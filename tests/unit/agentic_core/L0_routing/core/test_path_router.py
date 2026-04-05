@@ -20,7 +20,7 @@ class TestPathRouter:
 
     def test_path_enum_values(self):
         """Test Path enum has correct values."""
-        from agentic_core.L0_routing.engines.path_router import Path
+        from agentic_core.L0_routing.reasoning.path_router import Path
 
         assert Path.A.value == "A"
         assert Path.B.value == "B"
@@ -29,8 +29,8 @@ class TestPathRouter:
 
     def test_empty_check_ids_selects_path_a(self):
         """Test empty check_ids selects Path.A."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         payload = AirlockAssembler.assemble(
             s0_system="System",
@@ -49,8 +49,8 @@ class TestPathRouter:
 
     def test_sanitized_payload_selects_path_b(self):
         """Test sanitized payload selects Path.B."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         payload = AirlockAssembler.assemble(
             s0_system="System",
@@ -70,8 +70,8 @@ class TestPathRouter:
 
     def test_single_check_id_selects_path_c(self):
         """Test single check_id selects Path.C."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         payload = AirlockAssembler.assemble(
             s0_system="System",
@@ -91,8 +91,8 @@ class TestPathRouter:
 
     def test_multiple_check_ids_selects_path_d(self):
         """Test multiple check_ids selects Path.D."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         payload = AirlockAssembler.assemble(
             s0_system="System",
@@ -112,8 +112,8 @@ class TestPathRouter:
 
     def test_deterministic_selection_identical_payloads(self):
         """Test identical payloads produce identical path selection."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import PathRouter
 
         payload_args = {
             "s0_system": "System",
@@ -133,8 +133,8 @@ class TestPathRouter:
 
     def test_priority_order_empty_check_ids_overrides_sanitized(self):
         """Test priority: empty check_ids overrides sanitized."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         payload = AirlockAssembler.assemble(
             s0_system="System",
@@ -154,8 +154,8 @@ class TestPathRouter:
 
     def test_priority_order_sanitized_over_single_check_id(self):
         """Test priority: sanitized overrides single check_id."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         payload = AirlockAssembler.assemble(
             s0_system="System",

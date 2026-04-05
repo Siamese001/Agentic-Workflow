@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
+from agentic_core.L0_routing.reasoning.shadow_router_classifier import ShadowRouterClassifier
 from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
 from agentic_core.L0_routing.types.shadow_routing_types import ShadowRoutingTelemetry
 from agentic_core.runtime.lifecycle_trace_contract import (

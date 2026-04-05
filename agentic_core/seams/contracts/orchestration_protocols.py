@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
 
-from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+from agentic_core.L0_routing.reasoning.assembly_stage import GovernedPayload
 
 
 @dataclass

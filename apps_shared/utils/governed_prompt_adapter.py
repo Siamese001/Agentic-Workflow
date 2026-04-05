@@ -172,7 +172,7 @@ class GovernedPromptAdapter:
         template_args: dict[str, Any],
     ) -> Any:
         """Build PromptBOM via PromptBOMBuilder."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import (
+        from agentic_core.L0_routing.reasoning.prompt_bom_builder import (
             get_prompt_bom_builder,
         )
 
@@ -195,7 +195,7 @@ class GovernedPromptAdapter:
 
         If system_prompt is provided, it overrides the S0 from TemplateRegistry.
         """
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
         from agentic_core.L4_state.memory.template_registry import get_template_registry
 
         assembler = AirlockAssembler()

@@ -71,7 +71,7 @@ class TestE2ESmoke(unittest.TestCase):
 
     def test_path_router_integration(self) -> None:
         """Test PathRouter can be imported and used."""
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
         router = PathRouter()
         self.assertIsNotNone(router)
@@ -152,7 +152,7 @@ class TestIntegrationHealth(unittest.TestCase):
         """Test that governance emitters are present in key modules."""
         # All new modules should have governance wiring
         # This is a smoke test - just verify imports work
-        from agentic_core.L0_routing.engines.prompt_bom_builder import (
+        from agentic_core.L0_routing.reasoning.prompt_bom_builder import (
             get_prompt_bom_builder,
         )
         from agentic_core.L4_state.memory.template_registry import get_template_registry

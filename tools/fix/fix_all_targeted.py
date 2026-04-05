@@ -87,7 +87,7 @@ rel = r"agentic_core\L0_routing\types\governance_types.py"
 c = read(rel)
 if "GovernedPayload" not in c:
     new = safe_insert_before(c, "from agentic_core.L0_routing.types.determinism_types",
-        "from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload  # noqa: F401")
+        "from agentic_core.L0_routing.reasoning.assembly_stage import GovernedPayload  # noqa: F401")
     if new:
         write(rel, new)
         fixes_applied += 1

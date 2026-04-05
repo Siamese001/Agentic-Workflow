@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+from agentic_core.L0_routing.reasoning.reasoning_policy_engine import (
     ReasoningPolicyEngine,
     RequestStructureFeatures,
     compute_complexity_score,

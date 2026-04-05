@@ -306,7 +306,7 @@ class TestAssemblyStageEdgeCases(unittest.TestCase):
 
     def test_assembler_with_minimal_bom(self) -> None:
         """Test assembler with minimal BOM (edge case)."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
         from agentic_core.prompt_governance.contracts import PromptBOM
 
         assembler = AirlockAssembler()
@@ -331,7 +331,7 @@ class TestBOMBuilderEdgeCases(unittest.TestCase):
 
     def test_builder_with_empty_user_input(self) -> None:
         """Test builder with empty user input."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
+        from agentic_core.L0_routing.reasoning.prompt_bom_builder import PromptBOMBuilder
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 
         builder = PromptBOMBuilder()

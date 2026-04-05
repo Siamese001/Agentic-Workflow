@@ -88,7 +88,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
     def test_build_from_packet_with_real_store(self) -> None:
         """Test building PromptBOM from InstructionPacket using real version store."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
+        from agentic_core.L0_routing.reasoning.prompt_bom_builder import PromptBOMBuilder
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 
         # Create builder with injected in-memory store
@@ -125,7 +125,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
     def test_build_mixins_sorted(self) -> None:
         """Test that mixins are sorted in output using real store."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
+        from agentic_core.L0_routing.reasoning.prompt_bom_builder import PromptBOMBuilder
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 
         builder = PromptBOMBuilder()
@@ -157,7 +157,7 @@ class TestAssemblyStageIntegration(unittest.TestCase):
 
     def test_assemble_from_bom_with_real_registry(self) -> None:
         """Test that assemble_from_bom works with real in-memory registry."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
         from agentic_core.prompt_governance.contracts import CompiledPromptArtifact, PromptBOM
 
         secret_key = b"test-secret"
@@ -252,7 +252,7 @@ class TestIntegrationSmoke(unittest.TestCase):
 
     def test_prompt_bom_builder_import(self) -> None:
         """Test PromptBOMBuilder can be imported and instantiated."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import (
+        from agentic_core.L0_routing.reasoning.prompt_bom_builder import (
             PromptBOMBuilder,
         )
 
@@ -261,7 +261,7 @@ class TestIntegrationSmoke(unittest.TestCase):
 
     def test_airlock_assembler_import(self) -> None:
         """Test AirlockAssembler can be imported."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
 
         assembler = AirlockAssembler()
         self.assertIsNotNone(assembler)

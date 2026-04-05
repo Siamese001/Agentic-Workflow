@@ -129,7 +129,7 @@ emit_determinism_digest("trace_agentic_router", "agentic_router_guardrail_check"
 emit_determinism_digest("trace_agentic_router", "agentic_router_policy_verify")
 
 if TYPE_CHECKING:
-    from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
+    from agentic_core.L0_routing.reasoning.intent_embedding_classifier import IntentEmbeddingClassifier
 
 Logger = logging.getLogger(__name__)
 

@@ -199,7 +199,7 @@ def canonical_bytes(data: dict[str, Any]) -> bytes:
     Centralizes canonicalization — no local logic duplication.
     Prevents replay integrity breaks across layers.
     """
-    from agentic_core.L0_routing.engines.assembly_stage import canonical_bytes as _l0_canonical_bytes
+    from agentic_core.L0_routing.reasoning.assembly_stage import canonical_bytes as _l0_canonical_bytes
 
     return _l0_canonical_bytes(data)
 

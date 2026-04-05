@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload  # noqa: F401
+from agentic_core.L0_routing.reasoning.assembly_stage import GovernedPayload  # noqa: F401
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
