@@ -41,8 +41,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -128,7 +128,7 @@ _emit_captures_evaluation_metric("p4", "evaluation_record", "eval_metric")
 _emit_stores_embedding("p4", "evaluation_record", "embedding_store")
 _emit_updates_meta_learning_state("p4", "evaluation_record", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "evaluation_record", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -541,7 +541,7 @@ def _sha256_any(value: Any) -> str:
 
 def _resolve_trace_id() -> str:
     try:
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         active = get_active_execution_trace()
         return active.trace_id if active else ""
@@ -551,7 +551,7 @@ def _resolve_trace_id() -> str:
 
 def _resolve_run_id() -> str:
     try:
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         active = get_active_execution_trace()
         return getattr(active, "run_id", "") if active else ""

@@ -8,7 +8,7 @@ directory to verify sovereign namespace compliance.
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -99,7 +99,7 @@ sys.path.insert(0, str(project_root))
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.seams.safety_reasoning_seam import load_structure_enforcer_agent
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

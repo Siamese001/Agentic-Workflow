@@ -69,7 +69,7 @@ def _get_performance_emitter():
     )
     return StageStatus, record_reasoning_performance
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -142,7 +142,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_dispatch_entry")
 emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_dispatch_exit")

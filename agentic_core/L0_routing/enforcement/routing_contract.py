@@ -47,7 +47,7 @@ from agentic_core.L0_routing.optimization.optimization_orchestrator import (
     RoutingHistory,
     optimize_simple_routing,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,7 +87,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -520,7 +520,7 @@ def create_and_commit_routing_contract(
     clk.emit_determinism_digest(context=f"routing:{routing_context.router_id}")
 
     # Step 7 — attach trace id
-    from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+    from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
     _active = get_active_execution_trace()
     trace_id = _active.trace_id if _active else f"no-trace:{routing_context.run_id}"

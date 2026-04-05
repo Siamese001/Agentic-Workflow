@@ -97,7 +97,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils.providers import get_clock
 
 logger = logging.getLogger(__name__)
 from agentic_core.L3_orchestration.types.rag_provider_types import (
@@ -211,7 +211,7 @@ _emit_writes_through("p1", "sovereign_rag_orchestrator", "write_through_2")
 _emit_validated_by_safety_plane("p1", "sovereign_rag_orchestrator", "safety_validation")
 _emit_invokes_eval("p1", "sovereign_rag_orchestrator", "eval_call")
 _emit_proposal_commits_routing("p1", "sovereign_rag_orchestrator", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_dispatch_entry")
 emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_dispatch_exit")

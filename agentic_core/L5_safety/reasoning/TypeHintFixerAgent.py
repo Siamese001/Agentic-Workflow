@@ -4,7 +4,7 @@ import ast
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -90,7 +90,7 @@ _emit_updates_meta_learning_state("p4", "TypeHintFixerAgent", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "TypeHintFixerAgent", "exec_snapshot_link")
 
 "\nTypeHintFixerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: TypeHintEnforcementAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

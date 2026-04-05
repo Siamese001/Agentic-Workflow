@@ -31,7 +31,7 @@ import logging
 import time
 from typing import Any, Callable, TypeVar
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     emit_determinism_digest,

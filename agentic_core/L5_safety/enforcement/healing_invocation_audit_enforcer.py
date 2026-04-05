@@ -1,5 +1,5 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -97,7 +97,7 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

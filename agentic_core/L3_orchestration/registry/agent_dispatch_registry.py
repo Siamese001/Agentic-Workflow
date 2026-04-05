@@ -63,7 +63,7 @@ from agentic_core.L3_orchestration.registry.agent_capability_registry import (
     AgentCapabilityRegistry,
     get_agent_capability_registry,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402  # noqa: E402
     _emit_authorize_and_execute,
@@ -147,7 +147,7 @@ _emit_captures_evaluation_metric("p4", "agent_dispatch_registry", "eval_metric")
 _emit_stores_embedding("p4", "agent_dispatch_registry", "embedding_store")
 _emit_updates_meta_learning_state("p4", "agent_dispatch_registry", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "agent_dispatch_registry", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -475,7 +475,7 @@ class AgentDispatchRegistry:
                 logger.debug("DISPATCH_REGISTRY coordination_ledger update skipped: %s", _cl_exc)
 
         # P0/L6: emit records_execution_trace + signs_execution_trace lifecycle edges
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()
         _rtid = _active.trace_id if _active else f"no-trace:{caller}->{target_class}"

@@ -38,7 +38,7 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -120,7 +120,7 @@ _emit_captures_evaluation_metric("p4", "run_guardian_location_alignment", "eval_
 _emit_stores_embedding("p4", "run_guardian_location_alignment", "embedding_store")
 _emit_updates_meta_learning_state("p4", "run_guardian_location_alignment", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "run_guardian_location_alignment", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

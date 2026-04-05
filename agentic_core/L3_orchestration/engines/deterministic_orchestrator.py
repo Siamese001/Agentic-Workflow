@@ -30,7 +30,7 @@ from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
 )
 
 # ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -117,7 +117,7 @@ _emit_validates_agent_capability("p1", "deterministic_orchestrator", "L3")
 _emit_checks_agent_registry("p1", "deterministic_orchestrator", "L3")
 
 _emit_snapshots_state("p0", "deterministic_orchestrator", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

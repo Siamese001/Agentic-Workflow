@@ -11,7 +11,7 @@ from typing import Any
 from agentic_core.knowledge.cache.catalog_keymaker import CatalogKeymaker
 from agentic_core.knowledge.cache.fast_terminal import FastTerminal
 from agentic_core.knowledge.cache.policy_evaluator import PolicyEvaluator
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,

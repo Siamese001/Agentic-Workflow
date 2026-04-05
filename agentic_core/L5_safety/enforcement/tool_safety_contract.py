@@ -42,8 +42,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
 
-from agentic_core.L2_execution.providers import get_clock
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -127,7 +127,7 @@ _emit_captures_evaluation_metric("p4", "tool_safety_contract", "eval_metric")
 _emit_stores_embedding("p4", "tool_safety_contract", "embedding_store")
 _emit_updates_meta_learning_state("p4", "tool_safety_contract", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "tool_safety_contract", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -508,7 +508,7 @@ def invoke_tool_safely(
     # --- Steps 5 & 6: Attach policy hash + trace id ---
     if not trace_id:
         try:
-            from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+            from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
             _at = get_active_execution_trace()
             trace_id = _at.trace_id if _at else ""

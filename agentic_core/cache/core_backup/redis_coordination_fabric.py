@@ -41,7 +41,7 @@ from agentic_core.cache.redis_cache_client import (
     canonical_json_bytes,
     content_hash,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -488,7 +488,7 @@ class RedisCoordinationFabric:
                 When ``replay_mode=True``, always returns None so the caller re-derives
                 from L4 and appends to the deterministic transcript.
         import uuid
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.runtime.lifecycle_trace_contract import (
             _emit_pulls_context,
             _emit_execution_terminates_at_uwg,
             _emit_writes_through,
@@ -509,7 +509,7 @@ class RedisCoordinationFabric:
             _emit_hard_fails_untranscripted,
             _emit_gated_by_confidence,
         )
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
+        from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
         _emit_pulls_context("p1", "redis_coordination_fabric", "context_pull")
         _emit_pulls_context("p1", "redis_coordination_fabric", "context_pull_secondary")
         _emit_execution_terminates_at_uwg("p1", "redis_coordination_fabric", "uwg_term")

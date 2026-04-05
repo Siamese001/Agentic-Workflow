@@ -23,7 +23,7 @@ from agentic_core.L5_safety.audit.safety_audit_registry import (
     get_safety_audit_registry,
     reset_safety_audit_registry,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

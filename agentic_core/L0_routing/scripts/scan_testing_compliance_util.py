@@ -28,7 +28,7 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L0_routing.seams.safety_validators_seam import (
     load_canonical_truth_validator,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -115,7 +115,7 @@ _emit_links_execution_to_snapshot("p4", "scan_testing_compliance_util", "exec_sn
 
 _ctv = load_canonical_truth_validator()
 get_canonical_layer = _ctv.get_canonical_layer
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

@@ -855,7 +855,7 @@ class UnifiedAgent(SovereignBaseAgent):
     def _get_trace_id(self) -> str:
         """Return the active trace_id or generate a fresh UUID."""
 
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         active = get_active_execution_trace()
         return active.trace_id if (active and active.trace_id) else str(uuid.uuid4())

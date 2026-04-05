@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -105,7 +105,7 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -185,7 +185,7 @@ _emit_writes_through("p1", "ArchitectureGovernorAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "ArchitectureGovernorAgent", "safety_validation")
 _emit_invokes_eval("p1", "ArchitectureGovernorAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "ArchitectureGovernorAgent", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_ArchitectureGovernorAgent", "ArchitectureGovernorAgent_dispatch_entry")
 emit_determinism_digest("trace_ArchitectureGovernorAgent", "ArchitectureGovernorAgent_dispatch_exit")

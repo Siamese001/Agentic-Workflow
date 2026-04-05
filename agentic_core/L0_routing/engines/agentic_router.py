@@ -115,7 +115,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_agentic_router", "agentic_router_dispatch_entry")
 emit_determinism_digest("trace_agentic_router", "agentic_router_dispatch_exit")
@@ -292,7 +292,7 @@ class AgenticRouter:
             RoutingDecision with chosen target, confidence, and handler result.
         """
         context = context or {}
-        from agentic_core.L2_execution.providers import get_clock as _get_clock  # noqa: PLC0415
+        from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415
 
         _route_start_tick = _get_clock().now_epoch()
         intent, target_name, confidence = self._classify(user_input)
@@ -306,7 +306,7 @@ class AgenticRouter:
         _emitter = _get_proof_emitter()
         with _emitter.proof_op(f"route:{intent}:{target_name}"):
             pass
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()
         _rtid = _active.trace_id if _active else f"no-trace:route:{intent}"

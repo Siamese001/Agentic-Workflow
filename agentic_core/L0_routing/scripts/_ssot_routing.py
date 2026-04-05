@@ -38,7 +38,7 @@ from agentic_core.L0_routing.scripts._ssot_types import (
 )
 
 # L2 import deferred to avoid layer boundary violation (L0→L2)
-# from agentic_core.L2_execution.providers import get_clock
+# from agentic_core.L2_execution.utils.providers import get_clock
 
 _clock_cache = None
 
@@ -46,7 +46,7 @@ def _get_clock():
     global _clock_cache
     if _clock_cache is None:
         try:
-            from agentic_core.L2_execution.providers import get_clock as _get_clock_impl
+            from agentic_core.L2_execution.utils.providers import get_clock as _get_clock_impl
             _clock_cache = _get_clock_impl()
         except ImportError as e:
             logging.warning(f"L2 clock provider not available: {e}")
@@ -57,7 +57,7 @@ def _get_clock():
                     return time.time()
             _clock_cache = _MinimalClock()
     return _clock_cache
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -102,7 +102,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -19,7 +19,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.types.execution_trace import get_active_execution_trace
 
 _emit_emits_metric_event("workflow_learning_bridge", "p4obs", "metric_1")
 _emit_emits_metric_event("workflow_learning_bridge", "p4obs", "metric_2")

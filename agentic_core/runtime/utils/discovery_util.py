@@ -22,7 +22,7 @@ def get_python_files(path):
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "discovery_util", "p0_governance")
 _emit_reads_policy_state("p0", "discovery_util", "policy_binding")
 _emit_snapshots_state("p0", "discovery_util", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

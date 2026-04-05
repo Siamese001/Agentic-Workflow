@@ -30,7 +30,7 @@ from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
     DefaultDeterministicDPOPairGenerator,
 )
 from agentic_core.L6_observability.types.dpo_types import DPOExampleId
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_captures_evaluation_metric,

@@ -23,7 +23,7 @@ from agentic_core.L2_execution.contracts.l2_execution_contract import (
 )
 from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
 from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -107,7 +107,7 @@ _emit_captures_evaluation_metric("p4", "tool_intent_executor", "eval_metric")
 _emit_stores_embedding("p4", "tool_intent_executor", "embedding_store")
 _emit_updates_meta_learning_state("p4", "tool_intent_executor", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "tool_intent_executor", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

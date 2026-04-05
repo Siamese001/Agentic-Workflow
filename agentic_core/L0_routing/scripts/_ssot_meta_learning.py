@@ -165,7 +165,7 @@ _emit_writes_through("p1", "_ssot_meta_learning", "write_through_2")
 _emit_validated_by_safety_plane("p1", "_ssot_meta_learning", "safety_validation")
 _emit_invokes_eval("p1", "_ssot_meta_learning", "eval_call")
 _emit_proposal_commits_routing("p1", "_ssot_meta_learning", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace__ssot_meta_learning", "_ssot_meta_learning_dispatch_entry")
 emit_determinism_digest("trace__ssot_meta_learning", "_ssot_meta_learning_dispatch_exit")

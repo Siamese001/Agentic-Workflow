@@ -22,7 +22,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 ADG_NS = "ADG"
 EntityType = Literal[

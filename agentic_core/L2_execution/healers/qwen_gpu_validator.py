@@ -12,7 +12,7 @@ import subprocess
 from typing import Literal
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

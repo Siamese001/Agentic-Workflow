@@ -16,8 +16,8 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

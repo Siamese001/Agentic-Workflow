@@ -170,7 +170,7 @@ _emit_writes_through("p1", "rl_coordinator_orchestrator", "write_through_2")
 _emit_validated_by_safety_plane("p1", "rl_coordinator_orchestrator", "safety_validation")
 _emit_invokes_eval("p1", "rl_coordinator_orchestrator", "eval_call")
 _emit_proposal_commits_routing("p1", "rl_coordinator_orchestrator", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_rl_coordinator_orchestrator", "rl_coordinator_orchestrator_dispatch_entry")
 emit_determinism_digest("trace_rl_coordinator_orchestrator", "rl_coordinator_orchestrator_dispatch_exit")

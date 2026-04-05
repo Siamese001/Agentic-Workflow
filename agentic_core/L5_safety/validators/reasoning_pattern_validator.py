@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -86,7 +86,7 @@ _emit_hard_fails_untranscripted("p1", "reasoning_pattern_validator")
 _emit_gated_by_confidence("p1", "reasoning_pattern_validator", "confidence_gate")
 _emit_escalates_to_human("p1", "reasoning_pattern_validator", "L5")
 _emit_reads_policy_state("p1", "reasoning_pattern_validator", "L5")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

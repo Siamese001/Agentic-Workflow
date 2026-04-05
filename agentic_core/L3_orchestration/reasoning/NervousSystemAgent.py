@@ -99,7 +99,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
@@ -178,7 +178,7 @@ _emit_writes_through("p1", "NervousSystemAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "NervousSystemAgent", "safety_validation")
 _emit_invokes_eval("p1", "NervousSystemAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "NervousSystemAgent", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_dispatch_entry")
 emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_dispatch_exit")
@@ -580,7 +580,7 @@ class NervousSystemAgent(SovereignBaseAgent):
             _active_trace = _rsa.observe_runtime_state(
                 "trace_id_fetch", stage="run_complete", actor_id="NervousSystemAgent"
             )
-            from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+            from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
             _et = get_active_execution_trace()
             _rtid = _et.trace_id if _et else getattr(context, "run_id", "") or "no-trace"
@@ -595,7 +595,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         # guardian: allow-silent-swallow
         except (RuntimeError, ValueError) as e:
             _rsa.observe_runtime_state("execute_error", stage="error", actor_id="NervousSystemAgent")
-            from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+            from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
             _et2 = get_active_execution_trace()
             _rtid2 = _et2.trace_id if _et2 else getattr(context, "run_id", "") or "no-trace"

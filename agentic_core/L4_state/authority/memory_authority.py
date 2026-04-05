@@ -35,12 +35,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.L4_state.authority.run_state_authority import (
     RunStateAuthority,
     get_run_state_authority,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -84,7 +84,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -413,7 +413,7 @@ class MemoryAuthority:
         # Resolve trace_id from active trace if not provided
         if not trace_id:
             try:
-                from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+                from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
                 _at = get_active_execution_trace()
                 trace_id = _at.trace_id if _at else ""

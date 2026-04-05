@@ -41,7 +41,7 @@ from agentic_core.L2_execution.observability.observability_recorder import (
     record_execution_retry,
     record_policy_block,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

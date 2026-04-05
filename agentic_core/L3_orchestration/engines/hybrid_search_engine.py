@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # BM25Index imported lazily to avoid L3->L4 violation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )

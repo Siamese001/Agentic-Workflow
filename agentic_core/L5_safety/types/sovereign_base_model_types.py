@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ _emit_links_execution_to_snapshot("p4", "sovereign_base_model_types", "exec_snap
 "\nBase Sovereign Schemas\n======================\nDefines the root models and structural entities for the Sovereign system.\nAll primary system entities should inherit from SovereignBaseModel to\nensure strict validation and immutability.\n"
 from pydantic import BaseModel, ConfigDict, model_validator
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

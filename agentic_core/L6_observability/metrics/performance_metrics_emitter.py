@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.types.execution_trace import get_active_execution_trace
 
 emit_replay_key("p0", "performance_metrics_emitter")
 emit_determinism_digest("p0", "performance_metrics_emitter")
@@ -104,7 +104,7 @@ _emit_captures_evaluation_metric("p4", "performance_metrics_emitter", "eval_metr
 _emit_stores_embedding("p4", "performance_metrics_emitter", "embedding_store")
 _emit_updates_meta_learning_state("p4", "performance_metrics_emitter", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "performance_metrics_emitter", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

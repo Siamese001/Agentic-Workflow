@@ -52,7 +52,7 @@ from typing import Any, Generator
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
     ActorContext,
     MutationPayload,
@@ -65,7 +65,7 @@ from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
     commit_versioned_state_transition,
     read_versioned_state,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402  # noqa: E402
     _emit_authorize_and_execute,

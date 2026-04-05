@@ -16,7 +16,7 @@ import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ _emit_applies_guardrail("p0", "impact", "p0_governance")
 _emit_reads_policy_state("p0", "impact", "policy_binding")
 _emit_snapshots_state("p0", "impact", "state_snapshot")
 _emit_escalates_to_human("p1", "impact", "human_escalation")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

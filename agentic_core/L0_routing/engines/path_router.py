@@ -19,7 +19,7 @@ from agentic_core.L0_routing.telemetry.routing_telemetry import (
     RoutingTelemetryContext,
     record_routing_telemetry,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 from ..engines.assembly_stage import GovernedPayload
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -166,7 +166,7 @@ class PathRouter:
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
-        from agentic_core.L2_execution.providers import get_clock as _get_clock  # noqa: PLC0415
+        from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415
 
         _path_start_tick = _get_clock().now_epoch()
         if not payload.check_ids:
@@ -181,7 +181,7 @@ class PathRouter:
         _emitter = _get_proof_emitter()
         with _emitter.proof_op(f"select_path:{chosen.value}"):
             pass
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()
         _rtid = _active.trace_id if _active else f"no-trace:path:{chosen.value}"

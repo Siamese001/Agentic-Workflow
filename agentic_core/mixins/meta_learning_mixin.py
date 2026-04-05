@@ -21,7 +21,7 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -85,7 +85,7 @@ _emit_captures_evaluation_metric("p4", "meta_learning_mixin", "eval_metric")
 _emit_stores_embedding("p4", "meta_learning_mixin", "embedding_store")
 _emit_updates_meta_learning_state("p4", "meta_learning_mixin", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "meta_learning_mixin", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -184,7 +184,7 @@ _emit_gated_by_confidence("p1", "meta_learning_mixin", "confidence_gate")
 emit_replay_key("p0", "meta_learning_mixin")
 emit_determinism_digest("p0", "meta_learning_mixin")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_dispatch_entry")
 emit_determinism_digest("trace_meta_learning_mixin", "meta_learning_mixin_dispatch_exit")

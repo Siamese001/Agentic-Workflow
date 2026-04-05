@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -95,7 +95,7 @@ _emit_links_execution_to_snapshot("p4", "capability_extractor_util", "exec_snaps
 "\nCapability Extractor - AST-based capability analysis for agent classes.\nExtracted from agent_capability_supplement.py for single responsibility.\n"
 import ast
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

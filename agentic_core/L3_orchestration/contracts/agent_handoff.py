@@ -90,7 +90,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.types.execution_trace import get_active_execution_trace
 
 _emit_routes_to_agent("p1", "agent_handoff", "L3")
 _emit_orchestrates_workflow("p1", "agent_handoff", "L3")
@@ -130,7 +130,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_entry")
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_exit")

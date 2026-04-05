@@ -1,7 +1,7 @@
 # guardian: allow-silent-swallower -- Memory bridge operations logged, failures non-critical for system continuity
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -48,7 +48,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 try:
     from agentic_core.adg.client.InMemoryStore import ADGMCPClient as _MCPFallbackClient
@@ -66,7 +66,7 @@ try:
 except ImportError:
     _SqliteMemoryStore = None  # type: ignore[assignment,misc]
     _SQLITE_STORE_AVAILABLE = False
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

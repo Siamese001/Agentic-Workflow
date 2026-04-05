@@ -21,7 +21,7 @@ USAGE (apps_*):
 from __future__ import annotations
 
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )

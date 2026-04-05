@@ -9,7 +9,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
 
 from ..config.model_registry import DecisionMode
 from ..inference.replay_harness import ReplayHarness

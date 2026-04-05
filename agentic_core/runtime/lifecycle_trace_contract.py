@@ -33,7 +33,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.execution_trace import get_active_execution_trace
+from agentic_core.runtime.types.execution_trace import get_active_execution_trace
 
 _LOG = logging.getLogger(__name__)
 

@@ -16,7 +16,7 @@ from agentic_core.L0_routing.enforcement.routing_contract import (
     RoutingContext,
     create_and_commit_routing_contract,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -60,7 +60,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -233,7 +233,7 @@ class ExecutionOrchestrator:
         payload = self.assembler.assemble(intent_input)
         path = self.path_router.select_path(payload)
         _get_routing_gateway().stamp_decision(path.value)
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()
         _rtid = _active.trace_id if _active else f"no-trace:orchestrate:{path.value}"

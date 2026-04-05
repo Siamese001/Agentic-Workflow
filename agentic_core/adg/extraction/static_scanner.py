@@ -2038,9 +2038,9 @@ import os
 from pathlib import Path
 from some.external.sdk import SomeProvider
 import uuid
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_replay_key  # noqa: E402
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
 
 class BaseClass:
     pass

@@ -58,7 +58,7 @@ from agentic_core.L5_safety.utils.location_constants_util import (
 from agentic_core.L5_safety.utils.location_utils_util import (
     compute_module_path,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -144,7 +144,7 @@ _emit_orchestrates_workflow("p1", "LocationHealerAgent", "L5")
 _emit_dispatches_execution_plan("p1", "LocationHealerAgent", "L5")
 _emit_validates_agent_capability("p1", "LocationHealerAgent", "L5")
 _emit_checks_agent_registry("p1", "LocationHealerAgent", "L5")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -214,7 +214,7 @@ _emit_writes_through("p1", "LocationHealerAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "LocationHealerAgent", "safety_validation")
 _emit_invokes_eval("p1", "LocationHealerAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "LocationHealerAgent", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_LocationHealerAgent", "LocationHealerAgent_dispatch_entry")
 emit_determinism_digest("trace_LocationHealerAgent", "LocationHealerAgent_dispatch_exit")

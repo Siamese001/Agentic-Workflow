@@ -13,7 +13,7 @@ Pattern Detection:
 import ast
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -80,7 +80,7 @@ _emit_captures_evaluation_metric("p4", "path_fragility_validator", "eval_metric"
 _emit_stores_embedding("p4", "path_fragility_validator", "embedding_store")
 _emit_updates_meta_learning_state("p4", "path_fragility_validator", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "path_fragility_validator", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -372,7 +372,7 @@ class PathFragilityDetector(AntiPatternDetector):
         return """Use pathlib.Path for all path operations:
     from pathlib import Path
 import uuid
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

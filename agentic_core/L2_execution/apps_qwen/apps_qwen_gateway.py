@@ -17,7 +17,7 @@ from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
     VLLMResponse,
 )
 from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_evaluation_metric,
     _emit_records_execution_trace,

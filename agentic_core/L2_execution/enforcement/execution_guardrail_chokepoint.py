@@ -240,7 +240,7 @@ _emit_writes_through("p1", "execution_guardrail_chokepoint", "write_through_2")
 _emit_validated_by_safety_plane("p1", "execution_guardrail_chokepoint", "safety_validation")
 _emit_invokes_eval("p1", "execution_guardrail_chokepoint", "eval_call")
 _emit_proposal_commits_routing("p1", "execution_guardrail_chokepoint", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_entry")
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_exit")

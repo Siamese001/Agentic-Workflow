@@ -11,7 +11,7 @@ The L5 inventory contract test enforces that no stray string refs for
 these names exist outside this file and the agent's own defining module.
 """
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

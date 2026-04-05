@@ -58,7 +58,7 @@ import uuid
 from pathlib import Path
 
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.L3_orchestration.contracts.coordination_ledger import (
     MissingCoordinationLedger,
     WorkflowStatus,
@@ -142,7 +142,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")
@@ -420,7 +420,7 @@ def run_standard_mode():
             Logger.error("Policy blocked mission start: %s", _pee)
             return
         _rsa.observe_runtime_state("mission_start", stage="pre_cycle", actor_id="mission_runner")
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _et_start = get_active_execution_trace()
         _rtid_mission = _et_start.trace_id if _et_start else str(id(ctx))
@@ -461,7 +461,7 @@ def run_standard_mode():
                     _mission_run_id = str(id(ctx))
                     if get_coordination_ledger(_mission_run_id) is None:
                         try:
-                            from agentic_core.runtime.execution_trace import (
+                            from agentic_core.runtime.types.execution_trace import (
                                 get_active_execution_trace,  # noqa: PLC0415
                             )
 

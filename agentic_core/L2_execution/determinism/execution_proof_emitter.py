@@ -22,7 +22,7 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -115,8 +115,8 @@ _emit_updates_meta_learning_state("p4", "execution_proof_emitter", "meta_learnin
 _emit_links_execution_to_snapshot("p4", "execution_proof_emitter", "exec_snapshot_link")
 
 if TYPE_CHECKING:
-    from agentic_core.runtime.execution_trace import ExecutionTrace
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.runtime.types.execution_trace import ExecutionTrace
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -320,7 +320,7 @@ class ExecutionProofEmitter:
         self._ledger: list[ExecutionProof] = []
 
     def _trace_id(self) -> str:
-        from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         active: ExecutionTrace | None = get_active_execution_trace()
         return active.trace_id if active else "no-active-trace"

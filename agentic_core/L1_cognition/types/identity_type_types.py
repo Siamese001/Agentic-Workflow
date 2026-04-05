@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -94,7 +94,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -219,7 +219,7 @@ class AgentIdentity:
         """
         import uuid as _uuid  # noqa: PLC0415
 
-        from agentic_core.L2_execution.providers import get_clock
+        from agentic_core.L2_execution.utils.providers import get_clock
 
         _emit_snapshots_state(str(_uuid.uuid4()), "AgentIdentity.is_expired", "state_snapshot")
         import hashlib as _hashlib  # noqa: PLC0415

@@ -146,7 +146,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_execution_gateway", "execution_gateway_dispatch_entry")
 emit_determinism_digest("trace_execution_gateway", "execution_gateway_dispatch_exit")
@@ -289,7 +289,7 @@ class V15ExecutionGateway:
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
-        from agentic_core.L2_execution.providers import get_clock  # noqa: PLC0415
+        from agentic_core.L2_execution.utils.providers import get_clock  # noqa: PLC0415
 
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, **kwargs)

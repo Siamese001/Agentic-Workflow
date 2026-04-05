@@ -23,7 +23,7 @@ from agentic_core.L3_orchestration.engines.adg_integration import (
     ADGQueryClient,
     get_global_adg_client,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_evaluation_metric,
     _emit_reads_through,

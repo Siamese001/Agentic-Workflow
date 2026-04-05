@@ -42,7 +42,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -128,7 +128,7 @@ _emit_captures_evaluation_metric("p4", "ssot_guardrail", "eval_metric")
 _emit_stores_embedding("p4", "ssot_guardrail", "embedding_store")
 _emit_updates_meta_learning_state("p4", "ssot_guardrail", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "ssot_guardrail", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -33,7 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.adg.schema_util import canonical_name
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -80,7 +80,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "agent_registry_scanner", "p0_governance")
 _emit_reads_policy_state("p0", "agent_registry_scanner", "policy_binding")
 _emit_snapshots_state("p0", "agent_registry_scanner", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

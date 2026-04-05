@@ -16,7 +16,7 @@ Finds all Python classes in agentic_core that:
 
 import warnings
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -113,7 +113,7 @@ try:
         except ImportError:  # guardian: allow-silent-swallow
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     ARCHIVES_DIR = ".sovereign_healing_backup"
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

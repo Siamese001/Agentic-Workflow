@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -93,7 +93,7 @@ from datetime import datetime
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

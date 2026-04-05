@@ -9,7 +9,7 @@ This module re-exports for callers using
 from agentic_core.L4_state.utils.sanitize_telemetry_util import (  # noqa: F401
     sanitize_tool_output,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

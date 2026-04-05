@@ -218,7 +218,7 @@ _emit_writes_through("p1", "orchestrator_engine", "write_through_2")
 _emit_validated_by_safety_plane("p1", "orchestrator_engine", "safety_validation")
 _emit_invokes_eval("p1", "orchestrator_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "orchestrator_engine", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 # Runtime ADG imports
 # guardian: allow-silent-degradation - Optional runtime ADG

@@ -14,7 +14,7 @@ from threading import Lock
 from typing import Callable
 
 from agentic_core.knowledge.canonical.canonical_store import CanonicalStore
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,

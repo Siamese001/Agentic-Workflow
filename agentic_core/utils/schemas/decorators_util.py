@@ -27,7 +27,7 @@ import traceback
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -94,7 +94,7 @@ from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
 _emit_records_execution_trace("p0", "evidence", "decorators_util")
 _emit_applies_guardrail("p0", "decorators_util", "p0_governance")
 _emit_snapshots_state("p0", "decorators_util", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

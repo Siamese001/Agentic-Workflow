@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -90,7 +90,7 @@ _emit_links_execution_to_snapshot("p4", "omni_context_engine", "exec_snapshot_li
 "Brief description of functionality and purpose."
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 from agentic_core.L2_execution.reasoning.base import SubAtomicAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

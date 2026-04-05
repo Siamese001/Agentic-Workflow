@@ -116,7 +116,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace__ssot_pipeline", "_ssot_pipeline_dispatch_entry")
 emit_determinism_digest("trace__ssot_pipeline", "_ssot_pipeline_dispatch_exit")

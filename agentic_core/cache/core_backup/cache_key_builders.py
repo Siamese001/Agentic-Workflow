@@ -10,7 +10,7 @@ enforce the non-authoritative cache contract:
 
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 
 def _require_safe_segment(name: str, value: str) -> None:

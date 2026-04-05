@@ -182,7 +182,7 @@ _emit_writes_through("p1", "meta_observability", "write_through_2")
 _emit_validated_by_safety_plane("p1", "meta_observability", "safety_validation")
 _emit_invokes_eval("p1", "meta_observability", "eval_call")
 _emit_proposal_commits_routing("p1", "meta_observability", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 record_execution_trace("meta_observability", "meta_observability_trace")
 

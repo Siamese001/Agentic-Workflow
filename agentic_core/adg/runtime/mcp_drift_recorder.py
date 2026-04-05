@@ -26,7 +26,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

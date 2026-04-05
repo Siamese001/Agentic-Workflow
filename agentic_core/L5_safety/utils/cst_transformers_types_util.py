@@ -28,7 +28,7 @@ from agentic_core.L5_safety.types.cst_transformers_types import (  # noqa: F401
     create_trailing_whitespace_fixer,
     create_type_hint_inserter,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

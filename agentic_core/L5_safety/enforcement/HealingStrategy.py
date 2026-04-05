@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -91,7 +91,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -163,7 +163,7 @@ _emit_writes_through("p1", "HealingStrategy", "write_through_2")
 _emit_validated_by_safety_plane("p1", "HealingStrategy", "safety_validation")
 _emit_invokes_eval("p1", "HealingStrategy", "eval_call")
 _emit_proposal_commits_routing("p1", "HealingStrategy", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_HealingStrategy", "HealingStrategy_dispatch_entry")
 emit_determinism_digest("trace_HealingStrategy", "HealingStrategy_dispatch_exit")
