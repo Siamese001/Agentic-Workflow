@@ -1633,12 +1633,14 @@ def _deep_freeze(obj: Any) -> Any:
 
 
 # Build and deep-freeze at import time
-SOVEREIGN_TERRITORIES: Final[Mapping[str, Any]] = _deep_freeze(build_sovereign_territories())
+# Wave 3: SOVEREIGN_TERRITORIES removed - use get_all_territories() from territories module
+# SOVEREIGN_TERRITORIES: Final[Mapping[str, Any]] = _deep_freeze(build_sovereign_territories())
 
 # Materialized at import time — consumers get a real frozenset, not a lazy proxy.
 # frozenset guarantees immutability: no downstream code can accidentally mutate
 # the SSOT whitelist and cause global side-effects.
-ROOT_WHITELIST: Final[frozenset[str]] = frozenset(SOVEREIGN_TERRITORIES.keys())
+# Wave 3: ROOT_WHITELIST moved to ssot.py as alias to PROJECT_ROOT_WHITELIST
+# ROOT_WHITELIST: Final[frozenset[str]] = frozenset(SOVEREIGN_TERRITORIES.keys())
 
 
 # ============================================================================

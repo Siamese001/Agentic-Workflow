@@ -37,6 +37,15 @@ def load_layer_overrides() -> dict[str, Any]:
     return _loaded_data["layers"]
 
 
+def load_ast_signals() -> dict[str, Any]:
+    """Load AST signal definitions from YAML."""
+    if "ast_signals" not in _loaded_data:
+        config_path = _get_config_dir() / "ast_signals.yaml"
+        with open(config_path) as f:
+            _loaded_data["ast_signals"] = yaml.safe_load(f)
+    return _loaded_data["ast_signals"]
+
+
 def get_territory(name: str) -> dict[str, Any] | None:
     """Get a specific territory definition."""
     data = load_territories()
@@ -77,6 +86,7 @@ def get_all_layer_names() -> list[str]:
 __all__ = [
     "load_territories",
     "load_layer_overrides",
+    "load_ast_signals",
     "get_territory",
     "get_layer_override",
     "match_wildcard_territory",
