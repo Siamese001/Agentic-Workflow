@@ -317,8 +317,11 @@ class SQLiteGraphStore(IGraphStore):
 
             if current_id == dst_id:
                 # Reconstruct path
-                nodes = [self.get_entity(pid) for pid in path_ids + [dst_id]]
-                nodes = [n for n in nodes if n is not None]
+                nodes: list[GraphEntity] = []
+                for pid in path_ids + [dst_id]:
+                    entity = self.get_entity(pid)
+                    if entity is not None:
+                        nodes.append(entity)
                 return GraphPath(
                     nodes=nodes,
                     relationships=path_rels,
@@ -384,6 +387,19 @@ class SQLiteGraphStore(IGraphStore):
             center_id=center_id,
             radius=radius,
         )
+
+    def get_centrality(self, entity_id: str) -> float:
+        """Get the centrality score of an entity.
+
+        Args:
+            entity_id: The ID of the entity.
+
+        Returns:
+            Centrality score (higher = more central).
+        """
+        # Degree centrality: number of connections
+        rels = self.get_relationships(entity_id, direction="both")
+        return float(len(rels))
 
 
 __all__ = ["SQLiteGraphStore"]
