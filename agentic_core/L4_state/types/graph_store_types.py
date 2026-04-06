@@ -88,6 +88,19 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def find_shortest_path(self, src_id: str, dst_id: str) -> GraphPath | None:
+        """Find the shortest path between two entities.
+
+        Args:
+            src_id: The ID of the source entity.
+            dst_id: The ID of the destination entity.
+
+        Returns:
+            GraphPath representing the shortest path, or None if no path exists.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
