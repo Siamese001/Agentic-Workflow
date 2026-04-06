@@ -22,6 +22,8 @@ from agentic_core.L5_safety.reasoning.file_classification.classification_core im
     _is_factory_class,
     _is_service_class,
     _is_true_agent,
+    validate_folder_suffix_consistency,
+    validate_single_suffix,
 )
 
 
@@ -526,3 +528,50 @@ class MyClass:
         node = tree.body[0]
         result = _is_factory_class(node)
         assert result is False
+
+
+class TestValidateSingleSuffix:
+    """Tests for validate_single_suffix function."""
+
+    def test_single_suffix_compliant(self):
+        """Test that files with single suffix are compliant."""
+        result = validate_single_suffix("model_provider_types.py")
+        assert result is None
+
+    def test_multiple_suffixes_violation(self):
+        """Test that files with multiple suffixes are violations."""
+        result = validate_single_suffix("model_provider_types_config.py")
+        assert result is not None
+        assert "found_suffixes" in result
+        assert "suggested_name" in result
+
+    def test_exempt_files(self):
+        """Test that exempt files pass validation."""
+        assert validate_single_suffix("__init__.py") is None
+        assert validate_single_suffix("__main__.py") is None
+        assert validate_single_suffix("conftest.py") is None
+
+
+class TestValidateFolderSuffixConsistency:
+    """Tests for validate_folder_suffix_consistency function."""
+
+    def test_types_folder_compliant(self):
+        """Test that types folder with correct suffix is compliant."""
+        result = validate_folder_suffix_consistency(Path("config/types/model_types.py"))
+        assert result is None
+
+    def test_types_folder_violation(self):
+        """Test that types folder with wrong suffix is violation."""
+        result = validate_folder_suffix_consistency(Path("config/types/model.py"))
+        assert result is not None
+        assert result["folder"] == "types"
+
+    def test_utils_folder_compliant(self):
+        """Test that utils folder with correct suffix is compliant."""
+        result = validate_folder_suffix_consistency(Path("config/utils/helper_util.py"))
+        assert result is None
+
+    def test_non_typed_folder(self):
+        """Test that non-typed folders are not checked."""
+        result = validate_folder_suffix_consistency(Path("config/reasoning/agent.py"))
+        assert result is None

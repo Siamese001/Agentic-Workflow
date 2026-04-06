@@ -9,7 +9,7 @@ import ast
 import logging
 import re
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
@@ -914,6 +914,116 @@ def _is_async_agent(node: ast.ClassDef, file_path: Path) -> bool:
     TODO: Extract implementation.
     """
     return False
+
+
+def validate_single_suffix(filename: str) -> dict[str, Any] | None:
+    """Pre-classification gate: reject files with multiple architectural suffixes.
+
+    LCD+ Single-Suffix Rule: every .py file must have AT MOST ONE known
+    architectural suffix. Files like *_types_config.py have ambiguous
+    classification and must be renamed before processing.
+
+    Args:
+        filename: The filename to check (e.g., "model_provider_types_config.py")
+
+    Returns:
+        None if compliant, or a violation dict with:
+            - found_suffixes: list of detected suffixes
+            - primary_suffix: recommended suffix (rightmost match)
+            - suggested_name: auto-corrected filename with single suffix
+    """
+    from agentic_core.L5_safety.config.structure_blueprint.classification import (
+        KNOWN_ARCHITECTURAL_SUFFIXES,
+    )
+
+    if not filename.endswith(".py") or filename in ("__init__.py", "__main__.py", "conftest.py"):
+        return None
+
+    stem = filename[:-3]
+
+    found_suffixes: list[str] = []
+    remaining = stem
+    while True:
+        matched = False
+        for suffix in KNOWN_ARCHITECTURAL_SUFFIXES:
+            if remaining.endswith(suffix) and len(remaining) > len(suffix):
+                found_suffixes.append(suffix)
+                remaining = remaining[: -len(suffix)]
+                matched = True
+                break
+        if not matched:
+            break
+
+    if len(found_suffixes) <= 1:
+        return None
+
+    rightmost_suffix = found_suffixes[0]
+
+    sanitized_stem = stem
+    for suffix in found_suffixes:
+        if suffix != rightmost_suffix:
+            sanitized_stem = sanitized_stem.replace(suffix, "")
+
+    sanitized_stem = re.sub(r"_{2,}", "_", sanitized_stem).strip("_")
+    suggested_name = f"{sanitized_stem}{rightmost_suffix}.py" if sanitized_stem else filename
+
+    return {
+        "found_suffixes": found_suffixes,
+        "primary_suffix": rightmost_suffix,
+        "suggested_name": suggested_name,
+        "filename": filename,
+    }
+
+
+def validate_folder_suffix_consistency(path: Path) -> dict[str, Any] | None:
+    """Enforce that files in typed LCD folders have matching suffixes.
+
+    Rules:
+    - Files in types/   -> must end with _types.py, _protocol.py, or match I*Protocol.py
+    - Files in utils/   -> must end with _util.py, _mixin.py, or _helper.py
+    - Files in config/  -> must end with _config.py, _settings.py, or _blueprint.py
+
+    Args:
+        path: Full file path to validate
+
+    Returns:
+        None if compliant, or a dict with 'folder', 'expected_suffixes', 'suggested_name'.
+    """
+    filename = path.name
+    parent_name = path.parent.name
+
+    if filename in ("__init__.py", "__main__.py", "conftest.py"):
+        return None
+
+    if not filename.endswith(".py"):
+        return None
+
+    folder_suffix_rules: dict[str, list[str]] = {
+        "types": ["_types.py", "_protocol.py"],
+        "utils": ["_util.py", "_mixin.py", "_helper.py"],
+        "config": ["_config.py", "_settings.py", "_blueprint.py"],
+    }
+
+    expected_suffixes = folder_suffix_rules.get(parent_name)
+    if expected_suffixes is None:
+        return None
+
+    if parent_name == "types" and filename.startswith("I") and filename[1:2].isupper():
+        return None
+
+    if any(filename.endswith(s) for s in expected_suffixes):
+        return None
+
+    stem = filename[:-3]
+    primary_suffix = expected_suffixes[0]
+    suggested_name = f"{stem}{primary_suffix}"
+
+    return {
+        "folder": parent_name,
+        "expected_suffixes": expected_suffixes,
+        "suggested_name": suggested_name,
+        "filename": filename,
+    }
 
 
 def _is_adapter_class(node: ast.ClassDef) -> bool:
