@@ -4,9 +4,90 @@ Implement a production-grade SQLiteGraphStore to enable GraphRAG capabilities (l
 
 ---
 
+## ADG Ingestion Analysis
+
+**Latest ADG Database**: `artifacts/adg/adg_indexed_04062026_0751.sqlite`
+
+**Graph Statistics**:
+- **88,251 nodes** (80,664 symbols, 7,529 modules)
+- **625,904 edges** (rich relationship graph)
+- **Schema**: nodes, edges, meta, violations, sqlite_sequence
+
+**Node Distribution by Layer**:
+- Unlabeled: 60,564 nodes (68.6% - need layer inference)
+- L_TEST: 8,539 nodes (9.7%)
+- L_TOOLS: 4,727 nodes (5.4%)
+- L_OPS: 3,920 nodes (4.4%)
+- L_APP: 2,561 nodes (2.9%)
+- L_UNKNOWN: 1,736 nodes (2.0%)
+- L_SHARED: 1,193 nodes (1.4%)
+- L5: 1,089 nodes (1.2% - safety/governance)
+- L_SL: 800 nodes (0.9%)
+- L0: 528 nodes (0.6% - routing)
+- L2: 455 nodes (0.5% - execution)
+- L3: 432 nodes (0.5% - orchestration)
+- L_PG: 404 nodes (0.5%)
+- L_RUNTIME: 397 nodes (0.4%)
+- L6: 312 nodes (0.4%)
+
+**Edge Distribution by Relation Type** (Top 20):
+- **imports**: 194,815 edges (31.1%) - import dependencies
+- **reads_from**: 99,154 edges (15.8%) - data flow
+- **flows_to**: 64,052 edges (10.2%) - execution flow
+- **controls_flow**: 59,132 edges (9.4%) - control flow
+- **resolves_callsite**: 54,884 edges (8.8%) - call resolution
+- **emits_side_effect**: 42,155 edges (6.7%) - side effects
+- **exports**: 38,481 edges (6.1%) - exports
+- **unused_import**: 16,648 edges (2.7%) - unused code detection
+- **decomposes_into**: 11,985 edges (1.9%) - decomposition
+- **covers**: 7,193 edges (1.1%) - coverage
+- **belongs_to_layer**: 7,006 edges (1.1%) - layer assignment
+- **applies**: 5,366 edges (0.9%) - policy application
+- **writes_to**: 5,110 edges (0.8%) - data mutation
+- **antipattern**: 4,698 edges (0.8%) - anti-pattern detection
+- **implements**: 3,365 edges (0.5%) - interface implementation
+- **tests_execution_of**: 2,867 edges (0.5%) - test coverage
+- **dead_imports**: 1,562 edges (0.3%) - dead code
+- **reads_through**: 1,296 edges (0.2%) - transitive reads
+- **writes_through**: 1,243 edges (0.2%) - transitive writes
+- **instantiates**: 1,130 edges (0.2%) - instantiation
+
+**Traversal-Relevant Edge Counts**:
+- imports: 194,815 (primary for circular dependency detection)
+- calls: 442 (direct call relationships - sparse, most encoded via resolves_callsite)
+- reads_from: 99,154 (data flow analysis)
+- writes_to: 5,110 (data mutation tracking)
+- flows_to: 64,052 (execution flow)
+- controls_flow: 59,132 (control flow)
+- emits_side_effect: 42,155 (side effect propagation)
+
+**Node Schema** (20 columns):
+- id, adg_name, entity_type, layer, identity_kind, confidence
+- resolved_path, precision_type
+- span_start, span_end, span_line, span_column, span_end_line, span_end_column
+- logical_sequence_id, control_path_id, temporal_order
+- type_surface, enclosing_symbol
+
+**Edge Schema** (19 columns):
+- id, src_id, dst_id, relation_type, edge_kind
+- source_file, line_no, symbol, semantic_type, confidence_score
+- source_span_start, source_span_end, source_span_line, source_span_column
+- target_span_start, target_span_end, target_span_line, target_span_column
+- dynamic_resolution
+
+**Key Insights for GraphRAG**:
+1. **Import graph is dense** (194K edges) - excellent for circular dependency detection and module clustering
+2. **Data flow edges abundant** (99K reads_from + 5K writes_to) - enables rich context retrieval
+3. **Control flow edges present** (59K controls_flow + 64K flows_to) - enables execution path analysis
+4. **Layer coverage incomplete** (68% unlabeled) - need layer inference for governance queries
+5. **Symbol-level granularity** (91% symbols) - enables fine-grained graph traversal
+6. **Call resolution via resolves_callsite** (55K edges) - need to map to semantic "calls" for GraphRAG
+
+---
+
 ## DEPENDENCY_GRAPH
 
-**Graph Roots**: 
+**Graph Roots**:
 - `agentic_core/L4_state/types/graph_store_types.py` (IGraphStore interface)
 - `agentic_core/L4_state/utils/memory/graph_knowledge_store.py` (SQLiteGraphStore placeholder)
 - `agentic_core/L1_cognition/reasoning/local_search_engine.py` (BFS traversal)
@@ -25,7 +106,7 @@ Implement a production-grade SQLiteGraphStore to enable GraphRAG capabilities (l
 
 **Downstream Set** (dependencies):
 - `graph_store_types.py` - interface definition
-- Existing ADG SQLite database (`adg_indexed_04062026_0554.sqlite`) - 88,216 nodes, 625,564 edges
+- ADG SQLite database (`adg_indexed_04062026_0751.sqlite`) - 88,251 nodes, 625,904 edges
 - BGE embedding service (local, no API cost)
 - Redis hot cache (existing infrastructure)
 
@@ -126,45 +207,65 @@ Implement a production-grade SQLiteGraphStore to enable GraphRAG capabilities (l
 - `agentic_core/L4_state/utils/memory/graph_knowledge_store.py`
 
 **Schema Mapping** (ADG SQLite → Graph Store):
-- `nodes` table → GraphEntity
-- `edges` table → GraphRelationship  
-- Existing ADG edges: calls, imports, reads_from, writes_to, pulls_context
+- `nodes` table → GraphEntity (map: id→entity_id, adg_name→name, entity_type→entity_type, layer→metadata['layer'], resolved_path→metadata['file_path'])
+- `edges` table → GraphRelationship (map: src_id→source_id, dst_id→target_id, relation_type→relation_type, edge_kind→metadata['edge_kind'], source_file→metadata['source_file'], line_no→metadata['line_no'])
+- **Key ADG edge types for GraphRAG**:
+  - `imports` (194K) → module-level dependencies, circular dependency detection
+  - `reads_from` (99K) → data flow, context retrieval
+  - `writes_to` (5K) → data mutation tracking
+  - `flows_to` (64K) → execution flow
+  - `controls_flow` (59K) → control flow
+  - `emits_side_effect` (42K) → side effect propagation
+  - `resolves_callsite` (55K) → map to semantic "calls" for GraphRAG
 
 **Implementation**:
 1. **Entity Operations**:
-   - `add_entity`: INSERT into nodes table
-   - `get_entity`: SELECT from nodes by id
-   - `search_entities`: FTS5 full-text search on adg_name + resolved_path
+   - `add_entity`: INSERT into nodes table with required columns
+   - `get_entity`: SELECT from nodes by id with all 20 columns
+   - `search_entities`: FTS5 full-text search on adg_name + resolved_path (if FTS available), otherwise LIKE query
 
 2. **Relationship Operations**:
    - `get_relationships`: SELECT from edges WHERE src_id=? OR dst_id=?
-   - Support direction filtering ("outgoing", "incoming", "both")
-   - Return GraphRelationship objects with metadata
+   - Support direction filtering ("outgoing" → src_id=?, "incoming" → dst_id=?, "both" → both)
+   - Return GraphRelationship objects with metadata (edge_kind, source_file, line_no, confidence_score)
+   - Support relation_type filtering for specific traversal types
 
 3. **Traversal Operations**:
    - `traverse`: Recursive CTE for BFS up to max_depth
-   - Filter by relation_types if provided
+   - Filter by relation_types if provided (default: imports, reads_from, flows_to, controls_flow)
+   - Map `resolves_callsite` to semantic "calls" during traversal
    - Return GraphPath objects with visited nodes and edges
+   - Include edge metadata (line_no, source_file) for context
 
 4. **Community Detection**:
-   - `detect_communities`: Use connected components on relation_type="imports"
+   - `detect_communities`: Use connected components on relation_type="imports" (194K edges)
    - Implement Louvain/Leiden algorithm in Python (networkx integration)
-   - Cache communities in SQLite communities table
+   - Cache communities in SQLite communities table (create if not exists)
+   - Support hierarchical communities (community_levels parameter)
 
 5. **Centrality Metrics**:
    - `get_centrality`: Calculate degree centrality from edges table
-   - PageRank implementation using adjacency matrix
-   - Cache centrality scores for performance
+   - PageRank implementation using adjacency matrix (numpy/scipy)
+   - Cache centrality scores for performance (create centrality_cache table)
+   - Support different centrality measures: degree, betweenness, eigenvector
 
 6. **Path Finding**:
-   - `find_shortest_path`: BFS with parent tracking
-   - Dijkstra for weighted paths (if edge weights added)
-   - Return path with cost/hops
+   - `find_shortest_path`: BFS with parent tracking on imports graph
+   - Dijkstra for weighted paths (if edge weights added from confidence_score)
+   - Return path with cost/hops and edge metadata
+   - Support cycle detection (path where start == end)
 
 7. **Subgraph Extraction**:
    - `get_subgraph`: Extract nodes within radius hops
-   - Include all edges between extracted nodes
-   - Return GraphSubgraph for context assembly
+   - Include all edges between extracted nodes (transitive closure)
+   - Return GraphSubgraph with nodes, edges, and metadata
+   - Filter by relation_types for context assembly
+
+8. **Layer-Aware Queries** (new based on ADG analysis):
+   - `get_nodes_by_layer`: SELECT from nodes WHERE layer=? (handle unlabeled nodes)
+   - `get_cross_layer_edges`: Find edges crossing layer boundaries
+   - `infer_layer`: Use belongs_to_layer edges (7K) to infer unlabeled nodes
+   - Support layer filtering in all traversal operations
 
 **Performance Optimizations**:
 - Index on edges.src_id, edges.dst_id, edges.relation_type
@@ -434,11 +535,12 @@ best_path = min(healing_paths, key=lambda x: x[1])
 # Implement all graph operations with SQLite queries
 
 # Phase 2: Add indexes to ADG SQLite
-sqlite3 artifacts/adg/adg_indexed_04062026_0554.sqlite <<EOF
+sqlite3 artifacts/adg/adg_indexed_04062026_0751.sqlite <<EOF
 CREATE INDEX IF NOT EXISTS idx_edges_src ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst ON edges(dst_id);
 CREATE INDEX IF NOT EXISTS idx_edges_relation ON edges(relation_type);
 CREATE INDEX IF NOT EXISTS idx_nodes_layer ON nodes(layer);
+CREATE INDEX IF NOT EXISTS idx_nodes_type ON nodes(entity_type);
 EOF
 
 # Phase 3: Search engine integration
@@ -487,11 +589,12 @@ git checkout HEAD -- agentic_core/L1_cognition/reasoning/drift_search_engine.py
 git checkout HEAD -- agentic_core/L5_safety/reasoning/SystemArchitectAgent.py
 
 # Drop indexes
-sqlite3 artifacts/adg/adg_indexed_04062026_0554.sqlite <<EOF
+sqlite3 artifacts/adg/adg_indexed_04062026_0751.sqlite <<EOF
 DROP INDEX IF EXISTS idx_edges_src;
 DROP INDEX IF EXISTS idx_edges_dst;
 DROP INDEX IF EXISTS idx_edges_relation;
 DROP INDEX IF EXISTS idx_nodes_layer;
+DROP INDEX IF EXISTS idx_nodes_type;
 EOF
 ```
 
@@ -517,7 +620,12 @@ EOF
 ## FACT_CLASSIFICATION
 
 **DIRECTLY_OBSERVED**:
-- ADG status: 88,216 nodes, 625,564 edges in `adg_indexed_04062026_0554.sqlite`
+- Latest ADG database: `adg_indexed_04062026_0751.sqlite` (171MB)
+- ADG graph statistics: **88,251 nodes, 625,904 edges**
+- Node distribution: 80,664 symbols (91%), 7,529 modules (9%)
+- Edge distribution: 194,815 imports (31%), 99,154 reads_from (16%), 64,052 flows_to (10%), 59,132 controls_flow (9%)
+- Layer coverage: 68.6% unlabeled, L_TEST (9.7%), L_TOOLS (5.4%), L_OPS (4.4%), L_APP (2.9%)
+- ADG schema: nodes (20 columns), edges (19 columns), meta, violations, sqlite_sequence
 - SQLiteGraphStore is a placeholder (all methods return None/empty)
 - Search engines (local/global/drift) exist but use mock graph store
 - SystemArchitectAgent has manual DFS circular dependency detection
@@ -527,15 +635,21 @@ EOF
 - Redis hot cache exists for semantic search
 
 **DERIVED**:
+- Import graph density (194K edges) enables efficient circular dependency detection
+- Data flow edges (99K reads_from + 5K writes_to) enable rich context retrieval for GraphRAG
+- Control flow edges (59K controls_flow + 64K flows_to) enable execution path analysis
+- Layer inference needed for 68% unlabeled nodes (use belongs_to_layer edges: 7K)
+- resolves_callsite edges (55K) need mapping to semantic "calls" for GraphRAG
 - Graph store implementation would enable 8 high-impact use cases
-- Performance improvements: 2-10x faster for graph operations
+- Performance improvements: 2-10x faster for graph operations (indexed queries vs manual traversal)
 - No architectural barriers to implementation
 - Existing ADG schema can support graph operations with indexes
 
 **INFERRED**:
-- Community detection would improve code organization understanding
+- Community detection on import graph would identify functional groupings
 - GraphRAG would enhance context retrieval for LLM queries
 - Blast radius analysis would improve refactoring safety
+- Cross-layer edge detection would strengthen governance
 
 **EXTERNAL**:
 - User request: "detailed ingestion of SQLLite ADG to understand code"
@@ -553,3 +667,4 @@ EOF
 - Token budget estimates (token_estimator.py not found)
 - Exact performance numbers (requires implementation and benchmarking)
 - Community detection quality (requires implementation and evaluation)
+- Layer inference accuracy for unlabeled nodes (requires implementation)
