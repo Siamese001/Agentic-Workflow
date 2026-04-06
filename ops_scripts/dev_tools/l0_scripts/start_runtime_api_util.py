@@ -67,7 +67,8 @@ def main():
     print('=' * 70)
     try:
         import uvicorn
-        from agentic_core.L6_observability.api.runtime_api import app  # guardian: allow-layer-violation -- runtime API utility script requires L6 observability layer for server startup
+        # guardian: allow-layer-violation -- runtime API utility script requires L6 observability layer for server startup
+        from agentic_core.L6_observability.api.runtime_api import app
         uvicorn.run('agentic_core.L6_observability.api.runtime_api:app', host=args.host, port=args.port, reload=args.reload, workers=args.workers if not args.reload else 1, log_level='info')
     except ImportError as e:
         print(f'\n❌ Error: Missing dependency - {e}')
