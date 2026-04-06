@@ -1,0 +1,1982 @@
+{
+  "summary": {
+    "target_dir": "apps_exec",
+    "total_files": 67,
+    "total_with_issues": 12,
+    "total_root_violations": 8,
+    "total_dead_code_files": 12,
+    "total_misplaced_files": 8,
+    "folder_breakdown": {
+      "apps_exec": {
+        "files": 9,
+        "total_lines": 1009,
+        "root_violations": [
+          "apps_exec/CLI_SPEC.md",
+          "apps_exec/OUTPUT_CONTRACTS.md",
+          "apps_exec/PRODUCT_SPEC.md",
+          "apps_exec/README.md",
+          "apps_exec/SVP_ENGINEERING_REVIEW.md",
+          "apps_exec/TECHNICAL_SPEC.md",
+          "apps_exec/TEST_STRATEGY.md",
+          "apps_exec/__main__.py"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "apps_exec/CLI_SPEC.md",
+          "apps_exec/OUTPUT_CONTRACTS.md",
+          "apps_exec/PRODUCT_SPEC.md",
+          "apps_exec/README.md",
+          "apps_exec/SVP_ENGINEERING_REVIEW.md",
+          "apps_exec/TECHNICAL_SPEC.md",
+          "apps_exec/TEST_STRATEGY.md",
+          "apps_exec/__main__.py"
+        ],
+        "clean_files": 1
+      },
+      "apps_exec\\config": {
+        "files": 6,
+        "total_lines": 561,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/config/__init__.py",
+          "apps_exec/config/knowledge_base.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_exec\\engines": {
+        "files": 6,
+        "total_lines": 1499,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/engines/__init__.py",
+          "apps_exec/engines/base_exec_engine.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_exec\\integrations": {
+        "files": 3,
+        "total_lines": 179,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/integrations/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_exec\\outputs": {
+        "files": 3,
+        "total_lines": 221,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/outputs/__init__.py",
+          "apps_exec/outputs/brief_renderer.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "apps_exec\\reasoning": {
+        "files": 8,
+        "total_lines": 2317,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/reasoning/ExecOrchestrator.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_exec\\scripts": {
+        "files": 3,
+        "total_lines": 623,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "apps_exec\\services": {
+        "files": 10,
+        "total_lines": 656,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 10
+      },
+      "apps_exec\\spine": {
+        "files": 2,
+        "total_lines": 53,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_exec\\tests": {
+        "files": 7,
+        "total_lines": 546,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/tests/test_exec_engines.py",
+          "apps_exec/tests/test_exec_orchestrator.py",
+          "apps_exec/tests/test_exec_services.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_exec\\tools": {
+        "files": 2,
+        "total_lines": 52,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_exec\\types": {
+        "files": 3,
+        "total_lines": 536,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_exec/types/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_exec\\utils": {
+        "files": 2,
+        "total_lines": 79,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_exec\\validators": {
+        "files": 3,
+        "total_lines": 807,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "apps_exec/CLI_SPEC.md",
+      "depth": 1,
+      "size_bytes": 3669,
+      "total_lines": 106,
+      "code_lines": 77,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/OUTPUT_CONTRACTS.md",
+      "depth": 1,
+      "size_bytes": 4112,
+      "total_lines": 129,
+      "code_lines": 94,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/PRODUCT_SPEC.md",
+      "depth": 1,
+      "size_bytes": 6245,
+      "total_lines": 119,
+      "code_lines": 87,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/README.md",
+      "depth": 1,
+      "size_bytes": 2403,
+      "total_lines": 62,
+      "code_lines": 46,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/SVP_ENGINEERING_REVIEW.md",
+      "depth": 1,
+      "size_bytes": 4797,
+      "total_lines": 149,
+      "code_lines": 114,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/TECHNICAL_SPEC.md",
+      "depth": 1,
+      "size_bytes": 5832,
+      "total_lines": 140,
+      "code_lines": 115,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/TEST_STRATEGY.md",
+      "depth": 1,
+      "size_bytes": 3548,
+      "total_lines": 92,
+      "code_lines": 65,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/__init__.py",
+      "depth": 1,
+      "size_bytes": 47,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/__main__.py",
+      "depth": 1,
+      "size_bytes": 8815,
+      "total_lines": 211,
+      "code_lines": 194,
+      "functions": [
+        "_adg_bootstrap",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/config/__init__.py",
+      "depth": 2,
+      "size_bytes": 204,
+      "total_lines": 7,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 5,
+          "symbol": "apps_exec.config.agent_spec_config.ExecAgentSpecs"
+        },
+        {
+          "line": 5,
+          "symbol": "apps_exec.config.agent_spec_config.load_exec_specs"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/config/agent_spec_config.py",
+      "depth": 2,
+      "size_bytes": 14745,
+      "total_lines": 338,
+      "code_lines": 300,
+      "functions": [
+        "load_exec_specs",
+        "validate_personas_non_empty"
+      ],
+      "classes": [
+        "AudiencePersonaConfig",
+        "IngestionConfig",
+        "ExtractionConfig",
+        "OutputConfig",
+        "StyleGateConfig",
+        "ExecAgentSpecs"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/config/exec_policies.yaml",
+      "depth": 2,
+      "size_bytes": 1518,
+      "total_lines": 84,
+      "code_lines": 67,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/config/exec_thresholds.yaml",
+      "depth": 2,
+      "size_bytes": 1451,
+      "total_lines": 70,
+      "code_lines": 54,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/config/knowledge_base.py",
+      "depth": 2,
+      "size_bytes": 765,
+      "total_lines": 35,
+      "code_lines": 32,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(12)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 7,
+          "symbol": "ExecBriefGlobalRule"
+        },
+        {
+          "line": 7,
+          "symbol": "ExecBriefNodeEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "ExecBriefPromptEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "ExecSovereignKnowledge"
+        },
+        {
+          "line": 7,
+          "symbol": "FROZEN_SNAPSHOT"
+        },
+        {
+          "line": 7,
+          "symbol": "get_global_rule"
+        },
+        {
+          "line": 7,
+          "symbol": "get_node_config"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt_entry"
+        },
+        {
+          "line": 7,
+          "symbol": "get_system_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_nodes"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_prompts"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/config/reasoning_toggles_config.py",
+      "depth": 2,
+      "size_bytes": 731,
+      "total_lines": 27,
+      "code_lines": 19,
+      "functions": [],
+      "classes": [
+        "ExecReasoningToggles"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 139,
+      "total_lines": 5,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_exec.engines.base_exec_engine.BaseExecEngine"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/engines/base_exec_engine.py",
+      "depth": 2,
+      "size_bytes": 4098,
+      "total_lines": 130,
+      "code_lines": 96,
+      "functions": [
+        "__init__",
+        "execute",
+        "get_prompt",
+        "get_node_config",
+        "record_fail",
+        "record_pass",
+        "get_status"
+      ],
+      "classes": [
+        "BaseExecEngine",
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 31,
+          "symbol": "pydantic.BaseModel"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/engines/brief_assembly_engine.py",
+      "depth": 2,
+      "size_bytes": 19345,
+      "total_lines": 415,
+      "code_lines": 382,
+      "functions": [
+        "execute",
+        "_render_body"
+      ],
+      "classes": [
+        "AssemblyResult",
+        "BriefAssemblyEngine"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/engines/brief_retrieval_engine.py",
+      "depth": 2,
+      "size_bytes": 12620,
+      "total_lines": 380,
+      "code_lines": 298,
+      "functions": [
+        "create_retrieval_engine",
+        "__init__",
+        "add_brief",
+        "query_similar",
+        "get_by_audience",
+        "_mock_embed",
+        "_cosine_similarity",
+        "__init__",
+        "index_brief",
+        "find_similar_briefs",
+        "get_audience_history",
+        "analyze_style_trends",
+        "get_style_benchmark",
+        "recommend_sections"
+      ],
+      "classes": [
+        "RetrievedBrief",
+        "StyleTrend",
+        "InMemoryBriefStore",
+        "BriefRetrievalEngine"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/engines/capability_extraction_engine.py",
+      "depth": 2,
+      "size_bytes": 13883,
+      "total_lines": 292,
+      "code_lines": 261,
+      "functions": [
+        "execute"
+      ],
+      "classes": [
+        "ExtractionResult",
+        "CapabilityExtractionEngine"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/engines/ingestion_engine.py",
+      "depth": 2,
+      "size_bytes": 16650,
+      "total_lines": 277,
+      "code_lines": 248,
+      "functions": [
+        "total_chars",
+        "execute"
+      ],
+      "classes": [
+        "IngestedDocument",
+        "IngestionResult",
+        "IngestionEngine"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/integrations/__init__.py",
+      "depth": 2,
+      "size_bytes": 247,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_exec.integrations.execution_adapter.ExecutionAdapter"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_exec.integrations.observability_adapter.ObservabilityAdapter"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/integrations/execution_adapter.py",
+      "depth": 2,
+      "size_bytes": 2911,
+      "total_lines": 93,
+      "code_lines": 67,
+      "functions": [
+        "__init__",
+        "submit",
+        "_timestamp",
+        "get_execution_log"
+      ],
+      "classes": [
+        "ExecutionRequest",
+        "ExecutionAdapter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/integrations/observability_adapter.py",
+      "depth": 2,
+      "size_bytes": 2649,
+      "total_lines": 80,
+      "code_lines": 67,
+      "functions": [
+        "__init__",
+        "emit_brief_start",
+        "emit_brief_complete",
+        "emit_section_generated",
+        "get_metrics",
+        "_timestamp"
+      ],
+      "classes": [
+        "ObservabilityAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/outputs/__init__.py",
+      "depth": 2,
+      "size_bytes": 254,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(3)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_exec.outputs.brief_renderer.BriefRenderer"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.outputs.brief_renderer.BriefSummaryRenderer"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_exec.outputs.section_renderer.SectionRenderer"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/outputs/brief_renderer.py",
+      "depth": 2,
+      "size_bytes": 4887,
+      "total_lines": 135,
+      "code_lines": 110,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "BriefRenderer",
+        "BriefSummaryRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 16,
+          "symbol": "apps_exec.types.BriefSection"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/outputs/section_renderer.py",
+      "depth": 2,
+      "size_bytes": 2476,
+      "total_lines": 80,
+      "code_lines": 61,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_html"
+      ],
+      "classes": [
+        "SectionRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/BriefAssemblyAgent.py",
+      "depth": 2,
+      "size_bytes": 2533,
+      "total_lines": 75,
+      "code_lines": 60,
+      "functions": [
+        "__init__",
+        "assemble_brief",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "BriefAssemblyAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/ExecOrchestrator.py",
+      "depth": 2,
+      "size_bytes": 25620,
+      "total_lines": 593,
+      "code_lines": 504,
+      "functions": [
+        "__post_init__",
+        "run",
+        "_emit_artifacts",
+        "_emit_run_summary",
+        "_record_hop",
+        "plan_execution_with_qwen",
+        "_prepare_execution_planning_prompt",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "ExecOrchestrator"
+      ],
+      "import_count": 18,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 32,
+          "symbol": "AppsQwenPromptConfig"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/SourceIngestionAgent.py",
+      "depth": 2,
+      "size_bytes": 2804,
+      "total_lines": 78,
+      "code_lines": 63,
+      "functions": [
+        "__init__",
+        "ingest_sources",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "SourceIngestionAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/StyleComplianceAgent.py",
+      "depth": 2,
+      "size_bytes": 2872,
+      "total_lines": 84,
+      "code_lines": 66,
+      "functions": [
+        "__init__",
+        "validate_style",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "StyleComplianceAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/__init__.py",
+      "depth": 2,
+      "size_bytes": 561,
+      "total_lines": 17,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/brief_decomposition_agent.py",
+      "depth": 2,
+      "size_bytes": 20797,
+      "total_lines": 506,
+      "code_lines": 406,
+      "functions": [
+        "__init__",
+        "decompose",
+        "decompose_batch",
+        "generate_summary",
+        "_extract_evidence",
+        "_map_evidence_requirements",
+        "_generate_section_title",
+        "_generate_section_description",
+        "_determine_dependencies",
+        "_generate_key_messages",
+        "_determine_narrative_flow",
+        "_identify_evidence_gaps",
+        "_determine_tone",
+        "__init__",
+        "analyze_brief_requirements",
+        "get_brief_production_plan"
+      ],
+      "classes": [
+        "SectionType",
+        "AudiencePriority",
+        "BriefComponent",
+        "BriefDecomposition",
+        "DecompositionSummary",
+        "BriefDecomposer",
+        "BriefDecompositionAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/brief_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 15213,
+      "total_lines": 418,
+      "code_lines": 323,
+      "functions": [
+        "__init__",
+        "execute",
+        "_run_implementation",
+        "_ingest_sources",
+        "_extract_capabilities",
+        "_generate_sections",
+        "_validate_style",
+        "_assemble_brief",
+        "_check_quality",
+        "__init__",
+        "register_agent",
+        "create_orchestration_plan",
+        "execute_plan",
+        "get_combined_results",
+        "_compute_execution_order",
+        "__init__",
+        "_initialize_agents",
+        "generate_briefs"
+      ],
+      "classes": [
+        "BriefAgentType",
+        "AgentStatus",
+        "BriefAgentRequest",
+        "BriefAgentResult",
+        "BriefOrchestrationPlan",
+        "BriefGenerationAgent",
+        "BriefOrchestrator",
+        "MultiAgentBriefEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/reasoning/enterprise_brief_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 21480,
+      "total_lines": 546,
+      "code_lines": 412,
+      "functions": [
+        "run_enterprise_briefs",
+        "__post_init__",
+        "_generate_trace_id",
+        "__init__",
+        "process",
+        "_step_decompose",
+        "_step_retrieve",
+        "_step_generate",
+        "_step_collect_repo_signals",
+        "_step_validate",
+        "_generate_mock_brief_content",
+        "_step_emit",
+        "_write_brief_markdown",
+        "_write_manifest",
+        "_log_step"
+      ],
+      "classes": [
+        "EnterpriseBriefRequest",
+        "EnterpriseBriefResult",
+        "EnterpriseBriefOrchestrator"
+      ],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/scripts/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/scripts/run_exec.py",
+      "depth": 2,
+      "size_bytes": 4860,
+      "total_lines": 146,
+      "code_lines": 126,
+      "functions": [
+        "build_parser",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/scripts/test_enterprise_brief.py",
+      "depth": 2,
+      "size_bytes": 16979,
+      "total_lines": 477,
+      "code_lines": 364,
+      "functions": [
+        "_assert",
+        "_assert_repo_signals",
+        "_assert_detailed_observability",
+        "_assert_layer4_wiring",
+        "_assert_enhanced_system_learning",
+        "_assert_rigorous_e2e_wiring",
+        "test_single_persona_brief",
+        "test_multi_persona_briefs",
+        "test_with_style_retrieval",
+        "test_full_enterprise_pipeline",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/__init__.py",
+      "depth": 2,
+      "size_bytes": 1213,
+      "total_lines": 28,
+      "code_lines": 25,
+      "functions": [],
+      "classes": [],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/artifact_exporter_service.py",
+      "depth": 2,
+      "size_bytes": 746,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "export_artifact"
+      ],
+      "classes": [
+        "ArtifactExporterService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/audience_analyzer_service.py",
+      "depth": 2,
+      "size_bytes": 731,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "analyze_audience"
+      ],
+      "classes": [
+        "AudienceAnalyzerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/brief_assembler_service.py",
+      "depth": 2,
+      "size_bytes": 3691,
+      "total_lines": 113,
+      "code_lines": 89,
+      "functions": [
+        "__init__",
+        "assemble_brief",
+        "get_brief_summary"
+      ],
+      "classes": [
+        "BriefAssemblerService"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/capability_extractor_service.py",
+      "depth": 2,
+      "size_bytes": 1040,
+      "total_lines": 35,
+      "code_lines": 25,
+      "functions": [
+        "__init__",
+        "extract_capabilities",
+        "get_extracted_capabilities"
+      ],
+      "classes": [
+        "CapabilityExtractorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/content_synthesizer_service.py",
+      "depth": 2,
+      "size_bytes": 764,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "synthesize_content"
+      ],
+      "classes": [
+        "ContentSynthesizerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/document_ingestion_service.py",
+      "depth": 2,
+      "size_bytes": 5241,
+      "total_lines": 150,
+      "code_lines": 118,
+      "functions": [
+        "__init__",
+        "ingest_directory",
+        "ingest_file",
+        "_ingest_file",
+        "get_ingested_docs",
+        "clear_cache"
+      ],
+      "classes": [
+        "DocumentIngestionService"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/evidence_collector_service.py",
+      "depth": 2,
+      "size_bytes": 681,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "collect_evidence"
+      ],
+      "classes": [
+        "EvidenceCollectorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/repo_signal_service.py",
+      "depth": 2,
+      "size_bytes": 7854,
+      "total_lines": 200,
+      "code_lines": 161,
+      "functions": [
+        "as_dict",
+        "__init__",
+        "collect",
+        "_collect_engineering_posture",
+        "_collect_adg_signals",
+        "_collect_test_signals",
+        "_collect_ci_signals",
+        "_collect_governance_signals",
+        "_json_entry_count",
+        "_line_count"
+      ],
+      "classes": [
+        "RepoSignalSnapshot",
+        "RepoSignalService"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/services/style_validator_service.py",
+      "depth": 2,
+      "size_bytes": 716,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "validate_style"
+      ],
+      "classes": [
+        "StyleValidatorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/spine/__init__.py",
+      "depth": 2,
+      "size_bytes": 39,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/spine/exec_spine_adapter.py",
+      "depth": 2,
+      "size_bytes": 1353,
+      "total_lines": 52,
+      "code_lines": 38,
+      "functions": [
+        "__init__",
+        "execute"
+      ],
+      "classes": [
+        "ExecSpineAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/__init__.py",
+      "depth": 2,
+      "size_bytes": 35,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/test_exec_engines.py",
+      "depth": 2,
+      "size_bytes": 902,
+      "total_lines": 34,
+      "code_lines": 24,
+      "functions": [
+        "test_engine_import",
+        "test_engine_class_exists",
+        "test_engine_import",
+        "test_engine_class_exists"
+      ],
+      "classes": [
+        "TestBriefAssemblyEngine",
+        "TestIngestionEngine"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/test_exec_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 627,
+      "total_lines": 21,
+      "code_lines": 13,
+      "functions": [
+        "test_orchestrator_import",
+        "test_orchestrator_class_exists"
+      ],
+      "classes": [
+        "TestExecOrchestrator"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/test_exec_services.py",
+      "depth": 2,
+      "size_bytes": 1478,
+      "total_lines": 49,
+      "code_lines": 35,
+      "functions": [
+        "test_service_import",
+        "test_service_class_exists",
+        "test_service_import",
+        "test_service_class_exists",
+        "test_service_import",
+        "test_service_class_exists"
+      ],
+      "classes": [
+        "TestStyleValidatorService",
+        "TestArtifactExporterService",
+        "TestContentSynthesizerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/test_exec_types.py",
+      "depth": 2,
+      "size_bytes": 6015,
+      "total_lines": 183,
+      "code_lines": 148,
+      "functions": [
+        "test_capability_creation",
+        "test_description_validation",
+        "test_section_creation",
+        "test_body_validation",
+        "test_config_defaults",
+        "test_quality_score_bounds",
+        "test_max_sections_bounds",
+        "test_request_creation",
+        "test_config_nested",
+        "test_result_creation",
+        "test_passed_gate_property",
+        "test_quality_score_bounds",
+        "test_summary_creation",
+        "test_to_dict",
+        "test_violation_creation",
+        "test_message_validation"
+      ],
+      "classes": [
+        "TestCapabilityEvidence",
+        "TestBriefSection",
+        "TestExecBriefConfig",
+        "TestExecBriefRequest",
+        "TestExecBriefResult",
+        "TestRunSummary",
+        "TestStyleViolation"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/test_integrations.py",
+      "depth": 2,
+      "size_bytes": 4125,
+      "total_lines": 122,
+      "code_lines": 106,
+      "functions": [
+        "setUp",
+        "test_submit_passed",
+        "test_submit_failed",
+        "test_get_execution_log",
+        "setUp",
+        "test_emit_brief_start",
+        "test_emit_brief_complete",
+        "test_emit_section_generated",
+        "test_get_metrics"
+      ],
+      "classes": [
+        "TestExecutionAdapter",
+        "TestObservabilityAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tests/test_outputs.py",
+      "depth": 2,
+      "size_bytes": 4622,
+      "total_lines": 136,
+      "code_lines": 115,
+      "functions": [
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "test_render_html"
+      ],
+      "classes": [
+        "TestBriefRenderer",
+        "TestBriefSummaryRenderer",
+        "TestSectionRenderer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tools/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/tools/exec_dry_run_tool.py",
+      "depth": 2,
+      "size_bytes": 1587,
+      "total_lines": 52,
+      "code_lines": 39,
+      "functions": [
+        "main"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/types/PromptTemplate.py",
+      "depth": 2,
+      "size_bytes": 12125,
+      "total_lines": 347,
+      "code_lines": 278,
+      "functions": [
+        "get_prompt",
+        "get_system_prompt",
+        "get_prompt_entry",
+        "get_node_config",
+        "get_global_rule",
+        "list_all_prompts",
+        "list_all_nodes"
+      ],
+      "classes": [
+        "ExecBriefPromptEntry",
+        "ExecBriefNodeEntry",
+        "ExecBriefGlobalRule",
+        "ExecSovereignKnowledge"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 542,
+      "total_lines": 29,
+      "code_lines": 27,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(11)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.AudiencePersona"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.BriefSection"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.BriefStatus"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.BriefTone"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.CapabilityEvidence"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.EmphasisArea"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.ExecBriefConfig"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.ExecBriefRequest"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.ExecBriefResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.RunSummary"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_exec.types.exec_types.StyleViolation"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/types/exec_types.py",
+      "depth": 2,
+      "size_bytes": 7166,
+      "total_lines": 160,
+      "code_lines": 125,
+      "functions": [
+        "validate_description",
+        "validate_body",
+        "passed_gate",
+        "validate_quality",
+        "to_dict"
+      ],
+      "classes": [
+        "CapabilityEvidence",
+        "BriefSection",
+        "ExecBriefConfig",
+        "ExecBriefRequest",
+        "ExecBriefResult",
+        "StyleViolation",
+        "RunSummary",
+        "Config"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/utils/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/utils/exec_artifact_util.py",
+      "depth": 2,
+      "size_bytes": 2028,
+      "total_lines": 79,
+      "code_lines": 59,
+      "functions": [
+        "resolve_artifact_path",
+        "build_manifest",
+        "write_json",
+        "is_dry_run"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/validators/brief_style_validator.py",
+      "depth": 2,
+      "size_bytes": 16025,
+      "total_lines": 455,
+      "code_lines": 337,
+      "functions": [
+        "__init__",
+        "validate",
+        "_check_buzzwords",
+        "_check_unsupported_claims",
+        "_check_empty_sections",
+        "_check_evidence_anchors",
+        "_calculate_style_metrics",
+        "_calculate_quality_score",
+        "__init__",
+        "evaluate",
+        "__init__",
+        "validate_brief",
+        "validate_batch",
+        "get_validation_summary"
+      ],
+      "classes": [
+        "ViolationSeverity",
+        "StyleViolation",
+        "BriefValidationResult",
+        "StyleValidator",
+        "QualityGate",
+        "BriefValidationAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_exec/validators/style_gate_validator.py",
+      "depth": 2,
+      "size_bytes": 14742,
+      "total_lines": 352,
+      "code_lines": 319,
+      "functions": [
+        "first_failure",
+        "__init__",
+        "validate_sections",
+        "_check_evidence_anchors",
+        "_check_buzzwords",
+        "_check_unsupported_claims",
+        "_check_why_this_matters",
+        "_check_empty_body"
+      ],
+      "classes": [
+        "StyleGateResult",
+        "StyleGateValidator"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

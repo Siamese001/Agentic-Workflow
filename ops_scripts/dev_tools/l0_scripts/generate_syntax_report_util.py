@@ -76,16 +76,6 @@ _emit_updates_meta_learning_state("p4", "generate_syntax_report_util", "meta_lea
 _emit_links_execution_to_snapshot("p4", "generate_syntax_report_util", "exec_snapshot_link")
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

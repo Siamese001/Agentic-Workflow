@@ -32,16 +32,6 @@ import pathlib
 import re
 import sys
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SSOT_IMPORT_BLOCK = 'from agentic_core.L5_safety.config.structure_blueprint.ssot import (\nfrom agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR\n    DISCOVERY_EXCLUDED_TERRITORIES,\n    GLOBAL_EXCLUDED_DIRS,\n    SOVEREIGN_EXCLUDED_FOLDERS,\n)'

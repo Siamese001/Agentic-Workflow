@@ -19,9 +19,6 @@ try:
     from apps_shared.reasoning.InfrastructureOrchestrator import (
         BATCH_SIZE,
         BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
         InfrastructureOrchestrator,
         execute_task,
         get_infrastructure_orchestrator,

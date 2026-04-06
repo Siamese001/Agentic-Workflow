@@ -1,0 +1,1081 @@
+{
+  "root_dir": "agentic_core\\prompt_governance",
+  "root_level_files": [
+    {
+      "file": "prompt_governance\\__init__.py",
+      "complexity": {
+        "functions": 0,
+        "classes": 0,
+        "imports": 3,
+        "lines": 28,
+        "size": 677
+      }
+    }
+  ],
+  "subdirs": {
+    "contracts": {
+      "root_dir": "agentic_core\\prompt_governance\\contracts",
+      "root_level_files": [
+        {
+          "file": "contracts\\compiled_artifact_types.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 6,
+            "lines": 166,
+            "size": 6944
+          }
+        },
+        {
+          "file": "contracts\\context_contracts.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 3,
+            "imports": 2,
+            "lines": 36,
+            "size": 769
+          }
+        },
+        {
+          "file": "contracts\\prompt_bom_types.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 5,
+            "lines": 152,
+            "size": 6121
+          }
+        },
+        {
+          "file": "contracts\\slot_contracts.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 12,
+            "imports": 2,
+            "lines": 123,
+            "size": 3512
+          }
+        },
+        {
+          "file": "contracts\\template_manifest_types.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 5,
+            "lines": 140,
+            "size": 5800
+          }
+        },
+        {
+          "file": "contracts\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 6,
+            "lines": 33,
+            "size": 797
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "contracts\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "contracts\\compiled_artifact_types.py",
+        "contracts\\context_contracts.py",
+        "contracts\\prompt_bom_types.py",
+        "contracts\\slot_contracts.py",
+        "contracts\\template_manifest_types.py"
+      ]
+    },
+    "core": {
+      "root_dir": "agentic_core\\prompt_governance\\core",
+      "root_level_files": [
+        {
+          "file": "core\\evaluation_loader.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 3,
+            "imports": 7,
+            "lines": 259,
+            "size": 16458
+          }
+        },
+        {
+          "file": "core\\governance_hub.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 5,
+            "lines": 192,
+            "size": 9049
+          }
+        },
+        {
+          "file": "core\\invariant_registry.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 0,
+            "imports": 4,
+            "lines": 199,
+            "size": 9841
+          }
+        },
+        {
+          "file": "core\\prompt_assembler.py",
+          "complexity": {
+            "functions": 25,
+            "classes": 6,
+            "imports": 20,
+            "lines": 781,
+            "size": 60129
+          }
+        },
+        {
+          "file": "core\\prompt_entry_types.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 2,
+            "imports": 2,
+            "lines": 278,
+            "size": 14684
+          }
+        },
+        {
+          "file": "core\\prompt_loader.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 3,
+            "imports": 7,
+            "lines": 290,
+            "size": 17547
+          }
+        },
+        {
+          "file": "core\\sovereign_prompt_renderer.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 3,
+            "imports": 10,
+            "lines": 422,
+            "size": 52419
+          }
+        },
+        {
+          "file": "core\\template_catalog.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 3,
+            "imports": 3,
+            "lines": 536,
+            "size": 20534
+          }
+        },
+        {
+          "file": "core\\tier_instructional_enrichment.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 3,
+            "lines": 207,
+            "size": 7330
+          }
+        },
+        {
+          "file": "core\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 4,
+            "lines": 33,
+            "size": 833
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "core\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "core\\evaluation_loader.py",
+        "core\\governance_hub.py",
+        "core\\invariant_registry.py",
+        "core\\prompt_assembler.py",
+        "core\\prompt_entry_types.py",
+        "core\\prompt_loader.py",
+        "core\\sovereign_prompt_renderer.py",
+        "core\\template_catalog.py",
+        "core\\tier_instructional_enrichment.py"
+      ]
+    },
+    "meta_prompts": {
+      "root_dir": "agentic_core\\prompt_governance\\meta_prompts",
+      "root_level_files": [
+        {
+          "file": "meta_prompts\\adversarial_escalation.jinja",
+          "complexity": {
+            "error": "invalid character '\u2014' (U+2014) (adversarial_escalation.jinja, line 30)",
+            "lines": 0,
+            "size": 1870
+          }
+        },
+        {
+          "file": "meta_prompts\\adversarial_self_test.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (adversarial_self_test.jinja, line 20)",
+            "lines": 0,
+            "size": 5019
+          }
+        },
+        {
+          "file": "meta_prompts\\agent_prioritization.jinja",
+          "complexity": {
+            "error": "invalid syntax (agent_prioritization.jinja, line 2)",
+            "lines": 0,
+            "size": 1740
+          }
+        },
+        {
+          "file": "meta_prompts\\autonomous_mission_resume.jinja",
+          "complexity": {
+            "error": "invalid syntax (autonomous_mission_resume.jinja, line 2)",
+            "lines": 0,
+            "size": 2060
+          }
+        },
+        {
+          "file": "meta_prompts\\convergence_planning.jinja",
+          "complexity": {
+            "error": "invalid syntax (convergence_planning.jinja, line 2)",
+            "lines": 0,
+            "size": 2449
+          }
+        },
+        {
+          "file": "meta_prompts\\emergent_capability_discovery.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (emergent_capability_discovery.jinja, line 20)",
+            "lines": 0,
+            "size": 5383
+          }
+        },
+        {
+          "file": "meta_prompts\\evolution_directive.jinja",
+          "complexity": {
+            "error": "invalid syntax (evolution_directive.jinja, line 2)",
+            "lines": 0,
+            "size": 1722
+          }
+        },
+        {
+          "file": "meta_prompts\\immune_response.jinja",
+          "complexity": {
+            "error": "invalid syntax (immune_response.jinja, line 2)",
+            "lines": 0,
+            "size": 1782
+          }
+        },
+        {
+          "file": "meta_prompts\\INSTRUCTIONAL_INJECTION_PATTERNS.md",
+          "complexity": {
+            "error": "invalid character '\u2014' (U+2014) (INSTRUCTIONAL_INJECTION_PATTERNS.md, line 16)",
+            "lines": 0,
+            "size": 3870
+          }
+        },
+        {
+          "file": "meta_prompts\\meta_agent_activation.jinja",
+          "complexity": {
+            "error": "leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers (meta_agent_activation.jinja, line 34)",
+            "lines": 0,
+            "size": 2118
+          }
+        },
+        {
+          "file": "meta_prompts\\meta_convergence_forecast.jinja",
+          "complexity": {
+            "error": "invalid syntax (meta_convergence_forecast.jinja, line 2)",
+            "lines": 0,
+            "size": 1849
+          }
+        },
+        {
+          "file": "meta_prompts\\meta_coordination_directive.jinja",
+          "complexity": {
+            "error": "invalid character '\u2014' (U+2014) (meta_coordination_directive.jinja, line 21)",
+            "lines": 0,
+            "size": 3298
+          }
+        },
+        {
+          "file": "meta_prompts\\prompt_selection.jinja",
+          "complexity": {
+            "error": "invalid syntax (prompt_selection.jinja, line 2)",
+            "lines": 0,
+            "size": 1953
+          }
+        },
+        {
+          "file": "meta_prompts\\red_team_governance.jinja",
+          "complexity": {
+            "error": "invalid syntax (red_team_governance.jinja, line 2)",
+            "lines": 0,
+            "size": 2582
+          }
+        },
+        {
+          "file": "meta_prompts\\red_team_scope_validator.jinja",
+          "complexity": {
+            "error": "invalid syntax (red_team_scope_validator.jinja, line 2)",
+            "lines": 0,
+            "size": 1479
+          }
+        },
+        {
+          "file": "meta_prompts\\self_reflection.jinja",
+          "complexity": {
+            "error": "invalid syntax (self_reflection.jinja, line 2)",
+            "lines": 0,
+            "size": 1887
+          }
+        },
+        {
+          "file": "meta_prompts\\sovereign_convergence_orchestrator.jinja",
+          "complexity": {
+            "error": "invalid syntax (sovereign_convergence_orchestrator.jinja, line 2)",
+            "lines": 0,
+            "size": 2958
+          }
+        },
+        {
+          "file": "meta_prompts\\sovereign_orchestrator.jinja",
+          "complexity": {
+            "error": "invalid character '\u2264' (U+2264) (sovereign_orchestrator.jinja, line 34)",
+            "lines": 0,
+            "size": 1822
+          }
+        },
+        {
+          "file": "meta_prompts\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 2,
+            "lines": 20,
+            "size": 1226
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "meta_prompts\\__init__.py"
+      ],
+      "high_signal_root_files": []
+    },
+    "optimization": {
+      "root_dir": "agentic_core\\prompt_governance\\optimization",
+      "root_level_files": [
+        {
+          "file": "optimization\\optimization_strategy.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 4,
+            "imports": 8,
+            "lines": 234,
+            "size": 10611
+          }
+        },
+        {
+          "file": "optimization\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 17,
+            "size": 375
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "optimization\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "optimization\\optimization_strategy.py"
+      ]
+    },
+    "registry": {
+      "root_dir": "agentic_core\\prompt_governance\\registry",
+      "root_level_files": [
+        {
+          "file": "registry\\prompt_registry_config.json",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 26,
+            "size": 638
+          }
+        },
+        {
+          "file": "registry\\registry.json",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 381,
+            "size": 11150
+          }
+        }
+      ],
+      "subdirs": {
+        "backups": {
+          "root_dir": "agentic_core\\prompt_governance\\registry\\backups",
+          "root_level_files": [
+            {
+              "file": "backups\\registry.v1.backup",
+              "complexity": {
+                "functions": 0,
+                "classes": 0,
+                "imports": 0,
+                "lines": 16,
+                "size": 359
+              }
+            },
+            {
+              "file": "backups\\__init__.py",
+              "complexity": {
+                "functions": 0,
+                "classes": 0,
+                "imports": 0,
+                "lines": 1,
+                "size": 74
+              }
+            }
+          ],
+          "subdirs": {},
+          "empty_subdirs": [],
+          "low_signal_files": [
+            "backups\\registry.v1.backup",
+            "backups\\__init__.py"
+          ],
+          "high_signal_root_files": []
+        }
+      },
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "registry\\prompt_registry_config.json"
+      ],
+      "high_signal_root_files": [
+        "registry\\registry.json"
+      ]
+    },
+    "scripts": {
+      "root_dir": "agentic_core\\prompt_governance\\scripts",
+      "root_level_files": [
+        {
+          "file": "scripts\\audit_registry_linkages.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 0,
+            "imports": 3,
+            "lines": 137,
+            "size": 5131
+          }
+        },
+        {
+          "file": "scripts\\cleanup_duplicates_util.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 0,
+            "imports": 6,
+            "lines": 229,
+            "size": 12152
+          }
+        },
+        {
+          "file": "scripts\\detect_template_drift.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 0,
+            "imports": 7,
+            "lines": 383,
+            "size": 17242
+          }
+        },
+        {
+          "file": "scripts\\dry_run_compiler.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 0,
+            "imports": 3,
+            "lines": 160,
+            "size": 22062
+          }
+        },
+        {
+          "file": "scripts\\file_intent.py",
+          "complexity": {
+            "functions": 12,
+            "classes": 4,
+            "imports": 9,
+            "lines": 488,
+            "size": 21770
+          }
+        },
+        {
+          "file": "scripts\\harden_templates.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 0,
+            "imports": 6,
+            "lines": 151,
+            "size": 6229
+          }
+        },
+        {
+          "file": "scripts\\import_violation_visitor.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 1,
+            "imports": 6,
+            "lines": 338,
+            "size": 23925
+          }
+        },
+        {
+          "file": "scripts\\synchronize_registry_hashes.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 0,
+            "imports": 7,
+            "lines": 289,
+            "size": 13562
+          }
+        },
+        {
+          "file": "scripts\\template_render_visitor.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 1,
+            "imports": 6,
+            "lines": 331,
+            "size": 15323
+          }
+        },
+        {
+          "file": "scripts\\validate_assembly.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 0,
+            "imports": 5,
+            "lines": 196,
+            "size": 7462
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "scripts\\audit_registry_linkages.py",
+        "scripts\\cleanup_duplicates_util.py",
+        "scripts\\detect_template_drift.py",
+        "scripts\\dry_run_compiler.py",
+        "scripts\\file_intent.py",
+        "scripts\\harden_templates.py",
+        "scripts\\import_violation_visitor.py",
+        "scripts\\synchronize_registry_hashes.py",
+        "scripts\\template_render_visitor.py",
+        "scripts\\validate_assembly.py"
+      ]
+    },
+    "security": {
+      "root_dir": "agentic_core\\prompt_governance\\security",
+      "root_level_files": [
+        {
+          "file": "security\\assembly_injection_neutralizer.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 3,
+            "imports": 4,
+            "lines": 100,
+            "size": 3264
+          }
+        },
+        {
+          "file": "security\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 3,
+            "lines": 16,
+            "size": 428
+          }
+        }
+      ],
+      "subdirs": {
+        "adversarial": {
+          "root_dir": "agentic_core\\prompt_governance\\security\\adversarial",
+          "root_level_files": [
+            {
+              "file": "adversarial\\cot_jailbreak.jinja",
+              "complexity": {
+                "error": "invalid character '\u2014' (U+2014) (cot_jailbreak.jinja, line 24)",
+                "lines": 0,
+                "size": 1527
+              }
+            },
+            {
+              "file": "adversarial\\encoded_payload_base64.jinja",
+              "complexity": {
+                "error": "'{' was never closed (encoded_payload_base64.jinja, line 14)",
+                "lines": 0,
+                "size": 1353
+              }
+            },
+            {
+              "file": "adversarial\\encoded_payload_leetspeak.jinja",
+              "complexity": {
+                "error": "invalid decimal literal (encoded_payload_leetspeak.jinja, line 15)",
+                "lines": 0,
+                "size": 1173
+              }
+            },
+            {
+              "file": "adversarial\\encoded_payload_rot13.jinja",
+              "complexity": {
+                "error": "'{' was never closed (encoded_payload_rot13.jinja, line 13)",
+                "lines": 0,
+                "size": 1136
+              }
+            },
+            {
+              "file": "adversarial\\indirect_attack.jinja",
+              "complexity": {
+                "error": "invalid character '\u2014' (U+2014) (indirect_attack.jinja, line 22)",
+                "lines": 0,
+                "size": 1411
+              }
+            },
+            {
+              "file": "adversarial\\jailbreak_classic.jinja",
+              "complexity": {
+                "error": "unterminated string literal (detected at line 26) (jailbreak_classic.jinja, line 26)",
+                "lines": 0,
+                "size": 1230
+              }
+            },
+            {
+              "file": "adversarial\\multilingual_jailbreak.jinja",
+              "complexity": {
+                "error": "'{' was never closed (multilingual_jailbreak.jinja, line 14)",
+                "lines": 0,
+                "size": 1352
+              }
+            },
+            {
+              "file": "adversarial\\prompt_injection_payload.jinja",
+              "complexity": {
+                "error": "invalid character '\u2014' (U+2014) (prompt_injection_payload.jinja, line 19)",
+                "lines": 0,
+                "size": 1337
+              }
+            },
+            {
+              "file": "adversarial\\recursive_override.jinja",
+              "complexity": {
+                "error": "invalid character '\u2014' (U+2014) (recursive_override.jinja, line 36)",
+                "lines": 0,
+                "size": 2477
+              }
+            },
+            {
+              "file": "adversarial\\recursive_override_staged.jinja",
+              "complexity": {
+                "error": "invalid character '\u2014' (U+2014) (recursive_override_staged.jinja, line 43)",
+                "lines": 0,
+                "size": 1749
+              }
+            },
+            {
+              "file": "adversarial\\token_smuggling.jinja",
+              "complexity": {
+                "error": "'{' was never closed (token_smuggling.jinja, line 12)",
+                "lines": 0,
+                "size": 1247
+              }
+            }
+          ],
+          "subdirs": {},
+          "empty_subdirs": [],
+          "low_signal_files": [],
+          "high_signal_root_files": []
+        },
+        "detectors": {
+          "root_dir": "agentic_core\\prompt_governance\\security\\detectors",
+          "root_level_files": [
+            {
+              "file": "detectors\\assembly_injection_neutralizer.py",
+              "complexity": {
+                "functions": 3,
+                "classes": 3,
+                "imports": 4,
+                "lines": 100,
+                "size": 3264
+              }
+            },
+            {
+              "file": "detectors\\injection_detector.py",
+              "complexity": {
+                "functions": 8,
+                "classes": 1,
+                "imports": 14,
+                "lines": 470,
+                "size": 21819
+              }
+            },
+            {
+              "file": "detectors\\pii_scrubber.py",
+              "complexity": {
+                "functions": 1,
+                "classes": 1,
+                "imports": 4,
+                "lines": 184,
+                "size": 8612
+              }
+            },
+            {
+              "file": "detectors\\__init__.py",
+              "complexity": {
+                "functions": 0,
+                "classes": 0,
+                "imports": 4,
+                "lines": 18,
+                "size": 418
+              }
+            }
+          ],
+          "subdirs": {},
+          "empty_subdirs": [],
+          "low_signal_files": [
+            "detectors\\__init__.py"
+          ],
+          "high_signal_root_files": [
+            "detectors\\assembly_injection_neutralizer.py",
+            "detectors\\injection_detector.py",
+            "detectors\\pii_scrubber.py"
+          ]
+        },
+        "utils": {
+          "root_dir": "agentic_core\\prompt_governance\\security\\utils",
+          "root_level_files": [
+            {
+              "file": "utils\\injection_scan_util.py",
+              "complexity": {
+                "functions": 1,
+                "classes": 0,
+                "imports": 4,
+                "lines": 176,
+                "size": 8937
+              }
+            },
+            {
+              "file": "utils\\normalization_util.py",
+              "complexity": {
+                "functions": 5,
+                "classes": 0,
+                "imports": 5,
+                "lines": 134,
+                "size": 12521
+              }
+            },
+            {
+              "file": "utils\\__init__.py",
+              "complexity": {
+                "functions": 0,
+                "classes": 0,
+                "imports": 2,
+                "lines": 15,
+                "size": 306
+              }
+            }
+          ],
+          "subdirs": {},
+          "empty_subdirs": [],
+          "low_signal_files": [
+            "utils\\__init__.py"
+          ],
+          "high_signal_root_files": [
+            "utils\\injection_scan_util.py",
+            "utils\\normalization_util.py"
+          ]
+        },
+        "validators": {
+          "root_dir": "agentic_core\\prompt_governance\\security\\validators",
+          "root_level_files": [
+            {
+              "file": "validators\\output_schema_validator.py",
+              "complexity": {
+                "functions": 7,
+                "classes": 0,
+                "imports": 9,
+                "lines": 401,
+                "size": 19029
+              }
+            },
+            {
+              "file": "validators\\__init__.py",
+              "complexity": {
+                "functions": 0,
+                "classes": 0,
+                "imports": 2,
+                "lines": 11,
+                "size": 311
+              }
+            }
+          ],
+          "subdirs": {},
+          "empty_subdirs": [],
+          "low_signal_files": [
+            "validators\\__init__.py"
+          ],
+          "high_signal_root_files": [
+            "validators\\output_schema_validator.py"
+          ]
+        }
+      },
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "security\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "security\\assembly_injection_neutralizer.py"
+      ]
+    },
+    "templates": {
+      "root_dir": "agentic_core\\prompt_governance\\templates",
+      "root_level_files": [
+        {
+          "file": "templates\\agent_autonomy_law.jinja",
+          "complexity": {
+            "error": "invalid character '\u2014' (U+2014) (agent_autonomy_law.jinja, line 27)",
+            "lines": 0,
+            "size": 1965
+          }
+        },
+        {
+          "file": "templates\\anomaly_detection_response.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (anomaly_detection_response.jinja, line 14)",
+            "lines": 0,
+            "size": 5069
+          }
+        },
+        {
+          "file": "templates\\async_compatibility.jinja",
+          "complexity": {
+            "error": "invalid character '\u2192' (U+2192) (async_compatibility.jinja, line 19)",
+            "lines": 0,
+            "size": 1254
+          }
+        },
+        {
+          "file": "templates\\autonomous_decision_tree.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (autonomous_decision_tree.jinja, line 14)",
+            "lines": 0,
+            "size": 3149
+          }
+        },
+        {
+          "file": "templates\\code_healing.jinja",
+          "complexity": {
+            "error": "'{' was never closed (code_healing.jinja, line 10)",
+            "lines": 0,
+            "size": 1682
+          }
+        },
+        {
+          "file": "templates\\context_memory_synthesis.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (context_memory_synthesis.jinja, line 14)",
+            "lines": 0,
+            "size": 4881
+          }
+        },
+        {
+          "file": "templates\\cross_layer_coordination.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (cross_layer_coordination.jinja, line 14)",
+            "lines": 0,
+            "size": 3990
+          }
+        },
+        {
+          "file": "templates\\dead_code_elimination.jinja",
+          "complexity": {
+            "error": "'{' was never closed (dead_code_elimination.jinja, line 12)",
+            "lines": 0,
+            "size": 1321
+          }
+        },
+        {
+          "file": "templates\\docstring_enrichment.jinja",
+          "complexity": {
+            "error": "'{' was never closed (docstring_enrichment.jinja, line 13)",
+            "lines": 0,
+            "size": 1584
+          }
+        },
+        {
+          "file": "templates\\file_placement.jinja",
+          "complexity": {
+            "error": "'{' was never closed (file_placement.jinja, line 13)",
+            "lines": 0,
+            "size": 1598
+          }
+        },
+        {
+          "file": "templates\\fission_planning.jinja",
+          "complexity": {
+            "error": "'{' was never closed (fission_planning.jinja, line 13)",
+            "lines": 0,
+            "size": 1567
+          }
+        },
+        {
+          "file": "templates\\goal_decomposition_planning.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (goal_decomposition_planning.jinja, line 14)",
+            "lines": 0,
+            "size": 4032
+          }
+        },
+        {
+          "file": "templates\\gravity_compliance.jinja",
+          "complexity": {
+            "error": "'{' was never closed (gravity_compliance.jinja, line 12)",
+            "lines": 0,
+            "size": 1115
+          }
+        },
+        {
+          "file": "templates\\gravity_dynamic_conversion.jinja",
+          "complexity": {
+            "error": "'{' was never closed (gravity_dynamic_conversion.jinja, line 12)",
+            "lines": 0,
+            "size": 1210
+          }
+        },
+        {
+          "file": "templates\\gravity_repair.jinja",
+          "complexity": {
+            "error": "'{' was never closed (gravity_repair.jinja, line 13)",
+            "lines": 0,
+            "size": 1305
+          }
+        },
+        {
+          "file": "templates\\import_optimization.jinja",
+          "complexity": {
+            "error": "invalid character '\u2192' (U+2192) (import_optimization.jinja, line 22)",
+            "lines": 0,
+            "size": 1494
+          }
+        },
+        {
+          "file": "templates\\multi_agent_consensus.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (multi_agent_consensus.jinja, line 14)",
+            "lines": 0,
+            "size": 4725
+          }
+        },
+        {
+          "file": "templates\\naming_law.jinja",
+          "complexity": {
+            "error": "'{' was never closed (naming_law.jinja, line 13)",
+            "lines": 0,
+            "size": 1290
+          }
+        },
+        {
+          "file": "templates\\naming_precision.jinja",
+          "complexity": {
+            "error": "'{' was never closed (naming_precision.jinja, line 12)",
+            "lines": 0,
+            "size": 1372
+          }
+        },
+        {
+          "file": "templates\\predictive_failure_prevention.jinja",
+          "complexity": {
+            "error": "invalid character '\u2013' (U+2013) (predictive_failure_prevention.jinja, line 14)",
+            "lines": 0,
+            "size": 4635
+          }
+        },
+        {
+          "file": "templates\\reasoning_chain.jinja",
+          "complexity": {
+            "error": "invalid character '\u2014' (U+2014) (reasoning_chain.jinja, line 30)",
+            "lines": 0,
+            "size": 1919
+          }
+        },
+        {
+          "file": "templates\\subatomic_healing_context.jinja",
+          "complexity": {
+            "error": "invalid character '\u2014' (U+2014) (subatomic_healing_context.jinja, line 33)",
+            "lines": 0,
+            "size": 2407
+          }
+        },
+        {
+          "file": "templates\\type_inference.jinja",
+          "complexity": {
+            "error": "'{' was never closed (type_inference.jinja, line 12)",
+            "lines": 0,
+            "size": 1759
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": []
+    },
+    "validation": {
+      "root_dir": "agentic_core\\prompt_governance\\validation",
+      "root_level_files": [
+        {
+          "file": "validation\\validate_assembly.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 0,
+            "imports": 5,
+            "lines": 196,
+            "size": 7462
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "validation\\validate_assembly.py"
+      ]
+    }
+  },
+  "empty_subdirs": [],
+  "low_signal_files": [
+    "prompt_governance\\__init__.py"
+  ],
+  "high_signal_root_files": []
+}

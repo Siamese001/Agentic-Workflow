@@ -10,7 +10,6 @@ Phase 2 of the SSOT mixin consolidation plan.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from agentic_core.config.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 # Configuration constants
 

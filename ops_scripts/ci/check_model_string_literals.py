@@ -6,16 +6,6 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATTERN = re.compile('(gpt-[0-9]|claude-[0-9]|gemini-[0-9]|text-embedding-3|qwen|llama)', re.I)

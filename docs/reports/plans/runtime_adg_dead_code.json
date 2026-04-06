@@ -1,0 +1,276 @@
+{
+  "target_dir": "agentic_core/runtime",
+  "dead_imports": [
+    {
+      "node_id": 1723,
+      "file_path": "agentic_core/runtime/config/__init__.py",
+      "name": "ADG::Module::agentic_core/runtime/config/__init__.py"
+    },
+    {
+      "node_id": 1746,
+      "file_path": "agentic_core/runtime/engine/__init__.py",
+      "name": "ADG::Module::agentic_core/runtime/engine/__init__.py"
+    },
+    {
+      "node_id": 1779,
+      "file_path": "agentic_core/runtime/exceptions/workflow_exceptions.py",
+      "name": "ADG::Module::agentic_core/runtime/exceptions/workflow_exceptions.py"
+    },
+    {
+      "node_id": 1806,
+      "file_path": "agentic_core/runtime/utils/__init__.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/__init__.py"
+    },
+    {
+      "node_id": 5783,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_model_tier_config_adg.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_model_tier_config_adg.py"
+    }
+  ],
+  "unused_imports": [
+    {
+      "node_id": 1724,
+      "file_path": "agentic_core/runtime/config/anomaly_report_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/anomaly_report_config.py"
+    },
+    {
+      "node_id": 1725,
+      "file_path": "agentic_core/runtime/config/capability_gap_types.py",
+      "name": "ADG::Module::agentic_core/runtime/config/capability_gap_types.py"
+    },
+    {
+      "node_id": 1727,
+      "file_path": "agentic_core/runtime/config/detection_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/detection_config.py"
+    },
+    {
+      "node_id": 1728,
+      "file_path": "agentic_core/runtime/config/feature_flags_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/feature_flags_config.py"
+    },
+    {
+      "node_id": 1729,
+      "file_path": "agentic_core/runtime/config/heal_result_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/heal_result_config.py"
+    },
+    {
+      "node_id": 1730,
+      "file_path": "agentic_core/runtime/config/injection_type_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/injection_type_config.py"
+    },
+    {
+      "node_id": 1732,
+      "file_path": "agentic_core/runtime/config/model_provider_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/model_provider_config.py"
+    },
+    {
+      "node_id": 1733,
+      "file_path": "agentic_core/runtime/config/model_tier_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/model_tier_config.py"
+    },
+    {
+      "node_id": 1734,
+      "file_path": "agentic_core/runtime/config/prompt_injection_loader_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/prompt_injection_loader_config.py"
+    },
+    {
+      "node_id": 1735,
+      "file_path": "agentic_core/runtime/config/reasoning_types.py",
+      "name": "ADG::Module::agentic_core/runtime/config/reasoning_types.py"
+    },
+    {
+      "node_id": 1736,
+      "file_path": "agentic_core/runtime/config/review_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/review_config.py"
+    },
+    {
+      "node_id": 1737,
+      "file_path": "agentic_core/runtime/config/security_level_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/security_level_config.py"
+    },
+    {
+      "node_id": 1738,
+      "file_path": "agentic_core/runtime/config/shared_infrastructure_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/shared_infrastructure_config.py"
+    },
+    {
+      "node_id": 1739,
+      "file_path": "agentic_core/runtime/config/signal_quality_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/signal_quality_config.py"
+    },
+    {
+      "node_id": 1740,
+      "file_path": "agentic_core/runtime/config/sovereignty_bootstrap.py",
+      "name": "ADG::Module::agentic_core/runtime/config/sovereignty_bootstrap.py"
+    },
+    {
+      "node_id": 1741,
+      "file_path": "agentic_core/runtime/config/validation_severity_config.py",
+      "name": "ADG::Module::agentic_core/runtime/config/validation_severity_config.py"
+    },
+    {
+      "node_id": 1743,
+      "file_path": "agentic_core/runtime/enforcement/boundary_validator.py",
+      "name": "ADG::Module::agentic_core/runtime/enforcement/boundary_validator.py"
+    },
+    {
+      "node_id": 1744,
+      "file_path": "agentic_core/runtime/enforcement/envelope_factory.py",
+      "name": "ADG::Module::agentic_core/runtime/enforcement/envelope_factory.py"
+    },
+    {
+      "node_id": 1748,
+      "file_path": "agentic_core/runtime/engine/ast_relocator.py",
+      "name": "ADG::Module::agentic_core/runtime/engine/ast_relocator.py"
+    },
+    {
+      "node_id": 1749,
+      "file_path": "agentic_core/runtime/engine/eval_spine.py",
+      "name": "ADG::Module::agentic_core/runtime/engine/eval_spine.py"
+    },
+    {
+      "node_id": 1778,
+      "file_path": "agentic_core/runtime/exceptions/sovereignty_exceptions.py",
+      "name": "ADG::Module::agentic_core/runtime/exceptions/sovereignty_exceptions.py"
+    },
+    {
+      "node_id": 1785,
+      "file_path": "agentic_core/runtime/lifecycle_trace_contract.py",
+      "name": "ADG::Module::agentic_core/runtime/lifecycle_trace_contract.py"
+    },
+    {
+      "node_id": 1786,
+      "file_path": "agentic_core/runtime/types/__init__.py",
+      "name": "ADG::Module::agentic_core/runtime/types/__init__.py"
+    },
+    {
+      "node_id": 1787,
+      "file_path": "agentic_core/runtime/types/cache_entry_types.py",
+      "name": "ADG::Module::agentic_core/runtime/types/cache_entry_types.py"
+    },
+    {
+      "node_id": 1791,
+      "file_path": "agentic_core/runtime/types/claim_type_types.py",
+      "name": "ADG::Module::agentic_core/runtime/types/claim_type_types.py"
+    },
+    {
+      "node_id": 1792,
+      "file_path": "agentic_core/runtime/types/cost_governor_types.py",
+      "name": "ADG::Module::agentic_core/runtime/types/cost_governor_types.py"
+    },
+    {
+      "node_id": 1802,
+      "file_path": "agentic_core/runtime/types/state.py",
+      "name": "ADG::Module::agentic_core/runtime/types/state.py"
+    },
+    {
+      "node_id": 1810,
+      "file_path": "agentic_core/runtime/utils/file_cache_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/file_cache_util.py"
+    },
+    {
+      "node_id": 1811,
+      "file_path": "agentic_core/runtime/utils/main_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/main_util.py"
+    },
+    {
+      "node_id": 1812,
+      "file_path": "agentic_core/runtime/utils/runtime_bootstrapper_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/runtime_bootstrapper_util.py"
+    },
+    {
+      "node_id": 1813,
+      "file_path": "agentic_core/runtime/utils/sovereign_dependency_error_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/sovereign_dependency_error_util.py"
+    },
+    {
+      "node_id": 1814,
+      "file_path": "agentic_core/runtime/utils/sovereign_index_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/sovereign_index_util.py"
+    },
+    {
+      "node_id": 1815,
+      "file_path": "agentic_core/runtime/utils/sovereign_scan_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/sovereign_scan_util.py"
+    },
+    {
+      "node_id": 1816,
+      "file_path": "agentic_core/runtime/utils/tools.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/tools.py"
+    },
+    {
+      "node_id": 1817,
+      "file_path": "agentic_core/runtime/utils/trace_context.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/trace_context.py"
+    },
+    {
+      "node_id": 1818,
+      "file_path": "agentic_core/runtime/utils/trace_emitter.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/trace_emitter.py"
+    },
+    {
+      "node_id": 1819,
+      "file_path": "agentic_core/runtime/utils/trait_system_util.py",
+      "name": "ADG::Module::agentic_core/runtime/utils/trait_system_util.py"
+    },
+    {
+      "node_id": 5767,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_capability_gap_types.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_capability_gap_types.py"
+    },
+    {
+      "node_id": 5780,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_model_provider_config.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_model_provider_config.py"
+    },
+    {
+      "node_id": 5786,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_reasoning_types.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_reasoning_types.py"
+    },
+    {
+      "node_id": 5799,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_validation_severity_config_adg.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_validation_severity_config_adg.py"
+    },
+    {
+      "node_id": 5810,
+      "file_path": "tests/unit/agentic_core/runtime/exceptions/test_SovereignError.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/exceptions/test_SovereignError.py"
+    },
+    {
+      "node_id": 5814,
+      "file_path": "tests/unit/agentic_core/runtime/exceptions/test_healer_exceptions.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/exceptions/test_healer_exceptions.py"
+    },
+    {
+      "node_id": 5817,
+      "file_path": "tests/unit/agentic_core/runtime/exceptions/test_runtime_exceptions.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/exceptions/test_runtime_exceptions.py"
+    },
+    {
+      "node_id": 5820,
+      "file_path": "tests/unit/agentic_core/runtime/exceptions/test_workflow_exceptions.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/exceptions/test_workflow_exceptions.py"
+    },
+    {
+      "node_id": 5853,
+      "file_path": "tests/unit/agentic_core/runtime/utils/test_trait_system_util.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/utils/test_trait_system_util.py"
+    }
+  ],
+  "unreachable_code": [],
+  "duplicate_methods": [
+    {
+      "node_id": 5768,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_capability_gap_types_adg.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_capability_gap_types_adg.py"
+    },
+    {
+      "node_id": 5787,
+      "file_path": "tests/unit/agentic_core/runtime/config/test_reasoning_types_adg.py",
+      "name": "ADG::Module::tests/unit/agentic_core/runtime/config/test_reasoning_types_adg.py"
+    }
+  ],
+  "orphans": []
+}

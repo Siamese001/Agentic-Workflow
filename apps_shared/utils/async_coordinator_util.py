@@ -178,7 +178,6 @@ _emit_links_execution_to_snapshot("p4", "async_coordinator_util", "exec_snapshot
 
 logger = logging.getLogger(__name__)
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

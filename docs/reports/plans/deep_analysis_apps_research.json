@@ -1,0 +1,1898 @@
+{
+  "summary": {
+    "target_dir": "apps_research",
+    "total_files": 63,
+    "total_with_issues": 10,
+    "total_root_violations": 8,
+    "total_dead_code_files": 10,
+    "total_misplaced_files": 8,
+    "folder_breakdown": {
+      "apps_research": {
+        "files": 9,
+        "total_lines": 1052,
+        "root_violations": [
+          "apps_research/CLI_SPEC.md",
+          "apps_research/OUTPUT_CONTRACTS.md",
+          "apps_research/PRODUCT_SPEC.md",
+          "apps_research/README.md",
+          "apps_research/SVP_ENGINEERING_REVIEW.md",
+          "apps_research/TECHNICAL_SPEC.md",
+          "apps_research/TEST_STRATEGY.md",
+          "apps_research/__main__.py"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "apps_research/CLI_SPEC.md",
+          "apps_research/OUTPUT_CONTRACTS.md",
+          "apps_research/PRODUCT_SPEC.md",
+          "apps_research/README.md",
+          "apps_research/SVP_ENGINEERING_REVIEW.md",
+          "apps_research/TECHNICAL_SPEC.md",
+          "apps_research/TEST_STRATEGY.md",
+          "apps_research/__main__.py"
+        ],
+        "clean_files": 1
+      },
+      "apps_research\\config": {
+        "files": 6,
+        "total_lines": 564,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/config/__init__.py",
+          "apps_research/config/knowledge_base.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_research\\engines": {
+        "files": 4,
+        "total_lines": 1122,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/engines/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "apps_research\\integrations": {
+        "files": 3,
+        "total_lines": 180,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/integrations/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_research\\outputs": {
+        "files": 3,
+        "total_lines": 223,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/outputs/__init__.py",
+          "apps_research/outputs/research_renderer.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "apps_research\\reasoning": {
+        "files": 8,
+        "total_lines": 2275,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/reasoning/ResearchOrchestrator.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_research\\scripts": {
+        "files": 3,
+        "total_lines": 527,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "apps_research\\services": {
+        "files": 10,
+        "total_lines": 676,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/services/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 9
+      },
+      "apps_research\\spine": {
+        "files": 2,
+        "total_lines": 53,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_research\\tests": {
+        "files": 5,
+        "total_lines": 463,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/tests/test_research_reasoning.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_research\\tools": {
+        "files": 2,
+        "total_lines": 55,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_research\\types": {
+        "files": 3,
+        "total_lines": 526,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_research/types/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_research\\utils": {
+        "files": 2,
+        "total_lines": 68,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_research\\validators": {
+        "files": 3,
+        "total_lines": 576,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "apps_research/CLI_SPEC.md",
+      "depth": 1,
+      "size_bytes": 3877,
+      "total_lines": 107,
+      "code_lines": 82,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/OUTPUT_CONTRACTS.md",
+      "depth": 1,
+      "size_bytes": 3856,
+      "total_lines": 145,
+      "code_lines": 104,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/PRODUCT_SPEC.md",
+      "depth": 1,
+      "size_bytes": 7060,
+      "total_lines": 125,
+      "code_lines": 92,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/README.md",
+      "depth": 1,
+      "size_bytes": 2594,
+      "total_lines": 63,
+      "code_lines": 46,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/SVP_ENGINEERING_REVIEW.md",
+      "depth": 1,
+      "size_bytes": 4841,
+      "total_lines": 149,
+      "code_lines": 114,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/TECHNICAL_SPEC.md",
+      "depth": 1,
+      "size_bytes": 5651,
+      "total_lines": 155,
+      "code_lines": 122,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/TEST_STRATEGY.md",
+      "depth": 1,
+      "size_bytes": 4015,
+      "total_lines": 95,
+      "code_lines": 69,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/__init__.py",
+      "depth": 1,
+      "size_bytes": 156,
+      "total_lines": 5,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/__main__.py",
+      "depth": 1,
+      "size_bytes": 8719,
+      "total_lines": 208,
+      "code_lines": 191,
+      "functions": [
+        "_adg_bootstrap",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/config/__init__.py",
+      "depth": 2,
+      "size_bytes": 228,
+      "total_lines": 7,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 5,
+          "symbol": "apps_research.config.agent_spec_config.ResearchAgentSpecs"
+        },
+        {
+          "line": 5,
+          "symbol": "apps_research.config.agent_spec_config.load_research_specs"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/config/agent_spec_config.py",
+      "depth": 2,
+      "size_bytes": 13737,
+      "total_lines": 334,
+      "code_lines": 284,
+      "functions": [
+        "load_research_specs",
+        "validate_modes_non_empty"
+      ],
+      "classes": [
+        "ArtifactModeConfig",
+        "SourceRegisterConfig",
+        "ResearchGateConfig",
+        "ResearchOutputConfig",
+        "ResearchAgentSpecs"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/config/knowledge_base.py",
+      "depth": 2,
+      "size_bytes": 779,
+      "total_lines": 35,
+      "code_lines": 32,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(12)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 7,
+          "symbol": "FROZEN_SNAPSHOT"
+        },
+        {
+          "line": 7,
+          "symbol": "ResearchGlobalRule"
+        },
+        {
+          "line": 7,
+          "symbol": "ResearchNodeEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "ResearchPromptEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "ResearchSovereignKnowledge"
+        },
+        {
+          "line": 7,
+          "symbol": "get_global_rule"
+        },
+        {
+          "line": 7,
+          "symbol": "get_node_config"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt_entry"
+        },
+        {
+          "line": 7,
+          "symbol": "get_system_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_nodes"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_prompts"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/config/reasoning_toggles_config.py",
+      "depth": 2,
+      "size_bytes": 782,
+      "total_lines": 29,
+      "code_lines": 20,
+      "functions": [],
+      "classes": [
+        "ResearchReasoningToggles"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/config/research_policies.yaml",
+      "depth": 2,
+      "size_bytes": 1445,
+      "total_lines": 77,
+      "code_lines": 62,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/config/research_thresholds.yaml",
+      "depth": 2,
+      "size_bytes": 1507,
+      "total_lines": 82,
+      "code_lines": 62,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 158,
+      "total_lines": 5,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_research.engines.base_research_engine.BaseResearchEngine"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/engines/base_research_engine.py",
+      "depth": 2,
+      "size_bytes": 3984,
+      "total_lines": 124,
+      "code_lines": 91,
+      "functions": [
+        "__init__",
+        "execute",
+        "get_prompt",
+        "get_node_config",
+        "record_fail",
+        "record_pass",
+        "get_status"
+      ],
+      "classes": [
+        "BaseResearchEngine",
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/engines/research_assembly_engine.py",
+      "depth": 2,
+      "size_bytes": 31785,
+      "total_lines": 638,
+      "code_lines": 609,
+      "functions": [
+        "__init__",
+        "execute",
+        "_build_source_register",
+        "_build_sections",
+        "_build_comparison_matrix"
+      ],
+      "classes": [
+        "ResearchAssemblyResult",
+        "ResearchAssemblyEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/engines/research_retrieval_engine.py",
+      "depth": 2,
+      "size_bytes": 11908,
+      "total_lines": 355,
+      "code_lines": 280,
+      "functions": [
+        "create_retrieval_engine",
+        "__init__",
+        "add_research",
+        "query_similar",
+        "get_by_mode",
+        "_mock_embed",
+        "_cosine_similarity",
+        "__init__",
+        "index_research",
+        "find_similar_research",
+        "get_mode_history",
+        "analyze_claim_trends",
+        "get_quality_benchmark",
+        "recommend_sources"
+      ],
+      "classes": [
+        "RetrievedResearch",
+        "SourceTrend",
+        "InMemoryResearchStore",
+        "ResearchRetrievalEngine"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/integrations/__init__.py",
+      "depth": 2,
+      "size_bytes": 259,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_research.integrations.execution_adapter.ExecutionAdapter"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_research.integrations.observability_adapter.ObservabilityAdapter"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/integrations/execution_adapter.py",
+      "depth": 2,
+      "size_bytes": 2900,
+      "total_lines": 93,
+      "code_lines": 67,
+      "functions": [
+        "__init__",
+        "submit",
+        "_timestamp",
+        "get_execution_log"
+      ],
+      "classes": [
+        "ExecutionRequest",
+        "ExecutionAdapter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/integrations/observability_adapter.py",
+      "depth": 2,
+      "size_bytes": 2684,
+      "total_lines": 81,
+      "code_lines": 68,
+      "functions": [
+        "__init__",
+        "emit_research_start",
+        "emit_research_complete",
+        "emit_section_generated",
+        "get_metrics",
+        "_timestamp"
+      ],
+      "classes": [
+        "ObservabilityAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/outputs/__init__.py",
+      "depth": 2,
+      "size_bytes": 281,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(3)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_research.outputs.research_renderer.ResearchRenderer"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.outputs.research_renderer.ResearchSummaryRenderer"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_research.outputs.section_renderer.SectionRenderer"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/outputs/research_renderer.py",
+      "depth": 2,
+      "size_bytes": 5245,
+      "total_lines": 143,
+      "code_lines": 117,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "ResearchRenderer",
+        "ResearchSummaryRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 16,
+          "symbol": "apps_research.types.ResearchSection"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/outputs/section_renderer.py",
+      "depth": 2,
+      "size_bytes": 2230,
+      "total_lines": 74,
+      "code_lines": 57,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_html"
+      ],
+      "classes": [
+        "SectionRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/InsightExtractionAgent.py",
+      "depth": 2,
+      "size_bytes": 2925,
+      "total_lines": 84,
+      "code_lines": 68,
+      "functions": [
+        "__init__",
+        "extract_insights",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "InsightExtractionAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/KnowledgeSynthesisAgent.py",
+      "depth": 2,
+      "size_bytes": 2757,
+      "total_lines": 81,
+      "code_lines": 66,
+      "functions": [
+        "__init__",
+        "synthesize",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "KnowledgeSynthesisAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/ResearchOrchestrator.py",
+      "depth": 2,
+      "size_bytes": 26106,
+      "total_lines": 588,
+      "code_lines": 502,
+      "functions": [
+        "__post_init__",
+        "run",
+        "_emit_artifacts",
+        "_emit_run_summary",
+        "_record_hop",
+        "synthesize_research_with_qwen",
+        "_prepare_research_synthesis_prompt",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "ResearchOrchestrator"
+      ],
+      "import_count": 17,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 31,
+          "symbol": "AppsQwenPromptConfig"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/SourceDiscoveryAgent.py",
+      "depth": 2,
+      "size_bytes": 2790,
+      "total_lines": 81,
+      "code_lines": 66,
+      "functions": [
+        "__init__",
+        "discover_sources",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "SourceDiscoveryAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/__init__.py",
+      "depth": 2,
+      "size_bytes": 622,
+      "total_lines": 17,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/enterprise_research_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 22557,
+      "total_lines": 586,
+      "code_lines": 462,
+      "functions": [
+        "run_enterprise_research",
+        "__post_init__",
+        "_generate_trace_id",
+        "__init__",
+        "process",
+        "_step_decompose",
+        "_step_retrieve",
+        "_step_generate",
+        "_step_collect_repo_signals",
+        "_step_validate",
+        "_generate_mock_research_content",
+        "_generate_mock_source_register",
+        "_get_required_sections",
+        "_step_emit",
+        "_write_research_markdown",
+        "_write_manifest",
+        "_log_step"
+      ],
+      "classes": [
+        "EnterpriseResearchRequest",
+        "EnterpriseResearchResult",
+        "EnterpriseResearchOrchestrator"
+      ],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/query_decomposition_agent.py",
+      "depth": 2,
+      "size_bytes": 16539,
+      "total_lines": 417,
+      "code_lines": 325,
+      "functions": [
+        "__init__",
+        "decompose",
+        "decompose_batch",
+        "generate_summary",
+        "_detect_query_type",
+        "_generate_query_text",
+        "_determine_claim_types",
+        "_determine_dependencies",
+        "_generate_keywords",
+        "_determine_execution_order",
+        "_identify_source_gaps",
+        "__init__",
+        "analyze_research_query",
+        "get_research_execution_plan"
+      ],
+      "classes": [
+        "QueryType",
+        "EvidenceRequirement",
+        "ResearchQueryComponent",
+        "QueryDecomposition",
+        "DecompositionSummary",
+        "QueryDecomposer",
+        "QueryDecompositionAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/reasoning/research_multi_agent.py",
+      "depth": 2,
+      "size_bytes": 15360,
+      "total_lines": 421,
+      "code_lines": 329,
+      "functions": [
+        "__init__",
+        "execute",
+        "_run_implementation",
+        "_analyze_query",
+        "_gather_sources",
+        "_extract_evidence",
+        "_synthesize_content",
+        "_type_claims",
+        "_validate_quality",
+        "__init__",
+        "register_agent",
+        "create_orchestration_plan",
+        "execute_plan",
+        "get_combined_results",
+        "_compute_execution_order",
+        "__init__",
+        "_initialize_agents",
+        "generate_research"
+      ],
+      "classes": [
+        "ResearchAgentType",
+        "AgentStatus",
+        "ResearchAgentRequest",
+        "ResearchAgentResult",
+        "ResearchOrchestrationPlan",
+        "ResearchGenerationAgent",
+        "ResearchOrchestrator",
+        "MultiAgentResearchEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/scripts/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/scripts/run_research.py",
+      "depth": 2,
+      "size_bytes": 3244,
+      "total_lines": 101,
+      "code_lines": 82,
+      "functions": [
+        "build_parser",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/scripts/test_enterprise_research.py",
+      "depth": 2,
+      "size_bytes": 14609,
+      "total_lines": 426,
+      "code_lines": 323,
+      "functions": [
+        "_assert",
+        "_assert_repo_signals",
+        "_assert_detailed_observability",
+        "_assert_layer4_wiring",
+        "_assert_enhanced_system_learning",
+        "_assert_rigorous_e2e_wiring",
+        "test_single_topic_brief",
+        "test_comparison_mode",
+        "test_with_source_retrieval",
+        "test_full_enterprise_pipeline",
+        "test_all_artifact_modes",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/__init__.py",
+      "depth": 2,
+      "size_bytes": 1235,
+      "total_lines": 28,
+      "code_lines": 25,
+      "functions": [],
+      "classes": [],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 8,
+          "symbol": "apps_research.services.citation_manager_service.CitationManagerService"
+        },
+        {
+          "line": 9,
+          "symbol": "apps_research.services.content_harvester_service.ContentHarvesterService"
+        },
+        {
+          "line": 10,
+          "symbol": "apps_research.services.credibility_scorer_service.CredibilityScorerService"
+        },
+        {
+          "line": 11,
+          "symbol": "apps_research.services.insight_extractor_service.InsightExtractorService"
+        },
+        {
+          "line": 12,
+          "symbol": "apps_research.services.knowledge_integrator_service.KnowledgeIntegratorService"
+        },
+        {
+          "line": 13,
+          "symbol": "apps_research.services.repo_signal_service.RepoSignalService"
+        },
+        {
+          "line": 14,
+          "symbol": "apps_research.services.report_compiler_service.ReportCompilerService"
+        },
+        {
+          "line": 15,
+          "symbol": "apps_research.services.source_discovery_service.SourceDiscoveryService"
+        },
+        {
+          "line": 16,
+          "symbol": "apps_research.services.synthesis_engine_service.SynthesisEngineService"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/citation_manager_service.py",
+      "depth": 2,
+      "size_bytes": 703,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "add_citation"
+      ],
+      "classes": [
+        "CitationManagerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/content_harvester_service.py",
+      "depth": 2,
+      "size_bytes": 898,
+      "total_lines": 33,
+      "code_lines": 23,
+      "functions": [
+        "__init__",
+        "harvest_content",
+        "get_harvested_content"
+      ],
+      "classes": [
+        "ContentHarvesterService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/credibility_scorer_service.py",
+      "depth": 2,
+      "size_bytes": 675,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "score_source"
+      ],
+      "classes": [
+        "CredibilityScorerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/insight_extractor_service.py",
+      "depth": 2,
+      "size_bytes": 683,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "extract_insights"
+      ],
+      "classes": [
+        "InsightExtractorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/knowledge_integrator_service.py",
+      "depth": 2,
+      "size_bytes": 762,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "integrate_knowledge"
+      ],
+      "classes": [
+        "KnowledgeIntegratorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/repo_signal_service.py",
+      "depth": 2,
+      "size_bytes": 8016,
+      "total_lines": 201,
+      "code_lines": 162,
+      "functions": [
+        "as_dict",
+        "__init__",
+        "collect",
+        "_collect_research_context",
+        "_collect_adg_signals",
+        "_collect_test_signals",
+        "_collect_ci_signals",
+        "_collect_governance_signals",
+        "_json_entry_count",
+        "_line_count"
+      ],
+      "classes": [
+        "RepoSignalSnapshot",
+        "RepoSignalService"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/report_compiler_service.py",
+      "depth": 2,
+      "size_bytes": 737,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "compile_report"
+      ],
+      "classes": [
+        "ReportCompilerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/source_discovery_service.py",
+      "depth": 2,
+      "size_bytes": 5016,
+      "total_lines": 141,
+      "code_lines": 111,
+      "functions": [
+        "__init__",
+        "discover_from_query",
+        "discover_from_seed_list",
+        "get_sources",
+        "get_sources_by_type",
+        "clear_sources"
+      ],
+      "classes": [
+        "SourceDiscoveryService"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/services/synthesis_engine_service.py",
+      "depth": 2,
+      "size_bytes": 5013,
+      "total_lines": 143,
+      "code_lines": 117,
+      "functions": [
+        "__init__",
+        "synthesize_findings",
+        "get_synthesized_findings",
+        "compare_syntheses"
+      ],
+      "classes": [
+        "SynthesisEngineService"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/spine/__init__.py",
+      "depth": 2,
+      "size_bytes": 43,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/spine/research_spine_adapter.py",
+      "depth": 2,
+      "size_bytes": 1407,
+      "total_lines": 52,
+      "code_lines": 38,
+      "functions": [
+        "__init__",
+        "execute"
+      ],
+      "classes": [
+        "ResearchSpineAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tests/__init__.py",
+      "depth": 2,
+      "size_bytes": 39,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tests/test_integrations.py",
+      "depth": 2,
+      "size_bytes": 3985,
+      "total_lines": 117,
+      "code_lines": 101,
+      "functions": [
+        "setUp",
+        "test_submit_passed",
+        "test_submit_failed",
+        "test_get_execution_log",
+        "setUp",
+        "test_emit_research_start",
+        "test_emit_research_complete",
+        "test_emit_section_generated",
+        "test_get_metrics"
+      ],
+      "classes": [
+        "TestExecutionAdapter",
+        "TestObservabilityAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tests/test_outputs.py",
+      "depth": 2,
+      "size_bytes": 4683,
+      "total_lines": 136,
+      "code_lines": 115,
+      "functions": [
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "test_render_html"
+      ],
+      "classes": [
+        "TestResearchRenderer",
+        "TestResearchSummaryRenderer",
+        "TestSectionRenderer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tests/test_research_reasoning.py",
+      "depth": 2,
+      "size_bytes": 976,
+      "total_lines": 34,
+      "code_lines": 24,
+      "functions": [
+        "test_orchestrator_import",
+        "test_orchestrator_class_exists",
+        "test_agent_import",
+        "test_agent_class_exists"
+      ],
+      "classes": [
+        "TestResearchOrchestrator",
+        "TestSourceDiscoveryAgent"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tests/test_research_types.py",
+      "depth": 2,
+      "size_bytes": 5637,
+      "total_lines": 175,
+      "code_lines": 140,
+      "functions": [
+        "test_source_creation",
+        "test_confidence_bounds",
+        "test_row_creation",
+        "test_section_creation",
+        "test_body_validation",
+        "test_config_defaults",
+        "test_quality_score_bounds",
+        "test_max_sections_bounds",
+        "test_request_creation",
+        "test_topic_validation",
+        "test_config_nested",
+        "test_result_creation",
+        "test_passed_gate_property",
+        "test_quality_score_bounds",
+        "test_summary_creation",
+        "test_to_dict"
+      ],
+      "classes": [
+        "TestSourceEntry",
+        "TestComparisonRow",
+        "TestResearchSection",
+        "TestResearchConfig",
+        "TestResearchRequest",
+        "TestResearchResult",
+        "TestResearchRunSummary"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tools/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/tools/research_dry_run_tool.py",
+      "depth": 2,
+      "size_bytes": 1719,
+      "total_lines": 55,
+      "code_lines": 41,
+      "functions": [
+        "main"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/types/PromptTemplate.py",
+      "depth": 2,
+      "size_bytes": 12155,
+      "total_lines": 341,
+      "code_lines": 273,
+      "functions": [
+        "get_prompt",
+        "get_system_prompt",
+        "get_prompt_entry",
+        "get_node_config",
+        "get_global_rule",
+        "list_all_prompts",
+        "list_all_nodes"
+      ],
+      "classes": [
+        "ResearchPromptEntry",
+        "ResearchNodeEntry",
+        "ResearchGlobalRule",
+        "ResearchSovereignKnowledge"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 556,
+      "total_lines": 29,
+      "code_lines": 27,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(11)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ArtifactMode"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.AudienceStyle"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ClaimType"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ComparisonRow"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ResearchConfig"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ResearchRequest"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ResearchResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ResearchRunSummary"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ResearchSection"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.ResearchStatus"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_research.types.research_types.SourceEntry"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/types/research_types.py",
+      "depth": 2,
+      "size_bytes": 6923,
+      "total_lines": 156,
+      "code_lines": 121,
+      "functions": [
+        "validate_body",
+        "validate_topic",
+        "passed_gate",
+        "validate_quality",
+        "to_dict"
+      ],
+      "classes": [
+        "SourceEntry",
+        "ComparisonRow",
+        "ResearchSection",
+        "ResearchConfig",
+        "ResearchRequest",
+        "ResearchResult",
+        "ResearchRunSummary",
+        "Config"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/utils/__init__.py",
+      "depth": 2,
+      "size_bytes": 39,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/utils/research_artifact_util.py",
+      "depth": 2,
+      "size_bytes": 1904,
+      "total_lines": 67,
+      "code_lines": 51,
+      "functions": [
+        "resolve_artifact_path",
+        "serialize_source_register",
+        "write_json",
+        "is_dry_run"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/validators/research_gate_validator.py",
+      "depth": 2,
+      "size_bytes": 2890,
+      "total_lines": 95,
+      "code_lines": 75,
+      "functions": [
+        "validate"
+      ],
+      "classes": [
+        "ResearchViolation",
+        "ResearchGateResult",
+        "ResearchGateValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_research/validators/research_source_validator.py",
+      "depth": 2,
+      "size_bytes": 16836,
+      "total_lines": 481,
+      "code_lines": 357,
+      "functions": [
+        "__init__",
+        "validate",
+        "_check_source_register",
+        "_check_required_sections",
+        "_check_claim_types",
+        "_check_empty_sections",
+        "_calculate_source_metrics",
+        "_calculate_claim_metrics",
+        "_calculate_quality_score",
+        "__init__",
+        "evaluate",
+        "__init__",
+        "validate_research",
+        "validate_batch",
+        "get_validation_summary"
+      ],
+      "classes": [
+        "ViolationSeverity",
+        "ValidationViolation",
+        "ResearchValidationResult",
+        "ResearchValidator",
+        "SourceGate",
+        "ResearchValidationAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

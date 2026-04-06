@@ -1,0 +1,935 @@
+[
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\fix_legacy_agents_for_certification_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\fix_missing_imports_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L7: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\fix_remaining_imports_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L1: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\fix_root_scripts_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L17: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_agent_duplicates_table_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_agent_table_simple_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_agent_tests_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_layer_report_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L7: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_missing_tests_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_subject_line.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_summary_section.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\generate_syntax_report_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L79: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\logic_synthesis_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L7: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\logic_synthesis_pick_best_refinement_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\logic_validation_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L7: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\maintenance_generate_hooks_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L13: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\merge_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L7: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\migrate_imports_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L81: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\migrate_unified_to_high_signal_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L21: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\mock_subatomic_hop.py",
+    "symbols_removed": [
+      "BUFFER_SIZE",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L81: removed ['BUFFER_SIZE', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\pipeline_data_access_get_info_request_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\pipeline_data_access_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\pipeline_init_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L6: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\prove_violation_detection_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L88: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\quick_scan_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L6: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\rca_agent_count_analysis_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\rca_table_rendering_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\recalculate_code_quality_scores_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L11: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\recalculate_health_scores_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L11: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\reduce_complexity_top5_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\remove_duplicate_suffixes_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L19: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\rename_to_agent_suffix_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L13: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\repair_legacy_agents_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\rescue_reviewer.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L80: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\revert_cognitive_moves_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L6: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\runtime_shared_data_layer_example_util.py",
+    "symbols_removed": [
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\scan_duplicates_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\scour_and_seal_legacy_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\set_all_agents_tested_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\set_all_invocations_yes_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\set_schema_strictness_100_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\set_typed_documented_100_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\silo_mover.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\simulate_sovereign_workflow_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L84: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\sovereign_mission_control_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L78: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\sovereign_model_visitor.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\sovereign_pdf_parser.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\sovereignty_auditor.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L17: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\ssot_consolidation_analyzer.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L11: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\start_runtime_api_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L33: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\swarm_scheduler.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L12: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\sync_mcp_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L23: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\syntax_scar_repairer.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L12: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\terminal_alignment_final_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\toolbox_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L80: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\tooling_add_docstrings_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L80: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\tooling_auto_init_py_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\tooling_auto_ruff_path_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L5: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\tooling_enforce_verb_noun_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L6: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\trace_drilldown_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L5: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\undo_core_moves_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L78: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\update_mcp_metadata_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\verify_l2_fix_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L4: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\verify_refactor_integrity_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L15: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\workflow_review_pending_merge_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L77: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\workflow_track_changes_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L79: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "ops_scripts\\dev_tools\\l0_scripts\\zombie_vaccinator.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L20: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  }
+]

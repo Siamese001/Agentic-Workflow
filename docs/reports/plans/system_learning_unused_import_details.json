@@ -1,0 +1,2934 @@
+{
+  "system_learning/adapters/l1_meta_adapter.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/adapters/l4_meta_prior_provider.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/adapters/live_run_pipeline_adapter.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/adapters/otel_telemetry_store_adapter.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/adapters/system_learning_memory_bridge.py": [
+    {
+      "line": 21,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/arbitration/engine.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/arbitration/types.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/confidence/__init__.py": [
+    {
+      "line": 2,
+      "symbol": "BATCH_SIZE",
+      "import_name": "ADG::Symbol::BATCH_SIZE",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "BUFFER_SIZE",
+      "import_name": "ADG::Symbol::BUFFER_SIZE",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "DEFAULT_SLEEP",
+      "import_name": "ADG::Symbol::DEFAULT_SLEEP",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "DEFAULT_TIMEOUT",
+      "import_name": "ADG::Symbol::DEFAULT_TIMEOUT",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "MAX_DEPTH",
+      "import_name": "ADG::Symbol::MAX_DEPTH",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "MAX_FILES",
+      "import_name": "ADG::Symbol::MAX_FILES",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "MAX_RETRIES",
+      "import_name": "ADG::Symbol::MAX_RETRIES",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "THRESHOLD",
+      "import_name": "ADG::Symbol::THRESHOLD",
+      "import_path": ""
+    },
+    {
+      "line": 14,
+      "symbol": "gemini_judge",
+      "import_name": "ADG::Symbol::gemini_judge",
+      "import_path": ""
+    },
+    {
+      "line": 14,
+      "symbol": "llm_judge",
+      "import_name": "ADG::Symbol::llm_judge",
+      "import_path": ""
+    },
+    {
+      "line": 14,
+      "symbol": "novel_judge",
+      "import_name": "ADG::Symbol::novel_judge",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "HealingConfidenceScorer",
+      "import_name": "ADG::Symbol::HealingConfidenceScorer",
+      "import_path": ""
+    },
+    {
+      "line": 16,
+      "symbol": "ConfidenceDecision",
+      "import_name": "ADG::Symbol::ConfidenceDecision",
+      "import_path": ""
+    },
+    {
+      "line": 16,
+      "symbol": "HealingAttempt",
+      "import_name": "ADG::Symbol::HealingAttempt",
+      "import_path": ""
+    },
+    {
+      "line": 16,
+      "symbol": "HealingConfidenceReport",
+      "import_name": "ADG::Symbol::HealingConfidenceReport",
+      "import_path": ""
+    }
+  ],
+  "system_learning/confidence/engine.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/confidence/types.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/config/config_store.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_authorize_and_execute",
+      "import_name": "ADG::Symbol::_emit_authorize_and_execute",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_blocks_direct_write",
+      "import_name": "ADG::Symbol::_emit_blocks_direct_write",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_captures_evaluation_metric",
+      "import_name": "ADG::Symbol::_emit_captures_evaluation_metric",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_captures_execution_output",
+      "import_name": "ADG::Symbol::_emit_captures_execution_output",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_coordinates_agents",
+      "import_name": "ADG::Symbol::_emit_coordinates_agents",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_dispatches_agent",
+      "import_name": "ADG::Symbol::_emit_dispatches_agent",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_dispatches_healing_run",
+      "import_name": "ADG::Symbol::_emit_dispatches_healing_run",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_escalates_failure",
+      "import_name": "ADG::Symbol::_emit_escalates_failure",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_escalates_to_human",
+      "import_name": "ADG::Symbol::_emit_escalates_to_human",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_invokes_evaluation",
+      "import_name": "ADG::Symbol::_emit_invokes_evaluation",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_links_execution_to_snapshot",
+      "import_name": "ADG::Symbol::_emit_links_execution_to_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_orchestrates_workflow",
+      "import_name": "ADG::Symbol::_emit_orchestrates_workflow",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_reads_policy_state",
+      "import_name": "ADG::Symbol::_emit_reads_policy_state",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_records_healing_outcome",
+      "import_name": "ADG::Symbol::_emit_records_healing_outcome",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_records_telemetry_event",
+      "import_name": "ADG::Symbol::_emit_records_telemetry_event",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_records_tool_invocation",
+      "import_name": "ADG::Symbol::_emit_records_tool_invocation",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_records_workflow_lineage",
+      "import_name": "ADG::Symbol::_emit_records_workflow_lineage",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_routes_through",
+      "import_name": "ADG::Symbol::_emit_routes_through",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_routes_to_capability",
+      "import_name": "ADG::Symbol::_emit_routes_to_capability",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_stores_embedding",
+      "import_name": "ADG::Symbol::_emit_stores_embedding",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_updates_meta_learning_state",
+      "import_name": "ADG::Symbol::_emit_updates_meta_learning_state",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_validates_capability",
+      "import_name": "ADG::Symbol::_emit_validates_capability",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "_emit_writes_via_uwg",
+      "import_name": "ADG::Symbol::_emit_writes_via_uwg",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "emit_determinism_digest",
+      "import_name": "ADG::Symbol::emit_determinism_digest",
+      "import_path": ""
+    },
+    {
+      "line": 15,
+      "symbol": "emit_replay_key",
+      "import_name": "ADG::Symbol::emit_replay_key",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_agent_executes_agent",
+      "import_name": "ADG::Symbol::_emit_agent_executes_agent",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_captures_pattern",
+      "import_name": "ADG::Symbol::_emit_captures_pattern",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_captures_runtime_anomaly",
+      "import_name": "ADG::Symbol::_emit_captures_runtime_anomaly",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_checks_agent_registry",
+      "import_name": "ADG::Symbol::_emit_checks_agent_registry",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_dispatches_execution_plan",
+      "import_name": "ADG::Symbol::_emit_dispatches_execution_plan",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_emits_metric_event",
+      "import_name": "ADG::Symbol::_emit_emits_metric_event",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_execution_terminates_at_uwg",
+      "import_name": "ADG::Symbol::_emit_execution_terminates_at_uwg",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_feeds_meta_learning",
+      "import_name": "ADG::Symbol::_emit_feeds_meta_learning",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_gated_by_confidence",
+      "import_name": "ADG::Symbol::_emit_gated_by_confidence",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_hard_fails_untranscripted",
+      "import_name": "ADG::Symbol::_emit_hard_fails_untranscripted",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_improves_agent_policy",
+      "import_name": "ADG::Symbol::_emit_improves_agent_policy",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_invokes_eval",
+      "import_name": "ADG::Symbol::_emit_invokes_eval",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_links_incident_trace",
+      "import_name": "ADG::Symbol::_emit_links_incident_trace",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_observes_runtime_state",
+      "import_name": "ADG::Symbol::_emit_observes_runtime_state",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_proposal_commits_routing",
+      "import_name": "ADG::Symbol::_emit_proposal_commits_routing",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_pulls_context",
+      "import_name": "ADG::Symbol::_emit_pulls_context",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_reads_environ",
+      "import_name": "ADG::Symbol::_emit_reads_environ",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_reads_runtime_state",
+      "import_name": "ADG::Symbol::_emit_reads_runtime_state",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_records_incident_event",
+      "import_name": "ADG::Symbol::_emit_records_incident_event",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_records_learning_event",
+      "import_name": "ADG::Symbol::_emit_records_learning_event",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_routes_to_agent",
+      "import_name": "ADG::Symbol::_emit_routes_to_agent",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_stores_learning_state",
+      "import_name": "ADG::Symbol::_emit_stores_learning_state",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_transcripts_response",
+      "import_name": "ADG::Symbol::_emit_transcripts_response",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_triggers_alert",
+      "import_name": "ADG::Symbol::_emit_triggers_alert",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_updates_monitoring_state",
+      "import_name": "ADG::Symbol::_emit_updates_monitoring_state",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_updates_routing_strategy",
+      "import_name": "ADG::Symbol::_emit_updates_routing_strategy",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_validated_by_safety_plane",
+      "import_name": "ADG::Symbol::_emit_validated_by_safety_plane",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_validates_agent_capability",
+      "import_name": "ADG::Symbol::_emit_validates_agent_capability",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_verifies_boundary",
+      "import_name": "ADG::Symbol::_emit_verifies_boundary",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_verifies_policy",
+      "import_name": "ADG::Symbol::_emit_verifies_policy",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_writes_learning_snapshot",
+      "import_name": "ADG::Symbol::_emit_writes_learning_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_writes_observability_log",
+      "import_name": "ADG::Symbol::_emit_writes_observability_log",
+      "import_path": ""
+    },
+    {
+      "line": 149,
+      "symbol": "_emit_writes_through",
+      "import_name": "ADG::Symbol::_emit_writes_through",
+      "import_path": ""
+    }
+  ],
+  "system_learning/config/feature_flags.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/constraints/dampening.py": [
+    {
+      "line": 11,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/correlation/engine.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/correlation/types.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/embedding/__init__.py": [
+    {
+      "line": 2,
+      "symbol": "PolicyEmbedder",
+      "import_name": "ADG::Symbol::PolicyEmbedder",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "embed",
+      "import_name": "ADG::Symbol::embed",
+      "import_path": ""
+    }
+  ],
+  "system_learning/enforcement/determinism.py": [
+    {
+      "line": 21,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/enforcement/oscillation_freezer.py": [
+    {
+      "line": 11,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/__init__.py": [
+    {
+      "line": 4,
+      "symbol": "ApprovalDecision",
+      "import_name": "ADG::Symbol::ApprovalDecision",
+      "import_path": ""
+    },
+    {
+      "line": 4,
+      "symbol": "ApprovalGauntletEngine",
+      "import_name": "ADG::Symbol::ApprovalGauntletEngine",
+      "import_path": ""
+    },
+    {
+      "line": 4,
+      "symbol": "ApprovalGauntletResult",
+      "import_name": "ADG::Symbol::ApprovalGauntletResult",
+      "import_path": ""
+    },
+    {
+      "line": 9,
+      "symbol": "CaseCompilationEngine",
+      "import_name": "ADG::Symbol::CaseCompilationEngine",
+      "import_path": ""
+    },
+    {
+      "line": 9,
+      "symbol": "CaseRecordBuilder",
+      "import_name": "ADG::Symbol::CaseRecordBuilder",
+      "import_path": ""
+    },
+    {
+      "line": 9,
+      "symbol": "SealedOutputReader",
+      "import_name": "ADG::Symbol::SealedOutputReader",
+      "import_path": ""
+    },
+    {
+      "line": 16,
+      "symbol": "GGateRegressionChecker",
+      "import_name": "ADG::Symbol::GGateRegressionChecker",
+      "import_path": ""
+    },
+    {
+      "line": 17,
+      "symbol": "CalibrationRecord",
+      "import_name": "ADG::Symbol::CalibrationRecord",
+      "import_path": ""
+    },
+    {
+      "line": 17,
+      "symbol": "HumanCalibrationEngine",
+      "import_name": "ADG::Symbol::HumanCalibrationEngine",
+      "import_path": ""
+    },
+    {
+      "line": 17,
+      "symbol": "HumanJudgment",
+      "import_name": "ADG::Symbol::HumanJudgment",
+      "import_path": ""
+    },
+    {
+      "line": 24,
+      "symbol": "ExitControlResult",
+      "import_name": "ADG::Symbol::ExitControlResult",
+      "import_path": ""
+    },
+    {
+      "line": 24,
+      "symbol": "LiveExitControlGate",
+      "import_name": "ADG::Symbol::LiveExitControlGate",
+      "import_path": ""
+    },
+    {
+      "line": 28,
+      "symbol": "ExecutionTraceReader",
+      "import_name": "ADG::Symbol::ExecutionTraceReader",
+      "import_path": ""
+    },
+    {
+      "line": 28,
+      "symbol": "GroundednessChecker",
+      "import_name": "ADG::Symbol::GroundednessChecker",
+      "import_path": ""
+    },
+    {
+      "line": 28,
+      "symbol": "OutcomeEvaluationEngine",
+      "import_name": "ADG::Symbol::OutcomeEvaluationEngine",
+      "import_path": ""
+    },
+    {
+      "line": 35,
+      "symbol": "RuleDraftingEngine",
+      "import_name": "ADG::Symbol::RuleDraftingEngine",
+      "import_path": ""
+    },
+    {
+      "line": 35,
+      "symbol": "RuleDraftingResult",
+      "import_name": "ADG::Symbol::RuleDraftingResult",
+      "import_path": ""
+    },
+    {
+      "line": 35,
+      "symbol": "RuleProposal",
+      "import_name": "ADG::Symbol::RuleProposal",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "AggregatedSignalBundle",
+      "import_name": "ADG::Symbol::AggregatedSignalBundle",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "PreferenceGrade",
+      "import_name": "ADG::Symbol::PreferenceGrade",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "SignalAggregatorEngine",
+      "import_name": "ADG::Symbol::SignalAggregatorEngine",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "TelemetryMetric",
+      "import_name": "ADG::Symbol::TelemetryMetric",
+      "import_path": ""
+    },
+    {
+      "line": 46,
+      "symbol": "MetaLearningStage",
+      "import_name": "ADG::Symbol::MetaLearningStage",
+      "import_path": ""
+    },
+    {
+      "line": 46,
+      "symbol": "StageBarrierEnforcer",
+      "import_name": "ADG::Symbol::StageBarrierEnforcer",
+      "import_path": ""
+    },
+    {
+      "line": 50,
+      "symbol": "TrajectoryEvaluationEngine",
+      "import_name": "ADG::Symbol::TrajectoryEvaluationEngine",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/approval_gauntlet_engine.py": [
+    {
+      "line": 15,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/bus_consumer.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/case_compilation_engine.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/change_package_impl.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/cross_repo_system_learning_import.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/default_healing_pattern_advisor.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/embedding_retention_scheduler.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/embedding_service_factory.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/enhanced_rag_retrieval_cache.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/g_gate_regression_checker.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/governance_reward_model.py": [
+    {
+      "line": 28,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/graph_neighborhood_embedder.py": [
+    {
+      "line": 24,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/healer_outcome_embedder.py": [
+    {
+      "line": 22,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/healing_config_optimizer.py": [
+    {
+      "line": 8,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/healing_outcome_aggregator.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/healing_success_rate_store.py": [
+    {
+      "line": 18,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/historical_backfill_engine.py": [
+    {
+      "line": 20,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/historical_ingestion_orchestrator.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/hitl_decision_logger.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/human_calibration_engine.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/in_memory_scoring_report_store.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/incident_bundle_embedder.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l0_routing_confidence_monitor.py": [
+    {
+      "line": 21,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l0_threshold_tuner.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l1_model_proposer.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l3_efficiency_tuner.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l4_audit_reader.py": [
+    {
+      "line": 8,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    },
+    {
+      "line": 113,
+      "symbol": "AuthorityViolation",
+      "import_name": "ADG::Symbol::AuthorityViolation",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l4_state_writer.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l4_version_store.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/l5_policy_proposer.py": [
+    {
+      "line": 11,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/live_exit_control_gate.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/local_embedding_population_service.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/meta_learning_bus.py": [
+    {
+      "line": 38,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/meta_learning_embedding_service.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/meta_learning_replay_binding.py": [
+    {
+      "line": 27,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/mutation_diff_embedder.py": [
+    {
+      "line": 19,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/offline_healing_outcome_evaluator.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/openai_embedder.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/optimization_proposal_engine.py": [
+    {
+      "line": 20,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/outcome_evaluation_engine.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/path_d_preference_embedder.py": [
+    {
+      "line": 20,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/pattern_analysis_engine.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/pattern_analysis_engine_adapter.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/policy_guardrail_embedder.py": [
+    {
+      "line": 21,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/prompt_drift_detector.py": [
+    {
+      "line": 25,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/prompt_execution_tracer.py": [
+    {
+      "line": 20,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/prompt_outcome_bus_adapter.py": [
+    {
+      "line": 53,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/prompt_outcome_embedder.py": [
+    {
+      "line": 22,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/prompt_provenance_builder.py": [
+    {
+      "line": 23,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/prompt_safety_validator.py": [
+    {
+      "line": 28,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/proposal_validation_engine.py": [
+    {
+      "line": 27,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rag_optimizer.py": [
+    {
+      "line": 11,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rag_proposer.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rag_retrieval_cache.py": [
+    {
+      "line": 26,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rca_cluster_engine.py": [
+    {
+      "line": 22,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rca_engine.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/replay_failure_embedder.py": [
+    {
+      "line": 22,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/replay_validator.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/retrieval_case_embedder.py": [
+    {
+      "line": 22,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/retrieval_profile.py": [
+    {
+      "line": 11,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/retrieval_profile_manager.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rlhf_optimizer.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rlhf_optimizer_impl.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/rule_drafting_engine.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/seed_embedding_pack_builder.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/seed_pack_build_cli.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/semantic_index_registry.py": [
+    {
+      "line": 22,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/semantic_memory_registry.py": [
+    {
+      "line": 33,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/signal_aggregator_engine.py": [
+    {
+      "line": 16,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/signal_grouping_engine.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/stage_barrier_enforcer.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/surface_isolation_validator.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/system_learning_admission_gate.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/telemetry_consumer.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/trace_feature_extractor.py": [
+    {
+      "line": 17,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/engines/trajectory_evaluation_engine.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/fingerprinting/engine.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/fingerprinting/types.py": [
+    {
+      "line": 3,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/invariants/commit_proof_invariant.py": [
+    {
+      "line": 15,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/invariants/freeze_gate.py": [
+    {
+      "line": 8,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/memory/__init__.py": [
+    {
+      "line": 2,
+      "symbol": "SqliteMemoryStore",
+      "import_name": "ADG::Symbol::SqliteMemoryStore",
+      "import_path": ""
+    }
+  ],
+  "system_learning/meta_learning/meta_apply.py": [
+    {
+      "line": 17,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_applies_guardrail",
+      "import_name": "ADG::Symbol::_emit_applies_guardrail",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_authorize_and_execute",
+      "import_name": "ADG::Symbol::_emit_authorize_and_execute",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_blocks_direct_write",
+      "import_name": "ADG::Symbol::_emit_blocks_direct_write",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_captures_evaluation_metric",
+      "import_name": "ADG::Symbol::_emit_captures_evaluation_metric",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_captures_execution_output",
+      "import_name": "ADG::Symbol::_emit_captures_execution_output",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_coordinates_agents",
+      "import_name": "ADG::Symbol::_emit_coordinates_agents",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_dispatches_agent",
+      "import_name": "ADG::Symbol::_emit_dispatches_agent",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_dispatches_healing_run",
+      "import_name": "ADG::Symbol::_emit_dispatches_healing_run",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_escalates_failure",
+      "import_name": "ADG::Symbol::_emit_escalates_failure",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_escalates_to_human",
+      "import_name": "ADG::Symbol::_emit_escalates_to_human",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_invokes_evaluation",
+      "import_name": "ADG::Symbol::_emit_invokes_evaluation",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_links_execution_to_snapshot",
+      "import_name": "ADG::Symbol::_emit_links_execution_to_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_orchestrates_workflow",
+      "import_name": "ADG::Symbol::_emit_orchestrates_workflow",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_reads_policy_state",
+      "import_name": "ADG::Symbol::_emit_reads_policy_state",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_records_healing_outcome",
+      "import_name": "ADG::Symbol::_emit_records_healing_outcome",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_records_telemetry_event",
+      "import_name": "ADG::Symbol::_emit_records_telemetry_event",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_records_tool_invocation",
+      "import_name": "ADG::Symbol::_emit_records_tool_invocation",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_records_workflow_lineage",
+      "import_name": "ADG::Symbol::_emit_records_workflow_lineage",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_routes_through",
+      "import_name": "ADG::Symbol::_emit_routes_through",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_routes_to_capability",
+      "import_name": "ADG::Symbol::_emit_routes_to_capability",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_signs_execution_trace",
+      "import_name": "ADG::Symbol::_emit_signs_execution_trace",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_snapshots_state",
+      "import_name": "ADG::Symbol::_emit_snapshots_state",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_stores_embedding",
+      "import_name": "ADG::Symbol::_emit_stores_embedding",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_updates_meta_learning_state",
+      "import_name": "ADG::Symbol::_emit_updates_meta_learning_state",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_validates_capability",
+      "import_name": "ADG::Symbol::_emit_validates_capability",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "_emit_writes_via_uwg",
+      "import_name": "ADG::Symbol::_emit_writes_via_uwg",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "emit_determinism_digest",
+      "import_name": "ADG::Symbol::emit_determinism_digest",
+      "import_path": ""
+    },
+    {
+      "line": 29,
+      "symbol": "emit_replay_key",
+      "import_name": "ADG::Symbol::emit_replay_key",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_agent_executes_agent",
+      "import_name": "ADG::Symbol::_emit_agent_executes_agent",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_captures_pattern",
+      "import_name": "ADG::Symbol::_emit_captures_pattern",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_captures_runtime_anomaly",
+      "import_name": "ADG::Symbol::_emit_captures_runtime_anomaly",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_checks_agent_registry",
+      "import_name": "ADG::Symbol::_emit_checks_agent_registry",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_dispatches_execution_plan",
+      "import_name": "ADG::Symbol::_emit_dispatches_execution_plan",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_emits_metric_event",
+      "import_name": "ADG::Symbol::_emit_emits_metric_event",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_execution_terminates_at_uwg",
+      "import_name": "ADG::Symbol::_emit_execution_terminates_at_uwg",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_feeds_meta_learning",
+      "import_name": "ADG::Symbol::_emit_feeds_meta_learning",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_gated_by_confidence",
+      "import_name": "ADG::Symbol::_emit_gated_by_confidence",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_hard_fails_untranscripted",
+      "import_name": "ADG::Symbol::_emit_hard_fails_untranscripted",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_improves_agent_policy",
+      "import_name": "ADG::Symbol::_emit_improves_agent_policy",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_invokes_eval",
+      "import_name": "ADG::Symbol::_emit_invokes_eval",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_links_incident_trace",
+      "import_name": "ADG::Symbol::_emit_links_incident_trace",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_observes_runtime_state",
+      "import_name": "ADG::Symbol::_emit_observes_runtime_state",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_proposal_commits_routing",
+      "import_name": "ADG::Symbol::_emit_proposal_commits_routing",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_pulls_context",
+      "import_name": "ADG::Symbol::_emit_pulls_context",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_reads_environ",
+      "import_name": "ADG::Symbol::_emit_reads_environ",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_reads_runtime_state",
+      "import_name": "ADG::Symbol::_emit_reads_runtime_state",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_records_incident_event",
+      "import_name": "ADG::Symbol::_emit_records_incident_event",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_records_learning_event",
+      "import_name": "ADG::Symbol::_emit_records_learning_event",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_routes_to_agent",
+      "import_name": "ADG::Symbol::_emit_routes_to_agent",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_stores_learning_state",
+      "import_name": "ADG::Symbol::_emit_stores_learning_state",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_transcripts_response",
+      "import_name": "ADG::Symbol::_emit_transcripts_response",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_triggers_alert",
+      "import_name": "ADG::Symbol::_emit_triggers_alert",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_updates_monitoring_state",
+      "import_name": "ADG::Symbol::_emit_updates_monitoring_state",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_updates_routing_strategy",
+      "import_name": "ADG::Symbol::_emit_updates_routing_strategy",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_validated_by_safety_plane",
+      "import_name": "ADG::Symbol::_emit_validated_by_safety_plane",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_validates_agent_capability",
+      "import_name": "ADG::Symbol::_emit_validates_agent_capability",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_verifies_boundary",
+      "import_name": "ADG::Symbol::_emit_verifies_boundary",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_verifies_policy",
+      "import_name": "ADG::Symbol::_emit_verifies_policy",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_writes_learning_snapshot",
+      "import_name": "ADG::Symbol::_emit_writes_learning_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_writes_observability_log",
+      "import_name": "ADG::Symbol::_emit_writes_observability_log",
+      "import_path": ""
+    },
+    {
+      "line": 73,
+      "symbol": "_emit_writes_through",
+      "import_name": "ADG::Symbol::_emit_writes_through",
+      "import_path": ""
+    }
+  ],
+  "system_learning/meta_learning/meta_apply_ops.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/ml_integration/anomaly_detection.py": [
+    {
+      "line": 173,
+      "symbol": "sklearn",
+      "import_name": "ADG::Symbol::sklearn",
+      "import_path": ""
+    }
+  ],
+  "system_learning/monitoring/performance_monitor.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/pipelines/approval_gate_impl.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/pipelines/approval_gates.py": [
+    {
+      "line": 11,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/pipelines/meta_learning_pipeline.py": [
+    {
+      "line": 49,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/pipelines/pipeline_factory.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/policy/system_learning_policy.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/ports/l4_meta_prior_provider.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/ports/meta_outcome_bus_hook.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/ports/outcome_write_back_hook.py": [
+    {
+      "line": 16,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/provenance/__init__.py": [
+    {
+      "line": 2,
+      "symbol": "ProvenanceEngine",
+      "import_name": "ADG::Symbol::ProvenanceEngine",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "ProvenanceEvent",
+      "import_name": "ADG::Symbol::ProvenanceEvent",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "ProvenanceIntegrator",
+      "import_name": "ADG::Symbol::ProvenanceIntegrator",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "ProvenanceRecord",
+      "import_name": "ADG::Symbol::ProvenanceRecord",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "integrate",
+      "import_name": "ADG::Symbol::integrate",
+      "import_path": ""
+    },
+    {
+      "line": 2,
+      "symbol": "trace",
+      "import_name": "ADG::Symbol::trace",
+      "import_path": ""
+    }
+  ],
+  "system_learning/runtime_adg/__init__.py": [
+    {
+      "line": 21,
+      "symbol": "L6MetaLearningBridge",
+      "import_name": "ADG::Symbol::L6MetaLearningBridge",
+      "import_path": ""
+    },
+    {
+      "line": 22,
+      "symbol": "RuntimeADGMaterializer",
+      "import_name": "ADG::Symbol::RuntimeADGMaterializer",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "RuntimeADGEdge",
+      "import_name": "ADG::Symbol::RuntimeADGEdge",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "RuntimeADGNode",
+      "import_name": "ADG::Symbol::RuntimeADGNode",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "RuntimeADGSnapshot",
+      "import_name": "ADG::Symbol::RuntimeADGSnapshot",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "attributes_to_json",
+      "import_name": "ADG::Symbol::attributes_to_json",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "create_runtime_adg_snapshot",
+      "import_name": "ADG::Symbol::create_runtime_adg_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "FileBackedRuntimeADGStore",
+      "import_name": "ADG::Symbol::FileBackedRuntimeADGStore",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "InMemoryRuntimeADGStore",
+      "import_name": "ADG::Symbol::InMemoryRuntimeADGStore",
+      "import_path": ""
+    }
+  ],
+  "system_learning/runtime_adg/auto_persistence.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/runtime_adg/l6_integration.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/runtime_adg/materializer.py": [
+    {
+      "line": 20,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/runtime_adg/snapshot.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/runtime_adg/store.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/scripts/meta_learning_bridge.py": [
+    {
+      "line": 14,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/scripts/meta_learning_operator.py": [
+    {
+      "line": 15,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/snapshots/snapshot_factory.py": [
+    {
+      "line": 15,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/state/system_learning_state_manager.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/__init__.py": [
+    {
+      "line": 3,
+      "symbol": "OpenTelemetrySpanStore",
+      "import_name": "ADG::Symbol::OpenTelemetrySpanStore",
+      "import_path": ""
+    },
+    {
+      "line": 4,
+      "symbol": "FileBackedTelemetryStore",
+      "import_name": "ADG::Symbol::FileBackedTelemetryStore",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/activator.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/audit_store.py": [
+    {
+      "line": 8,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/config_provider.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/otel_telemetry_store.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/telemetry_store.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/stores/version_store.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/telemetry/system_learning_telemetry.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/__init__.py": [
+    {
+      "line": 7,
+      "symbol": "ApprovalDecision",
+      "import_name": "ADG::Symbol::ApprovalDecision",
+      "import_path": ""
+    },
+    {
+      "line": 7,
+      "symbol": "ApprovalGauntletEngine",
+      "import_name": "ADG::Symbol::ApprovalGauntletEngine",
+      "import_path": ""
+    },
+    {
+      "line": 7,
+      "symbol": "ApprovalGauntletResult",
+      "import_name": "ADG::Symbol::ApprovalGauntletResult",
+      "import_path": ""
+    },
+    {
+      "line": 12,
+      "symbol": "CalibrationRecord",
+      "import_name": "ADG::Symbol::CalibrationRecord",
+      "import_path": ""
+    },
+    {
+      "line": 12,
+      "symbol": "HumanCalibrationEngine",
+      "import_name": "ADG::Symbol::HumanCalibrationEngine",
+      "import_path": ""
+    },
+    {
+      "line": 12,
+      "symbol": "HumanJudgment",
+      "import_name": "ADG::Symbol::HumanJudgment",
+      "import_path": ""
+    },
+    {
+      "line": 19,
+      "symbol": "ExitControlResult",
+      "import_name": "ADG::Symbol::ExitControlResult",
+      "import_path": ""
+    },
+    {
+      "line": 19,
+      "symbol": "LiveExitControlGate",
+      "import_name": "ADG::Symbol::LiveExitControlGate",
+      "import_path": ""
+    },
+    {
+      "line": 25,
+      "symbol": "RuleDraftingEngine",
+      "import_name": "ADG::Symbol::RuleDraftingEngine",
+      "import_path": ""
+    },
+    {
+      "line": 25,
+      "symbol": "RuleDraftingResult",
+      "import_name": "ADG::Symbol::RuleDraftingResult",
+      "import_path": ""
+    },
+    {
+      "line": 25,
+      "symbol": "RuleProposal",
+      "import_name": "ADG::Symbol::RuleProposal",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "CaseCompilationResult",
+      "import_name": "ADG::Symbol::CaseCompilationResult",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "CompilationInput",
+      "import_name": "ADG::Symbol::CompilationInput",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "CompilationPayload",
+      "import_name": "ADG::Symbol::CompilationPayload",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "CompilationStage",
+      "import_name": "ADG::Symbol::CompilationStage",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "ContextLogAttachment",
+      "import_name": "ADG::Symbol::ContextLogAttachment",
+      "import_path": ""
+    },
+    {
+      "line": 30,
+      "symbol": "SealedOutputRef",
+      "import_name": "ADG::Symbol::SealedOutputRef",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "GGateValidationResult",
+      "import_name": "ADG::Symbol::GGateValidationResult",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "MetricScore",
+      "import_name": "ADG::Symbol::MetricScore",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "OutcomeEvaluationResult",
+      "import_name": "ADG::Symbol::OutcomeEvaluationResult",
+      "import_path": ""
+    },
+    {
+      "line": 40,
+      "symbol": "TrajectoryEvaluationResult",
+      "import_name": "ADG::Symbol::TrajectoryEvaluationResult",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/app_signal_types.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/apply_attempt_types.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/case_compilation_types.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/case_memory_types.py": [
+    {
+      "line": 19,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/config_store_types.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_applies_guardrail",
+      "import_name": "ADG::Symbol::_emit_applies_guardrail",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_authorize_and_execute",
+      "import_name": "ADG::Symbol::_emit_authorize_and_execute",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_blocks_direct_write",
+      "import_name": "ADG::Symbol::_emit_blocks_direct_write",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_captures_evaluation_metric",
+      "import_name": "ADG::Symbol::_emit_captures_evaluation_metric",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_captures_execution_output",
+      "import_name": "ADG::Symbol::_emit_captures_execution_output",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_coordinates_agents",
+      "import_name": "ADG::Symbol::_emit_coordinates_agents",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_dispatches_agent",
+      "import_name": "ADG::Symbol::_emit_dispatches_agent",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_dispatches_healing_run",
+      "import_name": "ADG::Symbol::_emit_dispatches_healing_run",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_escalates_failure",
+      "import_name": "ADG::Symbol::_emit_escalates_failure",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_escalates_to_human",
+      "import_name": "ADG::Symbol::_emit_escalates_to_human",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_invokes_evaluation",
+      "import_name": "ADG::Symbol::_emit_invokes_evaluation",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_links_execution_to_snapshot",
+      "import_name": "ADG::Symbol::_emit_links_execution_to_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_orchestrates_workflow",
+      "import_name": "ADG::Symbol::_emit_orchestrates_workflow",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_reads_policy_state",
+      "import_name": "ADG::Symbol::_emit_reads_policy_state",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_records_healing_outcome",
+      "import_name": "ADG::Symbol::_emit_records_healing_outcome",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_records_telemetry_event",
+      "import_name": "ADG::Symbol::_emit_records_telemetry_event",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_records_tool_invocation",
+      "import_name": "ADG::Symbol::_emit_records_tool_invocation",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_records_workflow_lineage",
+      "import_name": "ADG::Symbol::_emit_records_workflow_lineage",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_routes_through",
+      "import_name": "ADG::Symbol::_emit_routes_through",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_routes_to_capability",
+      "import_name": "ADG::Symbol::_emit_routes_to_capability",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_signs_execution_trace",
+      "import_name": "ADG::Symbol::_emit_signs_execution_trace",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_snapshots_state",
+      "import_name": "ADG::Symbol::_emit_snapshots_state",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_stores_embedding",
+      "import_name": "ADG::Symbol::_emit_stores_embedding",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_updates_meta_learning_state",
+      "import_name": "ADG::Symbol::_emit_updates_meta_learning_state",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_validates_capability",
+      "import_name": "ADG::Symbol::_emit_validates_capability",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "_emit_writes_via_uwg",
+      "import_name": "ADG::Symbol::_emit_writes_via_uwg",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "emit_determinism_digest",
+      "import_name": "ADG::Symbol::emit_determinism_digest",
+      "import_path": ""
+    },
+    {
+      "line": 23,
+      "symbol": "emit_replay_key",
+      "import_name": "ADG::Symbol::emit_replay_key",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_agent_executes_agent",
+      "import_name": "ADG::Symbol::_emit_agent_executes_agent",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_captures_pattern",
+      "import_name": "ADG::Symbol::_emit_captures_pattern",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_captures_runtime_anomaly",
+      "import_name": "ADG::Symbol::_emit_captures_runtime_anomaly",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_checks_agent_registry",
+      "import_name": "ADG::Symbol::_emit_checks_agent_registry",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_dispatches_execution_plan",
+      "import_name": "ADG::Symbol::_emit_dispatches_execution_plan",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_emits_metric_event",
+      "import_name": "ADG::Symbol::_emit_emits_metric_event",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_execution_terminates_at_uwg",
+      "import_name": "ADG::Symbol::_emit_execution_terminates_at_uwg",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_feeds_meta_learning",
+      "import_name": "ADG::Symbol::_emit_feeds_meta_learning",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_gated_by_confidence",
+      "import_name": "ADG::Symbol::_emit_gated_by_confidence",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_hard_fails_untranscripted",
+      "import_name": "ADG::Symbol::_emit_hard_fails_untranscripted",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_improves_agent_policy",
+      "import_name": "ADG::Symbol::_emit_improves_agent_policy",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_invokes_eval",
+      "import_name": "ADG::Symbol::_emit_invokes_eval",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_links_incident_trace",
+      "import_name": "ADG::Symbol::_emit_links_incident_trace",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_observes_runtime_state",
+      "import_name": "ADG::Symbol::_emit_observes_runtime_state",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_proposal_commits_routing",
+      "import_name": "ADG::Symbol::_emit_proposal_commits_routing",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_pulls_context",
+      "import_name": "ADG::Symbol::_emit_pulls_context",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_reads_environ",
+      "import_name": "ADG::Symbol::_emit_reads_environ",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_reads_runtime_state",
+      "import_name": "ADG::Symbol::_emit_reads_runtime_state",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_records_incident_event",
+      "import_name": "ADG::Symbol::_emit_records_incident_event",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_records_learning_event",
+      "import_name": "ADG::Symbol::_emit_records_learning_event",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_routes_to_agent",
+      "import_name": "ADG::Symbol::_emit_routes_to_agent",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_stores_learning_state",
+      "import_name": "ADG::Symbol::_emit_stores_learning_state",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_transcripts_response",
+      "import_name": "ADG::Symbol::_emit_transcripts_response",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_triggers_alert",
+      "import_name": "ADG::Symbol::_emit_triggers_alert",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_updates_monitoring_state",
+      "import_name": "ADG::Symbol::_emit_updates_monitoring_state",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_updates_routing_strategy",
+      "import_name": "ADG::Symbol::_emit_updates_routing_strategy",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_validated_by_safety_plane",
+      "import_name": "ADG::Symbol::_emit_validated_by_safety_plane",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_validates_agent_capability",
+      "import_name": "ADG::Symbol::_emit_validates_agent_capability",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_verifies_boundary",
+      "import_name": "ADG::Symbol::_emit_verifies_boundary",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_verifies_policy",
+      "import_name": "ADG::Symbol::_emit_verifies_policy",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_writes_learning_snapshot",
+      "import_name": "ADG::Symbol::_emit_writes_learning_snapshot",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_writes_observability_log",
+      "import_name": "ADG::Symbol::_emit_writes_observability_log",
+      "import_path": ""
+    },
+    {
+      "line": 67,
+      "symbol": "_emit_writes_through",
+      "import_name": "ADG::Symbol::_emit_writes_through",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/embedding_artifact.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/evaluation_spine_types.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/healing_outcome_learning_types.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/healing_outcome_scoring_types.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/healing_outcome_types.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/index_build_metadata_types.py": [
+    {
+      "line": 7,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/meta_learning_types.py": [
+    {
+      "line": 15,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/offline_replay_types.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/optimization_types.py": [
+    {
+      "line": 23,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/pattern_analysis_types.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/prompt_artifact_types.py": [
+    {
+      "line": 29,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/rollout_types.py": [
+    {
+      "line": 10,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/seed_embedding_pack_types.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/semantic_memory_types.py": [
+    {
+      "line": 15,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/snapshot_types.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/telemetry_types.py": [
+    {
+      "line": 12,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/types/trace_feature_types.py": [
+    {
+      "line": 19,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/validators/lineage_validator.py": [
+    {
+      "line": 9,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/validators/replay_validator.py": [
+    {
+      "line": 13,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "system_learning/validators/shadow_replay_validator.py": [
+    {
+      "line": 17,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/integration/test_signal_integration.py": [
+    {
+      "line": 6,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/integration/test_system_integrity_audit.py": [
+    {
+      "line": 8,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/adapters/test_system_learning_memory_bridge.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/engines/test_healing_success_rate_store.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/engines/test_hitl_decision_logger.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/engines/test_local_faiss_store.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/engines/test_retrieval_profile.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/ports/test_healing_outcome_intake_store.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/ports/test_meta_prior_provider.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/ports/test_scoring_report_store_adg.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_app_signal_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_apply_attempt_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_healing_outcome_intake_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_healing_outcome_learning_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_healing_outcome_scoring_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_healing_outcome_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_index_build_metadata_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_meta_learning_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ],
+  "tests/system_learning/unit/types/test_rollout_types.py": [
+    {
+      "line": 2,
+      "symbol": "annotations",
+      "import_name": "ADG::Symbol::annotations",
+      "import_path": ""
+    }
+  ]
+}

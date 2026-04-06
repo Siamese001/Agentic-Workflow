@@ -1,0 +1,1992 @@
+{
+  "summary": {
+    "target_dir": "apps_rfp",
+    "total_files": 65,
+    "total_with_issues": 10,
+    "total_root_violations": 8,
+    "total_dead_code_files": 10,
+    "total_misplaced_files": 8,
+    "folder_breakdown": {
+      "apps_rfp": {
+        "files": 9,
+        "total_lines": 1050,
+        "root_violations": [
+          "apps_rfp/CLI_SPEC.md",
+          "apps_rfp/OUTPUT_CONTRACTS.md",
+          "apps_rfp/PRODUCT_SPEC.md",
+          "apps_rfp/README.md",
+          "apps_rfp/SVP_ENGINEERING_REVIEW.md",
+          "apps_rfp/TECHNICAL_SPEC.md",
+          "apps_rfp/TEST_STRATEGY.md",
+          "apps_rfp/__main__.py"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "apps_rfp/CLI_SPEC.md",
+          "apps_rfp/OUTPUT_CONTRACTS.md",
+          "apps_rfp/PRODUCT_SPEC.md",
+          "apps_rfp/README.md",
+          "apps_rfp/SVP_ENGINEERING_REVIEW.md",
+          "apps_rfp/TECHNICAL_SPEC.md",
+          "apps_rfp/TEST_STRATEGY.md",
+          "apps_rfp/__main__.py"
+        ],
+        "clean_files": 1
+      },
+      "apps_rfp\\config": {
+        "files": 6,
+        "total_lines": 615,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/config/__init__.py",
+          "apps_rfp/config/knowledge_base.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_rfp\\data\\sample_rfps": {
+        "files": 2,
+        "total_lines": 248,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_rfp\\engines": {
+        "files": 5,
+        "total_lines": 1354,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/engines/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_rfp\\integrations": {
+        "files": 3,
+        "total_lines": 179,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/integrations/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_rfp\\outputs": {
+        "files": 3,
+        "total_lines": 231,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/outputs/__init__.py",
+          "apps_rfp/outputs/proposal_renderer.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "apps_rfp\\reasoning": {
+        "files": 8,
+        "total_lines": 3084,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/reasoning/RfpOrchestrator.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_rfp\\scripts": {
+        "files": 3,
+        "total_lines": 425,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "apps_rfp\\services": {
+        "files": 10,
+        "total_lines": 729,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/services/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 9
+      },
+      "apps_rfp\\spine": {
+        "files": 2,
+        "total_lines": 53,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_rfp\\tests": {
+        "files": 5,
+        "total_lines": 495,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/tests/test_rfp_reasoning.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_rfp\\tools": {
+        "files": 2,
+        "total_lines": 54,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_rfp\\types": {
+        "files": 3,
+        "total_lines": 586,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_rfp/types/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_rfp\\utils": {
+        "files": 2,
+        "total_lines": 80,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_rfp\\validators": {
+        "files": 2,
+        "total_lines": 126,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "apps_rfp/CLI_SPEC.md",
+      "depth": 1,
+      "size_bytes": 3656,
+      "total_lines": 101,
+      "code_lines": 76,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/OUTPUT_CONTRACTS.md",
+      "depth": 1,
+      "size_bytes": 4091,
+      "total_lines": 165,
+      "code_lines": 121,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/PRODUCT_SPEC.md",
+      "depth": 1,
+      "size_bytes": 6552,
+      "total_lines": 125,
+      "code_lines": 92,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/README.md",
+      "depth": 1,
+      "size_bytes": 2307,
+      "total_lines": 64,
+      "code_lines": 48,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/SVP_ENGINEERING_REVIEW.md",
+      "depth": 1,
+      "size_bytes": 4901,
+      "total_lines": 151,
+      "code_lines": 116,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/TECHNICAL_SPEC.md",
+      "depth": 1,
+      "size_bytes": 4768,
+      "total_lines": 150,
+      "code_lines": 122,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/TEST_STRATEGY.md",
+      "depth": 1,
+      "size_bytes": 3300,
+      "total_lines": 81,
+      "code_lines": 59,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/__init__.py",
+      "depth": 1,
+      "size_bytes": 147,
+      "total_lines": 5,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/__main__.py",
+      "depth": 1,
+      "size_bytes": 8667,
+      "total_lines": 208,
+      "code_lines": 191,
+      "functions": [
+        "_adg_bootstrap",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/config/__init__.py",
+      "depth": 2,
+      "size_bytes": 198,
+      "total_lines": 7,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 5,
+          "symbol": "apps_rfp.config.agent_spec_config.RfpAgentSpecs"
+        },
+        {
+          "line": 5,
+          "symbol": "apps_rfp.config.agent_spec_config.load_rfp_specs"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/config/agent_spec_config.py",
+      "depth": 2,
+      "size_bytes": 15656,
+      "total_lines": 369,
+      "code_lines": 331,
+      "functions": [
+        "load_rfp_specs",
+        "validate_required_sections_present"
+      ],
+      "classes": [
+        "ProposalSectionConfig",
+        "IndustryProfileConfig",
+        "RoadmapConfig",
+        "RiskMatrixConfig",
+        "ProposalOutputConfig",
+        "ProposalGateConfig",
+        "RfpAgentSpecs"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/config/knowledge_base.py",
+      "depth": 2,
+      "size_bytes": 724,
+      "total_lines": 35,
+      "code_lines": 32,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(12)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 7,
+          "symbol": "FROZEN_SNAPSHOT"
+        },
+        {
+          "line": 7,
+          "symbol": "RfpGlobalRule"
+        },
+        {
+          "line": 7,
+          "symbol": "RfpNodeEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "RfpPromptEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "RfpSovereignKnowledge"
+        },
+        {
+          "line": 7,
+          "symbol": "get_global_rule"
+        },
+        {
+          "line": 7,
+          "symbol": "get_node_config"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt_entry"
+        },
+        {
+          "line": 7,
+          "symbol": "get_system_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_nodes"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_prompts"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/config/reasoning_toggles_config.py",
+      "depth": 2,
+      "size_bytes": 797,
+      "total_lines": 30,
+      "code_lines": 21,
+      "functions": [],
+      "classes": [
+        "RfpReasoningToggles"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/config/rfp_policies.yaml",
+      "depth": 2,
+      "size_bytes": 1652,
+      "total_lines": 92,
+      "code_lines": 74,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/config/rfp_thresholds.yaml",
+      "depth": 2,
+      "size_bytes": 1598,
+      "total_lines": 82,
+      "code_lines": 60,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/data/sample_rfps/financial_services_rfp.md",
+      "depth": 3,
+      "size_bytes": 4894,
+      "total_lines": 129,
+      "code_lines": 98,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/data/sample_rfps/healthcare_rfp.md",
+      "depth": 3,
+      "size_bytes": 4168,
+      "total_lines": 119,
+      "code_lines": 93,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 128,
+      "total_lines": 5,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_rfp.engines.base_rfp_engine.BaseRfpEngine"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/engines/base_rfp_engine.py",
+      "depth": 2,
+      "size_bytes": 3920,
+      "total_lines": 124,
+      "code_lines": 91,
+      "functions": [
+        "__init__",
+        "execute",
+        "get_prompt",
+        "get_node_config",
+        "record_fail",
+        "record_pass",
+        "get_status"
+      ],
+      "classes": [
+        "BaseRfpEngine",
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/engines/proposal_assembly_engine.py",
+      "depth": 2,
+      "size_bytes": 24278,
+      "total_lines": 489,
+      "code_lines": 453,
+      "functions": [
+        "__init__",
+        "execute",
+        "_build_assumptions",
+        "_build_sections",
+        "_build_roadmap",
+        "_build_risks"
+      ],
+      "classes": [
+        "ProposalAssemblyResult",
+        "ProposalAssemblyEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/engines/proposal_retrieval_engine.py",
+      "depth": 2,
+      "size_bytes": 12562,
+      "total_lines": 377,
+      "code_lines": 290,
+      "functions": [
+        "create_retrieval_engine",
+        "add_proposal",
+        "query_similar",
+        "get_by_industry",
+        "__init__",
+        "add_proposal",
+        "query_similar",
+        "get_by_industry",
+        "_mock_embed",
+        "_cosine_similarity",
+        "__init__",
+        "index_proposal",
+        "find_similar_proposals",
+        "get_reusable_sections",
+        "get_proposal_templates",
+        "_default_templates",
+        "generate_reuse_report"
+      ],
+      "classes": [
+        "EmbeddingStore",
+        "RetrievedProposal",
+        "ProposalChunk",
+        "InMemoryProposalStore",
+        "ProposalRetrievalEngine"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/engines/rfp_ingestion_engine.py",
+      "depth": 2,
+      "size_bytes": 13129,
+      "total_lines": 359,
+      "code_lines": 269,
+      "functions": [
+        "extract_rfp_summary",
+        "can_parse",
+        "parse",
+        "can_parse",
+        "parse",
+        "_extract_title",
+        "_extract_organization",
+        "_extract_deadline",
+        "_parse_sections",
+        "_extract_requirements",
+        "_extract_constraints",
+        "_extract_eval_criteria",
+        "_classify_requirement",
+        "can_parse",
+        "parse",
+        "__init__",
+        "ingest",
+        "ingest_batch"
+      ],
+      "classes": [
+        "DocumentParser",
+        "ParsedDocument",
+        "Requirement",
+        "Constraint",
+        "EvalCriterion",
+        "PlainTextParser",
+        "MockPDFParser",
+        "RfpIngestionEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/integrations/__init__.py",
+      "depth": 2,
+      "size_bytes": 244,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_rfp.integrations.execution_adapter.ExecutionAdapter"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_rfp.integrations.observability_adapter.ObservabilityAdapter"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/integrations/execution_adapter.py",
+      "depth": 2,
+      "size_bytes": 2849,
+      "total_lines": 93,
+      "code_lines": 67,
+      "functions": [
+        "__init__",
+        "submit",
+        "_timestamp",
+        "get_execution_log"
+      ],
+      "classes": [
+        "ExecutionRequest",
+        "ExecutionAdapter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/integrations/observability_adapter.py",
+      "depth": 2,
+      "size_bytes": 2660,
+      "total_lines": 80,
+      "code_lines": 67,
+      "functions": [
+        "__init__",
+        "emit_rfp_start",
+        "emit_rfp_complete",
+        "emit_section_generated",
+        "get_metrics",
+        "_timestamp"
+      ],
+      "classes": [
+        "ObservabilityAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/outputs/__init__.py",
+      "depth": 2,
+      "size_bytes": 266,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(3)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_rfp.outputs.proposal_renderer.ProposalRenderer"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.outputs.proposal_renderer.ProposalSummaryRenderer"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_rfp.outputs.section_renderer.SectionRenderer"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/outputs/proposal_renderer.py",
+      "depth": 2,
+      "size_bytes": 5445,
+      "total_lines": 145,
+      "code_lines": 118,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "ProposalRenderer",
+        "ProposalSummaryRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 16,
+          "symbol": "apps_rfp.types.RiskItem"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/outputs/section_renderer.py",
+      "depth": 2,
+      "size_bytes": 2507,
+      "total_lines": 80,
+      "code_lines": 62,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_html"
+      ],
+      "classes": [
+        "SectionRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/ComplianceMappingAgent.py",
+      "depth": 2,
+      "size_bytes": 2875,
+      "total_lines": 82,
+      "code_lines": 67,
+      "functions": [
+        "__init__",
+        "map_compliance",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "ComplianceMappingAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/RequirementAnalysisAgent.py",
+      "depth": 2,
+      "size_bytes": 2736,
+      "total_lines": 79,
+      "code_lines": 64,
+      "functions": [
+        "__init__",
+        "analyze_requirements",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "RequirementAnalysisAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/RfpOrchestrator.py",
+      "depth": 2,
+      "size_bytes": 24515,
+      "total_lines": 571,
+      "code_lines": 484,
+      "functions": [
+        "__post_init__",
+        "run",
+        "_emit_artifacts",
+        "_emit_run_summary",
+        "_record_hop",
+        "generate_proposal_with_qwen",
+        "_prepare_proposal_generation_prompt",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "RfpOrchestrator"
+      ],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 31,
+          "symbol": "AppsQwenPromptConfig"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/__init__.py",
+      "depth": 2,
+      "size_bytes": 465,
+      "total_lines": 15,
+      "code_lines": 12,
+      "functions": [],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/compliance_validator.py",
+      "depth": 2,
+      "size_bytes": 20132,
+      "total_lines": 557,
+      "code_lines": 438,
+      "functions": [
+        "__init__",
+        "__init__",
+        "validate",
+        "_initialize_rules",
+        "_check_unsupported_claims",
+        "_check_missing_evidence",
+        "_check_regulatory_alignment",
+        "_check_required_sections",
+        "_check_security_claims",
+        "_extract_claims",
+        "_verify_claim",
+        "_identify_regulatory_gaps",
+        "_calculate_quality_score",
+        "_extract_risk_flags",
+        "__init__",
+        "register_evidence",
+        "verify_claim_against_sources",
+        "batch_verify"
+      ],
+      "classes": [
+        "ViolationSeverity",
+        "ComplianceViolation",
+        "ClaimVerification",
+        "ComplianceValidationResult",
+        "ComplianceRule",
+        "ComplianceValidator",
+        "ClaimsVerifier"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/enterprise_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 23513,
+      "total_lines": 620,
+      "code_lines": 500,
+      "functions": [
+        "generate_proposal_from_rfp",
+        "generate_proposal_from_text",
+        "__post_init__",
+        "_generate_trace_id",
+        "__init__",
+        "process",
+        "_step_ingest",
+        "_step_decompose",
+        "_step_retrieve",
+        "_step_generate",
+        "_step_collect_repo_signals",
+        "_step_validate",
+        "_step_emit",
+        "_write_proposal_markdown",
+        "_write_source_register",
+        "_write_validation_report",
+        "_log_step"
+      ],
+      "classes": [
+        "EnterpriseRfpRequest",
+        "EnterpriseRfpResult",
+        "EnterpriseRfpOrchestrator"
+      ],
+      "import_count": 17,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/requirement_decomposition_agent.py",
+      "depth": 2,
+      "size_bytes": 20111,
+      "total_lines": 540,
+      "code_lines": 407,
+      "functions": [
+        "__init__",
+        "decompose",
+        "decompose_batch",
+        "generate_summary",
+        "_classify_requirement_type",
+        "_extract_components",
+        "_split_compound_requirements",
+        "_estimate_complexity",
+        "_complexity_to_hours",
+        "_generate_acceptance_criteria",
+        "_generate_component_name",
+        "_generate_technical_notes",
+        "_determine_implementation_order",
+        "_identify_risk_flags",
+        "__init__",
+        "analyze_rfp_requirements",
+        "get_implementation_plan",
+        "sort_key"
+      ],
+      "classes": [
+        "RequirementType",
+        "ComplexityTier",
+        "DecomposedComponent",
+        "RequirementDecomposition",
+        "DecompositionSummary",
+        "RequirementDecomposer",
+        "RequirementDecompositionAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/reasoning/section_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 23193,
+      "total_lines": 620,
+      "code_lines": 464,
+      "functions": [
+        "__init__",
+        "generate",
+        "_load_templates",
+        "_render_template",
+        "_get_heading",
+        "_extract_evidence",
+        "_extract_assumptions",
+        "_calculate_quality",
+        "__init__",
+        "register_agent",
+        "create_orchestration_plan",
+        "execute_plan",
+        "get_combined_proposal",
+        "_build_section_context",
+        "_determine_dependencies",
+        "_compute_execution_order",
+        "_get_section_word_limit",
+        "_identify_critical_path",
+        "__init__",
+        "_initialize_agents",
+        "generate_proposal",
+        "render_list"
+      ],
+      "classes": [
+        "SectionType",
+        "SectionStatus",
+        "SectionRequest",
+        "SectionResult",
+        "OrchestrationPlan",
+        "SectionGenerationAgent",
+        "SectionOrchestrator",
+        "MultiAgentProposalOrchestrator"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/scripts/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/scripts/run_rfp.py",
+      "depth": 2,
+      "size_bytes": 3510,
+      "total_lines": 106,
+      "code_lines": 87,
+      "functions": [
+        "build_parser",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/scripts/test_enterprise_rfp.py",
+      "depth": 2,
+      "size_bytes": 11156,
+      "total_lines": 319,
+      "code_lines": 239,
+      "functions": [
+        "_assert",
+        "_assert_repo_signals",
+        "_assert_detailed_observability",
+        "_assert_layer4_wiring",
+        "_assert_enhanced_system_learning",
+        "_assert_rigorous_e2e_wiring",
+        "test_with_sample_rfp",
+        "test_with_problem_statement",
+        "test_full_pipeline",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/__init__.py",
+      "depth": 2,
+      "size_bytes": 1237,
+      "total_lines": 28,
+      "code_lines": 25,
+      "functions": [],
+      "classes": [],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 8,
+          "symbol": "apps_rfp.services.capability_mapper_service.CapabilityMapperService"
+        },
+        {
+          "line": 9,
+          "symbol": "apps_rfp.services.compliance_checker_service.ComplianceCheckerService"
+        },
+        {
+          "line": 10,
+          "symbol": "apps_rfp.services.differentiation_analyzer_service.DifferentiationAnalyzerService"
+        },
+        {
+          "line": 11,
+          "symbol": "apps_rfp.services.proposal_architect_service.ProposalArchitectService"
+        },
+        {
+          "line": 12,
+          "symbol": "apps_rfp.services.repo_signal_service.RepoSignalService"
+        },
+        {
+          "line": 13,
+          "symbol": "apps_rfp.services.requirement_parser_service.RequirementParserService"
+        },
+        {
+          "line": 14,
+          "symbol": "apps_rfp.services.response_generator_service.ResponseGeneratorService"
+        },
+        {
+          "line": 15,
+          "symbol": "apps_rfp.services.risk_assessor_service.RiskAssessorService"
+        },
+        {
+          "line": 16,
+          "symbol": "apps_rfp.services.submission_validator_service.SubmissionValidatorService"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/capability_mapper_service.py",
+      "depth": 2,
+      "size_bytes": 703,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "map_capabilities"
+      ],
+      "classes": [
+        "CapabilityMapperService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/compliance_checker_service.py",
+      "depth": 2,
+      "size_bytes": 6489,
+      "total_lines": 181,
+      "code_lines": 143,
+      "functions": [
+        "__init__",
+        "check_compliance",
+        "_requirement_addressed",
+        "_find_referencing_sections",
+        "get_compliance_history",
+        "get_gap_analysis"
+      ],
+      "classes": [
+        "ComplianceCheckerService"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/differentiation_analyzer_service.py",
+      "depth": 2,
+      "size_bytes": 770,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "analyze_differentiation"
+      ],
+      "classes": [
+        "DifferentiationAnalyzerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/proposal_architect_service.py",
+      "depth": 2,
+      "size_bytes": 969,
+      "total_lines": 33,
+      "code_lines": 23,
+      "functions": [
+        "__init__",
+        "design_proposal_structure",
+        "get_architecture"
+      ],
+      "classes": [
+        "ProposalArchitectService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/repo_signal_service.py",
+      "depth": 2,
+      "size_bytes": 7979,
+      "total_lines": 203,
+      "code_lines": 164,
+      "functions": [
+        "as_dict",
+        "__init__",
+        "collect",
+        "_collect_delivery_proof",
+        "_collect_adg_signals",
+        "_collect_test_signals",
+        "_collect_ci_signals",
+        "_collect_governance_signals",
+        "_json_entry_count",
+        "_line_count"
+      ],
+      "classes": [
+        "RepoSignalSnapshot",
+        "RepoSignalService"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/requirement_parser_service.py",
+      "depth": 2,
+      "size_bytes": 5509,
+      "total_lines": 154,
+      "code_lines": 124,
+      "functions": [
+        "__init__",
+        "parse_document",
+        "_categorize_requirement",
+        "get_requirements",
+        "get_requirement_summary",
+        "clear_requirements"
+      ],
+      "classes": [
+        "RequirementParserService"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/response_generator_service.py",
+      "depth": 2,
+      "size_bytes": 743,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "generate_response"
+      ],
+      "classes": [
+        "ResponseGeneratorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/risk_assessor_service.py",
+      "depth": 2,
+      "size_bytes": 666,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "assess_risks"
+      ],
+      "classes": [
+        "RiskAssessorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/services/submission_validator_service.py",
+      "depth": 2,
+      "size_bytes": 728,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "validate_submission"
+      ],
+      "classes": [
+        "SubmissionValidatorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/spine/__init__.py",
+      "depth": 2,
+      "size_bytes": 38,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/spine/rfp_spine_adapter.py",
+      "depth": 2,
+      "size_bytes": 1319,
+      "total_lines": 52,
+      "code_lines": 38,
+      "functions": [
+        "__init__",
+        "execute"
+      ],
+      "classes": [
+        "RfpSpineAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tests/__init__.py",
+      "depth": 2,
+      "size_bytes": 34,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tests/test_integrations.py",
+      "depth": 2,
+      "size_bytes": 4192,
+      "total_lines": 121,
+      "code_lines": 105,
+      "functions": [
+        "setUp",
+        "test_submit_passed",
+        "test_submit_failed",
+        "test_get_execution_log",
+        "setUp",
+        "test_emit_rfp_start",
+        "test_emit_rfp_complete",
+        "test_emit_section_generated",
+        "test_get_metrics"
+      ],
+      "classes": [
+        "TestExecutionAdapter",
+        "TestObservabilityAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tests/test_outputs.py",
+      "depth": 2,
+      "size_bytes": 4616,
+      "total_lines": 134,
+      "code_lines": 113,
+      "functions": [
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "test_render_html"
+      ],
+      "classes": [
+        "TestProposalRenderer",
+        "TestProposalSummaryRenderer",
+        "TestSectionRenderer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tests/test_rfp_reasoning.py",
+      "depth": 2,
+      "size_bytes": 953,
+      "total_lines": 34,
+      "code_lines": 24,
+      "functions": [
+        "test_orchestrator_import",
+        "test_orchestrator_class_exists",
+        "test_agent_import",
+        "test_agent_class_exists"
+      ],
+      "classes": [
+        "TestRfpOrchestrator",
+        "TestRequirementAnalysisAgent"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tests/test_rfp_types.py",
+      "depth": 2,
+      "size_bytes": 6825,
+      "total_lines": 205,
+      "code_lines": 164,
+      "functions": [
+        "test_phase_creation",
+        "test_duration_bounds",
+        "test_risk_creation",
+        "test_description_validation",
+        "test_assumption_creation",
+        "test_statement_validation",
+        "test_section_creation",
+        "test_body_validation",
+        "test_config_defaults",
+        "test_quality_score_bounds",
+        "test_max_sections_bounds",
+        "test_request_creation",
+        "test_problem_statement_validation",
+        "test_timeline_bounds",
+        "test_result_creation",
+        "test_passed_gate_property",
+        "test_quality_score_bounds",
+        "test_summary_creation",
+        "test_to_dict"
+      ],
+      "classes": [
+        "TestRoadmapPhase",
+        "TestRiskItem",
+        "TestAssumptionItem",
+        "TestProposalSection",
+        "TestRfpConfig",
+        "TestRfpRequest",
+        "TestRfpResult",
+        "TestRfpRunSummary"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tools/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/tools/rfp_dry_run_tool.py",
+      "depth": 2,
+      "size_bytes": 1746,
+      "total_lines": 54,
+      "code_lines": 41,
+      "functions": [
+        "main"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/types/PromptTemplate.py",
+      "depth": 2,
+      "size_bytes": 12298,
+      "total_lines": 357,
+      "code_lines": 285,
+      "functions": [
+        "get_prompt",
+        "get_system_prompt",
+        "get_prompt_entry",
+        "get_node_config",
+        "get_global_rule",
+        "list_all_prompts",
+        "list_all_nodes"
+      ],
+      "classes": [
+        "RfpPromptEntry",
+        "RfpNodeEntry",
+        "RfpGlobalRule",
+        "RfpSovereignKnowledge"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 515,
+      "total_lines": 29,
+      "code_lines": 27,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(11)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.ArchitecturePosture"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.AssumptionItem"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.ProposalSection"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.ProposalStatus"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RfpConfig"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RfpRequest"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RfpResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RfpRunSummary"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RiskItem"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RiskSeverity"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_rfp.types.rfp_types.RoadmapPhase"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/types/rfp_types.py",
+      "depth": 2,
+      "size_bytes": 8999,
+      "total_lines": 200,
+      "code_lines": 159,
+      "functions": [
+        "validate_duration",
+        "validate_description",
+        "validate_statement",
+        "validate_body",
+        "validate_problem",
+        "validate_timeline",
+        "passed_gate",
+        "validate_quality",
+        "to_dict"
+      ],
+      "classes": [
+        "RoadmapPhase",
+        "RiskItem",
+        "AssumptionItem",
+        "ProposalSection",
+        "RfpConfig",
+        "RfpRequest",
+        "RfpResult",
+        "RfpRunSummary",
+        "Config"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/utils/__init__.py",
+      "depth": 2,
+      "size_bytes": 34,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/utils/rfp_artifact_util.py",
+      "depth": 2,
+      "size_bytes": 2009,
+      "total_lines": 79,
+      "code_lines": 61,
+      "functions": [
+        "resolve_artifact_path",
+        "build_manifest",
+        "write_json",
+        "is_dry_run"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_rfp/validators/proposal_gate_validator.py",
+      "depth": 2,
+      "size_bytes": 3821,
+      "total_lines": 126,
+      "code_lines": 103,
+      "functions": [
+        "validate"
+      ],
+      "classes": [
+        "ProposalViolation",
+        "ProposalGateResult",
+        "ProposalGateValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

@@ -8,16 +8,6 @@ import json
 import re
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'artifacts' / 'adg' / 'ssot_fixes_applied.json'

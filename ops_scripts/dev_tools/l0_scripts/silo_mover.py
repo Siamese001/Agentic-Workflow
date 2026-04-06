@@ -7,16 +7,6 @@ import os
 import shutil
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (

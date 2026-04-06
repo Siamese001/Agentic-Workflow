@@ -1,0 +1,2891 @@
+{
+  "root_dir": "system_learning",
+  "root_level_files": [
+    {
+      "file": "system_learning\\__init__.py",
+      "complexity": {
+        "functions": 0,
+        "classes": 0,
+        "imports": 1,
+        "lines": 3,
+        "size": 106
+      }
+    }
+  ],
+  "subdirs": {
+    "adapters": {
+      "root_dir": "system_learning\\adapters",
+      "root_level_files": [
+        {
+          "file": "adapters\\l1_meta_adapter.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 3,
+            "imports": 9,
+            "lines": 324,
+            "size": 13805
+          }
+        },
+        {
+          "file": "adapters\\l4_meta_prior_provider.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 7,
+            "lines": 230,
+            "size": 10755
+          }
+        },
+        {
+          "file": "adapters\\live_run_pipeline_adapter.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 9,
+            "lines": 286,
+            "size": 13797
+          }
+        },
+        {
+          "file": "adapters\\otel_telemetry_store_adapter.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 1,
+            "imports": 7,
+            "lines": 221,
+            "size": 6678
+          }
+        },
+        {
+          "file": "adapters\\system_learning_memory_bridge.py",
+          "complexity": {
+            "functions": 53,
+            "classes": 1,
+            "imports": 11,
+            "lines": 2025,
+            "size": 101283
+          }
+        },
+        {
+          "file": "adapters\\workflow_outcome_sl_adapter.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 1,
+            "imports": 5,
+            "lines": 103,
+            "size": 3510
+          }
+        },
+        {
+          "file": "adapters\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 106
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "adapters\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "adapters\\l1_meta_adapter.py",
+        "adapters\\l4_meta_prior_provider.py",
+        "adapters\\live_run_pipeline_adapter.py",
+        "adapters\\otel_telemetry_store_adapter.py",
+        "adapters\\system_learning_memory_bridge.py",
+        "adapters\\workflow_outcome_sl_adapter.py"
+      ]
+    },
+    "arbitration": {
+      "root_dir": "system_learning\\arbitration",
+      "root_level_files": [
+        {
+          "file": "arbitration\\engine.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 9,
+            "lines": 253,
+            "size": 11193
+          }
+        },
+        {
+          "file": "arbitration\\types.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 3,
+            "imports": 10,
+            "lines": 248,
+            "size": 9997
+          }
+        },
+        {
+          "file": "arbitration\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 3,
+            "lines": 16,
+            "size": 492
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "arbitration\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "arbitration\\engine.py",
+        "arbitration\\types.py"
+      ]
+    },
+    "confidence": {
+      "root_dir": "system_learning\\confidence",
+      "root_level_files": [
+        {
+          "file": "confidence\\engine.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 2,
+            "imports": 8,
+            "lines": 254,
+            "size": 11099
+          }
+        },
+        {
+          "file": "confidence\\gemini_judge.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 2,
+            "imports": 1,
+            "lines": 57,
+            "size": 1421
+          }
+        },
+        {
+          "file": "confidence\\llm_judge.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 1,
+            "lines": 67,
+            "size": 1529
+          }
+        },
+        {
+          "file": "confidence\\novel_judge.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 1,
+            "lines": 45,
+            "size": 1131
+          }
+        },
+        {
+          "file": "confidence\\types.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 5,
+            "imports": 8,
+            "lines": 247,
+            "size": 9682
+          }
+        },
+        {
+          "file": "confidence\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 4,
+            "lines": 26,
+            "size": 667
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "confidence\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "confidence\\engine.py",
+        "confidence\\gemini_judge.py",
+        "confidence\\llm_judge.py",
+        "confidence\\novel_judge.py",
+        "confidence\\types.py"
+      ]
+    },
+    "config": {
+      "root_dir": "system_learning\\config",
+      "root_level_files": [
+        {
+          "file": "config\\config_store.py",
+          "complexity": {
+            "functions": 17,
+            "classes": 0,
+            "imports": 16,
+            "lines": 455,
+            "size": 69382
+          }
+        },
+        {
+          "file": "config\\embedding_storage_layout.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 1,
+            "imports": 2,
+            "lines": 79,
+            "size": 2693
+          }
+        },
+        {
+          "file": "config\\feature_flags.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 4,
+            "lines": 194,
+            "size": 8524
+          }
+        },
+        {
+          "file": "config\\import_policy.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 61,
+            "size": 1517
+          }
+        },
+        {
+          "file": "config\\semantic_memory_config.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 29,
+            "size": 1021
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "config\\semantic_memory_config.py"
+      ],
+      "high_signal_root_files": [
+        "config\\config_store.py",
+        "config\\embedding_storage_layout.py",
+        "config\\feature_flags.py",
+        "config\\import_policy.py"
+      ]
+    },
+    "constraints": {
+      "root_dir": "system_learning\\constraints",
+      "root_level_files": [
+        {
+          "file": "constraints\\config_surfaces.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 3,
+            "imports": 2,
+            "lines": 254,
+            "size": 7494
+          }
+        },
+        {
+          "file": "constraints\\dampening.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 5,
+            "imports": 2,
+            "lines": 98,
+            "size": 2910
+          }
+        },
+        {
+          "file": "constraints\\delta_enforcer.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 7,
+            "imports": 2,
+            "lines": 225,
+            "size": 7541
+          }
+        },
+        {
+          "file": "constraints\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 108
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "constraints\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "constraints\\config_surfaces.py",
+        "constraints\\dampening.py",
+        "constraints\\delta_enforcer.py"
+      ]
+    },
+    "correlation": {
+      "root_dir": "system_learning\\correlation",
+      "root_level_files": [
+        {
+          "file": "correlation\\engine.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 7,
+            "lines": 212,
+            "size": 9556
+          }
+        },
+        {
+          "file": "correlation\\types.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 3,
+            "imports": 6,
+            "lines": 209,
+            "size": 8518
+          }
+        },
+        {
+          "file": "correlation\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 3,
+            "lines": 16,
+            "size": 459
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "correlation\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "correlation\\engine.py",
+        "correlation\\types.py"
+      ]
+    },
+    "embedding": {
+      "root_dir": "system_learning\\embedding",
+      "root_level_files": [
+        {
+          "file": "embedding\\embedders.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 0,
+            "lines": 19,
+            "size": 430
+          }
+        },
+        {
+          "file": "embedding\\embedding.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 0,
+            "lines": 14,
+            "size": 280
+          }
+        },
+        {
+          "file": "embedding\\policy_embedder.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 0,
+            "lines": 14,
+            "size": 326
+          }
+        },
+        {
+          "file": "embedding\\registry.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 0,
+            "lines": 22,
+            "size": 508
+          }
+        },
+        {
+          "file": "embedding\\types.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 2,
+            "imports": 0,
+            "lines": 11,
+            "size": 222
+          }
+        },
+        {
+          "file": "embedding\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 4,
+            "size": 170
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "embedding\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "embedding\\embedders.py",
+        "embedding\\embedding.py",
+        "embedding\\policy_embedder.py",
+        "embedding\\registry.py",
+        "embedding\\types.py"
+      ]
+    },
+    "enforcement": {
+      "root_dir": "system_learning\\enforcement",
+      "root_level_files": [
+        {
+          "file": "enforcement\\authority_invariants.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 2,
+            "lines": 138,
+            "size": 4805
+          }
+        },
+        {
+          "file": "enforcement\\boundary_guard.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 1,
+            "imports": 6,
+            "lines": 91,
+            "size": 11437
+          }
+        },
+        {
+          "file": "enforcement\\determinism.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 7,
+            "lines": 84,
+            "size": 2732
+          }
+        },
+        {
+          "file": "enforcement\\dual_injection_proposal_gate.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 2,
+            "imports": 3,
+            "lines": 52,
+            "size": 1867
+          }
+        },
+        {
+          "file": "enforcement\\oscillation_freezer.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 3,
+            "imports": 5,
+            "lines": 120,
+            "size": 4687
+          }
+        },
+        {
+          "file": "enforcement\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 42
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "enforcement\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "enforcement\\authority_invariants.py",
+        "enforcement\\boundary_guard.py",
+        "enforcement\\determinism.py",
+        "enforcement\\dual_injection_proposal_gate.py",
+        "enforcement\\oscillation_freezer.py"
+      ]
+    },
+    "engines": {
+      "root_dir": "system_learning\\engines",
+      "root_level_files": [
+        {
+          "file": "engines\\approval_gauntlet_engine.py",
+          "complexity": {
+            "functions": 17,
+            "classes": 3,
+            "imports": 7,
+            "lines": 481,
+            "size": 17184
+          }
+        },
+        {
+          "file": "engines\\bus_consumer.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 0,
+            "imports": 5,
+            "lines": 67,
+            "size": 2341
+          }
+        },
+        {
+          "file": "engines\\case_compilation_engine.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 3,
+            "imports": 7,
+            "lines": 482,
+            "size": 17618
+          }
+        },
+        {
+          "file": "engines\\change_package_impl.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 6,
+            "lines": 220,
+            "size": 10248
+          }
+        },
+        {
+          "file": "engines\\cross_repo_system_learning_import.py",
+          "complexity": {
+            "functions": 23,
+            "classes": 5,
+            "imports": 10,
+            "lines": 686,
+            "size": 41873
+          }
+        },
+        {
+          "file": "engines\\default_healing_pattern_advisor.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 8,
+            "lines": 289,
+            "size": 13598
+          }
+        },
+        {
+          "file": "engines\\deterministic_replay_engine.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 8,
+            "lines": 376,
+            "size": 17436
+          }
+        },
+        {
+          "file": "engines\\embedding_corpus_extraction.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 1,
+            "imports": 5,
+            "lines": 176,
+            "size": 5633
+          }
+        },
+        {
+          "file": "engines\\embedding_retention_scheduler.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 8,
+            "lines": 279,
+            "size": 14301
+          }
+        },
+        {
+          "file": "engines\\embedding_service_factory.py",
+          "complexity": {
+            "functions": 21,
+            "classes": 7,
+            "imports": 17,
+            "lines": 569,
+            "size": 24576
+          }
+        },
+        {
+          "file": "engines\\enhanced_rag_retrieval_cache.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 1,
+            "imports": 10,
+            "lines": 451,
+            "size": 29096
+          }
+        },
+        {
+          "file": "engines\\faiss_startup_integrity.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 5,
+            "lines": 156,
+            "size": 24026
+          }
+        },
+        {
+          "file": "engines\\governance_reward_model.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 2,
+            "imports": 11,
+            "lines": 489,
+            "size": 19773
+          }
+        },
+        {
+          "file": "engines\\graph_neighborhood_embedder.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 2,
+            "imports": 12,
+            "lines": 419,
+            "size": 18127
+          }
+        },
+        {
+          "file": "engines\\g_gate_regression_checker.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 1,
+            "imports": 5,
+            "lines": 423,
+            "size": 15117
+          }
+        },
+        {
+          "file": "engines\\healer_outcome_embedder.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 2,
+            "imports": 12,
+            "lines": 401,
+            "size": 16772
+          }
+        },
+        {
+          "file": "engines\\healing_config_optimizer.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 3,
+            "imports": 16,
+            "lines": 704,
+            "size": 31042
+          }
+        },
+        {
+          "file": "engines\\healing_outcome_aggregator.py",
+          "complexity": {
+            "functions": 14,
+            "classes": 3,
+            "imports": 7,
+            "lines": 426,
+            "size": 17708
+          }
+        },
+        {
+          "file": "engines\\healing_outcome_intake_adapter.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 6,
+            "lines": 234,
+            "size": 11877
+          }
+        },
+        {
+          "file": "engines\\healing_success_rate_store.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 1,
+            "imports": 12,
+            "lines": 365,
+            "size": 16090
+          }
+        },
+        {
+          "file": "engines\\historical_backfill_engine.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 0,
+            "imports": 11,
+            "lines": 408,
+            "size": 16860
+          }
+        },
+        {
+          "file": "engines\\historical_ingestion_orchestrator.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 9,
+            "lines": 427,
+            "size": 18833
+          }
+        },
+        {
+          "file": "engines\\hitl_decision_logger.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 0,
+            "imports": 11,
+            "lines": 273,
+            "size": 18008
+          }
+        },
+        {
+          "file": "engines\\human_calibration_engine.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 3,
+            "imports": 6,
+            "lines": 421,
+            "size": 14482
+          }
+        },
+        {
+          "file": "engines\\incident_bundle_embedder.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 2,
+            "imports": 12,
+            "lines": 365,
+            "size": 15576
+          }
+        },
+        {
+          "file": "engines\\in_memory_healing_outcome_intake_store.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 2,
+            "lines": 43,
+            "size": 1343
+          }
+        },
+        {
+          "file": "engines\\in_memory_scoring_report_store.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 6,
+            "lines": 217,
+            "size": 10760
+          }
+        },
+        {
+          "file": "engines\\l0_routing_confidence_monitor.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 9,
+            "lines": 445,
+            "size": 35228
+          }
+        },
+        {
+          "file": "engines\\l0_threshold_tuner.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 13,
+            "lines": 425,
+            "size": 33400
+          }
+        },
+        {
+          "file": "engines\\l1_model_proposer.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 10,
+            "lines": 264,
+            "size": 11677
+          }
+        },
+        {
+          "file": "engines\\l3_efficiency_tuner.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 3,
+            "imports": 11,
+            "lines": 364,
+            "size": 15779
+          }
+        },
+        {
+          "file": "engines\\l4_audit_reader.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 5,
+            "lines": 251,
+            "size": 10556
+          }
+        },
+        {
+          "file": "engines\\l4_state_writer.py",
+          "complexity": {
+            "functions": 42,
+            "classes": 7,
+            "imports": 9,
+            "lines": 541,
+            "size": 20988
+          }
+        },
+        {
+          "file": "engines\\l4_version_store.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 4,
+            "imports": 7,
+            "lines": 304,
+            "size": 12873
+          }
+        },
+        {
+          "file": "engines\\l5_policy_proposer.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 10,
+            "lines": 323,
+            "size": 13933
+          }
+        },
+        {
+          "file": "engines\\live_exit_control_gate.py",
+          "complexity": {
+            "functions": 11,
+            "classes": 2,
+            "imports": 6,
+            "lines": 430,
+            "size": 15671
+          }
+        },
+        {
+          "file": "engines\\local_embedding_population_service.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 3,
+            "imports": 11,
+            "lines": 332,
+            "size": 15463
+          }
+        },
+        {
+          "file": "engines\\meta_learning_bus.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 3,
+            "imports": 16,
+            "lines": 917,
+            "size": 36223
+          }
+        },
+        {
+          "file": "engines\\meta_learning_embedding_service.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 3,
+            "imports": 14,
+            "lines": 391,
+            "size": 18176
+          }
+        },
+        {
+          "file": "engines\\meta_learning_replay_binding.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 1,
+            "imports": 7,
+            "lines": 314,
+            "size": 15198
+          }
+        },
+        {
+          "file": "engines\\meta_learning_state_digest.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 0,
+            "imports": 3,
+            "lines": 88,
+            "size": 3336
+          }
+        },
+        {
+          "file": "engines\\mutation_diff_embedder.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 2,
+            "imports": 12,
+            "lines": 394,
+            "size": 16570
+          }
+        },
+        {
+          "file": "engines\\offline_healing_outcome_evaluator.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 8,
+            "lines": 309,
+            "size": 15229
+          }
+        },
+        {
+          "file": "engines\\openai_embedder.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 2,
+            "imports": 10,
+            "lines": 285,
+            "size": 12080
+          }
+        },
+        {
+          "file": "engines\\optimization_proposal_engine.py",
+          "complexity": {
+            "functions": 12,
+            "classes": 4,
+            "imports": 13,
+            "lines": 641,
+            "size": 25678
+          }
+        },
+        {
+          "file": "engines\\outcome_evaluation_engine.py",
+          "complexity": {
+            "functions": 12,
+            "classes": 3,
+            "imports": 6,
+            "lines": 481,
+            "size": 16899
+          }
+        },
+        {
+          "file": "engines\\path_d_preference_embedder.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 2,
+            "imports": 12,
+            "lines": 394,
+            "size": 16708
+          }
+        },
+        {
+          "file": "engines\\pattern_analysis_engine.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 9,
+            "imports": 14,
+            "lines": 692,
+            "size": 38250
+          }
+        },
+        {
+          "file": "engines\\pattern_analysis_engine_adapter.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 9,
+            "lines": 319,
+            "size": 15544
+          }
+        },
+        {
+          "file": "engines\\policy_guardrail_embedder.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 2,
+            "imports": 13,
+            "lines": 544,
+            "size": 21970
+          }
+        },
+        {
+          "file": "engines\\policy_recommendation_engine.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 3,
+            "imports": 8,
+            "lines": 324,
+            "size": 15953
+          }
+        },
+        {
+          "file": "engines\\prompt_drift_detector.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 3,
+            "imports": 11,
+            "lines": 522,
+            "size": 20935
+          }
+        },
+        {
+          "file": "engines\\prompt_execution_tracer.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 2,
+            "imports": 11,
+            "lines": 576,
+            "size": 22693
+          }
+        },
+        {
+          "file": "engines\\prompt_outcome_bus_adapter.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 10,
+            "lines": 369,
+            "size": 16505
+          }
+        },
+        {
+          "file": "engines\\prompt_outcome_embedder.py",
+          "complexity": {
+            "functions": 16,
+            "classes": 2,
+            "imports": 12,
+            "lines": 619,
+            "size": 25423
+          }
+        },
+        {
+          "file": "engines\\prompt_provenance_builder.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 4,
+            "imports": 10,
+            "lines": 552,
+            "size": 21285
+          }
+        },
+        {
+          "file": "engines\\prompt_safety_validator.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 2,
+            "imports": 10,
+            "lines": 431,
+            "size": 17976
+          }
+        },
+        {
+          "file": "engines\\proposal_validation_engine.py",
+          "complexity": {
+            "functions": 11,
+            "classes": 2,
+            "imports": 10,
+            "lines": 590,
+            "size": 22999
+          }
+        },
+        {
+          "file": "engines\\rag_optimizer.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 9,
+            "lines": 336,
+            "size": 13604
+          }
+        },
+        {
+          "file": "engines\\rag_proposer.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 10,
+            "lines": 273,
+            "size": 11996
+          }
+        },
+        {
+          "file": "engines\\rag_retrieval_cache.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 8,
+            "lines": 323,
+            "size": 13903
+          }
+        },
+        {
+          "file": "engines\\rca_cluster_engine.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 2,
+            "imports": 11,
+            "lines": 550,
+            "size": 22063
+          }
+        },
+        {
+          "file": "engines\\rca_engine.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 7,
+            "lines": 347,
+            "size": 22860
+          }
+        },
+        {
+          "file": "engines\\replay_failure_embedder.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 2,
+            "imports": 12,
+            "lines": 549,
+            "size": 22616
+          }
+        },
+        {
+          "file": "engines\\replay_validator.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 9,
+            "lines": 281,
+            "size": 13650
+          }
+        },
+        {
+          "file": "engines\\retrieval_case_embedder.py",
+          "complexity": {
+            "functions": 16,
+            "classes": 2,
+            "imports": 12,
+            "lines": 623,
+            "size": 25630
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 7,
+            "lines": 255,
+            "size": 11115
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile_activation_gate.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 3,
+            "imports": 11,
+            "lines": 477,
+            "size": 20721
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile_invariant_checker.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 5,
+            "lines": 268,
+            "size": 13382
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile_manager.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 1,
+            "imports": 6,
+            "lines": 291,
+            "size": 12865
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile_proposal.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 7,
+            "lines": 272,
+            "size": 12894
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile_proposal_manager.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 6,
+            "lines": 325,
+            "size": 15171
+          }
+        },
+        {
+          "file": "engines\\retrieval_profile_replay_check.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 8,
+            "lines": 348,
+            "size": 16312
+          }
+        },
+        {
+          "file": "engines\\rlhf_optimizer.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 7,
+            "lines": 331,
+            "size": 30763
+          }
+        },
+        {
+          "file": "engines\\rlhf_optimizer_impl.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 9,
+            "lines": 319,
+            "size": 22157
+          }
+        },
+        {
+          "file": "engines\\rule_drafting_engine.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 4,
+            "imports": 6,
+            "lines": 464,
+            "size": 17088
+          }
+        },
+        {
+          "file": "engines\\seed_embedding_pack_builder.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 2,
+            "imports": 12,
+            "lines": 461,
+            "size": 19850
+          }
+        },
+        {
+          "file": "engines\\seed_pack_build_cli.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 15,
+            "lines": 359,
+            "size": 15756
+          }
+        },
+        {
+          "file": "engines\\semantic_index_registry.py",
+          "complexity": {
+            "functions": 30,
+            "classes": 3,
+            "imports": 26,
+            "lines": 858,
+            "size": 37511
+          }
+        },
+        {
+          "file": "engines\\semantic_memory_registry.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 15,
+            "lines": 301,
+            "size": 14432
+          }
+        },
+        {
+          "file": "engines\\shadow_drift_analyzer.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 2,
+            "imports": 18,
+            "lines": 479,
+            "size": 21497
+          }
+        },
+        {
+          "file": "engines\\signal_aggregator_engine.py",
+          "complexity": {
+            "functions": 17,
+            "classes": 4,
+            "imports": 6,
+            "lines": 515,
+            "size": 17509
+          }
+        },
+        {
+          "file": "engines\\signal_grouping_engine.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 3,
+            "imports": 14,
+            "lines": 404,
+            "size": 17027
+          }
+        },
+        {
+          "file": "engines\\stage_barrier_enforcer.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 2,
+            "imports": 7,
+            "lines": 252,
+            "size": 11275
+          }
+        },
+        {
+          "file": "engines\\surface_isolation_validator.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 1,
+            "imports": 5,
+            "lines": 314,
+            "size": 14722
+          }
+        },
+        {
+          "file": "engines\\system_learning_admission_gate.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 3,
+            "imports": 9,
+            "lines": 544,
+            "size": 22033
+          }
+        },
+        {
+          "file": "engines\\telemetry_consumer.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 7,
+            "lines": 352,
+            "size": 13650
+          }
+        },
+        {
+          "file": "engines\\trace_feature_extractor.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 1,
+            "imports": 7,
+            "lines": 453,
+            "size": 18254
+          }
+        },
+        {
+          "file": "engines\\trajectory_evaluation_engine.py",
+          "complexity": {
+            "functions": 11,
+            "classes": 1,
+            "imports": 5,
+            "lines": 462,
+            "size": 16958
+          }
+        },
+        {
+          "file": "engines\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 10,
+            "lines": 83,
+            "size": 2362
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "engines\\approval_gauntlet_engine.py",
+        "engines\\bus_consumer.py",
+        "engines\\case_compilation_engine.py",
+        "engines\\change_package_impl.py",
+        "engines\\cross_repo_system_learning_import.py",
+        "engines\\default_healing_pattern_advisor.py",
+        "engines\\deterministic_replay_engine.py",
+        "engines\\embedding_corpus_extraction.py",
+        "engines\\embedding_retention_scheduler.py",
+        "engines\\embedding_service_factory.py",
+        "engines\\enhanced_rag_retrieval_cache.py",
+        "engines\\faiss_startup_integrity.py",
+        "engines\\governance_reward_model.py",
+        "engines\\graph_neighborhood_embedder.py",
+        "engines\\g_gate_regression_checker.py",
+        "engines\\healer_outcome_embedder.py",
+        "engines\\healing_config_optimizer.py",
+        "engines\\healing_outcome_aggregator.py",
+        "engines\\healing_outcome_intake_adapter.py",
+        "engines\\healing_success_rate_store.py",
+        "engines\\historical_backfill_engine.py",
+        "engines\\historical_ingestion_orchestrator.py",
+        "engines\\hitl_decision_logger.py",
+        "engines\\human_calibration_engine.py",
+        "engines\\incident_bundle_embedder.py",
+        "engines\\in_memory_healing_outcome_intake_store.py",
+        "engines\\in_memory_scoring_report_store.py",
+        "engines\\l0_routing_confidence_monitor.py",
+        "engines\\l0_threshold_tuner.py",
+        "engines\\l1_model_proposer.py",
+        "engines\\l3_efficiency_tuner.py",
+        "engines\\l4_audit_reader.py",
+        "engines\\l4_state_writer.py",
+        "engines\\l4_version_store.py",
+        "engines\\l5_policy_proposer.py",
+        "engines\\live_exit_control_gate.py",
+        "engines\\local_embedding_population_service.py",
+        "engines\\meta_learning_bus.py",
+        "engines\\meta_learning_embedding_service.py",
+        "engines\\meta_learning_replay_binding.py",
+        "engines\\meta_learning_state_digest.py",
+        "engines\\mutation_diff_embedder.py",
+        "engines\\offline_healing_outcome_evaluator.py",
+        "engines\\openai_embedder.py",
+        "engines\\optimization_proposal_engine.py",
+        "engines\\outcome_evaluation_engine.py",
+        "engines\\path_d_preference_embedder.py",
+        "engines\\pattern_analysis_engine.py",
+        "engines\\pattern_analysis_engine_adapter.py",
+        "engines\\policy_guardrail_embedder.py",
+        "engines\\policy_recommendation_engine.py",
+        "engines\\prompt_drift_detector.py",
+        "engines\\prompt_execution_tracer.py",
+        "engines\\prompt_outcome_bus_adapter.py",
+        "engines\\prompt_outcome_embedder.py",
+        "engines\\prompt_provenance_builder.py",
+        "engines\\prompt_safety_validator.py",
+        "engines\\proposal_validation_engine.py",
+        "engines\\rag_optimizer.py",
+        "engines\\rag_proposer.py",
+        "engines\\rag_retrieval_cache.py",
+        "engines\\rca_cluster_engine.py",
+        "engines\\rca_engine.py",
+        "engines\\replay_failure_embedder.py",
+        "engines\\replay_validator.py",
+        "engines\\retrieval_case_embedder.py",
+        "engines\\retrieval_profile.py",
+        "engines\\retrieval_profile_activation_gate.py",
+        "engines\\retrieval_profile_invariant_checker.py",
+        "engines\\retrieval_profile_manager.py",
+        "engines\\retrieval_profile_proposal.py",
+        "engines\\retrieval_profile_proposal_manager.py",
+        "engines\\retrieval_profile_replay_check.py",
+        "engines\\rlhf_optimizer.py",
+        "engines\\rlhf_optimizer_impl.py",
+        "engines\\rule_drafting_engine.py",
+        "engines\\seed_embedding_pack_builder.py",
+        "engines\\seed_pack_build_cli.py",
+        "engines\\semantic_index_registry.py",
+        "engines\\semantic_memory_registry.py",
+        "engines\\shadow_drift_analyzer.py",
+        "engines\\signal_aggregator_engine.py",
+        "engines\\signal_grouping_engine.py",
+        "engines\\stage_barrier_enforcer.py",
+        "engines\\surface_isolation_validator.py",
+        "engines\\system_learning_admission_gate.py",
+        "engines\\telemetry_consumer.py",
+        "engines\\trace_feature_extractor.py",
+        "engines\\trajectory_evaluation_engine.py",
+        "engines\\__init__.py"
+      ]
+    },
+    "fingerprinting": {
+      "root_dir": "system_learning\\fingerprinting",
+      "root_level_files": [
+        {
+          "file": "fingerprinting\\engine.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 1,
+            "imports": 7,
+            "lines": 282,
+            "size": 12071
+          }
+        },
+        {
+          "file": "fingerprinting\\types.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 9,
+            "lines": 212,
+            "size": 8900
+          }
+        },
+        {
+          "file": "fingerprinting\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 3,
+            "lines": 16,
+            "size": 439
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "fingerprinting\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "fingerprinting\\engine.py",
+        "fingerprinting\\types.py"
+      ]
+    },
+    "golden": {
+      "root_dir": "system_learning\\golden",
+      "root_level_files": [
+        {
+          "file": "golden\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": []
+    },
+    "invariants": {
+      "root_dir": "system_learning\\invariants",
+      "root_level_files": [
+        {
+          "file": "invariants\\commit_proof_invariant.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 7,
+            "lines": 291,
+            "size": 13744
+          }
+        },
+        {
+          "file": "invariants\\freeze_gate.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 3,
+            "imports": 7,
+            "lines": 230,
+            "size": 14555
+          }
+        },
+        {
+          "file": "invariants\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "invariants\\commit_proof_invariant.py",
+        "invariants\\freeze_gate.py"
+      ]
+    },
+    "logs": {
+      "root_dir": "system_learning\\logs",
+      "root_level_files": [
+        {
+          "file": "logs\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": []
+    },
+    "memory": {
+      "root_dir": "system_learning\\memory",
+      "root_level_files": [
+        {
+          "file": "memory\\mcp_adapter.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 0,
+            "lines": 14,
+            "size": 296
+          }
+        },
+        {
+          "file": "memory\\memory.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 0,
+            "lines": 8,
+            "size": 195
+          }
+        },
+        {
+          "file": "memory\\sqlite_store.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 0,
+            "lines": 8,
+            "size": 210
+          }
+        },
+        {
+          "file": "memory\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 4,
+            "size": 151
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "memory\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "memory\\mcp_adapter.py",
+        "memory\\memory.py",
+        "memory\\sqlite_store.py"
+      ]
+    },
+    "meta_learning": {
+      "root_dir": "system_learning\\meta_learning",
+      "root_level_files": [
+        {
+          "file": "meta_learning\\creative.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 1,
+            "lines": 54,
+            "size": 1478
+          }
+        },
+        {
+          "file": "meta_learning\\engines.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 0,
+            "lines": 11,
+            "size": 254
+          }
+        },
+        {
+          "file": "meta_learning\\meta_apply.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 0,
+            "imports": 13,
+            "lines": 375,
+            "size": 13927
+          }
+        },
+        {
+          "file": "meta_learning\\meta_apply_ops.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 0,
+            "imports": 16,
+            "lines": 534,
+            "size": 20704
+          }
+        },
+        {
+          "file": "meta_learning\\meta_learning_bus.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 2,
+            "imports": 9,
+            "lines": 286,
+            "size": 12129
+          }
+        },
+        {
+          "file": "meta_learning\\pipeline.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 0,
+            "lines": 14,
+            "size": 302
+          }
+        },
+        {
+          "file": "meta_learning\\types.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 2,
+            "imports": 0,
+            "lines": 11,
+            "size": 204
+          }
+        },
+        {
+          "file": "meta_learning\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 6,
+            "size": 132
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "meta_learning\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "meta_learning\\creative.py",
+        "meta_learning\\engines.py",
+        "meta_learning\\meta_apply.py",
+        "meta_learning\\meta_apply_ops.py",
+        "meta_learning\\meta_learning_bus.py",
+        "meta_learning\\pipeline.py",
+        "meta_learning\\types.py"
+      ]
+    },
+    "ml_integration": {
+      "root_dir": "system_learning\\ml_integration",
+      "root_level_files": [
+        {
+          "file": "ml_integration\\anomaly_detection.py",
+          "complexity": {
+            "functions": 24,
+            "classes": 6,
+            "imports": 12,
+            "lines": 776,
+            "size": 27870
+          }
+        },
+        {
+          "file": "ml_integration\\training_pipeline.py",
+          "complexity": {
+            "functions": 38,
+            "classes": 11,
+            "imports": 22,
+            "lines": 905,
+            "size": 32143
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "ml_integration\\anomaly_detection.py",
+        "ml_integration\\training_pipeline.py"
+      ]
+    },
+    "monitoring": {
+      "root_dir": "system_learning\\monitoring",
+      "root_level_files": [
+        {
+          "file": "monitoring\\performance_monitor.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 3,
+            "imports": 9,
+            "lines": 443,
+            "size": 14652
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "monitoring\\performance_monitor.py"
+      ]
+    },
+    "output": {
+      "root_dir": "system_learning\\output",
+      "root_level_files": [
+        {
+          "file": "output\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": []
+    },
+    "pipelines": {
+      "root_dir": "system_learning\\pipelines",
+      "root_level_files": [
+        {
+          "file": "pipelines\\approval_gates.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 5,
+            "imports": 7,
+            "lines": 353,
+            "size": 13252
+          }
+        },
+        {
+          "file": "pipelines\\approval_gate_impl.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 4,
+            "imports": 7,
+            "lines": 254,
+            "size": 11295
+          }
+        },
+        {
+          "file": "pipelines\\meta_learning_pipeline.py",
+          "complexity": {
+            "functions": 24,
+            "classes": 15,
+            "imports": 60,
+            "lines": 1334,
+            "size": 65836
+          }
+        },
+        {
+          "file": "pipelines\\pipeline_factory.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 0,
+            "imports": 31,
+            "lines": 406,
+            "size": 17314
+          }
+        },
+        {
+          "file": "pipelines\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 66
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "pipelines\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "pipelines\\approval_gates.py",
+        "pipelines\\approval_gate_impl.py",
+        "pipelines\\meta_learning_pipeline.py",
+        "pipelines\\pipeline_factory.py"
+      ]
+    },
+    "policy": {
+      "root_dir": "system_learning\\policy",
+      "root_level_files": [
+        {
+          "file": "policy\\system_learning_policy.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 5,
+            "imports": 11,
+            "lines": 736,
+            "size": 28572
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "policy\\system_learning_policy.py"
+      ]
+    },
+    "ports": {
+      "root_dir": "system_learning\\ports",
+      "root_level_files": [
+        {
+          "file": "ports\\healing_outcome_intake_store.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 1,
+            "lines": 30,
+            "size": 918
+          }
+        },
+        {
+          "file": "ports\\healing_outcome_sink.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 3,
+            "lines": 36,
+            "size": 1014
+          }
+        },
+        {
+          "file": "ports\\healing_pattern_advisor.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 3,
+            "imports": 2,
+            "lines": 58,
+            "size": 1831
+          }
+        },
+        {
+          "file": "ports\\l4_meta_prior_provider.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 7,
+            "lines": 251,
+            "size": 11770
+          }
+        },
+        {
+          "file": "ports\\meta_outcome_bus_hook.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 3,
+            "imports": 10,
+            "lines": 252,
+            "size": 11598
+          }
+        },
+        {
+          "file": "ports\\meta_prior_provider.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 2,
+            "lines": 48,
+            "size": 1414
+          }
+        },
+        {
+          "file": "ports\\outcome_write_back_hook.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 3,
+            "imports": 11,
+            "lines": 271,
+            "size": 12477
+          }
+        },
+        {
+          "file": "ports\\scoring_report_store.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 3,
+            "lines": 26,
+            "size": 626
+          }
+        },
+        {
+          "file": "ports\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 75
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "ports\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "ports\\healing_outcome_intake_store.py",
+        "ports\\healing_outcome_sink.py",
+        "ports\\healing_pattern_advisor.py",
+        "ports\\l4_meta_prior_provider.py",
+        "ports\\meta_outcome_bus_hook.py",
+        "ports\\meta_prior_provider.py",
+        "ports\\outcome_write_back_hook.py",
+        "ports\\scoring_report_store.py"
+      ]
+    },
+    "provenance": {
+      "root_dir": "system_learning\\provenance",
+      "root_level_files": [
+        {
+          "file": "provenance\\integration.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 0,
+            "lines": 14,
+            "size": 377
+          }
+        },
+        {
+          "file": "provenance\\prompt_engines.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 0,
+            "lines": 14,
+            "size": 341
+          }
+        },
+        {
+          "file": "provenance\\provenance.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 4,
+            "imports": 0,
+            "lines": 37,
+            "size": 684
+          }
+        },
+        {
+          "file": "provenance\\types.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 2,
+            "imports": 0,
+            "lines": 11,
+            "size": 254
+          }
+        },
+        {
+          "file": "provenance\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 11,
+            "size": 350
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "provenance\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "provenance\\integration.py",
+        "provenance\\prompt_engines.py",
+        "provenance\\provenance.py",
+        "provenance\\types.py"
+      ]
+    },
+    "raw": {
+      "root_dir": "system_learning\\raw",
+      "root_level_files": [
+        {
+          "file": "raw\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": []
+    },
+    "runtime": {
+      "root_dir": "system_learning\\runtime",
+      "root_level_files": [
+        {
+          "file": "runtime\\isolation_monitor.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 3,
+            "lines": 70,
+            "size": 2190
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "runtime\\isolation_monitor.py"
+      ]
+    },
+    "runtime_adg": {
+      "root_dir": "system_learning\\runtime_adg",
+      "root_level_files": [
+        {
+          "file": "runtime_adg\\advanced_analytics.py",
+          "complexity": {
+            "functions": 21,
+            "classes": 4,
+            "imports": 7,
+            "lines": 658,
+            "size": 25049
+          }
+        },
+        {
+          "file": "runtime_adg\\auto_persistence.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 2,
+            "imports": 10,
+            "lines": 280,
+            "size": 9507
+          }
+        },
+        {
+          "file": "runtime_adg\\l6_integration.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 1,
+            "imports": 9,
+            "lines": 413,
+            "size": 16581
+          }
+        },
+        {
+          "file": "runtime_adg\\materializer.py",
+          "complexity": {
+            "functions": 19,
+            "classes": 1,
+            "imports": 5,
+            "lines": 605,
+            "size": 21491
+          }
+        },
+        {
+          "file": "runtime_adg\\snapshot.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 3,
+            "imports": 6,
+            "lines": 360,
+            "size": 11839
+          }
+        },
+        {
+          "file": "runtime_adg\\store.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 2,
+            "imports": 7,
+            "lines": 221,
+            "size": 13199
+          }
+        },
+        {
+          "file": "runtime_adg\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 5,
+            "lines": 48,
+            "size": 1643
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "runtime_adg\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "runtime_adg\\advanced_analytics.py",
+        "runtime_adg\\auto_persistence.py",
+        "runtime_adg\\l6_integration.py",
+        "runtime_adg\\materializer.py",
+        "runtime_adg\\snapshot.py",
+        "runtime_adg\\store.py"
+      ]
+    },
+    "scripts": {
+      "root_dir": "system_learning\\scripts",
+      "root_level_files": [
+        {
+          "file": "scripts\\meta_learning_bridge.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 7,
+            "lines": 328,
+            "size": 13518
+          }
+        },
+        {
+          "file": "scripts\\meta_learning_operator.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 15,
+            "lines": 404,
+            "size": 17653
+          }
+        },
+        {
+          "file": "scripts\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "scripts\\meta_learning_bridge.py",
+        "scripts\\meta_learning_operator.py"
+      ]
+    },
+    "snapshots": {
+      "root_dir": "system_learning\\snapshots",
+      "root_level_files": [
+        {
+          "file": "snapshots\\snapshot_factory.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 0,
+            "imports": 7,
+            "lines": 294,
+            "size": 12952
+          }
+        },
+        {
+          "file": "snapshots\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 69
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "snapshots\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "snapshots\\snapshot_factory.py"
+      ]
+    },
+    "state": {
+      "root_dir": "system_learning\\state",
+      "root_level_files": [
+        {
+          "file": "state\\system_learning_state_manager.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 5,
+            "imports": 12,
+            "lines": 640,
+            "size": 23715
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "state\\system_learning_state_manager.py"
+      ]
+    },
+    "stores": {
+      "root_dir": "system_learning\\stores",
+      "root_level_files": [
+        {
+          "file": "stores\\activator.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 2,
+            "imports": 10,
+            "lines": 242,
+            "size": 14949
+          }
+        },
+        {
+          "file": "stores\\audit_store.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 8,
+            "lines": 252,
+            "size": 15586
+          }
+        },
+        {
+          "file": "stores\\config_provider.py",
+          "complexity": {
+            "functions": 15,
+            "classes": 3,
+            "imports": 11,
+            "lines": 349,
+            "size": 23452
+          }
+        },
+        {
+          "file": "stores\\otel_telemetry_store.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 1,
+            "imports": 6,
+            "lines": 197,
+            "size": 6099
+          }
+        },
+        {
+          "file": "stores\\telemetry_store.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 9,
+            "lines": 262,
+            "size": 16316
+          }
+        },
+        {
+          "file": "stores\\version_store.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 2,
+            "imports": 13,
+            "lines": 300,
+            "size": 17591
+          }
+        },
+        {
+          "file": "stores\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 2,
+            "lines": 9,
+            "size": 319
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "stores\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "stores\\activator.py",
+        "stores\\audit_store.py",
+        "stores\\config_provider.py",
+        "stores\\otel_telemetry_store.py",
+        "stores\\telemetry_store.py",
+        "stores\\version_store.py"
+      ]
+    },
+    "telemetry": {
+      "root_dir": "system_learning\\telemetry",
+      "root_level_files": [
+        {
+          "file": "telemetry\\system_learning_telemetry.py",
+          "complexity": {
+            "functions": 16,
+            "classes": 5,
+            "imports": 9,
+            "lines": 653,
+            "size": 21975
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "telemetry\\system_learning_telemetry.py"
+      ]
+    },
+    "types": {
+      "root_dir": "system_learning\\types",
+      "root_level_files": [
+        {
+          "file": "types\\apply_attempt_types.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 9,
+            "lines": 282,
+            "size": 12440
+          }
+        },
+        {
+          "file": "types\\app_signal_types.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 2,
+            "imports": 11,
+            "lines": 650,
+            "size": 24283
+          }
+        },
+        {
+          "file": "types\\case_compilation_types.py",
+          "complexity": {
+            "functions": 24,
+            "classes": 6,
+            "imports": 6,
+            "lines": 397,
+            "size": 13487
+          }
+        },
+        {
+          "file": "types\\case_memory_types.py",
+          "complexity": {
+            "functions": 24,
+            "classes": 9,
+            "imports": 6,
+            "lines": 777,
+            "size": 30065
+          }
+        },
+        {
+          "file": "types\\config_store_types.py",
+          "complexity": {
+            "functions": 12,
+            "classes": 2,
+            "imports": 9,
+            "lines": 289,
+            "size": 10290
+          }
+        },
+        {
+          "file": "types\\embedding_artifact.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 8,
+            "lines": 252,
+            "size": 11758
+          }
+        },
+        {
+          "file": "types\\evaluation_spine_types.py",
+          "complexity": {
+            "functions": 14,
+            "classes": 4,
+            "imports": 5,
+            "lines": 424,
+            "size": 14823
+          }
+        },
+        {
+          "file": "types\\healing_outcome_intake_types.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 1,
+            "imports": 6,
+            "lines": 226,
+            "size": 11508
+          }
+        },
+        {
+          "file": "types\\healing_outcome_learning_types.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 3,
+            "imports": 8,
+            "lines": 323,
+            "size": 14963
+          }
+        },
+        {
+          "file": "types\\healing_outcome_scoring_types.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 3,
+            "imports": 8,
+            "lines": 307,
+            "size": 22747
+          }
+        },
+        {
+          "file": "types\\healing_outcome_types.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 3,
+            "imports": 6,
+            "lines": 329,
+            "size": 14364
+          }
+        },
+        {
+          "file": "types\\index_build_metadata_types.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 6,
+            "lines": 217,
+            "size": 10689
+          }
+        },
+        {
+          "file": "types\\meta_learning_types.py",
+          "complexity": {
+            "functions": 28,
+            "classes": 7,
+            "imports": 8,
+            "lines": 1017,
+            "size": 38911
+          }
+        },
+        {
+          "file": "types\\offline_replay_types.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 1,
+            "imports": 11,
+            "lines": 384,
+            "size": 15979
+          }
+        },
+        {
+          "file": "types\\optimization_types.py",
+          "complexity": {
+            "functions": 25,
+            "classes": 5,
+            "imports": 6,
+            "lines": 722,
+            "size": 28200
+          }
+        },
+        {
+          "file": "types\\pattern_analysis_types.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 4,
+            "imports": 8,
+            "lines": 254,
+            "size": 11610
+          }
+        },
+        {
+          "file": "types\\prompt_adg_relations.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 267,
+            "size": 9336
+          }
+        },
+        {
+          "file": "types\\prompt_artifact_types.py",
+          "complexity": {
+            "functions": 24,
+            "classes": 7,
+            "imports": 6,
+            "lines": 918,
+            "size": 34845
+          }
+        },
+        {
+          "file": "types\\rca_types.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 3,
+            "lines": 156,
+            "size": 4181
+          }
+        },
+        {
+          "file": "types\\rollout_types.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 2,
+            "imports": 9,
+            "lines": 433,
+            "size": 17768
+          }
+        },
+        {
+          "file": "types\\seed_embedding_pack_types.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 7,
+            "lines": 251,
+            "size": 11853
+          }
+        },
+        {
+          "file": "types\\semantic_memory_types.py",
+          "complexity": {
+            "functions": 28,
+            "classes": 9,
+            "imports": 16,
+            "lines": 864,
+            "size": 34695
+          }
+        },
+        {
+          "file": "types\\snapshot_types.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 3,
+            "lines": 75,
+            "size": 2923
+          }
+        },
+        {
+          "file": "types\\telemetry_store_protocol.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 1,
+            "imports": 2,
+            "lines": 103,
+            "size": 2570
+          }
+        },
+        {
+          "file": "types\\telemetry_types.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 2,
+            "imports": 6,
+            "lines": 221,
+            "size": 6422
+          }
+        },
+        {
+          "file": "types\\trace_feature_types.py",
+          "complexity": {
+            "functions": 21,
+            "classes": 4,
+            "imports": 8,
+            "lines": 673,
+            "size": 27349
+          }
+        },
+        {
+          "file": "types\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 6,
+            "lines": 73,
+            "size": 2013
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "types\\apply_attempt_types.py",
+        "types\\app_signal_types.py",
+        "types\\case_compilation_types.py",
+        "types\\case_memory_types.py",
+        "types\\config_store_types.py",
+        "types\\embedding_artifact.py",
+        "types\\evaluation_spine_types.py",
+        "types\\healing_outcome_intake_types.py",
+        "types\\healing_outcome_learning_types.py",
+        "types\\healing_outcome_scoring_types.py",
+        "types\\healing_outcome_types.py",
+        "types\\index_build_metadata_types.py",
+        "types\\meta_learning_types.py",
+        "types\\offline_replay_types.py",
+        "types\\optimization_types.py",
+        "types\\pattern_analysis_types.py",
+        "types\\prompt_adg_relations.py",
+        "types\\prompt_artifact_types.py",
+        "types\\rca_types.py",
+        "types\\rollout_types.py",
+        "types\\seed_embedding_pack_types.py",
+        "types\\semantic_memory_types.py",
+        "types\\snapshot_types.py",
+        "types\\telemetry_store_protocol.py",
+        "types\\telemetry_types.py",
+        "types\\trace_feature_types.py",
+        "types\\__init__.py"
+      ]
+    },
+    "validators": {
+      "root_dir": "system_learning\\validators",
+      "root_level_files": [
+        {
+          "file": "validators\\lineage_validator.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 4,
+            "imports": 4,
+            "lines": 268,
+            "size": 11375
+          }
+        },
+        {
+          "file": "validators\\oscillation_detector.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 2,
+            "imports": 2,
+            "lines": 136,
+            "size": 3963
+          }
+        },
+        {
+          "file": "validators\\readonly_access.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 5,
+            "lines": 85,
+            "size": 11720
+          }
+        },
+        {
+          "file": "validators\\replay_validator.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 1,
+            "imports": 4,
+            "lines": 78,
+            "size": 2513
+          }
+        },
+        {
+          "file": "validators\\shadow_evaluator.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 3,
+            "imports": 2,
+            "lines": 132,
+            "size": 5117
+          }
+        },
+        {
+          "file": "validators\\shadow_replay_validator.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 4,
+            "imports": 6,
+            "lines": 293,
+            "size": 12899
+          }
+        },
+        {
+          "file": "validators\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 1,
+            "size": 100
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "validators\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "validators\\lineage_validator.py",
+        "validators\\oscillation_detector.py",
+        "validators\\readonly_access.py",
+        "validators\\replay_validator.py",
+        "validators\\shadow_evaluator.py",
+        "validators\\shadow_replay_validator.py"
+      ]
+    }
+  },
+  "empty_subdirs": [],
+  "low_signal_files": [
+    "system_learning\\__init__.py"
+  ],
+  "high_signal_root_files": []
+}

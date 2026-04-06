@@ -1,0 +1,745 @@
+{
+  "root_dir": "agentic_core\\runtime",
+  "root_level_files": [
+    {
+      "file": "runtime\\lifecycle_trace_contract.py",
+      "complexity": {
+        "functions": 113,
+        "classes": 5,
+        "imports": 9,
+        "lines": 1794,
+        "size": 76072
+      }
+    },
+    {
+      "file": "runtime\\__init__.py",
+      "complexity": {
+        "functions": 0,
+        "classes": 0,
+        "imports": 0,
+        "lines": 15,
+        "size": 508
+      }
+    }
+  ],
+  "subdirs": {
+    "config": {
+      "root_dir": "agentic_core\\runtime\\config",
+      "root_level_files": [
+        {
+          "file": "config\\anomaly_report_config.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 9,
+            "lines": 259,
+            "size": 12280
+          }
+        },
+        {
+          "file": "config\\capability_gap_types.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 5,
+            "imports": 6,
+            "lines": 147,
+            "size": 6993
+          }
+        },
+        {
+          "file": "config\\contextual_router_config.py",
+          "complexity": {
+            "functions": 21,
+            "classes": 5,
+            "imports": 11,
+            "lines": 679,
+            "size": 29354
+          }
+        },
+        {
+          "file": "config\\detection_config.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 4,
+            "imports": 5,
+            "lines": 113,
+            "size": 3256
+          }
+        },
+        {
+          "file": "config\\feature_flags_config.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 2,
+            "imports": 8,
+            "lines": 383,
+            "size": 15635
+          }
+        },
+        {
+          "file": "config\\heal_result_config.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 4,
+            "imports": 5,
+            "lines": 224,
+            "size": 8750
+          }
+        },
+        {
+          "file": "config\\injection_type_config.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 3,
+            "imports": 7,
+            "lines": 214,
+            "size": 10108
+          }
+        },
+        {
+          "file": "config\\instructional_injections.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 0,
+            "imports": 5,
+            "lines": 217,
+            "size": 10982
+          }
+        },
+        {
+          "file": "config\\model_provider_config.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 9,
+            "imports": 8,
+            "lines": 446,
+            "size": 20786
+          }
+        },
+        {
+          "file": "config\\model_tier_config.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 4,
+            "imports": 8,
+            "lines": 241,
+            "size": 11190
+          }
+        },
+        {
+          "file": "config\\prompt_injection_loader_config.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 4,
+            "imports": 10,
+            "lines": 533,
+            "size": 24197
+          }
+        },
+        {
+          "file": "config\\reasoning_types.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 5,
+            "imports": 6,
+            "lines": 315,
+            "size": 11978
+          }
+        },
+        {
+          "file": "config\\review_config.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 4,
+            "imports": 5,
+            "lines": 121,
+            "size": 3261
+          }
+        },
+        {
+          "file": "config\\security_level_config.py",
+          "complexity": {
+            "functions": 30,
+            "classes": 17,
+            "imports": 20,
+            "lines": 1292,
+            "size": 48792
+          }
+        },
+        {
+          "file": "config\\shared_infrastructure_config.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 2,
+            "imports": 8,
+            "lines": 221,
+            "size": 10980
+          }
+        },
+        {
+          "file": "config\\signal_quality_config.py",
+          "complexity": {
+            "functions": 30,
+            "classes": 5,
+            "imports": 13,
+            "lines": 1097,
+            "size": 40717
+          }
+        },
+        {
+          "file": "config\\sovereignty_bootstrap.py",
+          "complexity": {
+            "functions": 6,
+            "classes": 1,
+            "imports": 7,
+            "lines": 127,
+            "size": 4084
+          }
+        },
+        {
+          "file": "config\\validation_severity_config.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 3,
+            "imports": 8,
+            "lines": 219,
+            "size": 10352
+          }
+        },
+        {
+          "file": "config\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 2,
+            "lines": 23,
+            "size": 572
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "config\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "config\\anomaly_report_config.py",
+        "config\\capability_gap_types.py",
+        "config\\contextual_router_config.py",
+        "config\\detection_config.py",
+        "config\\feature_flags_config.py",
+        "config\\heal_result_config.py",
+        "config\\injection_type_config.py",
+        "config\\instructional_injections.py",
+        "config\\model_provider_config.py",
+        "config\\model_tier_config.py",
+        "config\\prompt_injection_loader_config.py",
+        "config\\reasoning_types.py",
+        "config\\review_config.py",
+        "config\\security_level_config.py",
+        "config\\shared_infrastructure_config.py",
+        "config\\signal_quality_config.py",
+        "config\\sovereignty_bootstrap.py",
+        "config\\validation_severity_config.py"
+      ]
+    },
+    "enforcement": {
+      "root_dir": "agentic_core\\runtime\\enforcement",
+      "root_level_files": [
+        {
+          "file": "enforcement\\boundary_validator.py",
+          "complexity": {
+            "functions": 3,
+            "classes": 0,
+            "imports": 6,
+            "lines": 230,
+            "size": 11155
+          }
+        },
+        {
+          "file": "enforcement\\envelope_factory.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 10,
+            "lines": 225,
+            "size": 10336
+          }
+        },
+        {
+          "file": "enforcement\\mathematical_determinism.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 3,
+            "imports": 10,
+            "lines": 330,
+            "size": 15549
+          }
+        },
+        {
+          "file": "enforcement\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "enforcement\\boundary_validator.py",
+        "enforcement\\envelope_factory.py",
+        "enforcement\\mathematical_determinism.py"
+      ]
+    },
+    "engine": {
+      "root_dir": "agentic_core\\runtime\\engine",
+      "root_level_files": [
+        {
+          "file": "engine\\agent_engine.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 1,
+            "imports": 15,
+            "lines": 310,
+            "size": 13510
+          }
+        },
+        {
+          "file": "engine\\ast_relocator.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 1,
+            "imports": 7,
+            "lines": 282,
+            "size": 12899
+          }
+        },
+        {
+          "file": "engine\\eval_spine.py",
+          "complexity": {
+            "functions": 25,
+            "classes": 8,
+            "imports": 7,
+            "lines": 433,
+            "size": 17225
+          }
+        },
+        {
+          "file": "engine\\execution_bound_token.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 3,
+            "imports": 10,
+            "lines": 358,
+            "size": 17201
+          }
+        },
+        {
+          "file": "engine\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 2,
+            "lines": 15,
+            "size": 327
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "engine\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "engine\\agent_engine.py",
+        "engine\\ast_relocator.py",
+        "engine\\eval_spine.py",
+        "engine\\execution_bound_token.py"
+      ]
+    },
+    "exceptions": {
+      "root_dir": "agentic_core\\runtime\\exceptions",
+      "root_level_files": [
+        {
+          "file": "exceptions\\healer_exceptions.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 7,
+            "imports": 2,
+            "lines": 114,
+            "size": 3660
+          }
+        },
+        {
+          "file": "exceptions\\runtime_exceptions.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 6,
+            "imports": 1,
+            "lines": 103,
+            "size": 3523
+          }
+        },
+        {
+          "file": "exceptions\\SovereignError.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 10,
+            "imports": 0,
+            "lines": 86,
+            "size": 2762
+          }
+        },
+        {
+          "file": "exceptions\\sovereignty_exceptions.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 4,
+            "imports": 1,
+            "lines": 53,
+            "size": 1485
+          }
+        },
+        {
+          "file": "exceptions\\workflow_exceptions.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 5,
+            "imports": 2,
+            "lines": 60,
+            "size": 1471
+          }
+        },
+        {
+          "file": "exceptions\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 0,
+            "lines": 0,
+            "size": 0
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [],
+      "high_signal_root_files": [
+        "exceptions\\healer_exceptions.py",
+        "exceptions\\runtime_exceptions.py",
+        "exceptions\\SovereignError.py",
+        "exceptions\\sovereignty_exceptions.py",
+        "exceptions\\workflow_exceptions.py"
+      ]
+    },
+    "types": {
+      "root_dir": "agentic_core\\runtime\\types",
+      "root_level_files": [
+        {
+          "file": "types\\cache_entry_types.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 4,
+            "imports": 13,
+            "lines": 511,
+            "size": 22778
+          }
+        },
+        {
+          "file": "types\\circuit_breaker_types.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 2,
+            "imports": 2,
+            "lines": 34,
+            "size": 628
+          }
+        },
+        {
+          "file": "types\\claim_type_types.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 5,
+            "imports": 8,
+            "lines": 250,
+            "size": 10435
+          }
+        },
+        {
+          "file": "types\\cost_governor_types.py",
+          "complexity": {
+            "functions": 14,
+            "classes": 4,
+            "imports": 14,
+            "lines": 384,
+            "size": 17262
+          }
+        },
+        {
+          "file": "types\\execution_trace.py",
+          "complexity": {
+            "functions": 10,
+            "classes": 2,
+            "imports": 6,
+            "lines": 109,
+            "size": 3880
+          }
+        },
+        {
+          "file": "types\\expansion_strategy_types.py",
+          "complexity": {
+            "functions": 4,
+            "classes": 4,
+            "imports": 5,
+            "lines": 76,
+            "size": 2165
+          }
+        },
+        {
+          "file": "types\\recovery_types.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 5,
+            "imports": 5,
+            "lines": 39,
+            "size": 796
+          }
+        },
+        {
+          "file": "types\\sovereign_events_types.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 2,
+            "imports": 14,
+            "lines": 324,
+            "size": 23334
+          }
+        },
+        {
+          "file": "types\\state.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 8,
+            "size": 255
+          }
+        },
+        {
+          "file": "types\\state_types.py",
+          "complexity": {
+            "functions": 2,
+            "classes": 2,
+            "imports": 3,
+            "lines": 30,
+            "size": 835
+          }
+        },
+        {
+          "file": "types\\__init__.py",
+          "complexity": {
+            "functions": 1,
+            "classes": 0,
+            "imports": 4,
+            "lines": 41,
+            "size": 1750
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "types\\state.py"
+      ],
+      "high_signal_root_files": [
+        "types\\cache_entry_types.py",
+        "types\\circuit_breaker_types.py",
+        "types\\claim_type_types.py",
+        "types\\cost_governor_types.py",
+        "types\\execution_trace.py",
+        "types\\expansion_strategy_types.py",
+        "types\\recovery_types.py",
+        "types\\sovereign_events_types.py",
+        "types\\state_types.py",
+        "types\\__init__.py"
+      ]
+    },
+    "utils": {
+      "root_dir": "agentic_core\\runtime\\utils",
+      "root_level_files": [
+        {
+          "file": "utils\\discovery_parser_util.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 1,
+            "imports": 4,
+            "lines": 47,
+            "size": 1688
+          }
+        },
+        {
+          "file": "utils\\discovery_util.py",
+          "complexity": {
+            "functions": 7,
+            "classes": 3,
+            "imports": 12,
+            "lines": 361,
+            "size": 14639
+          }
+        },
+        {
+          "file": "utils\\dynamic_loader_util.py",
+          "complexity": {
+            "functions": 8,
+            "classes": 1,
+            "imports": 6,
+            "lines": 331,
+            "size": 14653
+          }
+        },
+        {
+          "file": "utils\\file_cache_util.py",
+          "complexity": {
+            "functions": 16,
+            "classes": 1,
+            "imports": 11,
+            "lines": 439,
+            "size": 27607
+          }
+        },
+        {
+          "file": "utils\\main_util.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 9,
+            "lines": 211,
+            "size": 9259
+          }
+        },
+        {
+          "file": "utils\\runtime_bootstrapper_util.py",
+          "complexity": {
+            "functions": 19,
+            "classes": 14,
+            "imports": 7,
+            "lines": 276,
+            "size": 13755
+          }
+        },
+        {
+          "file": "utils\\sovereign_dependency_error_util.py",
+          "complexity": {
+            "functions": 5,
+            "classes": 4,
+            "imports": 12,
+            "lines": 584,
+            "size": 27338
+          }
+        },
+        {
+          "file": "utils\\sovereign_index_util.py",
+          "complexity": {
+            "functions": 16,
+            "classes": 1,
+            "imports": 13,
+            "lines": 537,
+            "size": 51358
+          }
+        },
+        {
+          "file": "utils\\sovereign_scan_util.py",
+          "complexity": {
+            "functions": 9,
+            "classes": 1,
+            "imports": 8,
+            "lines": 270,
+            "size": 12785
+          }
+        },
+        {
+          "file": "utils\\tools.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 2,
+            "lines": 15,
+            "size": 468
+          }
+        },
+        {
+          "file": "utils\\trace_context.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 1,
+            "lines": 3,
+            "size": 160
+          }
+        },
+        {
+          "file": "utils\\trace_emitter.py",
+          "complexity": {
+            "functions": 13,
+            "classes": 3,
+            "imports": 11,
+            "lines": 401,
+            "size": 16894
+          }
+        },
+        {
+          "file": "utils\\trait_system_util.py",
+          "complexity": {
+            "functions": 21,
+            "classes": 4,
+            "imports": 17,
+            "lines": 498,
+            "size": 20840
+          }
+        },
+        {
+          "file": "utils\\__init__.py",
+          "complexity": {
+            "functions": 0,
+            "classes": 0,
+            "imports": 3,
+            "lines": 20,
+            "size": 419
+          }
+        }
+      ],
+      "subdirs": {},
+      "empty_subdirs": [],
+      "low_signal_files": [
+        "utils\\tools.py",
+        "utils\\trace_context.py",
+        "utils\\__init__.py"
+      ],
+      "high_signal_root_files": [
+        "utils\\discovery_parser_util.py",
+        "utils\\discovery_util.py",
+        "utils\\dynamic_loader_util.py",
+        "utils\\file_cache_util.py",
+        "utils\\main_util.py",
+        "utils\\runtime_bootstrapper_util.py",
+        "utils\\sovereign_dependency_error_util.py",
+        "utils\\sovereign_index_util.py",
+        "utils\\sovereign_scan_util.py",
+        "utils\\trace_emitter.py",
+        "utils\\trait_system_util.py"
+      ]
+    }
+  },
+  "empty_subdirs": [],
+  "low_signal_files": [
+    "runtime\\__init__.py"
+  ],
+  "high_signal_root_files": [
+    "runtime\\lifecycle_trace_contract.py"
+  ]
+}

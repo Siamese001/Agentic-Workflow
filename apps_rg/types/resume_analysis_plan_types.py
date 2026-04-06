@@ -13,7 +13,6 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import MAX_RETRIES  # noqa: F401 — SSOT constant
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

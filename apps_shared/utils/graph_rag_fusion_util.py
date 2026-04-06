@@ -238,7 +238,6 @@ _emit_reads_through("l4", "graph_rag_fusion_util", "urg_read_62")
 _emit_reads_through("l4", "graph_rag_fusion_util", "urg_read_63")
 
 logger = logging.getLogger(__name__)
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

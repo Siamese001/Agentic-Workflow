@@ -19,9 +19,6 @@ try:
     from apps_shared.enforcement.ProvenancetrackerStrategy import (
         BATCH_SIZE,
         BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
         ArtifactLineage,
         ProvenanceContext,
         ProvenanceTracker,

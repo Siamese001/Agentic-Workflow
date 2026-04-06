@@ -1,13 +1,5 @@
 from __future__ import annotations
 
-from agentic_core.L0_routing.config.path_constants import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_DEPTH,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L3_orchestration.healers.healing_tier_config import (
     HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
 )

@@ -1,0 +1,2102 @@
+{
+  "summary": {
+    "target_dir": "apps_underwriting_ai",
+    "total_files": 82,
+    "total_with_issues": 2,
+    "total_root_violations": 2,
+    "total_dead_code_files": 2,
+    "total_misplaced_files": 2,
+    "folder_breakdown": {
+      "apps_underwriting_ai": {
+        "files": 3,
+        "total_lines": 484,
+        "root_violations": [
+          "apps_underwriting_ai/README.md",
+          "apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "apps_underwriting_ai/README.md",
+          "apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md"
+        ],
+        "clean_files": 1
+      },
+      "apps_underwriting_ai\\config": {
+        "files": 7,
+        "total_lines": 636,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_underwriting_ai\\engines": {
+        "files": 6,
+        "total_lines": 1538,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 6
+      },
+      "apps_underwriting_ai\\examples": {
+        "files": 2,
+        "total_lines": 214,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_underwriting_ai\\ingestion": {
+        "files": 8,
+        "total_lines": 1456,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 8
+      },
+      "apps_underwriting_ai\\integrations": {
+        "files": 7,
+        "total_lines": 799,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_underwriting_ai\\outputs": {
+        "files": 5,
+        "total_lines": 301,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 5
+      },
+      "apps_underwriting_ai\\parsers": {
+        "files": 7,
+        "total_lines": 692,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_underwriting_ai\\reasoning": {
+        "files": 8,
+        "total_lines": 1209,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 8
+      },
+      "apps_underwriting_ai\\tests": {
+        "files": 7,
+        "total_lines": 504,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_underwriting_ai/tests/test_parsers.py",
+          "apps_underwriting_ai/tests/test_validators.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 5
+      },
+      "apps_underwriting_ai\\types": {
+        "files": 15,
+        "total_lines": 1093,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 15
+      },
+      "apps_underwriting_ai\\validators": {
+        "files": 7,
+        "total_lines": 963,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "apps_underwriting_ai/README.md",
+      "depth": 1,
+      "size_bytes": 6948,
+      "total_lines": 196,
+      "code_lines": 148,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md",
+      "depth": 1,
+      "size_bytes": 10251,
+      "total_lines": 265,
+      "code_lines": 200,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/__init__.py",
+      "depth": 1,
+      "size_bytes": 462,
+      "total_lines": 23,
+      "code_lines": 21,
+      "functions": [],
+      "classes": [],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/covenant_templates.yaml",
+      "depth": 2,
+      "size_bytes": 1971,
+      "total_lines": 56,
+      "code_lines": 44,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/industry_risk_weights.yaml",
+      "depth": 2,
+      "size_bytes": 3156,
+      "total_lines": 123,
+      "code_lines": 101,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/policy_exception_rules.yaml",
+      "depth": 2,
+      "size_bytes": 2799,
+      "total_lines": 102,
+      "code_lines": 88,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/product_rules.yaml",
+      "depth": 2,
+      "size_bytes": 2696,
+      "total_lines": 111,
+      "code_lines": 91,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/prohibited_features.yaml",
+      "depth": 2,
+      "size_bytes": 2438,
+      "total_lines": 95,
+      "code_lines": 83,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/underwriting_required_docs.yaml",
+      "depth": 2,
+      "size_bytes": 1836,
+      "total_lines": 87,
+      "code_lines": 77,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/config/underwriting_thresholds.yaml",
+      "depth": 2,
+      "size_bytes": 1360,
+      "total_lines": 62,
+      "code_lines": 54,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 663,
+      "total_lines": 20,
+      "code_lines": 18,
+      "functions": [],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/engines/decision_packet_assembler.py",
+      "depth": 2,
+      "size_bytes": 6743,
+      "total_lines": 170,
+      "code_lines": 136,
+      "functions": [
+        "assemble",
+        "_build_decision_memo",
+        "_build_decision_packet",
+        "_build_audit_trace"
+      ],
+      "classes": [
+        "AssemblerInput",
+        "DecisionPacketAssembler"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/engines/document_reconciliation_engine.py",
+      "depth": 2,
+      "size_bytes": 7525,
+      "total_lines": 209,
+      "code_lines": 172,
+      "functions": [
+        "__init__",
+        "reconcile",
+        "_reconcile_financials",
+        "_reconcile_debt",
+        "_reconcile_collateral",
+        "_check_field"
+      ],
+      "classes": [
+        "ContradictionSeverity",
+        "Contradiction",
+        "ReconciliationResult",
+        "DocumentReconciliationEngine"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/engines/evidence_register_engine.py",
+      "depth": 2,
+      "size_bytes": 9917,
+      "total_lines": 268,
+      "code_lines": 232,
+      "functions": [
+        "add_entry",
+        "add_claim",
+        "get_completeness_pct",
+        "get_contradiction_count",
+        "__init__",
+        "initialize",
+        "collect_financial_evidence",
+        "collect_credit_evidence",
+        "collect_collateral_evidence",
+        "collect_policy_evidence",
+        "collect_relationship_evidence"
+      ],
+      "classes": [
+        "EvidenceRegister",
+        "EvidenceRegisterEngine"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/engines/feature_derivation_engine.py",
+      "depth": 2,
+      "size_bytes": 19773,
+      "total_lines": 546,
+      "code_lines": 388,
+      "functions": [
+        "derive_features",
+        "_derive_capacity_features",
+        "_derive_liquidity_features",
+        "_derive_collateral_features",
+        "_derive_credit_features",
+        "_derive_operating_risk_features",
+        "_derive_relationship_features",
+        "_derive_documentation_features",
+        "_derive_policy_features",
+        "_derive_composite_features",
+        "_calculate_revenue_trend_score",
+        "_calculate_earnings_stability"
+      ],
+      "classes": [
+        "FeatureDerivationEngine"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/engines/underwriting_engine.py",
+      "depth": 2,
+      "size_bytes": 13652,
+      "total_lines": 325,
+      "code_lines": 231,
+      "functions": [
+        "__init__",
+        "run",
+        "_collect_evidence",
+        "_run_validators",
+        "_determine_decision"
+      ],
+      "classes": [
+        "UnderwritingResult",
+        "UnderwritingEngine"
+      ],
+      "import_count": 21,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/examples/sample_decision_packet.json",
+      "depth": 2,
+      "size_bytes": 970,
+      "total_lines": 29,
+      "code_lines": 29,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/examples/sample_underwriting_request.json",
+      "depth": 2,
+      "size_bytes": 5052,
+      "total_lines": 185,
+      "code_lines": 185,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/__init__.py",
+      "depth": 2,
+      "size_bytes": 654,
+      "total_lines": 24,
+      "code_lines": 22,
+      "functions": [],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/csv_mapper.py",
+      "depth": 2,
+      "size_bytes": 6920,
+      "total_lines": 181,
+      "code_lines": 141,
+      "functions": [
+        "__init__",
+        "map_to_request",
+        "_flatten_to_nested"
+      ],
+      "classes": [
+        "CSVMappingResult",
+        "CSVMapper"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/document_ingestion.py",
+      "depth": 2,
+      "size_bytes": 6568,
+      "total_lines": 199,
+      "code_lines": 156,
+      "functions": [
+        "__init__",
+        "ingest_document",
+        "ingest_batch",
+        "build_document_package",
+        "_compute_file_hash",
+        "_infer_doc_type",
+        "_extract_document_fields"
+      ],
+      "classes": [
+        "DocumentManifest",
+        "DocumentIngestion"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/document_manifest_builder.py",
+      "depth": 2,
+      "size_bytes": 4916,
+      "total_lines": 138,
+      "code_lines": 118,
+      "functions": [
+        "__init__",
+        "add_entry",
+        "set_required_docs",
+        "check_completeness",
+        "get_by_type",
+        "to_document_package",
+        "to_dict"
+      ],
+      "classes": [
+        "ManifestEntry",
+        "DocumentManifestBuilder"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/intake_router.py",
+      "depth": 2,
+      "size_bytes": 7421,
+      "total_lines": 242,
+      "code_lines": 202,
+      "functions": [
+        "__init__",
+        "ingest_json",
+        "ingest_csv",
+        "ingest_xlsx",
+        "ingest_documents",
+        "_compute_file_hash"
+      ],
+      "classes": [
+        "IngestionResult",
+        "IntakeRouter"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/json_mapper.py",
+      "depth": 2,
+      "size_bytes": 13818,
+      "total_lines": 310,
+      "code_lines": 272,
+      "functions": [
+        "__init__",
+        "map_to_request",
+        "_map_borrower",
+        "_map_financials",
+        "_map_collateral",
+        "_map_credit",
+        "_map_banking",
+        "_map_documents",
+        "_map_policy_context",
+        "_map_external_signals",
+        "_map_relationship_context",
+        "_map_decision_constraints",
+        "_map_requested_structure",
+        "map_doc_list"
+      ],
+      "classes": [
+        "JSONMappingResult",
+        "JSONMapper"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/structured_ingestion.py",
+      "depth": 2,
+      "size_bytes": 8516,
+      "total_lines": 247,
+      "code_lines": 195,
+      "functions": [
+        "__init__",
+        "normalize_field_names",
+        "normalize_booleans",
+        "standardize_periods",
+        "validate_required_fields",
+        "normalize_nulls",
+        "log_field_provenance"
+      ],
+      "classes": [
+        "IngestionMode",
+        "MappingResult",
+        "StructuredIngestion"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/ingestion/xlsx_mapper.py",
+      "depth": 2,
+      "size_bytes": 3528,
+      "total_lines": 115,
+      "code_lines": 85,
+      "functions": [
+        "__init__",
+        "map_to_request",
+        "_parse_standard_template",
+        "_parse_sheet"
+      ],
+      "classes": [
+        "XLSXMappingResult",
+        "XLSXMapper"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/__init__.py",
+      "depth": 2,
+      "size_bytes": 484,
+      "total_lines": 19,
+      "code_lines": 17,
+      "functions": [],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/core_adapter.py",
+      "depth": 2,
+      "size_bytes": 4338,
+      "total_lines": 119,
+      "code_lines": 99,
+      "functions": [
+        "prepare_handoff",
+        "_packet_to_dict",
+        "create_domain_request_payload"
+      ],
+      "classes": [
+        "CoreHandoffPayload",
+        "CoreAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/execution_adapter.py",
+      "depth": 2,
+      "size_bytes": 3451,
+      "total_lines": 96,
+      "code_lines": 71,
+      "functions": [
+        "create_execution_request",
+        "to_execution_payload"
+      ],
+      "classes": [
+        "ExecutionRequest",
+        "ExecutionAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/observability_adapter.py",
+      "depth": 2,
+      "size_bytes": 3233,
+      "total_lines": 98,
+      "code_lines": 85,
+      "functions": [
+        "emit_telemetry",
+        "to_metrics_dict"
+      ],
+      "classes": [
+        "UnderwritingTelemetry",
+        "ObservabilityAdapter"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/policy_adapter.py",
+      "depth": 2,
+      "size_bytes": 4140,
+      "total_lines": 126,
+      "code_lines": 98,
+      "functions": [
+        "prepare_policy_context",
+        "check_policy_exceptions"
+      ],
+      "classes": [
+        "PolicyCompliancePayload",
+        "PolicyAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/retrieval_adapter.py",
+      "depth": 2,
+      "size_bytes": 6728,
+      "total_lines": 188,
+      "code_lines": 147,
+      "functions": [
+        "prepare_evidence_requests",
+        "build_retrieval_queries",
+        "process_retrieval_results",
+        "_matches_request"
+      ],
+      "classes": [
+        "EvidenceRequest",
+        "RetrievalQuery",
+        "RetrievalAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/integrations/storage_adapter.py",
+      "depth": 2,
+      "size_bytes": 5047,
+      "total_lines": 153,
+      "code_lines": 122,
+      "functions": [
+        "__init__",
+        "save_decision_memo",
+        "save_decision_packet",
+        "save_audit_trace",
+        "save_conditions_sheet",
+        "_render_memo_markdown"
+      ],
+      "classes": [
+        "StorageAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/outputs/__init__.py",
+      "depth": 2,
+      "size_bytes": 345,
+      "total_lines": 15,
+      "code_lines": 13,
+      "functions": [],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/outputs/audit_trace_renderer.py",
+      "depth": 2,
+      "size_bytes": 1335,
+      "total_lines": 38,
+      "code_lines": 31,
+      "functions": [
+        "render",
+        "render_minimal"
+      ],
+      "classes": [
+        "AuditTraceRenderer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/outputs/exception_renderer.py",
+      "depth": 2,
+      "size_bytes": 1942,
+      "total_lines": 62,
+      "code_lines": 49,
+      "functions": [
+        "render"
+      ],
+      "classes": [
+        "ExceptionRenderer"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/outputs/memo_renderer.py",
+      "depth": 2,
+      "size_bytes": 5079,
+      "total_lines": 159,
+      "code_lines": 122,
+      "functions": [
+        "render",
+        "_render_header",
+        "_render_summary",
+        "_render_strengths",
+        "_render_risks",
+        "_render_conditions",
+        "_render_covenants",
+        "_render_exceptions",
+        "_render_missing",
+        "_render_evidence",
+        "_render_footer"
+      ],
+      "classes": [
+        "MemoRenderer"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/outputs/packet_renderer.py",
+      "depth": 2,
+      "size_bytes": 866,
+      "total_lines": 27,
+      "code_lines": 21,
+      "functions": [
+        "render",
+        "render_compact"
+      ],
+      "classes": [
+        "PacketRenderer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/__init__.py",
+      "depth": 2,
+      "size_bytes": 545,
+      "total_lines": 19,
+      "code_lines": 17,
+      "functions": [],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/ap_aging_parser.py",
+      "depth": 2,
+      "size_bytes": 2665,
+      "total_lines": 88,
+      "code_lines": 68,
+      "functions": [
+        "parse",
+        "_extract_text",
+        "_extract_buckets",
+        "_extract_total_ap"
+      ],
+      "classes": [
+        "APBucket",
+        "ParsedAPAging",
+        "APAgingParser"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/ar_aging_parser.py",
+      "depth": 2,
+      "size_bytes": 3274,
+      "total_lines": 100,
+      "code_lines": 76,
+      "functions": [
+        "parse",
+        "_extract_text",
+        "_extract_buckets",
+        "_extract_total_ar"
+      ],
+      "classes": [
+        "ARBucket",
+        "ParsedARAging",
+        "ARAgingParser"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/bank_statement_parser.py",
+      "depth": 2,
+      "size_bytes": 3924,
+      "total_lines": 115,
+      "code_lines": 80,
+      "functions": [
+        "parse",
+        "_extract_text",
+        "_extract_bank_name",
+        "_extract_account_number",
+        "_extract_monthly_summaries"
+      ],
+      "classes": [
+        "MonthlySummary",
+        "ParsedBankStatement",
+        "BankStatementParser"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/collateral_summary_parser.py",
+      "depth": 2,
+      "size_bytes": 3792,
+      "total_lines": 108,
+      "code_lines": 89,
+      "functions": [
+        "parse",
+        "_extract_text",
+        "_extract_appraised_value",
+        "_extract_appraisal_date",
+        "_extract_appraiser",
+        "_extract_collateral_type",
+        "_extract_condition_rating"
+      ],
+      "classes": [
+        "ParsedCollateralSummary",
+        "CollateralSummaryParser"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/debt_schedule_parser.py",
+      "depth": 2,
+      "size_bytes": 3281,
+      "total_lines": 94,
+      "code_lines": 71,
+      "functions": [
+        "parse",
+        "_extract_text",
+        "_extract_debt_entries"
+      ],
+      "classes": [
+        "DebtEntry",
+        "ParsedDebtSchedule",
+        "DebtScheduleParser"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/parsers/financial_statement_parser.py",
+      "depth": 2,
+      "size_bytes": 5936,
+      "total_lines": 168,
+      "code_lines": 137,
+      "functions": [
+        "parse",
+        "_extract_text",
+        "_extract_with_patterns",
+        "_extract_period_end",
+        "_get_excerpt"
+      ],
+      "classes": [
+        "ParsedFinancialStatement",
+        "FinancialStatementParser"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/__init__.py",
+      "depth": 2,
+      "size_bytes": 705,
+      "total_lines": 22,
+      "code_lines": 20,
+      "functions": [],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/condition_recommender.py",
+      "depth": 2,
+      "size_bytes": 5348,
+      "total_lines": 153,
+      "code_lines": 101,
+      "functions": [
+        "recommend_conditions",
+        "_document_conditions",
+        "_collateral_conditions",
+        "_structural_conditions",
+        "_reporting_conditions"
+      ],
+      "classes": [
+        "ConditionRecommender"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/counter_offer_recommender.py",
+      "depth": 2,
+      "size_bytes": 5728,
+      "total_lines": 176,
+      "code_lines": 128,
+      "functions": [
+        "recommend_counter_offer",
+        "_calculate_amount_reduction",
+        "_calculate_term_reduction",
+        "_calculate_pricing_adjustment",
+        "_build_rationale"
+      ],
+      "classes": [
+        "CounterOfferTerms",
+        "CounterOfferRecommender"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/covenant_recommender.py",
+      "depth": 2,
+      "size_bytes": 2696,
+      "total_lines": 71,
+      "code_lines": 50,
+      "functions": [
+        "recommend_covenants"
+      ],
+      "classes": [
+        "CovenantRecommender"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/exception_summarizer.py",
+      "depth": 2,
+      "size_bytes": 7274,
+      "total_lines": 181,
+      "code_lines": 133,
+      "functions": [
+        "summarize",
+        "_build_exception_details",
+        "_identify_escalation_reasons",
+        "_recommend_approver"
+      ],
+      "classes": [
+        "ExceptionSummary",
+        "ExceptionSummarizer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/feature_interpreter.py",
+      "depth": 2,
+      "size_bytes": 9899,
+      "total_lines": 246,
+      "code_lines": 201,
+      "functions": [
+        "interpret_features",
+        "_interpret_capacity",
+        "_interpret_liquidity",
+        "_interpret_collateral",
+        "_interpret_credit",
+        "_interpret_operating_risk",
+        "_interpret_relationship"
+      ],
+      "classes": [
+        "FeatureInterpreter"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/human_escalation_selector.py",
+      "depth": 2,
+      "size_bytes": 5050,
+      "total_lines": 142,
+      "code_lines": 101,
+      "functions": [
+        "should_escalate",
+        "_is_unusual_structure",
+        "_check_manual_review_triggers"
+      ],
+      "classes": [
+        "HumanEscalationSelector"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/reasoning/risk_hypothesis_builder.py",
+      "depth": 2,
+      "size_bytes": 9421,
+      "total_lines": 218,
+      "code_lines": 145,
+      "functions": [
+        "build_hypothesis",
+        "_identify_strengths",
+        "_identify_risks",
+        "_identify_open_questions",
+        "_generate_recommendation"
+      ],
+      "classes": [
+        "RiskHypothesis",
+        "RiskHypothesisBuilder"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/__init__.py",
+      "depth": 2,
+      "size_bytes": 47,
+      "total_lines": 3,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/test_compliance_validator.py",
+      "depth": 2,
+      "size_bytes": 1413,
+      "total_lines": 51,
+      "code_lines": 37,
+      "functions": [
+        "setUp",
+        "test_pass_compliant_request",
+        "test_fail_dscr_below_minimum",
+        "test_fail_restricted_industry"
+      ],
+      "classes": [
+        "TestComplianceValidator"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/test_document_completeness_validator.py",
+      "depth": 2,
+      "size_bytes": 1393,
+      "total_lines": 47,
+      "code_lines": 35,
+      "functions": [
+        "setUp",
+        "test_complete_document_package",
+        "test_incomplete_package"
+      ],
+      "classes": [
+        "TestDocumentCompleteness"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/test_feature_derivation_engine.py",
+      "depth": 2,
+      "size_bytes": 3967,
+      "total_lines": 119,
+      "code_lines": 106,
+      "functions": [
+        "setUp",
+        "_create_test_request",
+        "test_dscr_calculation",
+        "test_leverage_calculation",
+        "test_composite_score"
+      ],
+      "classes": [
+        "TestFeatureDerivation"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/test_parsers.py",
+      "depth": 2,
+      "size_bytes": 1224,
+      "total_lines": 42,
+      "code_lines": 30,
+      "functions": [
+        "test_parser_initialization",
+        "test_parse_empty_data",
+        "test_parser_initialization",
+        "test_parse_empty_data"
+      ],
+      "classes": [
+        "TestFinancialStatementParser",
+        "TestBankStatementParser"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/test_underwriting_engine.py",
+      "depth": 2,
+      "size_bytes": 7202,
+      "total_lines": 199,
+      "code_lines": 172,
+      "functions": [
+        "setUp",
+        "_create_base_request",
+        "test_approve_strong_credit",
+        "test_pend_missing_documents",
+        "test_decline_prohibited_industry",
+        "setUp",
+        "test_approve_with_conditions_weak_dscr",
+        "test_counter_offer_high_leverage",
+        "test_escalate_high_amount"
+      ],
+      "classes": [
+        "TestUnderwritingEngine",
+        "TestScenarios"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/tests/test_validators.py",
+      "depth": 2,
+      "size_bytes": 1329,
+      "total_lines": 43,
+      "code_lines": 31,
+      "functions": [
+        "test_validator_initialization",
+        "test_validate_within_limit",
+        "test_validator_initialization",
+        "test_validate_fresh_data"
+      ],
+      "classes": [
+        "TestAuthorityLimitValidator",
+        "TestStaleDataValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 3167,
+      "total_lines": 173,
+      "code_lines": 120,
+      "functions": [],
+      "classes": [],
+      "import_count": 14,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/banking_package_types.py",
+      "depth": 2,
+      "size_bytes": 1423,
+      "total_lines": 34,
+      "code_lines": 29,
+      "functions": [],
+      "classes": [
+        "BankingPackage",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/borrower_profile_types.py",
+      "depth": 2,
+      "size_bytes": 3880,
+      "total_lines": 97,
+      "code_lines": 86,
+      "functions": [
+        "validate_years",
+        "validate_ownership_sum",
+        "validate_employee_count"
+      ],
+      "classes": [
+        "OwnerInfo",
+        "BorrowerProfile",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/collateral_package_types.py",
+      "depth": 2,
+      "size_bytes": 1941,
+      "total_lines": 57,
+      "code_lines": 50,
+      "functions": [
+        "ltv"
+      ],
+      "classes": [
+        "CollateralPackage",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/credit_package_types.py",
+      "depth": 2,
+      "size_bytes": 2179,
+      "total_lines": 54,
+      "code_lines": 48,
+      "functions": [
+        "validate_fico",
+        "min_fico",
+        "max_fico"
+      ],
+      "classes": [
+        "CreditPackage",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/decision_constraints_types.py",
+      "depth": 2,
+      "size_bytes": 1133,
+      "total_lines": 28,
+      "code_lines": 23,
+      "functions": [],
+      "classes": [
+        "DecisionConstraints",
+        "Config"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/decision_memo_types.py",
+      "depth": 2,
+      "size_bytes": 3078,
+      "total_lines": 59,
+      "code_lines": 53,
+      "functions": [],
+      "classes": [
+        "EvidenceItem",
+        "DecisionMemo",
+        "Config"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/decision_packet_types.py",
+      "depth": 2,
+      "size_bytes": 2526,
+      "total_lines": 51,
+      "code_lines": 45,
+      "functions": [],
+      "classes": [
+        "DecisionPacket",
+        "AuditTrace",
+        "Config"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/document_package_types.py",
+      "depth": 2,
+      "size_bytes": 3662,
+      "total_lines": 91,
+      "code_lines": 84,
+      "functions": [
+        "total_doc_count",
+        "doc_types_present"
+      ],
+      "classes": [
+        "DocumentRef",
+        "DocumentPackage",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/evidence_register_types.py",
+      "depth": 2,
+      "size_bytes": 1965,
+      "total_lines": 46,
+      "code_lines": 39,
+      "functions": [
+        "add_entry",
+        "get_by_category"
+      ],
+      "classes": [
+        "EvidenceEntry",
+        "EvidenceRegister",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/financial_package_types.py",
+      "depth": 2,
+      "size_bytes": 3978,
+      "total_lines": 88,
+      "code_lines": 77,
+      "functions": [
+        "validate_periods"
+      ],
+      "classes": [
+        "FinancialPeriod",
+        "CalculatedMetrics",
+        "FinancialPackage",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/policy_context_types.py",
+      "depth": 2,
+      "size_bytes": 2451,
+      "total_lines": 56,
+      "code_lines": 48,
+      "functions": [],
+      "classes": [
+        "CollateralRules",
+        "PolicyContext",
+        "Config"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/relationship_context_types.py",
+      "depth": 2,
+      "size_bytes": 1140,
+      "total_lines": 32,
+      "code_lines": 27,
+      "functions": [],
+      "classes": [
+        "RelationshipContext",
+        "Config"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/risk_feature_types.py",
+      "depth": 2,
+      "size_bytes": 5382,
+      "total_lines": 109,
+      "code_lines": 86,
+      "functions": [],
+      "classes": [
+        "CapacityFeatures",
+        "LiquidityFeatures",
+        "CollateralFeatures",
+        "CreditFeatures",
+        "OperatingRiskFeatures",
+        "RelationshipFeatures",
+        "DocumentationFeatures",
+        "PolicyFeatures",
+        "CompositeFeatures",
+        "RiskFeatures",
+        "Config"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/types/underwriting_request_types.py",
+      "depth": 2,
+      "size_bytes": 5128,
+      "total_lines": 118,
+      "code_lines": 98,
+      "functions": [
+        "validate_timestamp",
+        "validate_positive_amount"
+      ],
+      "classes": [
+        "RequestedStructure",
+        "ExternalSignals",
+        "UnderwritingRequest",
+        "Config"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 796,
+      "total_lines": 23,
+      "code_lines": 21,
+      "functions": [],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/authority_limit_validator.py",
+      "depth": 2,
+      "size_bytes": 3974,
+      "total_lines": 122,
+      "code_lines": 96,
+      "functions": [
+        "validate",
+        "_recommend_approver"
+      ],
+      "classes": [
+        "AuthorityResult",
+        "AuthorityLimitValidator"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/compliance_validator.py",
+      "depth": 2,
+      "size_bytes": 8192,
+      "total_lines": 233,
+      "code_lines": 188,
+      "functions": [
+        "validate",
+        "_check_industry",
+        "_check_jurisdiction",
+        "_check_dscr",
+        "_check_leverage",
+        "_check_fico",
+        "_check_collateral"
+      ],
+      "classes": [
+        "ComplianceResult",
+        "ComplianceValidator"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/contradiction_validator.py",
+      "depth": 2,
+      "size_bytes": 2584,
+      "total_lines": 79,
+      "code_lines": 63,
+      "functions": [
+        "validate"
+      ],
+      "classes": [
+        "ContradictionValidationResult",
+        "ContradictionValidator"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/document_completeness_validator.py",
+      "depth": 2,
+      "size_bytes": 6455,
+      "total_lines": 208,
+      "code_lines": 168,
+      "functions": [
+        "validate",
+        "_get_required_documents",
+        "_check_document_present",
+        "_check_document_freshness"
+      ],
+      "classes": [
+        "CompletenessResult",
+        "DocumentCompletenessValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/forbidden_feature_checker.py",
+      "depth": 2,
+      "size_bytes": 5002,
+      "total_lines": 164,
+      "code_lines": 126,
+      "functions": [
+        "check_request",
+        "_check_borrower_profile",
+        "_check_proxy_indicators",
+        "validate_feature_derivation"
+      ],
+      "classes": [
+        "ForbiddenCheckResult",
+        "ForbiddenFeatureChecker"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_underwriting_ai/validators/stale_data_validator.py",
+      "depth": 2,
+      "size_bytes": 3724,
+      "total_lines": 134,
+      "code_lines": 103,
+      "functions": [
+        "validate",
+        "_check_date_freshness"
+      ],
+      "classes": [
+        "StaleDataResult",
+        "StaleDataValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

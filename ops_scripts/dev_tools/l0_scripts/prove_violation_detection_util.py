@@ -85,16 +85,6 @@ _emit_links_execution_to_snapshot("p4", "prove_violation_detection_util", "exec_
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from agentic_core.L3_orchestration.reasoning.SSOTOrchestratorAgent import SSOTOrchestratorAgent
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,

@@ -5,16 +5,6 @@ import ast
 import re
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 LEGACY_ROOT = Path('apps_shared/legacy')
 STUB_IMPORTS = '\nfrom typing import Any, List, Dict, Optional, Union, Tuple\nfrom dataclasses import dataclass, field\nfrom enum import Enum\ntry:\n    from pydantic import BaseModel, Field\nexcept ImportError:\n    class BaseModel: pass\n    def Field(*args, **kwargs): return None\n'

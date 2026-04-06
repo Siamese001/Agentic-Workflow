@@ -65,16 +65,6 @@ _emit_captures_evaluation_metric("p4", "clean_duplicates_enhanced", "eval_metric
 _emit_stores_embedding("p4", "clean_duplicates_enhanced", "embedding_store")
 _emit_updates_meta_learning_state("p4", "clean_duplicates_enhanced", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "clean_duplicates_enhanced", "exec_snapshot_link")
-from apps_shared.config.pipeline_constants_config import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 _emit_records_execution_trace("p0", "evidence", "clean_duplicates_enhanced")
 _emit_applies_guardrail("p0", "clean_duplicates_enhanced", "p0_governance")

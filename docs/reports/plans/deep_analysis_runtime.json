@@ -1,0 +1,2498 @@
+{
+  "summary": {
+    "target_dir": "agentic_core/runtime",
+    "total_files": 61,
+    "total_with_issues": 15,
+    "total_root_violations": 1,
+    "total_dead_code_files": 15,
+    "total_misplaced_files": 1,
+    "folder_breakdown": {
+      "runtime": {
+        "files": 2,
+        "total_lines": 1809,
+        "root_violations": [
+          "runtime/lifecycle_trace_contract.py"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "runtime/lifecycle_trace_contract.py"
+        ],
+        "clean_files": 1
+      },
+      "runtime\\config": {
+        "files": 19,
+        "total_lines": 6871,
+        "root_violations": [],
+        "dead_code_files": [
+          "runtime/config/__init__.py",
+          "runtime/config/anomaly_report_config.py",
+          "runtime/config/detection_config.py",
+          "runtime/config/feature_flags_config.py",
+          "runtime/config/heal_result_config.py",
+          "runtime/config/prompt_injection_loader_config.py",
+          "runtime/config/review_config.py",
+          "runtime/config/shared_infrastructure_config.py",
+          "runtime/config/signal_quality_config.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 10
+      },
+      "runtime\\enforcement": {
+        "files": 4,
+        "total_lines": 785,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "runtime\\engine": {
+        "files": 5,
+        "total_lines": 1398,
+        "root_violations": [],
+        "dead_code_files": [
+          "runtime/engine/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "runtime\\exceptions": {
+        "files": 6,
+        "total_lines": 416,
+        "root_violations": [],
+        "dead_code_files": [
+          "runtime/exceptions/workflow_exceptions.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 5
+      },
+      "runtime\\types": {
+        "files": 11,
+        "total_lines": 1806,
+        "root_violations": [],
+        "dead_code_files": [
+          "runtime/types/state.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 10
+      },
+      "runtime\\utils": {
+        "files": 14,
+        "total_lines": 3993,
+        "root_violations": [],
+        "dead_code_files": [
+          "runtime/utils/__init__.py",
+          "runtime/utils/tools.py",
+          "runtime/utils/trace_context.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 11
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "runtime/__init__.py",
+      "depth": 1,
+      "size_bytes": 508,
+      "total_lines": 15,
+      "code_lines": 9,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/lifecycle_trace_contract.py",
+      "depth": 1,
+      "size_bytes": 76072,
+      "total_lines": 1794,
+      "code_lines": 1401,
+      "functions": [
+        "_emit_records_execution_trace",
+        "_emit_signs_execution_trace",
+        "emit_replay_key",
+        "emit_determinism_digest",
+        "record_execution_trace",
+        "_emit_transcripts_response",
+        "_emit_hard_fails_untranscripted",
+        "_emit_applies_guardrail",
+        "_emit_validated_by_safety_plane",
+        "_emit_verifies_boundary",
+        "_emit_agent_executes_agent",
+        "_emit_writes_through",
+        "_emit_reads_through",
+        "_emit_snapshots_state",
+        "_emit_observes_runtime_state",
+        "_emit_verifies_policy",
+        "_emit_gated_by_confidence",
+        "_emit_reads_policy_state",
+        "_emit_escalates_to_human",
+        "_emit_routes_through",
+        "_emit_dispatches_healing_run",
+        "_emit_routes_to_agent",
+        "_emit_orchestrates_workflow",
+        "_emit_dispatches_execution_plan",
+        "_emit_validates_agent_capability",
+        "_emit_checks_agent_registry",
+        "_emit_authorize_and_execute",
+        "_emit_validates_capability",
+        "_emit_routes_to_capability",
+        "_emit_writes_via_uwg",
+        "_emit_blocks_direct_write",
+        "_emit_records_tool_invocation",
+        "_emit_captures_execution_output",
+        "_emit_dispatches_agent",
+        "_emit_coordinates_agents",
+        "_emit_records_workflow_lineage",
+        "_emit_records_healing_outcome",
+        "_emit_escalates_failure",
+        "_emit_invokes_evaluation",
+        "_emit_records_telemetry_event",
+        "_emit_captures_evaluation_metric",
+        "_emit_stores_embedding",
+        "_emit_updates_meta_learning_state",
+        "_emit_links_execution_to_snapshot",
+        "_emit_pulls_context",
+        "_emit_execution_terminates_at_uwg",
+        "_emit_invokes_eval",
+        "_emit_proposal_commits_routing",
+        "_emit_reads_environ",
+        "_emit_reads_runtime_state",
+        "_emit_captures_pattern",
+        "_emit_records_learning_event",
+        "_emit_writes_learning_snapshot",
+        "_emit_feeds_meta_learning",
+        "_emit_updates_routing_strategy",
+        "_emit_improves_agent_policy",
+        "_emit_stores_learning_state",
+        "_emit_emits_metric_event",
+        "_emit_records_incident_event",
+        "_emit_captures_runtime_anomaly",
+        "_emit_writes_observability_log",
+        "_emit_updates_monitoring_state",
+        "_emit_triggers_alert",
+        "_emit_links_incident_trace",
+        "_record_contract",
+        "get_lifecycle_contracts",
+        "get_lifecycle_recorder",
+        "_emit_mutation_signature",
+        "_emit_parent_snapshot_hash",
+        "_emit_policy_verification",
+        "_emit_dispatches_execution_plan",
+        "_emit_defines_test_case",
+        "_emit_defines_test_suite",
+        "_emit_defines_invariant",
+        "_emit_emits_test_result",
+        "_emit_records_validation_outcome",
+        "_emit_links_to_execution_trace",
+        "_emit_gates_promotion",
+        "_emit_detects_regression",
+        "_emit_retrieves_from_store",
+        "_emit_enriches_chunk",
+        "_emit_routes_retrieval",
+        "_emit_applies_retrieval_guardrail",
+        "_emit_indexes_for_retrieval",
+        "_emit_validates_uwg_intent",
+        "_emit_checks_policy_hash_at_uwg",
+        "_emit_checks_capability_set",
+        "_emit_validates_blast_radius_at_uwg",
+        "_emit_generates_mutation_diff",
+        "_emit_computes_mutation_replay_key",
+        "_emit_applies_hmac_seal",
+        "_emit_packages_execution_trace",
+        "_emit_claims_write_lock",
+        "_emit_commits_mutation_durable",
+        "_emit_appends_hash_chain",
+        "_emit_heals_on_rollback_failure",
+        "_emit_materializes_read_view",
+        "_emit_refreshes_retrieval_surface",
+        "_emit_swaps_version_alias",
+        "_emit_syncs_l4_telemetry",
+        "_emit_reads_l4_surface",
+        "_emit_receives_policy_hash",
+        "_emit_l5_reads_l4_surface",
+        "_emit_l3_reads_l4_surface",
+        "_emit_l6_ingests_l4_trace",
+        "create",
+        "is_complete",
+        "missing_segments",
+        "__init__",
+        "__init__",
+        "record_segment",
+        "bind_replay_artifacts",
+        "finalise"
+      ],
+      "classes": [
+        "LayerSegment",
+        "TraceSegment",
+        "LifecycleTraceContract",
+        "UntraceableRunError",
+        "LifecycleTraceRecorder"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/__init__.py",
+      "depth": 2,
+      "size_bytes": 572,
+      "total_lines": 23,
+      "code_lines": 21,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "shared_infrastructure_config.DomainConfig"
+        },
+        {
+          "line": 3,
+          "symbol": "shared_infrastructure_config.SharedInfrastructure"
+        },
+        {
+          "line": 3,
+          "symbol": "shared_infrastructure_config.get_shared_infrastructure"
+        },
+        {
+          "line": 4,
+          "symbol": "signal_quality_config.ClaimAnalysis"
+        },
+        {
+          "line": 4,
+          "symbol": "signal_quality_config.QualityThresholds"
+        },
+        {
+          "line": 4,
+          "symbol": "signal_quality_config.SignalAssessment"
+        },
+        {
+          "line": 4,
+          "symbol": "signal_quality_config.SignalQuality"
+        },
+        {
+          "line": 4,
+          "symbol": "signal_quality_config.get_signal_enhancer"
+        },
+        {
+          "line": 4,
+          "symbol": "signal_quality_config.signal_enhancer"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/anomaly_report_config.py",
+      "depth": 2,
+      "size_bytes": 12280,
+      "total_lines": 259,
+      "code_lines": 232,
+      "functions": [
+        "validate_description",
+        "__str__",
+        "to_dict",
+        "from_dict"
+      ],
+      "classes": [
+        "AnomalySeverity",
+        "AnomalyReport"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 127,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 127,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 127,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 127,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 127,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 127,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 127,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 127,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/capability_gap_types.py",
+      "depth": 2,
+      "size_bytes": 6993,
+      "total_lines": 147,
+      "code_lines": 124,
+      "functions": [
+        "to_dict",
+        "to_dict",
+        "to_dict"
+      ],
+      "classes": [
+        "CapabilityGapType",
+        "RecommendationType",
+        "CapabilityGap",
+        "Recommendation",
+        "AnalysisReport"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/contextual_router_config.py",
+      "depth": 2,
+      "size_bytes": 29354,
+      "total_lines": 679,
+      "code_lines": 571,
+      "functions": [
+        "get_guardian_signal_bus",
+        "get_router",
+        "emit_signal",
+        "get_active_signals",
+        "__new__",
+        "emit_signal",
+        "subscribe",
+        "get_active_signals",
+        "clear_signals",
+        "__init__",
+        "_register_default_policies",
+        "_on_guardian_signal",
+        "add_policy_rule",
+        "_check_circuit_breaker",
+        "_evaluate_policies",
+        "_check_guardian_signals",
+        "route",
+        "get_metrics",
+        "base_agent_rule",
+        "external_touch_rule",
+        "complexity_rule"
+      ],
+      "classes": [
+        "RoutingRequest",
+        "RoutingResult",
+        "GuardianSignalProtocol",
+        "GuardianSignalBus",
+        "ContextualRouter"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/detection_config.py",
+      "depth": 2,
+      "size_bytes": 3256,
+      "total_lines": 113,
+      "code_lines": 89,
+      "functions": [
+        "__post_init__",
+        "__post_init__",
+        "to_dict",
+        "classify_risk_level",
+        "emit_signal",
+        "get_signals",
+        "is_available"
+      ],
+      "classes": [
+        "Severity",
+        "DetectionRequest",
+        "DetectionResult",
+        "DetectionSignalProtocol"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 12,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 12,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 12,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 12,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 12,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 12,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 12,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 12,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/feature_flags_config.py",
+      "depth": 2,
+      "size_bytes": 15635,
+      "total_lines": 383,
+      "code_lines": 332,
+      "functions": [
+        "is_enabled",
+        "set_override",
+        "clear_override",
+        "clear_all_overrides",
+        "required_for_healing",
+        "get_all_flags",
+        "get_healing_required_flags",
+        "validate_healing_flags",
+        "register_flag",
+        "get_flag_info"
+      ],
+      "classes": [
+        "FeatureFlag",
+        "FeatureFlagManager"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 98,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 98,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 98,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 98,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 98,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 98,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 98,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 98,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/heal_result_config.py",
+      "depth": 2,
+      "size_bytes": 8750,
+      "total_lines": 224,
+      "code_lines": 192,
+      "functions": [
+        "to_dict",
+        "from_dict",
+        "is_success",
+        "has_errors",
+        "to_dict",
+        "from_dict",
+        "to_dict"
+      ],
+      "classes": [
+        "HealStatus",
+        "HealResult",
+        "ValidationResult",
+        "ClassificationResult"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 14,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 14,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 14,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 14,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 14,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 14,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 14,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 14,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/injection_type_config.py",
+      "depth": 2,
+      "size_bytes": 10108,
+      "total_lines": 214,
+      "code_lines": 190,
+      "functions": [
+        "validate_variables"
+      ],
+      "classes": [
+        "InjectionType",
+        "InjectionScope",
+        "InjectionPattern"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/instructional_injections.py",
+      "depth": 2,
+      "size_bytes": 10982,
+      "total_lines": 217,
+      "code_lines": 202,
+      "functions": [
+        "get_instructional_injections",
+        "get_required_injections"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/model_provider_config.py",
+      "depth": 2,
+      "size_bytes": 20786,
+      "total_lines": 446,
+      "code_lines": 340,
+      "functions": [
+        "validate_model_name"
+      ],
+      "classes": [
+        "ModelProvider",
+        "ModelConfig",
+        "RAGConfig",
+        "GovernorConfig",
+        "WorkflowConfig",
+        "Config",
+        "ContentConstraintsConfig",
+        "SignalControlConfig",
+        "GlobalConfig"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/model_tier_config.py",
+      "depth": 2,
+      "size_bytes": 11190,
+      "total_lines": 241,
+      "code_lines": 212,
+      "functions": [
+        "validate_capabilities",
+        "to_dict",
+        "to_dict"
+      ],
+      "classes": [
+        "ModelTier",
+        "TaskComplexity",
+        "ModelConfig",
+        "RoutingDecision"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/prompt_injection_loader_config.py",
+      "depth": 2,
+      "size_bytes": 24197,
+      "total_lines": 533,
+      "code_lines": 447,
+      "functions": [
+        "get_injection_loader",
+        "__init__",
+        "_load_injections",
+        "_load_instructional_injections",
+        "_load_instructional_injections_from_yaml",
+        "_create_builtin_injections",
+        "save_injection",
+        "find_matching_injections",
+        "_calculate_match_confidence",
+        "apply_injections"
+      ],
+      "classes": [
+        "PromptInjectionLoader",
+        "InjectionConfig",
+        "InjectionMatch",
+        "InjectionPattern"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(3)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 87,
+          "symbol": "InjectionScope"
+        },
+        {
+          "line": 87,
+          "symbol": "InjectionType"
+        },
+        {
+          "line": 87,
+          "symbol": "MicroStage"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/reasoning_types.py",
+      "depth": 2,
+      "size_bytes": 11978,
+      "total_lines": 315,
+      "code_lines": 290,
+      "functions": [
+        "validate_invariants",
+        "validate_invariants",
+        "validate_invariants",
+        "validate_invariants"
+      ],
+      "classes": [
+        "ModelProvider",
+        "ModelConfig",
+        "RAGConfig",
+        "GovernorConfig",
+        "ReasoningConfig"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/review_config.py",
+      "depth": 2,
+      "size_bytes": 3261,
+      "total_lines": 121,
+      "code_lines": 93,
+      "functions": [
+        "__post_init__",
+        "__post_init__",
+        "is_approved",
+        "is_terminal",
+        "submit_for_review",
+        "check_status",
+        "get_pending_reviews",
+        "is_available",
+        "get_queue_depth"
+      ],
+      "classes": [
+        "ReviewStatus",
+        "ReviewRequest",
+        "ReviewResult",
+        "HumanReviewProtocol"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 12,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 12,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 12,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 12,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 12,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 12,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 12,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 12,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/security_level_config.py",
+      "depth": 2,
+      "size_bytes": 48792,
+      "total_lines": 1292,
+      "code_lines": 1064,
+      "functions": [
+        "__init__",
+        "scan_content",
+        "scan_resume",
+        "_get_severity",
+        "_get_recommendation",
+        "get_issues",
+        "get_issues_by_severity",
+        "get_stats",
+        "__init__",
+        "analyze_content",
+        "analyze_resume",
+        "get_analyses",
+        "get_stats",
+        "__init__",
+        "analyze_structure",
+        "get_ats_recommendations",
+        "get_proposals",
+        "get_stats",
+        "__init__",
+        "build_context",
+        "search",
+        "get_section",
+        "get_stats",
+        "__init__",
+        "run_mission",
+        "_run_phase",
+        "_check_convergence",
+        "get_comprehensive_stats",
+        "_v15_build_operation_manifest",
+        "heal_repository",
+        "_heal_body",
+        "_state_hash"
+      ],
+      "classes": [
+        "SecurityLevel",
+        "AnalysisType",
+        "RefactorType",
+        "PhaseType",
+        "SecurityIssue",
+        "SemanticMatch",
+        "RefactorProposal",
+        "PhaseResult",
+        "SecurityHardener",
+        "SemanticAnalyzer",
+        "StrategicAdvisor",
+        "OmniContext",
+        "MCPHardenedMixin",
+        "L3SubatomicTestingMixin",
+        "Orchestrator",
+        "L3SubatomicTestingMixin",
+        "HealerMixin"
+      ],
+      "import_count": 20,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/shared_infrastructure_config.py",
+      "depth": 2,
+      "size_bytes": 10980,
+      "total_lines": 221,
+      "code_lines": 198,
+      "functions": [
+        "get_shared_infrastructure",
+        "__init__",
+        "create_domain_config",
+        "get_domain_config"
+      ],
+      "classes": [
+        "DomainConfig",
+        "SharedInfrastructure"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 121,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 121,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 121,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 121,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 121,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 121,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 121,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 121,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/signal_quality_config.py",
+      "depth": 2,
+      "size_bytes": 40717,
+      "total_lines": 1097,
+      "code_lines": 867,
+      "functions": [
+        "get_signal_enhancer",
+        "EXCELLENT_MIN",
+        "HIGH_MIN",
+        "GOOD_MIN",
+        "MARGINAL_MIN",
+        "MIN_RELEVANCE",
+        "MIN_AUTHORITY",
+        "MIN_SPECIFICITY",
+        "MIN_COHERENCE",
+        "MAX_HALLUCINATION_RISK",
+        "MIN_FACT_VERIFICATION",
+        "MAX_REPETITION_RATIO",
+        "MIN_CLAIM_CONFIDENCE",
+        "is_acceptable",
+        "__init__",
+        "assess_signal",
+        "_assess_relevance",
+        "_assess_authority",
+        "_assess_specificity",
+        "_assess_coherence",
+        "_calculate_signal_to_noise",
+        "_calculate_information_density",
+        "_assess_factual_accuracy",
+        "_assess_originality",
+        "_assess_hallucination_risk",
+        "_calculate_repetition_ratio",
+        "_analyze_claims",
+        "_generate_flags_and_recommendations",
+        "_update_stats",
+        "get_stats"
+      ],
+      "classes": [
+        "SignalQuality",
+        "QualityThresholds",
+        "ClaimAnalysis",
+        "SignalAssessment",
+        "signal_enhancer"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(8)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 130,
+          "symbol": "BATCH_SIZE"
+        },
+        {
+          "line": 130,
+          "symbol": "BUFFER_SIZE"
+        },
+        {
+          "line": 130,
+          "symbol": "DEFAULT_SLEEP"
+        },
+        {
+          "line": 130,
+          "symbol": "DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 130,
+          "symbol": "MAX_DEPTH"
+        },
+        {
+          "line": 130,
+          "symbol": "MAX_FILES"
+        },
+        {
+          "line": 130,
+          "symbol": "MAX_RETRIES"
+        },
+        {
+          "line": 130,
+          "symbol": "THRESHOLD"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/sovereignty_bootstrap.py",
+      "depth": 2,
+      "size_bytes": 4084,
+      "total_lines": 127,
+      "code_lines": 93,
+      "functions": [
+        "get_hierarchy_validator",
+        "initialize_determinism_engine",
+        "start_execution_trace",
+        "__init__",
+        "bootstrap",
+        "seal_and_finalize"
+      ],
+      "classes": [
+        "SovereigntyBootstrap"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/config/validation_severity_config.py",
+      "depth": 2,
+      "size_bytes": 10352,
+      "total_lines": 219,
+      "code_lines": 191,
+      "functions": [
+        "validate_severity"
+      ],
+      "classes": [
+        "Provider",
+        "ApiCallStatus",
+        "ValidationSeverityConfig"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/enforcement/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/enforcement/boundary_validator.py",
+      "depth": 2,
+      "size_bytes": 11155,
+      "total_lines": 230,
+      "code_lines": 212,
+      "functions": [
+        "assert_no_apps_imports",
+        "validate_layer_direction",
+        "check_runtime_boundaries"
+      ],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/enforcement/envelope_factory.py",
+      "depth": 2,
+      "size_bytes": 10336,
+      "total_lines": 225,
+      "code_lines": 204,
+      "functions": [
+        "has_completed_stage",
+        "mark_stage_start",
+        "mark_stage_complete",
+        "mark_stage_skipped",
+        "create_envelope"
+      ],
+      "classes": [
+        "envelope",
+        "EnvelopeFactory"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/enforcement/mathematical_determinism.py",
+      "depth": 2,
+      "size_bytes": 15549,
+      "total_lines": 330,
+      "code_lines": 294,
+      "functions": [
+        "initialize_determinism_engine",
+        "get_determinism_engine",
+        "__init__",
+        "add_artifact",
+        "seal",
+        "verify_replay",
+        "get_proof",
+        "_is_deterministic_metadata",
+        "_check"
+      ],
+      "classes": [
+        "DeterministicArtifact",
+        "DeterminismProof",
+        "MathematicalDeterminismEngine"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/engine/__init__.py",
+      "depth": 2,
+      "size_bytes": 327,
+      "total_lines": 15,
+      "code_lines": 13,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BATCH_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BUFFER_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_SLEEP"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_DEPTH"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_FILES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_RETRIES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.THRESHOLD"
+        },
+        {
+          "line": 13,
+          "symbol": "ast_relocator.AstRelocator"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/engine/agent_engine.py",
+      "depth": 2,
+      "size_bytes": 13510,
+      "total_lines": 310,
+      "code_lines": 270,
+      "functions": [
+        "__init__",
+        "_v15_build_operation_manifest",
+        "run",
+        "_noop_heal",
+        "_state_hash"
+      ],
+      "classes": [
+        "AgentEngine"
+      ],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/engine/ast_relocator.py",
+      "depth": 2,
+      "size_bytes": 12899,
+      "total_lines": 282,
+      "code_lines": 265,
+      "functions": [
+        "__init__",
+        "visit_ClassDef",
+        "visit_FunctionDef",
+        "_suggest_placement",
+        "get_movable_entities",
+        "extract_entity_code",
+        "generate_import_fix"
+      ],
+      "classes": [
+        "AstRelocator"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/engine/eval_spine.py",
+      "depth": 2,
+      "size_bytes": 17225,
+      "total_lines": 433,
+      "code_lines": 377,
+      "functions": [
+        "to_dict",
+        "is_critical",
+        "to_dict",
+        "to_dict",
+        "pair_count",
+        "to_dict",
+        "is_committed",
+        "to_dict",
+        "committed_proposal_count",
+        "critical_drift_count",
+        "metrics_by_name",
+        "average_metric",
+        "to_dict",
+        "summary",
+        "__init__",
+        "score_groundedness",
+        "compute_pk",
+        "compute_mrr",
+        "compute_ndcg",
+        "_record",
+        "emit_drift_alert",
+        "build_dpo_batch",
+        "stage_proposal",
+        "commit_optimization",
+        "reject_proposal"
+      ],
+      "classes": [
+        "OptimizationStage",
+        "EvalMetricResult",
+        "DriftAlert",
+        "PreferencePair",
+        "DPOBatch",
+        "OptimizationProposal",
+        "EvalSpineReport",
+        "EvalSpine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/engine/execution_bound_token.py",
+      "depth": 2,
+      "size_bytes": 17201,
+      "total_lines": 358,
+      "code_lines": 330,
+      "functions": [
+        "get_capability_authority",
+        "verify_execution_binding",
+        "verify_signature",
+        "_compute_expected_signature",
+        "__init__",
+        "_load_authority_secret",
+        "issue_token",
+        "verify_token"
+      ],
+      "classes": [
+        "CapabilityType",
+        "ExecutionBoundToken",
+        "SecureCapabilityAuthority"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/exceptions/SovereignError.py",
+      "depth": 2,
+      "size_bytes": 2762,
+      "total_lines": 86,
+      "code_lines": 53,
+      "functions": [
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__"
+      ],
+      "classes": [
+        "SovereignError",
+        "HealerError",
+        "CircularDependencyError",
+        "ConfigurationError",
+        "StructuralError",
+        "HygieneError",
+        "IntegrityError",
+        "ValidationError",
+        "ResourceNotFoundError",
+        "SecurityViolationError"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/exceptions/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/exceptions/healer_exceptions.py",
+      "depth": 2,
+      "size_bytes": 3660,
+      "total_lines": 114,
+      "code_lines": 82,
+      "functions": [
+        "__init__",
+        "__str__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__"
+      ],
+      "classes": [
+        "HealerError",
+        "CircularDependencyError",
+        "HealingBudgetExceededError",
+        "ValidationRegistryError",
+        "HealingTimeoutError",
+        "SovereignError",
+        "ConfigurationError"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/exceptions/runtime_exceptions.py",
+      "depth": 2,
+      "size_bytes": 3523,
+      "total_lines": 103,
+      "code_lines": 79,
+      "functions": [
+        "__init__",
+        "__str__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__"
+      ],
+      "classes": [
+        "AgentRuntimeError",
+        "ToolExecutionError",
+        "ToolNotFoundError",
+        "HealExecutionError",
+        "PatternExecutionError",
+        "MaxTurnsExceededError"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/exceptions/sovereignty_exceptions.py",
+      "depth": 2,
+      "size_bytes": 1485,
+      "total_lines": 53,
+      "code_lines": 37,
+      "functions": [],
+      "classes": [
+        "SovereigntyViolationError",
+        "IsolationViolationError",
+        "CapabilityTokenError",
+        "DeterminismViolationError"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/exceptions/workflow_exceptions.py",
+      "depth": 2,
+      "size_bytes": 1471,
+      "total_lines": 60,
+      "code_lines": 47,
+      "functions": [],
+      "classes": [
+        "AgenticWorkflowError",
+        "HopExecutionError",
+        "ValidationError",
+        "ApiError",
+        "CircuitBreakerOpenError"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(13)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.AgentResponse"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.CircuitState"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.GateDecision"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.HopStatus"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.LLMResponse"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.MessageType"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.RAGState"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.ReasoningConfig"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.ResidualAgentMessage"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.ResidualValidationResult"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.ThematicAnalysis"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.ValidationSeverity"
+        },
+        {
+          "line": 4,
+          "symbol": "agentic_core.runtime.types.core_contracts_types.WorkflowCheckpoint"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 1750,
+      "total_lines": 41,
+      "code_lines": 38,
+      "functions": [
+        "__getattr__"
+      ],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/cache_entry_types.py",
+      "depth": 2,
+      "size_bytes": 22778,
+      "total_lines": 511,
+      "code_lines": 467,
+      "functions": [
+        "create_semantic_cache",
+        "is_expired",
+        "__init__",
+        "_compute_embedding",
+        "_find_semantic_match",
+        "_hash_prompt",
+        "get",
+        "set",
+        "_evict_oldest",
+        "clear",
+        "get_stats",
+        "prune_expired",
+        "get_embedding"
+      ],
+      "classes": [
+        "CacheEntry",
+        "SemanticCacheHit",
+        "CacheMiss",
+        "semantic_cache"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/circuit_breaker_types.py",
+      "depth": 2,
+      "size_bytes": 628,
+      "total_lines": 34,
+      "code_lines": 22,
+      "functions": [
+        "get_breaker"
+      ],
+      "classes": [
+        "CircuitBreakerState",
+        "CircuitBreakerOpenError"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/claim_type_types.py",
+      "depth": 2,
+      "size_bytes": 10435,
+      "total_lines": 250,
+      "code_lines": 221,
+      "functions": [
+        "create_claim_scorer",
+        "__init__",
+        "extract_claims",
+        "score_claim",
+        "analyze_claims"
+      ],
+      "classes": [
+        "ClaimType",
+        "ConfidenceLevel",
+        "Claim",
+        "ClaimAnalysisResult",
+        "ClaimConfidenceScorer"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/cost_governor_types.py",
+      "depth": 2,
+      "size_bytes": 17262,
+      "total_lines": 384,
+      "code_lines": 343,
+      "functions": [
+        "get_global_cost_governor",
+        "track_api_call",
+        "__init__",
+        "__init__",
+        "track_usage",
+        "_check_budget_status",
+        "get_spend",
+        "get_remaining_budget",
+        "get_usage_summary",
+        "update_pricing",
+        "reset",
+        "export_usage",
+        "__init__",
+        "get_governor"
+      ],
+      "classes": [
+        "BudgetExceededError",
+        "CostGovernor",
+        "UsageRecord",
+        "CostGovernorManager"
+      ],
+      "import_count": 14,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/execution_trace.py",
+      "depth": 2,
+      "size_bytes": 3880,
+      "total_lines": 109,
+      "code_lines": 82,
+      "functions": [
+        "_bootstrap_determinism_digest",
+        "get_execution_trace_manager",
+        "start_execution_trace",
+        "bind_determinism_to_trace",
+        "get_active_execution_trace",
+        "__init__",
+        "start_trace",
+        "bind_determinism_digest",
+        "get_active_trace",
+        "end_trace"
+      ],
+      "classes": [
+        "ExecutionTrace",
+        "ExecutionTraceManager"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/expansion_strategy_types.py",
+      "depth": 2,
+      "size_bytes": 2165,
+      "total_lines": 76,
+      "code_lines": 58,
+      "functions": [
+        "is_valid",
+        "__init__",
+        "expand_query",
+        "generate_hypothetical_doc"
+      ],
+      "classes": [
+        "ExpansionStrategy",
+        "HyDeDocument",
+        "HyDeResult",
+        "HyDeProcessor"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/recovery_types.py",
+      "depth": 2,
+      "size_bytes": 796,
+      "total_lines": 39,
+      "code_lines": 25,
+      "functions": [],
+      "classes": [
+        "RecoveryStrategy",
+        "ResilienceError",
+        "TransientError",
+        "PermanentError",
+        "RetryExhaustedError"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/sovereign_events_types.py",
+      "depth": 2,
+      "size_bytes": 23334,
+      "total_lines": 324,
+      "code_lines": 298,
+      "functions": [
+        "__init__",
+        "emit_event",
+        "_dispatch_to_observability",
+        "observe_execution",
+        "_dispatch_async",
+        "decorator",
+        "wrapper"
+      ],
+      "classes": [
+        "SovereignEvent",
+        "event_emission_mixin"
+      ],
+      "import_count": 14,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/state.py",
+      "depth": 2,
+      "size_bytes": 255,
+      "total_lines": 8,
+      "code_lines": 5,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 6,
+          "symbol": "AgentMessage"
+        },
+        {
+          "line": 6,
+          "symbol": "AgentState"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/types/state_types.py",
+      "depth": 2,
+      "size_bytes": 835,
+      "total_lines": 30,
+      "code_lines": 22,
+      "functions": [
+        "add_message",
+        "increment_turn"
+      ],
+      "classes": [
+        "AgentMessage",
+        "AgentState"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/__init__.py",
+      "depth": 2,
+      "size_bytes": 419,
+      "total_lines": 20,
+      "code_lines": 17,
+      "functions": [],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BATCH_SIZE"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BUFFER_SIZE"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_SLEEP"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_DEPTH"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_FILES"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_RETRIES"
+        },
+        {
+          "line": 3,
+          "symbol": "agentic_core.L0_routing.config.path_constants.THRESHOLD"
+        },
+        {
+          "line": 14,
+          "symbol": "main_util.main"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/discovery_parser_util.py",
+      "depth": 2,
+      "size_bytes": 1688,
+      "total_lines": 47,
+      "code_lines": 36,
+      "functions": [
+        "load_hardened_agent_metadata",
+        "__init__",
+        "__getitem__",
+        "__len__",
+        "__iter__"
+      ],
+      "classes": [
+        "AgentListMapping"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/discovery_util.py",
+      "depth": 2,
+      "size_bytes": 14639,
+      "total_lines": 361,
+      "code_lines": 322,
+      "functions": [
+        "get_python_files",
+        "__init__",
+        "discover_all",
+        "_scan_file_for_agents",
+        "_determine_layer",
+        "_get_class_reference",
+        "_get_module_path"
+      ],
+      "classes": [
+        "DiscoveredAgentRecord",
+        "AgentRegistry",
+        "Mock"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/dynamic_loader_util.py",
+      "depth": 2,
+      "size_bytes": 14653,
+      "total_lines": 331,
+      "code_lines": 302,
+      "functions": [
+        "load_class",
+        "load_implementation",
+        "create_instance",
+        "clear_cache",
+        "clear_instance_cache",
+        "register_implementation",
+        "is_available",
+        "get_registered_protocols"
+      ],
+      "classes": [
+        "DynamicLoader"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/file_cache_util.py",
+      "depth": 2,
+      "size_bytes": 27607,
+      "total_lines": 439,
+      "code_lines": 388,
+      "functions": [
+        "get_python_files",
+        "get_all_files",
+        "invalidate_cache",
+        "__init__",
+        "get_instance",
+        "reset_instance",
+        "_detect_project_root",
+        "_scan",
+        "get_all_files",
+        "get_files_by_extension",
+        "get_python_files",
+        "get_markdown_files",
+        "invalidate",
+        "get_scan_count",
+        "project_root",
+        "is_cached"
+      ],
+      "classes": [
+        "FileCache"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/main_util.py",
+      "depth": 2,
+      "size_bytes": 9259,
+      "total_lines": 211,
+      "code_lines": 197,
+      "functions": [
+        "main"
+      ],
+      "classes": [],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/runtime_bootstrapper_util.py",
+      "depth": 2,
+      "size_bytes": 13755,
+      "total_lines": 276,
+      "code_lines": 252,
+      "functions": [
+        "__init__",
+        "record",
+        "track",
+        "emit",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "__init__",
+        "assemble_hop",
+        "_get_tool"
+      ],
+      "classes": [
+        "TelemetryRecorder",
+        "semantic_gatekeeper",
+        "StructuredEngineAgent",
+        "DockerSandbox",
+        "MCPConnectionManager",
+        "SupremeCourt",
+        "GenealogyRegistry",
+        "LocalDiskAdapter",
+        "AirlockProtocol",
+        "ConstitutionalOverseer",
+        "CostGovernor",
+        "InputMembrane",
+        "SubatomicHop",
+        "runtime_bootstrapper"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/sovereign_dependency_error_util.py",
+      "depth": 2,
+      "size_bytes": 27338,
+      "total_lines": 584,
+      "code_lines": 549,
+      "functions": [
+        "__init__",
+        "run",
+        "_run_with_zero_trust",
+        "_preflight_checks",
+        "_sanitize_input",
+        "_execute_think_stage_with_consensus",
+        "_assess_task_risk",
+        "_check_past_failures",
+        "_execute_act_stage_with_airlock",
+        "_execute_critique_stage_with_membrane",
+        "_execute_commit_stage",
+        "_handle_budget_exceeded",
+        "_handle_execution_error",
+        "_cleanup",
+        "__init__"
+      ],
+      "classes": [
+        "SovereignDependencyError",
+        "AgentPlan",
+        "SubatomicHop",
+        "BudgetExceededError"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/sovereign_index_util.py",
+      "depth": 2,
+      "size_bytes": 51358,
+      "total_lines": 537,
+      "code_lines": 477,
+      "functions": [
+        "__init__",
+        "get_instance",
+        "reset_instance",
+        "get_files",
+        "get_python_files",
+        "get_agent_files",
+        "file_exists",
+        "refresh",
+        "invalidate",
+        "force_refresh",
+        "add_exclusion",
+        "remove_exclusion",
+        "get_stats",
+        "_ensure_fresh",
+        "_scan_filesystem",
+        "_scan_directory"
+      ],
+      "classes": [
+        "SovereignIndex"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/sovereign_scan_util.py",
+      "depth": 2,
+      "size_bytes": 12785,
+      "total_lines": 270,
+      "code_lines": 246,
+      "functions": [
+        "__new__",
+        "__init__",
+        "get_instance",
+        "reset_instance",
+        "scan_repository",
+        "_file_belongs_to_root",
+        "get_root_files",
+        "get_all_files",
+        "invalidate_cache"
+      ],
+      "classes": [
+        "SovereignScanner"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/tools.py",
+      "depth": 2,
+      "size_bytes": 468,
+      "total_lines": 15,
+      "code_lines": 12,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(4)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 6,
+          "symbol": "ToolDefinition"
+        },
+        {
+          "line": 6,
+          "symbol": "ToolMatch"
+        },
+        {
+          "line": 6,
+          "symbol": "create_tool_registry"
+        },
+        {
+          "line": 11,
+          "symbol": "ToolRegistry"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/trace_context.py",
+      "depth": 2,
+      "size_bytes": 160,
+      "total_lines": 3,
+      "code_lines": 2,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "*"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/trace_emitter.py",
+      "depth": 2,
+      "size_bytes": 16894,
+      "total_lines": 401,
+      "code_lines": 361,
+      "functions": [
+        "emit_trace",
+        "to_dict",
+        "_module_name",
+        "_current_trace",
+        "_make_digest",
+        "emit_trace_record",
+        "trace_op",
+        "decorator",
+        "__init__",
+        "__enter__",
+        "__exit__",
+        "record",
+        "wrapper"
+      ],
+      "classes": [
+        "TraceRecord",
+        "TraceEmitter",
+        "trace_operation"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "runtime/utils/trait_system_util.py",
+      "depth": 2,
+      "size_bytes": 20840,
+      "total_lines": 498,
+      "code_lines": 429,
+      "functions": [
+        "with_traits",
+        "get_applied_traits",
+        "has_trait",
+        "apply",
+        "get_trait_name",
+        "apply",
+        "apply",
+        "apply",
+        "decorator",
+        "new_post_init",
+        "cache_get",
+        "cache_set",
+        "cache_clear",
+        "new_post_init",
+        "record_timing",
+        "get_metrics",
+        "reset_metrics",
+        "new_post_init",
+        "batch_add",
+        "batch_flush",
+        "should_flush_batch",
+        "run_pooled"
+      ],
+      "classes": [
+        "Trait",
+        "CachingTrait",
+        "MetricsTrait",
+        "BatchingTrait"
+      ],
+      "import_count": 17,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

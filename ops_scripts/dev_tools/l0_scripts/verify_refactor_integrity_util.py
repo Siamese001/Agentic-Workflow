@@ -12,16 +12,6 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 RENAMES = {'Config': 'app_config', 'Exceptions': 'canon_exceptions', 'Factory': 'router_factory', 'Prompts': 'resume_prompts'}

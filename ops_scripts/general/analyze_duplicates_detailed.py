@@ -12,16 +12,6 @@ Uses CodeDeduplicationAgent and FilenameUniquenessGuardianAgent for analysis.
 import asyncio
 import sys
 
-from apps_shared.config.pipeline_constants_config import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

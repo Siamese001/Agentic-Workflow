@@ -247,7 +247,6 @@ _emit_reads_through("l4", "config_environment_util", "urg_read_73")
 _emit_reads_through("l4", "config_environment_util", "urg_read_74")
 _emit_reads_through("l4", "config_environment_util", "urg_read_75")
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

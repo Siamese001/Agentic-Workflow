@@ -113,51 +113,77 @@ from agentic_core.L2_execution.utils.parallel_file_processor import (  # noqa: E
 )
 
 
-def _print_defect_table(routing_summary: dict[str, int], semantic_warnings: list[str] | None = None) -> None:
+def _print_defect_table(
+    routing_summary: dict,
+    semantic_warnings: list[str] | None = None,
+    sqlite_path: Path | None = None,
+) -> None:
     """Print P1-P4 defect table in terminal output.
 
-    SEVERITY SSOT: See agentic_core.L5_safety.config.severity.SeverityLevel
-    Maps severity levels to priority system:
-    - P1: CRITICAL - Layer violations, critical repair routes (blocks commit)
-    - P2: HIGH - High severity repair routes, architectural issues
-    - P3: MEDIUM - Medium severity repair routes, code quality issues
-    - P4: LOW - Low severity repair routes, semantic enrichment warnings
+    Counts are sourced from two places:
+    - P1: routing_summary["by_severity"]["critical"] — layer violations (violates edges)
+    - P2/P3/P4: SQLite violations table — antipattern edges classified by severity SQL
+      P2=HIGH (critical-layer exception patterns), P3=MEDIUM (other layers), P4=LOW
+    If sqlite_path is not provided, falls back to routing_summary for all counts.
 
     Args:
-        routing_summary: Dictionary with by_severity counts
+        routing_summary: Dictionary with by_severity counts (for layer violations)
         semantic_warnings: List of semantic enrichment warnings (EDGE SEMANTIC PRECISION, etc.)
+        sqlite_path: Path to the ADG SQLite database (for antipattern violation counts)
     """
     by_severity = routing_summary.get("by_severity", {})
 
-    # Map severity to priority
+    # P1: layer violations always come from routing_summary (violates edges)
     p1_count = by_severity.get("critical", 0)
-    p2_count = by_severity.get("high", 0)
-    p3_count = by_severity.get("medium", 0)
 
-    # P4 includes low severity + semantic enrichment warnings
-    p4_count = by_severity.get("low", 0)
+    # P2/P3/P4: read antipattern violation counts directly from SQLite violations table
+    p2_antipattern = 0
+    p3_antipattern = 0
+    p4_antipattern = 0
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            import sqlite3 as _sqlite3
+            with _sqlite3.connect(str(sqlite_path)) as _conn:
+                rows = _conn.execute(
+                    "SELECT severity, COUNT(*) FROM violations WHERE category='antipattern' GROUP BY severity"
+                ).fetchall()
+                _sev_map = {r[0]: r[1] for r in rows}
+                p2_antipattern = _sev_map.get("HIGH", 0)
+                p3_antipattern = _sev_map.get("MEDIUM", 0)
+                p4_antipattern = _sev_map.get("LOW", 0)
+        except Exception:  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
+            pass
+
+    # Non-antipattern HIGH/MEDIUM/LOW from routing (dynamic_exec, invokes_provider, etc.)
+    p2_routing = by_severity.get("high", 0)
+    p3_routing = by_severity.get("medium", 0)
+
+    p2_count = p2_antipattern + p2_routing
+    p3_count = p3_antipattern + p3_routing
+
+    # P4: antipattern LOW + semantic enrichment warnings
+    p4_count = p4_antipattern + by_severity.get("low", 0)
     if semantic_warnings:
         p4_count += len(semantic_warnings)
 
     total = p1_count + p2_count + p3_count + p4_count
 
-    print("\n[ADG] Defect Summary:")
+    print("\n[ADG] Defect Summary (from ADG edges):")
     print("+-----+-------------------------------+--------+")
     print("| P#  | Description                   | Count  |")
     print("+-----+-------------------------------+--------+")
     print(f"| P1  | CRITICAL - layer violations   | {p1_count:6} |")
-    print(f"| P2  | HIGH - architectural issues   | {p2_count:6} |")
+    print(f"| P2  | HIGH - exception antipatterns | {p2_count:6} |")
     print(f"| P3  | MEDIUM - code quality         | {p3_count:6} |")
-    print(f"| P4  | LOW - semantic warnings       | {p4_count:6} |")
+    print(f"| P4  | LOW - style/warnings          | {p4_count:6} |")
     print("+-----+-------------------------------+--------+")
     print(f"| TOT | TOTAL                         | {total:6} |")
     print("+-----+-------------------------------+--------+")
 
     # Detail P4 breakdown if there are semantic warnings
     if semantic_warnings:
-        low_count = by_severity.get("low", 0)
         warning_count = len(semantic_warnings)
-        print(f"[ADG] P4 breakdown: {low_count} low severity + {warning_count} semantic warnings")
+        print(f"[ADG] P4 breakdown: {p4_antipattern} low antipatterns + {warning_count} semantic warnings")
         for warning in semantic_warnings:
             print(f"[ADG]   - {warning}")
 
@@ -506,8 +532,23 @@ def generate_full_adg(
             pass
 
     # --- E10: Repair routing ---
+    _critical_layer_prefixes = (
+        "agentic_core/L0_routing/",
+        "agentic_core/L5_safety/",
+        "agentic_core/L2_execution/",
+        "agentic_core/L3_orchestration/",
+    )
+    _high_antipattern_kinds = frozenset(
+        ("broad_exception_catch", "silent_exception_swallow", "log_and_swallow", "return_none_swallow")
+    )
     violation_edges = [
-        e for e in result.edges if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
+        e for e in result.edges
+        if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
+        or (
+            e.relation_type == "antipattern"
+            and e.edge_kind in _high_antipattern_kinds
+            and any(e.source_file.startswith(p) for p in _critical_layer_prefixes)
+        )
     ]
     repair_routes = route_violations(violation_edges)
     routing_summary = repair_routing_summary(repair_routes)
@@ -666,7 +707,7 @@ def generate_full_adg(
             raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
 
     # Print P1-P4 defect table (including semantic warnings as P4)
-    _print_defect_table(routing_summary, semantic_warnings)
+    _print_defect_table(routing_summary, semantic_warnings, sqlite_path=paths.sqlite)
 
     if os.environ.get("ADG_SKIP_REDIS", "").strip().lower() not in ("1", "true", "yes"):
         _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)

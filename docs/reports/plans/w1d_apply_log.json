@@ -1,0 +1,684 @@
+[
+  {
+    "file": "agentic_core\\L4_state\\cache\\config_file_cache.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L138: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\L5_safety\\enforcement\\test_rigor_enforcer.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L150: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\L5_safety\\types\\heal_policy_types.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L37: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\L5_safety\\utils\\tiered_batch_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L3: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\adg\\analysis\\coupling_metrics_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L29: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\adg\\analysis\\prompt_drift_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L36: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\adg\\ci\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L4: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\adg\\client\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L4: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\adg\\client\\mcp_client.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L100: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\adg\\contracts\\schema_util.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L24: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\adg\\extraction\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L8: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\adg\\runtime\\cache_loader.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L100: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\adg\\runtime\\query_engine.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L90: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_DEPTH', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\cache\\config_file_cache.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L102: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\cache\\core_backup\\config_file_cache.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L102: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\agent_defaults_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L102: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\base_entity_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L97: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\colors_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L113: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\config_loader.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L10: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\domain_constitution_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L11: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\gateway_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L115: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\global_settings_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\hygiene_registry_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L2: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\injection_layer_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L26: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\legacy_artifacts_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L100: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\reflection_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES"
+    ],
+    "details": "  L103: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\registry_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L96: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\config\\sovereign_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L102: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\evaluation\\metrics\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L3: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\interfaces\\gateway.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L29: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\interfaces\\gateway_shim.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L29: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\interfaces\\mixins.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L21: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\interfaces\\mixins_shim.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L21: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\knowledge\\document_loaders\\pdf_document_loader_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L3: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\knowledge\\document_loaders\\text_document_loader_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L3: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\knowledge\\research_cache\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L3: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\knowledge\\static_index\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L4: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\mixins\\archive_unused_20260405\\config_compat_mixin.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L13: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\mixins\\mcp_operation_mixin.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L105: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\prompt_governance\\security\\utils\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L4: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\anomaly_report_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L127: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\detection_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L12: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\feature_flags_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L98: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\heal_result_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L14: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\review_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L12: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\shared_infrastructure_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L121: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\config\\signal_quality_config.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L130: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  },
+  {
+    "file": "agentic_core\\runtime\\engine\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L2: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\runtime\\utils\\__init__.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "DEFAULT_TIMEOUT",
+      "MAX_DEPTH",
+      "MAX_FILES",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L3: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'DEFAULT_TIMEOUT', 'MAX_DEPTH', 'MAX_FILES', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "agentic_core\\utils\\workflow_engines\\completeness.py",
+    "symbols_removed": [
+      "BATCH_SIZE",
+      "BUFFER_SIZE",
+      "DEFAULT_SLEEP",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L23: removed ['BATCH_SIZE', 'BUFFER_SIZE', 'DEFAULT_SLEEP', 'MAX_RETRIES', 'THRESHOLD'] (single-line)"
+  }
+]

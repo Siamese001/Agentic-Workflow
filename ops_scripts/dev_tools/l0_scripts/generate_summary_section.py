@@ -5,16 +5,6 @@ import logging
 import time
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)

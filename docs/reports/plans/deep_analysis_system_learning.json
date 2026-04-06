@@ -1,0 +1,7153 @@
+{
+  "summary": {
+    "target_dir": "system_learning",
+    "total_files": 232,
+    "total_with_issues": 9,
+    "total_root_violations": 0,
+    "total_dead_code_files": 9,
+    "total_misplaced_files": 0,
+    "folder_breakdown": {
+      "system_learning": {
+        "files": 1,
+        "total_lines": 3,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\adapters": {
+        "files": 7,
+        "total_lines": 3190,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "system_learning\\arbitration": {
+        "files": 3,
+        "total_lines": 517,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/arbitration/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "system_learning\\confidence": {
+        "files": 6,
+        "total_lines": 696,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 6
+      },
+      "system_learning\\config": {
+        "files": 5,
+        "total_lines": 818,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/config/config_store.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "system_learning\\constraints": {
+        "files": 4,
+        "total_lines": 578,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "system_learning\\correlation": {
+        "files": 3,
+        "total_lines": 437,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/correlation/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "system_learning\\embedding": {
+        "files": 6,
+        "total_lines": 84,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 6
+      },
+      "system_learning\\enforcement": {
+        "files": 6,
+        "total_lines": 486,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 6
+      },
+      "system_learning\\engines": {
+        "files": 90,
+        "total_lines": 35747,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/engines/l4_audit_reader.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 89
+      },
+      "system_learning\\fingerprinting": {
+        "files": 3,
+        "total_lines": 510,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/fingerprinting/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "system_learning\\golden": {
+        "files": 1,
+        "total_lines": 0,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\invariants": {
+        "files": 3,
+        "total_lines": 521,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "system_learning\\logs": {
+        "files": 1,
+        "total_lines": 0,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\memory": {
+        "files": 4,
+        "total_lines": 34,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "system_learning\\meta_learning": {
+        "files": 8,
+        "total_lines": 1291,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/meta_learning/__init__.py",
+          "system_learning/meta_learning/meta_apply.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 6
+      },
+      "system_learning\\ml_integration": {
+        "files": 2,
+        "total_lines": 1681,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/ml_integration/anomaly_detection.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\monitoring": {
+        "files": 1,
+        "total_lines": 443,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\output": {
+        "files": 1,
+        "total_lines": 0,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\pipelines": {
+        "files": 5,
+        "total_lines": 2348,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 5
+      },
+      "system_learning\\policy": {
+        "files": 1,
+        "total_lines": 736,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\ports": {
+        "files": 9,
+        "total_lines": 973,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 9
+      },
+      "system_learning\\provenance": {
+        "files": 5,
+        "total_lines": 87,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 5
+      },
+      "system_learning\\raw": {
+        "files": 1,
+        "total_lines": 0,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\runtime": {
+        "files": 1,
+        "total_lines": 70,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\runtime_adg": {
+        "files": 7,
+        "total_lines": 2585,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "system_learning\\scripts": {
+        "files": 3,
+        "total_lines": 732,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "system_learning\\snapshots": {
+        "files": 2,
+        "total_lines": 295,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "system_learning\\state": {
+        "files": 1,
+        "total_lines": 640,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\stores": {
+        "files": 7,
+        "total_lines": 1611,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "system_learning\\telemetry": {
+        "files": 1,
+        "total_lines": 653,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "system_learning\\types": {
+        "files": 27,
+        "total_lines": 10884,
+        "root_violations": [],
+        "dead_code_files": [
+          "system_learning/types/config_store_types.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 26
+      },
+      "system_learning\\validators": {
+        "files": 7,
+        "total_lines": 993,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 7
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "system_learning/__init__.py",
+      "depth": 1,
+      "size_bytes": 106,
+      "total_lines": 3,
+      "code_lines": 2,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/__init__.py",
+      "depth": 2,
+      "size_bytes": 106,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/l1_meta_adapter.py",
+      "depth": 2,
+      "size_bytes": 13805,
+      "total_lines": 324,
+      "code_lines": 296,
+      "functions": [
+        "extract_telemetry",
+        "detect_drift"
+      ],
+      "classes": [
+        "L1TelemetryEvent",
+        "L1DriftSignal",
+        "L1MetaAdapter"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/l4_meta_prior_provider.py",
+      "depth": 2,
+      "size_bytes": 10755,
+      "total_lines": 230,
+      "code_lines": 209,
+      "functions": [
+        "__init__",
+        "get_prior",
+        "from_default_store"
+      ],
+      "classes": [
+        "L4MetaPriorProvider"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/live_run_pipeline_adapter.py",
+      "depth": 2,
+      "size_bytes": 13797,
+      "total_lines": 286,
+      "code_lines": 256,
+      "functions": [
+        "__init__",
+        "record_count",
+        "build_pipeline_deps",
+        "run"
+      ],
+      "classes": [
+        "ActivationAuthorizationError",
+        "LiveRunPipelineAdapter"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/otel_telemetry_store_adapter.py",
+      "depth": 2,
+      "size_bytes": 6678,
+      "total_lines": 221,
+      "code_lines": 160,
+      "functions": [
+        "get_otel_adapter",
+        "collect_otel_telemetry",
+        "__init__",
+        "store_span_data",
+        "store_span_metrics",
+        "query_spans_by_time_range",
+        "query_metrics_by_time_range",
+        "get_latest_span_count",
+        "cleanup_old_data",
+        "collect_and_store_current_spans"
+      ],
+      "classes": [
+        "OTelTelemetryStoreAdapter"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/system_learning_memory_bridge.py",
+      "depth": 2,
+      "size_bytes": 101283,
+      "total_lines": 2025,
+      "code_lines": 1747,
+      "functions": [
+        "_trunc",
+        "_content_hash",
+        "get_sl_memory_bridge",
+        "__init__",
+        "get_instance",
+        "_load_bridge",
+        "is_available",
+        "_get_unified_memory_manager",
+        "_normalize_persistable_event",
+        "persist_active_version",
+        "persist_config_snapshot",
+        "persist_telemetry_window",
+        "persist_l1_drift_signal",
+        "persist_healing_success_rate",
+        "persist_all_healing_rates",
+        "restore_healing_success_rates",
+        "persist_rca_findings",
+        "query_rca_pattern_frequency",
+        "persist_drift_summary",
+        "query_drift_history",
+        "persist_policy_recommendation",
+        "mark_recommendation_applied",
+        "query_policy_recommendations",
+        "persist_healing_aggregate_snapshot",
+        "persist_failure_pattern",
+        "query_failure_patterns",
+        "get_latest_violation_counts",
+        "_extract_timestamp",
+        "_extract_violation_count",
+        "persist_circuit_breaker_event",
+        "persist_adg_confidence_summary",
+        "persist_injection_detection_counts",
+        "persist_healing_tier_outcome",
+        "persist_workflow_outcome",
+        "persist_eval_regression_results",
+        "persist_cognitive_dispositions",
+        "persist_safety_audit_record",
+        "persist_resource_prediction_feedback",
+        "persist_rollback_strategy_outcome",
+        "persist_healing_memory_retrieval_quality",
+        "persist_execute_ssot_phase_outcomes",
+        "persist_repair_routes",
+        "_query_execute_ssot_outcomes",
+        "_query_recent_healing_memory_quality",
+        "persist_cache_coherence_violation",
+        "persist_infrastructure_drift_analysis",
+        "persist_cross_domain_healing_event",
+        "persist_cross_domain_pattern_analysis",
+        "persist_otel_span",
+        "persist_otel_span_metrics",
+        "persist_injection_detection_counts",
+        "persist_injection_context_data",
+        "persist_signal_spike_detection"
+      ],
+      "classes": [
+        "SystemLearningMemoryBridge"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/adapters/workflow_outcome_sl_adapter.py",
+      "depth": 2,
+      "size_bytes": 3510,
+      "total_lines": 103,
+      "code_lines": 75,
+      "functions": [
+        "_get_workflow_outcome",
+        "get_workflow_outcome_sl_adapter",
+        "register_with_workflow_bridge",
+        "__init__",
+        "accept",
+        "get_stats"
+      ],
+      "classes": [
+        "WorkflowOutcomeSLAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/arbitration/__init__.py",
+      "depth": 2,
+      "size_bytes": 492,
+      "total_lines": 16,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(12)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BATCH_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BUFFER_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_SLEEP"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_DEPTH"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_FILES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_RETRIES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.THRESHOLD"
+        },
+        {
+          "line": 13,
+          "symbol": "engine.ArbitrationEngine"
+        },
+        {
+          "line": 14,
+          "symbol": "types.ArbitrationCandidate"
+        },
+        {
+          "line": 14,
+          "symbol": "types.ArbitrationDecision"
+        },
+        {
+          "line": 14,
+          "symbol": "types.ArbitrationPolicy"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/arbitration/engine.py",
+      "depth": 2,
+      "size_bytes": 11193,
+      "total_lines": 253,
+      "code_lines": 240,
+      "functions": [
+        "arbitrate",
+        "_compute_fingerprint",
+        "sort_key"
+      ],
+      "classes": [
+        "ArbitrationEngine"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/arbitration/types.py",
+      "depth": 2,
+      "size_bytes": 9997,
+      "total_lines": 248,
+      "code_lines": 227,
+      "functions": [
+        "canonical_bytes",
+        "canonical_bytes",
+        "canonical_bytes",
+        "content_hash"
+      ],
+      "classes": [
+        "ArbitrationCandidate",
+        "ArbitrationPolicy",
+        "ArbitrationDecision"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/confidence/__init__.py",
+      "depth": 2,
+      "size_bytes": 667,
+      "total_lines": 26,
+      "code_lines": 23,
+      "functions": [],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/confidence/engine.py",
+      "depth": 2,
+      "size_bytes": 11099,
+      "total_lines": 254,
+      "code_lines": 231,
+      "functions": [
+        "calculate_confidence",
+        "__init__",
+        "__init__",
+        "score",
+        "_calculate_confidence",
+        "_map_confidence_to_action"
+      ],
+      "classes": [
+        "ConfidenceScore",
+        "HealingConfidenceScorer"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/confidence/gemini_judge.py",
+      "depth": 2,
+      "size_bytes": 1421,
+      "total_lines": 57,
+      "code_lines": 40,
+      "functions": [
+        "score_with_gemini",
+        "evaluate_e2e",
+        "__init__",
+        "score",
+        "__init__",
+        "evaluate"
+      ],
+      "classes": [
+        "GeminiJudge",
+        "GeminiE2EJudge"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/confidence/llm_judge.py",
+      "depth": 2,
+      "size_bytes": 1529,
+      "total_lines": 67,
+      "code_lines": 49,
+      "functions": [
+        "evaluate",
+        "score_output",
+        "__init__",
+        "evaluate",
+        "score"
+      ],
+      "classes": [
+        "LLMJudge"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/confidence/novel_judge.py",
+      "depth": 2,
+      "size_bytes": 1131,
+      "total_lines": 45,
+      "code_lines": 33,
+      "functions": [
+        "evaluate_novel",
+        "__init__",
+        "evaluate",
+        "score"
+      ],
+      "classes": [
+        "NovelJudge"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/confidence/types.py",
+      "depth": 2,
+      "size_bytes": 9682,
+      "total_lines": 247,
+      "code_lines": 225,
+      "functions": [
+        "canonical_bytes",
+        "from_canonical_bytes"
+      ],
+      "classes": [
+        "ConfidenceLevel",
+        "ConfidenceFactor",
+        "HealingAttempt",
+        "ConfidenceDecision",
+        "HealingConfidenceReport"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/config/config_store.py",
+      "depth": 2,
+      "size_bytes": 69382,
+      "total_lines": 455,
+      "code_lines": 358,
+      "functions": [
+        "_capture_start_of_run_state",
+        "_clear_start_of_run_cache",
+        "_get_MetaLearningChangePackageArtifact",
+        "_component_dir",
+        "_current_path",
+        "_versions_dir",
+        "_version_path",
+        "_atomic_write_json",
+        "_validate_inputs",
+        "load_current",
+        "_scan_latest_version",
+        "write_next_version",
+        "apply_change_package_readonly",
+        "get_active_version",
+        "read_active_payload",
+        "read_version_payload",
+        "activate_version"
+      ],
+      "classes": [],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 15,
+          "symbol": "emit_determinism_digest"
+        },
+        {
+          "line": 15,
+          "symbol": "emit_replay_key"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/config/embedding_storage_layout.py",
+      "depth": 2,
+      "size_bytes": 2693,
+      "total_lines": 79,
+      "code_lines": 57,
+      "functions": [
+        "__init__",
+        "indexes_dir",
+        "healing_contexts_index_dir",
+        "telemetry_events_index_dir",
+        "dpo_pairs_index_dir",
+        "current_faiss_file",
+        "current_metadata_file",
+        "archive_dir",
+        "embedding_cache_dir",
+        "healing_contexts_cache_dir",
+        "telemetry_events_cache_dir",
+        "dpo_pairs_cache_dir",
+        "raw_staging_dir"
+      ],
+      "classes": [
+        "EmbeddingStorageLayout"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/config/feature_flags.py",
+      "depth": 2,
+      "size_bytes": 8524,
+      "total_lines": 194,
+      "code_lines": 153,
+      "functions": [
+        "get_feature_flags",
+        "is_feature_enabled",
+        "reset_feature_flags",
+        "from_env",
+        "to_dict"
+      ],
+      "classes": [
+        "FeatureFlagConfig"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/config/import_policy.py",
+      "depth": 2,
+      "size_bytes": 1517,
+      "total_lines": 61,
+      "code_lines": 55,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/config/semantic_memory_config.py",
+      "depth": 2,
+      "size_bytes": 1021,
+      "total_lines": 29,
+      "code_lines": 19,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/constraints/__init__.py",
+      "depth": 2,
+      "size_bytes": 108,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/constraints/config_surfaces.py",
+      "depth": 2,
+      "size_bytes": 7494,
+      "total_lines": 254,
+      "code_lines": 189,
+      "functions": [],
+      "classes": [
+        "FloatConstraint",
+        "IntConstraint",
+        "PointerConstraint"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/constraints/dampening.py",
+      "depth": 2,
+      "size_bytes": 2910,
+      "total_lines": 98,
+      "code_lines": 72,
+      "functions": [
+        "assert_cooldown_ok",
+        "assert_min_sample_size"
+      ],
+      "classes": [
+        "DampeningViolation",
+        "CooldownViolation",
+        "SampleSizeViolation",
+        "CooldownPolicy",
+        "SampleSizePolicy"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/constraints/delta_enforcer.py",
+      "depth": 2,
+      "size_bytes": 7541,
+      "total_lines": 225,
+      "code_lines": 159,
+      "functions": [
+        "_get_constraint",
+        "validate_surface_change"
+      ],
+      "classes": [
+        "ConstraintViolation",
+        "ForbiddenSurface",
+        "UnknownSurface",
+        "BoundsViolation",
+        "DeltaViolation",
+        "TypeViolation",
+        "PointerViolation"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/correlation/__init__.py",
+      "depth": 2,
+      "size_bytes": 459,
+      "total_lines": 16,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(12)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BATCH_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BUFFER_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_SLEEP"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_DEPTH"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_FILES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_RETRIES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.THRESHOLD"
+        },
+        {
+          "line": 13,
+          "symbol": "engine.RiskCorrelator"
+        },
+        {
+          "line": 14,
+          "symbol": "types.CorrelatedRiskReport"
+        },
+        {
+          "line": 14,
+          "symbol": "types.CorrelatedRow"
+        },
+        {
+          "line": 14,
+          "symbol": "types.DriftEvent"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/correlation/engine.py",
+      "depth": 2,
+      "size_bytes": 9556,
+      "total_lines": 212,
+      "code_lines": 201,
+      "functions": [
+        "build",
+        "_should_correlate"
+      ],
+      "classes": [
+        "RiskCorrelator"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/correlation/types.py",
+      "depth": 2,
+      "size_bytes": 8518,
+      "total_lines": 209,
+      "code_lines": 191,
+      "functions": [
+        "from_canonical_bytes"
+      ],
+      "classes": [
+        "DriftEvent",
+        "CorrelatedRow",
+        "CorrelatedRiskReport"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/embedding/__init__.py",
+      "depth": 2,
+      "size_bytes": 170,
+      "total_lines": 4,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/embedding/embedders.py",
+      "depth": 2,
+      "size_bytes": 430,
+      "total_lines": 19,
+      "code_lines": 12,
+      "functions": [
+        "bge_embedding",
+        "embed_text",
+        "embed"
+      ],
+      "classes": [
+        "BGEEmbedder"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/embedding/embedding.py",
+      "depth": 2,
+      "size_bytes": 280,
+      "total_lines": 14,
+      "code_lines": 9,
+      "functions": [
+        "embed",
+        "embed"
+      ],
+      "classes": [
+        "PolicyEmbedder"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/embedding/policy_embedder.py",
+      "depth": 2,
+      "size_bytes": 326,
+      "total_lines": 14,
+      "code_lines": 9,
+      "functions": [
+        "embed_policy",
+        "embed"
+      ],
+      "classes": [
+        "PolicyGuardrailEmbedder"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/embedding/registry.py",
+      "depth": 2,
+      "size_bytes": 508,
+      "total_lines": 22,
+      "code_lines": 14,
+      "functions": [
+        "register_embedding",
+        "register_embedder",
+        "register"
+      ],
+      "classes": [
+        "EmbeddingRegistry"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/embedding/types.py",
+      "depth": 2,
+      "size_bytes": 222,
+      "total_lines": 11,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [
+        "EmbeddingVector",
+        "EmbeddingMetadata"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/enforcement/__init__.py",
+      "depth": 2,
+      "size_bytes": 42,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/enforcement/authority_invariants.py",
+      "depth": 2,
+      "size_bytes": 4805,
+      "total_lines": 138,
+      "code_lines": 110,
+      "functions": [
+        "assert_zero_execution_authority",
+        "assert_read_only_audit_access",
+        "assert_no_side_channel_activation"
+      ],
+      "classes": [
+        "AuthorityViolation",
+        "AuthorityContext"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/enforcement/boundary_guard.py",
+      "depth": 2,
+      "size_bytes": 11437,
+      "total_lines": 91,
+      "code_lines": 71,
+      "functions": [
+        "check_file_isolation",
+        "check_system_learning_isolation",
+        "__init__",
+        "_check_module",
+        "visit_Import",
+        "visit_ImportFrom"
+      ],
+      "classes": [
+        "_BoundaryVisitor"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/enforcement/determinism.py",
+      "depth": 2,
+      "size_bytes": 2732,
+      "total_lines": 84,
+      "code_lines": 66,
+      "functions": [
+        "deterministic_json",
+        "stable_sha256_json",
+        "assert_no_nondeterminism"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/enforcement/dual_injection_proposal_gate.py",
+      "depth": 2,
+      "size_bytes": 1867,
+      "total_lines": 52,
+      "code_lines": 40,
+      "functions": [
+        "decide_activation_mode"
+      ],
+      "classes": [
+        "ActivationBypassViolation",
+        "MetaLearningActivationDecision"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/enforcement/oscillation_freezer.py",
+      "depth": 2,
+      "size_bytes": 4687,
+      "total_lines": 120,
+      "code_lines": 94,
+      "functions": [
+        "__init__",
+        "record_change",
+        "is_frozen",
+        "frozen_count",
+        "reset_for_testing",
+        "_assert_not_frozen",
+        "_append_event",
+        "_oscillation_detected"
+      ],
+      "classes": [
+        "_ThresholdEvent",
+        "ParameterFrozenError",
+        "OscillationDetector"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 2362,
+      "total_lines": 83,
+      "code_lines": 69,
+      "functions": [],
+      "classes": [],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/approval_gauntlet_engine.py",
+      "depth": 2,
+      "size_bytes": 17184,
+      "total_lines": 481,
+      "code_lines": 360,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__init__",
+        "run_gauntlet",
+        "_run_gauntlet_gates",
+        "_validate_shadow_mode",
+        "_check_regression_gate",
+        "_check_safety_gate",
+        "_check_policy_gate",
+        "_make_sovereign_decision",
+        "_determine_overall_decision"
+      ],
+      "classes": [
+        "ApprovalDecision",
+        "ApprovalGauntletResult",
+        "ApprovalGauntletEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/bus_consumer.py",
+      "depth": 2,
+      "size_bytes": 2341,
+      "total_lines": 67,
+      "code_lines": 56,
+      "functions": [
+        "drain_and_apply"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/case_compilation_engine.py",
+      "depth": 2,
+      "size_bytes": 17618,
+      "total_lines": 482,
+      "code_lines": 387,
+      "functions": [
+        "read_sealed_output",
+        "build_case_record",
+        "__init__",
+        "compile_cases",
+        "_execute_capture_stage",
+        "_execute_freeze_stage",
+        "_build_case_records",
+        "_execute_seal_stage",
+        "_build_error_result"
+      ],
+      "classes": [
+        "SealedOutputReader",
+        "CaseRecordBuilder",
+        "CaseCompilationEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/change_package_impl.py",
+      "depth": 2,
+      "size_bytes": 10248,
+      "total_lines": 220,
+      "code_lines": 207,
+      "functions": [
+        "reasons",
+        "canonical_bytes"
+      ],
+      "classes": [
+        "ChangePackage"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/cross_repo_system_learning_import.py",
+      "depth": 2,
+      "size_bytes": 41873,
+      "total_lines": 686,
+      "code_lines": 580,
+      "functions": [
+        "_canonical_json_bytes",
+        "_sha256_hex",
+        "_is_candidate",
+        "_artifact_guess_and_bucket",
+        "_classify_disposition",
+        "_normalize_text_bytes",
+        "_hash_file",
+        "_derive_repo_name",
+        "_derive_ingestion_timestamp_from_path",
+        "discover_artifacts",
+        "build_accepted_manifest",
+        "_namespace_and_dimension_for_bucket",
+        "build_embedding_import_records",
+        "_validate_embedding_dimensions",
+        "_digest_of_dataclasses",
+        "_build_wiring_map",
+        "run_import",
+        "_write_json",
+        "write_run_artifacts",
+        "load_cross_repo_learning_context",
+        "_parse_args",
+        "main",
+        "_has"
+      ],
+      "classes": [
+        "DiscoveredArtifact",
+        "AcceptedArtifact",
+        "EmbeddingImportRecord",
+        "ImportDigests",
+        "ImportRunResult"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/default_healing_pattern_advisor.py",
+      "depth": 2,
+      "size_bytes": 13598,
+      "total_lines": 289,
+      "code_lines": 254,
+      "functions": [
+        "__init__",
+        "advise"
+      ],
+      "classes": [
+        "HealingPattern",
+        "DefaultHealingPatternAdvisor"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/deterministic_replay_engine.py",
+      "depth": 2,
+      "size_bytes": 17436,
+      "total_lines": 376,
+      "code_lines": 348,
+      "functions": [
+        "emit_digest",
+        "__init__",
+        "replay",
+        "_run_replay_cases",
+        "_compute_replay_digest"
+      ],
+      "classes": [
+        "ReplayResult",
+        "DeterministicReplayEngine"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/embedding_corpus_extraction.py",
+      "depth": 2,
+      "size_bytes": 5633,
+      "total_lines": 176,
+      "code_lines": 142,
+      "functions": [
+        "canonical_record_json",
+        "compute_content_hash",
+        "write_jsonl_records",
+        "extract_healing_context_records",
+        "extract_telemetry_event_records",
+        "extract_dpo_pair_records"
+      ],
+      "classes": [
+        "CorpusRecord"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/embedding_retention_scheduler.py",
+      "depth": 2,
+      "size_bytes": 14301,
+      "total_lines": 279,
+      "code_lines": 262,
+      "functions": [
+        "run_once",
+        "rolling_window_predicate"
+      ],
+      "classes": [
+        "EmbeddingRetentionScheduler"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/embedding_service_factory.py",
+      "depth": 2,
+      "size_bytes": 24576,
+      "total_lines": 569,
+      "code_lines": 501,
+      "functions": [
+        "is_disabled",
+        "retrieve",
+        "is_healthy",
+        "replay_key",
+        "__init__",
+        "get_or_disabled",
+        "reset_instance",
+        "get",
+        "_is_embedding_enabled",
+        "_faiss_gpu_available",
+        "_embedding_device",
+        "_build_gpu_index",
+        "_get_blas_fingerprint",
+        "_load_pack",
+        "_verify_integrity",
+        "_compute_streaming_hash",
+        "_perform_spot_check",
+        "is_disabled",
+        "retrieve",
+        "is_healthy",
+        "replay_key"
+      ],
+      "classes": [
+        "EmbeddingDisabledError",
+        "EmbeddingForkViolationError",
+        "EmbeddingIntegrityError",
+        "EmbeddingReplayViolationError",
+        "EmbeddingResult",
+        "_DisabledEmbeddingService",
+        "EmbeddingServiceFactory"
+      ],
+      "import_count": 17,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/enhanced_rag_retrieval_cache.py",
+      "depth": 2,
+      "size_bytes": 29096,
+      "total_lines": 451,
+      "code_lines": 357,
+      "functions": [
+        "_get_cache_entry_types",
+        "get_enhanced_rag_retrieval_cache",
+        "__init__",
+        "_get_default_embedding_client",
+        "get",
+        "_try_semantic_match",
+        "_meets_similarity_threshold",
+        "set",
+        "_store_semantic_entry",
+        "_build_enhanced_cache_key",
+        "_validate_policy_compliance",
+        "invalidate",
+        "get_metrics",
+        "reset_metrics"
+      ],
+      "classes": [
+        "EnhancedRagRetrievalCache"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/faiss_startup_integrity.py",
+      "depth": 2,
+      "size_bytes": 24026,
+      "total_lines": 156,
+      "code_lines": 129,
+      "functions": [
+        "_verify_single_index",
+        "verify_all_indexes_in_dir"
+      ],
+      "classes": [
+        "StartupIntegrityError",
+        "IndexVerificationResult"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/g_gate_regression_checker.py",
+      "depth": 2,
+      "size_bytes": 15117,
+      "total_lines": 423,
+      "code_lines": 317,
+      "functions": [
+        "__init__",
+        "validate_regression",
+        "_validate_exact_match",
+        "_validate_schema_state",
+        "_extract_schema_signature",
+        "_validate_trajectory_invariance",
+        "_detect_api_drift",
+        "_validate_rubric_consistency",
+        "_collect_drift_details",
+        "_build_diff_summary"
+      ],
+      "classes": [
+        "GGateRegressionChecker"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/governance_reward_model.py",
+      "depth": 2,
+      "size_bytes": 19773,
+      "total_lines": 489,
+      "code_lines": 412,
+      "functions": [
+        "_safe_mean",
+        "_human_approval_rate",
+        "_build_score_id",
+        "score_proposal",
+        "__post_init__",
+        "__init__",
+        "score",
+        "score_batch",
+        "annotate_proposals"
+      ],
+      "classes": [
+        "RewardModelConfig",
+        "GovernanceRewardModel"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/graph_neighborhood_embedder.py",
+      "depth": 2,
+      "size_bytes": 18127,
+      "total_lines": 419,
+      "code_lines": 373,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_similar_motif",
+        "retrieve_by_description",
+        "_retrieve",
+        "neighborhood_from_adg_node"
+      ],
+      "classes": [
+        "NeighborhoodRetrievalResult",
+        "GraphNeighborhoodEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/healer_outcome_embedder.py",
+      "depth": 2,
+      "size_bytes": 16772,
+      "total_lines": 401,
+      "code_lines": 358,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_for_failure",
+        "retrieve_similar",
+        "_retrieve",
+        "record_from_healing_event"
+      ],
+      "classes": [
+        "HealerRetrievalResult",
+        "HealerOutcomeEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/healing_config_optimizer.py",
+      "depth": 2,
+      "size_bytes": 31042,
+      "total_lines": 704,
+      "code_lines": 555,
+      "functions": [
+        "__init__",
+        "create_snapshot_from_intake",
+        "propose_threshold_adjustments",
+        "propose_threshold_adjustments_with_patterns",
+        "_apply_pattern_findings",
+        "_apply_bounded_constraints",
+        "_get_current_threshold_for_healer",
+        "_get_current_threshold",
+        "_compute_confidence",
+        "propose_threshold_adjustments_with_embeddings",
+        "_aggregate_embedding_scores",
+        "canonical_bytes",
+        "content_hash",
+        "canonical_bytes",
+        "content_hash"
+      ],
+      "classes": [
+        "HealingConfigOptimizer",
+        "ThresholdAdjustment",
+        "ThresholdAdjustmentProposal"
+      ],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/healing_outcome_aggregator.py",
+      "depth": 2,
+      "size_bytes": 17708,
+      "total_lines": 426,
+      "code_lines": 345,
+      "functions": [
+        "__init__",
+        "ingest",
+        "snapshot",
+        "build_proposal",
+        "window_size",
+        "event_count",
+        "ingest_invocation",
+        "compute_success_rate",
+        "create_snapshot",
+        "clear_aggregates",
+        "__init__",
+        "ingest_invocation",
+        "compute_success_rate",
+        "create_snapshot"
+      ],
+      "classes": [
+        "HealingOutcomeAggregator",
+        "InvocationRecord",
+        "HealingOutcomeAggregatorProtocol"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/healing_outcome_intake_adapter.py",
+      "depth": 2,
+      "size_bytes": 11877,
+      "total_lines": 234,
+      "code_lines": 216,
+      "functions": [
+        "__init__",
+        "build_record",
+        "persist_record",
+        "get_recent_records"
+      ],
+      "classes": [
+        "HealingOutcomeIntakeAdapter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/healing_success_rate_store.py",
+      "depth": 2,
+      "size_bytes": 16090,
+      "total_lines": 365,
+      "code_lines": 322,
+      "functions": [
+        "get_default_store",
+        "reset_default_store",
+        "__init__",
+        "_check_pid",
+        "get_prior",
+        "record_outcome",
+        "_maybe_persist_to_mcp",
+        "_log_update",
+        "export_state",
+        "store_state_hash",
+        "import_state",
+        "restore_from_memory",
+        "get_all",
+        "get_counts",
+        "reset"
+      ],
+      "classes": [
+        "HealingSuccessRateStore"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/historical_backfill_engine.py",
+      "depth": 2,
+      "size_bytes": 16860,
+      "total_lines": 408,
+      "code_lines": 337,
+      "functions": [
+        "_sha256",
+        "_existing_hashes",
+        "_load_jsonl_lenient",
+        "_load_json_lenient",
+        "backfill_protected_root_blocks",
+        "backfill_compliance_success_rates",
+        "run_backfill"
+      ],
+      "classes": [],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/historical_ingestion_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 18833,
+      "total_lines": 427,
+      "code_lines": 353,
+      "functions": [
+        "ingest_and_build_indexes",
+        "ingest_and_build_indexes_with_embedder",
+        "build_with_embedder"
+      ],
+      "classes": [],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/hitl_decision_logger.py",
+      "depth": 2,
+      "size_bytes": 18008,
+      "total_lines": 273,
+      "code_lines": 254,
+      "functions": [
+        "_get_evidence_path",
+        "log_hitl_decision",
+        "get_decision_count",
+        "reset_for_testing",
+        "log_routing_correction"
+      ],
+      "classes": [],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/human_calibration_engine.py",
+      "depth": 2,
+      "size_bytes": 14482,
+      "total_lines": 421,
+      "code_lines": 336,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__init__",
+        "record_judgment",
+        "get_calibration_summary",
+        "_human_label_to_confidence",
+        "_calibrate_confidence",
+        "_detect_drift",
+        "_determine_feedback_action"
+      ],
+      "classes": [
+        "HumanJudgment",
+        "CalibrationRecord",
+        "HumanCalibrationEngine"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/in_memory_healing_outcome_intake_store.py",
+      "depth": 2,
+      "size_bytes": 1343,
+      "total_lines": 43,
+      "code_lines": 31,
+      "functions": [
+        "__init__",
+        "write",
+        "get_records",
+        "clear",
+        "count"
+      ],
+      "classes": [
+        "InMemoryHealingOutcomeIntakeStore"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/in_memory_scoring_report_store.py",
+      "depth": 2,
+      "size_bytes": 10760,
+      "total_lines": 217,
+      "code_lines": 199,
+      "functions": [
+        "__init__",
+        "write",
+        "count",
+        "get_reports",
+        "clear"
+      ],
+      "classes": [
+        "InMemoryScoringReportStore"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/incident_bundle_embedder.py",
+      "depth": 2,
+      "size_bytes": 15576,
+      "total_lines": 365,
+      "code_lines": 327,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_similar",
+        "bundle_from_healing_event"
+      ],
+      "classes": [
+        "IncidentRetrievalResult",
+        "IncidentBundleEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l0_routing_confidence_monitor.py",
+      "depth": 2,
+      "size_bytes": 35228,
+      "total_lines": 445,
+      "code_lines": 369,
+      "functions": [
+        "_compute_p10",
+        "propose_routing_confidence_change",
+        "canonical_bytes",
+        "content_hash",
+        "propose"
+      ],
+      "classes": [
+        "RoutingConfidenceChangePackage",
+        "L0RoutingConfidenceProposerAdapter"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l0_threshold_tuner.py",
+      "depth": 2,
+      "size_bytes": 33400,
+      "total_lines": 425,
+      "code_lines": 345,
+      "functions": [
+        "propose_l0_threshold_changes",
+        "canonical_bytes",
+        "content_hash",
+        "propose"
+      ],
+      "classes": [
+        "L0ThresholdChangePackage",
+        "L0ProposerAdapter"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l1_model_proposer.py",
+      "depth": 2,
+      "size_bytes": 11677,
+      "total_lines": 264,
+      "code_lines": 243,
+      "functions": [
+        "canonical_bytes",
+        "content_hash",
+        "propose"
+      ],
+      "classes": [
+        "L1ModelChangePackage",
+        "L1ModelProposer"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l3_efficiency_tuner.py",
+      "depth": 2,
+      "size_bytes": 15779,
+      "total_lines": 364,
+      "code_lines": 331,
+      "functions": [
+        "extract_timings_from_runtime_state",
+        "canonical_bytes",
+        "canonical_bytes",
+        "content_hash",
+        "__init__",
+        "analyze"
+      ],
+      "classes": [
+        "EfficiencyBottleneck",
+        "EfficiencyReport",
+        "L3EfficiencyTuner"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l4_audit_reader.py",
+      "depth": 2,
+      "size_bytes": 10556,
+      "total_lines": 251,
+      "code_lines": 222,
+      "functions": [
+        "pull_audit_data",
+        "read_audit_slice"
+      ],
+      "classes": [
+        "AuditStore"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 113,
+          "symbol": "AuthorityViolation"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l4_state_writer.py",
+      "depth": 2,
+      "size_bytes": 20988,
+      "total_lines": 541,
+      "code_lines": 465,
+      "functions": [
+        "_content_hash",
+        "write_l4a_detection_signal",
+        "write_l4b_healing_snapshot",
+        "write_l4c_shadow_drift",
+        "write_l4c_policy_recommendation",
+        "write_l4c_retrieval_profile_proposal",
+        "read_latest_detection_signal",
+        "read_latest_drift_snapshot",
+        "_write",
+        "write_l4a_detection_signal",
+        "write_l4b_healing_snapshot",
+        "write_l4c_shadow_drift",
+        "write_l4c_policy_recommendation",
+        "write_l4c_retrieval_profile_proposal",
+        "read_latest_detection_signal",
+        "read_latest_drift_snapshot",
+        "__init__",
+        "_write",
+        "write_l4a_detection_signal",
+        "write_l4b_healing_snapshot",
+        "write_l4c_shadow_drift",
+        "write_l4c_policy_recommendation",
+        "write_l4c_retrieval_profile_proposal",
+        "read_latest_detection_signal",
+        "read_latest_drift_snapshot",
+        "write_l4a_detection_signal",
+        "write_l4b_healing_snapshot",
+        "write_l4c_shadow_drift",
+        "write_l4c_policy_recommendation",
+        "write_l4c_retrieval_profile_proposal",
+        "read_latest_detection_signal",
+        "read_latest_drift_snapshot",
+        "canonical_bytes",
+        "__init__",
+        "_write",
+        "write_l4a_detection_signal",
+        "write_l4b_healing_snapshot",
+        "write_l4c_shadow_drift",
+        "write_l4c_policy_recommendation",
+        "write_l4c_retrieval_profile_proposal",
+        "read_latest_detection_signal",
+        "read_latest_drift_snapshot"
+      ],
+      "classes": [
+        "L4StateWriter",
+        "_VersionEntry",
+        "InMemoryL4StateWriter",
+        "FileBackedL4StateWriter",
+        "NoOpL4StateWriter",
+        "SimpleChangePackage",
+        "DefaultL4StateWriter"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l4_version_store.py",
+      "depth": 2,
+      "size_bytes": 12873,
+      "total_lines": 304,
+      "code_lines": 271,
+      "functions": [
+        "__init__",
+        "commit_change_package",
+        "get_change_package",
+        "list_versions",
+        "update_activation_pointer",
+        "get_active_version",
+        "rollback"
+      ],
+      "classes": [
+        "ParentVersionNotFound",
+        "VersionNotFound",
+        "VersionedPackage",
+        "L4VersionStore"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/l5_policy_proposer.py",
+      "depth": 2,
+      "size_bytes": 13933,
+      "total_lines": 323,
+      "code_lines": 295,
+      "functions": [
+        "extract_l5_metrics_from_healing_actions",
+        "canonical_bytes",
+        "content_hash",
+        "propose"
+      ],
+      "classes": [
+        "L5PolicyChangePackage",
+        "L5PolicyProposer"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/live_exit_control_gate.py",
+      "depth": 2,
+      "size_bytes": 15671,
+      "total_lines": 430,
+      "code_lines": 324,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__init__",
+        "validate_exit",
+        "_validate_structure",
+        "_classify_safety",
+        "_check_confidence",
+        "_check_policy_compliance",
+        "_determine_exit_action"
+      ],
+      "classes": [
+        "ExitControlResult",
+        "LiveExitControlGate"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/local_embedding_population_service.py",
+      "depth": 2,
+      "size_bytes": 15463,
+      "total_lines": 332,
+      "code_lines": 298,
+      "functions": [
+        "extract_embedding_text",
+        "normalize_l2",
+        "embed_batch",
+        "__init__",
+        "populate_from_jsonl"
+      ],
+      "classes": [
+        "EmbeddingProvider",
+        "_RecordKey",
+        "LocalEmbeddingPopulationService"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/meta_learning_bus.py",
+      "depth": 2,
+      "size_bytes": 36223,
+      "total_lines": 917,
+      "code_lines": 761,
+      "functions": [
+        "_build_commit_id",
+        "_build_optimization_commit",
+        "run_learning_pipeline",
+        "__init__",
+        "consume_evaluation_signal",
+        "process_traces",
+        "process_single_trace",
+        "_stage_extract",
+        "_stage_promote",
+        "_stage_cluster",
+        "_stage_propose",
+        "_stage_score_and_filter",
+        "_stage_validate_and_commit",
+        "_synthesise_reward_signals",
+        "_emit_adg_relations"
+      ],
+      "classes": [
+        "MetaLearningBusConfig",
+        "BusPipelineResult",
+        "MetaLearningBus"
+      ],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/meta_learning_embedding_service.py",
+      "depth": 2,
+      "size_bytes": 18176,
+      "total_lines": 391,
+      "code_lines": 354,
+      "functions": [
+        "embed_batch",
+        "__init__",
+        "retrieve",
+        "_load_and_validate_pack",
+        "_compute_similarities"
+      ],
+      "classes": [
+        "Embedder",
+        "IntegrityError",
+        "MetaLearningEmbeddingService"
+      ],
+      "import_count": 14,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/meta_learning_replay_binding.py",
+      "depth": 2,
+      "size_bytes": 15198,
+      "total_lines": 314,
+      "code_lines": 280,
+      "functions": [
+        "compute_replay_key",
+        "__post_init__",
+        "to_dict",
+        "to_line",
+        "emit",
+        "from_line"
+      ],
+      "classes": [
+        "MetaLearningReplayBinding"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/meta_learning_state_digest.py",
+      "depth": 2,
+      "size_bytes": 3336,
+      "total_lines": 88,
+      "code_lines": 69,
+      "functions": [
+        "compute_meta_learning_state_digest",
+        "emit_meta_learning_state_digest"
+      ],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/mutation_diff_embedder.py",
+      "depth": 2,
+      "size_bytes": 16570,
+      "total_lines": 394,
+      "code_lines": 351,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "pre_commit_check",
+        "retrieve_similar",
+        "_retrieve",
+        "record_from_uwg_mutation"
+      ],
+      "classes": [
+        "MutationRetrievalResult",
+        "MutationDiffEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/offline_healing_outcome_evaluator.py",
+      "depth": 2,
+      "size_bytes": 15229,
+      "total_lines": 309,
+      "code_lines": 257,
+      "functions": [
+        "__init__",
+        "evaluate"
+      ],
+      "classes": [
+        "OfflineHealingOutcomeEvaluator"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/openai_embedder.py",
+      "depth": 2,
+      "size_bytes": 12080,
+      "total_lines": 285,
+      "code_lines": 249,
+      "functions": [
+        "__init__",
+        "embed_batch",
+        "get_model_info",
+        "get_model_checksum",
+        "__init__",
+        "embed_batch",
+        "get_model_info",
+        "get_model_checksum"
+      ],
+      "classes": [
+        "OpenAIEmbedder",
+        "BGEEmbedder"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/optimization_proposal_engine.py",
+      "depth": 2,
+      "size_bytes": 25678,
+      "total_lines": 641,
+      "code_lines": 542,
+      "functions": [
+        "_match_rule",
+        "_build_change_spec",
+        "_build_proposal_id",
+        "_build_repair_change_spec",
+        "generate_proposals",
+        "__init__",
+        "generate",
+        "_generate_for_cluster",
+        "stable_hash",
+        "__init__",
+        "generate_from_repair_routes",
+        "_generate_from_cluster"
+      ],
+      "classes": [
+        "ProposalEngineConfig",
+        "OptimizationProposalEngine",
+        "RepairRouteCluster",
+        "RepairRouteOptimizationEngine"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/outcome_evaluation_engine.py",
+      "depth": 2,
+      "size_bytes": 16899,
+      "total_lines": 481,
+      "code_lines": 364,
+      "functions": [
+        "read_trace",
+        "check_groundedness",
+        "__init__",
+        "evaluate_outcome",
+        "_evaluate_task_completion",
+        "_evaluate_groundedness",
+        "_evaluate_citation_support",
+        "_evaluate_abstain_correctness",
+        "_evaluate_escalation_correctness",
+        "_evaluate_answer_relevance",
+        "_calculate_overall_score",
+        "_build_evaluation_summary"
+      ],
+      "classes": [
+        "ExecutionTraceReader",
+        "GroundednessChecker",
+        "OutcomeEvaluationEngine"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/path_d_preference_embedder.py",
+      "depth": 2,
+      "size_bytes": 16708,
+      "total_lines": 394,
+      "code_lines": 352,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_for_proposal",
+        "retrieve_similar",
+        "_retrieve",
+        "pair_from_hitl_log"
+      ],
+      "classes": [
+        "PreferenceRetrievalResult",
+        "PathDPreferenceEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/pattern_analysis_engine.py",
+      "depth": 2,
+      "size_bytes": 38250,
+      "total_lines": 692,
+      "code_lines": 605,
+      "functions": [
+        "get_embeddings_batch",
+        "canonical_bytes",
+        "content_hash",
+        "__init__",
+        "analyze",
+        "_analyze_from_snapshots",
+        "_analyze_embeddings",
+        "analyze_texts",
+        "_round_vector",
+        "_deterministic_cluster",
+        "_l2_normalize",
+        "_cosine_distance",
+        "_compute_centroid",
+        "_vector_hash",
+        "_compute_digest",
+        "_empty_digest",
+        "analyze_cross_domain_patterns"
+      ],
+      "classes": [
+        "EmbeddingClient",
+        "PatternAnalysisConfig",
+        "Cluster",
+        "PatternSummary",
+        "PatternFindingKey",
+        "PatternFinding",
+        "PatternSourceIds",
+        "PatternAnalysisReport",
+        "PatternAnalysisEngine"
+      ],
+      "import_count": 14,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/pattern_analysis_engine_adapter.py",
+      "depth": 2,
+      "size_bytes": 15544,
+      "total_lines": 319,
+      "code_lines": 280,
+      "functions": [
+        "analyze",
+        "_euclidean_distance"
+      ],
+      "classes": [
+        "PatternAnalysisEngine"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/policy_guardrail_embedder.py",
+      "depth": 2,
+      "size_bytes": 21970,
+      "total_lines": 544,
+      "code_lines": 480,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_for_payload",
+        "retrieve_for_policy_hash",
+        "retrieve_similar",
+        "_retrieve",
+        "verdict_stats",
+        "evict_by_policy_hash",
+        "retrieve_by_verdict",
+        "retrieve_false_positives",
+        "top_strictness_levels",
+        "case_from_l5_block"
+      ],
+      "classes": [
+        "GuardrailRetrievalResult",
+        "PolicyGuardrailEmbedder"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/policy_recommendation_engine.py",
+      "depth": 2,
+      "size_bytes": 15953,
+      "total_lines": 324,
+      "code_lines": 294,
+      "functions": [
+        "emit_digest",
+        "to_canonical_json",
+        "generate_recommendation",
+        "_compute_digest",
+        "generate_recommendation"
+      ],
+      "classes": [
+        "PolicyRecommendation",
+        "PolicyRecommendationEngine",
+        "MemoryAwarePolicyRecommendationEngine"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/prompt_drift_detector.py",
+      "depth": 2,
+      "size_bytes": 20935,
+      "total_lines": 522,
+      "code_lines": 446,
+      "functions": [
+        "_compute_stats",
+        "_build_signal_id",
+        "detect_prompt_drift",
+        "__init__",
+        "detect",
+        "detect_template_supersession",
+        "_make_signal"
+      ],
+      "classes": [
+        "DriftDetectorConfig",
+        "WindowStats",
+        "PromptDriftDetector"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/prompt_execution_tracer.py",
+      "depth": 2,
+      "size_bytes": 22693,
+      "total_lines": 576,
+      "code_lines": 463,
+      "functions": [
+        "_classify_outcome",
+        "_classify_replay",
+        "_classify_failure_slot",
+        "_build_execution_id",
+        "_build_outcome_id",
+        "_pick_outcome_relation",
+        "_fmt_score",
+        "trace_execution",
+        "trace",
+        "trace_batch"
+      ],
+      "classes": [
+        "ExecutionTraceResult",
+        "PromptExecutionTracer"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/prompt_outcome_bus_adapter.py",
+      "depth": 2,
+      "size_bytes": 16505,
+      "total_lines": 369,
+      "code_lines": 311,
+      "functions": [
+        "_build_record_id",
+        "convert_outcome_to_record",
+        "convert_outcomes_to_records",
+        "convert",
+        "convert_batch"
+      ],
+      "classes": [
+        "PromptOutcomeBusAdapter"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/prompt_outcome_embedder.py",
+      "depth": 2,
+      "size_bytes": 25423,
+      "total_lines": 619,
+      "code_lines": 546,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_for_task",
+        "retrieve_similar",
+        "retrieve_by_template",
+        "safety_outcome_stats",
+        "evict_by_template_id",
+        "top_templates_by_outcome",
+        "model_stats",
+        "evict_before_timestamp",
+        "route_distribution",
+        "_retrieve",
+        "record_from_execution"
+      ],
+      "classes": [
+        "PromptOutcomeRetrievalResult",
+        "PromptOutcomeEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/prompt_provenance_builder.py",
+      "depth": 2,
+      "size_bytes": 21285,
+      "total_lines": 552,
+      "code_lines": 447,
+      "functions": [
+        "_classify_budget",
+        "_default_tokenizer",
+        "_slot_hash",
+        "_prompt_hash",
+        "build_compiled_prompt",
+        "__init__",
+        "build",
+        "_classify_budget"
+      ],
+      "classes": [
+        "SlotPayload",
+        "PromptBuildRequest",
+        "PromptBuildResult",
+        "PromptProvenanceBuilder"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/prompt_safety_validator.py",
+      "depth": 2,
+      "size_bytes": 17976,
+      "total_lines": 431,
+      "code_lines": 349,
+      "functions": [
+        "_gate_policy",
+        "_gate_guardrail",
+        "_gate_budget",
+        "_hash_set",
+        "validate_prompt",
+        "__init__",
+        "validate"
+      ],
+      "classes": [
+        "SafetyValidatorConfig",
+        "PromptSafetyValidator"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/proposal_validation_engine.py",
+      "depth": 2,
+      "size_bytes": 22999,
+      "total_lines": 590,
+      "code_lines": 476,
+      "functions": [
+        "_derive_regression_risk",
+        "_gate_replay",
+        "_gate_policy",
+        "_gate_guardrail",
+        "_gate_determinism",
+        "_gate_regression",
+        "validate_proposal",
+        "__init__",
+        "validate",
+        "validate_batch",
+        "_run_gates"
+      ],
+      "classes": [
+        "ValidationConfig",
+        "ProposalValidationEngine"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rag_optimizer.py",
+      "depth": 2,
+      "size_bytes": 13604,
+      "total_lines": 336,
+      "code_lines": 291,
+      "functions": [
+        "propose_rag_param_changes",
+        "canonical_bytes",
+        "content_hash"
+      ],
+      "classes": [
+        "RAGChangePackage"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rag_proposer.py",
+      "depth": 2,
+      "size_bytes": 11996,
+      "total_lines": 273,
+      "code_lines": 252,
+      "functions": [
+        "canonical_bytes",
+        "content_hash",
+        "propose"
+      ],
+      "classes": [
+        "RAGChangePackage",
+        "RAGParameterProposer"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rag_retrieval_cache.py",
+      "depth": 2,
+      "size_bytes": 13903,
+      "total_lines": 323,
+      "code_lines": 286,
+      "functions": [
+        "get_rag_retrieval_cache",
+        "__init__",
+        "get",
+        "set",
+        "invalidate"
+      ],
+      "classes": [
+        "RagRetrievalCache"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rca_cluster_engine.py",
+      "depth": 2,
+      "size_bytes": 22063,
+      "total_lines": 550,
+      "code_lines": 451,
+      "functions": [
+        "_derive_failure_pattern",
+        "_derive_sub_key",
+        "_dominant",
+        "_dominant_optional",
+        "_outcome_distribution",
+        "_avg_groundedness",
+        "_hitl_rate",
+        "_healer_rate",
+        "_affected_agents",
+        "_adg_cluster_node",
+        "_build_cluster",
+        "cluster_records",
+        "__init__",
+        "cluster",
+        "_seed_clusters_from_negatives"
+      ],
+      "classes": [
+        "RCAClusterConfig",
+        "RCAClusterEngine"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rca_engine.py",
+      "depth": 2,
+      "size_bytes": 22860,
+      "total_lines": 347,
+      "code_lines": 311,
+      "functions": [
+        "classify_line",
+        "analyze_failures",
+        "analyze_failures_and_persist"
+      ],
+      "classes": [
+        "RCAAnalysisError"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/replay_failure_embedder.py",
+      "depth": 2,
+      "size_bytes": 22616,
+      "total_lines": 549,
+      "code_lines": 483,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_for_failure",
+        "retrieve_by_nondeterminism_type",
+        "retrieve_similar",
+        "nondeterminism_type_stats",
+        "evict_by_replay_key",
+        "top_affected_subsystems",
+        "evict_by_nondeterminism_type",
+        "replay_key_summary",
+        "_retrieve",
+        "record_from_replay_event"
+      ],
+      "classes": [
+        "ReplayFailureRetrievalResult",
+        "ReplayFailureEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/replay_validator.py",
+      "depth": 2,
+      "size_bytes": 13650,
+      "total_lines": 281,
+      "code_lines": 258,
+      "functions": [
+        "validate_seed_pack",
+        "validate_embedding_artifact"
+      ],
+      "classes": [
+        "DeterminismViolationError",
+        "ReplayValidator"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_case_embedder.py",
+      "depth": 2,
+      "size_bytes": 25630,
+      "total_lines": 623,
+      "code_lines": 558,
+      "functions": [
+        "__init__",
+        "ingest",
+        "ingest_batch",
+        "export_corpus_records",
+        "buffer_size",
+        "retrieve_similar",
+        "retrieve_for_query",
+        "retrieve_weak_cases",
+        "quality_signal_summary",
+        "escalation_candidates",
+        "corpus_expansion_report",
+        "evict_by_query_id",
+        "score_percentile_buckets",
+        "_retrieve",
+        "record_from_rag_evaluation",
+        "_bucket"
+      ],
+      "classes": [
+        "RetrievalCaseRetrievalResult",
+        "RetrievalCaseEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile.py",
+      "depth": 2,
+      "size_bytes": 11115,
+      "total_lines": 255,
+      "code_lines": 232,
+      "functions": [
+        "to_canonical_json",
+        "profile_digest",
+        "emit_digest",
+        "create_default"
+      ],
+      "classes": [
+        "RetrievalProfile"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile_activation_gate.py",
+      "depth": 2,
+      "size_bytes": 20721,
+      "total_lines": 477,
+      "code_lines": 439,
+      "functions": [
+        "emit_digest",
+        "__init__",
+        "activate_if_approved",
+        "_create_failure_result",
+        "_load_proposal_from_l4",
+        "_load_profile_from_l4",
+        "_write_new_profile_to_l4",
+        "_update_active_profile_id",
+        "_compute_activation_digest",
+        "__init__"
+      ],
+      "classes": [
+        "ActivationResult",
+        "RetrievalProfileActivationGate",
+        "MockProposal"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile_invariant_checker.py",
+      "depth": 2,
+      "size_bytes": 13382,
+      "total_lines": 268,
+      "code_lines": 248,
+      "functions": [
+        "__init__",
+        "validate"
+      ],
+      "classes": [
+        "InvariantViolation",
+        "RetrievalProfileInvariantChecker"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile_manager.py",
+      "depth": 2,
+      "size_bytes": 12865,
+      "total_lines": 291,
+      "code_lines": 254,
+      "functions": [
+        "get_retrieval_profile_manager",
+        "get_active_retrieval_profile",
+        "__init__",
+        "get_active_profile_id",
+        "load_active_profile",
+        "activate_profile",
+        "clear_cache"
+      ],
+      "classes": [
+        "RetrievalProfileManager"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile_proposal.py",
+      "depth": 2,
+      "size_bytes": 12894,
+      "total_lines": 272,
+      "code_lines": 249,
+      "functions": [
+        "create_proposal_digest",
+        "emit_digest",
+        "to_canonical_json",
+        "create_approved_copy",
+        "_compute_approved_digest"
+      ],
+      "classes": [
+        "RetrievalProfileProposal"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile_proposal_manager.py",
+      "depth": 2,
+      "size_bytes": 15171,
+      "total_lines": 325,
+      "code_lines": 281,
+      "functions": [
+        "create_proposal",
+        "set_approval",
+        "get_latest_proposal",
+        "_apply_recommendation_to_profile"
+      ],
+      "classes": [
+        "RetrievalProfileProposalManager"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/retrieval_profile_replay_check.py",
+      "depth": 2,
+      "size_bytes": 16312,
+      "total_lines": 348,
+      "code_lines": 319,
+      "functions": [
+        "__init__",
+        "replay_check_profile_change",
+        "_run_deterministic_retrieval",
+        "_compare_outputs",
+        "_compute_replay_digest"
+      ],
+      "classes": [
+        "ReplayCheckResult",
+        "RetrievalProfileReplayChecker"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rlhf_optimizer.py",
+      "depth": 2,
+      "size_bytes": 30763,
+      "total_lines": 331,
+      "code_lines": 308,
+      "functions": [
+        "propose_from_dpo",
+        "__init__",
+        "propose_from_dpo",
+        "commit_optimization"
+      ],
+      "classes": [
+        "RLHFOptimizer",
+        "DefaultDeterministicRLHFOptimizer"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rlhf_optimizer_impl.py",
+      "depth": 2,
+      "size_bytes": 22157,
+      "total_lines": 319,
+      "code_lines": 293,
+      "functions": [
+        "canonical_bytes",
+        "content_hash",
+        "propose_from_dpo",
+        "commit_optimization"
+      ],
+      "classes": [
+        "RLHFChangePackage",
+        "DefaultRLHFOptimizer"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/rule_drafting_engine.py",
+      "depth": 2,
+      "size_bytes": 17088,
+      "total_lines": 464,
+      "code_lines": 378,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "read_trace",
+        "__init__",
+        "draft_rules",
+        "_derive_structure_improvements",
+        "_derive_fix_targets",
+        "_derive_control_reverts",
+        "_determine_fix_action"
+      ],
+      "classes": [
+        "RuleProposal",
+        "RuleDraftingResult",
+        "ExecutionTraceReader",
+        "RuleDraftingEngine"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/seed_embedding_pack_builder.py",
+      "depth": 2,
+      "size_bytes": 19850,
+      "total_lines": 461,
+      "code_lines": 377,
+      "functions": [
+        "_canonical_sort_rows",
+        "_write_row_index_jsonl",
+        "_write_embeddings_f32",
+        "_compute_seed_index_version_hash",
+        "build_seed_embedding_pack",
+        "embed_batch",
+        "__init__",
+        "embed_batch"
+      ],
+      "classes": [
+        "Embedder",
+        "DeterministicHashEmbedder"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/seed_pack_build_cli.py",
+      "depth": 2,
+      "size_bytes": 15756,
+      "total_lines": 359,
+      "code_lines": 335,
+      "functions": [
+        "_find_default_corpus_path",
+        "load_canonical_corpus",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/semantic_index_registry.py",
+      "depth": 2,
+      "size_bytes": 37511,
+      "total_lines": 858,
+      "code_lines": 743,
+      "functions": [
+        "total",
+        "__init__",
+        "ingest_incident",
+        "ingest_graph_neighborhood",
+        "ingest_mutation",
+        "ingest_prompt_outcome",
+        "ingest_retrieval_case",
+        "ingest_replay_failure",
+        "ingest_preference",
+        "ingest_guardrail_case",
+        "query_incidents",
+        "query_graph_motifs",
+        "query_mutations",
+        "query_prompt_outcomes",
+        "query_retrieval_cases",
+        "query_replay_failures",
+        "query_preferences",
+        "query_guardrail_cases",
+        "buffer_snapshot",
+        "export_all_corpus_records",
+        "retrieval_quality_summary",
+        "prompt_safety_outcome_stats",
+        "replay_nondeterminism_stats",
+        "guardrail_verdict_stats",
+        "total_buffer_utilization",
+        "cross_index_health_report",
+        "bulk_evict_by_trace_id",
+        "index_namespace_map",
+        "_frac",
+        "_evict_from"
+      ],
+      "classes": [
+        "RegistryBufferSnapshot",
+        "MultiIndexIngestResult",
+        "SemanticIndexRegistry"
+      ],
+      "import_count": 26,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/semantic_memory_registry.py",
+      "depth": 2,
+      "size_bytes": 14432,
+      "total_lines": 301,
+      "code_lines": 272,
+      "functions": [
+        "__init__",
+        "get",
+        "reset_for_testing",
+        "export_all_corpus_records",
+        "total_buffer_size"
+      ],
+      "classes": [
+        "SemanticMemoryRegistry"
+      ],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/shadow_drift_analyzer.py",
+      "depth": 2,
+      "size_bytes": 21497,
+      "total_lines": 479,
+      "code_lines": 420,
+      "functions": [
+        "emit_digest",
+        "to_canonical_json",
+        "__init__",
+        "analyze_batch",
+        "_emit_to_registry",
+        "analyze_infrastructure_drift",
+        "_compute_percentile",
+        "_compute_digest"
+      ],
+      "classes": [
+        "DriftSummary",
+        "ShadowDriftAnalyzer"
+      ],
+      "import_count": 18,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/signal_aggregator_engine.py",
+      "depth": 2,
+      "size_bytes": 17509,
+      "total_lines": 515,
+      "code_lines": 392,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "__post_init__",
+        "to_dict",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__init__",
+        "aggregate_signals",
+        "_build_score_bundle",
+        "_calculate_confidence",
+        "_calculate_variance",
+        "_compute_variance",
+        "_determine_decisiveness",
+        "_detect_drift_flags",
+        "_classify_severity"
+      ],
+      "classes": [
+        "PreferenceGrade",
+        "TelemetryMetric",
+        "AggregatedSignalBundle",
+        "SignalAggregatorEngine"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/signal_grouping_engine.py",
+      "depth": 2,
+      "size_bytes": 17027,
+      "total_lines": 404,
+      "code_lines": 352,
+      "functions": [
+        "canonical_bytes",
+        "content_hash",
+        "canonical_bytes",
+        "content_hash",
+        "__init__",
+        "group_signals",
+        "detect_signal_spikes"
+      ],
+      "classes": [
+        "SignalGroup",
+        "SignalGroupingReport",
+        "SignalGroupingEngine"
+      ],
+      "import_count": 14,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/stage_barrier_enforcer.py",
+      "depth": 2,
+      "size_bytes": 11275,
+      "total_lines": 252,
+      "code_lines": 227,
+      "functions": [
+        "__init__",
+        "current_stage",
+        "advance_to",
+        "assert_config_mutation_allowed",
+        "is_commit_stage",
+        "reset"
+      ],
+      "classes": [
+        "MetaLearningStage",
+        "StageBarrierEnforcer"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/surface_isolation_validator.py",
+      "depth": 2,
+      "size_bytes": 14722,
+      "total_lines": 314,
+      "code_lines": 281,
+      "functions": [
+        "get_surface_isolation_validator",
+        "reset_surface_isolation_validator",
+        "__init__",
+        "can_mutate_surface",
+        "mark_surface_completed",
+        "reset_window",
+        "get_active_surfaces",
+        "get_completed_surfaces",
+        "_cleanup_expired_windows",
+        "get_window_status"
+      ],
+      "classes": [
+        "SurfaceIsolationValidator"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/system_learning_admission_gate.py",
+      "depth": 2,
+      "size_bytes": 22033,
+      "total_lines": 544,
+      "code_lines": 415,
+      "functions": [
+        "_get_cache_admission_gate",
+        "get_system_learning_admission_gate",
+        "__init__",
+        "evaluate_admission",
+        "_evaluate_learning_quality",
+        "_evaluate_drift_indicators",
+        "_evaluate_telemetry_correlation",
+        "_combine_admission_decisions",
+        "_record_admission_decision",
+        "get_metrics",
+        "reset_metrics"
+      ],
+      "classes": [
+        "SystemLearningAdmissionContext",
+        "SystemLearningAdmissionDecision",
+        "SystemLearningCacheAdmissionGate"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/telemetry_consumer.py",
+      "depth": 2,
+      "size_bytes": 13650,
+      "total_lines": 352,
+      "code_lines": 289,
+      "functions": [
+        "consume_telemetry",
+        "ingest_otel_spans",
+        "create_telemetry_consumer_with_otel",
+        "read_events"
+      ],
+      "classes": [
+        "TelemetryConsumerError",
+        "TelemetryStore"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/trace_feature_extractor.py",
+      "depth": 2,
+      "size_bytes": 18254,
+      "total_lines": 453,
+      "code_lines": 367,
+      "functions": [
+        "_classify_outcome",
+        "_extract_gate_state",
+        "build_feature_bundle",
+        "build_trace_record",
+        "extract",
+        "extract_record",
+        "extract_batch"
+      ],
+      "classes": [
+        "TraceFeatureExtractor"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/engines/trajectory_evaluation_engine.py",
+      "depth": 2,
+      "size_bytes": 16958,
+      "total_lines": 462,
+      "code_lines": 358,
+      "functions": [
+        "__init__",
+        "evaluate_trajectory",
+        "_extract_tool_sequence",
+        "_count_retries",
+        "_evaluate_tool_selection",
+        "_evaluate_arg_correctness",
+        "_evaluate_retry_thrashing",
+        "_evaluate_budget_discipline",
+        "_evaluate_policy_compliance",
+        "_calculate_overall_score",
+        "_build_evaluation_summary"
+      ],
+      "classes": [
+        "TrajectoryEvaluationEngine"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/fingerprinting/__init__.py",
+      "depth": 2,
+      "size_bytes": 439,
+      "total_lines": 16,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(11)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BATCH_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.BUFFER_SIZE"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_SLEEP"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.DEFAULT_TIMEOUT"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_DEPTH"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_FILES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.MAX_RETRIES"
+        },
+        {
+          "line": 2,
+          "symbol": "agentic_core.L0_routing.config.path_constants.THRESHOLD"
+        },
+        {
+          "line": 13,
+          "symbol": "engine.FailureFingerprinter"
+        },
+        {
+          "line": 14,
+          "symbol": "types.FailureEvent"
+        },
+        {
+          "line": 14,
+          "symbol": "types.FailureFingerprint"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/fingerprinting/engine.py",
+      "depth": 2,
+      "size_bytes": 12071,
+      "total_lines": 282,
+      "code_lines": 265,
+      "functions": [
+        "__init__",
+        "fingerprint",
+        "_normalize_event",
+        "_normalize_exception_type",
+        "_normalize_error_code",
+        "_normalize_component",
+        "_normalize_symbols",
+        "_normalize_metadata"
+      ],
+      "classes": [
+        "FailureFingerprinter"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/fingerprinting/types.py",
+      "depth": 2,
+      "size_bytes": 8900,
+      "total_lines": 212,
+      "code_lines": 197,
+      "functions": [
+        "canonical_bytes",
+        "from_canonical_bytes"
+      ],
+      "classes": [
+        "FailureEvent",
+        "FailureFingerprint"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/golden/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/invariants/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/invariants/commit_proof_invariant.py",
+      "depth": 2,
+      "size_bytes": 13744,
+      "total_lines": 291,
+      "code_lines": 266,
+      "functions": [
+        "verify_commit_proof",
+        "verify",
+        "from_package"
+      ],
+      "classes": [
+        "CommitProofViolation",
+        "CommitProofInvariant"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/invariants/freeze_gate.py",
+      "depth": 2,
+      "size_bytes": 14555,
+      "total_lines": 230,
+      "code_lines": 208,
+      "functions": [
+        "is_frozen",
+        "__init__",
+        "is_frozen",
+        "__init__",
+        "is_frozen"
+      ],
+      "classes": [
+        "FreezeStateReader",
+        "JsonFileBackedFreezeReader",
+        "StaticFreezeReader"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/logs/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/memory/__init__.py",
+      "depth": 2,
+      "size_bytes": 151,
+      "total_lines": 4,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/memory/mcp_adapter.py",
+      "depth": 2,
+      "size_bytes": 296,
+      "total_lines": 14,
+      "code_lines": 9,
+      "functions": [
+        "connect_to_mcp",
+        "connect"
+      ],
+      "classes": [
+        "MemoryMCPAdapter"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/memory/memory.py",
+      "depth": 2,
+      "size_bytes": 195,
+      "total_lines": 8,
+      "code_lines": 5,
+      "functions": [
+        "__init__"
+      ],
+      "classes": [
+        "SqliteMemoryStore"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/memory/sqlite_store.py",
+      "depth": 2,
+      "size_bytes": 210,
+      "total_lines": 8,
+      "code_lines": 5,
+      "functions": [
+        "__init__"
+      ],
+      "classes": [
+        "SQLiteMemoryStore"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/__init__.py",
+      "depth": 2,
+      "size_bytes": 132,
+      "total_lines": 6,
+      "code_lines": 3,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 4,
+          "symbol": "creative"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/creative.py",
+      "depth": 2,
+      "size_bytes": 1478,
+      "total_lines": 54,
+      "code_lines": 39,
+      "functions": [
+        "apply_creative_strategy",
+        "__init__",
+        "apply",
+        "get_suggestions"
+      ],
+      "classes": [
+        "CreativeStrategy"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/engines.py",
+      "depth": 2,
+      "size_bytes": 254,
+      "total_lines": 11,
+      "code_lines": 7,
+      "functions": [
+        "process_meta_learning_event"
+      ],
+      "classes": [
+        "MetaLearningEngine"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/meta_apply.py",
+      "depth": 2,
+      "size_bytes": 13927,
+      "total_lines": 375,
+      "code_lines": 288,
+      "functions": [
+        "_get_apply_attempt_types",
+        "_get_meta_learning_types",
+        "_get_rollout_types",
+        "_get_CapabilityTokenArtifact",
+        "_check_routing_thresholds_blast",
+        "_check_tool_policies_blast",
+        "_check_prompt_templates_blast",
+        "_check_blast_radius",
+        "_config_path",
+        "_rollback_path",
+        "_atomic_write_json",
+        "apply_meta_learning_rollout",
+        "_reject"
+      ],
+      "classes": [],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 29,
+          "symbol": "emit_determinism_digest"
+        },
+        {
+          "line": 29,
+          "symbol": "emit_replay_key"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/meta_apply_ops.py",
+      "depth": 2,
+      "size_bytes": 20704,
+      "total_lines": 534,
+      "code_lines": 435,
+      "functions": [
+        "_get_apply_attempt_types",
+        "_get_rollout_types",
+        "_check_no_schema_changes",
+        "_check_policy_hash_unchanged",
+        "_check_guardian_determinism_empty_diff",
+        "evaluate_invariants",
+        "rollback_meta_learning_rollout",
+        "apply_with_invariants",
+        "_rate_limit_path",
+        "check_rate_limit",
+        "record_apply_timestamp",
+        "_canary_state_path",
+        "record_canary_state"
+      ],
+      "classes": [],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/meta_learning_bus.py",
+      "depth": 2,
+      "size_bytes": 12129,
+      "total_lines": 286,
+      "code_lines": 251,
+      "functions": [
+        "get_process_bus",
+        "create",
+        "__init__",
+        "enqueue",
+        "dequeue",
+        "size",
+        "apply_next"
+      ],
+      "classes": [
+        "MetaLearningChangePackage",
+        "MetaLearningBus"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/pipeline.py",
+      "depth": 2,
+      "size_bytes": 302,
+      "total_lines": 14,
+      "code_lines": 9,
+      "functions": [
+        "run_pipeline",
+        "run"
+      ],
+      "classes": [
+        "MetaLearningPipeline"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/meta_learning/types.py",
+      "depth": 2,
+      "size_bytes": 204,
+      "total_lines": 11,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [
+        "MetaLearningEvent",
+        "MetaLearningState"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ml_integration/anomaly_detection.py",
+      "depth": 2,
+      "size_bytes": 27870,
+      "total_lines": 776,
+      "code_lines": 568,
+      "functions": [
+        "get_global_ml_detector",
+        "initialize_ml_models",
+        "detect_ml_anomalies",
+        "predict_performance_metrics",
+        "get_ml_detection_statistics",
+        "__init__",
+        "_check_sklearn_availability",
+        "initialize_models",
+        "add_training_data",
+        "detect_anomalies",
+        "_detect_statistical_anomalies",
+        "_detect_z_score_anomaly",
+        "_detect_iqr_anomaly",
+        "_detect_moving_average_anomaly",
+        "_detect_ml_anomalies",
+        "_detect_isolation_forest_anomaly",
+        "predict_performance",
+        "_predict_exponential_smoothing",
+        "_retrain_models",
+        "get_anomaly_statistics",
+        "get_prediction_statistics",
+        "get_model_performance",
+        "save_models",
+        "load_models"
+      ],
+      "classes": [
+        "AnomalyType",
+        "ModelType",
+        "AnomalyDetection",
+        "PredictionResult",
+        "ModelPerformance",
+        "MLAnomalyDetector"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 173,
+          "symbol": "sklearn"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ml_integration/training_pipeline.py",
+      "depth": 2,
+      "size_bytes": 32143,
+      "total_lines": 905,
+      "code_lines": 705,
+      "functions": [
+        "get_global_ml_pipeline",
+        "initialize_ml_pipeline",
+        "train_anomaly_detection_model",
+        "to_dict",
+        "to_dict",
+        "to_dict",
+        "__init__",
+        "train",
+        "predict",
+        "predict_proba",
+        "save_model",
+        "load_model",
+        "train",
+        "predict",
+        "predict_proba",
+        "save_model",
+        "load_model",
+        "train",
+        "predict",
+        "predict_proba",
+        "save_model",
+        "load_model",
+        "train",
+        "predict",
+        "predict_proba",
+        "save_model",
+        "load_model",
+        "__init__",
+        "initialize_pipeline",
+        "add_training_data",
+        "train_anomaly_detection_model",
+        "_create_model",
+        "evaluate_model",
+        "deploy_model",
+        "get_model_predictions",
+        "get_model_metrics",
+        "get_deployments",
+        "get_training_status"
+      ],
+      "classes": [
+        "ModelType",
+        "TrainingStatus",
+        "OptimizationMethod",
+        "ModelConfig",
+        "TrainingMetrics",
+        "ModelDeployment",
+        "BaseMLModel",
+        "RandomForestModel",
+        "XGBoostModel",
+        "NeuralNetworkModel",
+        "MLTrainingPipeline"
+      ],
+      "import_count": 22,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/monitoring/performance_monitor.py",
+      "depth": 2,
+      "size_bytes": 14652,
+      "total_lines": 443,
+      "code_lines": 347,
+      "functions": [
+        "get_performance_monitor",
+        "record_signal_latency",
+        "check_system_health",
+        "to_dict",
+        "success_rate",
+        "__init__",
+        "record_metric",
+        "record_signal_processing",
+        "get_signal_health",
+        "get_metrics_summary",
+        "check_alert_conditions",
+        "reset_metrics",
+        "export_metrics"
+      ],
+      "classes": [
+        "PerformanceMetric",
+        "SignalHealthMetrics",
+        "PerformanceMonitor"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/output/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/pipelines/__init__.py",
+      "depth": 2,
+      "size_bytes": 66,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/pipelines/approval_gate_impl.py",
+      "depth": 2,
+      "size_bytes": 11295,
+      "total_lines": 254,
+      "code_lines": 226,
+      "functions": [
+        "__init__",
+        "decide",
+        "decide",
+        "decide"
+      ],
+      "classes": [
+        "ApprovalDecision",
+        "AutoApprovalGate",
+        "AlwaysApproveGate",
+        "NeverApproveGate"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/pipelines/approval_gates.py",
+      "depth": 2,
+      "size_bytes": 13252,
+      "total_lines": 353,
+      "code_lines": 312,
+      "functions": [
+        "decide",
+        "classify",
+        "__init__",
+        "decide",
+        "__init__",
+        "classify"
+      ],
+      "classes": [
+        "ApprovalDecision",
+        "ApprovalGate",
+        "RiskTierClassifier",
+        "DefaultRuleBasedGate",
+        "DefaultRiskClassifier"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/pipelines/meta_learning_pipeline.py",
+      "depth": 2,
+      "size_bytes": 65836,
+      "total_lines": 1334,
+      "code_lines": 1188,
+      "functions": [
+        "_accumulate_shadow_telemetry",
+        "_analyze_shadow_drift_and_write",
+        "_generate_policy_recommendation_and_write",
+        "_create_proposal_and_write",
+        "_analyze_historical_patterns",
+        "_create_deterministic_embedding",
+        "_wc_digest",
+        "_retrieve_semantic_context",
+        "run_pipeline",
+        "read_audit_slice",
+        "read_events",
+        "get_current_configs",
+        "get_last_update_utc",
+        "get_param_history",
+        "commit_change_package",
+        "activate",
+        "decide",
+        "propose",
+        "propose",
+        "propose",
+        "propose",
+        "production_metrics",
+        "shadow_metrics",
+        "canonicalize"
+      ],
+      "classes": [
+        "PipelineError",
+        "ValidationError",
+        "PipelineConfig",
+        "AuditStore",
+        "TelemetryStore",
+        "ConfigProvider",
+        "VersionStore",
+        "Activator",
+        "ApprovalGate",
+        "L0Proposer",
+        "RAGProposer",
+        "L1Proposer",
+        "L5Proposer",
+        "BaselineMetricsProvider",
+        "PipelineDependencies"
+      ],
+      "import_count": 60,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/pipelines/pipeline_factory.py",
+      "depth": 2,
+      "size_bytes": 17314,
+      "total_lines": 406,
+      "code_lines": 349,
+      "functions": [
+        "build_pipeline_config",
+        "build_pipeline_deps"
+      ],
+      "classes": [],
+      "import_count": 31,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/policy/system_learning_policy.py",
+      "depth": 2,
+      "size_bytes": 28572,
+      "total_lines": 736,
+      "code_lines": 592,
+      "functions": [
+        "get_policy_validator",
+        "__init__",
+        "register_policy_context",
+        "validate_cache_operation",
+        "validate_retrieval_operation",
+        "validate_embedding_operation",
+        "validate_learning_operation",
+        "_validate_operation",
+        "_validate_cache_policy",
+        "_validate_retrieval_policy",
+        "_validate_embedding_policy",
+        "_validate_learning_policy",
+        "_get_policy_context",
+        "_build_policy_key",
+        "_build_validation_cache_key",
+        "_emit_policy_telemetry",
+        "build_policy_aware_cache_key",
+        "get_metrics",
+        "reset_metrics"
+      ],
+      "classes": [
+        "PolicyComplianceStatus",
+        "PolicyValidationType",
+        "PolicyContext",
+        "PolicyValidationResult",
+        "SystemLearningPolicyValidator"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/__init__.py",
+      "depth": 2,
+      "size_bytes": 75,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/healing_outcome_intake_store.py",
+      "depth": 2,
+      "size_bytes": 918,
+      "total_lines": 30,
+      "code_lines": 21,
+      "functions": [
+        "write",
+        "get_records"
+      ],
+      "classes": [
+        "HealingOutcomeIntakeStore"
+      ],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/healing_outcome_sink.py",
+      "depth": 2,
+      "size_bytes": 1014,
+      "total_lines": 36,
+      "code_lines": 24,
+      "functions": [
+        "emit"
+      ],
+      "classes": [
+        "HealingOutcomeSink"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/healing_pattern_advisor.py",
+      "depth": 2,
+      "size_bytes": 1831,
+      "total_lines": 58,
+      "code_lines": 40,
+      "functions": [
+        "advise",
+        "advise"
+      ],
+      "classes": [
+        "PatternAdvice",
+        "HealingPatternAdvisor",
+        "NullHealingPatternAdvisor"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/l4_meta_prior_provider.py",
+      "depth": 2,
+      "size_bytes": 11770,
+      "total_lines": 251,
+      "code_lines": 225,
+      "functions": [
+        "wire_l4_prior_into_dispatcher",
+        "__init__",
+        "_load_default_store",
+        "get_prior"
+      ],
+      "classes": [
+        "L4MetaPriorProvider"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/meta_outcome_bus_hook.py",
+      "depth": 2,
+      "size_bytes": 11598,
+      "total_lines": 252,
+      "code_lines": 226,
+      "functions": [
+        "publish_outcome",
+        "publish_outcome",
+        "__init__",
+        "publish_outcome"
+      ],
+      "classes": [
+        "MetaOutcomeBusHook",
+        "NullMetaOutcomeBusHook",
+        "DefaultMetaOutcomeBusHook"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/meta_prior_provider.py",
+      "depth": 2,
+      "size_bytes": 1414,
+      "total_lines": 48,
+      "code_lines": 32,
+      "functions": [
+        "get_prior",
+        "get_prior"
+      ],
+      "classes": [
+        "MetaPriorProvider",
+        "NeutralMetaPriorProvider"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/outcome_write_back_hook.py",
+      "depth": 2,
+      "size_bytes": 12477,
+      "total_lines": 271,
+      "code_lines": 242,
+      "functions": [
+        "on_outcome",
+        "on_outcome",
+        "__init__",
+        "on_outcome"
+      ],
+      "classes": [
+        "OutcomeWriteBackHook",
+        "NullOutcomeWriteBackHook",
+        "DefaultOutcomeWriteBackHook"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/ports/scoring_report_store.py",
+      "depth": 2,
+      "size_bytes": 626,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "write"
+      ],
+      "classes": [
+        "ScoringReportStore"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/provenance/__init__.py",
+      "depth": 2,
+      "size_bytes": 350,
+      "total_lines": 11,
+      "code_lines": 10,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/provenance/integration.py",
+      "depth": 2,
+      "size_bytes": 377,
+      "total_lines": 14,
+      "code_lines": 9,
+      "functions": [
+        "integrate_prompt_provenance",
+        "integrate"
+      ],
+      "classes": [
+        "PromptProvenanceIntegrator"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/provenance/prompt_engines.py",
+      "depth": 2,
+      "size_bytes": 341,
+      "total_lines": 14,
+      "code_lines": 9,
+      "functions": [
+        "trace_prompt_origin",
+        "trace"
+      ],
+      "classes": [
+        "PromptProvenanceEngine"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/provenance/provenance.py",
+      "depth": 2,
+      "size_bytes": 684,
+      "total_lines": 37,
+      "code_lines": 23,
+      "functions": [
+        "trace",
+        "integrate",
+        "trace",
+        "integrate"
+      ],
+      "classes": [
+        "ProvenanceEngine",
+        "ProvenanceIntegrator",
+        "ProvenanceEvent",
+        "ProvenanceRecord"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/provenance/types.py",
+      "depth": 2,
+      "size_bytes": 254,
+      "total_lines": 11,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [
+        "PromptProvenanceEvent",
+        "PromptProvenanceRecord"
+      ],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/raw/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime/isolation_monitor.py",
+      "depth": 2,
+      "size_bytes": 2190,
+      "total_lines": 70,
+      "code_lines": 54,
+      "functions": [
+        "get_forbidden_loaded_modules",
+        "assert_isolation",
+        "check_system_learning_runtime_isolation"
+      ],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/__init__.py",
+      "depth": 2,
+      "size_bytes": 1643,
+      "total_lines": 48,
+      "code_lines": 42,
+      "functions": [],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/advanced_analytics.py",
+      "depth": 2,
+      "size_bytes": 25049,
+      "total_lines": 658,
+      "code_lines": 472,
+      "functions": [
+        "get_global_analytics",
+        "analyze_snapshot_for_insights",
+        "get_system_trends",
+        "get_performance_recommendations",
+        "__init__",
+        "analyze_snapshot",
+        "_analyze_performance",
+        "_analyze_patterns",
+        "_generate_recommendations",
+        "_identify_risk_factors",
+        "_calculate_efficiency_score",
+        "_calculate_complexity_score",
+        "_calculate_reliability_score",
+        "_calculate_critical_path",
+        "_calculate_parallelism_factor",
+        "_detect_anomalies",
+        "_store_historical_patterns",
+        "get_trend_analysis",
+        "_calculate_trend",
+        "get_optimization_recommendations",
+        "get_performance_baselines"
+      ],
+      "classes": [
+        "PerformanceMetrics",
+        "PatternMetrics",
+        "OptimizationInsights",
+        "AdvancedADGAnalytics"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/auto_persistence.py",
+      "depth": 2,
+      "size_bytes": 9507,
+      "total_lines": 280,
+      "code_lines": 220,
+      "functions": [
+        "get_auto_persistence_tracer",
+        "__init__",
+        "trace_orchestrator",
+        "_auto_persist_runtime_adg",
+        "get_auto_persistence_status",
+        "force_persist_current_spans"
+      ],
+      "classes": [
+        "AutoPersistenceTracingAdapter",
+        "OpenTelemetryTracingAdapter"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/l6_integration.py",
+      "depth": 2,
+      "size_bytes": 16581,
+      "total_lines": 413,
+      "code_lines": 317,
+      "functions": [
+        "__init__",
+        "_load_index",
+        "_save_index",
+        "store_snapshot_for_meta_learning",
+        "_extract_and_store_patterns",
+        "_log_evolution_event",
+        "get_meta_learning_snapshots",
+        "get_execution_patterns",
+        "query_evolution_log"
+      ],
+      "classes": [
+        "L6MetaLearningBridge"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/materializer.py",
+      "depth": 2,
+      "size_bytes": 21491,
+      "total_lines": 605,
+      "code_lines": 463,
+      "functions": [
+        "_extract_node",
+        "_extract_parent_child_edges",
+        "_extract_temporal_edges",
+        "_extract_semantic_edges",
+        "_extract_actor_edges",
+        "_extract_target_edges",
+        "_extract_dependency_edges",
+        "_extract_read_write_edges",
+        "_extract_tool_invocation_edges",
+        "_extract_orchestration_handoff_edges",
+        "_extract_retry_edges",
+        "_extract_evaluation_edges",
+        "_extract_policy_validation_edges",
+        "_extract_human_escalation_edges",
+        "_extract_failure_propagation_edges",
+        "_extract_outcome_edges",
+        "_infer_mission",
+        "safe_ts_utc",
+        "materialize"
+      ],
+      "classes": [
+        "RuntimeADGMaterializer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/snapshot.py",
+      "depth": 2,
+      "size_bytes": 11839,
+      "total_lines": 360,
+      "code_lines": 300,
+      "functions": [
+        "_canonical_bytes",
+        "_compute_snapshot_hash",
+        "create_runtime_adg_snapshot",
+        "attributes_to_json",
+        "canonical_bytes",
+        "node_count",
+        "edge_count",
+        "validate",
+        "to_dict"
+      ],
+      "classes": [
+        "RuntimeADGNode",
+        "RuntimeADGEdge",
+        "RuntimeADGSnapshot"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/runtime_adg/store.py",
+      "depth": 2,
+      "size_bytes": 13199,
+      "total_lines": 221,
+      "code_lines": 170,
+      "functions": [
+        "_deserialise_snapshot",
+        "__init__",
+        "persist",
+        "get_by_version",
+        "get_version_id_for_trace",
+        "list_snapshots",
+        "__init__",
+        "_validate_l4_compliance",
+        "_load_trace_index",
+        "_save_trace_index",
+        "persist",
+        "get_by_version",
+        "get_version_id_for_trace",
+        "load_snapshot",
+        "list_snapshots"
+      ],
+      "classes": [
+        "InMemoryRuntimeADGStore",
+        "FileBackedRuntimeADGStore"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/scripts/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/scripts/meta_learning_bridge.py",
+      "depth": 2,
+      "size_bytes": 13518,
+      "total_lines": 328,
+      "code_lines": 307,
+      "functions": [
+        "emit_app_signal_event",
+        "propose_from_signal_aggregate",
+        "emit_app_signal_aggregate"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/scripts/meta_learning_operator.py",
+      "depth": 2,
+      "size_bytes": 17653,
+      "total_lines": 404,
+      "code_lines": 341,
+      "functions": [
+        "_deterministic_evidence_hash",
+        "run_meta_learning_operator",
+        "render_meta_learning_audit_pack"
+      ],
+      "classes": [],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/snapshots/__init__.py",
+      "depth": 2,
+      "size_bytes": 69,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/snapshots/snapshot_factory.py",
+      "depth": 2,
+      "size_bytes": 12952,
+      "total_lines": 294,
+      "code_lines": 266,
+      "functions": [
+        "_sha256_hex",
+        "create_snapshot"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/state/system_learning_state_manager.py",
+      "depth": 2,
+      "size_bytes": 23715,
+      "total_lines": 640,
+      "code_lines": 479,
+      "functions": [
+        "get_state_manager",
+        "compute_hash",
+        "__init__",
+        "create_state_snapshot",
+        "get_state_snapshot",
+        "get_snapshots_by_type",
+        "get_state_lineage",
+        "update_state_snapshot",
+        "delete_state_snapshot",
+        "_validate_snapshot",
+        "_cache_snapshot",
+        "_get_cached_snapshot",
+        "_cleanup_old_snapshots",
+        "get_metrics",
+        "reset_metrics"
+      ],
+      "classes": [
+        "SystemLearningStateType",
+        "StateLineageType",
+        "StateLineageEntry",
+        "SystemLearningStateSnapshot",
+        "SystemLearningStateManager"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/__init__.py",
+      "depth": 2,
+      "size_bytes": 319,
+      "total_lines": 9,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/activator.py",
+      "depth": 2,
+      "size_bytes": 14949,
+      "total_lines": 242,
+      "code_lines": 216,
+      "functions": [
+        "activate",
+        "get_active",
+        "__init__",
+        "_load",
+        "_save",
+        "activate",
+        "get_active"
+      ],
+      "classes": [
+        "InMemoryActivator",
+        "FileBackedActivator"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/audit_store.py",
+      "depth": 2,
+      "size_bytes": 15586,
+      "total_lines": 252,
+      "code_lines": 228,
+      "functions": [
+        "__init__",
+        "read_audit_slice",
+        "__init__",
+        "read_audit_slice",
+        "add_slice"
+      ],
+      "classes": [
+        "FileBackedAuditStore",
+        "InMemoryAuditStore"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/config_provider.py",
+      "depth": 2,
+      "size_bytes": 23452,
+      "total_lines": 349,
+      "code_lines": 300,
+      "functions": [
+        "__init__",
+        "_load_runtime_state",
+        "get_current_configs",
+        "get_last_update_utc",
+        "get_param_history",
+        "__init__",
+        "set_config",
+        "set_last_update",
+        "set_history",
+        "get_current_configs",
+        "get_last_update_utc",
+        "get_param_history",
+        "__init__",
+        "production_metrics",
+        "shadow_metrics"
+      ],
+      "classes": [
+        "FileBackedConfigProvider",
+        "InMemoryConfigProvider",
+        "InMemoryBaselineMetricsProvider"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/otel_telemetry_store.py",
+      "depth": 2,
+      "size_bytes": 6099,
+      "total_lines": 197,
+      "code_lines": 151,
+      "functions": [
+        "create_otel_telemetry_store",
+        "__init__",
+        "ingest_spans",
+        "read_events",
+        "get_span_count",
+        "clear_buffer",
+        "get_latest_spans"
+      ],
+      "classes": [
+        "OpenTelemetrySpanStore"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/telemetry_store.py",
+      "depth": 2,
+      "size_bytes": 16316,
+      "total_lines": 262,
+      "code_lines": 237,
+      "functions": [
+        "__init__",
+        "read_events",
+        "__init__",
+        "add_event",
+        "read_events"
+      ],
+      "classes": [
+        "FileBackedTelemetryStore",
+        "InMemoryTelemetryStore"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/stores/version_store.py",
+      "depth": 2,
+      "size_bytes": 17591,
+      "total_lines": 300,
+      "code_lines": 270,
+      "functions": [
+        "commit_change_package",
+        "get",
+        "list_versions",
+        "__init__",
+        "_load_index",
+        "_save_index",
+        "commit_change_package",
+        "get",
+        "list_versions"
+      ],
+      "classes": [
+        "InMemoryVersionStore",
+        "FileBackedVersionStore"
+      ],
+      "import_count": 13,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/telemetry/system_learning_telemetry.py",
+      "depth": 2,
+      "size_bytes": 21975,
+      "total_lines": 653,
+      "code_lines": 492,
+      "functions": [
+        "get_telemetry_emitter",
+        "emit_system_learning_event",
+        "telemetry_traced",
+        "__init__",
+        "start_operation",
+        "end_operation",
+        "emit_metric",
+        "emit_learning_event",
+        "emit_embedding_event",
+        "emit_cache_event",
+        "emit_drift_event",
+        "_emit_telemetry_event",
+        "get_metrics_summary",
+        "reset_metrics",
+        "decorator",
+        "wrapper"
+      ],
+      "classes": [
+        "SystemLearningEventType",
+        "SystemLearningOperationType",
+        "SystemLearningTelemetryContext",
+        "SystemLearningMetric",
+        "SystemLearningTelemetryEmitter"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 2013,
+      "total_lines": 73,
+      "code_lines": 57,
+      "functions": [],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/app_signal_types.py",
+      "depth": 2,
+      "size_bytes": 24283,
+      "total_lines": 650,
+      "code_lines": 571,
+      "functions": [
+        "_validate_finite",
+        "_validate_catalog_bounds",
+        "build_app_signal_event",
+        "build_app_signal_aggregate",
+        "_deterministic_mean",
+        "_deterministic_median",
+        "aggregate_app_signals",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "AppSignalEventArtifact",
+        "AppSignalAggregateArtifact"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/apply_attempt_types.py",
+      "depth": 2,
+      "size_bytes": 12440,
+      "total_lines": 282,
+      "code_lines": 262,
+      "functions": [
+        "build_apply_attempt",
+        "__post_init__",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "MetaLearningApplyAttemptArtifact"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/case_compilation_types.py",
+      "depth": 2,
+      "size_bytes": 13487,
+      "total_lines": 397,
+      "code_lines": 311,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash"
+      ],
+      "classes": [
+        "SealedOutputRef",
+        "ContextLogAttachment",
+        "CompilationInput",
+        "CompilationStage",
+        "CompilationPayload",
+        "CaseCompilationResult"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/case_memory_types.py",
+      "depth": 2,
+      "size_bytes": 30065,
+      "total_lines": 777,
+      "code_lines": 664,
+      "functions": [
+        "to_dict",
+        "to_dict",
+        "to_dict",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "to_dict",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash"
+      ],
+      "classes": [
+        "OutcomeClass",
+        "PolicyHashRef",
+        "ADGNodeRef",
+        "CaseRecord",
+        "HealerBundle",
+        "FalsePositiveNegativeRecord",
+        "GovernancePrecedent",
+        "PromptBundle",
+        "HITLPreferenceRecord"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/config_store_types.py",
+      "depth": 2,
+      "size_bytes": 10290,
+      "total_lines": 289,
+      "code_lines": 253,
+      "functions": [
+        "_get_MUTABLE_COMPONENTS",
+        "canonical_json",
+        "stable_sha256",
+        "validate_component_allowed",
+        "build_config_snapshot",
+        "build_config_delta",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "ConfigSnapshotArtifact",
+        "ConfigDeltaArtifact"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 23,
+          "symbol": "emit_determinism_digest"
+        },
+        {
+          "line": 23,
+          "symbol": "emit_replay_key"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/embedding_artifact.py",
+      "depth": 2,
+      "size_bytes": 11758,
+      "total_lines": 252,
+      "code_lines": 232,
+      "functions": [
+        "__post_init__",
+        "canonical_bytes",
+        "artifact_hash",
+        "assert_non_authoritative"
+      ],
+      "classes": [
+        "EmbeddingArtifact"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/evaluation_spine_types.py",
+      "depth": 2,
+      "size_bytes": 14823,
+      "total_lines": 424,
+      "code_lines": 362,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash"
+      ],
+      "classes": [
+        "MetricScore",
+        "OutcomeEvaluationResult",
+        "TrajectoryEvaluationResult",
+        "GGateValidationResult"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/healing_outcome_intake_types.py",
+      "depth": 2,
+      "size_bytes": 11508,
+      "total_lines": 226,
+      "code_lines": 213,
+      "functions": [
+        "__post_init__",
+        "canonical_bytes"
+      ],
+      "classes": [
+        "HealingOutcomeIntakeRecord"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/healing_outcome_learning_types.py",
+      "depth": 2,
+      "size_bytes": 14963,
+      "total_lines": 323,
+      "code_lines": 292,
+      "functions": [
+        "__post_init__",
+        "__post_init__",
+        "success_rate",
+        "canonical_bytes",
+        "content_hash",
+        "__post_init__",
+        "canonical_bytes",
+        "content_hash",
+        "get_success_rate"
+      ],
+      "classes": [
+        "HealingOutcomeAggregateKey",
+        "HealingOutcomeAggregate",
+        "HealingOutcomeAggregateSnapshot"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/healing_outcome_scoring_types.py",
+      "depth": 2,
+      "size_bytes": 22747,
+      "total_lines": 307,
+      "code_lines": 272,
+      "functions": [
+        "_validate_weight",
+        "_validate_ascii_only",
+        "_stable_round",
+        "__post_init__",
+        "__post_init__",
+        "__post_init__",
+        "canonical_bytes",
+        "content_hash"
+      ],
+      "classes": [
+        "ScoringWeights",
+        "ScoredRecommendation",
+        "ScoringReport"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/healing_outcome_types.py",
+      "depth": 2,
+      "size_bytes": 14364,
+      "total_lines": 329,
+      "code_lines": 299,
+      "functions": [
+        "_stable_rate",
+        "__post_init__",
+        "from_counts"
+      ],
+      "classes": [
+        "HealingOutcomeEvent",
+        "HealingOutcomeStats",
+        "HealingOutcomeProposal"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/index_build_metadata_types.py",
+      "depth": 2,
+      "size_bytes": 10689,
+      "total_lines": 217,
+      "code_lines": 202,
+      "functions": [
+        "to_canonical_json_bytes"
+      ],
+      "classes": [
+        "IndexBuildMetadata"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/meta_learning_types.py",
+      "depth": 2,
+      "size_bytes": 38911,
+      "total_lines": 1017,
+      "code_lines": 831,
+      "functions": [
+        "_canonical_payload_json",
+        "build_meta_learning_proposal",
+        "_derive_verdict",
+        "build_meta_learning_evaluation",
+        "build_meta_learning_approval",
+        "apply_meta_learning_proposal",
+        "_build_reject_decision",
+        "build_meta_learning_decision",
+        "build_meta_learning_change_package",
+        "to_dict",
+        "to_dict",
+        "from_dicts",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "_reject",
+        "__post_init__",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "ObjectiveSignal",
+        "ProposedChange",
+        "MetaLearningProposalArtifact",
+        "MetaLearningEvaluationArtifact",
+        "MetaLearningApprovalArtifact",
+        "MetaLearningDecisionArtifact",
+        "MetaLearningChangePackageArtifact"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/offline_replay_types.py",
+      "depth": 2,
+      "size_bytes": 15979,
+      "total_lines": 384,
+      "code_lines": 340,
+      "functions": [
+        "replay_app_signals_to_aggregate",
+        "replay_aggregate_to_rollout",
+        "render_offline_replay_bundle"
+      ],
+      "classes": [
+        "OfflineReplayBundle"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/optimization_types.py",
+      "depth": 2,
+      "size_bytes": 28200,
+      "total_lines": 722,
+      "code_lines": 628,
+      "functions": [
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "OptimizationProposal",
+        "ValidationResult",
+        "OptimizationCommit",
+        "GovernanceRewardSignal",
+        "GovernanceRewardScore"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/pattern_analysis_types.py",
+      "depth": 2,
+      "size_bytes": 11610,
+      "total_lines": 254,
+      "code_lines": 230,
+      "functions": [
+        "canonical_bytes",
+        "content_hash",
+        "canonical_bytes",
+        "content_hash"
+      ],
+      "classes": [
+        "PatternSourceIds",
+        "PatternFindingKey",
+        "PatternFinding",
+        "PatternFindingReport"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/prompt_adg_relations.py",
+      "depth": 2,
+      "size_bytes": 9336,
+      "total_lines": 267,
+      "code_lines": 201,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/prompt_artifact_types.py",
+      "depth": 2,
+      "size_bytes": 34845,
+      "total_lines": 918,
+      "code_lines": 780,
+      "functions": [
+        "__post_init__",
+        "to_dict",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "stable_hash",
+        "__post_init__",
+        "to_dict",
+        "stable_hash"
+      ],
+      "classes": [
+        "PromptSlotManifest",
+        "CompiledPromptArtifact",
+        "PromptSafetyDecision",
+        "PromptExecutionRecord",
+        "PromptOutcomeRecord",
+        "PreferenceRecord",
+        "PromptDriftSignal"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/rca_types.py",
+      "depth": 2,
+      "size_bytes": 4181,
+      "total_lines": 156,
+      "code_lines": 131,
+      "functions": [
+        "canonical_bytes",
+        "compute_report_hash",
+        "create_rca_report"
+      ],
+      "classes": [
+        "RCAFinding",
+        "RCAReport"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/rollout_types.py",
+      "depth": 2,
+      "size_bytes": 17768,
+      "total_lines": 433,
+      "code_lines": 388,
+      "functions": [
+        "build_meta_learning_rollout_plan",
+        "build_meta_learning_rollback",
+        "__post_init__",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "MetaLearningRolloutPlanArtifact",
+        "MetaLearningRollbackArtifact"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/seed_embedding_pack_types.py",
+      "depth": 2,
+      "size_bytes": 11853,
+      "total_lines": 251,
+      "code_lines": 231,
+      "functions": [
+        "to_canonical_json_bytes",
+        "to_full_json_bytes"
+      ],
+      "classes": [
+        "SeedEmbeddingPackManifest",
+        "SeedEmbeddingPackConfig"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/semantic_memory_types.py",
+      "depth": 2,
+      "size_bytes": 34695,
+      "total_lines": 864,
+      "code_lines": 729,
+      "functions": [
+        "_sha256_json",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text",
+        "__post_init__",
+        "_canonical_dict",
+        "to_embedding_text"
+      ],
+      "classes": [
+        "IncidentBundle",
+        "MutationDiffRecord",
+        "HealerOutcomeRecord",
+        "PathDPreferencePair",
+        "GraphNeighborhood",
+        "PolicyGuardrailCase",
+        "ReplayFailureRecord",
+        "PromptOutcomeEmbeddingRecord",
+        "RetrievalCaseRecord"
+      ],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/snapshot_types.py",
+      "depth": 2,
+      "size_bytes": 2923,
+      "total_lines": 75,
+      "code_lines": 64,
+      "functions": [
+        "to_dict"
+      ],
+      "classes": [
+        "MetaLearningSnapshot"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/telemetry_store_protocol.py",
+      "depth": 2,
+      "size_bytes": 2570,
+      "total_lines": 103,
+      "code_lines": 80,
+      "functions": [
+        "store_span_data",
+        "store_span_metrics",
+        "query_spans_by_time_range",
+        "query_metrics_by_time_range",
+        "get_latest_span_count",
+        "cleanup_old_data"
+      ],
+      "classes": [
+        "TelemetryStoreProtocol"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/telemetry_types.py",
+      "depth": 2,
+      "size_bytes": 6422,
+      "total_lines": 221,
+      "code_lines": 189,
+      "functions": [
+        "create_runtime_telemetry_event",
+        "create_telemetry_slice_from_runtime_records",
+        "canonical_bytes",
+        "compute_slice_hash",
+        "create_telemetry_slice",
+        "canonical_bytes"
+      ],
+      "classes": [
+        "TelemetryEvent",
+        "TelemetrySlice"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/types/trace_feature_types.py",
+      "depth": 2,
+      "size_bytes": 27349,
+      "total_lines": 673,
+      "code_lines": 591,
+      "functions": [
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "from_bundle",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json",
+        "__post_init__",
+        "_canonical_dict",
+        "stable_hash",
+        "to_dict",
+        "to_json"
+      ],
+      "classes": [
+        "FeatureBundle",
+        "TraceFeatureRecord",
+        "RCACluster",
+        "FailurePattern"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 100,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/lineage_validator.py",
+      "depth": 2,
+      "size_bytes": 11375,
+      "total_lines": 268,
+      "code_lines": 244,
+      "functions": [
+        "__init__",
+        "validate_lineage",
+        "validate_chain"
+      ],
+      "classes": [
+        "LineageValidationError",
+        "ParentNotFound",
+        "CycleDetected",
+        "LineageValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/oscillation_detector.py",
+      "depth": 2,
+      "size_bytes": 3963,
+      "total_lines": 136,
+      "code_lines": 111,
+      "functions": [
+        "detect_oscillation",
+        "compute_freeze_decision",
+        "values_equal"
+      ],
+      "classes": [
+        "OscillationPolicy",
+        "FreezeDecision"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/readonly_access.py",
+      "depth": 2,
+      "size_bytes": 11720,
+      "total_lines": 85,
+      "code_lines": 68,
+      "functions": [
+        "check_file_readonly",
+        "check_system_learning_readonly",
+        "__init__",
+        "visit_Assign",
+        "visit_Call"
+      ],
+      "classes": [
+        "_ReadOnlyVisitor"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/replay_validator.py",
+      "depth": 2,
+      "size_bytes": 2513,
+      "total_lines": 78,
+      "code_lines": 62,
+      "functions": [
+        "replay_validate"
+      ],
+      "classes": [
+        "DeterminismViolation"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/shadow_evaluator.py",
+      "depth": 2,
+      "size_bytes": 5117,
+      "total_lines": 132,
+      "code_lines": 112,
+      "functions": [
+        "evaluate_shadow"
+      ],
+      "classes": [
+        "ShadowRegression",
+        "ShadowMetrics",
+        "ShadowThresholds"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "system_learning/validators/shadow_replay_validator.py",
+      "depth": 2,
+      "size_bytes": 12899,
+      "total_lines": 293,
+      "code_lines": 259,
+      "functions": [
+        "digest_changed",
+        "performance_delta",
+        "safety_degraded",
+        "regression_threshold",
+        "activation_safe",
+        "validate"
+      ],
+      "classes": [
+        "RegressionError",
+        "ReplayResult",
+        "ShadowReplaySummary",
+        "ShadowReplayValidator"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

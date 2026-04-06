@@ -19,9 +19,6 @@ try:
     from apps_shared.enforcement.HardenedeventbusStrategy import (
         BATCH_SIZE,
         BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
         HardenedEventBus,
         get_hardened_event_bus,
         hardened_event_publisher,

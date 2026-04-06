@@ -175,7 +175,6 @@ _emit_updates_meta_learning_state("p4", "reasoning_toggles_config", "meta_learni
 _emit_links_execution_to_snapshot("p4", "reasoning_toggles_config", "exec_snapshot_link")
 
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

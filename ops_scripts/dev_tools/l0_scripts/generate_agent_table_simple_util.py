@@ -6,16 +6,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file as _kernel_is_agent
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

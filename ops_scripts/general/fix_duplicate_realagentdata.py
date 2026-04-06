@@ -118,16 +118,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from apps_shared.config.pipeline_constants_config import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 _emit_emits_metric_event("fix_duplicate_realagentdata", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_duplicate_realagentdata", "p4obs", "metric_2")

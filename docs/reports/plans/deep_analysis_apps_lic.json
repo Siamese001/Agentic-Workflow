@@ -1,0 +1,4192 @@
+{
+  "summary": {
+    "target_dir": "apps_lic",
+    "total_files": 140,
+    "total_with_issues": 15,
+    "total_root_violations": 1,
+    "total_dead_code_files": 15,
+    "total_misplaced_files": 1,
+    "folder_breakdown": {
+      "apps_lic": {
+        "files": 2,
+        "total_lines": 214,
+        "root_violations": [
+          "apps_lic/__main__.py"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "apps_lic/__main__.py"
+        ],
+        "clean_files": 1
+      },
+      "apps_lic\\config": {
+        "files": 13,
+        "total_lines": 1933,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/config/archetype_indicator_config.py",
+          "apps_lic/config/knowledge_base.py",
+          "apps_lic/config/loader_config.py",
+          "apps_lic/config/reasoning_toggles_config.py",
+          "apps_lic/config/retry_policy_config.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 8
+      },
+      "apps_lic\\engines": {
+        "files": 5,
+        "total_lines": 1025,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/engines/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_lic\\integrations": {
+        "files": 3,
+        "total_lines": 225,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/integrations/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_lic\\outputs": {
+        "files": 4,
+        "total_lines": 317,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/outputs/__init__.py",
+          "apps_lic/outputs/campaign_renderer.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_lic\\reasoning": {
+        "files": 21,
+        "total_lines": 5567,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/reasoning/GovernanceShieldAgent.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 20
+      },
+      "apps_lic\\scripts": {
+        "files": 6,
+        "total_lines": 312,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 6
+      },
+      "apps_lic\\services": {
+        "files": 1,
+        "total_lines": 79,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "apps_lic\\tests": {
+        "files": 6,
+        "total_lines": 563,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/tests/test_lic_reasoning.py",
+          "apps_lic/tests/test_lic_validators.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_lic\\tools": {
+        "files": 43,
+        "total_lines": 4580,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 43
+      },
+      "apps_lic\\types": {
+        "files": 21,
+        "total_lines": 7894,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/types/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 20
+      },
+      "apps_lic\\utils": {
+        "files": 9,
+        "total_lines": 2257,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_lic/utils/lic_agent_base_util.py",
+          "apps_lic/utils/mixins_util.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 7
+      },
+      "apps_lic\\validators": {
+        "files": 6,
+        "total_lines": 962,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 6
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "apps_lic/__init__.py",
+      "depth": 1,
+      "size_bytes": 53,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/__main__.py",
+      "depth": 1,
+      "size_bytes": 8876,
+      "total_lines": 213,
+      "code_lines": 195,
+      "functions": [
+        "_adg_bootstrap",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/__init__.py",
+      "depth": 2,
+      "size_bytes": 35,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/agent_specs.json",
+      "depth": 2,
+      "size_bytes": 2810,
+      "total_lines": 117,
+      "code_lines": 117,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/archetype_indicator_config.py",
+      "depth": 2,
+      "size_bytes": 3414,
+      "total_lines": 146,
+      "code_lines": 93,
+      "functions": [],
+      "classes": [
+        "ArchetypeIndicators",
+        "ProfileAnalysisAgent",
+        "VectorStoreQueryParams",
+        "FallbackRAGParams",
+        "ResearchAgent",
+        "SenderGroundingAgent",
+        "Conditions",
+        "Constraints",
+        "RoutingRule",
+        "RoutingAgent",
+        "GenerationAgent",
+        "ValidationAgent",
+        "GateDecisionAgent",
+        "ScoringWeights",
+        "QAReportAgent",
+        "AgentSpecs"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 10,
+          "symbol": "apps_shared.config.pipeline_constants_config.MAX_RETRIES"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/knowledge_base.py",
+      "depth": 2,
+      "size_bytes": 724,
+      "total_lines": 35,
+      "code_lines": 32,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(12)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 7,
+          "symbol": "FROZEN_SNAPSHOT"
+        },
+        {
+          "line": 7,
+          "symbol": "LicGlobalRule"
+        },
+        {
+          "line": 7,
+          "symbol": "LicNodeEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "LicPromptEntry"
+        },
+        {
+          "line": 7,
+          "symbol": "LicSovereignKnowledge"
+        },
+        {
+          "line": 7,
+          "symbol": "get_global_rule"
+        },
+        {
+          "line": 7,
+          "symbol": "get_node_config"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "get_prompt_entry"
+        },
+        {
+          "line": 7,
+          "symbol": "get_system_prompt"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_nodes"
+        },
+        {
+          "line": 7,
+          "symbol": "list_all_prompts"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/lic_policies.yaml",
+      "depth": 2,
+      "size_bytes": 1387,
+      "total_lines": 74,
+      "code_lines": 62,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/lic_thresholds.yaml",
+      "depth": 2,
+      "size_bytes": 1133,
+      "total_lines": 53,
+      "code_lines": 40,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/loader_config.py",
+      "depth": 2,
+      "size_bytes": 1733,
+      "total_lines": 70,
+      "code_lines": 46,
+      "functions": [
+        "get_config_path",
+        "load_agent_specs"
+      ],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 11,
+          "symbol": "apps_shared.config.pipeline_constants_config.MAX_RETRIES"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/placeholder_detector_agent_config.py",
+      "depth": 2,
+      "size_bytes": 1976,
+      "total_lines": 64,
+      "code_lines": 51,
+      "functions": [
+        "detect_placeholders",
+        "validate",
+        "heal_repository"
+      ],
+      "classes": [
+        "PlaceholderDetectorAgent"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/prompts.json",
+      "depth": 2,
+      "size_bytes": 466,
+      "total_lines": 5,
+      "code_lines": 5,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/reasoning_toggles_config.py",
+      "depth": 2,
+      "size_bytes": 11350,
+      "total_lines": 241,
+      "code_lines": 214,
+      "functions": [
+        "validate_branches",
+        "validate_depth",
+        "validate_temp"
+      ],
+      "classes": [
+        "ReasoningToggles",
+        "Config"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 178,
+          "symbol": "MAX_RETRIES"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/retry_policy_config.py",
+      "depth": 2,
+      "size_bytes": 23100,
+      "total_lines": 679,
+      "code_lines": 538,
+      "functions": [
+        "get_retry_executor",
+        "retry",
+        "retry_with_policy",
+        "init_default_policies",
+        "should_retry",
+        "calculate_delay",
+        "__init__",
+        "execute",
+        "_update_stats",
+        "get_stats",
+        "__init__",
+        "register_policy",
+        "execute",
+        "decorator",
+        "decorator",
+        "async_wrapper",
+        "sync_wrapper",
+        "wrapper",
+        "async_func"
+      ],
+      "classes": [
+        "RetryStrategy",
+        "RetryableError",
+        "NonRetryableError",
+        "RetryConfig",
+        "RetryAttempt",
+        "RetryResult",
+        "DelayCalculator",
+        "RetryPolicy",
+        "RetryableExecutor"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 174,
+          "symbol": "MAX_RETRIES"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/validator_rules.json",
+      "depth": 2,
+      "size_bytes": 10551,
+      "total_lines": 386,
+      "code_lines": 367,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/config/voice_profile.json",
+      "depth": 2,
+      "size_bytes": 1924,
+      "total_lines": 62,
+      "code_lines": 62,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 1760,
+      "total_lines": 51,
+      "code_lines": 42,
+      "functions": [],
+      "classes": [],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 10,
+          "symbol": "apps_lic.reasoning.ExecutiveStrategyAgent.ExecutiveStrategyAgent"
+        },
+        {
+          "line": 10,
+          "symbol": "apps_lic.reasoning.ExecutiveStrategyAgent.get_exec_interviewer_profile"
+        },
+        {
+          "line": 10,
+          "symbol": "apps_lic.reasoning.ExecutiveStrategyAgent.get_exec_shadow_audit"
+        },
+        {
+          "line": 10,
+          "symbol": "apps_lic.reasoning.ExecutiveStrategyAgent.get_exec_strategy_roadmap"
+        },
+        {
+          "line": 24,
+          "symbol": "apps_lic.reasoning.HOPPipelineExecutor.HOPPipelineExecutor"
+        },
+        {
+          "line": 29,
+          "symbol": "apps_lic.reasoning.LICValidationExecutor.LICValidationExecutor"
+        },
+        {
+          "line": 34,
+          "symbol": "apps_lic.reasoning.OutreachMessageAgent.OutreachMessageAgent"
+        },
+        {
+          "line": 39,
+          "symbol": "apps_lic.engines.control_plane.ControlPlane"
+        },
+        {
+          "line": 39,
+          "symbol": "apps_lic.engines.control_plane.PolicyAction"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/engines/control_plane.py",
+      "depth": 2,
+      "size_bytes": 16017,
+      "total_lines": 382,
+      "code_lines": 336,
+      "functions": [
+        "__post_init__",
+        "__init__",
+        "evaluate_input",
+        "evaluate_output",
+        "_evaluate",
+        "get_prompt",
+        "get_node_config",
+        "get_stats"
+      ],
+      "classes": [
+        "PolicyAction",
+        "PolicyDecision",
+        "ControlPlane"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/engines/hop_stage_registry.py",
+      "depth": 2,
+      "size_bytes": 2677,
+      "total_lines": 81,
+      "code_lines": 53,
+      "functions": [
+        "register_stage",
+        "get_stage_handler",
+        "_stage_1_profile_analysis",
+        "_stage_2_research",
+        "_stage_3_sender_grounding",
+        "_stage_4_routing",
+        "_stage_5_generation",
+        "_stage_6_validation",
+        "_stage_7_gate_decision",
+        "_stage_8_qa_report",
+        "_stage_9_integration",
+        "decorator"
+      ],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/engines/lic_spine_adapter.py",
+      "depth": 2,
+      "size_bytes": 12338,
+      "total_lines": 271,
+      "code_lines": 236,
+      "functions": [
+        "assemble",
+        "__init__"
+      ],
+      "classes": [
+        "_LicAssemblerAdapter",
+        "LicSpineAdapter"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/engines/message_body_composer.py",
+      "depth": 2,
+      "size_bytes": 9567,
+      "total_lines": 240,
+      "code_lines": 5,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/integrations/__init__.py",
+      "depth": 2,
+      "size_bytes": 244,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_lic.integrations.execution_adapter.ExecutionAdapter"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_lic.integrations.observability_adapter.ObservabilityAdapter"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/integrations/execution_adapter.py",
+      "depth": 2,
+      "size_bytes": 4186,
+      "total_lines": 129,
+      "code_lines": 98,
+      "functions": [
+        "__init__",
+        "submit_campaign",
+        "submit_draft",
+        "_timestamp",
+        "get_execution_log"
+      ],
+      "classes": [
+        "ExecutionRequest",
+        "ExecutionAdapter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/integrations/observability_adapter.py",
+      "depth": 2,
+      "size_bytes": 3050,
+      "total_lines": 90,
+      "code_lines": 76,
+      "functions": [
+        "__init__",
+        "emit_campaign_start",
+        "emit_campaign_complete",
+        "emit_draft_created",
+        "emit_validation_complete",
+        "get_metrics",
+        "_timestamp"
+      ],
+      "classes": [
+        "ObservabilityAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/outputs/__init__.py",
+      "depth": 2,
+      "size_bytes": 333,
+      "total_lines": 11,
+      "code_lines": 9,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(4)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_lic.outputs.campaign_renderer.CampaignRenderer"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.outputs.campaign_renderer.CampaignSummaryRenderer"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_lic.outputs.draft_renderer.DraftRenderer"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_lic.outputs.draft_renderer.ValidationReportRenderer"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/outputs/campaign_renderer.py",
+      "depth": 2,
+      "size_bytes": 4123,
+      "total_lines": 122,
+      "code_lines": 98,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "CampaignRenderer",
+        "CampaignSummaryRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 16,
+          "symbol": "apps_lic.types.DraftPackage"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/outputs/draft_renderer.py",
+      "depth": 2,
+      "size_bytes": 3517,
+      "total_lines": 112,
+      "code_lines": 92,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact",
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "DraftRenderer",
+        "ValidationReportRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/outputs/validation_report_renderer.py",
+      "depth": 2,
+      "size_bytes": 1953,
+      "total_lines": 72,
+      "code_lines": 59,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "ValidationReportRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/DispatchOutreachToolsAgent.py",
+      "depth": 2,
+      "size_bytes": 1704,
+      "total_lines": 48,
+      "code_lines": 34,
+      "functions": [
+        "execute",
+        "__post_init__",
+        "_run_domain_diagnostics"
+      ],
+      "classes": [
+        "DispatchOutreachToolsAgent"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/ExecutiveStrategyAgent.py",
+      "depth": 2,
+      "size_bytes": 14069,
+      "total_lines": 315,
+      "code_lines": 273,
+      "functions": [
+        "get_exec_shadow_audit",
+        "get_exec_strategy_roadmap",
+        "get_exec_interviewer_profile",
+        "__init__",
+        "_render",
+        "conduct_shadow_audit",
+        "generate_strategy_roadmap",
+        "profile_interviewer",
+        "heal",
+        "heal_repository"
+      ],
+      "classes": [
+        "ExecutiveStrategyAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/GovernanceShieldAgent.py",
+      "depth": 2,
+      "size_bytes": 28893,
+      "total_lines": 669,
+      "code_lines": 571,
+      "functions": [
+        "create_governance_shield_agent",
+        "sanitize_content",
+        "__post_init__",
+        "sanitize_claims",
+        "generate_safety_protocol",
+        "audit_outreach",
+        "scan_risk_level",
+        "_critical_fix_zero_hallucinations",
+        "_fix_privacy_language",
+        "analyze_governance_with_qwen",
+        "_prepare_governance_analysis_prompt",
+        "_generate_high_risk_protocol",
+        "_generate_standard_protocol",
+        "heal",
+        "heal_repository"
+      ],
+      "classes": [
+        "IndustrySensitivity",
+        "RiskProfile",
+        "SafetyProtocol",
+        "GovernanceShieldAgent"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 26,
+          "symbol": "AppsQwenPromptConfig"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/HOPPipelineExecutor.py",
+      "depth": 2,
+      "size_bytes": 11669,
+      "total_lines": 246,
+      "code_lines": 221,
+      "functions": [
+        "__post_init__",
+        "_process"
+      ],
+      "classes": [
+        "HOPPipelineExecutor"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/IndustrysensitivityStrategy.py",
+      "depth": 2,
+      "size_bytes": 1761,
+      "total_lines": 52,
+      "code_lines": 35,
+      "functions": [
+        "is_high_risk",
+        "is_comprehensive"
+      ],
+      "classes": [
+        "IndustrySensitivity",
+        "RiskProfile",
+        "SafetyProtocol",
+        "GovernanceShieldLevel"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/IntelligenceLibrarianAgent.py",
+      "depth": 2,
+      "size_bytes": 316,
+      "total_lines": 10,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/LICValidationExecutor.py",
+      "depth": 2,
+      "size_bytes": 12635,
+      "total_lines": 266,
+      "code_lines": 246,
+      "functions": [
+        "collect_issues",
+        "_validate_campaign_balance",
+        "_validate_deliverability",
+        "_validate_message_compliance"
+      ],
+      "classes": [
+        "LICValidationExecutor"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/LicCodeInterpreter.py",
+      "depth": 2,
+      "size_bytes": 25427,
+      "total_lines": 625,
+      "code_lines": 572,
+      "functions": [
+        "create_code_interpreter",
+        "__init__",
+        "execute",
+        "run_similarity_check",
+        "run_scoring_competition",
+        "extract_keywords",
+        "calculate_overlap",
+        "rank_by_metric",
+        "validate_structure",
+        "_cosine_similarity",
+        "_jaccard_similarity",
+        "_calculate_readability"
+      ],
+      "classes": [
+        "ScoredCandidate",
+        "ScoringCriteria",
+        "SimilarityResult",
+        "KeywordExtractionResult",
+        "LICCodeInterpreter"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/LicHealingOrchestrator.py",
+      "depth": 2,
+      "size_bytes": 19877,
+      "total_lines": 431,
+      "code_lines": 386,
+      "functions": [
+        "__post_init__",
+        "assess_system_health",
+        "_register_incident",
+        "ml_heal_incident",
+        "_execute_healing",
+        "_heal_structural",
+        "_heal_schema",
+        "_heal_llm_call",
+        "ml_cache_incident_resolution",
+        "ml_recall_incident_resolution",
+        "ml_optimize_playbook_selection",
+        "ml_record_playbook_success",
+        "_cycle_results_key"
+      ],
+      "classes": [
+        "LicHealingOrchestrator"
+      ],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/LicReflectionAgent.py",
+      "depth": 2,
+      "size_bytes": 584,
+      "total_lines": 18,
+      "code_lines": 12,
+      "functions": [],
+      "classes": [
+        "LicReflectionAgent"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/LicTemplateOptimizerAgent.py",
+      "depth": 2,
+      "size_bytes": 11507,
+      "total_lines": 225,
+      "code_lines": 213,
+      "functions": [
+        "execute",
+        "heal_repository",
+        "heal"
+      ],
+      "classes": [
+        "LicTemplateOptimizerAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/MessageArchitectAgent.py",
+      "depth": 2,
+      "size_bytes": 311,
+      "total_lines": 10,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/MessageComplianceAgent.py",
+      "depth": 2,
+      "size_bytes": 379,
+      "total_lines": 10,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/OutreachLearningAgent.py",
+      "depth": 2,
+      "size_bytes": 23037,
+      "total_lines": 580,
+      "code_lines": 499,
+      "functions": [
+        "__init__",
+        "inject_instruction",
+        "__init__",
+        "record_success",
+        "record_failure",
+        "_update_patterns",
+        "get_success_rate",
+        "get_examples",
+        "__init__",
+        "score_lead",
+        "score_message",
+        "get_confidence_level",
+        "__init__",
+        "_load",
+        "_save",
+        "store",
+        "retrieve",
+        "list_keys",
+        "clear",
+        "__init__",
+        "_register_in_knowledge_graph",
+        "execute",
+        "record_result",
+        "inject_instruction",
+        "record_success",
+        "record_failure",
+        "heal_repository",
+        "heal"
+      ],
+      "classes": [
+        "OutreachEngineContext",
+        "HealerMixin",
+        "OutreachConfidenceLevel",
+        "OutreachLearningExample",
+        "OutreachInstruction",
+        "OutreachLearningLoop",
+        "OutreachConfidenceScorer",
+        "OutreachMemoryPersistence",
+        "OutreachLearningAgent"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/OutreachMessageAgent.py",
+      "depth": 2,
+      "size_bytes": 29470,
+      "total_lines": 296,
+      "code_lines": 257,
+      "functions": [
+        "__init__",
+        "generate_connection_request",
+        "generate_cold_outreach",
+        "generate_followup",
+        "generate_message_body",
+        "_load_markdown_template",
+        "heal",
+        "heal_repository"
+      ],
+      "classes": [
+        "OutreachTemplateError",
+        "OutreachMessageAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/OutreachProactiveAgent.py",
+      "depth": 2,
+      "size_bytes": 1727,
+      "total_lines": 47,
+      "code_lines": 36,
+      "functions": [
+        "__init__",
+        "__init__",
+        "_get_handoff_kwargs",
+        "_record_task_execution"
+      ],
+      "classes": [
+        "OutreachEngineContext",
+        "OutreachProactiveAgent"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/OutreachSignalRouterAgent.py",
+      "depth": 2,
+      "size_bytes": 29467,
+      "total_lines": 686,
+      "code_lines": 606,
+      "functions": [
+        "run_outreach_healing_mission",
+        "__post_init__",
+        "get_agents_for_signals",
+        "has_critical_signal",
+        "determine_strategy",
+        "heal_repository",
+        "heal",
+        "create_all_agents",
+        "create_quality_agents",
+        "create_compliance_agents",
+        "create_agents_by_name",
+        "heal_repository",
+        "__init__",
+        "execute",
+        "_build_agenda",
+        "_check_rollback_conditions",
+        "_execute_rollback",
+        "__init__",
+        "__init__"
+      ],
+      "classes": [
+        "OutreachHealingStrategy",
+        "OutreachCycleResult",
+        "OutreachHealingResult",
+        "OutreachSignalRouterAgent",
+        "OutreachAgentFactory",
+        "OutreachHealingCycle",
+        "MCPHardenedMixin",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/OutreachValidationExecutorAgent.py",
+      "depth": 2,
+      "size_bytes": 24899,
+      "total_lines": 605,
+      "code_lines": 536,
+      "functions": [
+        "__init__",
+        "_execute_check",
+        "_check_placeholders_lic",
+        "_check_forbidden_verbs",
+        "_check_filler_phrases",
+        "_check_metric_source_binding",
+        "_check_metric_context",
+        "_check_existing_redundancy",
+        "_check_transition_phrase",
+        "_check_signature_immutability",
+        "_extract_metric_context",
+        "_calculate_jaccard_similarity",
+        "heal_repository",
+        "heal"
+      ],
+      "classes": [
+        "ValidationGateExecutor",
+        "RuleFailure",
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "OutreachValidationExecutorAgent"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/ValidatorAgent.py",
+      "depth": 2,
+      "size_bytes": 9788,
+      "total_lines": 216,
+      "code_lines": 200,
+      "functions": [
+        "__post_init__",
+        "check",
+        "_retry",
+        "heal",
+        "heal_repository"
+      ],
+      "classes": [
+        "ValidatorAgent"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/__init__.py",
+      "depth": 2,
+      "size_bytes": 311,
+      "total_lines": 9,
+      "code_lines": 7,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/reasoning/enterprise_campaign_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 7636,
+      "total_lines": 203,
+      "code_lines": 169,
+      "functions": [
+        "run_enterprise_lic_campaign",
+        "__post_init__",
+        "__init__",
+        "process",
+        "_build_risk_summary",
+        "_build_confidence_summary",
+        "_build_recommendations",
+        "_log_step"
+      ],
+      "classes": [
+        "EnterpriseLicRequest",
+        "EnterpriseLicResult",
+        "EnterpriseLicOrchestrator"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/scripts/__init__.py",
+      "depth": 2,
+      "size_bytes": 14,
+      "total_lines": 1,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/scripts/fix_lic_imports.py",
+      "depth": 2,
+      "size_bytes": 615,
+      "total_lines": 16,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/scripts/migrate_agents.py",
+      "depth": 2,
+      "size_bytes": 2115,
+      "total_lines": 53,
+      "code_lines": 43,
+      "functions": [
+        "migrate_rescued_agents"
+      ],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/scripts/move_lics2_to_legacy.py",
+      "depth": 2,
+      "size_bytes": 821,
+      "total_lines": 18,
+      "code_lines": 13,
+      "functions": [
+        "main"
+      ],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/scripts/purge_legacy_archive.py",
+      "depth": 2,
+      "size_bytes": 5928,
+      "total_lines": 35,
+      "code_lines": 28,
+      "functions": [
+        "purge_legacy_artifacts"
+      ],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/scripts/test_enterprise_lic.py",
+      "depth": 2,
+      "size_bytes": 6231,
+      "total_lines": 189,
+      "code_lines": 140,
+      "functions": [
+        "_assert",
+        "_assert_repo_signals",
+        "_assert_detailed_observability",
+        "_assert_layer4_wiring",
+        "_assert_enhanced_system_learning",
+        "_assert_rigorous_e2e_wiring",
+        "test_enterprise_lic_campaign",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/services/repo_signal_service.py",
+      "depth": 2,
+      "size_bytes": 3054,
+      "total_lines": 79,
+      "code_lines": 59,
+      "functions": [
+        "__init__",
+        "collect",
+        "_collect_lic_domain_signals",
+        "_collect_observability_signals",
+        "_json_entry_count"
+      ],
+      "classes": [
+        "RepoSignalService"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tests/__init__.py",
+      "depth": 2,
+      "size_bytes": 34,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tests/test_integrations.py",
+      "depth": 2,
+      "size_bytes": 4684,
+      "total_lines": 113,
+      "code_lines": 95,
+      "functions": [
+        "setUp",
+        "test_submit_campaign_passed",
+        "test_submit_campaign_failed",
+        "test_submit_draft",
+        "test_get_execution_log",
+        "setUp",
+        "test_emit_campaign_start",
+        "test_emit_campaign_complete",
+        "test_emit_draft_created",
+        "test_emit_validation_complete",
+        "test_get_metrics"
+      ],
+      "classes": [
+        "TestExecutionAdapter",
+        "TestObservabilityAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tests/test_lic_reasoning.py",
+      "depth": 2,
+      "size_bytes": 913,
+      "total_lines": 34,
+      "code_lines": 24,
+      "functions": [
+        "test_executor_import",
+        "test_executor_class_exists",
+        "test_agent_import",
+        "test_agent_class_exists"
+      ],
+      "classes": [
+        "TestLICValidationExecutor",
+        "TestValidatorAgent"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tests/test_lic_types.py",
+      "depth": 2,
+      "size_bytes": 8142,
+      "total_lines": 255,
+      "code_lines": 212,
+      "functions": [
+        "test_validation_passed",
+        "test_validation_failed",
+        "test_attempts_validation",
+        "test_latency_validation",
+        "test_draft_creation",
+        "test_draft_render",
+        "test_subject_validation_empty",
+        "test_body_validation_empty",
+        "test_draft_package_creation",
+        "test_with_draft",
+        "test_draft_required",
+        "test_config_defaults",
+        "test_max_recipients_bounds",
+        "test_min_quality_score_bounds",
+        "test_request_creation",
+        "test_campaign_id_required",
+        "test_result_creation",
+        "test_passed_gate_property",
+        "test_overall_score_bounds",
+        "test_summary_creation",
+        "test_to_dict"
+      ],
+      "classes": [
+        "TestValidationResult",
+        "TestDraft",
+        "TestDraftPackage",
+        "TestCampaignConfig",
+        "TestCampaignRequest",
+        "TestCampaignResult",
+        "TestCampaignRunSummary"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tests/test_lic_validators.py",
+      "depth": 2,
+      "size_bytes": 962,
+      "total_lines": 34,
+      "code_lines": 24,
+      "functions": [
+        "test_validator_import",
+        "test_validator_class_exists",
+        "test_planner_import",
+        "test_planner_class_exists"
+      ],
+      "classes": [
+        "TestMessageDiversityValidator",
+        "TestPersonaPlanner"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tests/test_outputs.py",
+      "depth": 2,
+      "size_bytes": 4449,
+      "total_lines": 126,
+      "code_lines": 100,
+      "functions": [
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown",
+        "test_render_compact",
+        "setUp",
+        "test_render_json",
+        "test_render_markdown_passed",
+        "test_render_markdown_failed"
+      ],
+      "classes": [
+        "TestCampaignRenderer",
+        "TestCampaignSummaryRenderer",
+        "TestDraftRenderer",
+        "TestValidationReportRenderer"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/AdjustToneWeights.py",
+      "depth": 2,
+      "size_bytes": 9598,
+      "total_lines": 203,
+      "code_lines": 189,
+      "functions": [
+        "refine",
+        "__init__",
+        "refine"
+      ],
+      "classes": [
+        "AdjustToneWeights"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/AggregateCampaignState.py",
+      "depth": 2,
+      "size_bytes": 652,
+      "total_lines": 21,
+      "code_lines": 14,
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "classes": [
+        "AggregateCampaignState"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/AssessContentRisk.py",
+      "depth": 2,
+      "size_bytes": 1819,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "AssessContentRisk"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/AssessMessageRelevance.py",
+      "depth": 2,
+      "size_bytes": 1834,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "AssessMessageRelevance"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/BuildMessageFilters.py",
+      "depth": 2,
+      "size_bytes": 1125,
+      "total_lines": 42,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "format",
+        "_transform",
+        "FormatData"
+      ],
+      "classes": [
+        "BuildMessageFilters"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/BuildPersonalizationQuery.py",
+      "depth": 2,
+      "size_bytes": 10115,
+      "total_lines": 205,
+      "code_lines": 190,
+      "functions": [
+        "retrieve",
+        "__init__",
+        "retrieve",
+        "_execute_query"
+      ],
+      "classes": [
+        "BuildPersonalizationQuery"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/CalibrateEngagementScore.py",
+      "depth": 2,
+      "size_bytes": 1840,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "CalibrateEngagementScore"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/ComputePersonalizationMatch.py",
+      "depth": 2,
+      "size_bytes": 667,
+      "total_lines": 21,
+      "code_lines": 14,
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "classes": [
+        "ComputePersonalizationMatch"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/DiagnosePersonalizationIssues.py",
+      "depth": 2,
+      "size_bytes": 1121,
+      "total_lines": 40,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "diagnose",
+        "diagnose"
+      ],
+      "classes": [
+        "DiagnosePersonalizationIssues"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/EvaluateComplianceLevel.py",
+      "depth": 2,
+      "size_bytes": 1837,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "EvaluateComplianceLevel"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/EvaluateEngagementPotential.py",
+      "depth": 2,
+      "size_bytes": 1849,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "EvaluateEngagementPotential"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/EvaluatePersonalizationQuality.py",
+      "depth": 2,
+      "size_bytes": 1858,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "EvaluatePersonalizationQuality"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/ExtractContactInfo.py",
+      "depth": 2,
+      "size_bytes": 9562,
+      "total_lines": 205,
+      "code_lines": 190,
+      "functions": [
+        "retrieve",
+        "__init__",
+        "retrieve",
+        "_execute_query"
+      ],
+      "classes": [
+        "ExtractContactInfo"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/FormatPersonalizationPrompt.py",
+      "depth": 2,
+      "size_bytes": 1150,
+      "total_lines": 42,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "format",
+        "_transform",
+        "FormatData"
+      ],
+      "classes": [
+        "FormatPersonalizationPrompt"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/GeminiLLMClient.py",
+      "depth": 2,
+      "size_bytes": 8972,
+      "total_lines": 188,
+      "code_lines": 178,
+      "functions": [
+        "__init__",
+        "generate"
+      ],
+      "classes": [
+        "GeminiLLMClient"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/GoogleSearchClient.py",
+      "depth": 2,
+      "size_bytes": 1546,
+      "total_lines": 43,
+      "code_lines": 34,
+      "functions": [
+        "__init__",
+        "_execute_search_call",
+        "search"
+      ],
+      "classes": [
+        "GoogleSearchClient"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/InspectMessageQuality.py",
+      "depth": 2,
+      "size_bytes": 1097,
+      "total_lines": 40,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "diagnose",
+        "diagnose"
+      ],
+      "classes": [
+        "InspectMessageQuality"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/LogCampaignMetrics.py",
+      "depth": 2,
+      "size_bytes": 1088,
+      "total_lines": 40,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "diagnose",
+        "diagnose"
+      ],
+      "classes": [
+        "LogCampaignMetrics"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/NormalizeRelevanceScores.py",
+      "depth": 2,
+      "size_bytes": 1840,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "NormalizeRelevanceScores"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/PrepareMessagePayload.py",
+      "depth": 2,
+      "size_bytes": 1132,
+      "total_lines": 42,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "format",
+        "_transform",
+        "FormatData"
+      ],
+      "classes": [
+        "PrepareMessagePayload"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/PrepareOutreachContext.py",
+      "depth": 2,
+      "size_bytes": 9752,
+      "total_lines": 202,
+      "code_lines": 187,
+      "functions": [
+        "FormatData",
+        "__init__",
+        "format",
+        "_transform"
+      ],
+      "classes": [
+        "PrepareOutreachContext"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/PrioritizeTalkingPoints.py",
+      "depth": 2,
+      "size_bytes": 1248,
+      "total_lines": 42,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "process",
+        "_execute",
+        "process"
+      ],
+      "classes": [
+        "PrioritizeTalkingPoints"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/SafetyProfile.py",
+      "depth": 2,
+      "size_bytes": 813,
+      "total_lines": 26,
+      "code_lines": 18,
+      "functions": [],
+      "classes": [
+        "SafetyProfile",
+        "BudgetProfile"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/SearchSimilarMessages.py",
+      "depth": 2,
+      "size_bytes": 649,
+      "total_lines": 21,
+      "code_lines": 14,
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "classes": [
+        "SearchSimilarMessages"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/SnapshotCampaignState.py",
+      "depth": 2,
+      "size_bytes": 649,
+      "total_lines": 21,
+      "code_lines": 14,
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "classes": [
+        "SnapshotCampaignState"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/UpdateRecipientProfiles.py",
+      "depth": 2,
+      "size_bytes": 649,
+      "total_lines": 23,
+      "code_lines": 15,
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "classes": [
+        "UpdateRecipientProfiles"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/WeightPersonalizationFactors.py",
+      "depth": 2,
+      "size_bytes": 1852,
+      "total_lines": 61,
+      "code_lines": 43,
+      "functions": [
+        "__init__",
+        "score",
+        "_extract_factors",
+        "_compute_weighted",
+        "_compute_confidence",
+        "compute_score"
+      ],
+      "classes": [
+        "WeightPersonalizationFactors"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/__init__.py",
+      "depth": 2,
+      "size_bytes": 15,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/call_personalization_api.py",
+      "depth": 2,
+      "size_bytes": 10172,
+      "total_lines": 205,
+      "code_lines": 190,
+      "functions": [
+        "execute",
+        "__init__",
+        "execute",
+        "_perform_action"
+      ],
+      "classes": [
+        "CallPersonalizationApi"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/create_message_body.py",
+      "depth": 2,
+      "size_bytes": 9786,
+      "total_lines": 206,
+      "code_lines": 191,
+      "functions": [
+        "execute",
+        "__init__",
+        "execute",
+        "_perform_action"
+      ],
+      "classes": [
+        "CreateMessageBody"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/dispatch_outreach_tools.py",
+      "depth": 2,
+      "size_bytes": 10093,
+      "total_lines": 205,
+      "code_lines": 190,
+      "functions": [
+        "execute",
+        "__init__",
+        "execute",
+        "_perform_action"
+      ],
+      "classes": [
+        "DispatchOutreachTools"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/enforce_tone_guidelines.py",
+      "depth": 2,
+      "size_bytes": 568,
+      "total_lines": 16,
+      "code_lines": 11,
+      "functions": [
+        "enforce_tone_guidelines",
+        "get_enforce_tone_guidelines_config"
+      ],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/generate_subject_line.py",
+      "depth": 2,
+      "size_bytes": 9971,
+      "total_lines": 206,
+      "code_lines": 191,
+      "functions": [
+        "execute",
+        "__init__",
+        "execute",
+        "_perform_action"
+      ],
+      "classes": [
+        "GenerateSubjectLine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/invoke_message_service.py",
+      "depth": 2,
+      "size_bytes": 10014,
+      "total_lines": 205,
+      "code_lines": 190,
+      "functions": [
+        "execute",
+        "__init__",
+        "execute",
+        "_perform_action"
+      ],
+      "classes": [
+        "InvokeMessageService"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/match_recipient_patterns.py",
+      "depth": 2,
+      "size_bytes": 656,
+      "total_lines": 21,
+      "code_lines": 14,
+      "functions": [
+        "__init__",
+        "process"
+      ],
+      "classes": [
+        "match_recipient_patterns"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/mcp_mocks.py",
+      "depth": 2,
+      "size_bytes": 8012,
+      "total_lines": 252,
+      "code_lines": 194,
+      "functions": [
+        "get_current_time",
+        "convert_time",
+        "issues_get_detail",
+        "browser_navigate",
+        "browser_type",
+        "browser_click",
+        "string_get",
+        "string_set",
+        "start_transaction",
+        "watch_key",
+        "transaction_set_with_ttl",
+        "commit_transaction",
+        "incr",
+        "get_and_set",
+        "brave_search",
+        "execute_cost_controlled_search",
+        "get_from_langcache",
+        "set_to_langcache",
+        "search_nodes",
+        "add_observations",
+        "search_records",
+        "write_file",
+        "read_text_file",
+        "semantic_score_draft",
+        "generate_draft_llm",
+        "get_variable_defs",
+        "get_file_versions"
+      ],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/network_ops.py",
+      "depth": 2,
+      "size_bytes": 6764,
+      "total_lines": 291,
+      "code_lines": 219,
+      "functions": [
+        "string_get",
+        "string_set",
+        "incr",
+        "start_transaction",
+        "watch_key",
+        "transaction_set_with_ttl",
+        "commit_transaction",
+        "get_and_set",
+        "brave_search",
+        "execute_cost_controlled_search",
+        "search_records",
+        "search_nodes",
+        "get_from_langcache",
+        "set_to_langcache",
+        "get_current_time",
+        "convert_time",
+        "issues_get_detail",
+        "browser_navigate",
+        "browser_type",
+        "browser_click"
+      ],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/order_call_to_actions.py",
+      "depth": 2,
+      "size_bytes": 9967,
+      "total_lines": 206,
+      "code_lines": 191,
+      "functions": [
+        "execute",
+        "__init__",
+        "execute",
+        "_perform_action"
+      ],
+      "classes": [
+        "OrderCallToActions"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/query_past_campaigns.py",
+      "depth": 2,
+      "size_bytes": 9720,
+      "total_lines": 205,
+      "code_lines": 190,
+      "functions": [
+        "retrieve",
+        "__init__",
+        "retrieve",
+        "_execute_query"
+      ],
+      "classes": [
+        "query_past_campaigns"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/rank_message_variants.py",
+      "depth": 2,
+      "size_bytes": 1242,
+      "total_lines": 42,
+      "code_lines": 28,
+      "functions": [
+        "__init__",
+        "process",
+        "_execute",
+        "process"
+      ],
+      "classes": [
+        "rank_message_variants"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/run_workflow.py",
+      "depth": 2,
+      "size_bytes": 3251,
+      "total_lines": 89,
+      "code_lines": 78,
+      "functions": [
+        "load_mission_input",
+        "create_orchestrator",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/run_workflow_lic.py",
+      "depth": 2,
+      "size_bytes": 22501,
+      "total_lines": 245,
+      "code_lines": 213,
+      "functions": [
+        "load_mission_input",
+        "validate_mission_input",
+        "create_orchestrator",
+        "print_header",
+        "print_mission_summary",
+        "print_results",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/tools/validation_tools.py",
+      "depth": 2,
+      "size_bytes": 10116,
+      "total_lines": 230,
+      "code_lines": 208,
+      "functions": [
+        "validate_schema_policy",
+        "add_error",
+        "add_warning",
+        "merge"
+      ],
+      "classes": [
+        "ValidationResult"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/ImmutableStagingBuffer.py",
+      "depth": 2,
+      "size_bytes": 10796,
+      "total_lines": 240,
+      "code_lines": 217,
+      "functions": [
+        "__post_init__",
+        "write_once",
+        "read",
+        "is_locked",
+        "get_snapshot"
+      ],
+      "classes": [
+        "ImmutableStagingBuffer",
+        "MCPHardenedMixin",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/PromptTemplate.py",
+      "depth": 2,
+      "size_bytes": 13038,
+      "total_lines": 373,
+      "code_lines": 301,
+      "functions": [
+        "get_prompt",
+        "get_system_prompt",
+        "get_prompt_entry",
+        "get_node_config",
+        "get_global_rule",
+        "list_all_prompts",
+        "list_all_nodes"
+      ],
+      "classes": [
+        "LicPromptEntry",
+        "LicNodeEntry",
+        "LicGlobalRule",
+        "LicSovereignKnowledge"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/SpecialistDraftPacket.py",
+      "depth": 2,
+      "size_bytes": 2105,
+      "total_lines": 60,
+      "code_lines": 40,
+      "functions": [],
+      "classes": [
+        "SpecialistDraftPacket",
+        "EvidenceClarificationRecord",
+        "EvidenceBriefRecord",
+        "EvidenceLiaisonPacket",
+        "CritiqueFindingRecord",
+        "CritiquePanelPacket"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/TraceRegistry.py",
+      "depth": 2,
+      "size_bytes": 18770,
+      "total_lines": 258,
+      "code_lines": 233,
+      "functions": [
+        "__post_init__",
+        "_load_from_disk",
+        "_flush_to_disk",
+        "_append_to_disk",
+        "add_trace",
+        "get_traces",
+        "clear",
+        "count"
+      ],
+      "classes": [
+        "TraceRegistry",
+        "MCPHardenedMixin",
+        "MCPHardenedMixin"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 726,
+      "total_lines": 35,
+      "code_lines": 33,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(13)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.CampaignConfig"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.CampaignRequest"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.CampaignResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.CampaignRunSummary"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.CampaignStatus"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.ComplianceLevel"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.Draft"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.DraftPackage"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.ValidationResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_lic.types.lic_types.ValidationVerdict"
+        },
+        {
+          "line": 15,
+          "symbol": "apps_lic.types.validation_result_types.check_content_compliance"
+        },
+        {
+          "line": 15,
+          "symbol": "apps_lic.types.validation_result_types.score_quality"
+        },
+        {
+          "line": 15,
+          "symbol": "apps_lic.types.validation_result_types.validate_schema_policy"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/action_call_generator_types.py",
+      "depth": 2,
+      "size_bytes": 11626,
+      "total_lines": 310,
+      "code_lines": 276,
+      "functions": [
+        "create_action_call_generator",
+        "__init__",
+        "generate_cta",
+        "_generate_content",
+        "_validate_character_limit",
+        "_check_time_bound",
+        "_check_specific_action",
+        "_validate_cta_clarity"
+      ],
+      "classes": [
+        "RouteType",
+        "CtaConfig",
+        "CtaResult",
+        "ActionCallGenerator"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/app_content_validator_agent_types.py",
+      "depth": 2,
+      "size_bytes": 30076,
+      "total_lines": 662,
+      "code_lines": 604,
+      "functions": [
+        "create_legacy_contact_validator",
+        "create_legacy_content_cleanliness_validator",
+        "create_legacy_message_diversity_validator",
+        "__str__",
+        "has_errors",
+        "is_valid",
+        "pass_rate",
+        "__post_init__",
+        "validate_email",
+        "validate_linkedin",
+        "validate_content_cleanliness",
+        "calculate_similarity",
+        "validate_diversity",
+        "validate_message",
+        "validate_messages"
+      ],
+      "classes": [
+        "ContentViolationType",
+        "ContentViolation",
+        "ContentValidationReport",
+        "ContentConfig",
+        "AppContentValidatorAgent"
+      ],
+      "import_count": 11,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/competitor_recon_agent_types.py",
+      "depth": 2,
+      "size_bytes": 23423,
+      "total_lines": 548,
+      "code_lines": 479,
+      "functions": [
+        "create_competitor_recon_agent",
+        "generate_competitive_hook",
+        "__post_init__",
+        "is_highly_relevant",
+        "get_competitors",
+        "get_recent_moves",
+        "__init__",
+        "get_competitors",
+        "get_recent_moves",
+        "__post_init__",
+        "generate_fomo_hook",
+        "get_strategic_ps",
+        "_identify_competitors",
+        "_gather_intel",
+        "_find_skill_matches",
+        "_create_targeted_hook",
+        "_create_speed_hook"
+      ],
+      "classes": [
+        "CompetitorMove",
+        "StrategicHook",
+        "IntelProvider",
+        "MockIntelProvider",
+        "CompetitorReconAgent"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/k1_router_types.py",
+      "depth": 2,
+      "size_bytes": 19655,
+      "total_lines": 456,
+      "code_lines": 419,
+      "functions": [
+        "__init__",
+        "__call__",
+        "determine_next_hop",
+        "execute_routing",
+        "_classify_archetype",
+        "_select_route"
+      ],
+      "classes": [
+        "ArchetypeClassificationResult",
+        "RouteSelectionResult",
+        "K1Output",
+        "K1Router"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/lic_models_types.py",
+      "depth": 2,
+      "size_bytes": 13554,
+      "total_lines": 385,
+      "code_lines": 299,
+      "functions": [
+        "heal_repository"
+      ],
+      "classes": [
+        "Route",
+        "Archetype",
+        "EventType",
+        "AgentStatus",
+        "ValidationSeverity",
+        "CircuitState",
+        "FailureClassification",
+        "FactualGapError",
+        "CircuitBreakerOpenError",
+        "OutreachMission",
+        "ProfileAnalysis",
+        "MessageClaim",
+        "RAGCritique",
+        "RAGResult",
+        "SenderGroundingWhitelists",
+        "ResearchContext",
+        "MessageScaffold",
+        "GeneratedMessage",
+        "ValidationResult",
+        "QAReport"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/lic_types.py",
+      "depth": 2,
+      "size_bytes": 6729,
+      "total_lines": 160,
+      "code_lines": 124,
+      "functions": [
+        "validate_attempts",
+        "validate_subject",
+        "validate_body",
+        "render",
+        "with_draft",
+        "passed_gate",
+        "to_dict"
+      ],
+      "classes": [
+        "ValidationResult",
+        "Draft",
+        "DraftPackage",
+        "CampaignConfig",
+        "CampaignRequest",
+        "CampaignResult",
+        "CampaignRunSummary",
+        "Config"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/lic_vector_memory_types.py",
+      "depth": 2,
+      "size_bytes": 24981,
+      "total_lines": 556,
+      "code_lines": 504,
+      "functions": [
+        "create_vector_memory",
+        "__init__",
+        "initialize",
+        "is_initialized",
+        "add_document",
+        "query_memory",
+        "query_by_company",
+        "query_by_executive",
+        "get_strategic_briefs",
+        "get_stats",
+        "delete_document",
+        "clear_collection",
+        "__init__",
+        "initialize",
+        "add_document",
+        "query_memory",
+        "get_stats",
+        "delete_document",
+        "clear_collection"
+      ],
+      "classes": [
+        "VectorDocument",
+        "QueryResult",
+        "MemoryStats",
+        "LICVectorMemory",
+        "MockVectorMemory"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/message_route_types.py",
+      "depth": 2,
+      "size_bytes": 24337,
+      "total_lines": 619,
+      "code_lines": 537,
+      "functions": [
+        "create_router",
+        "get_route_config",
+        "get_archetype_tone",
+        "__init__",
+        "determine_route",
+        "get_route_config",
+        "get_constraints",
+        "get_archetype_tone",
+        "get_temperature",
+        "get_tool_budget",
+        "validate_message_length"
+      ],
+      "classes": [
+        "MessageRoute",
+        "RecipientArchetype",
+        "SignatureFormat",
+        "CTAFormat",
+        "RouteConditions",
+        "RouteConstraints",
+        "RouteConfig",
+        "ArchetoneConfig",
+        "TemperatureConfig",
+        "ToolCallBudget",
+        "LICRouter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/message_type_types.py",
+      "depth": 2,
+      "size_bytes": 3906,
+      "total_lines": 172,
+      "code_lines": 105,
+      "functions": [],
+      "classes": [
+        "MessageType",
+        "ResidualAgentMessage",
+        "LLMResponse",
+        "AgentResponse",
+        "ResidualValidationResult",
+        "ReasoningConfig",
+        "HopStatus",
+        "GateDecision",
+        "ValidationSeverity",
+        "CircuitState",
+        "WorkflowCheckpoint",
+        "ThematicAnalysis",
+        "RAGState"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/qa_block_type_types.py",
+      "depth": 2,
+      "size_bytes": 972,
+      "total_lines": 49,
+      "code_lines": 34,
+      "functions": [],
+      "classes": [
+        "QaBlockType",
+        "QaBlock",
+        "MessageAssemblerConfig",
+        "MessageAssemblerResult"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/recipient_archetype_types.py",
+      "depth": 2,
+      "size_bytes": 25638,
+      "total_lines": 608,
+      "code_lines": 544,
+      "functions": [
+        "create_template_manager",
+        "get_archetype_template",
+        "get_signature_template",
+        "__init__",
+        "get_template",
+        "get_system_instructions",
+        "get_creative_brief",
+        "get_word_count_range",
+        "get_signature_template",
+        "get_greeting_template",
+        "format_signature",
+        "format_greeting",
+        "validate_greeting"
+      ],
+      "classes": [
+        "RecipientArchetype",
+        "SubjectLineBrief",
+        "MessageBodyBrief",
+        "CTABrief",
+        "CreativeBrief",
+        "ArchetypeTemplate",
+        "SignatureTemplate",
+        "GreetingTemplate",
+        "ArchetypeTemplateManager"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/route_types.py",
+      "depth": 2,
+      "size_bytes": 30565,
+      "total_lines": 951,
+      "code_lines": 853,
+      "functions": [
+        "get_route_config",
+        "get_archetype_config",
+        "classify_archetype",
+        "get_validation_rules",
+        "validate",
+        "validate"
+      ],
+      "classes": [
+        "Route",
+        "Archetype",
+        "ValidationSeverity",
+        "CharLimitConstraint",
+        "WordLimitConstraint",
+        "RouteConfig",
+        "ArchetypeConfig",
+        "ValidationRule"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/stack_modernization_agent_types.py",
+      "depth": 2,
+      "size_bytes": 12713,
+      "total_lines": 297,
+      "code_lines": 255,
+      "functions": [
+        "create_stack_modernization_agent",
+        "analyze_modernization_opportunity",
+        "is_highly_legacy",
+        "is_transformative",
+        "__init__",
+        "diagnose_stack",
+        "generate_thesis",
+        "generate_migration_hook",
+        "rewrite_resume_summary",
+        "_create_thesis_from_playbook"
+      ],
+      "classes": [
+        "LegacyDiagnostic",
+        "MigrationThesis",
+        "StackModernizationAgent"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/state_checkpoint_types.py",
+      "depth": 2,
+      "size_bytes": 18717,
+      "total_lines": 437,
+      "code_lines": 392,
+      "functions": [
+        "create_state_manager",
+        "create_state_validator",
+        "__init__",
+        "write_state",
+        "read_state",
+        "state_exists",
+        "list_states",
+        "delete_state",
+        "clear_all_states",
+        "get_checkpoint",
+        "get_all_checkpoints",
+        "validate_state",
+        "export_mission",
+        "_sanitize_filename",
+        "_calculate_checksum",
+        "__init__",
+        "validate_hop_chain",
+        "validate_dependencies"
+      ],
+      "classes": [
+        "StateCheckpoint",
+        "StateValidationResult",
+        "LICStateManager",
+        "StateValidator"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/validation_result_types.py",
+      "depth": 2,
+      "size_bytes": 2520,
+      "total_lines": 97,
+      "code_lines": 73,
+      "functions": [
+        "score_quality",
+        "validate_schema_policy",
+        "check_content_compliance",
+        "render",
+        "with_draft"
+      ],
+      "classes": [
+        "ValidationResult",
+        "Draft",
+        "DraftPackage"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/types/validation_severity_types.py",
+      "depth": 2,
+      "size_bytes": 25506,
+      "total_lines": 621,
+      "code_lines": 557,
+      "functions": [
+        "create_lic_validator",
+        "get_error_code",
+        "get_signal_config",
+        "get_claim_config",
+        "__init__",
+        "check_forbidden_verbs",
+        "check_filler_phrases",
+        "check_implementations",
+        "enforce_ascii",
+        "_get_recency_factor",
+        "_calculate_source_weight",
+        "calculate_signal_score",
+        "validate_message"
+      ],
+      "classes": [
+        "ValidationSeverity",
+        "ErrorCode",
+        "ContentCleanlinessRule",
+        "SignalQualityConfig",
+        "ClaimConfidenceConfig",
+        "LICValidator"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/PIISanitizerSpecialistAgent_util.py",
+      "depth": 2,
+      "size_bytes": 19528,
+      "total_lines": 403,
+      "code_lines": 356,
+      "functions": [
+        "track_metrics",
+        "_format_prompt_with_defaults",
+        "decorator",
+        "__post_init__",
+        "run",
+        "_sanitize_text",
+        "heal",
+        "__post_init__",
+        "_process",
+        "scan_content",
+        "__post_init__",
+        "run_async",
+        "run_async",
+        "sanitize_node"
+      ],
+      "classes": [
+        "PII_SanitizerSpecialistAgent",
+        "BiasDetectorSpecialist",
+        "PromptInjectionDetectorSpecialist",
+        "ConstitutionalReviewResult",
+        "ConstitutionalReviewerAgent",
+        "PIDetectionOutput"
+      ],
+      "import_count": 16,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/__init__.py",
+      "depth": 2,
+      "size_bytes": 418,
+      "total_lines": 11,
+      "code_lines": 9,
+      "functions": [],
+      "classes": [],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/archetype_indicator_util.py",
+      "depth": 2,
+      "size_bytes": 4434,
+      "total_lines": 155,
+      "code_lines": 109,
+      "functions": [
+        "from_dict"
+      ],
+      "classes": [
+        "ArchetypeIndicator",
+        "ProfileAnalysisConfig",
+        "ResearchConfig",
+        "SenderGroundingConfig",
+        "RouteConditions",
+        "RouteConstraints",
+        "RouteDef",
+        "QAReportConfig",
+        "GateConfig",
+        "ValidationConfig",
+        "GenerationConfig",
+        "RoutingConfig",
+        "AgentSpecs"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/cot_util.py",
+      "depth": 2,
+      "size_bytes": 1622,
+      "total_lines": 49,
+      "code_lines": 40,
+      "functions": [
+        "expand_thought_process",
+        "_generate_generic_steps"
+      ],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/hop_stage_capability_util.py",
+      "depth": 2,
+      "size_bytes": 12873,
+      "total_lines": 268,
+      "code_lines": 242,
+      "functions": [
+        "read_required_inputs",
+        "write_output",
+        "run_stage",
+        "_process"
+      ],
+      "classes": [
+        "HOPStageCapability"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/lic_agent_base_util.py",
+      "depth": 2,
+      "size_bytes": 35752,
+      "total_lines": 861,
+      "code_lines": 749,
+      "functions": [
+        "__post_init__",
+        "_initialize_guardrails",
+        "_initialize_meta_client",
+        "store_healing_pattern",
+        "retrieve_healing_patterns",
+        "ml_check_healing_depth",
+        "ml_increment_healing_depth",
+        "ml_reset_healing_depth",
+        "get_meta_learning_stats",
+        "get_lic_context",
+        "cache_pattern_with_metadata",
+        "retrieve_pattern_with_metadata",
+        "increment_pattern_success",
+        "ml_cache_campaign_pattern",
+        "ml_recall_campaign_pattern",
+        "ml_cache_compliance_rule",
+        "ml_recall_compliance_rule",
+        "get_namespaced_cache_key",
+        "validate_domain_pattern",
+        "isolate_cache_operation",
+        "check_and_enforce_rate_limit",
+        "check_cache_capacity",
+        "update_cache_metrics",
+        "safe_cache_set",
+        "safe_cache_get",
+        "get_cache_health",
+        "guardrails_validate_cache_key",
+        "guardrails_validate_cache_value",
+        "guardrails_check_healing_depth",
+        "guardrails_increment_healing_depth",
+        "guardrails_reset_healing_depth",
+        "guardrails_validate_domain_isolation",
+        "guardrails_sanitize_violation",
+        "guardrails_check_rate_limit",
+        "guardrails_get_stats"
+      ],
+      "classes": [
+        "LICAgentBase",
+        "HealerMixin",
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "import_count": 18,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(3)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 112,
+          "symbol": "MetaLearningMixin"
+        },
+        {
+          "line": 120,
+          "symbol": "SemanticCacheMixin"
+        },
+        {
+          "line": 128,
+          "symbol": "EmbeddingMixin"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/lic_engine_validation_capability_util.py",
+      "depth": 2,
+      "size_bytes": 12775,
+      "total_lines": 248,
+      "code_lines": 224,
+      "functions": [
+        "_validate",
+        "run_validation"
+      ],
+      "classes": [
+        "LICEngineValidationCapability"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/manifest_manager_util.py",
+      "depth": 2,
+      "size_bytes": 11059,
+      "total_lines": 249,
+      "code_lines": 224,
+      "functions": [
+        "__post_init__",
+        "save_manifest",
+        "load_manifest"
+      ],
+      "classes": [
+        "ManifestManager",
+        "MCPHardenedMixin",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ],
+      "import_count": 10,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/utils/mixins_util.py",
+      "depth": 2,
+      "size_bytes": 465,
+      "total_lines": 13,
+      "code_lines": 9,
+      "functions": [],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(3)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 9,
+          "symbol": "agentic_core.mixins.healer_mixin.HealerMixin"
+        },
+        {
+          "line": 10,
+          "symbol": "agentic_core.mixins.mcp_hardened_mixin.MCPHardenedMixin"
+        },
+        {
+          "line": 11,
+          "symbol": "agentic_core.mixins.subatomic_testing_mixin.SubatomicTestingMixin"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/validators/MessageDiversityValidator.py",
+      "depth": 2,
+      "size_bytes": 12042,
+      "total_lines": 256,
+      "code_lines": 234,
+      "functions": [
+        "__init__",
+        "check_diversity",
+        "add_to_history",
+        "heal_repository",
+        "heal"
+      ],
+      "classes": [
+        "HealerMixin",
+        "MessageDiversityValidator"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/validators/PersonaPlannerValidator.py",
+      "depth": 2,
+      "size_bytes": 21650,
+      "total_lines": 461,
+      "code_lines": 435,
+      "functions": [
+        "__init__",
+        "plan",
+        "_get_base_persona",
+        "_apply_seniority_adjustments",
+        "_apply_industry_adjustments",
+        "_apply_grounding_refinements",
+        "_calculate_confidence_score",
+        "_count_adjustments",
+        "_safe_record_telemetry",
+        "get_persona_summary",
+        "validate_persona_consistency"
+      ],
+      "classes": [
+        "PersonaPlan",
+        "PersonaPlanner"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 15,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/validators/check_schema_policy_validator.py",
+      "depth": 2,
+      "size_bytes": 7259,
+      "total_lines": 212,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/validators/safety_validate_ethical_standards_validator.py",
+      "depth": 2,
+      "size_bytes": 583,
+      "total_lines": 16,
+      "code_lines": 11,
+      "functions": [
+        "validate_ethical_standards",
+        "get_validate_ethical_standards_config"
+      ],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_lic/validators/safety_validate_outreach_constraints_validator.py",
+      "depth": 2,
+      "size_bytes": 598,
+      "total_lines": 16,
+      "code_lines": 11,
+      "functions": [
+        "validate_outreach_constraints",
+        "get_validate_outreach_constraints_config"
+      ],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

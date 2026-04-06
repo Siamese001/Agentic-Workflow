@@ -6,16 +6,6 @@ Compare mock data structure vs real data structure to identify mismatch
 import json
 import re
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L5_safety.config.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

@@ -2,6 +2,10 @@
 
 Rule 12 of .windsurfrules: NO IMPORTS FROM ARCHIVES/ IN PRODUCTION CODE.
 The archives/ directory is a backup graveyard — imports from it are FORBIDDEN.
+
+NOTE (2026-04-06): The archives/ directory has been deleted as part of operational
+hygiene cleanup. This gate will always pass unless the directory is recreated.
+It is retained as a safeguard against future re-introduction of archive imports.
 """
 
 import re
@@ -34,7 +38,8 @@ def find_archives_imports(repo_root: Path) -> list[tuple[str, int, str]]:
                     # Match actual imports from archives
                     if re.match(r'^(?:from|import)\s+archives\.', line.strip()):
                         violations.append((str(py_file), i + 1, line.strip()))
-            except Exception:
+            except (OSError, PermissionError, UnicodeDecodeError) as e:
+                print(f"WARNING: Could not read {py_file}: {e}")
                 continue
 
     return violations
@@ -58,6 +63,7 @@ def main() -> int:
         return 1
 
     print("OK: No archives/ imports found in production code.")
+    print("    (Note: archives/ directory was deleted 2026-04-06; this gate safeguards against recreation)")
     return 0
 
 

@@ -33,7 +33,6 @@ _emit_validates_capability("p2", "operational_config", "capability_check")
 emit_replay_key("p0", "operational_config")
 emit_determinism_digest("p0", "operational_config")
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

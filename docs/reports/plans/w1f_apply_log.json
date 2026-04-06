@@ -1,0 +1,38 @@
+[
+  {
+    "file": "tests\\unit\\agentic_core\\runtime\\config\\test_model_tier_config_adg.py",
+    "symbols_removed": [
+      "DEFAULT_SLEEP",
+      "MAX_DEPTH",
+      "THRESHOLD"
+    ],
+    "details": "  L9: removed ['DEFAULT_SLEEP', 'MAX_DEPTH', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "tests\\unit\\apps_shared\\enforcement\\test_HardenedeventbusStrategy.py",
+    "symbols_removed": [
+      "DEFAULT_SLEEP",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L19: removed ['DEFAULT_SLEEP', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "tests\\unit\\apps_shared\\enforcement\\test_ProvenancetrackerStrategy.py",
+    "symbols_removed": [
+      "DEFAULT_SLEEP",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L19: removed ['DEFAULT_SLEEP', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  },
+  {
+    "file": "tests\\unit\\apps_shared\\reasoning\\test_InfrastructureOrchestrator.py",
+    "symbols_removed": [
+      "DEFAULT_SLEEP",
+      "MAX_RETRIES",
+      "THRESHOLD"
+    ],
+    "details": "  L19: removed ['DEFAULT_SLEEP', 'MAX_RETRIES', 'THRESHOLD'] from multi-line import"
+  }
+]

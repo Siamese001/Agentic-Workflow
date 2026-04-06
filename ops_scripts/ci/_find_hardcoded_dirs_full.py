@@ -5,16 +5,6 @@ import ast
 import pathlib
 import sys
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 _emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_1")
 _emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_2")

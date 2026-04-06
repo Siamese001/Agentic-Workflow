@@ -3,16 +3,6 @@ import pathlib
 import re
 import sys
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 FILES = ['tests/system_learning/test_activation_gate_w4f.py', 'tests/system_learning/test_policy_recommendation_w4d.py', 'tests/system_learning/test_retrieval_profile_proposal_w4e.py', 'tests/system_learning/test_shadow_drift_w4c.py', 'tests/system_learning/test_shadow_embedder_w4b.py', 'tests/system_learning/test_w5_replay_engine.py']
 ROOT = pathlib.Path(__file__).resolve().parents[2]

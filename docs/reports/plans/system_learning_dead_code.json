@@ -1,0 +1,4739 @@
+{
+  "target_dir": "system_learning",
+  "adg_signals": {
+    "unused_imports": 16653,
+    "dead_imports": 1522,
+    "unreachable_after_raise": 17,
+    "duplicate_method": 11
+  },
+  "file_analysis": {
+    "system_learning\\__init__.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\adapters\\l1_meta_adapter.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\adapters\\l4_meta_prior_provider.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\adapters\\live_run_pipeline_adapter.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\adapters\\otel_telemetry_store_adapter.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\adapters\\system_learning_memory_bridge.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 21
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "persist_injection_detection_counts",
+          "line": 1891,
+          "duplicate_of": "persist_injection_detection_counts"
+        }
+      ]
+    },
+    "system_learning\\arbitration\\engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\arbitration\\types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "canonical_bytes",
+          "line": 209,
+          "duplicate_of": "canonical_bytes"
+        },
+        {
+          "function": "canonical_bytes",
+          "line": 233,
+          "duplicate_of": "canonical_bytes"
+        }
+      ]
+    },
+    "system_learning\\arbitration\\__init__.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BATCH_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BUFFER_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_SLEEP",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_TIMEOUT",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_DEPTH",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_FILES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_RETRIES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "THRESHOLD",
+          "alias": null,
+          "line": 2
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\confidence\\engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\confidence\\gemini_judge.py": {
+      "unused_imports": [],
+      "duplicate_methods": [
+        {
+          "function": "__init__",
+          "line": 20,
+          "duplicate_of": "__init__"
+        }
+      ]
+    },
+    "system_learning\\confidence\\types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\confidence\\__init__.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BATCH_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BUFFER_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_SLEEP",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_TIMEOUT",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_DEPTH",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_FILES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_RETRIES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "THRESHOLD",
+          "alias": null,
+          "line": 2
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\config\\config_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_authorize_and_execute",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_blocks_direct_write",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_evaluation_metric",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_execution_output",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_coordinates_agents",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_dispatches_agent",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_dispatches_healing_run",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_escalates_failure",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_escalates_to_human",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_invokes_evaluation",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_links_execution_to_snapshot",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_orchestrates_workflow",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_policy_state",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_healing_outcome",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_telemetry_event",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_tool_invocation",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_workflow_lineage",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_routes_through",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_routes_to_capability",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_stores_embedding",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_meta_learning_state",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_validates_capability",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_via_uwg",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "emit_determinism_digest",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "emit_replay_key",
+          "alias": null,
+          "line": 15
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_pattern",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_runtime_anomaly",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_emits_metric_event",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_execution_terminates_at_uwg",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_feeds_meta_learning",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_improves_agent_policy",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_invokes_eval",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_links_incident_trace",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_proposal_commits_routing",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_pulls_context",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_environ",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_runtime_state",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_incident_event",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_learning_event",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_stores_learning_state",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_triggers_alert",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_monitoring_state",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_routing_strategy",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_validated_by_safety_plane",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_learning_snapshot",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_observability_log",
+          "alias": null,
+          "line": 149
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_through",
+          "alias": null,
+          "line": 149
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\config\\embedding_storage_layout.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\config\\feature_flags.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\config\\semantic_memory_config.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 18
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\constraints\\config_surfaces.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\constraints\\dampening.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\constraints\\delta_enforcer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\correlation\\engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\correlation\\types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\correlation\\__init__.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BATCH_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BUFFER_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_SLEEP",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_TIMEOUT",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_DEPTH",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_FILES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_RETRIES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "THRESHOLD",
+          "alias": null,
+          "line": 2
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\enforcement\\authority_invariants.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\enforcement\\determinism.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 21
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\enforcement\\dual_injection_proposal_gate.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 1
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\enforcement\\oscillation_freezer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\approval_gauntlet_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 162,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 168,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 184,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 187,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\engines\\bus_consumer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\case_compilation_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\change_package_impl.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\cross_repo_system_learning_import.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\default_healing_pattern_advisor.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\embedding_corpus_extraction.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\embedding_retention_scheduler.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\embedding_service_factory.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "is_disabled",
+          "line": 487,
+          "duplicate_of": "is_disabled"
+        },
+        {
+          "function": "retrieve",
+          "line": 491,
+          "duplicate_of": "retrieve"
+        },
+        {
+          "function": "is_healthy",
+          "line": 537,
+          "duplicate_of": "is_healthy"
+        }
+      ]
+    },
+    "system_learning\\engines\\enhanced_rag_retrieval_cache.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\faiss_startup_integrity.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\governance_reward_model.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 28
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\graph_neighborhood_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 24
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\g_gate_regression_checker.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\healer_outcome_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\healing_config_optimizer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 8
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "canonical_bytes",
+          "line": 662,
+          "duplicate_of": "canonical_bytes"
+        },
+        {
+          "function": "content_hash",
+          "line": 693,
+          "duplicate_of": "content_hash"
+        }
+      ]
+    },
+    "system_learning\\engines\\healing_outcome_aggregator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "ingest_invocation",
+          "line": 409,
+          "duplicate_of": "ingest_invocation"
+        },
+        {
+          "function": "compute_success_rate",
+          "line": 413,
+          "duplicate_of": "compute_success_rate"
+        },
+        {
+          "function": "create_snapshot",
+          "line": 417,
+          "duplicate_of": "create_snapshot"
+        }
+      ]
+    },
+    "system_learning\\engines\\healing_success_rate_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 18
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\historical_backfill_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 20
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\historical_ingestion_orchestrator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\hitl_decision_logger.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\human_calibration_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 157,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 167,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 180,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 183,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\engines\\incident_bundle_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\in_memory_scoring_report_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\l0_routing_confidence_monitor.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 21
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\l0_threshold_tuner.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\l1_model_proposer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\l3_efficiency_tuner.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "canonical_bytes",
+          "line": 220,
+          "duplicate_of": "canonical_bytes"
+        }
+      ]
+    },
+    "system_learning\\engines\\l4_audit_reader.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 8
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\l4_state_writer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "write_l4a_detection_signal",
+          "line": 241,
+          "duplicate_of": "write_l4a_detection_signal"
+        },
+        {
+          "function": "write_l4b_healing_snapshot",
+          "line": 251,
+          "duplicate_of": "write_l4b_healing_snapshot"
+        },
+        {
+          "function": "write_l4c_shadow_drift",
+          "line": 258,
+          "duplicate_of": "write_l4c_shadow_drift"
+        },
+        {
+          "function": "write_l4c_policy_recommendation",
+          "line": 266,
+          "duplicate_of": "write_l4c_policy_recommendation"
+        },
+        {
+          "function": "write_l4c_retrieval_profile_proposal",
+          "line": 276,
+          "duplicate_of": "write_l4c_retrieval_profile_proposal"
+        },
+        {
+          "function": "read_latest_detection_signal",
+          "line": 286,
+          "duplicate_of": "read_latest_detection_signal"
+        },
+        {
+          "function": "read_latest_drift_snapshot",
+          "line": 289,
+          "duplicate_of": "read_latest_drift_snapshot"
+        },
+        {
+          "function": "_write",
+          "line": 312,
+          "duplicate_of": "_write"
+        },
+        {
+          "function": "write_l4a_detection_signal",
+          "line": 333,
+          "duplicate_of": "write_l4a_detection_signal"
+        },
+        {
+          "function": "write_l4b_healing_snapshot",
+          "line": 343,
+          "duplicate_of": "write_l4b_healing_snapshot"
+        },
+        {
+          "function": "write_l4c_shadow_drift",
+          "line": 350,
+          "duplicate_of": "write_l4c_shadow_drift"
+        },
+        {
+          "function": "write_l4c_policy_recommendation",
+          "line": 358,
+          "duplicate_of": "write_l4c_policy_recommendation"
+        },
+        {
+          "function": "write_l4c_retrieval_profile_proposal",
+          "line": 368,
+          "duplicate_of": "write_l4c_retrieval_profile_proposal"
+        },
+        {
+          "function": "read_latest_detection_signal",
+          "line": 378,
+          "duplicate_of": "read_latest_detection_signal"
+        },
+        {
+          "function": "read_latest_drift_snapshot",
+          "line": 382,
+          "duplicate_of": "read_latest_drift_snapshot"
+        },
+        {
+          "function": "write_l4a_detection_signal",
+          "line": 393,
+          "duplicate_of": "write_l4a_detection_signal"
+        },
+        {
+          "function": "write_l4b_healing_snapshot",
+          "line": 398,
+          "duplicate_of": "write_l4b_healing_snapshot"
+        },
+        {
+          "function": "write_l4c_shadow_drift",
+          "line": 403,
+          "duplicate_of": "write_l4c_shadow_drift"
+        },
+        {
+          "function": "write_l4c_policy_recommendation",
+          "line": 406,
+          "duplicate_of": "write_l4c_policy_recommendation"
+        },
+        {
+          "function": "write_l4c_retrieval_profile_proposal",
+          "line": 411,
+          "duplicate_of": "write_l4c_retrieval_profile_proposal"
+        },
+        {
+          "function": "read_latest_detection_signal",
+          "line": 416,
+          "duplicate_of": "read_latest_detection_signal"
+        },
+        {
+          "function": "read_latest_drift_snapshot",
+          "line": 419,
+          "duplicate_of": "read_latest_drift_snapshot"
+        },
+        {
+          "function": "__init__",
+          "line": 450,
+          "duplicate_of": "__init__"
+        },
+        {
+          "function": "write_l4a_detection_signal",
+          "line": 474,
+          "duplicate_of": "write_l4a_detection_signal"
+        },
+        {
+          "function": "write_l4b_healing_snapshot",
+          "line": 485,
+          "duplicate_of": "write_l4b_healing_snapshot"
+        },
+        {
+          "function": "write_l4c_shadow_drift",
+          "line": 496,
+          "duplicate_of": "write_l4c_shadow_drift"
+        },
+        {
+          "function": "write_l4c_policy_recommendation",
+          "line": 505,
+          "duplicate_of": "write_l4c_policy_recommendation"
+        },
+        {
+          "function": "write_l4c_retrieval_profile_proposal",
+          "line": 516,
+          "duplicate_of": "write_l4c_retrieval_profile_proposal"
+        },
+        {
+          "function": "read_latest_detection_signal",
+          "line": 527,
+          "duplicate_of": "read_latest_detection_signal"
+        },
+        {
+          "function": "read_latest_drift_snapshot",
+          "line": 530,
+          "duplicate_of": "read_latest_drift_snapshot"
+        }
+      ]
+    },
+    "system_learning\\engines\\l4_version_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\l5_policy_proposer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\live_exit_control_gate.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\local_embedding_population_service.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\meta_learning_bus.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 38
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\meta_learning_embedding_service.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\meta_learning_replay_binding.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 27
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\meta_learning_state_digest.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 24
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\mutation_diff_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 19
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\offline_healing_outcome_evaluator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\openai_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "embed_batch",
+          "line": 250,
+          "duplicate_of": "embed_batch"
+        },
+        {
+          "function": "get_model_info",
+          "line": 276,
+          "duplicate_of": "get_model_info"
+        },
+        {
+          "function": "get_model_checksum",
+          "line": 280,
+          "duplicate_of": "get_model_checksum"
+        }
+      ]
+    },
+    "system_learning\\engines\\optimization_proposal_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 20
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__init__",
+          "line": 522,
+          "duplicate_of": "__init__"
+        }
+      ]
+    },
+    "system_learning\\engines\\outcome_evaluation_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\path_d_preference_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 20
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\pattern_analysis_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\pattern_analysis_engine_adapter.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\policy_guardrail_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 21
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\policy_recommendation_engine.py": {
+      "unused_imports": [],
+      "duplicate_methods": [
+        {
+          "function": "generate_recommendation",
+          "line": 293,
+          "duplicate_of": "generate_recommendation"
+        }
+      ]
+    },
+    "system_learning\\engines\\prompt_drift_detector.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 25
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\prompt_execution_tracer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 20
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\prompt_outcome_bus_adapter.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 53
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\prompt_outcome_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\prompt_provenance_builder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 23
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\prompt_safety_validator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 28
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\proposal_validation_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 27
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rag_optimizer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rag_proposer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rag_retrieval_cache.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 26
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rca_cluster_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rca_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\replay_failure_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\replay_validator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\retrieval_case_embedder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\retrieval_profile.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\retrieval_profile_manager.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rlhf_optimizer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "propose_from_dpo",
+          "line": 223,
+          "duplicate_of": "propose_from_dpo"
+        }
+      ]
+    },
+    "system_learning\\engines\\rlhf_optimizer_impl.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\rule_drafting_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 150,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 158,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 169,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 172,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\engines\\seed_embedding_pack_builder.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "embed_batch",
+          "line": 210,
+          "duplicate_of": "embed_batch"
+        }
+      ]
+    },
+    "system_learning\\engines\\seed_pack_build_cli.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\semantic_index_registry.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 22
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\semantic_memory_registry.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 33
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\signal_aggregator_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 16
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 127,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 131,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "__post_init__",
+          "line": 181,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 191,
+          "duplicate_of": "to_dict"
+        }
+      ]
+    },
+    "system_learning\\engines\\signal_grouping_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "canonical_bytes",
+          "line": 222,
+          "duplicate_of": "canonical_bytes"
+        },
+        {
+          "function": "content_hash",
+          "line": 235,
+          "duplicate_of": "content_hash"
+        }
+      ]
+    },
+    "system_learning\\engines\\stage_barrier_enforcer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\surface_isolation_validator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\system_learning_admission_gate.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\telemetry_consumer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\trace_feature_extractor.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 17
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\engines\\trajectory_evaluation_engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\fingerprinting\\engine.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\fingerprinting\\types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 3
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\fingerprinting\\__init__.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BATCH_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "BUFFER_SIZE",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_SLEEP",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "DEFAULT_TIMEOUT",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_DEPTH",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_FILES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "MAX_RETRIES",
+          "alias": null,
+          "line": 2
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.L0_routing.config.path_constants",
+          "name": "THRESHOLD",
+          "alias": null,
+          "line": 2
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\invariants\\commit_proof_invariant.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\invariants\\freeze_gate.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 8
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "is_frozen",
+          "line": 199,
+          "duplicate_of": "is_frozen"
+        },
+        {
+          "function": "__init__",
+          "line": 223,
+          "duplicate_of": "__init__"
+        },
+        {
+          "function": "is_frozen",
+          "line": 226,
+          "duplicate_of": "is_frozen"
+        }
+      ]
+    },
+    "system_learning\\meta_learning\\meta_apply.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 17
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_applies_guardrail",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_authorize_and_execute",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_blocks_direct_write",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_evaluation_metric",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_execution_output",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_coordinates_agents",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_dispatches_agent",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_dispatches_healing_run",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_escalates_failure",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_escalates_to_human",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_invokes_evaluation",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_links_execution_to_snapshot",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_orchestrates_workflow",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_policy_state",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_healing_outcome",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_telemetry_event",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_tool_invocation",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_workflow_lineage",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_routes_through",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_routes_to_capability",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_signs_execution_trace",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_snapshots_state",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_stores_embedding",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_meta_learning_state",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_validates_capability",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_via_uwg",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "emit_determinism_digest",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "emit_replay_key",
+          "alias": null,
+          "line": 29
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_pattern",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_runtime_anomaly",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_emits_metric_event",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_execution_terminates_at_uwg",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_feeds_meta_learning",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_improves_agent_policy",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_invokes_eval",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_links_incident_trace",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_proposal_commits_routing",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_pulls_context",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_environ",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_runtime_state",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_incident_event",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_learning_event",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_stores_learning_state",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_triggers_alert",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_monitoring_state",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_routing_strategy",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_validated_by_safety_plane",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_learning_snapshot",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_observability_log",
+          "alias": null,
+          "line": 73
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_through",
+          "alias": null,
+          "line": 73
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\meta_learning\\meta_apply_ops.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\ml_integration\\training_pipeline.py": {
+      "unused_imports": [],
+      "duplicate_methods": [
+        {
+          "function": "to_dict",
+          "line": 138,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_dict",
+          "line": 175,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "train",
+          "line": 230,
+          "duplicate_of": "train"
+        },
+        {
+          "function": "predict",
+          "line": 286,
+          "duplicate_of": "predict"
+        },
+        {
+          "function": "predict_proba",
+          "line": 293,
+          "duplicate_of": "predict_proba"
+        },
+        {
+          "function": "save_model",
+          "line": 300,
+          "duplicate_of": "save_model"
+        },
+        {
+          "function": "load_model",
+          "line": 310,
+          "duplicate_of": "load_model"
+        },
+        {
+          "function": "train",
+          "line": 325,
+          "duplicate_of": "train"
+        },
+        {
+          "function": "predict",
+          "line": 391,
+          "duplicate_of": "predict"
+        },
+        {
+          "function": "predict_proba",
+          "line": 398,
+          "duplicate_of": "predict_proba"
+        },
+        {
+          "function": "save_model",
+          "line": 405,
+          "duplicate_of": "save_model"
+        },
+        {
+          "function": "load_model",
+          "line": 415,
+          "duplicate_of": "load_model"
+        },
+        {
+          "function": "train",
+          "line": 430,
+          "duplicate_of": "train"
+        },
+        {
+          "function": "predict",
+          "line": 495,
+          "duplicate_of": "predict"
+        },
+        {
+          "function": "predict_proba",
+          "line": 506,
+          "duplicate_of": "predict_proba"
+        },
+        {
+          "function": "save_model",
+          "line": 517,
+          "duplicate_of": "save_model"
+        },
+        {
+          "function": "load_model",
+          "line": 527,
+          "duplicate_of": "load_model"
+        }
+      ]
+    },
+    "system_learning\\monitoring\\performance_monitor.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\pipelines\\approval_gates.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "decide",
+          "line": 261,
+          "duplicate_of": "decide"
+        },
+        {
+          "function": "classify",
+          "line": 327,
+          "duplicate_of": "classify"
+        }
+      ]
+    },
+    "system_learning\\pipelines\\approval_gate_impl.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "decide",
+          "line": 241,
+          "duplicate_of": "decide"
+        },
+        {
+          "function": "decide",
+          "line": 248,
+          "duplicate_of": "decide"
+        }
+      ]
+    },
+    "system_learning\\pipelines\\meta_learning_pipeline.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 49
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "propose",
+          "line": 476,
+          "duplicate_of": "propose"
+        },
+        {
+          "function": "propose",
+          "line": 493,
+          "duplicate_of": "propose"
+        },
+        {
+          "function": "propose",
+          "line": 510,
+          "duplicate_of": "propose"
+        }
+      ]
+    },
+    "system_learning\\pipelines\\pipeline_factory.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\policy\\system_learning_policy.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\ports\\healing_outcome_sink.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 11
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\ports\\healing_pattern_advisor.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "advise",
+          "line": 54,
+          "duplicate_of": "advise"
+        }
+      ]
+    },
+    "system_learning\\ports\\l4_meta_prior_provider.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\ports\\meta_outcome_bus_hook.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "publish_outcome",
+          "line": 202,
+          "duplicate_of": "publish_outcome"
+        },
+        {
+          "function": "publish_outcome",
+          "line": 215,
+          "duplicate_of": "publish_outcome"
+        }
+      ]
+    },
+    "system_learning\\ports\\meta_prior_provider.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "get_prior",
+          "line": 44,
+          "duplicate_of": "get_prior"
+        }
+      ]
+    },
+    "system_learning\\ports\\outcome_write_back_hook.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 16
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "on_outcome",
+          "line": 217,
+          "duplicate_of": "on_outcome"
+        },
+        {
+          "function": "on_outcome",
+          "line": 235,
+          "duplicate_of": "on_outcome"
+        }
+      ]
+    },
+    "system_learning\\ports\\scoring_report_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\runtime\\isolation_monitor.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\runtime_adg\\auto_persistence.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\runtime_adg\\l6_integration.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\runtime_adg\\materializer.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 20
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\runtime_adg\\snapshot.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\runtime_adg\\store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "persist",
+          "line": 131,
+          "duplicate_of": "persist"
+        },
+        {
+          "function": "get_by_version",
+          "line": 140,
+          "duplicate_of": "get_by_version"
+        },
+        {
+          "function": "get_version_id_for_trace",
+          "line": 143,
+          "duplicate_of": "get_version_id_for_trace"
+        },
+        {
+          "function": "list_snapshots",
+          "line": 156,
+          "duplicate_of": "list_snapshots"
+        }
+      ]
+    },
+    "system_learning\\scripts\\meta_learning_bridge.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 14
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\scripts\\meta_learning_operator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\snapshots\\snapshot_factory.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\state\\system_learning_state_manager.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\stores\\activator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "activate",
+          "line": 221,
+          "duplicate_of": "activate"
+        },
+        {
+          "function": "get_active",
+          "line": 238,
+          "duplicate_of": "get_active"
+        }
+      ]
+    },
+    "system_learning\\stores\\audit_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 8
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__init__",
+          "line": 242,
+          "duplicate_of": "__init__"
+        },
+        {
+          "function": "read_audit_slice",
+          "line": 245,
+          "duplicate_of": "read_audit_slice"
+        }
+      ]
+    },
+    "system_learning\\stores\\config_provider.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "get_current_configs",
+          "line": 310,
+          "duplicate_of": "get_current_configs"
+        },
+        {
+          "function": "get_last_update_utc",
+          "line": 313,
+          "duplicate_of": "get_last_update_utc"
+        },
+        {
+          "function": "get_param_history",
+          "line": 316,
+          "duplicate_of": "get_param_history"
+        },
+        {
+          "function": "__init__",
+          "line": 334,
+          "duplicate_of": "__init__"
+        }
+      ]
+    },
+    "system_learning\\stores\\otel_telemetry_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\stores\\telemetry_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "read_events",
+          "line": 258,
+          "duplicate_of": "read_events"
+        }
+      ]
+    },
+    "system_learning\\stores\\version_store.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "commit_change_package",
+          "line": 248,
+          "duplicate_of": "commit_change_package"
+        },
+        {
+          "function": "get",
+          "line": 283,
+          "duplicate_of": "get"
+        },
+        {
+          "function": "list_versions",
+          "line": 296,
+          "duplicate_of": "list_versions"
+        }
+      ]
+    },
+    "system_learning\\telemetry\\system_learning_telemetry.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\apply_attempt_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\app_signal_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 432,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 446,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 462,
+          "duplicate_of": "to_json"
+        }
+      ]
+    },
+    "system_learning\\types\\case_compilation_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 124,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 128,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 136,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 139,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 178,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 186,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 196,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 199,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 240,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 248,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 259,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 262,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 303,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 311,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 322,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 325,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 363,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 373,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 383,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 386,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\types\\case_memory_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 19
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "to_dict",
+          "line": 230,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_dict",
+          "line": 259,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_dict",
+          "line": 343,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "__post_init__",
+          "line": 428,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 438,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 458,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 461,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 488,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "__post_init__",
+          "line": 543,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 553,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 568,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 571,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 629,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 637,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 653,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 656,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 714,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 724,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 742,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 745,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\types\\config_store_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_applies_guardrail",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_authorize_and_execute",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_blocks_direct_write",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_evaluation_metric",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_execution_output",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_coordinates_agents",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_dispatches_agent",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_dispatches_healing_run",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_escalates_failure",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_escalates_to_human",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_invokes_evaluation",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_links_execution_to_snapshot",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_orchestrates_workflow",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_policy_state",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_healing_outcome",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_telemetry_event",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_tool_invocation",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_workflow_lineage",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_routes_through",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_routes_to_capability",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_signs_execution_trace",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_snapshots_state",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_stores_embedding",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_meta_learning_state",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_validates_capability",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_via_uwg",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "emit_determinism_digest",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "emit_replay_key",
+          "alias": null,
+          "line": 23
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_pattern",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_captures_runtime_anomaly",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_emits_metric_event",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_execution_terminates_at_uwg",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_feeds_meta_learning",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_improves_agent_policy",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_invokes_eval",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_links_incident_trace",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_proposal_commits_routing",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_pulls_context",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_environ",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_reads_runtime_state",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_incident_event",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_records_learning_event",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_stores_learning_state",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_triggers_alert",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_monitoring_state",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_updates_routing_strategy",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_validated_by_safety_plane",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_learning_snapshot",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_observability_log",
+          "alias": null,
+          "line": 67
+        },
+        {
+          "type": "from_import",
+          "module": "agentic_core.runtime.lifecycle_trace_contract",
+          "name": "_emit_writes_through",
+          "alias": null,
+          "line": 67
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 220,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 232,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 245,
+          "duplicate_of": "to_json"
+        }
+      ]
+    },
+    "system_learning\\types\\embedding_artifact.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\evaluation_spine_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 158,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 177,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "__post_init__",
+          "line": 270,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 292,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 312,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 315,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 382,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 394,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 412,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 415,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\types\\healing_outcome_learning_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 220,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "__post_init__",
+          "line": 276,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "canonical_bytes",
+          "line": 288,
+          "duplicate_of": "canonical_bytes"
+        },
+        {
+          "function": "content_hash",
+          "line": 307,
+          "duplicate_of": "content_hash"
+        }
+      ]
+    },
+    "system_learning\\types\\healing_outcome_scoring_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 234,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "__post_init__",
+          "line": 265,
+          "duplicate_of": "__post_init__"
+        }
+      ]
+    },
+    "system_learning\\types\\healing_outcome_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\index_build_metadata_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\meta_learning_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 15
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "to_dict",
+          "line": 233,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_dict",
+          "line": 286,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "__post_init__",
+          "line": 437,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 444,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 459,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 560,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 567,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 581,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 694,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 701,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 715,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 895,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 904,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 919,
+          "duplicate_of": "to_json"
+        }
+      ]
+    },
+    "system_learning\\types\\offline_replay_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\optimization_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 23
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 382,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 401,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 417,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 422,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 425,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 482,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 503,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 519,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 524,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 527,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 574,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 588,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 601,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 606,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 609,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 668,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 684,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 704,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 709,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 712,
+          "duplicate_of": "to_json"
+        }
+      ]
+    },
+    "system_learning\\types\\pattern_analysis_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "canonical_bytes",
+          "line": 228,
+          "duplicate_of": "canonical_bytes"
+        },
+        {
+          "function": "content_hash",
+          "line": 252,
+          "duplicate_of": "content_hash"
+        }
+      ]
+    },
+    "system_learning\\types\\prompt_adg_relations.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 33
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\prompt_artifact_types.py": {
+      "unused_imports": [],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 401,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 416,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 434,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 483,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 502,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 515,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 565,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 577,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 591,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 669,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 696,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 718,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 721,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 769,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 789,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 802,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "stable_hash",
+          "line": 805,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "__post_init__",
+          "line": 866,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 886,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 900,
+          "duplicate_of": "stable_hash"
+        }
+      ]
+    },
+    "system_learning\\types\\rca_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\rollout_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 10
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 366,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "to_dict",
+          "line": 375,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 386,
+          "duplicate_of": "to_json"
+        }
+      ]
+    },
+    "system_learning\\types\\seed_embedding_pack_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 6
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\semantic_memory_types.py": {
+      "unused_imports": [],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 281,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 291,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 304,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 348,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 358,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 372,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 416,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 424,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 437,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 480,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 488,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 501,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 547,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 557,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 570,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 619,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 629,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 643,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 703,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 718,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 739,
+          "duplicate_of": "to_embedding_text"
+        },
+        {
+          "function": "__post_init__",
+          "line": 801,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 817,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "to_embedding_text",
+          "line": 835,
+          "duplicate_of": "to_embedding_text"
+        }
+      ]
+    },
+    "system_learning\\types\\snapshot_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\telemetry_store_protocol.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 7
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\types\\telemetry_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "canonical_bytes",
+          "line": 77,
+          "duplicate_of": "canonical_bytes"
+        }
+      ]
+    },
+    "system_learning\\types\\trace_feature_types.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 19
+        }
+      ],
+      "duplicate_methods": [
+        {
+          "function": "__post_init__",
+          "line": 412,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 420,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 441,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 444,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 447,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 544,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 550,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 568,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 571,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 574,
+          "duplicate_of": "to_json"
+        },
+        {
+          "function": "__post_init__",
+          "line": 637,
+          "duplicate_of": "__post_init__"
+        },
+        {
+          "function": "_canonical_dict",
+          "line": 645,
+          "duplicate_of": "_canonical_dict"
+        },
+        {
+          "function": "stable_hash",
+          "line": 657,
+          "duplicate_of": "stable_hash"
+        },
+        {
+          "function": "to_dict",
+          "line": 660,
+          "duplicate_of": "to_dict"
+        },
+        {
+          "function": "to_json",
+          "line": 663,
+          "duplicate_of": "to_json"
+        }
+      ]
+    },
+    "system_learning\\validators\\lineage_validator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 9
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\validators\\oscillation_detector.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\validators\\replay_validator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 13
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\validators\\shadow_evaluator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 12
+        }
+      ],
+      "duplicate_methods": []
+    },
+    "system_learning\\validators\\shadow_replay_validator.py": {
+      "unused_imports": [
+        {
+          "type": "from_import",
+          "module": "__future__",
+          "name": "annotations",
+          "alias": null,
+          "line": 17
+        }
+      ],
+      "duplicate_methods": []
+    }
+  },
+  "summary": {
+    "files_analyzed": 232,
+    "unused_imports": 345,
+    "duplicate_methods": 278
+  }
+}

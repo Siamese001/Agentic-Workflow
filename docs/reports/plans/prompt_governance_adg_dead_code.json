@@ -1,0 +1,155 @@
+{
+  "target_dir": "agentic_core/prompt_governance",
+  "dead_imports": [
+    {
+      "node_id": 1674,
+      "file_path": "agentic_core/prompt_governance/contracts/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/contracts/__init__.py"
+    },
+    {
+      "node_id": 1696,
+      "file_path": "agentic_core/prompt_governance/optimization/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/optimization/__init__.py"
+    },
+    {
+      "node_id": 1716,
+      "file_path": "agentic_core/prompt_governance/security/utils/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/utils/__init__.py"
+    },
+    {
+      "node_id": 1719,
+      "file_path": "agentic_core/prompt_governance/security/validators/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/validators/__init__.py"
+    }
+  ],
+  "unused_imports": [
+    {
+      "node_id": 1673,
+      "file_path": "agentic_core/prompt_governance/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/__init__.py"
+    },
+    {
+      "node_id": 1675,
+      "file_path": "agentic_core/prompt_governance/contracts/compiled_artifact_types.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/contracts/compiled_artifact_types.py"
+    },
+    {
+      "node_id": 1677,
+      "file_path": "agentic_core/prompt_governance/contracts/prompt_bom_types.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/contracts/prompt_bom_types.py"
+    },
+    {
+      "node_id": 1681,
+      "file_path": "agentic_core/prompt_governance/contracts/template_manifest_types.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/contracts/template_manifest_types.py"
+    },
+    {
+      "node_id": 1682,
+      "file_path": "agentic_core/prompt_governance/core/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/core/__init__.py"
+    },
+    {
+      "node_id": 1683,
+      "file_path": "agentic_core/prompt_governance/core/evaluation_loader.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/core/evaluation_loader.py"
+    },
+    {
+      "node_id": 1685,
+      "file_path": "agentic_core/prompt_governance/core/invariant_registry.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/core/invariant_registry.py"
+    },
+    {
+      "node_id": 1686,
+      "file_path": "agentic_core/prompt_governance/core/prompt_assembler.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/core/prompt_assembler.py"
+    },
+    {
+      "node_id": 1688,
+      "file_path": "agentic_core/prompt_governance/core/prompt_loader.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/core/prompt_loader.py"
+    },
+    {
+      "node_id": 1689,
+      "file_path": "agentic_core/prompt_governance/core/sovereign_prompt_renderer.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/core/sovereign_prompt_renderer.py"
+    },
+    {
+      "node_id": 1695,
+      "file_path": "agentic_core/prompt_governance/meta_prompts/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/meta_prompts/__init__.py"
+    },
+    {
+      "node_id": 1697,
+      "file_path": "agentic_core/prompt_governance/optimization/optimization_strategy.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/optimization/optimization_strategy.py"
+    },
+    {
+      "node_id": 1700,
+      "file_path": "agentic_core/prompt_governance/scripts/cleanup_duplicates_util.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/scripts/cleanup_duplicates_util.py"
+    },
+    {
+      "node_id": 1709,
+      "file_path": "agentic_core/prompt_governance/security/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/__init__.py"
+    },
+    {
+      "node_id": 1712,
+      "file_path": "agentic_core/prompt_governance/security/detectors/__init__.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/detectors/__init__.py"
+    },
+    {
+      "node_id": 1713,
+      "file_path": "agentic_core/prompt_governance/security/detectors/assembly_injection_neutralizer.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/detectors/assembly_injection_neutralizer.py"
+    },
+    {
+      "node_id": 1714,
+      "file_path": "agentic_core/prompt_governance/security/detectors/injection_detector.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/detectors/injection_detector.py"
+    },
+    {
+      "node_id": 1717,
+      "file_path": "agentic_core/prompt_governance/security/utils/injection_scan_util.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/utils/injection_scan_util.py"
+    },
+    {
+      "node_id": 1720,
+      "file_path": "agentic_core/prompt_governance/security/validators/output_schema_validator.py",
+      "name": "ADG::Module::agentic_core/prompt_governance/security/validators/output_schema_validator.py"
+    },
+    {
+      "node_id": 5731,
+      "file_path": "tests/unit/agentic_core/prompt_governance/core/test_invariant_registry.py",
+      "name": "ADG::Module::tests/unit/agentic_core/prompt_governance/core/test_invariant_registry.py"
+    },
+    {
+      "node_id": 5741,
+      "file_path": "tests/unit/agentic_core/prompt_governance/scripts/test_dry_run_compiler.py",
+      "name": "ADG::Module::tests/unit/agentic_core/prompt_governance/scripts/test_dry_run_compiler.py"
+    },
+    {
+      "node_id": 5749,
+      "file_path": "tests/unit/agentic_core/prompt_governance/security/detectors/test_injection_detector.py",
+      "name": "ADG::Module::tests/unit/agentic_core/prompt_governance/security/detectors/test_injection_detector.py"
+    },
+    {
+      "node_id": 5752,
+      "file_path": "tests/unit/agentic_core/prompt_governance/security/utils/test_injection_scan_util.py",
+      "name": "ADG::Module::tests/unit/agentic_core/prompt_governance/security/utils/test_injection_scan_util.py"
+    },
+    {
+      "node_id": 5756,
+      "file_path": "tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py",
+      "name": "ADG::Module::tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py"
+    },
+    {
+      "node_id": 5757,
+      "file_path": "tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py",
+      "name": "ADG::Module::tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py"
+    }
+  ],
+  "unreachable_code": [],
+  "duplicate_methods": [],
+  "orphans": []
+}

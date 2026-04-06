@@ -10,16 +10,6 @@ This script identifies entries that may be misclassified as Sovereign Agents:
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'

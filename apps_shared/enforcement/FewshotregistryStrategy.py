@@ -176,7 +176,6 @@ _emit_links_execution_to_snapshot("p4", "FewshotregistryStrategy", "exec_snapsho
 
 logger = logging.getLogger(__name__)
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

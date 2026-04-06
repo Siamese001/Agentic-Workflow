@@ -33,7 +33,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from agentic_core.adg.contracts.schema_util import PROMPT_SLOT_TYPES
-from agentic_core.config.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 # Configuration constants
 

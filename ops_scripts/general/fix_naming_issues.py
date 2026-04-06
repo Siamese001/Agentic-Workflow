@@ -6,16 +6,6 @@ Replaces with proper naming: pii_sanitizer, ddd_alignment, ssot_reconciler, hop
 import re
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 
 def find_files_to_fix() -> list[Path]:

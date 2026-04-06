@@ -270,7 +270,6 @@ _emit_reads_through("l4", "feedback_category_util", "urg_read_93")
 
 logger = logging.getLogger(__name__)
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

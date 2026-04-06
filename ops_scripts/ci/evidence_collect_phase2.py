@@ -21,16 +21,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 INVENTORY_REL = 'docs/reports/plans/v15_phase2_wave2_1_runtime_entrypoints.json'
 

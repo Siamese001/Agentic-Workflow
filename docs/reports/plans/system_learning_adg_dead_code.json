@@ -1,0 +1,915 @@
+{
+  "target_dir": "system_learning",
+  "dead_imports": [
+    {
+      "node_id": 3044,
+      "file_path": "ops_scripts/ci/check_system_learning_boundary.py",
+      "name": "ADG::Module::ops_scripts/ci/check_system_learning_boundary.py"
+    },
+    {
+      "node_id": 3566,
+      "file_path": "system_learning/arbitration/__init__.py",
+      "name": "ADG::Module::system_learning/arbitration/__init__.py"
+    },
+    {
+      "node_id": 3591,
+      "file_path": "system_learning/correlation/__init__.py",
+      "name": "ADG::Module::system_learning/correlation/__init__.py"
+    },
+    {
+      "node_id": 3700,
+      "file_path": "system_learning/fingerprinting/__init__.py",
+      "name": "ADG::Module::system_learning/fingerprinting/__init__.py"
+    },
+    {
+      "node_id": 3711,
+      "file_path": "system_learning/meta_learning/__init__.py",
+      "name": "ADG::Module::system_learning/meta_learning/__init__.py"
+    }
+  ],
+  "unused_imports": [
+    {
+      "node_id": 3560,
+      "file_path": "system_learning/adapters/l1_meta_adapter.py",
+      "name": "ADG::Module::system_learning/adapters/l1_meta_adapter.py"
+    },
+    {
+      "node_id": 3561,
+      "file_path": "system_learning/adapters/l4_meta_prior_provider.py",
+      "name": "ADG::Module::system_learning/adapters/l4_meta_prior_provider.py"
+    },
+    {
+      "node_id": 3562,
+      "file_path": "system_learning/adapters/live_run_pipeline_adapter.py",
+      "name": "ADG::Module::system_learning/adapters/live_run_pipeline_adapter.py"
+    },
+    {
+      "node_id": 3563,
+      "file_path": "system_learning/adapters/otel_telemetry_store_adapter.py",
+      "name": "ADG::Module::system_learning/adapters/otel_telemetry_store_adapter.py"
+    },
+    {
+      "node_id": 3564,
+      "file_path": "system_learning/adapters/system_learning_memory_bridge.py",
+      "name": "ADG::Module::system_learning/adapters/system_learning_memory_bridge.py"
+    },
+    {
+      "node_id": 3567,
+      "file_path": "system_learning/arbitration/engine.py",
+      "name": "ADG::Module::system_learning/arbitration/engine.py"
+    },
+    {
+      "node_id": 3568,
+      "file_path": "system_learning/arbitration/types.py",
+      "name": "ADG::Module::system_learning/arbitration/types.py"
+    },
+    {
+      "node_id": 3569,
+      "file_path": "system_learning/confidence/__init__.py",
+      "name": "ADG::Module::system_learning/confidence/__init__.py"
+    },
+    {
+      "node_id": 3570,
+      "file_path": "system_learning/confidence/engine.py",
+      "name": "ADG::Module::system_learning/confidence/engine.py"
+    },
+    {
+      "node_id": 3574,
+      "file_path": "system_learning/confidence/types.py",
+      "name": "ADG::Module::system_learning/confidence/types.py"
+    },
+    {
+      "node_id": 3575,
+      "file_path": "system_learning/config/config_store.py",
+      "name": "ADG::Module::system_learning/config/config_store.py"
+    },
+    {
+      "node_id": 3577,
+      "file_path": "system_learning/config/feature_flags.py",
+      "name": "ADG::Module::system_learning/config/feature_flags.py"
+    },
+    {
+      "node_id": 3582,
+      "file_path": "system_learning/constraints/dampening.py",
+      "name": "ADG::Module::system_learning/constraints/dampening.py"
+    },
+    {
+      "node_id": 3592,
+      "file_path": "system_learning/correlation/engine.py",
+      "name": "ADG::Module::system_learning/correlation/engine.py"
+    },
+    {
+      "node_id": 3593,
+      "file_path": "system_learning/correlation/types.py",
+      "name": "ADG::Module::system_learning/correlation/types.py"
+    },
+    {
+      "node_id": 3594,
+      "file_path": "system_learning/embedding/__init__.py",
+      "name": "ADG::Module::system_learning/embedding/__init__.py"
+    },
+    {
+      "node_id": 3604,
+      "file_path": "system_learning/enforcement/determinism.py",
+      "name": "ADG::Module::system_learning/enforcement/determinism.py"
+    },
+    {
+      "node_id": 3607,
+      "file_path": "system_learning/enforcement/oscillation_freezer.py",
+      "name": "ADG::Module::system_learning/enforcement/oscillation_freezer.py"
+    },
+    {
+      "node_id": 3608,
+      "file_path": "system_learning/engines/__init__.py",
+      "name": "ADG::Module::system_learning/engines/__init__.py"
+    },
+    {
+      "node_id": 3609,
+      "file_path": "system_learning/engines/approval_gauntlet_engine.py",
+      "name": "ADG::Module::system_learning/engines/approval_gauntlet_engine.py"
+    },
+    {
+      "node_id": 3610,
+      "file_path": "system_learning/engines/bus_consumer.py",
+      "name": "ADG::Module::system_learning/engines/bus_consumer.py"
+    },
+    {
+      "node_id": 3611,
+      "file_path": "system_learning/engines/case_compilation_engine.py",
+      "name": "ADG::Module::system_learning/engines/case_compilation_engine.py"
+    },
+    {
+      "node_id": 3612,
+      "file_path": "system_learning/engines/change_package_impl.py",
+      "name": "ADG::Module::system_learning/engines/change_package_impl.py"
+    },
+    {
+      "node_id": 3613,
+      "file_path": "system_learning/engines/cross_repo_system_learning_import.py",
+      "name": "ADG::Module::system_learning/engines/cross_repo_system_learning_import.py"
+    },
+    {
+      "node_id": 3614,
+      "file_path": "system_learning/engines/default_healing_pattern_advisor.py",
+      "name": "ADG::Module::system_learning/engines/default_healing_pattern_advisor.py"
+    },
+    {
+      "node_id": 3617,
+      "file_path": "system_learning/engines/embedding_retention_scheduler.py",
+      "name": "ADG::Module::system_learning/engines/embedding_retention_scheduler.py"
+    },
+    {
+      "node_id": 3618,
+      "file_path": "system_learning/engines/embedding_service_factory.py",
+      "name": "ADG::Module::system_learning/engines/embedding_service_factory.py"
+    },
+    {
+      "node_id": 3619,
+      "file_path": "system_learning/engines/enhanced_rag_retrieval_cache.py",
+      "name": "ADG::Module::system_learning/engines/enhanced_rag_retrieval_cache.py"
+    },
+    {
+      "node_id": 3622,
+      "file_path": "system_learning/engines/g_gate_regression_checker.py",
+      "name": "ADG::Module::system_learning/engines/g_gate_regression_checker.py"
+    },
+    {
+      "node_id": 3623,
+      "file_path": "system_learning/engines/governance_reward_model.py",
+      "name": "ADG::Module::system_learning/engines/governance_reward_model.py"
+    },
+    {
+      "node_id": 3624,
+      "file_path": "system_learning/engines/graph_neighborhood_embedder.py",
+      "name": "ADG::Module::system_learning/engines/graph_neighborhood_embedder.py"
+    },
+    {
+      "node_id": 3625,
+      "file_path": "system_learning/engines/healer_outcome_embedder.py",
+      "name": "ADG::Module::system_learning/engines/healer_outcome_embedder.py"
+    },
+    {
+      "node_id": 3626,
+      "file_path": "system_learning/engines/healing_config_optimizer.py",
+      "name": "ADG::Module::system_learning/engines/healing_config_optimizer.py"
+    },
+    {
+      "node_id": 3627,
+      "file_path": "system_learning/engines/healing_outcome_aggregator.py",
+      "name": "ADG::Module::system_learning/engines/healing_outcome_aggregator.py"
+    },
+    {
+      "node_id": 3629,
+      "file_path": "system_learning/engines/healing_success_rate_store.py",
+      "name": "ADG::Module::system_learning/engines/healing_success_rate_store.py"
+    },
+    {
+      "node_id": 3630,
+      "file_path": "system_learning/engines/historical_backfill_engine.py",
+      "name": "ADG::Module::system_learning/engines/historical_backfill_engine.py"
+    },
+    {
+      "node_id": 3631,
+      "file_path": "system_learning/engines/historical_ingestion_orchestrator.py",
+      "name": "ADG::Module::system_learning/engines/historical_ingestion_orchestrator.py"
+    },
+    {
+      "node_id": 3632,
+      "file_path": "system_learning/engines/hitl_decision_logger.py",
+      "name": "ADG::Module::system_learning/engines/hitl_decision_logger.py"
+    },
+    {
+      "node_id": 3633,
+      "file_path": "system_learning/engines/human_calibration_engine.py",
+      "name": "ADG::Module::system_learning/engines/human_calibration_engine.py"
+    },
+    {
+      "node_id": 3636,
+      "file_path": "system_learning/engines/in_memory_scoring_report_store.py",
+      "name": "ADG::Module::system_learning/engines/in_memory_scoring_report_store.py"
+    },
+    {
+      "node_id": 3637,
+      "file_path": "system_learning/engines/incident_bundle_embedder.py",
+      "name": "ADG::Module::system_learning/engines/incident_bundle_embedder.py"
+    },
+    {
+      "node_id": 3638,
+      "file_path": "system_learning/engines/l0_routing_confidence_monitor.py",
+      "name": "ADG::Module::system_learning/engines/l0_routing_confidence_monitor.py"
+    },
+    {
+      "node_id": 3639,
+      "file_path": "system_learning/engines/l0_threshold_tuner.py",
+      "name": "ADG::Module::system_learning/engines/l0_threshold_tuner.py"
+    },
+    {
+      "node_id": 3640,
+      "file_path": "system_learning/engines/l1_model_proposer.py",
+      "name": "ADG::Module::system_learning/engines/l1_model_proposer.py"
+    },
+    {
+      "node_id": 3641,
+      "file_path": "system_learning/engines/l3_efficiency_tuner.py",
+      "name": "ADG::Module::system_learning/engines/l3_efficiency_tuner.py"
+    },
+    {
+      "node_id": 3642,
+      "file_path": "system_learning/engines/l4_audit_reader.py",
+      "name": "ADG::Module::system_learning/engines/l4_audit_reader.py"
+    },
+    {
+      "node_id": 3643,
+      "file_path": "system_learning/engines/l4_state_writer.py",
+      "name": "ADG::Module::system_learning/engines/l4_state_writer.py"
+    },
+    {
+      "node_id": 3644,
+      "file_path": "system_learning/engines/l4_version_store.py",
+      "name": "ADG::Module::system_learning/engines/l4_version_store.py"
+    },
+    {
+      "node_id": 3645,
+      "file_path": "system_learning/engines/l5_policy_proposer.py",
+      "name": "ADG::Module::system_learning/engines/l5_policy_proposer.py"
+    },
+    {
+      "node_id": 3646,
+      "file_path": "system_learning/engines/live_exit_control_gate.py",
+      "name": "ADG::Module::system_learning/engines/live_exit_control_gate.py"
+    },
+    {
+      "node_id": 3647,
+      "file_path": "system_learning/engines/local_embedding_population_service.py",
+      "name": "ADG::Module::system_learning/engines/local_embedding_population_service.py"
+    },
+    {
+      "node_id": 3648,
+      "file_path": "system_learning/engines/meta_learning_bus.py",
+      "name": "ADG::Module::system_learning/engines/meta_learning_bus.py"
+    },
+    {
+      "node_id": 3649,
+      "file_path": "system_learning/engines/meta_learning_embedding_service.py",
+      "name": "ADG::Module::system_learning/engines/meta_learning_embedding_service.py"
+    },
+    {
+      "node_id": 3650,
+      "file_path": "system_learning/engines/meta_learning_replay_binding.py",
+      "name": "ADG::Module::system_learning/engines/meta_learning_replay_binding.py"
+    },
+    {
+      "node_id": 3652,
+      "file_path": "system_learning/engines/mutation_diff_embedder.py",
+      "name": "ADG::Module::system_learning/engines/mutation_diff_embedder.py"
+    },
+    {
+      "node_id": 3653,
+      "file_path": "system_learning/engines/offline_healing_outcome_evaluator.py",
+      "name": "ADG::Module::system_learning/engines/offline_healing_outcome_evaluator.py"
+    },
+    {
+      "node_id": 3654,
+      "file_path": "system_learning/engines/openai_embedder.py",
+      "name": "ADG::Module::system_learning/engines/openai_embedder.py"
+    },
+    {
+      "node_id": 3655,
+      "file_path": "system_learning/engines/optimization_proposal_engine.py",
+      "name": "ADG::Module::system_learning/engines/optimization_proposal_engine.py"
+    },
+    {
+      "node_id": 3656,
+      "file_path": "system_learning/engines/outcome_evaluation_engine.py",
+      "name": "ADG::Module::system_learning/engines/outcome_evaluation_engine.py"
+    },
+    {
+      "node_id": 3657,
+      "file_path": "system_learning/engines/path_d_preference_embedder.py",
+      "name": "ADG::Module::system_learning/engines/path_d_preference_embedder.py"
+    },
+    {
+      "node_id": 3658,
+      "file_path": "system_learning/engines/pattern_analysis_engine.py",
+      "name": "ADG::Module::system_learning/engines/pattern_analysis_engine.py"
+    },
+    {
+      "node_id": 3659,
+      "file_path": "system_learning/engines/pattern_analysis_engine_adapter.py",
+      "name": "ADG::Module::system_learning/engines/pattern_analysis_engine_adapter.py"
+    },
+    {
+      "node_id": 3660,
+      "file_path": "system_learning/engines/policy_guardrail_embedder.py",
+      "name": "ADG::Module::system_learning/engines/policy_guardrail_embedder.py"
+    },
+    {
+      "node_id": 3662,
+      "file_path": "system_learning/engines/prompt_drift_detector.py",
+      "name": "ADG::Module::system_learning/engines/prompt_drift_detector.py"
+    },
+    {
+      "node_id": 3663,
+      "file_path": "system_learning/engines/prompt_execution_tracer.py",
+      "name": "ADG::Module::system_learning/engines/prompt_execution_tracer.py"
+    },
+    {
+      "node_id": 3664,
+      "file_path": "system_learning/engines/prompt_outcome_bus_adapter.py",
+      "name": "ADG::Module::system_learning/engines/prompt_outcome_bus_adapter.py"
+    },
+    {
+      "node_id": 3665,
+      "file_path": "system_learning/engines/prompt_outcome_embedder.py",
+      "name": "ADG::Module::system_learning/engines/prompt_outcome_embedder.py"
+    },
+    {
+      "node_id": 3666,
+      "file_path": "system_learning/engines/prompt_provenance_builder.py",
+      "name": "ADG::Module::system_learning/engines/prompt_provenance_builder.py"
+    },
+    {
+      "node_id": 3667,
+      "file_path": "system_learning/engines/prompt_safety_validator.py",
+      "name": "ADG::Module::system_learning/engines/prompt_safety_validator.py"
+    },
+    {
+      "node_id": 3668,
+      "file_path": "system_learning/engines/proposal_validation_engine.py",
+      "name": "ADG::Module::system_learning/engines/proposal_validation_engine.py"
+    },
+    {
+      "node_id": 3669,
+      "file_path": "system_learning/engines/rag_optimizer.py",
+      "name": "ADG::Module::system_learning/engines/rag_optimizer.py"
+    },
+    {
+      "node_id": 3670,
+      "file_path": "system_learning/engines/rag_proposer.py",
+      "name": "ADG::Module::system_learning/engines/rag_proposer.py"
+    },
+    {
+      "node_id": 3671,
+      "file_path": "system_learning/engines/rag_retrieval_cache.py",
+      "name": "ADG::Module::system_learning/engines/rag_retrieval_cache.py"
+    },
+    {
+      "node_id": 3672,
+      "file_path": "system_learning/engines/rca_cluster_engine.py",
+      "name": "ADG::Module::system_learning/engines/rca_cluster_engine.py"
+    },
+    {
+      "node_id": 3673,
+      "file_path": "system_learning/engines/rca_engine.py",
+      "name": "ADG::Module::system_learning/engines/rca_engine.py"
+    },
+    {
+      "node_id": 3674,
+      "file_path": "system_learning/engines/replay_failure_embedder.py",
+      "name": "ADG::Module::system_learning/engines/replay_failure_embedder.py"
+    },
+    {
+      "node_id": 3675,
+      "file_path": "system_learning/engines/replay_validator.py",
+      "name": "ADG::Module::system_learning/engines/replay_validator.py"
+    },
+    {
+      "node_id": 3676,
+      "file_path": "system_learning/engines/retrieval_case_embedder.py",
+      "name": "ADG::Module::system_learning/engines/retrieval_case_embedder.py"
+    },
+    {
+      "node_id": 3677,
+      "file_path": "system_learning/engines/retrieval_profile.py",
+      "name": "ADG::Module::system_learning/engines/retrieval_profile.py"
+    },
+    {
+      "node_id": 3680,
+      "file_path": "system_learning/engines/retrieval_profile_manager.py",
+      "name": "ADG::Module::system_learning/engines/retrieval_profile_manager.py"
+    },
+    {
+      "node_id": 3684,
+      "file_path": "system_learning/engines/rlhf_optimizer.py",
+      "name": "ADG::Module::system_learning/engines/rlhf_optimizer.py"
+    },
+    {
+      "node_id": 3685,
+      "file_path": "system_learning/engines/rlhf_optimizer_impl.py",
+      "name": "ADG::Module::system_learning/engines/rlhf_optimizer_impl.py"
+    },
+    {
+      "node_id": 3686,
+      "file_path": "system_learning/engines/rule_drafting_engine.py",
+      "name": "ADG::Module::system_learning/engines/rule_drafting_engine.py"
+    },
+    {
+      "node_id": 3687,
+      "file_path": "system_learning/engines/seed_embedding_pack_builder.py",
+      "name": "ADG::Module::system_learning/engines/seed_embedding_pack_builder.py"
+    },
+    {
+      "node_id": 3688,
+      "file_path": "system_learning/engines/seed_pack_build_cli.py",
+      "name": "ADG::Module::system_learning/engines/seed_pack_build_cli.py"
+    },
+    {
+      "node_id": 3689,
+      "file_path": "system_learning/engines/semantic_index_registry.py",
+      "name": "ADG::Module::system_learning/engines/semantic_index_registry.py"
+    },
+    {
+      "node_id": 3690,
+      "file_path": "system_learning/engines/semantic_memory_registry.py",
+      "name": "ADG::Module::system_learning/engines/semantic_memory_registry.py"
+    },
+    {
+      "node_id": 3692,
+      "file_path": "system_learning/engines/signal_aggregator_engine.py",
+      "name": "ADG::Module::system_learning/engines/signal_aggregator_engine.py"
+    },
+    {
+      "node_id": 3693,
+      "file_path": "system_learning/engines/signal_grouping_engine.py",
+      "name": "ADG::Module::system_learning/engines/signal_grouping_engine.py"
+    },
+    {
+      "node_id": 3694,
+      "file_path": "system_learning/engines/stage_barrier_enforcer.py",
+      "name": "ADG::Module::system_learning/engines/stage_barrier_enforcer.py"
+    },
+    {
+      "node_id": 3695,
+      "file_path": "system_learning/engines/surface_isolation_validator.py",
+      "name": "ADG::Module::system_learning/engines/surface_isolation_validator.py"
+    },
+    {
+      "node_id": 3696,
+      "file_path": "system_learning/engines/system_learning_admission_gate.py",
+      "name": "ADG::Module::system_learning/engines/system_learning_admission_gate.py"
+    },
+    {
+      "node_id": 3697,
+      "file_path": "system_learning/engines/telemetry_consumer.py",
+      "name": "ADG::Module::system_learning/engines/telemetry_consumer.py"
+    },
+    {
+      "node_id": 3698,
+      "file_path": "system_learning/engines/trace_feature_extractor.py",
+      "name": "ADG::Module::system_learning/engines/trace_feature_extractor.py"
+    },
+    {
+      "node_id": 3699,
+      "file_path": "system_learning/engines/trajectory_evaluation_engine.py",
+      "name": "ADG::Module::system_learning/engines/trajectory_evaluation_engine.py"
+    },
+    {
+      "node_id": 3701,
+      "file_path": "system_learning/fingerprinting/engine.py",
+      "name": "ADG::Module::system_learning/fingerprinting/engine.py"
+    },
+    {
+      "node_id": 3702,
+      "file_path": "system_learning/fingerprinting/types.py",
+      "name": "ADG::Module::system_learning/fingerprinting/types.py"
+    },
+    {
+      "node_id": 3705,
+      "file_path": "system_learning/invariants/commit_proof_invariant.py",
+      "name": "ADG::Module::system_learning/invariants/commit_proof_invariant.py"
+    },
+    {
+      "node_id": 3706,
+      "file_path": "system_learning/invariants/freeze_gate.py",
+      "name": "ADG::Module::system_learning/invariants/freeze_gate.py"
+    },
+    {
+      "node_id": 3707,
+      "file_path": "system_learning/memory/__init__.py",
+      "name": "ADG::Module::system_learning/memory/__init__.py"
+    },
+    {
+      "node_id": 3714,
+      "file_path": "system_learning/meta_learning/meta_apply.py",
+      "name": "ADG::Module::system_learning/meta_learning/meta_apply.py"
+    },
+    {
+      "node_id": 3715,
+      "file_path": "system_learning/meta_learning/meta_apply_ops.py",
+      "name": "ADG::Module::system_learning/meta_learning/meta_apply_ops.py"
+    },
+    {
+      "node_id": 3719,
+      "file_path": "system_learning/ml_integration/anomaly_detection.py",
+      "name": "ADG::Module::system_learning/ml_integration/anomaly_detection.py"
+    },
+    {
+      "node_id": 3721,
+      "file_path": "system_learning/monitoring/performance_monitor.py",
+      "name": "ADG::Module::system_learning/monitoring/performance_monitor.py"
+    },
+    {
+      "node_id": 3724,
+      "file_path": "system_learning/pipelines/approval_gate_impl.py",
+      "name": "ADG::Module::system_learning/pipelines/approval_gate_impl.py"
+    },
+    {
+      "node_id": 3725,
+      "file_path": "system_learning/pipelines/approval_gates.py",
+      "name": "ADG::Module::system_learning/pipelines/approval_gates.py"
+    },
+    {
+      "node_id": 3726,
+      "file_path": "system_learning/pipelines/meta_learning_pipeline.py",
+      "name": "ADG::Module::system_learning/pipelines/meta_learning_pipeline.py"
+    },
+    {
+      "node_id": 3727,
+      "file_path": "system_learning/pipelines/pipeline_factory.py",
+      "name": "ADG::Module::system_learning/pipelines/pipeline_factory.py"
+    },
+    {
+      "node_id": 3728,
+      "file_path": "system_learning/policy/system_learning_policy.py",
+      "name": "ADG::Module::system_learning/policy/system_learning_policy.py"
+    },
+    {
+      "node_id": 3736,
+      "file_path": "system_learning/ports/l4_meta_prior_provider.py",
+      "name": "ADG::Module::system_learning/ports/l4_meta_prior_provider.py"
+    },
+    {
+      "node_id": 3737,
+      "file_path": "system_learning/ports/meta_outcome_bus_hook.py",
+      "name": "ADG::Module::system_learning/ports/meta_outcome_bus_hook.py"
+    },
+    {
+      "node_id": 3740,
+      "file_path": "system_learning/ports/outcome_write_back_hook.py",
+      "name": "ADG::Module::system_learning/ports/outcome_write_back_hook.py"
+    },
+    {
+      "node_id": 3743,
+      "file_path": "system_learning/provenance/__init__.py",
+      "name": "ADG::Module::system_learning/provenance/__init__.py"
+    },
+    {
+      "node_id": 3749,
+      "file_path": "system_learning/runtime_adg/__init__.py",
+      "name": "ADG::Module::system_learning/runtime_adg/__init__.py"
+    },
+    {
+      "node_id": 3751,
+      "file_path": "system_learning/runtime_adg/auto_persistence.py",
+      "name": "ADG::Module::system_learning/runtime_adg/auto_persistence.py"
+    },
+    {
+      "node_id": 3752,
+      "file_path": "system_learning/runtime_adg/l6_integration.py",
+      "name": "ADG::Module::system_learning/runtime_adg/l6_integration.py"
+    },
+    {
+      "node_id": 3753,
+      "file_path": "system_learning/runtime_adg/materializer.py",
+      "name": "ADG::Module::system_learning/runtime_adg/materializer.py"
+    },
+    {
+      "node_id": 3754,
+      "file_path": "system_learning/runtime_adg/snapshot.py",
+      "name": "ADG::Module::system_learning/runtime_adg/snapshot.py"
+    },
+    {
+      "node_id": 3755,
+      "file_path": "system_learning/runtime_adg/store.py",
+      "name": "ADG::Module::system_learning/runtime_adg/store.py"
+    },
+    {
+      "node_id": 3757,
+      "file_path": "system_learning/scripts/meta_learning_bridge.py",
+      "name": "ADG::Module::system_learning/scripts/meta_learning_bridge.py"
+    },
+    {
+      "node_id": 3758,
+      "file_path": "system_learning/scripts/meta_learning_operator.py",
+      "name": "ADG::Module::system_learning/scripts/meta_learning_operator.py"
+    },
+    {
+      "node_id": 3760,
+      "file_path": "system_learning/snapshots/snapshot_factory.py",
+      "name": "ADG::Module::system_learning/snapshots/snapshot_factory.py"
+    },
+    {
+      "node_id": 3761,
+      "file_path": "system_learning/state/system_learning_state_manager.py",
+      "name": "ADG::Module::system_learning/state/system_learning_state_manager.py"
+    },
+    {
+      "node_id": 3762,
+      "file_path": "system_learning/stores/__init__.py",
+      "name": "ADG::Module::system_learning/stores/__init__.py"
+    },
+    {
+      "node_id": 3763,
+      "file_path": "system_learning/stores/activator.py",
+      "name": "ADG::Module::system_learning/stores/activator.py"
+    },
+    {
+      "node_id": 3764,
+      "file_path": "system_learning/stores/audit_store.py",
+      "name": "ADG::Module::system_learning/stores/audit_store.py"
+    },
+    {
+      "node_id": 3765,
+      "file_path": "system_learning/stores/config_provider.py",
+      "name": "ADG::Module::system_learning/stores/config_provider.py"
+    },
+    {
+      "node_id": 3766,
+      "file_path": "system_learning/stores/otel_telemetry_store.py",
+      "name": "ADG::Module::system_learning/stores/otel_telemetry_store.py"
+    },
+    {
+      "node_id": 3767,
+      "file_path": "system_learning/stores/telemetry_store.py",
+      "name": "ADG::Module::system_learning/stores/telemetry_store.py"
+    },
+    {
+      "node_id": 3768,
+      "file_path": "system_learning/stores/version_store.py",
+      "name": "ADG::Module::system_learning/stores/version_store.py"
+    },
+    {
+      "node_id": 3769,
+      "file_path": "system_learning/telemetry/system_learning_telemetry.py",
+      "name": "ADG::Module::system_learning/telemetry/system_learning_telemetry.py"
+    },
+    {
+      "node_id": 3770,
+      "file_path": "system_learning/types/__init__.py",
+      "name": "ADG::Module::system_learning/types/__init__.py"
+    },
+    {
+      "node_id": 3771,
+      "file_path": "system_learning/types/app_signal_types.py",
+      "name": "ADG::Module::system_learning/types/app_signal_types.py"
+    },
+    {
+      "node_id": 3772,
+      "file_path": "system_learning/types/apply_attempt_types.py",
+      "name": "ADG::Module::system_learning/types/apply_attempt_types.py"
+    },
+    {
+      "node_id": 3773,
+      "file_path": "system_learning/types/case_compilation_types.py",
+      "name": "ADG::Module::system_learning/types/case_compilation_types.py"
+    },
+    {
+      "node_id": 3774,
+      "file_path": "system_learning/types/case_memory_types.py",
+      "name": "ADG::Module::system_learning/types/case_memory_types.py"
+    },
+    {
+      "node_id": 3775,
+      "file_path": "system_learning/types/config_store_types.py",
+      "name": "ADG::Module::system_learning/types/config_store_types.py"
+    },
+    {
+      "node_id": 3776,
+      "file_path": "system_learning/types/embedding_artifact.py",
+      "name": "ADG::Module::system_learning/types/embedding_artifact.py"
+    },
+    {
+      "node_id": 3777,
+      "file_path": "system_learning/types/evaluation_spine_types.py",
+      "name": "ADG::Module::system_learning/types/evaluation_spine_types.py"
+    },
+    {
+      "node_id": 3779,
+      "file_path": "system_learning/types/healing_outcome_learning_types.py",
+      "name": "ADG::Module::system_learning/types/healing_outcome_learning_types.py"
+    },
+    {
+      "node_id": 3780,
+      "file_path": "system_learning/types/healing_outcome_scoring_types.py",
+      "name": "ADG::Module::system_learning/types/healing_outcome_scoring_types.py"
+    },
+    {
+      "node_id": 3781,
+      "file_path": "system_learning/types/healing_outcome_types.py",
+      "name": "ADG::Module::system_learning/types/healing_outcome_types.py"
+    },
+    {
+      "node_id": 3782,
+      "file_path": "system_learning/types/index_build_metadata_types.py",
+      "name": "ADG::Module::system_learning/types/index_build_metadata_types.py"
+    },
+    {
+      "node_id": 3783,
+      "file_path": "system_learning/types/meta_learning_types.py",
+      "name": "ADG::Module::system_learning/types/meta_learning_types.py"
+    },
+    {
+      "node_id": 3784,
+      "file_path": "system_learning/types/offline_replay_types.py",
+      "name": "ADG::Module::system_learning/types/offline_replay_types.py"
+    },
+    {
+      "node_id": 3785,
+      "file_path": "system_learning/types/optimization_types.py",
+      "name": "ADG::Module::system_learning/types/optimization_types.py"
+    },
+    {
+      "node_id": 3786,
+      "file_path": "system_learning/types/pattern_analysis_types.py",
+      "name": "ADG::Module::system_learning/types/pattern_analysis_types.py"
+    },
+    {
+      "node_id": 3788,
+      "file_path": "system_learning/types/prompt_artifact_types.py",
+      "name": "ADG::Module::system_learning/types/prompt_artifact_types.py"
+    },
+    {
+      "node_id": 3790,
+      "file_path": "system_learning/types/rollout_types.py",
+      "name": "ADG::Module::system_learning/types/rollout_types.py"
+    },
+    {
+      "node_id": 3791,
+      "file_path": "system_learning/types/seed_embedding_pack_types.py",
+      "name": "ADG::Module::system_learning/types/seed_embedding_pack_types.py"
+    },
+    {
+      "node_id": 3792,
+      "file_path": "system_learning/types/semantic_memory_types.py",
+      "name": "ADG::Module::system_learning/types/semantic_memory_types.py"
+    },
+    {
+      "node_id": 3793,
+      "file_path": "system_learning/types/snapshot_types.py",
+      "name": "ADG::Module::system_learning/types/snapshot_types.py"
+    },
+    {
+      "node_id": 3796,
+      "file_path": "system_learning/types/telemetry_types.py",
+      "name": "ADG::Module::system_learning/types/telemetry_types.py"
+    },
+    {
+      "node_id": 3797,
+      "file_path": "system_learning/types/trace_feature_types.py",
+      "name": "ADG::Module::system_learning/types/trace_feature_types.py"
+    },
+    {
+      "node_id": 3799,
+      "file_path": "system_learning/validators/lineage_validator.py",
+      "name": "ADG::Module::system_learning/validators/lineage_validator.py"
+    },
+    {
+      "node_id": 3802,
+      "file_path": "system_learning/validators/replay_validator.py",
+      "name": "ADG::Module::system_learning/validators/replay_validator.py"
+    },
+    {
+      "node_id": 3805,
+      "file_path": "system_learning/validators/shadow_replay_validator.py",
+      "name": "ADG::Module::system_learning/validators/shadow_replay_validator.py"
+    },
+    {
+      "node_id": 4131,
+      "file_path": "tests/system_learning/integration/test_signal_integration.py",
+      "name": "ADG::Module::tests/system_learning/integration/test_signal_integration.py"
+    },
+    {
+      "node_id": 4132,
+      "file_path": "tests/system_learning/integration/test_system_integrity_audit.py",
+      "name": "ADG::Module::tests/system_learning/integration/test_system_integrity_audit.py"
+    },
+    {
+      "node_id": 4136,
+      "file_path": "tests/system_learning/unit/adapters/test_system_learning_memory_bridge.py",
+      "name": "ADG::Module::tests/system_learning/unit/adapters/test_system_learning_memory_bridge.py"
+    },
+    {
+      "node_id": 4150,
+      "file_path": "tests/system_learning/unit/engines/test_healing_success_rate_store.py",
+      "name": "ADG::Module::tests/system_learning/unit/engines/test_healing_success_rate_store.py"
+    },
+    {
+      "node_id": 4151,
+      "file_path": "tests/system_learning/unit/engines/test_hitl_decision_logger.py",
+      "name": "ADG::Module::tests/system_learning/unit/engines/test_hitl_decision_logger.py"
+    },
+    {
+      "node_id": 4157,
+      "file_path": "tests/system_learning/unit/engines/test_local_faiss_store.py",
+      "name": "ADG::Module::tests/system_learning/unit/engines/test_local_faiss_store.py"
+    },
+    {
+      "node_id": 4159,
+      "file_path": "tests/system_learning/unit/engines/test_retrieval_profile.py",
+      "name": "ADG::Module::tests/system_learning/unit/engines/test_retrieval_profile.py"
+    },
+    {
+      "node_id": 4176,
+      "file_path": "tests/system_learning/unit/ports/test_healing_outcome_intake_store.py",
+      "name": "ADG::Module::tests/system_learning/unit/ports/test_healing_outcome_intake_store.py"
+    },
+    {
+      "node_id": 4178,
+      "file_path": "tests/system_learning/unit/ports/test_meta_prior_provider.py",
+      "name": "ADG::Module::tests/system_learning/unit/ports/test_meta_prior_provider.py"
+    },
+    {
+      "node_id": 4180,
+      "file_path": "tests/system_learning/unit/ports/test_scoring_report_store_adg.py",
+      "name": "ADG::Module::tests/system_learning/unit/ports/test_scoring_report_store_adg.py"
+    },
+    {
+      "node_id": 4228,
+      "file_path": "tests/system_learning/unit/types/test_app_signal_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_app_signal_types.py"
+    },
+    {
+      "node_id": 4229,
+      "file_path": "tests/system_learning/unit/types/test_apply_attempt_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_apply_attempt_types.py"
+    },
+    {
+      "node_id": 4230,
+      "file_path": "tests/system_learning/unit/types/test_healing_outcome_intake_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_healing_outcome_intake_types.py"
+    },
+    {
+      "node_id": 4231,
+      "file_path": "tests/system_learning/unit/types/test_healing_outcome_learning_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_healing_outcome_learning_types.py"
+    },
+    {
+      "node_id": 4232,
+      "file_path": "tests/system_learning/unit/types/test_healing_outcome_scoring_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_healing_outcome_scoring_types.py"
+    },
+    {
+      "node_id": 4233,
+      "file_path": "tests/system_learning/unit/types/test_healing_outcome_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_healing_outcome_types.py"
+    },
+    {
+      "node_id": 4234,
+      "file_path": "tests/system_learning/unit/types/test_index_build_metadata_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_index_build_metadata_types.py"
+    },
+    {
+      "node_id": 4235,
+      "file_path": "tests/system_learning/unit/types/test_meta_learning_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_meta_learning_types.py"
+    },
+    {
+      "node_id": 4236,
+      "file_path": "tests/system_learning/unit/types/test_rollout_types.py",
+      "name": "ADG::Module::tests/system_learning/unit/types/test_rollout_types.py"
+    }
+  ],
+  "unreachable_code": [],
+  "duplicate_methods": [],
+  "orphans": []
+}

@@ -10,16 +10,6 @@ import ast
 import re
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 ROOT = Path(__file__).resolve().parents[2]
 LAYER_DIRS = {'L0_ROUTING_DIR', 'L1_COGNITION_DIR', 'L2_EXECUTION_DIR', 'L3_ORCHESTRATION_DIR', 'L4_STATE_DIR', 'L5_SAFETY_DIR', 'L6_OBSERVABILITY_DIR'}

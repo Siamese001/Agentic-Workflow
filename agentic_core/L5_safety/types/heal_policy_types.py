@@ -34,14 +34,6 @@ Functions:
 from dataclasses import dataclass
 from enum import Enum
 
-from agentic_core.L0_routing.config.path_constants import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_DEPTH,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L3_orchestration.healers.healing_tier_config import (
     SSOT_SCORE_THRESHOLD_DET as SCORE_THRESHOLD_DET,
 )

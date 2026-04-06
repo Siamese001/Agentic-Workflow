@@ -19,16 +19,6 @@ import tempfile
 from pathlib import Path
 from typing import NoReturn
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]

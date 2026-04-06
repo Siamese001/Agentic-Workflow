@@ -81,16 +81,6 @@ from agentic_core.L0_routing.enforcement.core_integrity_util import CoreIntegrit
 from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
 from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,

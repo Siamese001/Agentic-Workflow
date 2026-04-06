@@ -7,16 +7,6 @@ termination point of the heal chain.
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 discovery_path = Path('agent_discovery_full.json')
 with open(discovery_path) as f:

@@ -1,0 +1,177 @@
+[
+  {
+    "file": "apps_lic\\config\\archetype_indicator_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L10: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_lic\\config\\loader_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L11: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_lic\\config\\reasoning_toggles_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L178: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_lic\\config\\retry_policy_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L174: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_rg\\config\\agent_spec_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L238: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_rg\\config\\reasoning_toggles_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L178: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_rg\\types\\resume_analysis_plan_types.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L16: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\config\\environment_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L40: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\config\\integration_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L14: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\config\\operational_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L36: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\config\\routing_tier_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L174: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\config\\titanium_search_tool_config.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L11: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\enforcement\\FewshotregistryStrategy.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L179: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\reasoning\\InfrastructureUpgradesOrchestrator.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L175: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\types\\config_format_types.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L295: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\types\\config_type_types.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L294: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\async_coordinator_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L181: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\config_environment_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L250: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\config_loader_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L89: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\feedback_category_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L273: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\golden_state_datasets_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L7: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\graph_rag_fusion_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L241: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\input_validator_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L181: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\rank_observability_components_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L76: removed ['MAX_RETRIES'] (single-line)"
+  },
+  {
+    "file": "apps_shared\\utils\\request_type_util.py",
+    "symbols_removed": [
+      "MAX_RETRIES"
+    ],
+    "details": "  L337: removed ['MAX_RETRIES'] (single-line)"
+  }
+]

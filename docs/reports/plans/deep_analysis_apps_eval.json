@@ -1,0 +1,1987 @@
+{
+  "summary": {
+    "target_dir": "apps_eval",
+    "total_files": 68,
+    "total_with_issues": 10,
+    "total_root_violations": 8,
+    "total_dead_code_files": 10,
+    "total_misplaced_files": 8,
+    "folder_breakdown": {
+      "apps_eval": {
+        "files": 9,
+        "total_lines": 1157,
+        "root_violations": [
+          "apps_eval/CLI_SPEC.md",
+          "apps_eval/OUTPUT_CONTRACTS.md",
+          "apps_eval/PRODUCT_SPEC.md",
+          "apps_eval/README.md",
+          "apps_eval/SVP_ENGINEERING_REVIEW.md",
+          "apps_eval/TECHNICAL_SPEC.md",
+          "apps_eval/TEST_STRATEGY.md",
+          "apps_eval/__main__.py"
+        ],
+        "dead_code_files": [],
+        "misplaced_files": [
+          "apps_eval/CLI_SPEC.md",
+          "apps_eval/OUTPUT_CONTRACTS.md",
+          "apps_eval/PRODUCT_SPEC.md",
+          "apps_eval/README.md",
+          "apps_eval/SVP_ENGINEERING_REVIEW.md",
+          "apps_eval/TECHNICAL_SPEC.md",
+          "apps_eval/TEST_STRATEGY.md",
+          "apps_eval/__main__.py"
+        ],
+        "clean_files": 1
+      },
+      "apps_eval\\config": {
+        "files": 5,
+        "total_lines": 501,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/config/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_eval\\data": {
+        "files": 1,
+        "total_lines": 38,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "apps_eval\\engines": {
+        "files": 6,
+        "total_lines": 2089,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/engines/scenario_runner.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 5
+      },
+      "apps_eval\\integrations": {
+        "files": 3,
+        "total_lines": 165,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/integrations/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_eval\\outputs": {
+        "files": 3,
+        "total_lines": 184,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/outputs/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_eval\\reasoning": {
+        "files": 8,
+        "total_lines": 2409,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 8
+      },
+      "apps_eval\\scripts": {
+        "files": 3,
+        "total_lines": 585,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 3
+      },
+      "apps_eval\\services": {
+        "files": 10,
+        "total_lines": 623,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/services/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 9
+      },
+      "apps_eval\\spine": {
+        "files": 2,
+        "total_lines": 52,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_eval\\tests": {
+        "files": 7,
+        "total_lines": 552,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/tests/test_eval_orchestrator.py",
+          "apps_eval/tests/test_evaluation_engines.py",
+          "apps_eval/tests/test_quality_services.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      },
+      "apps_eval\\tools": {
+        "files": 2,
+        "total_lines": 48,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_eval\\types": {
+        "files": 2,
+        "total_lines": 185,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/types/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 1
+      },
+      "apps_eval\\utils": {
+        "files": 2,
+        "total_lines": 108,
+        "root_violations": [],
+        "dead_code_files": [],
+        "misplaced_files": [],
+        "clean_files": 2
+      },
+      "apps_eval\\validators": {
+        "files": 5,
+        "total_lines": 917,
+        "root_violations": [],
+        "dead_code_files": [
+          "apps_eval/validators/__init__.py"
+        ],
+        "misplaced_files": [],
+        "clean_files": 4
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "apps_eval/CLI_SPEC.md",
+      "depth": 1,
+      "size_bytes": 4191,
+      "total_lines": 124,
+      "code_lines": 90,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/OUTPUT_CONTRACTS.md",
+      "depth": 1,
+      "size_bytes": 4456,
+      "total_lines": 184,
+      "code_lines": 134,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/PRODUCT_SPEC.md",
+      "depth": 1,
+      "size_bytes": 6872,
+      "total_lines": 127,
+      "code_lines": 94,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/README.md",
+      "depth": 1,
+      "size_bytes": 2640,
+      "total_lines": 73,
+      "code_lines": 55,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/SVP_ENGINEERING_REVIEW.md",
+      "depth": 1,
+      "size_bytes": 4771,
+      "total_lines": 162,
+      "code_lines": 124,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/TECHNICAL_SPEC.md",
+      "depth": 1,
+      "size_bytes": 6594,
+      "total_lines": 173,
+      "code_lines": 142,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/TEST_STRATEGY.md",
+      "depth": 1,
+      "size_bytes": 4223,
+      "total_lines": 105,
+      "code_lines": 76,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/__init__.py",
+      "depth": 1,
+      "size_bytes": 36,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/__main__.py",
+      "depth": 1,
+      "size_bytes": 8717,
+      "total_lines": 208,
+      "code_lines": 191,
+      "functions": [
+        "_adg_bootstrap",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": true,
+      "issues": [],
+      "classification": "MISPLACED",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/config/__init__.py",
+      "depth": 2,
+      "size_bytes": 204,
+      "total_lines": 7,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 5,
+          "symbol": "apps_eval.config.agent_spec_config.EvalAgentSpecs"
+        },
+        {
+          "line": 5,
+          "symbol": "apps_eval.config.agent_spec_config.load_eval_specs"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/config/agent_spec_config.py",
+      "depth": 2,
+      "size_bytes": 16070,
+      "total_lines": 372,
+      "code_lines": 334,
+      "functions": [
+        "load_eval_specs",
+        "validate_weights_sum"
+      ],
+      "classes": [
+        "BenchmarkSuiteConfig",
+        "ScorecardDimensionConfig",
+        "RegressionConfig",
+        "EvalOutputConfig",
+        "EvalGateConfig",
+        "EvalQwenPilotConfig",
+        "EvalAgentSpecs"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/config/eval_policies.yaml",
+      "depth": 2,
+      "size_bytes": 879,
+      "total_lines": 43,
+      "code_lines": 35,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/config/eval_thresholds.yaml",
+      "depth": 2,
+      "size_bytes": 1081,
+      "total_lines": 50,
+      "code_lines": 38,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/config/reasoning_toggles_config.py",
+      "depth": 2,
+      "size_bytes": 765,
+      "total_lines": 29,
+      "code_lines": 20,
+      "functions": [],
+      "classes": [
+        "EvalReasoningToggles"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/data/evaluation_prompts.json",
+      "depth": 2,
+      "size_bytes": 2951,
+      "total_lines": 38,
+      "code_lines": 38,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/engines/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/engines/base_eval_engine.py",
+      "depth": 2,
+      "size_bytes": 6187,
+      "total_lines": 186,
+      "code_lines": 142,
+      "functions": [
+        "__init__",
+        "execute",
+        "evaluate_with_qwen",
+        "record_fail",
+        "record_pass",
+        "get_status"
+      ],
+      "classes": [
+        "BaseEvalEngine",
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/engines/evaluation_retrieval_engine.py",
+      "depth": 2,
+      "size_bytes": 12945,
+      "total_lines": 375,
+      "code_lines": 291,
+      "functions": [
+        "create_retrieval_engine",
+        "__init__",
+        "add_evaluation",
+        "query_similar",
+        "get_by_suite",
+        "_mock_embed",
+        "_cosine_similarity",
+        "__init__",
+        "index_evaluation",
+        "find_similar_evaluations",
+        "get_suite_history",
+        "analyze_trends",
+        "generate_baseline_comparison",
+        "detect_regression_signals"
+      ],
+      "classes": [
+        "RetrievedEvaluation",
+        "TrendAnalysis",
+        "InMemoryEvaluationStore",
+        "EvaluationRetrievalEngine"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/engines/regression_detector.py",
+      "depth": 2,
+      "size_bytes": 14580,
+      "total_lines": 330,
+      "code_lines": 293,
+      "functions": [
+        "__init__",
+        "detect",
+        "_load_baseline",
+        "_write_baseline",
+        "_emit_regression_results"
+      ],
+      "classes": [
+        "RegressionResult",
+        "RegressionDetector"
+      ],
+      "import_count": 12,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/engines/scenario_runner.py",
+      "depth": 2,
+      "size_bytes": 187592,
+      "total_lines": 914,
+      "code_lines": 819,
+      "functions": [
+        "_scenario_policy_hash_valid",
+        "_scenario_policy_hash_invalid",
+        "_scenario_missing_hash",
+        "_scenario_nondeterministic_time_call",
+        "_scenario_allowlisted_call",
+        "_scenario_clean_module",
+        "_scenario_exec_recruiter_brief",
+        "_scenario_exec_cto_brief",
+        "_scenario_exec_dry_run",
+        "_scenario_single_hop",
+        "_scenario_multi_hop_pass",
+        "_scenario_multi_hop_gate_fail",
+        "_scenario_signed_output_valid",
+        "_scenario_tampered_signature",
+        "_scenario_binary_precision_perfect",
+        "_scenario_binary_recall_perfect",
+        "_scenario_binary_f1_harmonic_mean",
+        "_scenario_multiclass_macro_f1",
+        "_scenario_multiclass_weighted_f1",
+        "_scenario_confusion_matrix_invariants",
+        "run_suite",
+        "_run_scenario"
+      ],
+      "classes": [
+        "ScenarioRunner",
+        "_TestModel"
+      ],
+      "import_count": 38,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 410,
+          "symbol": "PolicyHashViolation"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/engines/scorecard_engine.py",
+      "depth": 2,
+      "size_bytes": 11931,
+      "total_lines": 284,
+      "code_lines": 253,
+      "functions": [
+        "__init__",
+        "compute"
+      ],
+      "classes": [
+        "ScorecardResult",
+        "ScorecardEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/integrations/__init__.py",
+      "depth": 2,
+      "size_bytes": 247,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_eval.integrations.execution_adapter.ExecutionAdapter"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_eval.integrations.observability_adapter.ObservabilityAdapter"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/integrations/execution_adapter.py",
+      "depth": 2,
+      "size_bytes": 2475,
+      "total_lines": 86,
+      "code_lines": 62,
+      "functions": [
+        "__init__",
+        "submit",
+        "_timestamp",
+        "get_execution_log"
+      ],
+      "classes": [
+        "ExecutionRequest",
+        "ExecutionAdapter"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/integrations/observability_adapter.py",
+      "depth": 2,
+      "size_bytes": 2229,
+      "total_lines": 73,
+      "code_lines": 60,
+      "functions": [
+        "__init__",
+        "emit_eval_start",
+        "emit_eval_complete",
+        "emit_suite_metric",
+        "get_metrics",
+        "_timestamp"
+      ],
+      "classes": [
+        "ObservabilityAdapter"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/outputs/__init__.py",
+      "depth": 2,
+      "size_bytes": 230,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_eval.outputs.run_summary_renderer.RunSummaryRenderer"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_eval.outputs.scorecard_renderer.ScorecardRenderer"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/outputs/run_summary_renderer.py",
+      "depth": 2,
+      "size_bytes": 2642,
+      "total_lines": 90,
+      "code_lines": 75,
+      "functions": [
+        "render_json",
+        "render_markdown",
+        "render_compact"
+      ],
+      "classes": [
+        "RunSummaryRenderer"
+      ],
+      "import_count": 5,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/outputs/scorecard_renderer.py",
+      "depth": 2,
+      "size_bytes": 2468,
+      "total_lines": 88,
+      "code_lines": 67,
+      "functions": [
+        "render_csv",
+        "render_markdown",
+        "render_summary"
+      ],
+      "classes": [
+        "ScorecardRenderer"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/EvalOrchestrator.py",
+      "depth": 2,
+      "size_bytes": 26968,
+      "total_lines": 622,
+      "code_lines": 554,
+      "functions": [
+        "__post_init__",
+        "run",
+        "_run_suites",
+        "_emit_artifacts",
+        "_emit_run_summary",
+        "_load_qwen_prompt_templates",
+        "evaluate_with_qwen",
+        "_record_hop",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "EvalOrchestrator"
+      ],
+      "import_count": 19,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/QualityGateAgent.py",
+      "depth": 2,
+      "size_bytes": 3364,
+      "total_lines": 100,
+      "code_lines": 81,
+      "functions": [
+        "__init__",
+        "evaluate_quality_gate",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "QualityGateAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/ScenarioGenerationAgent.py",
+      "depth": 2,
+      "size_bytes": 3568,
+      "total_lines": 100,
+      "code_lines": 82,
+      "functions": [
+        "__init__",
+        "generate_scenarios",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "ScenarioGenerationAgent"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/TestDiscoveryAgent.py",
+      "depth": 2,
+      "size_bytes": 4068,
+      "total_lines": 114,
+      "code_lines": 92,
+      "functions": [
+        "__init__",
+        "discover_tests",
+        "_make_trace_id"
+      ],
+      "classes": [
+        "TestDiscoveryAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/__init__.py",
+      "depth": 2,
+      "size_bytes": 548,
+      "total_lines": 17,
+      "code_lines": 14,
+      "functions": [],
+      "classes": [],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/criteria_decomposition_agent.py",
+      "depth": 2,
+      "size_bytes": 19141,
+      "total_lines": 512,
+      "code_lines": 382,
+      "functions": [
+        "__init__",
+        "decompose",
+        "decompose_batch",
+        "generate_summary",
+        "_classify_criteria_type",
+        "_extract_components",
+        "_split_compound_criteria",
+        "_estimate_complexity",
+        "_determine_test_method",
+        "_estimate_execution_time",
+        "_generate_component_name",
+        "_generate_success_criteria",
+        "_determine_test_order",
+        "_identify_coverage_gaps",
+        "__init__",
+        "analyze_evaluation_criteria",
+        "get_test_execution_plan",
+        "sort_key"
+      ],
+      "classes": [
+        "CriteriaType",
+        "TestComplexity",
+        "TestComponent",
+        "CriteriaDecomposition",
+        "DecompositionSummary",
+        "CriteriaDecomposer",
+        "CriteriaDecompositionAgent"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/enterprise_eval_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 20445,
+      "total_lines": 514,
+      "code_lines": 399,
+      "functions": [
+        "run_enterprise_evaluation",
+        "__post_init__",
+        "_generate_trace_id",
+        "__init__",
+        "process",
+        "_step_decompose",
+        "_step_retrieve",
+        "_step_execute",
+        "_step_collect_repo_signals",
+        "_step_validate",
+        "_step_emit",
+        "_write_evaluation_markdown",
+        "_write_manifest",
+        "_write_baseline",
+        "_log_step"
+      ],
+      "classes": [
+        "EnterpriseEvalRequest",
+        "EnterpriseEvalResult",
+        "EnterpriseEvalOrchestrator"
+      ],
+      "import_count": 15,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/reasoning/evaluation_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 15189,
+      "total_lines": 430,
+      "code_lines": 330,
+      "functions": [
+        "__init__",
+        "execute",
+        "_run_implementation",
+        "_run_scenarios",
+        "_compute_scorecard",
+        "_detect_regression",
+        "_validate_gates",
+        "_analyze_trends",
+        "_check_coverage",
+        "__init__",
+        "register_agent",
+        "create_orchestration_plan",
+        "execute_plan",
+        "get_combined_results",
+        "_compute_execution_order",
+        "__init__",
+        "_initialize_agents",
+        "run_evaluation"
+      ],
+      "classes": [
+        "EvalAgentType",
+        "AgentStatus",
+        "AgentRequest",
+        "AgentResult",
+        "OrchestrationPlan",
+        "EvaluationAgent",
+        "EvaluationOrchestrator",
+        "MultiAgentEvaluationEngine"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/scripts/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/scripts/run_eval.py",
+      "depth": 2,
+      "size_bytes": 3370,
+      "total_lines": 97,
+      "code_lines": 80,
+      "functions": [
+        "build_parser",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/scripts/test_enterprise_eval.py",
+      "depth": 2,
+      "size_bytes": 16415,
+      "total_lines": 488,
+      "code_lines": 376,
+      "functions": [
+        "_assert",
+        "_assert_repo_signals",
+        "_assert_detailed_observability",
+        "_assert_layer4_wiring",
+        "_assert_enhanced_system_learning",
+        "_assert_rigorous_e2e_wiring",
+        "test_basic_evaluation",
+        "test_with_trend_analysis",
+        "test_full_pipeline",
+        "test_regression_detection",
+        "main"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/__init__.py",
+      "depth": 2,
+      "size_bytes": 1164,
+      "total_lines": 28,
+      "code_lines": 25,
+      "functions": [],
+      "classes": [],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(9)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 8,
+          "symbol": "apps_eval.services.benchmark_runner_service.BenchmarkRunnerService"
+        },
+        {
+          "line": 9,
+          "symbol": "apps_eval.services.coverage_analyzer_service.CoverageAnalyzerService"
+        },
+        {
+          "line": 10,
+          "symbol": "apps_eval.services.metric_collector_service.MetricCollectorService"
+        },
+        {
+          "line": 11,
+          "symbol": "apps_eval.services.quality_assessor_service.QualityAssessorService"
+        },
+        {
+          "line": 12,
+          "symbol": "apps_eval.services.regression_detector_service.RegressionDetectorService"
+        },
+        {
+          "line": 13,
+          "symbol": "apps_eval.services.repo_signal_service.RepoSignalService"
+        },
+        {
+          "line": 14,
+          "symbol": "apps_eval.services.result_aggregator_service.ResultAggregatorService"
+        },
+        {
+          "line": 15,
+          "symbol": "apps_eval.services.scenario_loader_service.ScenarioLoaderService"
+        },
+        {
+          "line": 16,
+          "symbol": "apps_eval.services.test_discovery_service.TestDiscoveryService"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/benchmark_runner_service.py",
+      "depth": 2,
+      "size_bytes": 720,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "run_benchmark"
+      ],
+      "classes": [
+        "BenchmarkRunnerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/coverage_analyzer_service.py",
+      "depth": 2,
+      "size_bytes": 733,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "analyze_coverage"
+      ],
+      "classes": [
+        "CoverageAnalyzerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/metric_collector_service.py",
+      "depth": 2,
+      "size_bytes": 1057,
+      "total_lines": 35,
+      "code_lines": 25,
+      "functions": [
+        "__init__",
+        "record_metric",
+        "get_metrics"
+      ],
+      "classes": [
+        "MetricCollectorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/quality_assessor_service.py",
+      "depth": 2,
+      "size_bytes": 708,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "assess_quality"
+      ],
+      "classes": [
+        "QualityAssessorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/regression_detector_service.py",
+      "depth": 2,
+      "size_bytes": 729,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "detect_regressions"
+      ],
+      "classes": [
+        "RegressionDetectorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/repo_signal_service.py",
+      "depth": 2,
+      "size_bytes": 7193,
+      "total_lines": 184,
+      "code_lines": 149,
+      "functions": [
+        "as_dict",
+        "__init__",
+        "collect",
+        "_compute_release_readiness",
+        "_collect_adg_signals",
+        "_collect_test_signals",
+        "_collect_ci_signals",
+        "_collect_governance_signals",
+        "_json_entry_count",
+        "_line_count"
+      ],
+      "classes": [
+        "RepoSignalSnapshot",
+        "RepoSignalService"
+      ],
+      "import_count": 9,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/result_aggregator_service.py",
+      "depth": 2,
+      "size_bytes": 742,
+      "total_lines": 26,
+      "code_lines": 17,
+      "functions": [
+        "__init__",
+        "aggregate_results"
+      ],
+      "classes": [
+        "ResultAggregatorService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/scenario_loader_service.py",
+      "depth": 2,
+      "size_bytes": 3690,
+      "total_lines": 103,
+      "code_lines": 78,
+      "functions": [
+        "__init__",
+        "load_from_file",
+        "load_from_directory",
+        "get_scenario",
+        "get_all_scenarios",
+        "validate_scenario"
+      ],
+      "classes": [
+        "ScenarioLoaderService"
+      ],
+      "import_count": 8,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/services/test_discovery_service.py",
+      "depth": 2,
+      "size_bytes": 4920,
+      "total_lines": 143,
+      "code_lines": 113,
+      "functions": [
+        "__init__",
+        "discover_from_adg",
+        "discover_from_codebase",
+        "get_catalog",
+        "clear_catalog"
+      ],
+      "classes": [
+        "TestDiscoveryService"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/spine/__init__.py",
+      "depth": 2,
+      "size_bytes": 39,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/spine/eval_spine_adapter.py",
+      "depth": 2,
+      "size_bytes": 1277,
+      "total_lines": 51,
+      "code_lines": 37,
+      "functions": [
+        "__init__",
+        "execute"
+      ],
+      "classes": [
+        "EvalSpineAdapter"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/__init__.py",
+      "depth": 2,
+      "size_bytes": 35,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/test_base_eval_engine.py",
+      "depth": 2,
+      "size_bytes": 2027,
+      "total_lines": 69,
+      "code_lines": 52,
+      "functions": [
+        "__init__",
+        "_load_config",
+        "execute",
+        "run",
+        "setUp",
+        "test_engine_initialization",
+        "test_engine_run",
+        "test_eval_request_defaults",
+        "test_eval_result_defaults"
+      ],
+      "classes": [
+        "MockEvalEngine",
+        "TestBaseEvalEngine"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/test_eval_orchestrator.py",
+      "depth": 2,
+      "size_bytes": 627,
+      "total_lines": 21,
+      "code_lines": 13,
+      "functions": [
+        "test_orchestrator_import",
+        "test_orchestrator_class_exists"
+      ],
+      "classes": [
+        "TestEvalOrchestrator"
+      ],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/test_eval_types.py",
+      "depth": 2,
+      "size_bytes": 6253,
+      "total_lines": 202,
+      "code_lines": 174,
+      "functions": [
+        "test_scenario_result_creation",
+        "test_scenario_result_score_validation",
+        "test_suite_result_passed_property",
+        "test_suite_result_pass_rate_validation",
+        "test_eval_config_defaults",
+        "test_eval_request_defaults",
+        "test_eval_result_passed_gate",
+        "test_eval_result_overall_score_validation",
+        "test_eval_run_summary_to_dict",
+        "test_scorecard_row_creation",
+        "test_scorecard_row_weight_validation",
+        "test_regression_record_creation",
+        "test_eval_run_summary_suites_run_validation"
+      ],
+      "classes": [
+        "TestEvalTypes"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/test_evaluation_engines.py",
+      "depth": 2,
+      "size_bytes": 950,
+      "total_lines": 34,
+      "code_lines": 24,
+      "functions": [
+        "test_engine_import",
+        "test_engine_class_exists",
+        "test_engine_import",
+        "test_engine_class_exists"
+      ],
+      "classes": [
+        "TestEvaluationRetrievalEngine",
+        "TestScorecardEngine"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/test_quality_services.py",
+      "depth": 2,
+      "size_bytes": 1478,
+      "total_lines": 49,
+      "code_lines": 35,
+      "functions": [
+        "test_service_import",
+        "test_service_class_exists",
+        "test_service_import",
+        "test_service_class_exists",
+        "test_service_import",
+        "test_service_class_exists"
+      ],
+      "classes": [
+        "TestQualityAssessorService",
+        "TestRegressionDetectorService",
+        "TestBenchmarkRunnerService"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "UNUSED_IMPORTS(1)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [
+        {
+          "line": 3,
+          "symbol": "pytest"
+        }
+      ],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tests/test_validators.py",
+      "depth": 2,
+      "size_bytes": 5812,
+      "total_lines": 176,
+      "code_lines": 153,
+      "functions": [
+        "setUp",
+        "test_validate_pass",
+        "test_validate_fails_min_pass_rate",
+        "test_validate_fails_nondeterministic",
+        "setUp",
+        "test_validate_pass",
+        "test_validate_fails_min_scenarios",
+        "test_validate_fails_latency",
+        "test_validate_fails_regression"
+      ],
+      "classes": [
+        "TestComplianceValidator",
+        "TestQualityGateValidator"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tools/__init__.py",
+      "depth": 2,
+      "size_bytes": 0,
+      "total_lines": 0,
+      "code_lines": 0,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/tools/eval_dry_run_tool.py",
+      "depth": 2,
+      "size_bytes": 1566,
+      "total_lines": 48,
+      "code_lines": 36,
+      "functions": [
+        "main"
+      ],
+      "classes": [],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/types/__init__.py",
+      "depth": 2,
+      "size_bytes": 528,
+      "total_lines": 29,
+      "code_lines": 27,
+      "functions": [],
+      "classes": [],
+      "import_count": 1,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(11)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.EvalConfig"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.EvalRequest"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.EvalResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.EvalRunSummary"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.EvalStatus"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.RegressionRecord"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.RegressionVerdict"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.ScenarioOutcome"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.ScenarioResult"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.ScorecardRow"
+        },
+        {
+          "line": 3,
+          "symbol": "apps_eval.types.eval_types.SuiteResult"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/types/eval_types.py",
+      "depth": 2,
+      "size_bytes": 6910,
+      "total_lines": 156,
+      "code_lines": 119,
+      "functions": [
+        "validate_score_range",
+        "passed",
+        "validate_pass_rate",
+        "passed_gate",
+        "to_dict"
+      ],
+      "classes": [
+        "ScenarioResult",
+        "SuiteResult",
+        "ScorecardRow",
+        "RegressionRecord",
+        "EvalConfig",
+        "EvalRequest",
+        "EvalResult",
+        "EvalRunSummary",
+        "Config"
+      ],
+      "import_count": 3,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/utils/__init__.py",
+      "depth": 2,
+      "size_bytes": 35,
+      "total_lines": 1,
+      "code_lines": 1,
+      "functions": [],
+      "classes": [],
+      "import_count": 0,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/utils/eval_artifact_util.py",
+      "depth": 2,
+      "size_bytes": 3271,
+      "total_lines": 107,
+      "code_lines": 87,
+      "functions": [
+        "resolve_artifact_path",
+        "write_scorecard_csv",
+        "build_manifest",
+        "write_json",
+        "is_dry_run"
+      ],
+      "classes": [],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/validators/__init__.py",
+      "depth": 2,
+      "size_bytes": 251,
+      "total_lines": 6,
+      "code_lines": 4,
+      "functions": [],
+      "classes": [],
+      "import_count": 2,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [
+        "DEAD_IMPORTS(2)"
+      ],
+      "classification": "DEAD_CODE",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [
+        {
+          "line": 3,
+          "symbol": "apps_eval.validators.compliance_validator.ComplianceValidator"
+        },
+        {
+          "line": 4,
+          "symbol": "apps_eval.validators.quality_gate_validator.QualityGateValidator"
+        }
+      ],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/validators/compliance_validator.py",
+      "depth": 2,
+      "size_bytes": 2220,
+      "total_lines": 68,
+      "code_lines": 50,
+      "functions": [
+        "__init__",
+        "validate",
+        "_validate_deterministic"
+      ],
+      "classes": [
+        "ComplianceValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/validators/eval_gate_validator.py",
+      "depth": 2,
+      "size_bytes": 12384,
+      "total_lines": 292,
+      "code_lines": 264,
+      "functions": [
+        "__init__",
+        "validate"
+      ],
+      "classes": [
+        "EvalViolation",
+        "EvalGateResult",
+        "EvalGateValidator"
+      ],
+      "import_count": 7,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/validators/evaluation_validator.py",
+      "depth": 2,
+      "size_bytes": 16839,
+      "total_lines": 478,
+      "code_lines": 372,
+      "functions": [
+        "__init__",
+        "__init__",
+        "validate",
+        "_initialize_rules",
+        "_check_score_range",
+        "_check_missing_dimensions",
+        "_check_execution_evidence",
+        "_check_suite_coverage",
+        "_check_latency_plausibility",
+        "_validate_score",
+        "_detect_anomalies",
+        "_assess_coverage",
+        "_calculate_quality_score",
+        "__init__",
+        "evaluate"
+      ],
+      "classes": [
+        "ViolationSeverity",
+        "ValidationViolation",
+        "EvaluationValidationResult",
+        "ValidationRule",
+        "EvaluationValidator",
+        "ScoringGate"
+      ],
+      "import_count": 6,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    },
+    {
+      "path": "apps_eval/validators/quality_gate_validator.py",
+      "depth": 2,
+      "size_bytes": 2377,
+      "total_lines": 73,
+      "code_lines": 54,
+      "functions": [
+        "__init__",
+        "validate"
+      ],
+      "classes": [
+        "QualityGateValidator"
+      ],
+      "import_count": 4,
+      "parse_error": null,
+      "root_violation": false,
+      "issues": [],
+      "classification": "CLEAN",
+      "adg_unused_imports": [],
+      "adg_dead_imports": [],
+      "adg_unreachable": [],
+      "adg_duplicate_methods": []
+    }
+  ]
+}

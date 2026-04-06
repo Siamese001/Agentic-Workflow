@@ -26,7 +26,6 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest
-from agentic_core.config.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 __all__ = [
     "SovereignLLMGateway",

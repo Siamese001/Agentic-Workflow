@@ -117,6 +117,30 @@ _RELATION_TO_ROUTE: dict[str, tuple[RepairAgent, CILane, Severity, str]] = {
         "low",
         "Dead import: name is imported but never referenced in the file body",
     ),
+    "broad_exception_catch": (
+        "ManualReview",
+        "governance",
+        "high",
+        "Broad exception catch: hides bugs and error propagation failures",
+    ),
+    "silent_exception_swallow": (
+        "ManualReview",
+        "governance",
+        "high",
+        "Silent exception swallow: suppresses failures without signalling callers",
+    ),
+    "log_and_swallow": (
+        "ManualReview",
+        "governance",
+        "high",
+        "Log-and-swallow: logs but does not re-raise; callers see false success",
+    ),
+    "return_none_swallow": (
+        "ManualReview",
+        "governance",
+        "high",
+        "Return-None-swallow: caller cannot distinguish error from valid None result",
+    ),
 }
 
 

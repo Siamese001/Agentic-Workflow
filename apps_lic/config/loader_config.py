@@ -8,7 +8,6 @@ import json
 import logging
 from pathlib import Path
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 from .archetype_indicator_config import AgentSpecs
 

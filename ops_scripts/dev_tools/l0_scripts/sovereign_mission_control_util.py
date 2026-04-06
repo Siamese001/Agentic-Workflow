@@ -75,16 +75,6 @@ _emit_links_execution_to_snapshot("p4", "sovereign_mission_control_util", "exec_
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 repo_root: Any = Path(__file__).parent.parent
 # guardian: allow-global-mutation

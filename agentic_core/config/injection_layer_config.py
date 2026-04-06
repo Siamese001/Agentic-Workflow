@@ -23,7 +23,6 @@ LAYERS:
 
 from dataclasses import dataclass
 from enum import Enum
-from agentic_core.config.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 
 class InjectionLayer(Enum):

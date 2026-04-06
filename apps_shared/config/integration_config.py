@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

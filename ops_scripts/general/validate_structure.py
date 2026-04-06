@@ -65,17 +65,9 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
     OPS_SCRIPTS_DIR,
     REPORTS_DIR,
     TESTS_DIR,
-    THRESHOLD,
     TOOLS_DIR,
 )
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through

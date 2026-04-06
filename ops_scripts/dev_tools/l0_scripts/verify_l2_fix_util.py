@@ -1,16 +1,6 @@
 """Verify L2 Execution data is now correct (user's specific example)."""
 import json
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 agents = json.load(open('agent_discovery_full.json'))
 l2_agents = [a for a in agents if 'L2_execution' in a.get('path', '')]
