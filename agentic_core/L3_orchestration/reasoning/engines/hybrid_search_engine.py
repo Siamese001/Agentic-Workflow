@@ -661,6 +661,38 @@ class HybridSearchEngine:
             Logger.error(f"Failed to get related chunks: {e}")
             return []
 
+    def expand_results_with_adg(
+        self, results: list[HybridSearchResult], relation_types: list[str] = ["calls"], limit_per_relation: int = 3
+    ) -> list[HybridSearchResult]:
+        """Expand search results with ADG-related chunks.
+
+        Args:
+            results: Original search results
+            relation_types: ADG relation types to traverse
+            limit_per_relation: Max chunks per relation type
+
+        Returns:
+            Expanded results with ADG-related chunks
+        """
+        expanded_results = list(results)  # Start with original results
+        seen_ids = {r.chunk_id for r in results}
+
+        for result in results:
+            for relation_type in relation_types:
+                related = self.get_related_chunks(result.chunk_id, relation_type, limit_per_relation)
+                for chunk in related:
+                    if chunk.chunk_id not in seen_ids:
+                        # Mark as expanded result
+                        chunk.metadata["expanded_via"] = f"adg_{relation_type}"
+                        chunk.metadata["expanded_from"] = result.chunk_id
+                        expanded_results.append(chunk)
+                        seen_ids.add(chunk.chunk_id)
+
+        if len(expanded_results) > len(results):
+            Logger.info(f"ADG expansion: {len(results)} -> {len(expanded_results)} results")
+
+        return expanded_results
+
 
 # Global instance
 _global_hybrid_engine: HybridSearchEngine | None = None
