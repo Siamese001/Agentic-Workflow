@@ -76,6 +76,18 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_centrality(self, entity_id: str) -> float:
+        """Get the centrality score of an entity.
+
+        Args:
+            entity_id: The ID of the entity.
+
+        Returns:
+            Centrality score (higher = more central).
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
