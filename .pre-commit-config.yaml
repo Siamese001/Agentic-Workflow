@@ -46,50 +46,43 @@ default_language_version:
 # Global exclude — applied to every hook. Individual hooks may extend this.
 # Excludes artifacts that change on every hook run to prevent infinite loops
 # Synchronized with .gitignore to ensure consistency
+# Generated from config/excluded_paths.yaml
+# Do not edit manually - run: python tools/generate/gitignore.py --write-precommit
+# Last generated: 2026-04-06T05:27:34.834350
 exclude: |
   (?x)^(
-    archives/.*|
-    \.sovereign_healing_backup/.*|
-    \.healing_backups/.*|
-    artifacts/migration/.*|
-    artifacts/adg_ci_lane_gate_result\.json|
-    artifacts/healing/healing_events\.jsonl|
-    artifacts/bypass_audit\.jsonl|
-    artifacts/import_health/import_health_report\.json|
-    artifacts/windsurf/.*\.(txt|out|typed|emitted|commit.*|acceptance.*|det.*|neg.*)|
-    temp_[^/]*/.*|
-    tmp.*|
-    _temp_cmd.*|
-    _out_.*|
-    _typed_.*|
-    _typed_emitted_.*|
-    _rebuild_.*|
-    _selfcheck_.*|
-    _run_.*|
+    .*.debug.log|
+    .*/logs/.*|
+    .*_sites.txt|
+    .backup/guardian_tests/.*|
+    .tmp/.*|
+    .tmp_.*sites.txt|
+    0[0-9]_[^/]*/.*|
     _capture_.*|
     _make_.*|
-    \.tmp/.*|
-    runtime_state.*\.json|
-    temp_complete_rules.*\.md|
-    guardian_.*\.(txt|json)|
-    .*\.debug\.log|
-    pytestdebug\.log|
-    \.tmp_.*sites\.txt|
-    .*_sites\.txt|
-    0[0-9]_[^/]*/.*|
+    _out_.*|
+    _rebuild_.*|
+    _run_.*|
+    _selfcheck_.*|
+    _temp_cmd.*|
+    _typed_.*|
+    _typed_emitted_.*|
+    artifacts/adg_ci_lane_gate_result.json|
+    artifacts/bypass_audit.jsonl|
+    artifacts/healing/healing_events.jsonl|
+    artifacts/import_health/import_health_report.json|
+    artifacts/windsurf/*|
     core/.*|
-    coverage_html/.*|
-    \.test_artifacts/.*|
-    \.backup/guardian_tests/.*|
-    v15_d_evidence_.*\.json|
-    v15_p2_evidence_temp\.json|
-    v15_d_inventory_p4\.json|
-    .*/logs/.*|
     docs/store/.*|
-    __pycache__/.*|
-    \.pytest_cache/.*|
-    \.ruff_cache/.*|
-    \.mypy_cache/.*
+    guardian_.*.(txt|json)|
+    pytestdebug.log|
+    runtime_state.*.json|
+    temp_[^/]*/.*|
+    temp_complete_rules.*.md|
+    tmp.*|
+    v15_d_evidence_.*.json|
+    v15_d_inventory_p4.json|
+    v15_p2_evidence_temp.json
   )
 
 repos:
@@ -179,6 +172,7 @@ repos:
     rev: v0.14.13
     hooks:
       # -- T2-P0: Critical (Security/Safety/Runtime) — BLOCKING ------------
+      # SEVERITY SSOT: Maps to SeverityLevel.CRITICAL (P0/P1)
       - id: ruff
         name: "T2-P0: Ruff Critical (Security/Safety/Runtime)"
         args:
@@ -187,8 +181,6 @@ repos:
         exclude: ops_scripts/ci/check_anti_patterns\.py
         stages: [pre-commit]
 
-      # -- T2-P1: High (Bug Patterns/Code Quality) — BLOCKING ----------------
-      - id: ruff
         name: "T2-P1: Ruff High (Bug Patterns/Code Quality)"
         args:
           - --select=B002,B006,B009,B010,B019,B027,S105,S106,S107,S108,S311,S324,S603,S607,UP028,C401,C402,C403,C404,B904
@@ -197,6 +189,7 @@ repos:
         stages: [pre-commit]
 
       # -- T2-P2: Medium (Style/Organization) — WARNING ----------------------
+      # SEVERITY SSOT: Maps to SeverityLevel.MEDIUM (P2/P3)
       - id: ruff
         name: "T2-P2: Ruff Medium (Style/Organization)"
         args:
@@ -207,6 +200,7 @@ repos:
         stages: [pre-commit]
 
       # -- T2-P3: Low (Formatting/Python3) — INFO ----------------------------
+      # SEVERITY SSOT: Maps to SeverityLevel.LOW (P3/P4)
       - id: ruff
         name: "T2-P3: Ruff Low (Formatting/Python3)"
         args:
@@ -448,6 +442,7 @@ repos:
         require_serial: true
 
       # -- T13.6: ADG P1 Defect Gate — BLOCKING -----------------------------------
+      # SEVERITY SSOT: P1 = SeverityLevel.CRITICAL (critical layer violations)
       # Blocks commits if P1 (critical) ADG defects exist in the codebase.
       # P1 defects are critical layer violations that must be resolved before committing.
       - id: adg-p1-defect-gate
@@ -588,6 +583,4 @@ repos:
         name: "T21: Pre-Commit Governance Summary Report"
         entry: python ops_scripts/ci/pre_commit_summary_reporter.py --report
         language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
+        pass_filenames: fre

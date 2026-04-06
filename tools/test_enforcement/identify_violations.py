@@ -2,6 +2,8 @@
 """
 Identify test violations based on classification and patterns.
 
+SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
+
 VIOLATION TYPES:
 1. try/except ImportError → pytest.skip (should use direct import or proper markers)
 2. pytest.skip without marker context
@@ -16,6 +18,8 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
+from agentic_core.L5_safety.config.severity import SeverityLevel
 
 
 @dataclass
@@ -92,7 +96,7 @@ class ViolationDetector:
                 file_path=test_data['file_path'],
                 test_name=test_data['test_name'],
                 violation_type='import_error_skip',
-                severity='HIGH',
+                severity=SeverityLevel.HIGH.value,
                 description='Using try/except ImportError pattern instead of proper marker',
                 suggested_fix='Use direct import for core tests or pytest.importorskip with @pytest.mark.optional',
                 line_number=test_data['line_number']
@@ -104,7 +108,7 @@ class ViolationDetector:
                 file_path=test_data['file_path'],
                 test_name=test_data['test_name'],
                 violation_type='unmarked_importorskip',
-                severity='HIGH',
+                severity=SeverityLevel.HIGH.value,
                 description=f'Using pytest.importorskip for {dependency} without optional marker',
                 suggested_fix='Add @pytest.mark.optional or @pytest.mark.external marker',
                 line_number=test_data['line_number']
@@ -121,7 +125,7 @@ class ViolationDetector:
                 file_path=test_data['file_path'],
                 test_name=test_data['test_name'],
                 violation_type='core_test_skip',
-                severity='HIGH',
+                severity=SeverityLevel.HIGH.value,
                 description='Core test should not skip - validates required functionality',
                 suggested_fix='Remove skip logic or reclassify as OPTIONAL/EXTERNAL',
                 line_number=test_data['line_number']
@@ -133,7 +137,7 @@ class ViolationDetector:
                 file_path=test_data['file_path'],
                 test_name=test_data['test_name'],
                 violation_type='uncertain_core',
-                severity='MEDIUM',
+                severity=SeverityLevel.MEDIUM.value,
                 description='Core test classification has low confidence',
                 suggested_fix='Add explicit @pytest.mark.core marker',
                 line_number=test_data['line_number']
@@ -152,7 +156,7 @@ class ViolationDetector:
                         file_path=test_data['file_path'],
                         test_name=test_data['test_name'],
                         violation_type='first_party_skip',
-                        severity='HIGH',
+                        severity=SeverityLevel.HIGH.value,
                         description=f'Skipping first-party module: {dependency}',
                         suggested_fix='Never skip first-party imports - ensure module is available',
                         line_number=test_data['line_number']
@@ -171,7 +175,7 @@ class ViolationDetector:
                 file_path=test_data['file_path'],
                 test_name=test_data['test_name'],
                 violation_type='missing_marker',
-                severity='MEDIUM',
+                severity=SeverityLevel.MEDIUM.value,
                 description=f'Test classification uncertain ({category}) - needs explicit marker',
                 suggested_fix=f'Add @pytest.mark.{category.lower()} marker',
                 line_number=test_data['line_number']
@@ -184,7 +188,11 @@ def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]
 
     # Group violations by type and severity
     by_type = {}
-    by_severity = {'HIGH': [], 'MEDIUM': [], 'LOW': []}
+    by_severity = {
+        SeverityLevel.HIGH.value: [],
+        SeverityLevel.MEDIUM.value: [],
+        SeverityLevel.LOW.value: [],
+    }
 
     for violation in violations:
         # Group by type
@@ -266,7 +274,7 @@ def main():
         print(f"  {vtype}: {count}")
 
     # Show high-priority violations
-    high_priority_violations = [v for v in violations if v.severity == 'HIGH']
+    high_priority_violations = [v for v in violations if v.severity == SeverityLevel.HIGH.value]
     if high_priority_violations:
         print("\n🚨 HIGH PRIORITY VIOLATIONS (sample):")
         for violation in high_priority_violations[:5]:

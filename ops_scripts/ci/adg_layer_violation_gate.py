@@ -5,6 +5,8 @@ This gate queries the ADG for 'violates' edges (layer boundary violations) and
 reports them. Runs in warning mode by default (--warn) for visibility without
 blocking commits.
 
+SEVERITY SSOT: Layer violations are classified as SeverityLevel.CRITICAL
+
 Usage:
     python ops_scripts/ci/adg_layer_violation_gate.py [--warn]
 
@@ -19,6 +21,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+
+from agentic_core.L5_safety.config.severity import SeverityLevel
 
 
 def _get_repo_root() -> Path:

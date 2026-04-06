@@ -4,6 +4,8 @@
 This gate queries the ADG repair routes to check for critical (P1) severity defects.
 If any P1 defects exist, the gate blocks the commit with exit code 1.
 
+SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
+
 Usage:
     python ops_scripts/ci/adg_p1_defect_gate.py
 
@@ -17,6 +19,8 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+from agentic_core.L5_safety.config.severity import SeverityLevel
 
 
 def _get_repo_root() -> Path:
@@ -43,10 +47,11 @@ def _get_critical_violations() -> list[dict]:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        # Query violations table for critical severity
+        # Query violations table for critical severity using SSOT
         cursor.execute(
             """SELECT id, file_path, edge_id, line_no, category
-               FROM violations WHERE severity = 'critical' LIMIT 50"""
+               FROM violations WHERE severity = ? LIMIT 50""",
+            (SeverityLevel.CRITICAL.value,),
         )
 
         rows = cursor.fetchall()

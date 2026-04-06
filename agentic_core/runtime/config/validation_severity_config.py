@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+import logging
+from enum import Enum
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from agentic_core.L5_safety.config.severity import (
+    SeverityLevel as ValidationSeverity,
+    from_legacy_string,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -7,6 +16,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
@@ -14,14 +25,27 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
     _emit_escalates_to_human,
+    _emit_emits_metric_event,
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_runtime_state,
+    _emit_records_execution_trace,
     _emit_records_healing_outcome,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
@@ -31,15 +55,24 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_stores_learning_state,
     _emit_transcripts_response,
+    _emit_triggers_alert,
     _emit_updates_meta_learning_state,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_through,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    LayerSegment,
 )
 
 _emit_applies_guardrail("p0", "validation_severity_config", "p0_governance")
@@ -68,41 +101,6 @@ _emit_captures_evaluation_metric("p4", "validation_severity_config", "eval_metri
 _emit_stores_embedding("p4", "validation_severity_config", "embedding_store")
 _emit_updates_meta_learning_state("p4", "validation_severity_config", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "validation_severity_config", "exec_snapshot_link")
-
-# Configuration constants
-
-"""Enum types for models."""
-import logging
-from enum import Enum
-
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-
-from agentic_core.runtime.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 
 _emit_emits_metric_event("validation_severity_config", "p4obs", "metric_1")
 _emit_emits_metric_event("validation_severity_config", "p4obs", "metric_2")
@@ -157,17 +155,6 @@ _emit_gated_by_confidence("p1", "validation_severity_config", "confidence_gate")
 
 _logger = logging.getLogger(__name__)
 
-
-# NAMING FIXED: ValidationSeverity → ValidationSeverity
-class ValidationSeverity(Enum):
-    """Severity levels for validation results."""
-
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-    CRITICAL = "critical"
-
-
 # NAMING FIXED: Provider → Provider
 class Provider(str, Enum):
     """Available LLM providers."""
@@ -189,21 +176,36 @@ class ApiCallStatus(Enum):
 
 
 class ValidationSeverityConfig(BaseModel):
-    """[HARDENED] Wrapper schema for validation severity metadata."""
+    """[HARDENED] Wrapper schema for validation severity metadata.
+
+    SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
+    Legacy values (WARNING, ERROR) are mapped via from_legacy_string():
+    - WARNING → MEDIUM
+    - ERROR → HIGH
+    """
 
     # [HARDENED] Enforcing SSOT immutability with frozen=True and extra="forbid"
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     severity: ValidationSeverity = Field(..., description="Severity level for validation")
 
-    @field_validator("severity")
+    @field_validator("severity", mode="before")
     @classmethod
-    def validate_severity(cls, value: ValidationSeverity) -> ValidationSeverity:
-        """[HARDENED] Ensure severity is a valid enum member."""
+    def validate_severity(cls, value) -> ValidationSeverity:
+        """[HARDENED] Ensure severity is a valid enum member. Converts legacy strings."""
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationSeverityConfig.validate_severity")
 
         if value is None:
             raise ValueError("Severity is required")
-        return value
+
+        # Convert legacy string values to SSOT enum
+        if isinstance(value, str):
+            return from_legacy_string(value)
+
+        # Already an enum, validate it's the right type
+        if isinstance(value, ValidationSeverity):
+            return value
+
+        raise ValueError(f"Invalid severity: {value}")

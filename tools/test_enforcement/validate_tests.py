@@ -2,6 +2,8 @@
 """
 Test Enforcement Validation Script
 
+SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
+
 Rules:
 - no pytest.skip allowed without marker
 - no ImportError skip in core tests
@@ -18,6 +20,8 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from agentic_core.L5_safety.config.severity import SeverityLevel
 
 
 class TestValidator:
@@ -54,7 +58,7 @@ class TestValidator:
                 'file_path': str(file_path),
                 'line_number': e.lineno or 0,
                 'violation_type': 'syntax_error',
-                'severity': 'HIGH',
+                'severity': SeverityLevel.HIGH.value,
                 'description': f'Syntax error: {e}',
                 'suggested_fix': 'Fix syntax error before validation'
             })
@@ -63,7 +67,7 @@ class TestValidator:
                 'file_path': str(file_path),
                 'line_number': 0,
                 'violation_type': 'parse_error',
-                'severity': 'HIGH',
+                'severity': SeverityLevel.HIGH.value,
                 'description': f'Parse error: {e}',
                 'suggested_fix': 'Fix file parsing issue'
             })
@@ -100,7 +104,11 @@ class TestValidator:
     def _build_summary(self, violations: list[dict[str, Any]]) -> dict[str, Any]:
         """Build summary statistics."""
         by_type = {}
-        by_severity = {'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
+        by_severity = {
+            SeverityLevel.HIGH.value: 0,
+            SeverityLevel.MEDIUM.value: 0,
+            SeverityLevel.LOW.value: 0,
+        }
 
         for violation in violations:
             vtype = violation['violation_type']

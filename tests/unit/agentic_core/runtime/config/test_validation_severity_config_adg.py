@@ -1,39 +1,63 @@
-"""Placeholder test file - syntax fixed."""
+"""Tests for ValidationSeverityConfig with SSOT severity migration."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import pytest
 
-import unittest
-
-
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.runtime.config."""
-
-    def test_validate_severity(self):
-        """Test validate_severity function."""
-        from agentic_core.runtime.config import validate_severity
-        # TODO: Implement actual test
-        result = validate_severity()
-        self.assertIsNotNone(result)
-    def test_ValidationSeverity_init(self):
-        """Test ValidationSeverity initialization."""
-        from agentic_core.runtime.config import ValidationSeverity
-        # TODO: Implement actual test
-        instance = ValidationSeverity()
-        self.assertIsNotNone(instance)
-    def test_Provider_init(self):
-        """Test Provider initialization."""
-        from agentic_core.runtime.config import Provider
-        # TODO: Implement actual test
-        instance = Provider()
-        self.assertIsNotNone(instance)
+from agentic_core.L5_safety.config.severity import (
+    SeverityLevel,
+    from_legacy_string,
+)
+from agentic_core.runtime.config.validation_severity_config import (
+    ValidationSeverityConfig,
+)
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestValidationSeverityConfig:
+    """Test ValidationSeverityConfig with SSOT."""
+
+    def test_happy_path_critical_severity(self) -> None:
+        """Create config with CRITICAL severity from SSOT."""
+        config = ValidationSeverityConfig(severity=SeverityLevel.CRITICAL)
+        assert config.severity == SeverityLevel.CRITICAL
+
+    def test_happy_path_high_severity(self) -> None:
+        """Create config with HIGH severity from SSOT."""
+        config = ValidationSeverityConfig(severity=SeverityLevel.HIGH)
+        assert config.severity == SeverityLevel.HIGH
+
+    def test_validate_legacy_warning_string(self) -> None:
+        """Convert legacy WARNING string to MEDIUM per SSOT mapping."""
+        config = ValidationSeverityConfig(severity="WARNING")
+        assert config.severity == SeverityLevel.MEDIUM
+
+    def test_validate_legacy_error_string(self) -> None:
+        """Convert legacy ERROR string to HIGH per SSOT mapping."""
+        config = ValidationSeverityConfig(severity="ERROR")
+        assert config.severity == SeverityLevel.HIGH
+
+    def test_validate_lowercase_critical_string(self) -> None:
+        """Accept lowercase 'critical' string via from_legacy_string."""
+        config = ValidationSeverityConfig(severity="critical")
+        assert config.severity == SeverityLevel.CRITICAL
+
+    def test_validate_uppercase_critical_string(self) -> None:
+        """Accept uppercase 'CRITICAL' string via from_legacy_string."""
+        config = ValidationSeverityConfig(severity="CRITICAL")
+        assert config.severity == SeverityLevel.CRITICAL
+
+    def test_validate_invalid_severity_string(self) -> None:
+        """Invalid severity string falls back to INFO via from_legacy_string (graceful degradation)."""
+        config = ValidationSeverityConfig(severity="INVALID")
+        assert config.severity == SeverityLevel.INFO
+
+    def test_validate_none_severity(self) -> None:
+        """Reject None severity."""
+        with pytest.raises(ValueError, match="Severity is required"):
+            ValidationSeverityConfig(severity=None)
+
+    def test_frozen_model_prevents_extra_fields(self) -> None:
+        """Reject extra fields due to frozen=True and extra='forbid'."""
+        with pytest.raises(Exception):
+            ValidationSeverityConfig(
+                severity=SeverityLevel.HIGH,
+                extra_field="not_allowed"
+            )

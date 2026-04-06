@@ -20,12 +20,12 @@ class TestSeverityLevel:
     """Test SeverityLevel enum."""
 
     def test_severity_values(self) -> None:
-        """All severity levels have correct string values."""
-        assert SeverityLevel.CRITICAL.value == "CRITICAL"
-        assert SeverityLevel.HIGH.value == "HIGH"
-        assert SeverityLevel.MEDIUM.value == "MEDIUM"
-        assert SeverityLevel.LOW.value == "LOW"
-        assert SeverityLevel.INFO.value == "INFO"
+        """All severity levels have correct string values (lowercase per SSOT)."""
+        assert SeverityLevel.CRITICAL.value == "critical"
+        assert SeverityLevel.HIGH.value == "high"
+        assert SeverityLevel.MEDIUM.value == "medium"
+        assert SeverityLevel.LOW.value == "low"
+        assert SeverityLevel.INFO.value == "info"
 
 
 class TestPreCommitIssue:
@@ -62,7 +62,7 @@ class TestPreCommitIssue:
         assert issue.issue_type == "general"
 
     def test_to_json_roundtrip(self) -> None:
-        """Serialize to JSON and back."""
+        """Serialize to JSON and back (lowercase per SSOT)."""
         issue = PreCommitIssue(
             hook_id="test-hook",
             hook_name="Test Hook",
@@ -74,7 +74,7 @@ class TestPreCommitIssue:
         )
         json_str = issue.to_json()
         data = json.loads(json_str)
-        assert data["severity"] == "CRITICAL"
+        assert data["severity"] == "critical"
         assert data["hook_id"] == "test-hook"
 
     def test_from_json_roundtrip(self) -> None:

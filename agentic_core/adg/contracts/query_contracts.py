@@ -6,6 +6,8 @@ Defines dataclasses for:
 - Query results and finding packets
 
 These contracts ensure type-safe, reproducible queries across SQLite and Redis.
+
+SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
 """
 
 from __future__ import annotations
@@ -13,6 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from agentic_core.L5_safety.config.severity import SeverityLevel as FindingSeverity
 
 
 class EntityType(Enum):
@@ -38,13 +42,6 @@ class RelationType(Enum):
 class EdgeKind(Enum):
     """ADG edge kinds."""
     DIRECT = "direct"
-    FROM_IMPORT = "from_import"
-    CONDITIONAL = "conditional"
-
-
-class FindingSeverity(Enum):
-    """Severity levels for invariant findings."""
-    INFO = "info"
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
