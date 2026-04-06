@@ -316,15 +316,20 @@ def _check_artifact_consistency(paths: object, artifact: object) -> None:
         sys.exit(1)
 
 
-def _check_p1_defects(routing_summary: dict[str, int], strict_mode: bool = False) -> None:
+def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None = None, strict_mode: bool = False) -> None:
     """Fail if P1 critical defects are present (unconditional fail-fast).
 
-    P1 layer violations are architectural violations that must block ADG generation
-    regardless of strict_mode setting. This is a constitutional requirement for
-    architectural integrity.
+    P1 defects include:
+    - Layer violations (violates edges) — architectural boundary violations
+    - Circular imports (in_cycle edges) — graph topology corruption
+    - Dynamic execution (dynamic_exec edges) — provably incomplete graph
+
+    All P1 defects must block ADG generation regardless of strict_mode setting.
+    This is a constitutional requirement for architectural integrity.
 
     Args:
         routing_summary: Dictionary with by_severity counts
+        sqlite_path: Path to SQLite database for in_cycle/dynamic_exec queries
         strict_mode: Unused - P1 always fails (kept for API compatibility)
     """
     p1_count = routing_summary.get("by_severity", {}).get("critical", 0)
@@ -333,6 +338,40 @@ def _check_p1_defects(routing_summary: dict[str, int], strict_mode: bool = False
         print("[ERROR] ADG generation failed - P1 defects present")
         print("[ERROR] Fix critical layer violations before regenerating ADG")
         sys.exit(1)
+
+    # Tier 1A: Check for in_cycle edges (graph topology corruption)
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            import sqlite3 as _sqlite3
+            with _sqlite3.connect(str(sqlite_path)) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type='in_cycle'")
+                in_cycle_count = cursor.fetchone()[0]
+                if in_cycle_count > 0:
+                    print(f"\n[ERROR] P1 Tier 1A: Circular imports detected: {in_cycle_count}")
+                    print("[ERROR] ADG generation failed - graph topology corrupted by cycles")
+                    print("[ERROR] Fix circular imports before regenerating ADG")
+                    sys.exit(1)
+        except Exception:
+            # If SQLite query fails, skip this check (non-critical at this stage)
+            pass
+
+    # Tier 1B: Check for dynamic_exec edges (graph incompleteness)
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            import sqlite3 as _sqlite3
+            with _sqlite3.connect(str(sqlite_path)) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'")
+                dynamic_exec_count = cursor.fetchone()[0]
+                if dynamic_exec_count > 0:
+                    print(f"\n[ERROR] P1 Tier 1B: Dynamic execution detected: {dynamic_exec_count}")
+                    print("[ERROR] ADG generation failed - graph is provably incomplete")
+                    print("[ERROR] Replace eval/exec/dynamic imports with static alternatives")
+                    sys.exit(1)
+        except Exception:
+            # If SQLite query fails, skip this check (non-critical at this stage)
+            pass
 
 
 def generate_full_adg(
@@ -555,7 +594,7 @@ def generate_full_adg(
     routing_summary = repair_routing_summary(repair_routes)
 
     # --- Fail-fast: P1 critical defects (strict mode only) ---
-    _check_p1_defects(routing_summary, strict_mode=strict_mode)
+    _check_p1_defects(routing_summary, sqlite_path=paths.sqlite, strict_mode=strict_mode)
 
     # --- E5: Impact prediction ---
     violation_sources = [

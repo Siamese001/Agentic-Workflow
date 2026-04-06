@@ -285,6 +285,62 @@ class TestP1DefectsCheck:
             _check_p1_defects(routing_summary, strict_mode=True)
         assert exc_info.value.code == 1
 
+    def test_in_cycle_blocks_generation(self, tmp_path):
+        """Test that in_cycle edges block ADG generation (Tier 1A)."""
+        from tools.generate.generate_full_adg import _check_p1_defects
+        import sqlite3
+
+        routing_summary = {"by_severity": {"critical": 0}}
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite with in_cycle edge
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (relation_type TEXT)")
+        conn.execute("INSERT INTO edges (relation_type) VALUES ('in_cycle')")
+        conn.commit()
+        conn.close()
+
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
+        assert exc_info.value.code == 1
+
+    def test_dynamic_exec_blocks_generation(self, tmp_path):
+        """Test that dynamic_exec edges block ADG generation (Tier 1B)."""
+        from tools.generate.generate_full_adg import _check_p1_defects
+        import sqlite3
+
+        routing_summary = {"by_severity": {"critical": 0}}
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite with dynamic_exec edge
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (relation_type TEXT)")
+        conn.execute("INSERT INTO edges (relation_type) VALUES ('dynamic_exec')")
+        conn.commit()
+        conn.close()
+
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
+        assert exc_info.value.code == 1
+
+    def test_no_graph_corruption_passes(self, tmp_path):
+        """Test that clean graph (no in_cycle/dynamic_exec) passes P1 checks."""
+        from tools.generate.generate_full_adg import _check_p1_defects
+        import sqlite3
+
+        routing_summary = {"by_severity": {"critical": 0}}
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite without in_cycle or dynamic_exec
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (relation_type TEXT)")
+        conn.execute("INSERT INTO edges (relation_type) VALUES ('imports')")
+        conn.commit()
+        conn.close()
+
+        # Should not raise
+        _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
+
 
 class TestLockedFilesFailFast:
     """Tests for locked-file fail-fast behavior and no-restart guidance."""
