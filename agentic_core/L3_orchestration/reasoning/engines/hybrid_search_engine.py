@@ -766,6 +766,37 @@ class HybridSearchEngine:
             Logger.error(f"Parent-child expansion failed: {e}")
             return results
 
+    def enforce_context_budget(
+        self, results: list[HybridSearchResult], max_tokens: int = 4000, avg_tokens_per_chunk: int = 100
+    ) -> list[HybridSearchResult]:
+        """Enforce context budget by limiting number of chunks.
+
+        Args:
+            results: Search results to filter
+            max_tokens: Maximum token budget
+            avg_tokens_per_chunk: Average tokens per chunk (default 100)
+
+        Returns:
+            Filtered results within token budget
+        """
+        max_chunks = max_tokens // avg_tokens_per_chunk
+
+        if len(results) <= max_chunks:
+            return results
+
+        # Sort by combined score (higher is better)
+        sorted_results = sorted(results, key=lambda r: r.combined_score, reverse=True)
+
+        # Keep top-k results
+        filtered = sorted_results[:max_chunks]
+
+        Logger.info(
+            f"Context budget enforcement: {len(results)} -> {len(filtered)} chunks "
+            f"(budget: {max_tokens} tokens, max_chunks: {max_chunks})"
+        )
+
+        return filtered
+
 
 # Global instance
 _global_hybrid_engine: HybridSearchEngine | None = None
