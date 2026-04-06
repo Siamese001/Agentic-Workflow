@@ -4,11 +4,21 @@ from __future__ import annotations
 from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
     load_territories,
     load_layer_overrides,
+    load_ast_signals,
     get_territory,
     get_layer_override,
     match_wildcard_territory,
     get_all_territory_names,
     get_all_layer_names,
+)
+from agentic_core.L5_safety.config.structure_blueprint.territories_loader import (
+    build_territories_from_yaml,
+    get_all_territories_yaml,
+    get_territory_yaml,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    ROOT_WHITELIST,
+    PROJECT_ROOT_WHITELIST,
 )
 
 
@@ -108,3 +118,71 @@ class TestGetAllNames:
         assert isinstance(names, list)
         assert "L0_routing" in names
         assert "L1_cognition" in names
+
+
+class TestLoadAstSignals:
+    """Test load_ast_signals function."""
+
+    def test_load_ast_signals_returns_data(self):
+        """Happy path: load_ast_signals returns YAML data."""
+        data = load_ast_signals()
+        assert "ast_signals" in data
+        assert isinstance(data["ast_signals"], dict)
+
+    def test_ast_signals_have_required_keys(self):
+        """Validation: AST signals have required structure."""
+        data = load_ast_signals()
+        ast_signals = data["ast_signals"]
+        assert isinstance(ast_signals, dict)
+        assert len(ast_signals) > 0
+        # AST signals are keyed by path, e.g., 'agentic_core/base_agents'
+        assert "agentic_core/base_agents" in ast_signals
+
+
+class TestTerritoriesLoader:
+    """Test territories_loader module functions."""
+
+    def test_build_territories_from_yaml_returns_data(self):
+        """Happy path: build_territories_from_yaml returns data."""
+        territories = build_territories_from_yaml()
+        assert isinstance(territories, dict)
+        assert "agentic_core" in territories
+
+    def test_build_territories_includes_ast_signals(self):
+        """Validation: AST signals merged into agentic_core territory."""
+        territories = build_territories_from_yaml()
+        assert "agentic_core" in territories
+        assert "ast_signals" in territories["agentic_core"]
+
+    def test_get_all_territories_yaml_returns_data(self):
+        """Happy path: get_all_territories_yaml returns data."""
+        territories = get_all_territories_yaml()
+        assert isinstance(territories, dict)
+        assert "agentic_core" in territories
+
+    def test_get_territory_yaml_existing(self):
+        """Happy path: get_territory_yaml returns existing territory."""
+        territory = get_territory_yaml("agentic_core")
+        assert territory is not None
+        assert "purpose" in territory
+
+    def test_get_territory_yaml_nonexistent(self):
+        """Failure path: get_territory_yaml returns None for nonexistent."""
+        territory = get_territory_yaml("nonexistent_territory")
+        assert territory is None
+
+
+class TestBackwardCompatibility:
+    """Test backward compatibility aliases."""
+
+    def test_root_whitelist_is_alias(self):
+        """Validation: ROOT_WHITELIST is an alias to PROJECT_ROOT_WHITELIST."""
+        assert ROOT_WHITELIST is PROJECT_ROOT_WHITELIST
+
+    def test_sovereign_territories_fallback(self):
+        """Validation: SOVEREIGN_TERRITORIES accessible via __getattr__ fallback."""
+        from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
+
+        # Check that it's a mapping with expected content
+        assert hasattr(SOVEREIGN_TERRITORIES, "__getitem__")
+        assert "agentic_core" in SOVEREIGN_TERRITORIES
