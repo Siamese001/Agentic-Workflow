@@ -479,38 +479,37 @@ def main() -> int:
         print("  All __all__ names resolve: PASS")
     print("\n3. DEEP IMMUTABILITY + IDENTITY")
     print("-" * 40)
-    from agentic_core.L5_safety.config.structure_blueprint._constants import ROOT_WHITELIST as c_rw
-    from agentic_core.L5_safety.config.structure_blueprint._constants import SOVEREIGN_TERRITORIES as c_st
+    # Wave 3: ROOT_WHITELIST moved to ssot.py, SOVEREIGN_TERRITORIES accessed via package fallback
     from agentic_core.L5_safety.config.structure_blueprint.ssot import ROOT_WHITELIST as s_rw
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_TERRITORIES as s_st
-    from agentic_core.L5_safety.config.structure_blueprint.territories import SOVEREIGN_TERRITORIES as t_st
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import PROJECT_ROOT_WHITELIST as prw
+    from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES as pkg_st
+    from agentic_core.L5_safety.config.structure_blueprint.territories import get_all_territories
+
+    territories = get_all_territories()
 
     imm_violations: list[str] = []
-    if c_rw is not s_rw:
-        imm_violations.append("ROOT_WHITELIST: _constants is not ssot")
-    if c_st is not t_st:
-        imm_violations.append("SOVEREIGN_TERRITORIES: _constants is not territories")
-    if c_st is not s_st:
-        imm_violations.append("SOVEREIGN_TERRITORIES: _constants is not ssot")
-    if not isinstance(c_rw, frozenset):
-        imm_violations.append(f"ROOT_WHITELIST: type={type(c_rw).__name__}, expected frozenset")
-    if not isinstance(c_st, MappingProxyType):
-        imm_violations.append(
-            f"SOVEREIGN_TERRITORIES: top-level type={type(c_st).__name__}, expected MappingProxyType"
-        )
-    if isinstance(c_st, dict):
+    # ROOT_WHITELIST is now an alias to PROJECT_ROOT_WHITELIST in ssot.py
+    if s_rw is not prw:
+        imm_violations.append("ROOT_WHITELIST is not aliased to PROJECT_ROOT_WHITELIST")
+    # SOVEREIGN_TERRITORIES from package fallback should match territories API
+    if pkg_st is not territories:
+        imm_violations.append("SOVEREIGN_TERRITORIES from package does not match territories API")
+    if not isinstance(s_rw, frozenset):
+        imm_violations.append(f"ROOT_WHITELIST: type={type(s_rw).__name__}, expected frozenset")
+    if isinstance(pkg_st, dict):
         imm_violations.append("SOVEREIGN_TERRITORIES: is plain dict (mutable!)")
     try:
-        c_st["__test__"] = 1
+        pkg_st["__test__"] = 1
         imm_violations.append("SOVEREIGN_TERRITORIES: top-level mutation succeeded")
     except TypeError:
         pass
-    freeze_err = _assert_frozen(c_st, "SOVEREIGN_TERRITORIES")
+    freeze_err = _assert_frozen(pkg_st, "SOVEREIGN_TERRITORIES")
     if freeze_err is not None:
         imm_violations.append(freeze_err)
-    print(f"  ROOT_WHITELIST: type={type(c_rw).__name__}, len={len(c_rw)}")
-    print(f"  SOVEREIGN_TERRITORIES: type={type(c_st).__name__}, len={len(c_st)}")
-    print(f"  Identity _constants==ssot==territories: {c_rw is s_rw and c_st is t_st and (c_st is s_st)}")
+    print(f"  ROOT_WHITELIST: type={type(s_rw).__name__}, len={len(s_rw)}")
+    print(f"  SOVEREIGN_TERRITORIES: type={type(pkg_st).__name__}, len={len(pkg_st)}")
+    print(f"  Identity ROOT_WHITELIST==PROJECT_ROOT_WHITELIST: {s_rw is prw}")
+    print(f"  Identity SOVEREIGN_TERRITORIES==territories: {pkg_st is territories}")
     if imm_violations:
         print(f"  RESULT: FAIL ({len(imm_violations)} violations)")
         for v in imm_violations:
