@@ -342,6 +342,70 @@ class TestP1DefectsCheck:
         _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
 
 
+class TestP2PipelineIntegrityCheck:
+    """Tests for Tier 2 P2 pipeline integrity gate."""
+
+    def test_exception_swallow_in_pipeline_blocks(self, tmp_path, capsys):
+        """Test that exception swallows in ADG pipeline paths block ADG generation."""
+        from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
+        import sqlite3
+
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite with exception swallow in pipeline path
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        conn.execute(
+            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'tools/adg/server.py')"
+        )
+        conn.commit()
+        conn.close()
+
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
+        assert exc_info.value.code == 1
+
+        out = capsys.readouterr().out
+        assert "P2 Tier 2" in out
+        assert "Exception swallows in ADG pipeline detected" in out
+
+    def test_exception_swallow_outside_pipeline_passes(self, tmp_path):
+        """Test that exception swallows outside pipeline paths do not block."""
+        from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
+        import sqlite3
+
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite with exception swallow outside pipeline path
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        conn.execute(
+            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'apps_eval/engine.py')"
+        )
+        conn.commit()
+        conn.close()
+
+        # Should not raise
+        _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
+
+    def test_no_exception_swallows_passes(self, tmp_path):
+        """Test that clean pipeline (no exception swallows) passes P2 checks."""
+        from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
+        import sqlite3
+
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite without exception swallows
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        conn.execute("INSERT INTO edges (edge_kind, source_file) VALUES ('imports', 'tools/adg/server.py')")
+        conn.commit()
+        conn.close()
+
+        # Should not raise
+        _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
+
+
 class TestLockedFilesFailFast:
     """Tests for locked-file fail-fast behavior and no-restart guidance."""
 

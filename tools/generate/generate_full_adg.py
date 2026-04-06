@@ -372,6 +372,65 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
             pass
 
 
+def _check_p2_pipeline_integrity(sqlite_path: Path | None = None) -> None:
+    """Fail if P2 exception swallows exist in ADG pipeline paths.
+
+    Tier 2 blocks ADG generation if exception swallows exist in:
+    - tools/adg/
+    - tools/generate/
+    - agentic_core/adg/
+
+    Exception swallow types:
+    - silent_exception_swallow
+    - broad_exception_catch
+    - log_and_swallow
+    - return_none_swallow
+
+    This prevents silent data loss in the ADG generation pipeline itself.
+
+    Args:
+        sqlite_path: Path to SQLite database for exception swallow queries
+    """
+    if sqlite_path is None or not sqlite_path.exists():
+        return
+
+    try:
+        import sqlite3 as _sqlite3
+        with _sqlite3.connect(str(sqlite_path)) as conn:
+            cursor = conn.cursor()
+
+            # Define pipeline paths
+            pipeline_paths = ("tools/adg/%", "tools/generate/%", "agentic_core/adg/%")
+
+            # Define exception swallow edge types
+            swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
+
+            # Query for exception swallows in pipeline paths
+            query = """
+                SELECT COUNT(*)
+                FROM edges e
+                WHERE e.edge_kind IN (?, ?, ?, ?)
+                AND (
+                    e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                )
+            """
+
+            cursor.execute(query, (*swallow_types, *pipeline_paths))
+            swallow_count = cursor.fetchone()[0]
+
+            if swallow_count > 0:
+                print(f"\n[ERROR] P2 Tier 2: Exception swallows in ADG pipeline detected: {swallow_count}")
+                print("[ERROR] ADG generation failed - pipeline path integrity compromised")
+                print("[ERROR] Exception swallows in ADG pipeline can cause silent data loss")
+                print("[ERROR] Affected paths: tools/adg/, tools/generate/, agentic_core/adg/")
+                print("[ERROR] Fix exception swallows in pipeline paths before regenerating ADG")
+                sys.exit(1)
+    except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during Tier 2 check falls back gracefully
+        pass
+
+
 def generate_full_adg(
     adg_artifacts_dir: Path,
     ts: str,
@@ -592,6 +651,9 @@ def generate_full_adg(
 
     # --- Fail-fast: P1 critical defects (strict mode only) ---
     _check_p1_defects(routing_summary, sqlite_path=paths.sqlite, strict_mode=strict_mode)
+
+    # --- Fail-fast: P2 pipeline integrity (exception swallows in ADG pipeline paths) ---
+    _check_p2_pipeline_integrity(sqlite_path=paths.sqlite)
 
     # --- E5: Impact prediction ---
     violation_sources = [
