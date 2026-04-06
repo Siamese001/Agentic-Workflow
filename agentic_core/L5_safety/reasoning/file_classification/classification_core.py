@@ -400,16 +400,132 @@ def _detect_validator_patterns(
 
 
 def _detect_orchestrator_patterns(
-    tree: ast.AST,
-    path: Path,
-    content: str,
-    primary_name: str,
+    tree: ast.AST, path: Path, content: str, primary_name: str
 ) -> bool:
-    """Detect orchestration patterns.
+    """Distinguish between L0 routers and L3 orchestrators based on behavioral patterns.
 
-    TODO: Extract implementation.
+    Phase 2 hardened: inheritance signals, broader tokens, multi-class coordinator,
+    relaxed threshold for exact suffix match.
+
+    Returns:
+        True if file exhibits orchestrator behavior, False if router or neither.
     """
-    return False
+    orchestrator_base_classes = {
+        "WorkflowCoordinator",
+        "Coordinator",
+        "L3OrchestrationBase",
+        "IOrchestratorProtocol",
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            for base in node.bases:
+                base_name = ""
+                if isinstance(base, ast.Name):
+                    base_name = base.id
+                elif isinstance(base, ast.Attribute):
+                    base_name = base.attr
+                if base_name in orchestrator_base_classes:
+                    return True
+
+    coordinator_class_count = sum(
+        1
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ClassDef) and node.name.endswith("Coordinator")
+    )
+    if coordinator_class_count >= 3:
+        return True
+
+    orchestrator_name_patterns = [
+        "Orchestrator",
+        "orchestrator",
+        "orchestrate",
+        "Coordinator",
+        "Pipeline",
+    ]
+    has_orchestrator_name = any(p in primary_name for p in orchestrator_name_patterns)
+    has_exact_suffix = primary_name.endswith(("Orchestrator", "Coordinator"))
+
+    orchestrator_behavior_signals = [
+        "run_pipeline",
+        "_run_guardians",
+        "_run_dispatcher",
+        "_run_healers",
+        "stage_1",
+        "stage_2",
+        "stage_3",
+        "phase_1",
+        "phase_2",
+        "coordinate",
+        "orchestrate",
+        "workflow",
+        "write_artifacts_dir",
+        "intermediate_result",
+        "aggregate_result",
+        "apply_mode",
+        "dry_run_mode",
+        "execution_policy",
+        "allow_mutation",
+        "run_stages",
+        "execute_workflow",
+        "run_phases",
+        "dispatch_to_agents",
+        "agent_roster",
+        "mission_context",
+        "run_all_guardians",
+        "run_healers",
+    ]
+
+    behavior_signal_count = sum(1 for signal in orchestrator_behavior_signals if signal in content)
+
+    router_patterns = [
+        "select_handler",
+        "route_to",
+        "dispatch_single",
+        "thin_wrapper",
+        "route_request",
+        "get_handler",
+        "resolve_route",
+        "match_route",
+        "dispatch_to",
+        "forward_to",
+    ]
+    has_router_pattern = any(p in content for p in router_patterns)
+
+    function_nodes = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+    stage_functions = [
+        f for f in function_nodes if any(stage in f.name.lower() for stage in ["stage", "phase", "step"])
+    ]
+    has_multi_stage_functions = len(stage_functions) >= 2
+
+    pipeline_methods = [
+        f
+        for f in function_nodes
+        if any(kw in f.name.lower() for kw in ["pipeline", "workflow", "orchestrate", "coordinate"])
+    ]
+    has_pipeline_method = len(pipeline_methods) > 0
+
+    is_in_l0_scripts = "L0_routing" in path.parts and "scripts" in path.parts
+    is_in_l3 = "L3_orchestration" in path.parts
+
+    if is_in_l3 and has_orchestrator_name:
+        return True
+
+    if has_multi_stage_functions and behavior_signal_count >= 3:
+        return True
+
+    if has_pipeline_method and behavior_signal_count >= 2:
+        return True
+
+    if is_in_l0_scripts and has_orchestrator_name and behavior_signal_count >= 3:
+        return True
+
+    if has_router_pattern and not has_multi_stage_functions:
+        return False
+
+    if has_exact_suffix and behavior_signal_count >= 1:
+        return True
+
+    return has_orchestrator_name and behavior_signal_count >= 2
 
 
 def _detect_enforcer_control_signal(tree: ast.AST, content: str) -> bool:
@@ -630,10 +746,51 @@ def _load_adg_behavioral_profile(path: Path) -> tuple[float, list[str]]:
 def _fuzzy_match_name_or_content(
     name: str, path: Path, content: str, patterns: list[str]
 ) -> bool:
-    """Fuzzy match patterns against name or content.
+    """Fuzzy matching for names and content patterns.
 
-    TODO: Extract implementation.
+    Uses multiple strategies:
+    - Exact name matching
+    - Partial name matching
+    - Content pattern matching (excluding comments)
     """
+    if any(pattern in name for pattern in patterns):
+        return True
+
+    try:
+        tree = ast.parse(content)
+        content_lower = content.lower()
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+                if any(pattern.lower() in node.name.lower() for pattern in patterns):
+                    return True
+
+            elif isinstance(node, ast.Constant) and isinstance(node.value, str):
+                if any(pattern.lower() in node.value.lower() for pattern in patterns):
+                    if len(node.value) > 10:
+                        return True
+
+            elif isinstance(node, ast.Attribute):
+                if any(pattern.lower() in node.attr.lower() for pattern in patterns):
+                    return True
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+                if (
+                    hasattr(node, "doc_string")
+                    and node.doc_string
+                    and any(pattern.lower() in node.doc_string.lower() for pattern in patterns)
+                ):
+                    return True
+
+    except SyntaxError:
+        content_lower = content.lower()
+        for pattern in patterns:
+            if pattern.lower() in content_lower:
+                pattern_count = content_lower.count(pattern.lower())
+                if pattern_count > 5:
+                    return True
+
     return False
 
 

@@ -13,10 +13,12 @@ from agentic_core.L5_safety.reasoning.file_classification.classification_core im
     _detect_config_patterns,
     _detect_enforcer_control_signal,
     _detect_filename_tag_conflicts,
+    _detect_orchestrator_patterns,
     _detect_script_patterns,
     _detect_test_patterns,
     _detect_type_patterns,
     _detect_validator_patterns,
+    _fuzzy_match_name_or_content,
 )
 
 
@@ -345,4 +347,70 @@ class MyClass:
 """
         tree = ast.parse(code)
         result = _detect_validator_patterns(tree, Path("regular.py"), code, [])
+        assert result is False
+
+
+class TestDetectOrchestratorPatterns:
+    """Tests for _detect_orchestrator_patterns function."""
+
+    def test_inheritance_detection(self):
+        """Test detection of orchestrator base class inheritance."""
+        code = """
+from agentic_core.L3_orchestration.base import L3OrchestrationBase
+
+class MyOrchestrator(L3OrchestrationBase):
+    def execute(self):
+        pass
+"""
+        tree = ast.parse(code)
+        result = _detect_orchestrator_patterns(tree, Path("my_orchestrator.py"), code, "MyOrchestrator")
+        assert result is True
+
+    def test_exact_suffix_detection(self):
+        """Test detection of exact orchestrator suffix."""
+        code = """
+class PipelineOrchestrator:
+    def run(self):
+        pass
+"""
+        tree = ast.parse(code)
+        result = _detect_orchestrator_patterns(tree, Path("pipeline_orchestrator.py"), code, "PipelineOrchestrator")
+        assert result is True
+
+    def test_non_orchestrator_file(self):
+        """Test that non-orchestrator files return False."""
+        code = """
+class MyClass:
+    def method(self):
+        return 42
+"""
+        tree = ast.parse(code)
+        result = _detect_orchestrator_patterns(tree, Path("regular.py"), code, "MyClass")
+        assert result is False
+
+
+class TestFuzzyMatchNameOrContent:
+    """Tests for _fuzzy_match_name_or_content function."""
+
+    def test_exact_name_match(self):
+        """Test exact name matching."""
+        result = _fuzzy_match_name_or_content("my_config.py", Path("test.py"), "", ["config"])
+        assert result is True
+
+    def test_content_pattern_match(self):
+        """Test content pattern matching in function names."""
+        code = """
+def validate_input(data):
+    return True
+"""
+        result = _fuzzy_match_name_or_content("test.py", Path("test.py"), code, ["validate"])
+        assert result is True
+
+    def test_no_match(self):
+        """Test that patterns not present return False."""
+        code = """
+def process_data(data):
+    return data.upper()
+"""
+        result = _fuzzy_match_name_or_content("test.py", Path("test.py"), code, ["validate"])
         assert result is False
