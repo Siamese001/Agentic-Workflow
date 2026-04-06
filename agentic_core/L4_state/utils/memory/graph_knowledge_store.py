@@ -401,5 +401,57 @@ class SQLiteGraphStore(IGraphStore):
         rels = self.get_relationships(entity_id, direction="both")
         return float(len(rels))
 
+    def detect_communities(self, algorithm: str = "leiden") -> list[GraphCommunity]:
+        """Detect communities in the graph.
+
+        Args:
+            algorithm: Community detection algorithm (default: "leiden").
+
+        Returns:
+            List of detected communities.
+
+        Note: This is a placeholder implementation. Full community detection
+        requires networkx and community detection libraries (leidenalg).
+        """
+        # Placeholder: return empty list
+        # TODO: Implement using networkx + leidenalg or python-louvain
+        # For now, use simple connected components on imports graph
+        try:
+            import networkx as nx
+
+            # Build graph from import edges
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT src_id, dst_id FROM edges WHERE relation_type = 'imports'"
+            )
+
+            G = nx.Graph()
+            for row in cursor.fetchall():
+                G.add_edge(row["src_id"], row["dst_id"])
+
+            # Get connected components
+            components = list(nx.connected_components(G))
+            communities = []
+
+            for i, component in enumerate(components):
+                entities = [str(nid) for nid in component]
+                communities.append(
+                    GraphCommunity(
+                        id=f"community_{i}",
+                        name=f"Community {i}",
+                        description=f"Connected component with {len(entities)} entities",
+                        entities=entities,
+                        confidence=1.0,
+                    )
+                )
+
+            return communities
+        except ImportError:
+            Logger.warning(
+                "networkx not installed, returning empty communities list"
+            )
+            return []
+
 
 __all__ = ["SQLiteGraphStore"]
