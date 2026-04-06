@@ -406,6 +406,135 @@ class TestP2PipelineIntegrityCheck:
         _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
 
 
+class TestP3RatchetCheck:
+    """Tests for Tier 3 P3 ratchet gate."""
+
+    def test_ratchet_initialization(self, tmp_path, capsys):
+        """Test that ratchet initializes with current count as ceiling."""
+        from tools.generate.generate_full_adg import _check_p3_ratchet
+        import sqlite3
+        import json
+
+        sqlite_path = tmp_path / "test.sqlite"
+        ratchet_file = tmp_path / "ratchet.json"
+
+        # Create SQLite with 5 exception swallows in production paths
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        for i in range(5):
+            conn.execute(
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+            )
+        conn.commit()
+        conn.close()
+
+        # Should initialize ratchet
+        _check_p3_ratchet(sqlite_path=sqlite_path, ratchet_file=ratchet_file)
+
+        # Check ratchet file
+        with open(ratchet_file) as f:
+            data = json.load(f)
+            assert data["exception_swallow_ceiling"] == 5
+
+        out = capsys.readouterr().out
+        assert "Initialized P3 ratchet ceiling: 5" in out
+
+    def test_ratchet_blocks_regression(self, tmp_path, capsys):
+        """Test that ratchet blocks if count exceeds ceiling."""
+        from tools.generate.generate_full_adg import _check_p3_ratchet
+        import sqlite3
+        import json
+
+        sqlite_path = tmp_path / "test.sqlite"
+        ratchet_file = tmp_path / "ratchet.json"
+
+        # Initialize ratchet with ceiling of 3
+        with open(ratchet_file, "w") as f:
+            json.dump({"exception_swallow_ceiling": 3}, f)
+
+        # Create SQLite with 5 exception swallows (exceeds ceiling)
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        for i in range(5):
+            conn.execute(
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+            )
+        conn.commit()
+        conn.close()
+
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p3_ratchet(sqlite_path=sqlite_path, ratchet_file=ratchet_file)
+        assert exc_info.value.code == 1
+
+        out = capsys.readouterr().out
+        assert "P3 Tier 3" in out
+        assert "Exception swallow regression detected" in out
+        assert "Current count: 5, Ceiling: 3" in out
+
+    def test_ratchet_allows_equal(self, tmp_path, capsys):
+        """Test that ratchet allows if count equals ceiling."""
+        from tools.generate.generate_full_adg import _check_p3_ratchet
+        import sqlite3
+        import json
+
+        sqlite_path = tmp_path / "test.sqlite"
+        ratchet_file = tmp_path / "ratchet.json"
+
+        # Initialize ratchet with ceiling of 5
+        with open(ratchet_file, "w") as f:
+            json.dump({"exception_swallow_ceiling": 5}, f)
+
+        # Create SQLite with 5 exception swallows (equals ceiling)
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        for i in range(5):
+            conn.execute(
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+            )
+        conn.commit()
+        conn.close()
+
+        # Should not raise
+        _check_p3_ratchet(sqlite_path=sqlite_path, ratchet_file=ratchet_file)
+
+        out = capsys.readouterr().out
+        assert "Current count 5 at ceiling 5" in out
+
+    def test_ratchet_updates_downward(self, tmp_path, capsys):
+        """Test that ratchet updates ceiling downward if count decreases."""
+        from tools.generate.generate_full_adg import _check_p3_ratchet
+        import sqlite3
+        import json
+
+        sqlite_path = tmp_path / "test.sqlite"
+        ratchet_file = tmp_path / "ratchet.json"
+
+        # Initialize ratchet with ceiling of 5
+        with open(ratchet_file, "w") as f:
+            json.dump({"exception_swallow_ceiling": 5}, f)
+
+        # Create SQLite with 3 exception swallows (below ceiling)
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
+        for i in range(3):
+            conn.execute(
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+            )
+        conn.commit()
+        conn.close()
+
+        # Should not raise and should update ceiling
+        _check_p3_ratchet(sqlite_path=sqlite_path, ratchet_file=ratchet_file)
+
+        # Check ceiling was updated
+        with open(ratchet_file) as f:
+            data = json.load(f)
+            assert data["exception_swallow_ceiling"] == 3
+
+        out = capsys.readouterr().out
+        assert "Reduced ceiling from 5 to 3" in out
+
+
 class TestLockedFilesFailFast:
     """Tests for locked-file fail-fast behavior and no-restart guidance."""
 

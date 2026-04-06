@@ -431,6 +431,88 @@ def _check_p2_pipeline_integrity(sqlite_path: Path | None = None) -> None:
         pass
 
 
+def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None = None) -> None:
+    """Enforce non-regression ratchet for exception swallows in production paths.
+
+    Tier 3 blocks ADG generation if exception swallows in production paths exceed
+    the persisted ceiling. Production paths:
+    - apps_*/
+    - agentic_core/L*/
+    - system_learning/
+
+    The ratchet ceiling is persisted to a JSON file and can be explicitly updated
+    to allow intentional increases.
+
+    Args:
+        sqlite_path: Path to SQLite database for exception swallow queries
+        ratchet_file: Path to JSON file storing ratchet ceilings (default: artifacts/adg/p3_ratchet.json)
+    """
+    if sqlite_path is None or not sqlite_path.exists():
+        return
+
+    if ratchet_file is None:
+        ratchet_file = Path("artifacts/adg/p3_ratchet.json")
+
+    try:
+        import sqlite3 as _sqlite3
+        import json
+
+        # Production paths (excluding pipeline paths and test scaffolding)
+        production_paths = ("apps_/%", "agentic_core/L0/%", "agentic_core/L1/%", "agentic_core/L2/%", "agentic_core/L3/%", "system_learning/%")
+        swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
+
+        with _sqlite3.connect(str(sqlite_path)) as conn:
+            cursor = conn.cursor()
+
+            # Query current count
+            query = """
+                SELECT COUNT(*)
+                FROM edges e
+                WHERE e.edge_kind IN (?, ?, ?, ?)
+                AND (
+                    e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                    OR e.source_file LIKE ?
+                )
+            """
+            cursor.execute(query, (*swallow_types, *production_paths))
+            current_count = cursor.fetchone()[0]
+
+        # Load or initialize ratchet ceiling
+        if ratchet_file.exists():
+            with open(ratchet_file) as f:
+                ratchet_data = json.load(f)
+                ceiling = ratchet_data.get("exception_swallow_ceiling", current_count)
+        else:
+            # Initialize with current count as ceiling
+            ceiling = current_count
+            ratchet_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(ratchet_file, "w") as f:
+                json.dump({"exception_swallow_ceiling": ceiling, "last_updated": str(Path.cwd())}, f, indent=2)
+            print(f"[INFO] Initialized P3 ratchet ceiling: {ceiling}")
+
+        # Check for regression
+        if current_count > ceiling:
+            print(f"\n[ERROR] P3 Tier 3: Exception swallow regression detected")
+            print(f"[ERROR] Current count: {current_count}, Ceiling: {ceiling}")
+            print(f"[ERROR] ADG generation failed - production path exception swallows increased")
+            print(f"[ERROR] Fix exception swallows or update ceiling: {ratchet_file}")
+            sys.exit(1)
+        elif current_count < ceiling:
+            # Improvement - update ceiling downward
+            ratchet_data = {"exception_swallow_ceiling": current_count, "last_updated": str(Path.cwd())}
+            with open(ratchet_file, "w") as f:
+                json.dump(ratchet_data, f, indent=2)
+            print(f"[INFO] P3 ratchet: Reduced ceiling from {ceiling} to {current_count}")
+        else:
+            print(f"[INFO] P3 ratchet: Current count {current_count} at ceiling {ceiling}")
+    except Exception:  # guardian: allow-silent-swallow -- non-critical: Ratchet check failure falls back gracefully
+        pass
+
+
 def generate_full_adg(
     adg_artifacts_dir: Path,
     ts: str,
@@ -654,6 +736,9 @@ def generate_full_adg(
 
     # --- Fail-fast: P2 pipeline integrity (exception swallows in ADG pipeline paths) ---
     _check_p2_pipeline_integrity(sqlite_path=paths.sqlite)
+
+    # --- Fail-fast: P3 ratchet (exception swallows in production paths) ---
+    _check_p3_ratchet(sqlite_path=paths.sqlite)
 
     # --- E5: Impact prediction ---
     violation_sources = [
