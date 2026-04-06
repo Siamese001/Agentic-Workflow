@@ -96,12 +96,8 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
         start_line = imp['lineno'] - 1  # 0-indexed
         end_line = imp['end_lineno'] - 1
         
-        # Extract the import block
-        import_block = lines[start_line:end_line + 1]
-        import_text = ''.join(import_block)
-        
-        # For multi-line imports, we need to rebuild the block
-        if '(' in import_text and ')' in import_text:
+        # For multi-line imports, use AST end_lineno (not paren heuristic)
+        if start_line != end_line:
             # Parse the block to extract individual symbol lines
             kept_symbols = []
             removed_symbols = []
@@ -147,20 +143,28 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
     # Build final lines, skipping deleted indices
     final_lines = [l for i, l in enumerate(lines) if i not in skip_indices]
     
-    # Remove __all__ if we removed imports
+    # Remove __all__ if we removed imports (track bracket depth for multi-line)
     final_output = []
     skip_all = False
+    all_bracket_depth = 0
     for line in final_lines:
-        if removed_any and '__all__' in line:
+        if removed_any and not skip_all and '__all__' in line:
+            depth = line.count('[') - line.count(']')
+            if depth <= 0:
+                # Single-line __all__ = [...] — skip this line and move on
+                continue
             skip_all = True
+            all_bracket_depth = depth
             continue
-        if skip_all and line.strip() and not line.strip().startswith('#'):
-            skip_all = False
-        if not skip_all:
-            final_output.append(line)
+        if skip_all:
+            all_bracket_depth += line.count('[') - line.count(']')
+            if all_bracket_depth <= 0:
+                skip_all = False
+            continue
+        final_output.append(line)
     
-    # Validate syntax
-    new_src = "".join(final_lines)
+    # Validate syntax of the final output (after __all__ removal)
+    new_src = "".join(final_output)
     try:
         ast.parse(new_src)
     except SyntaxError as e:
