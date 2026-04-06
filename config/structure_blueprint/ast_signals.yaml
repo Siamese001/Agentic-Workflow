@@ -1,0 +1,117 @@
+schema_version: "1.0.0"
+last_updated: "2026-04-06"
+description: "AST signal definitions for territory classification and placement confidence."
+
+ast_signals:
+  agentic_core/base_agents:
+    class_patterns:
+      - ".*Base$"
+    base_classes:
+      - "SovereignBaseAgent"
+      - "CanonBaseAgent"
+      - "L0RoutingBase"
+      - "L1CognitionBase"
+      - "L2ExecutionBase"
+      - "L3OrchestrationBase"
+      - "L4StateBase"
+      - "L5SafetyBase"
+      - "L6ObservabilityBase"
+    keyword_signals:
+      - "sovereign"
+      - "base"
+      - "inheritance"
+      - "abstract"
+      - "foundation"
+      - "role"
+      - "persona"
+      - "archetype"
+      - "behavior"
+      - "agent_type"
+    weight: 100
+
+  agentic_core/L5_safety/enforcement:
+    class_patterns:
+      - ".*Guardrail.*"
+      - ".*Barrier.*"
+      - ".*Gravity.*"
+      - ".*Leak.*"
+    base_classes:
+      - "BaseGuardrail"
+      - "SafetyAirlock"
+    keyword_signals:
+      - "mutation_check"
+      - "deletion_block"
+      - "circuit_breaker"
+      - "import_waterfall"
+      - "layer_violation"
+      - "deportation"
+    weight: 25
+
+  agentic_core/L1_cognition/reasoning:
+    class_patterns:
+      - ".*Node$"
+      - ".*Thought.*"
+      - ".*Reason.*"
+    base_classes:
+      - "ThoughtNode"
+      - "ReActNode"
+    keyword_signals:
+      - "chain_of_thought"
+      - "self_reflection"
+      - "deliberation"
+    weight: 18
+
+  agentic_core/L3_orchestration/reasoning:
+    class_patterns:
+      - ".*Orchestrator$"
+      - ".*Workflow.*"
+    base_classes:
+      - "BaseOrchestrator"
+      - "WorkflowEngine"
+    keyword_signals:
+      - "mission_control"
+      - "fission_logic"
+      - "dag_executor"
+    weight: 16
+
+  agentic_core/prompt_governance/meta_prompts:
+    class_patterns:
+      - ".*MetaPrompt.*"
+      - ".*Persona.*"
+    base_classes:
+      - "MetaPrompt"
+      - "BasePersona"
+    keyword_signals:
+      - "sovereign_instruction"
+      - "persona_definition"
+    weight: 15
+
+  agentic_core/prompt_governance/scripts:
+    content_signals:
+      keywords:
+        - "render_all_templates"
+        - "validate_prompt_syntax"
+      imports:
+        - "jinja2"
+        - "prompt_governance"
+    weight: 12
+
+  agentic_core/L4_state/memory:
+    class_patterns:
+      - ".*Context.*"
+      - ".*State.*"
+    base_classes:
+      - "ValidationContext"
+      - "StateManager"
+    weight: 14
+
+  agentic_core/prompt_governance/version_registry:
+    json_keys:
+      - "registry_version"
+      - "checksum_manifest"
+    weight: 11
+
+  agentic_core/L2_execution/reasoning:
+    class_patterns:
+      - ".*Agent$"
+    weight: 9

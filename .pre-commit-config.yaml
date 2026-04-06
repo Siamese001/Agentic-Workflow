@@ -14,6 +14,8 @@
 #   T9   tooling-bnd       — tooling/apps_* boundary guard (no ADG dependency)
 #   T10  module-coll       — architectural module collision check (no ADG dependency)
 #   T11  mcp-config        — MCP config sovereignty (file-triggered; cheap)
+#   T11.2 mcp-config-drift  — MCP config drift detection (always runs; prevents drift)
+#   T11.3 pytest-config    — pytest.ini vs pyproject.toml consistency
 #   T12  exemption-gate    — guardian exemption quality ratchet
 #   T13  burndown          — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
 #   T13.5 layer-violation  — ADG layer boundary violations (warning mode)
@@ -382,21 +384,21 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T11.5: MCP Config Drift Detection (SSOT enforcement) -------------------
+      # -- T11.2: MCP Config Drift Detection (SSOT enforcement) -------------------
       - id: mcp-config-drift-check
-        name: "T11.5: MCP Config Drift Detection — workspace vs global"
+        name: "T11.2: MCP Config Drift Detection — workspace vs global"
         entry: python tools/adg/sync_global_config.py --check
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T11.6: Pytest Config SSOT Gate ----------------------------------------
+      # -- T11.3: Pytest Config SSOT Gate ----------------------------------------
       # Validates pytest.ini and pyproject.toml [tool.pytest.ini_options] consistency.
       # Critical checks: -n auto presence, timeout values, serial marker, addopts alignment.
       # Blocks commits with config drift that would cause Windsurf IDE vs CI behavior mismatch.
       - id: pytest-config-ssot
-        name: "T11.6: Pytest Config SSOT — pytest.ini vs pyproject.toml consistency"
+        name: "T11.3: Pytest Config SSOT — pytest.ini vs pyproject.toml consistency"
         entry: python ops_scripts/ci/_validate_pytest_config.py --strict
         language: system
         pass_filenames: false
