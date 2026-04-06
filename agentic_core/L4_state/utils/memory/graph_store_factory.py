@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 _DEFAULT_ADG_DB_PATH = "artifacts/adg/adg_indexed.sqlite"
 
 
-def get_default_adg_db_path() -> Path:
+def get_default_adg_db_path() -> Path | None:
     """Get the default ADG SQLite database path.
     
     Checks for the ADG database in the standard artifacts location.
@@ -29,13 +29,13 @@ def get_default_adg_db_path() -> Path:
     # Try repository root relative path
     db_path = Path(_DEFAULT_ADG_DB_PATH)
     
-    if db_path.exists():
+    if db_path.exists() and db_path.is_file():
         logger.info("[SQLiteGraphStore Factory] Found ADG database at: %s", db_path)
         return db_path
     
     # Try absolute path from current working directory
     cwd_db_path = Path.cwd() / _DEFAULT_ADG_DB_PATH
-    if cwd_db_path.exists():
+    if cwd_db_path.exists() and cwd_db_path.is_file():
         logger.info("[SQLiteGraphStore Factory] Found ADG database at: %s", cwd_db_path)
         return cwd_db_path
     

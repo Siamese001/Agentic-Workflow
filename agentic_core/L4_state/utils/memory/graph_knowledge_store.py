@@ -35,15 +35,34 @@ class SQLiteGraphStore(IGraphStore):
 
         Args:
             db_path: Path to the ADG SQLite database.
+        
+        Raises:
+            FileNotFoundError: If db_path does not exist or is not a file.
+            sqlite3.OperationalError: If database is corrupted or invalid.
         """
         self.db_path = Path(db_path)
+        
+        # Validate path exists and is a file
+        if not self.db_path.exists():
+            raise FileNotFoundError(f"Database file does not exist: {self.db_path}")
+        if not self.db_path.is_file():
+            raise FileNotFoundError(f"Database path is not a file: {self.db_path}")
+        
         self._conn: sqlite3.Connection | None = None
 
     def _get_connection(self) -> sqlite3.Connection:
-        """Get or create a database connection."""
+        """Get or create a database connection.
+        
+        Raises:
+            sqlite3.OperationalError: If database is corrupted or invalid.
+        """
         if self._conn is None:
-            self._conn = sqlite3.connect(self.db_path)
-            self._conn.row_factory = sqlite3.Row
+            try:
+                self._conn = sqlite3.connect(self.db_path)
+                self._conn.row_factory = sqlite3.Row
+            except sqlite3.OperationalError as e:
+                Logger.error("Failed to connect to database at %s: %s", self.db_path, e)
+                raise
         return self._conn
 
     def close(self) -> None:
