@@ -8,14 +8,14 @@ import argparse
 import ast
 import hashlib
 import logging
-
-# Import SovereignChromaClient for centralized ChromaDB access
-import sys
 from pathlib import Path
 from typing import Any
 
+# Import SovereignChromaClient for centralized ChromaDB access
+import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -309,6 +309,16 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
 
     logger.info(f"Ingestion complete: {len(all_chunks)} chunks ingested")
     logger.info(f"Collection stats: {stats}")
+
+    # Populate BM25 index during ingestion (not lazy rebuild)
+    logger.info("Populating BM25 index...")
+    bm25_store = get_bm25_store()
+    bm25_docs = [
+        {"id": chunk["id"], "text": chunk["content"], "metadata": chunk["metadata"]}
+        for chunk in all_chunks
+    ]
+    bm25_store.add_documents(bm25_docs)
+    logger.info(f"BM25 index populated with {len(bm25_docs)} documents")
 
 
 def main():
