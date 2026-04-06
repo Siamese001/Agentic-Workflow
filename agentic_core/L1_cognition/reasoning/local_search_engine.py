@@ -197,17 +197,18 @@ class LocalSearchEngine:
 
     async def _find_seed_entities(self, query: SearchQuery) -> list[GraphEntity]:
         """Find seed entities using text search."""
-        # Use the graph store's search functionality
-        search_result = await self.graph_store.search_entities(
+        # Use the graph store's search functionality (sync call)
+        search_result = self.graph_store.search_entities(
             query=query.text,
-            entity_types=query.entity_types,
             limit=query.max_results * 2  # Get more to have better coverage
         )
 
         # Filter by relevance threshold
         seed_entities = []
-        for i, entity in enumerate(search_result.entities):
-            if i < len(search_result.scores) and search_result.scores[i] >= query.min_relevance_score:
+        for entity in search_result:
+            # Simple relevance check based on text matching
+            text_score = self._calculate_text_similarity(entity, query)
+            if text_score >= query.min_relevance_score:
                 seed_entities.append(entity)
 
         return seed_entities
@@ -228,8 +229,8 @@ class LocalSearchEngine:
             next_level = []
 
             for entity in current_level:
-                # Get relationships
-                relationships = await self.graph_store.get_relationships(
+                # Get relationships (sync call)
+                relationships = self.graph_store.get_relationships(
                     entity.id, direction="both"
                 )
 
@@ -240,8 +241,8 @@ class LocalSearchEngine:
                     if connected_id not in visited_entities:
                         visited_entities.add(connected_id)
 
-                        # Get the connected entity
-                        connected_entity = await self._get_cached_entity(connected_id)
+                        # Get the connected entity (sync call)
+                        connected_entity = self._get_cached_entity(connected_id)
                         if connected_entity:
                             # Apply filters
                             if self._passes_entity_filters(connected_entity, query):
@@ -371,8 +372,8 @@ class LocalSearchEngine:
 
     async def _get_entity_context(self, entity: GraphEntity) -> str | None:
         """Get context information for an entity."""
-        # Get relationships to provide context
-        relationships = await self.graph_store.get_relationships(entity.id, direction="both")
+        # Get relationships to provide context (sync call)
+        relationships = self.graph_store.get_relationships(entity.id, direction="both")
 
         if not relationships:
             return None
@@ -387,7 +388,8 @@ class LocalSearchEngine:
 
     async def _get_surrounding_entities(self, entity: GraphEntity) -> list[str]:
         """Get surrounding entity IDs."""
-        relationships = await self.graph_store.get_relationships(entity.id, direction="both")
+        # Get relationships (sync call)
+        relationships = self.graph_store.get_relationships(entity.id, direction="both")
 
         surrounding = []
         for rel in relationships[:10]:  # Limit to 10 surrounding entities
@@ -429,7 +431,7 @@ class LocalSearchEngine:
 
         return filtered
 
-    async def _get_cached_entity(self, entity_id: str) -> GraphEntity | None:
+    def _get_cached_entity(self, entity_id: str) -> GraphEntity | None:
         """Get entity from cache or graph store."""
         # Check cache
         if self.config.enable_caching and entity_id in self._entity_cache:
@@ -439,8 +441,8 @@ class LocalSearchEngine:
                 if age < self.config.cache_ttl_seconds:
                     return self._entity_cache[entity_id]
 
-        # Get from graph store
-        entity = await self.graph_store.get_entity(entity_id)
+        # Get from graph store (sync call)
+        entity = self.graph_store.get_entity(entity_id)
 
         # Update cache
         if entity and self.config.enable_caching:
