@@ -22,9 +22,7 @@ from pathlib import Path
 from re import Pattern
 from typing import Any, Final
 
-from agentic_core.L5_safety.config.structure_blueprint._constants import (
-    ROOT_WHITELIST,  # noqa: F401 — re-exported via __init__.py
-)
+# Wave 3: ROOT_WHITELIST import removed - now defined locally as alias to PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.config.structure_blueprint.derived import (
     L4_APPROVED_FOLDERS,
     L4_SUBFOLDER_MAP,
@@ -962,6 +960,9 @@ PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         ".vscode",
     },
 )
+
+# Wave 3: ROOT_WHITELIST alias for backward compatibility
+ROOT_WHITELIST = PROJECT_ROOT_WHITELIST
 
 
 # [SSOT] STRICT ROOT POLICY: Any file NOT in this list or matching these patterns

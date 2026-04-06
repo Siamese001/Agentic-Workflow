@@ -417,9 +417,10 @@ def __getattr__(name: str):
 
         return getattr(derived, name)
     if name == "SOVEREIGN_TERRITORIES":
-        from agentic_core.L5_safety.config.structure_blueprint._constants import SOVEREIGN_TERRITORIES
+        # Wave 3: SOVEREIGN_TERRITORIES now accessed via territories API
+        from agentic_core.L5_safety.config.structure_blueprint.territories import get_all_territories
 
-        return SOVEREIGN_TERRITORIES
+        return get_all_territories()
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
