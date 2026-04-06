@@ -57,7 +57,6 @@ archive_dirs:
 ide_dirs:
   - ".idea"
   - ".vscode"
-  - ".windsurf"
   - ".DS_Store"
 
 # Vendor/package directories (not our code)
