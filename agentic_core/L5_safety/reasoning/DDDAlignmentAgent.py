@@ -429,7 +429,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         self.violations = []
         Logger.info(f"[DDDAlignmentAgent] Scanning for bounded context violations in {target}")
         try:
-            from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+            from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
             python_files = list(get_python_files(target))
         except ImportError:

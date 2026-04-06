@@ -223,7 +223,7 @@ def validate_depth_precision(project_root: Path) -> dict:
     """Validate apps_* depth without archiving."""
     apps_exact_depth = DEPTH_RULES.get("apps_rg", 2)
     violations = []
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
         get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
@@ -244,7 +244,7 @@ def validate_tests_depth(project_root: Path) -> dict:
     """Validate tests depth without archiving."""
     tests_exact_depth = DEPTH_RULES.get("tests", 2)
     violations = []
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
         get_data_files(project_root, extensions=[".json", ".md", ".yaml", ".yml"])
@@ -265,7 +265,7 @@ def validate_universal_depth(project_root: Path) -> dict:
     """Validate universal depth for non-Python files without archiving."""
     agentic_core_exact_depth = DEPTH_RULES.get("agentic_core", 3)
     violations = []
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files
 
     target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
     for file_path in get_data_files(project_root, extensions=target_exts):

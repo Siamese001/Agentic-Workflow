@@ -195,7 +195,7 @@ def fix_structural_violations() -> Any:
     print("[*] STARTING STRUCTURAL FIX...")
     print("\n[PHASE 1] Fixing agentic_core -> schemas dependency...")
     schemas_path: Any = ROOT / "schemas"
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     canon_entry_files: Any = [f for f in get_python_files(schemas_path) if "canon" in f.name]
     if canon_entry_files:

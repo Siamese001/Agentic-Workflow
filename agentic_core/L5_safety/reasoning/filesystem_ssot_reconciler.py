@@ -535,7 +535,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 raise
                 Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
         agentic_core = self.project_root / AGENTIC_CORE_DIR
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
 
         for py_file in get_agent_files(agentic_core):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", ARCHIVES_DIR]):

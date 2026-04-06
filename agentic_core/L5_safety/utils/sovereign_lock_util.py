@@ -196,7 +196,7 @@ def enforce_gravity() -> Any:
     print("[*] ENFORCING GRAVITY...")
     violations: Any = 0
     forbidden: Any = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(CORE):
         if py_file.name == "__init__.py":
@@ -214,7 +214,7 @@ def enforce_depth() -> Any:
     """Ensures every file is EXACTLY at Depth 4. No shallower, no deeper."""
     print("[*] ENFORCING ABSOLUTE DEPTH-4 MANDATE...")
     violations: Any = 0
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(CORE):
         if py_file.name == "__init__.py":
@@ -232,7 +232,7 @@ def check_airlocks() -> Any:
     """Ensures __init__.py files are minimal (under 50 lines)."""
     print("[*] CHECKING AIRLOCK HYGIENE...")
     violations: Any = 0
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for init_file in [f for f in get_python_files(CORE) if f.name == "__init__.py"]:
         lines: Any = init_file.read_text(encoding="utf-8").splitlines()

@@ -394,7 +394,7 @@ async def scan_directory(directory: Path, embedder: Any, vector_store: Any) -> d
     """Scan directory and process all supported files"""
     stats: Any = {"files_processed": 0, "chunks_indexed": 0}
     extensions: Any = {".py", ".md", ".txt", ".json", ".yaml", ".yml"}
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(directory)) + list(get_data_files(directory))
     for file_path in all_files:

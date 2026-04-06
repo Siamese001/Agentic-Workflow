@@ -219,7 +219,7 @@ def main():
         print('EXECUTING RENAMES')
         print('=' * 60)
     root = Path('C:/Git/Agentic-Workflow')
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
     py_files = list(get_python_files(root))
     total_changes = 0
     files_changed = 0

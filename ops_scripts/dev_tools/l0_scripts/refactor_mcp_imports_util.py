@@ -233,7 +233,7 @@ def main():
     files_scanned = 0
 
     # Phase 6.9 Sub-50: Use ssot_discovery instead of glob
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(l0_scripts):
         if py_file.name.startswith("_"):

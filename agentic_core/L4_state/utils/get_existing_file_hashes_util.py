@@ -132,7 +132,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
+from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
 _emit_emits_metric_event("get_existing_file_hashes_util", "p4obs", "metric_1")
 _emit_emits_metric_event("get_existing_file_hashes_util", "p4obs", "metric_2")

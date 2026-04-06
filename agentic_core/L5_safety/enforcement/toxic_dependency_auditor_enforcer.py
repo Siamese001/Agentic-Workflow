@@ -253,7 +253,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
     def _build_fan_in_map(self):
         """Walks all python files to see who imports what."""
         # Operation Zero: Use ssot_discovery instead of glob
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(self.root / AGENTIC_CORE_DIR):
             current_module = self._get_module_name(py_file)

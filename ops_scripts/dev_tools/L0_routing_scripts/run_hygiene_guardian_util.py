@@ -201,7 +201,7 @@ def scan_temp_artifacts(root: Path) -> list[Path]:
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "scan_temp_artifacts")
     artifacts = []
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files
 
     for path in get_data_files(root, extensions=[".pyc", ".pyo", ".tmp", ".bak", ".swp"]):
         if ".git" not in path.parts:

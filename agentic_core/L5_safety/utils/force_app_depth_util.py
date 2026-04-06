@@ -244,7 +244,7 @@ def force_app_depth() -> Any:
         _wg.ensure_dir(app_p1)
         if not (app_p1 / "__init__.py").exists():
             _wg.write_text(app_p1 / "__init__.py", '"""App Core Implementation"""\n')
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(app_path):
             if py_file.name == "__init__.py":

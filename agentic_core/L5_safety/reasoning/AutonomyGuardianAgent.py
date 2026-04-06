@@ -298,7 +298,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
 
     def _check_forbidden_runner_scripts(self, violations: list[tuple[Path, str]]) -> None:
         """Check for forbidden runner scripts."""
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for dir_path in self.forbidden_dirs:
             dir_obj = self.project_root / dir_path
@@ -440,7 +440,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
             if not agent_paths:
                 log.warning("[AutonomyGuardian] Fallback to agentic_core scan (discovery JSON unavailable)")
                 agentic_core_dir = self.project_root / AGENTIC_CORE_DIR
-                from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
+                from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
 
                 agent_paths = list(get_agent_files(agentic_core_dir))
             for agent_path in agent_paths:

@@ -100,7 +100,7 @@ _emit_updates_meta_learning_state("p4", "collision_resolver", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "collision_resolver", "exec_snapshot_link")
 
 try:
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
     _SSOT_DISCOVERY_AVAILABLE = True
 except ImportError as e:
     _SSOT_DISCOVERY_AVAILABLE = False

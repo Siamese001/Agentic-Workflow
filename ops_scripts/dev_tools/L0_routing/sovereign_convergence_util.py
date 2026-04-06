@@ -219,7 +219,7 @@ def align_territory() -> Any:
     print("\n[*] REWIRING IMPORTS...")
     replacements: Any = []
     count: Any = 0
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(ROOT):
         if "legacy_code" in str(py_file):

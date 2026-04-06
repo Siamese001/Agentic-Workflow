@@ -240,7 +240,7 @@ def main():
     for territory in territories:
         if not territory.exists():
             continue
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(territory):
             if add_ssot_import(py_file):

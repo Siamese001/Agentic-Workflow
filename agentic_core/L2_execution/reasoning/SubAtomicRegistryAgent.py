@@ -511,7 +511,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubAtomicRegistryAgent.extract_methods"
         )
         methods = []
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(self.root):
             if ARCHIVES_DIR in str(py_file):

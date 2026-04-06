@@ -264,7 +264,7 @@ class ASTEnforcementMixin:
         total_snake = 0
         total_aliases = 0
         total_pascal = 0
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         all_files = get_python_files(repo_root)
         for path in all_files:

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 
-# from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+# from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 # ssot_discovery_validator not found - create placeholder
 def get_python_files(path):
     """Placeholder function to get Python files."""

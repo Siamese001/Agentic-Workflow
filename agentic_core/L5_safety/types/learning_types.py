@@ -328,7 +328,7 @@ class AdaptiveLearningEngine:
             if self.storage_path.exists():
                 backup = self.backup_dir / f"healing_patterns.{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
                 _wg.copy_file(self.storage_path, backup)
-                from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files
+                from agentic_core.utils.runners.ssot_discovery_validator import get_data_files
 
                 all_files = get_data_files(self.backup_dir, extensions=[".json"])
                 backups = sorted(

@@ -398,7 +398,7 @@ class UnifiedSSOTValidator:
         report.drift_violations = self._check_drift_violations()
         stats = self.scanner.get_compliance_stats()
         report.total_agents = stats["total_agents"]
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         report.total_files_scanned = len(list(get_python_files(self.project_root)))
         total_checks = report.total_agents * 4
@@ -430,7 +430,7 @@ class UnifiedSSOTValidator:
         agentic_core = self.project_root / AGENTIC_CORE_DIR
         if not agentic_core.exists():
             return violations
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(agentic_core):
             source_layer = self._get_layer_from_path(py_file)

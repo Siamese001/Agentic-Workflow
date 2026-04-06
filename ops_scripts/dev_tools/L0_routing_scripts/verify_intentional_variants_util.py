@@ -340,7 +340,7 @@ def scan_for_duplicates():
     exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     # Absolute Zero: Use ssot_discovery instead of rglob
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root))
     for file_path in all_files:

@@ -225,7 +225,7 @@ def main():
 
     # Find blueprint agent files
     # Phase 6.9: Use ssot_discovery instead of glob
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
 
     blueprint_agents = list(get_agent_files(blueprint_dir))
 

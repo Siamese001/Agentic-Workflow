@@ -418,7 +418,7 @@ class L4ContextManager:
         """
         current_time = time.time()
         if self._python_files is None or current_time - self._python_files_timestamp > max_age:
-            from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+            from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
             self._python_files = get_python_files(self.project_root)
             self._python_files_timestamp = current_time

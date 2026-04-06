@@ -260,7 +260,7 @@ def scan_for_duplicates():
     extensions = [".py", ".json", ".md"]
 
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(
         get_data_files(project_root, extensions=[".json", ".md"]),

@@ -280,7 +280,7 @@ def validate_repository() -> tuple[bool, dict]:
 
     # Scan all Python files
     # Final True 20: Use ssot_discovery instead of rglob
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(PROJECT_ROOT):
         if should_exclude_path(py_file):

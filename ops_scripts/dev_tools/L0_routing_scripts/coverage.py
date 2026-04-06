@@ -192,7 +192,7 @@ class CoverageValidator:
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
         violations = []
-        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         l0_modules = list(get_python_files(Path(L0_MAINTENANCE_DIR)))
         for module in l0_modules[:20]:

@@ -198,7 +198,7 @@ def extract_net_incremental() -> None:
     staging_dir.mkdir()
     existing_files: Any = get_existing_files()
     extracted_files: Any = []
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(source_dir):
         FILENAME: Any = py_file.name

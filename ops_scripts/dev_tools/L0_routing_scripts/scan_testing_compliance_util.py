@@ -344,7 +344,7 @@ def main():
 
     # Scan all Python files in agentic_core
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
-    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(AGENTIC_CORE):
         if "__pycache__" in str(py_file) or ".sovereign_healing_backup" in str(py_file):
