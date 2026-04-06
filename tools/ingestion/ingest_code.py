@@ -8,11 +8,14 @@ import argparse
 import ast
 import hashlib
 import logging
+
+# Import SovereignChromaClient for centralized ChromaDB access
+import sys
 from pathlib import Path
 from typing import Any
 
-import chromadb
-from chromadb.utils import embedding_functions
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
+from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -65,7 +68,12 @@ class CodeChunker:
                     if not node.args.args:
                         continue
                     chunk = self._create_function_chunk(
-                        node, content, file_path, module_name, layer, is_async=True
+                        node,
+                        content,
+                        file_path,
+                        module_name,
+                        layer,
+                        is_async=True,
                     )
 
                 if chunk:
@@ -107,7 +115,13 @@ class CodeChunker:
             return "Unknown"
 
     def _create_function_chunk(
-        self, node, content: str, file_path: Path, module_name: str, layer: str, is_async: bool = False
+        self,
+        node,
+        content: str,
+        file_path: Path,
+        module_name: str,
+        layer: str,
+        is_async: bool = False,
     ) -> dict[str, Any]:
         """Create a chunk for a function."""
         start_line = node.lineno
@@ -120,7 +134,7 @@ class CodeChunker:
 
         # Create chunk ID
         chunk_id = hashlib.sha256(
-            f"{file_path}:{module_name}:{node.name}:{start_line}:{func_code}".encode()
+            f"{file_path}:{module_name}:{node.name}:{start_line}:{func_code}".encode(),
         ).hexdigest()
 
         return {
@@ -137,11 +151,19 @@ class CodeChunker:
                 "args": [arg.arg for arg in node.args.args] if node.args.args else [],
                 "docstring": ast.get_docstring(node) or "",
                 "type": "code",
+                "adg_node_id": None,  # TODO: Populate from ADG in future wave
+                "embedding_model": "fallback_hash_384",
+                "ingested_at": None,  # Will be set during ingestion
             },
         }
 
     def _create_class_chunk(
-        self, node, content: str, file_path: Path, module_name: str, layer: str
+        self,
+        node,
+        content: str,
+        file_path: Path,
+        module_name: str,
+        layer: str,
     ) -> dict[str, Any]:
         """Create a chunk for a class."""
         start_line = node.lineno
@@ -154,7 +176,7 @@ class CodeChunker:
 
         # Create chunk ID
         chunk_id = hashlib.sha256(
-            f"{file_path}:{module_name}:{node.name}:{start_line}:{class_code}".encode()
+            f"{file_path}:{module_name}:{node.name}:{start_line}:{class_code}".encode(),
         ).hexdigest()
 
         # Extract methods
@@ -177,25 +199,47 @@ class CodeChunker:
                 "methods": methods if methods else [],
                 "docstring": ast.get_docstring(node) or "",
                 "type": "code",
+                "adg_node_id": None,  # TODO: Populate from ADG in future wave
+                "embedding_model": "fallback_hash_384",
+                "ingested_at": None,  # Will be set during ingestion
             },
         }
 
 
-def ingest_code(source_dir: str, collection_name: str, mock_embeddings: bool = True, dry_run: bool = False):
-    """Ingest Python code into ChromaDB."""
+def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_run: bool = False):
+    """Ingest Python code into ChromaDB using SovereignChromaClient.
 
-    # Initialize ChromaDB
-    client = chromadb.PersistentClient("artifacts/chromadb")
+    Args:
+        source_dir: Source directory with Python files
+        collection_name: ChromaDB collection name (default: repo_code_chunks)
+        dry_run: If True, don't actually ingest (for testing)
+    """
+    import sqlite3
+    from datetime import datetime
 
-    # Get or create collection
-    try:
-        collection = client.get_collection(collection_name)
-        logger.info(f"Using existing collection: {collection_name}")
-    except Exception:
-        collection = client.create_collection(
-            name=collection_name, metadata={"description": "Python source code chunks"}
-        )
-        logger.info(f"Created new collection: {collection_name}")
+    # Initialize SovereignChromaClient
+    chroma_client = SovereignChromaClient(persist_dir="artifacts/chromadb")
+
+    logger.info(f"Using collection: {collection_name}")
+
+    # Query ADG for node IDs (future wave - placeholder)
+    # TODO: Query ADG SQLite to get node_id for each file
+    adg_db_path = "artifacts/adg/adg_indexed_04062026_1246.sqlite"
+    adg_node_map = {}
+    if Path(adg_db_path).exists():
+        try:
+            conn = sqlite3.connect(adg_db_path)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT id, resolved_path FROM nodes WHERE resolved_path LIKE ?", (f"%{source_dir}%",),
+            )
+            for row in cur.fetchall():
+                adg_node_map[row["resolved_path"]] = row["id"]
+            conn.close()
+            logger.info(f"Loaded {len(adg_node_map)} ADG node mappings")
+        except Exception as e:
+            logger.warning(f"Could not load ADG node mappings: {e}")
 
     # Find Python files
     source_path = Path(source_dir)
@@ -221,6 +265,12 @@ def ingest_code(source_dir: str, collection_name: str, mock_embeddings: bool = T
     for py_file in python_files:
         logger.info(f"Processing: {py_file}")
         chunks = chunker.chunk_file(py_file)
+        # Add ADG node ID if available
+        file_path_str = str(py_file)
+        adg_node_id = adg_node_map.get(file_path_str)
+        for chunk in chunks:
+            chunk["metadata"]["adg_node_id"] = adg_node_id
+            chunk["metadata"]["ingested_at"] = datetime.now().isoformat()
         all_chunks.extend(chunks)
 
     logger.info(f"Generated {len(all_chunks)} chunks from {len(python_files)} files")
@@ -229,47 +279,33 @@ def ingest_code(source_dir: str, collection_name: str, mock_embeddings: bool = T
         logger.info("DRY RUN - Not ingesting into ChromaDB")
         if all_chunks:
             logger.info(f"Preview chunk: {all_chunks[0]['metadata']['file_path']}")
+            logger.info(f"Metadata sample: {all_chunks[0]['metadata']}")
         return
 
-    # Generate embeddings
-    logger.info("Generating embeddings...")
-
-    if mock_embeddings:
-        # Generate mock embeddings (1536 dimensions like OpenAI)
-        embeddings = [[0.0] * 1536 for _ in all_chunks]
-        logger.info(f"Generated {len(embeddings)} mock embeddings")
-    else:
-        # Use OpenAI embeddings
-        openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-            api_key=os.getenv("OPENAI_API_KEY"), model_name="text-embedding-ada-002"
-        )
-        texts = [chunk["content"] for chunk in all_chunks]
-        embeddings = openai_ef(texts)
-        logger.info(f"Generated {len(embeddings)} OpenAI embeddings")
-
-    # Ingest into ChromaDB
+    # Ingest into ChromaDB using SovereignChromaClient
     logger.info("Ingesting into ChromaDB...")
 
     batch_size = 5000
     for i in range(0, len(all_chunks), batch_size):
         batch = all_chunks[i : i + batch_size]
-        batch_embeddings = embeddings[i : i + batch_size]
 
         ids = [chunk["id"] for chunk in batch]
         documents = [chunk["content"] for chunk in batch]
         metadatas = [chunk["metadata"] for chunk in batch]
 
-        collection.add(ids=ids, documents=documents, metadatas=metadatas, embeddings=batch_embeddings)
+        chroma_client.add_documents(
+            collection_name=collection_name,
+            documents=documents,
+            metadatas=metadatas,
+            ids=ids,
+        )
 
         logger.info(f"Successfully ingested batch {i // batch_size + 1}: {len(batch)} chunks")
 
     # Get collection stats
-    stats = {
-        "collection_name": collection_name,
-        "total_chunks": collection.count(),
-        "vector_dimensions": 1536,
-        "vector_metric": "cosine",
-    }
+    stats = chroma_client.get_collection_stats(collection_name)
+    stats["total_chunks"] = len(all_chunks)
+    stats["vector_dimensions"] = 384  # SovereignChromaClient uses 384-dim fallback
 
     logger.info(f"Ingestion complete: {len(all_chunks)} chunks ingested")
     logger.info(f"Collection stats: {stats}")
@@ -278,17 +314,18 @@ def ingest_code(source_dir: str, collection_name: str, mock_embeddings: bool = T
 def main():
     parser = argparse.ArgumentParser(description="Ingest Python code into ChromaDB")
     parser.add_argument("--source-dir", required=True, help="Source directory with Python files")
-    parser.add_argument("--collection-name", default="code", help="ChromaDB collection name")
-    parser.add_argument("--mock-embeddings", action="store_true", default=True, help="Use mock embeddings")
+    parser.add_argument(
+        "--collection-name",
+        default="repo_code_chunks",
+        help="ChromaDB collection name (default: repo_code_chunks)",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Dry run (don't ingest)")
-    parser.add_argument("--limit", type=int, help="Limit number of files to process")
 
     args = parser.parse_args()
 
     ingest_code(
         source_dir=args.source_dir,
         collection_name=args.collection_name,
-        mock_embeddings=args.mock_embeddings,
         dry_run=args.dry_run,
     )
 
