@@ -221,5 +221,73 @@ class SQLiteGraphStore(IGraphStore):
 
             return neighbors
 
+    def traverse(
+        self,
+        start_id: str,
+        max_depth: int = 2,
+        relation_types: list[str] | None = None,
+    ) -> list[GraphPath]:
+        """Traverse the graph from a starting entity.
+
+        Args:
+            start_id: The ID of the starting entity.
+            max_depth: Maximum traversal depth (default: 2).
+            relation_types: Optional list of relation types to filter by.
+
+        Returns:
+            List of paths discovered during traversal.
+        """
+        paths: list[GraphPath] = []
+        start_entity = self.get_entity(start_id)
+
+        if start_entity is None:
+            return paths
+
+        # BFS traversal
+        from collections import deque
+
+        queue: deque[tuple[list[GraphEntity], list[GraphRelationship]]] = deque()
+        queue.append(([start_entity], []))
+        visited = {start_id}
+
+        while queue and len(paths) < 1000:  # Limit results
+            current_nodes, current_rels = queue.popleft()
+            current_depth = len(current_nodes) - 1
+
+            if current_depth >= max_depth:
+                paths.append(
+                    GraphPath(
+                        nodes=current_nodes.copy(),
+                        relationships=current_rels.copy(),
+                        cost=float(current_depth),
+                    )
+                )
+                continue
+
+            # Get neighbors
+            last_node = current_nodes[-1]
+            rels = self.get_relationships(last_node.id, direction="outgoing")
+
+            for rel in rels:
+                # Filter by relation types if specified
+                if relation_types and rel.relation_type not in relation_types:
+                    continue
+
+                next_id = rel.target_id
+                if next_id in visited:
+                    continue
+
+                visited.add(next_id)
+                next_entity = self.get_entity(next_id)
+
+                if next_entity is None:
+                    continue
+
+                new_nodes = current_nodes + [next_entity]
+                new_rels = current_rels + [rel]
+                queue.append((new_nodes, new_rels))
+
+        return paths
+
 
 __all__ = ["SQLiteGraphStore"]
