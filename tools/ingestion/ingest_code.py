@@ -25,8 +25,49 @@ logger = logging.getLogger(__name__)
 class CodeChunker:
     """AST-based code chunker for Python files."""
 
+    # Metadata schema for validation
+    REQUIRED_METADATA_FIELDS = {
+        "file_path", "module", "layer", "entity_type", "name",
+        "line_start", "line_end", "type"
+    }
+    OPTIONAL_METADATA_FIELDS = {
+        "args", "docstring", "methods", "adg_node_id", "embedding_model", "ingested_at"
+    }
+
     def __init__(self):
         self.chunks = []
+
+    @staticmethod
+    def validate_metadata(metadata: dict[str, Any]) -> tuple[bool, list[str]]:
+        """Validate chunk metadata against schema.
+
+        Returns:
+            (is_valid, list_of_errors)
+        """
+        errors = []
+
+        # Check required fields
+        missing_fields = CodeChunker.REQUIRED_METADATA_FIELDS - metadata.keys()
+        if missing_fields:
+            errors.append(f"Missing required fields: {missing_fields}")
+
+        # Check for unknown fields
+        all_known = CodeChunker.REQUIRED_METADATA_FIELDS | CodeChunker.OPTIONAL_METADATA_FIELDS
+        unknown_fields = metadata.keys() - all_known
+        if unknown_fields:
+            errors.append(f"Unknown fields: {unknown_fields}")
+
+        # Type checks
+        if "line_start" in metadata and not isinstance(metadata["line_start"], int):
+            errors.append("line_start must be int")
+        if "line_end" in metadata and not isinstance(metadata["line_end"], int):
+            errors.append("line_end must be int")
+        if "layer" in metadata and metadata["layer"] not in ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "Unknown"]:
+            errors.append(f"Invalid layer: {metadata['layer']}")
+        if "entity_type" in metadata and metadata["entity_type"] not in ["function", "async_function", "class", "module"]:
+            errors.append(f"Invalid entity_type: {metadata['entity_type']}")
+
+        return (len(errors) == 0, errors)
 
     def chunk_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Chunk a Python file using AST."""
@@ -268,10 +309,17 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
         # Add ADG node ID if available
         file_path_str = str(py_file)
         adg_node_id = adg_node_map.get(file_path_str)
+        valid_chunks = []
         for chunk in chunks:
             chunk["metadata"]["adg_node_id"] = adg_node_id
             chunk["metadata"]["ingested_at"] = datetime.now().isoformat()
-        all_chunks.extend(chunks)
+            # Validate metadata
+            is_valid, errors = CodeChunker.validate_metadata(chunk["metadata"])
+            if not is_valid:
+                logger.warning(f"Metadata validation failed for {chunk['id']}: {errors}")
+                continue
+            valid_chunks.append(chunk)
+        all_chunks.extend(valid_chunks)
 
     logger.info(f"Generated {len(all_chunks)} chunks from {len(python_files)} files")
 
