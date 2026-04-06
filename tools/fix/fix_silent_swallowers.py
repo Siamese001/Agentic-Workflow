@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 from typing import List, Dict, Tuple, Any
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 class SilentSwallowerFixer:
@@ -58,7 +58,7 @@ class SilentSwallowerFixer:
         except SyntaxError:
             return violations
 
-        for node in ast.walk(node):
+        for node in ast.walk(tree):
             if isinstance(node, ast.ExceptHandler):
                 violation = self._analyze_exception_handler(node, lines, file_path)
                 if violation:
@@ -261,7 +261,7 @@ def main():
         'violations': violations
     }
 
-    output_file = PROJECT_ROOT / "tools" / "silent_swallower_report.json"
+    output_file = PROJECT_ROOT / "silent_swallower_report.json"
     import json
     with open(output_file, 'w') as f:
         json.dump(report, f, indent=2)

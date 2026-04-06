@@ -9,7 +9,7 @@ Hardens the P1-P4 enforcement documentation and infrastructure based on gaps ide
 | Waves | Metric | Scope | Checkpoint | Tokens |
 |-------|--------|-------|------------|---------|
 | Wave 1 | Documentation completeness | P1/P2 exemption mechanisms, P2 enforcement function names | A | 15k 🟢 |
-| Wave 2 | Fix script pipeline integration | Wire P2 fix scripts into ADG post-run pipeline | B | 25k 🟡 |
+| Wave 2 | Fix script pipeline integration | Wire P2 fix scripts into ADG post-run pipeline | B | 25k 🟢 |
 | Wave 3 | Pre-commit clarification | Document T21 dependency for P2 commit blocking | C | 10k 🟢 |
 
 **Total: 50k tokens across 3 waves, all GREEN**
@@ -17,6 +17,11 @@ Hardens the P1-P4 enforcement documentation and infrastructure based on gaps ide
 ---
 
 ## Gap Register
+
+**GAP-0: fix_silent_swallowers.py is broken**
+- UnboundLocalError on line 61 (cannot access local variable 'node')
+- Path bug: duplicate 'tools' in output path
+- Status: ✅ FIXED (line 61: node→tree, line 264: removed duplicate 'tools' path)
 
 **GAP-1: P2 "Blocks Commit" is overstated**
 - P2 commit blocking depends on T21 (summary reporter) being active
@@ -60,6 +65,8 @@ Hardens the P1-P4 enforcement documentation and infrastructure based on gaps ide
 ### Phase 1.1 — Document P1 exemption mechanism
 **Scope**: Add explicit statement that P1 violations cannot be whitelisted
 
+**Status**: ✅ COMPLETE
+
 **Commands**:
 ```bash
 # Verify P1 has no whitelist support in base_detector_validator.py
@@ -75,6 +82,8 @@ grep -n "whitelist" agentic_core/L5_safety/validators/base_detector_validator.py
 
 ### Phase 1.2 — Document P2 exemption mechanisms
 **Scope**: Add `# guardian: allow-*` exemption details to P2 breakdown
+
+**Status**: ✅ COMPLETE
 
 **Commands**:
 ```bash
@@ -94,6 +103,8 @@ grep -r "guardian: allow-" agentic_core/L5_safety/validators/ --include="*.py"
 ### Phase 1.3 — Name P2 enforcement functions explicitly
 **Scope**: Replace vague "architectural detection" with concrete function names
 
+**Status**: ✅ COMPLETE
+
 **Commands**:
 ```bash
 # Verify detector names in anti_pattern_scanner_validator.py
@@ -109,6 +120,8 @@ grep -A 5 "SilentSwallowerDetector\|InvalidStubDetector" agentic_core/L5_safety/
 
 ### Phase 1.4 — Add snapshot reference to P3/P4 counts
 **Scope**: Footnote point-in-time counts with snapshot ID
+
+**Status**: ✅ COMPLETE
 
 **Commands**:
 ```bash
@@ -129,6 +142,15 @@ ls -la artifacts/adg/adg_snapshot_*.json | tail -1
 ### Phase 2.1 — Survey fix script landscape
 **Scope**: Identify all P2 fix scripts and their current integration status
 
+**Status**: ✅ COMPLETE
+
+**Survey Findings**:
+- `fix_invalid_stubs.py` (8214 bytes) - ✅ Working CLI with `--dry-run` and `--apply`
+- `fix_high_severity_silent_swallowers.py` (16004 bytes) - ✅ Working CLI with `--phase21` and `--demo`
+- `fix_silent_swallowers.py` (10922 bytes) - ❌ **BROKEN** (UnboundLocalError on line 61)
+- Integration status: None called in `generate_full_adg.py` or `.pre-commit-config.yaml`
+- Only referenced in `generate_final_compliance_report.py`
+
 **Commands**:
 ```bash
 # List fix scripts
@@ -148,6 +170,8 @@ python tools/fix/fix_invalid_stubs.py --help
 ### Phase 2.2 — Design ADG post-run fix script integration
 **Scope**: Design mechanism to call fix scripts after ADG generation completes
 
+**Status**: 🔴 BLOCKED (requires fix_silent_swallowers.py fix first)
+
 **Commands**:
 ```bash
 # Review generate_full_adg.py structure
@@ -166,6 +190,8 @@ grep -n "print.*complete\|print.*done" tools/generate/generate_full_adg.py
 
 ### Phase 2.3 — Implement fix script integration
 **Scope**: Add fix script calls to ADG generation pipeline
+
+**Status**: 🔴 BLOCKED (requires Phase 2.2 and fix_silent_swallowers.py fix)
 
 **Commands**:
 ```bash
@@ -187,6 +213,8 @@ grep -n "print.*complete\|print.*done" tools/generate/generate_full_adg.py
 ### Phase 2.4 — Test fix script integration
 **Scope**: Verify fix scripts run correctly in ADG context
 
+**Status**: 🔴 BLOCKED (requires Phase 2.3)
+
 **Commands**:
 ```bash
 # Run ADG generation with test file containing P2 violations
@@ -204,6 +232,8 @@ python tools/generate/generate_full_adg.py --strict-mode
 ### Phase 3.1 — Clarify P1 auto-fix timing
 **Scope**: Change "before retry" to "before manual ADG re-run"
 
+**Status**: ✅ COMPLETE
+
 **Commands**:
 ```bash
 # Update enforcement table
@@ -220,6 +250,8 @@ python tools/generate/generate_full_adg.py --strict-mode
 
 ### Phase 3.2 — Clarify P2 commit blocking dependency
 **Scope**: Add T21 summary reporter dependency to P2 commit blocking
+
+**Status**: ✅ COMPLETE
 
 **Commands**:
 ```bash
@@ -240,6 +272,8 @@ grep -n "critical_high_count\|blocks_commit" ops_scripts/ci/pre_commit_summary_r
 
 ### Phase 3.3 — Update enforcement flow diagram
 **Scope**: Clarify manual vs. automated steps in flow diagram
+
+**Status**: ✅ COMPLETE
 
 **Commands**:
 ```bash
@@ -329,3 +363,31 @@ If things go wrong:
 | P2 commit blocking clarity | T21 dependency documented | Table text says "via T21 summary reporter" |
 | Test coverage | Integration tested with real violations | Test execution log shows fix scripts called |
 | Backward compatibility | No regression | Existing ADG generation passes without new behavior |
+
+---
+
+## Implementation Status Summary
+
+**Wave 1: Documentation Hardening** - ✅ COMPLETE
+- Phase 1.1: P1 exemption mechanism documented ✅
+- Phase 1.2: P2 exemption mechanisms documented ✅
+- Phase 1.3: P2 enforcement function names explicit ✅
+- Phase 1.4: P3/P4 counts have snapshot reference ✅
+
+**Wave 2: Fix Script Pipeline Integration** - � READY TO PROCEED
+- Phase 2.1: Survey complete - found broken fix_silent_swallowers.py ✅
+- Phase 2.1a: Fixed fix_silent_swallowers.py (line 61: node→tree, line 264: path fix) ✅
+- Phase 2.2: Design - READY (fix_silent_swallowers.py now working) �
+- Phase 2.3: Implementation - READY �
+- Phase 2.4: Testing - READY �
+
+**Wave 3: Pre-Commit Clarification** - ✅ COMPLETE
+- Phase 3.1: P1 auto-fix timing clarified ✅
+- Phase 3.2: P2 commit blocking dependency documented ✅
+- Phase 3.3: Enforcement flow diagram updated ✅
+
+**Blocker Resolved**: `fix_silent_swallowers.py` UnboundLocalError and path bug fixed. Script now works (found 1626 violations, report generated successfully).
+
+**Next Steps**:
+1. Complete Wave 2 phases 2.2-2.4 (design, implement, test fix script integration)
+2. Final validation and testing
