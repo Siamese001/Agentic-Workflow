@@ -337,5 +337,53 @@ class SQLiteGraphStore(IGraphStore):
 
         return None  # No path found
 
+    def get_subgraph(self, center_id: str, radius: int = 2) -> GraphSubgraph:
+        """Extract a subgraph around a center entity.
+
+        Args:
+            center_id: The ID of the center entity.
+            radius: The radius in hops (default: 2).
+
+        Returns:
+            GraphSubgraph containing nodes and relationships within the radius.
+        """
+        # Get all nodes within radius
+        node_ids = {center_id}
+        current_level = {center_id}
+
+        for _ in range(radius):
+            next_level = set()
+            for eid in current_level:
+                rels = self.get_relationships(eid, direction="both")
+                for rel in rels:
+                    next_level.add(rel.source_id)
+                    next_level.add(rel.target_id)
+            current_level = next_level - node_ids
+            node_ids.update(current_level)
+            if not current_level:
+                break
+
+        # Get all nodes
+        nodes = []
+        for nid in node_ids:
+            entity = self.get_entity(nid)
+            if entity is not None:
+                nodes.append(entity)
+
+        # Get all edges between these nodes
+        relationships = []
+        for nid in node_ids:
+            rels = self.get_relationships(nid, direction="outgoing")
+            for rel in rels:
+                if rel.target_id in node_ids:
+                    relationships.append(rel)
+
+        return GraphSubgraph(
+            nodes=nodes,
+            relationships=relationships,
+            center_id=center_id,
+            radius=radius,
+        )
+
 
 __all__ = ["SQLiteGraphStore"]
