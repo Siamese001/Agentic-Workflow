@@ -206,7 +206,7 @@ class AntipatternCategory(str, Enum):
 
 _SEVERITY_MAP: dict[AntipatternCategory, AntipatternSeverity] = {
     AntipatternCategory.HARDCODED_SECRET: AntipatternSeverity.CRITICAL,
-    AntipatternCategory.GLOBAL_STATE_MUTATION: AntipatternSeverity.HIGH,
+    AntipatternCategory.GLOBAL_STATE_MUTATION: AntipatternSeverity.MEDIUM,
     AntipatternCategory.SILENT_EXCEPTION_SWALLOW: AntipatternSeverity.HIGH,
     AntipatternCategory.BLOCKING_CALL_IN_ASYNC: AntipatternSeverity.HIGH,
     AntipatternCategory.RETRY_WITHOUT_BACKOFF: AntipatternSeverity.MEDIUM,
