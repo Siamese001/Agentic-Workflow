@@ -453,5 +453,23 @@ class SQLiteGraphStore(IGraphStore):
             )
             return []
 
+    def get_community(self, community_id: str) -> GraphCommunity | None:
+        """Get a community by ID.
+
+        Args:
+            community_id: The ID of the community.
+
+        Returns:
+            GraphCommunity, or None if not found.
+
+        Note: This re-runs community detection to find the requested community.
+        For production use, communities should be cached in a SQLite table.
+        """
+        communities = self.detect_communities()
+        for community in communities:
+            if community.id == community_id:
+                return community
+        return None
+
 
 __all__ = ["SQLiteGraphStore"]
