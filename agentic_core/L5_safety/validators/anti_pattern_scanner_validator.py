@@ -45,6 +45,9 @@ from agentic_core.L5_safety.validators.global_mutation_validator import (
 from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
     HollowFileDetector,
 )
+from agentic_core.L5_safety.validators.invalid_stub_validator import (
+    InvalidStubDetector,
+)
 from agentic_core.L5_safety.validators.magic_validator import (
     MagicConfigDetector,
 )
@@ -406,6 +409,7 @@ class AntiPatternScanner:
                 ConfigWithLogicDetector(enforcement_level=enforcement_level),
                 DirectPromptCompilationDetector(enforcement_level=enforcement_level),
                 HollowFileDetector(enforcement_level=enforcement_level),
+                InvalidStubDetector(enforcement_level=enforcement_level),
             ],
         )
         self.detectors = self.composite.detectors

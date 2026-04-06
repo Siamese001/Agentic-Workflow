@@ -202,6 +202,7 @@ class AntiPatternCategory(str, Enum):
     CONFIG_WITH_LOGIC = "config_with_logic"
     DIRECT_PROMPT_COMPILATION = "direct_prompt_compilation"
     HOLLOW_FILE = "hollow_file"
+    INVALID_STUB = "invalid_stub"
 
 
 @dataclass
