@@ -123,5 +123,54 @@ class SQLiteGraphStore(IGraphStore):
         )
         return [self._row_to_entity(row) for row in cursor.fetchall()]
 
+    def _row_to_relationship(self, row: sqlite3.Row) -> GraphRelationship:
+        """Convert ADG edge row to GraphRelationship."""
+        return GraphRelationship(
+            source_id=str(row["src_id"]),
+            target_id=str(row["dst_id"]),
+            relation_type=row["relation_type"] or "unknown",
+            edge_kind=row["edge_kind"] or "",
+            confidence=float(row["confidence_score"] or 1.0),
+            metadata={
+                "source_file": row["source_file"] or "",
+                "line_no": int(row["line_no"] or 0),
+                "symbol": row["symbol"] or "",
+                "semantic_type": row["semantic_type"] or "",
+            },
+        )
+
+    def get_relationships(
+        self, entity_id: str, direction: str = "both"
+    ) -> list[GraphRelationship]:
+        """Get relationships for an entity.
+
+        Args:
+            entity_id: The ID of the entity.
+            direction: "outgoing", "incoming", or "both" (default: "both").
+
+        Returns:
+            List of relationships connected to the entity.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+
+        if direction == "outgoing":
+            cursor.execute(
+                "SELECT * FROM edges WHERE src_id = ?",
+                (int(entity_id),),
+            )
+        elif direction == "incoming":
+            cursor.execute(
+                "SELECT * FROM edges WHERE dst_id = ?",
+                (int(entity_id),),
+            )
+        else:  # both
+            cursor.execute(
+                "SELECT * FROM edges WHERE src_id = ? OR dst_id = ?",
+                (int(entity_id), int(entity_id)),
+            )
+
+        return [self._row_to_relationship(row) for row in cursor.fetchall()]
+
 
 __all__ = ["SQLiteGraphStore"]
