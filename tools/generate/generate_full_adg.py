@@ -317,19 +317,20 @@ def _check_artifact_consistency(paths: object, artifact: object) -> None:
 
 
 def _check_p1_defects(routing_summary: dict[str, int], strict_mode: bool = False) -> None:
-    """Fail if P1 critical defects are present (in strict mode).
+    """Fail if P1 critical defects are present (unconditional fail-fast).
+
+    P1 layer violations are architectural violations that must block ADG generation
+    regardless of strict_mode setting. This is a constitutional requirement for
+    architectural integrity.
 
     Args:
         routing_summary: Dictionary with by_severity counts
-        strict_mode: If True, fail on P1 defects
+        strict_mode: Unused - P1 always fails (kept for API compatibility)
     """
-    if not strict_mode:
-        return
-
     p1_count = routing_summary.get("by_severity", {}).get("critical", 0)
     if p1_count > 0:
         print(f"\n[ERROR] P1 critical defects detected: {p1_count}")
-        print("[ERROR] ADG generation failed - P1 defects present in strict mode")
+        print("[ERROR] ADG generation failed - P1 defects present")
         print("[ERROR] Fix critical layer violations before regenerating ADG")
         sys.exit(1)
 

@@ -262,8 +262,8 @@ class TestP1DefectsCheck:
         # Should not raise
         _check_p1_defects(routing_summary, strict_mode=True)
 
-    def test_p1_defects_ignored_in_non_strict_mode(self):
-        """Test that P1 defects are ignored when not in strict mode."""
+    def test_p1_defects_fail_unconditionally(self):
+        """Test that P1 defects fail regardless of strict_mode (unconditional fail-fast)."""
         from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {
@@ -275,8 +275,15 @@ class TestP1DefectsCheck:
             },
         }
 
-        # Should not raise when strict_mode=False
-        _check_p1_defects(routing_summary, strict_mode=False)
+        # Should fail even when strict_mode=False
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p1_defects(routing_summary, strict_mode=False)
+        assert exc_info.value.code == 1
+
+        # Should also fail when strict_mode=True
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p1_defects(routing_summary, strict_mode=True)
+        assert exc_info.value.code == 1
 
 
 class TestLockedFilesFailFast:
