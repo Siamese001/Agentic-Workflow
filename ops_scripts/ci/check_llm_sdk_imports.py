@@ -23,7 +23,7 @@ from agentic_core.L0_routing.config.path_constants import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BLOCKED_TOP_LEVEL = {'openai', 'anthropic', 'vertexai', 'requests', 'httpx', 'aiohttp', 'faiss', 'sentence_transformers', 'tiktoken'}
 BLOCKED_FROM = {('google', 'generativeai'), ('urllib', 'request')}
-ALLOWED_PATHS = {'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'data/sdks_mcps/client_wrappers.py', 'apps_shared/utils/providers_google_genai_client_util.py', 'system_learning/engines/embedding_service_factory.py', 'system_learning/engines/openai_embedder.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'apps_shared/utils/late_interaction_reranker_util.py'}
+ALLOWED_PATHS = {'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'infrastructure/sdks_mcps/client_wrappers.py', 'apps_shared/utils/providers_google_genai_client_util.py', 'system_learning/engines/embedding_service_factory.py', 'system_learning/engines/openai_embedder.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'apps_shared/utils/late_interaction_reranker_util.py'}
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 def _blocked(node: ast.Import | ast.ImportFrom) -> str | None:

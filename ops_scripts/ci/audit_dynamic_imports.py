@@ -26,7 +26,7 @@ from agentic_core.L0_routing.config.path_constants import (
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 DANGEROUS_FUNCTIONS = {'importlib.import_module', '__import__', 'eval', 'exec', 'getattr', 'hasattr', 'setattr'}
 PROVIDER_MODULES = {'openai', 'anthropic', 'vertexai', 'transformers', 'torch', 'sentence_transformers'}
-ALLOWLIST_MODULES = {'data/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement', TESTS_DIR, 'ops_scripts/ci', 'system_learning/engines/embedding_service_factory'}
+ALLOWLIST_MODULES = {'infrastructure/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement', TESTS_DIR, 'ops_scripts/ci', 'system_learning/engines/embedding_service_factory'}
 
 class DynamicImportViolation:
     """Represents a dynamic import violation."""

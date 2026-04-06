@@ -24,9 +24,9 @@ from agentic_core.L0_routing.config.path_constants import (
 
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-ALLOWLIST_MODULES = {'data/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway', 'agentic_core/config/core', 'ops_scripts/ci', TESTS_DIR}
+ALLOWLIST_MODULES = {'infrastructure/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway', 'agentic_core/config/core', 'ops_scripts/ci', TESTS_DIR}
 FORBIDDEN_IMPORTS = {'openai', 'anthropic', 'vertexai', 'google.generativeai', 'transformers', 'torch'}
-ALLOWED_MODEL_CONFIGS = {'agentic_core/config/core/gateway_config.py', 'agentic_core/config/core/sovereign_config.py', 'data/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py'}
+ALLOWED_MODEL_CONFIGS = {'agentic_core/config/core/gateway_config.py', 'agentic_core/config/core/sovereign_config.py', 'infrastructure/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py'}
 
 class RoutingViolation:
     """Represents a routing enforcement violation."""

@@ -167,7 +167,7 @@ REPO_ROOT = get_validated_project_root()
 
 ALLOWED_SDK_FILES = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
-    "data/sdks_mcps/client_wrappers.py",
+    "infrastructure/sdks_mcps/client_wrappers.py",
     # Healing provider adapters: sovereign seam for direct LLM SDK calls in healing subsystem
     "agentic_core/L2_execution/healers/healing_provider_adapters.py",
     # OpenAI embedder: sovereign seam for OpenAI embedding API

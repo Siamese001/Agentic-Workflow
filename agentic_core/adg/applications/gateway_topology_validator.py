@@ -187,7 +187,7 @@ _GW_NODE = canonical_name("Gateway", "SovereignLLMGateway")
 _ALLOWED_DIRECT_PROVIDER_MODULES: frozenset[str] = frozenset(
     {
         _GW_PATH,
-        "data/sdks_mcps/client_wrappers.py",
+        "infrastructure/sdks_mcps/client_wrappers.py",
     }
 )
 

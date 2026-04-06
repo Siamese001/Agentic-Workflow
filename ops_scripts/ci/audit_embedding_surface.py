@@ -29,7 +29,7 @@ from agentic_core.L0_routing.config.path_constants import (
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 EMBEDDING_PRIMITIVES = {'AutoModel', 'AutoTokenizer', 'AutoModelForSeq2SeqLM', 'AutoModelForMaskedLM', 'sentence_transformers', 'SentenceTransformer', 'OpenAI', 'EmbeddingServiceFactory', 'EmbeddingResult', 'text-embedding-3', 'all-MiniLM'}
 EMBEDDING_FACTORY_PATH = 'system_learning/engines/embedding_service_factory.py'
-ALLOWLIST_MODULES = {'data/sdks_mcps/client_wrappers', 'system_learning/engines/embedding_service_factory', TESTS_DIR, 'ops_scripts/ci'}
+ALLOWLIST_MODULES = {'infrastructure/sdks_mcps/client_wrappers', 'system_learning/engines/embedding_service_factory', TESTS_DIR, 'ops_scripts/ci'}
 
 class EmbeddingUsageViolation:
     """Represents an embedding usage violation."""

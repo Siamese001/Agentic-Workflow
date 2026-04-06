@@ -19,7 +19,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATTERN = re.compile('(gpt-[0-9]|claude-[0-9]|gemini-[0-9]|text-embedding-3|qwen|llama)', re.I)
-ALLOWED_PATHS = {'agentic_core/config/core/sovereign_config.py', 'agentic_core/agents/agent_registry.py', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'data/sdks_mcps/client_wrappers.py'}
+ALLOWED_PATHS = {'agentic_core/config/core/sovereign_config.py', 'agentic_core/agents/agent_registry.py', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'infrastructure/sdks_mcps/client_wrappers.py'}
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 def main() -> int:
