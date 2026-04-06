@@ -49,77 +49,32 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
 
-from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_reads_through,
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
 
-_emit_records_execution_trace("p0", "evidence", "generate_full_adg")
-_emit_applies_guardrail("p0", "generate_full_adg", "p0_governance")
-_emit_reads_policy_state("p0", "generate_full_adg", "policy_binding")
-_emit_snapshots_state("p0", "generate_full_adg", "state_snapshot")
-emit_replay_key("p0", "generate_full_adg")
-emit_determinism_digest("p0", "generate_full_adg")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "generate_full_adg", "execution_auth")
-_emit_validates_capability("p2", "generate_full_adg", "capability_check")
-_emit_routes_to_capability("p2", "generate_full_adg", "capability_route")
-_emit_writes_via_uwg("p2", "generate_full_adg", "uwg_write")
-_emit_blocks_direct_write("p2", "generate_full_adg", "direct_write_block")
-_emit_records_tool_invocation("p2", "generate_full_adg", "tool_invocation")
-_emit_captures_execution_output("p2", "generate_full_adg", "exec_output")
-_emit_dispatches_agent("p3", "generate_full_adg", "agent_dispatch")
-_emit_coordinates_agents("p3", "generate_full_adg", "agent_coordination")
-_emit_records_workflow_lineage("p3", "generate_full_adg", "workflow_lineage")
-_emit_records_healing_outcome("p3", "generate_full_adg", "healing_outcome")
-_emit_escalates_failure("p3", "generate_full_adg", "failure_escalation")
-_emit_orchestrates_workflow("p3", "generate_full_adg", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "generate_full_adg", "healing_dispatch")
-_emit_invokes_evaluation("p3", "generate_full_adg", "evaluation_signal")
-_emit_records_telemetry_event("p4", "generate_full_adg", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "generate_full_adg", "eval_metric")
-_emit_stores_embedding("p4", "generate_full_adg", "embedding_store")
-_emit_updates_meta_learning_state("p4", "generate_full_adg", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "generate_full_adg", "exec_snapshot_link")
+def _is_file_locked(filepath: Path) -> bool:
+    """Check if file is locked (Windows only).
+
+    Returns True if file cannot be opened exclusively.
+    """
+    if os.name != "nt":
+        return False
+    try:
+        import ctypes
+
+        handle = ctypes.windll.kernel32.CreateFileW(
+            str(filepath),
+            0x80000000,  # GENERIC_READ
+            0,  # No sharing (exclusive access)
+            None,
+            3,  # OPEN_EXISTING
+            0,
+            None,
+        )
+        if handle == -1:
+            return True  # File is locked
+        ctypes.windll.kernel32.CloseHandle(handle)
+        return False
+    except Exception:
+        return True
 
 from agentic_core.adg.analysis.CanonicalSnapshot import (
     build_snapshot,
@@ -155,132 +110,67 @@ from agentic_core.L2_execution.utils.cpu_optimizer import (
 from agentic_core.L2_execution.utils.parallel_file_processor import (
     shutdown_file_processor,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 
-_emit_emits_metric_event("generate_full_adg", "p4obs", "metric_1")
-_emit_emits_metric_event("generate_full_adg", "p4obs", "metric_2")
-_emit_emits_metric_event("generate_full_adg", "p4obs", "metric_3")
-_emit_emits_metric_event("generate_full_adg", "p4obs", "metric_4")
-_emit_emits_metric_event("generate_full_adg", "p4obs", "metric_5")
-_emit_emits_metric_event("generate_full_adg", "p4obs", "metric_6")
-_emit_records_incident_event("generate_full_adg", "p4obs", "incident")
-_emit_captures_runtime_anomaly("generate_full_adg", "p4obs", "anomaly")
-_emit_writes_observability_log("generate_full_adg", "p4obs", "obs_log")
-_emit_updates_monitoring_state("generate_full_adg", "p4obs", "mon_state")
-_emit_triggers_alert("generate_full_adg", "p4obs", "alert")
-_emit_links_incident_trace("generate_full_adg", "p4obs", "trace_link")
-_emit_captures_pattern("generate_full_adg", "p3lm", "pattern")
-_emit_records_learning_event("generate_full_adg", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("generate_full_adg", "p3lm", "snapshot")
-_emit_feeds_meta_learning("generate_full_adg", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("generate_full_adg", "p3lm", "routing")
-_emit_improves_agent_policy("generate_full_adg", "p3lm", "policy")
-_emit_stores_learning_state("generate_full_adg", "p3lm", "state")
-_emit_records_execution_trace("generate_full_adg", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("generate_full_adg", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("generate_full_adg", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("generate_full_adg", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("generate_full_adg", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("generate_full_adg", "env_read", "p2_env_1")
-_emit_reads_environ("generate_full_adg", "env_read", "p2_env_2")
-_emit_reads_runtime_state("generate_full_adg", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("generate_full_adg", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "generate_full_adg", "context_pull")
-_emit_pulls_context("p1", "generate_full_adg", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "generate_full_adg", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "generate_full_adg", "uwg_term_2")
-_emit_writes_through("p1", "generate_full_adg", "write_through")
-_emit_writes_through("p1", "generate_full_adg", "write_through_2")
-_emit_validated_by_safety_plane("p1", "generate_full_adg", "safety_validation")
-_emit_invokes_eval("p1", "generate_full_adg", "eval_call")
-_emit_proposal_commits_routing("p1", "generate_full_adg", "routing_commit")
-_emit_escalates_to_human("p1", "generate_full_adg", "human_escalation")
-_emit_routes_through("p1", "generate_full_adg", "route_through")
-_emit_checks_agent_registry("p1", "generate_full_adg", "agent_registry")
-_emit_validates_agent_capability("p1", "generate_full_adg", "capability")
-_emit_dispatches_execution_plan("p1", "generate_full_adg", "exec_plan")
-_emit_agent_executes_agent("p1", "generate_full_adg", "sub_agent")
-_emit_routes_to_agent("p1", "generate_full_adg", "target_agent")
-_emit_verifies_policy("p1", "generate_full_adg", "policy_check")
-_emit_observes_runtime_state("p1", "generate_full_adg", "runtime_state")
-_emit_verifies_boundary("p1", "generate_full_adg", "boundary_check")
-_emit_transcripts_response("p1", "generate_full_adg", "transcript")
-_emit_hard_fails_untranscripted("p1", "generate_full_adg")
-_emit_gated_by_confidence("p1", "generate_full_adg", "confidence_gate")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_1")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_2")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_3")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_4")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_5")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_6")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_7")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_8")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_9")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_10")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_11")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_12")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_13")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_14")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_15")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_16")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_17")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_18")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_19")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_20")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_21")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_22")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_23")
-_emit_reads_through("l4", "generate_full_adg", "urg_read_24")
+
+def _print_defect_table(routing_summary: dict[str, int], semantic_warnings: list[str] | None = None) -> None:
+    """Print P1-P4 defect table in terminal output.
+    
+    Maps severity levels to priority system:
+    - P1: critical (highest priority) - Layer violations, critical repair routes
+    - P2: high - High severity repair routes, architectural issues
+    - P3: medium - Medium severity repair routes, code quality issues
+    - P4: low (lowest priority) - Low severity repair routes, semantic enrichment warnings
+    
+    Args:
+        routing_summary: Dictionary with by_severity counts
+        semantic_warnings: List of semantic enrichment warnings (EDGE SEMANTIC PRECISION, etc.)
+    """
+    by_severity = routing_summary.get("by_severity", {})
+    
+    # Map severity to priority
+    p1_count = by_severity.get("critical", 0)
+    p2_count = by_severity.get("high", 0)
+    p3_count = by_severity.get("medium", 0)
+    
+    # P4 includes low severity + semantic enrichment warnings
+    p4_count = by_severity.get("low", 0)
+    if semantic_warnings:
+        p4_count += len(semantic_warnings)
+    
+    total = p1_count + p2_count + p3_count + p4_count
+    
+    print("\n[ADG] Defect Summary:")
+    print("┌─────┬───────────────────────────────┬────────┐")
+    print("│ P#  │ Description                  │ Count  │")
+    print("├─────┼───────────────────────────────┼────────┤")
+    print(f"│ P1  │ Critical - layer violations  │ {p1_count:6} │")
+    print(f"│ P2  │ High - architectural issues  │ {p2_count:6} │")
+    print(f"│ P3  │ Medium - code quality        │ {p3_count:6} │")
+    print(f"│ P4  │ Low - semantic warnings      │ {p4_count:6} │")
+    print("├─────┼───────────────────────────────┼────────┤")
+    print(f"│ TOT │ TOTAL                        │ {total:6} │")
+    print("└─────┴───────────────────────────────┴────────┘")
+    
+    # Detail P4 breakdown if there are semantic warnings
+    if semantic_warnings:
+        low_count = by_severity.get("low", 0)
+        warning_count = len(semantic_warnings)
+        print(f"[ADG] P4 breakdown: {low_count} low severity + {warning_count} semantic warnings")
+        for warning in semantic_warnings:
+            print(f"[ADG]   - {warning}")
 
 
 def generate_full_adg(
     adg_artifacts_dir: Path,
     ts: str,
     archive_old: bool = True,
-    parallel: bool = False,
+    parallel: bool = True,
     workers: int | None = None,
     cpu_affinity: bool = False,
     batch_size: int = 100,
-    enable_zip: bool = False,
-    enable_reports: bool = False,
-    enable_analysis: bool = False,
+    enable_zip: bool = True,
+    enable_reports: bool = True,
+    enable_analysis: bool = True,
 ) -> None:
     """Generate full ADG and write all artifact tiers.
 
@@ -288,36 +178,23 @@ def generate_full_adg(
         adg_artifacts_dir: Directory for ADG artifacts
         ts: Timestamp string (MMDDYYYY format)
         archive_old: If True, archive artifacts older than retention period
-        parallel: Enable parallel processing via CPU optimizer
+        parallel: Enable parallel processing via CPU optimizer (default True)
         workers: Number of worker processes (None = auto-detect)
         cpu_affinity: Enable CPU affinity pinning (AMD-optimized)
         batch_size: Batch size for parallel file/edge operations
-        enable_zip: Write a zip archive of all artifacts (default off — use for CI/release)
-        enable_reports: Generate all 8 standardized reports (default off — use for CI/release)
-        enable_analysis: Run score_edges + route_violations analytics (default off in local mode)
+        enable_zip: Write a zip archive of all artifacts (default True)
+        enable_reports: Generate all 8 standardized reports (default True)
+        enable_analysis: Run score_edges + route_violations analytics (default True)
 
-    Execution modes:
-        Local (default): core artifacts only, no zip, no reports, no analytics (~saves ~7s)
-        Full (CI/release): set enable_zip=True, enable_reports=True, or ADG_MODE=full env var
+    Always runs in full mode with all artifacts enabled.
     """
-    _adg_mode = os.environ.get("ADG_MODE", "").strip().lower()
-    if _adg_mode == "full":
-        enable_zip = True
-        enable_reports = True
-        enable_analysis = True
     import time as _time
 
     # --- Startup mode banner (visible before any work begins) ---
-    _execution_mode = "full" if (enable_zip and enable_reports) else "local"
-    if _execution_mode == "full" and not enable_analysis:
-        enable_analysis = True
-    _omitted_artifacts: list[str] = []
-    print(
-        f"[ADG] Mode: {_execution_mode.upper()}  "
-        f"zip={'ON' if enable_zip else 'OFF'}  "
-        f"reports={'ON' if enable_reports else 'OFF'}"
-        + ("  (use --full or ADG_MODE=full for full-fidelity output)" if _execution_mode == "local" else "")
-    )
+    print("[ADG] Mode: FULL  zip=ON  reports=ON  parallel=ON")
+
+    # Track semantic enrichment warnings for P4 defect reporting
+    semantic_warnings: list[str] = []
 
     _adg_start = _time.time()
 
@@ -345,7 +222,7 @@ def generate_full_adg(
             f"({cpu_metrics_start.get('cpu_count_physical', '?')} physical cores)"
         )
     else:
-        print("[ADG] Running in sequential mode (use --parallel to enable CPU optimization)")
+        print("[ADG] Running in sequential mode (--parallel disabled)")
 
     print("[ADG] Starting full scan...")
 
@@ -383,6 +260,18 @@ def generate_full_adg(
     print(
         f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}"
     )
+
+    # Fail if syntax errors were detected
+    if result.syntax_errors:
+        print(f"\n[ERROR] Scan detected {len(result.syntax_errors)} syntax error(s) in the codebase")
+        print("[ERROR] Files with syntax errors:")
+        for err in result.syntax_errors:
+            print(f"[ERROR]   - {err}")
+        print("[ERROR]")
+        print("[ERROR] Syntax errors prevent complete ADG analysis")
+        print("[ERROR] Fix all syntax errors before running ADG generation")
+        print("[ERROR] See wave plan: .windsurf/plans/burn-down-syntax-errors-wave-plan-20260406.md")
+        sys.exit(1)
 
     # --- Build canonical artifact (schema v3) ---
     print("[ADG] Building canonical artifact...")
@@ -445,19 +334,13 @@ def generate_full_adg(
         except Exception:
             # System learning unavailable - continue without persistence
             pass
-    else:
-        conf_summary = {"average_confidence": "n/a", "confidence_tiers": {"high": "n/a", "low": "n/a"}}
-        _omitted_artifacts.append("score_edges + confidence_summary (use --full or ADG_MODE=full)")
 
     # --- E10: Repair routing ---
-    if enable_analysis:
-        violation_edges = [
-            e for e in result.edges if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
-        ]
-        repair_routes = route_violations(violation_edges)
-        routing_summary = repair_routing_summary(repair_routes)
-    else:
-        routing_summary = {"total_routes": 0, "by_severity": {}}
+    violation_edges = [
+        e for e in result.edges if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
+    ]
+    repair_routes = route_violations(violation_edges)
+    routing_summary = repair_routing_summary(repair_routes)
 
     # --- E5: Impact prediction ---
     violation_sources = [
@@ -517,36 +400,27 @@ def generate_full_adg(
         and _infer_ownership(getattr(e, "resolved_path", "")).criticality == "high"
     )
     print(f"      E8 ownership: {len(result.modules)} modules  high_criticality={owned_high}")
-    if enable_analysis:
-        print(
-            f"      E9 confidence: avg={conf_summary['average_confidence']}  "
-            f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
-        )
-        print(
-            f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
-        )
-    else:
-        print("      E9 confidence: skipped (use --full or ADG_MODE=full)")
-        print("      E10 repair routes: skipped (use --full or ADG_MODE=full)")
+    print(
+        f"      E9 confidence: avg={conf_summary['average_confidence']}  "
+        f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
+    )
+    print(
+        f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
+    )
 
     # --- Memory MCP persistence ---
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
 
     # --- Wave 6: Generate standardized reports ---
-    if enable_reports:
-        closure_report = _generate_standardized_reports(
-            adg_artifacts_dir,
-            ts,
-            artifact,
-            result=result,
-            repo_root=ROOT,
-            enable_determinism_probe=os.environ.get("ADG_ENABLE_DETERMINISM_PROBE", "1").strip().lower()
-            not in ("0", "false", "no"),
-        )
-    else:
-        closure_report = None
-        _omitted_artifacts.append("standardized_reports (8 JSON files)")
-        print("[ADG] Reports skipped (use --reports or ADG_MODE=full to generate)")
+    closure_report = _generate_standardized_reports(
+        adg_artifacts_dir,
+        ts,
+        artifact,
+        result=result,
+        repo_root=ROOT,
+        enable_determinism_probe=os.environ.get("ADG_ENABLE_DETERMINISM_PROBE", "1").strip().lower()
+        not in ("0", "false", "no"),
+    )
 
     # --- Create zip archive of all 6 artifacts + Wave 6 reports (full mode only) ---
     artifact_files = [
@@ -576,21 +450,17 @@ def generate_full_adg(
         artifact_files.extend(existing_reports)
         print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
 
-    # --- Create zip archive (full/CI mode only) ---
+    # --- Create zip archive (always enabled) ---
     zip_created = False
-    if not enable_zip:
-        _omitted_artifacts.append("zip_archive (adg_<ts>.zip)")
-        print("[ADG] Zip skipped (use --zip or ADG_MODE=full to archive)")    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
-    if enable_zip:
-        try:
-            _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
-            zip_created = True
-            print(f"[ADG] Zip creation successful for {ts}")
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except RuntimeError as e:
-            print(f"[ADG] WARNING: Zip creation failed: {e}")
-            print("[ADG] Individual files will be archived using legacy path")
-            zip_created = False
+    try:
+        _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+        zip_created = True
+        print(f"[ADG] Zip creation successful for {ts}")
+    # guardian: allow-silent-swallow - acceptable exception handling
+    except RuntimeError as e:
+        print(f"[ADG] WARNING: Zip creation failed: {e}")
+        print("[ADG] Individual files will be archived using legacy path")
+        zip_created = False
 
     # --- Archive old artifacts (moved before validation check) ---
     if archive_old:
@@ -604,16 +474,24 @@ def generate_full_adg(
         if failed_caps == ["EDGE SEMANTIC PRECISION"]:
             print("[ADG] WARNING: EDGE SEMANTIC PRECISION validation failed (known issue)")
             print("[ADG] This does not block ADG generation - semantic enrichment needs investigation")
+            semantic_warnings.append("EDGE SEMANTIC PRECISION")
         elif failed_caps == ["DETERMINISM (ARTIFACT LEVEL)"]:
             print("[ADG] WARNING: DETERMINISM (ARTIFACT LEVEL) validation failed (known issue)")
             print("[ADG] This does not block ADG generation - determinism system needs investigation")
+            semantic_warnings.append("DETERMINISM (ARTIFACT LEVEL)")
         elif set(failed_caps) == {"EDGE SEMANTIC PRECISION", "DETERMINISM (ARTIFACT LEVEL)"}:
             print(
                 "[ADG] WARNING: EDGE SEMANTIC PRECISION and DETERMINISM (ARTIFACT LEVEL) validation failed (known issues)"
             )
             print("[ADG] This does not block ADG generation - these systems need investigation")
+            semantic_warnings.append("EDGE SEMANTIC PRECISION")
+            semantic_warnings.append("DETERMINISM (ARTIFACT LEVEL)")
         else:
             raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
+    
+    # Print P1-P4 defect table (including semantic warnings as P4)
+    _print_defect_table(routing_summary, semantic_warnings)
+
     if os.environ.get("ADG_SKIP_REDIS", "").strip().lower() not in ("1", "true", "yes"):
         _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
 
@@ -625,13 +503,6 @@ def generate_full_adg(
 
     # --- CPU Optimization: Final metrics and cleanup ---
     _adg_elapsed = _time.time() - _adg_start
-
-    # --- Omitted-artifacts manifest (local mode transparency) ---
-    if _omitted_artifacts:
-        print(f"[ADG] OMITTED ({len(_omitted_artifacts)} artifact type(s) not produced in {_execution_mode.upper()} mode):")
-        for _item in _omitted_artifacts:
-            print(f"[ADG]   - {_item}")
-        print("[ADG] Re-run with --full or ADG_MODE=full to produce all artifacts.")
 
     print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
     if parallel:
@@ -1025,19 +896,44 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                         file_size = 0
                     # guardian: allow-silent-swallow - acceptable exception handling
                     try:
+                        # Check if file is locked before attempting deletion
+                        if _is_file_locked(file_path):
+                            print(f"[WARNING] Archive: skipping locked file {file_path.name}")
+                            print(f"[WARNING]   File held by MCP server or Redis cache")
+                            print(f"[WARNING]   Restart Windsurf to release file locks")
+                            continue
+
                         # For SQLite files, try to close WAL checkpoint before deletion
                         if file_path.suffix == ".sqlite":
                             try:
                                 import sqlite3
+
                                 temp_conn = sqlite3.connect(str(file_path))
                                 temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                                 temp_conn.close()
                             except Exception:
                                 pass  # Best-effort cleanup
                         file_path.unlink()
+                        
+                        # Delete associated WAL files for SQLite
+                        if file_path.suffix == ".sqlite":
+                            wal_path = file_path.with_suffix(".sqlite-wal")
+                            shm_path = file_path.with_suffix(".sqlite-shm")
+                            for aux_file in [wal_path, shm_path]:
+                                if aux_file.exists():
+                                    try:
+                                        aux_file.unlink()
+                                    except OSError as e:
+                                        pass  # Silent fail - WAL cleanup is best-effort
+                        
                         archived_count += 1
                     except OSError as e:
-                        print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
+                        if "being used by another process" in str(e):
+                            print(f"[WARNING] Archive: skipping locked file {file_path.name}")
+                            print(f"[WARNING]   File held by MCP server or Redis cache")
+                            print(f"[WARNING]   Restart Windsurf to release file locks")
+                        else:
+                            print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
                         continue
 
     if bytes_original > 0:
@@ -1642,7 +1538,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
         raise RuntimeError(f"Zip file not created after successful completion for {ts}")
 
     zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
-    report_count = len([p for p in artifact_paths if p.name.endswith("_report.json")])
+    report_count = len([p for p in artifact_paths if "report" in p.name.lower()])
     print(
         f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports)"
     )
@@ -2270,6 +2166,174 @@ def _generate_standardized_reports(
     return closure_report
 
 
+def _check_mcp_config_drift() -> None:
+    """Check for MCP config drift between YAML and global config."""
+    print("[ADG] Checking MCP config drift...")
+    yaml_config_path = ROOT / "config" / "mcp_servers.yaml"
+    global_config_path = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
+
+    if yaml_config_path.exists() and global_config_path.exists():
+        try:
+            from agentic_core.config.mcp_loader import MCPLoader
+
+            loader = MCPLoader(yaml_config_path)
+            yaml_config = loader.load()
+            yaml_count = len([s for s in yaml_config.servers.values() if s.enabled])
+
+            with open(global_config_path, encoding="utf-8") as f:
+                global_config = json.load(f)
+            global_count = len(global_config.get("mcpServers", {}))
+
+            if yaml_count != global_count:
+                print(f"[WARNING] MCP config drift detected!")
+                print(f"[WARNING]   YAML enabled servers: {yaml_count}")
+                print(f"[WARNING]   Global enabled servers: {global_count}")
+                print(f"[WARNING]   Run: python tools/adg/sync_yaml_to_global.py")
+                print("[WARNING]   Proceeding with ADG generation...")
+            else:
+                print("[ADG] MCP config is in sync")
+        except Exception as e:
+            print(f"[WARNING] Could not check MCP config drift: {e}")
+            print("[WARNING]   Proceeding with ADG generation...")
+    else:
+        print("[WARNING] MCP config files not found, skipping drift check")
+
+
+def _perform_wal_checkpoint() -> None:
+    """Perform best-effort WAL checkpoint on prior SQLite files."""
+    print("[ADG] Pre-flight: attempting best-effort SQLite WAL checkpoint...")
+    try:
+        adg_dir = ROOT / "artifacts" / "adg"
+        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+
+        for sqlite_file in sqlite_files:
+            try:
+                # Try to checkpoint and close any connections
+                import sqlite3
+
+                temp_conn = sqlite3.connect(str(sqlite_file))
+                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                temp_conn.close()
+                print(f"[ADG] WAL checkpoint attempted for: {sqlite_file.name}")
+            except Exception:
+                pass  # Silent fail - will be caught by lock check
+    except Exception:
+        pass  # Silent fail - will be caught by lock check
+
+
+def _check_locked_files() -> None:
+    """Check for locked SQLite files and abort if found."""
+    print("[ADG] Checking for remaining locked SQLite files...")
+    try:
+        adg_dir = ROOT / "artifacts" / "adg"
+        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+        locked_count = 0
+        locked_files_list = []
+
+        for sqlite_file in sqlite_files:
+            if _is_file_locked(sqlite_file):
+                locked_count += 1
+                locked_files_list.append(sqlite_file.name)
+                print(f"[ADG] Found locked SQLite file: {sqlite_file.name}")
+
+        if locked_count > 0:
+            print(f"\n[ERROR] {locked_count} SQLite file(s) are locked by MCP server process")
+            print(f"[ERROR] Locked files: {', '.join(locked_files_list)}")
+            print(f"[ERROR]")
+            print(f"[ERROR] The MCP server (adg_sqlite) has these files open.")
+            print(f"[ERROR] Automatic lock release cannot close connections from another process.")
+            print(f"[ERROR]")
+            print(f"[ERROR] REQUIRED ACTION: Restart Windsurf to release file locks")
+            print(f"[ERROR]")
+            print(f"[ERROR] ADG generation aborted - file locks prevent archive cleanup")
+            sys.exit(1)
+        else:
+            print("[ADG] No locked SQLite files found - proceeding with generation")
+    except Exception as e:
+        print(f"[WARNING] Could not check for locked SQLite files: {e}")
+        print("[WARNING]   Proceeding with ADG generation...")
+
+
+def _generate_timestamp() -> str:
+    """Generate timestamp in US Eastern time format MMDDYYYY_HHMM."""
+    est = timezone(timedelta(hours=-4))  # EDT (UTC-4); DST active Mar-Nov in US Eastern
+    now_est = datetime.now(est)
+    return now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
+
+
+def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports: bool) -> None:
+    """Verify that requested artifacts were created."""
+    # Verify zip was created if requested
+    if not no_zip:
+        zip_path = adg_artifacts_dir / f"adg_run_{ts}.zip"
+        if not zip_path.exists():
+            print(f"[ERROR] Zip archive not found: {zip_path}")
+            sys.exit(1)
+        print(f"[ADG] Zip archive verification: {zip_path.name} exists")
+
+    # Verify reports were generated if requested
+    if not no_reports:
+        report_files = [
+            f"layer_coverage_report_{ts}.json",
+            f"edge_density_report_{ts}.json",
+            f"provenance_report_{ts}.json",
+            f"replay_determinism_report_{ts}.json",
+            f"boundary_report_{ts}.json",
+            f"mutation_integrity_report_{ts}.json",
+            f"test_surface_coverage_{ts}.json",
+            f"closure_validation_report_{ts}.json",
+        ]
+        missing_reports = [rf for rf in report_files if not (adg_artifacts_dir / rf).exists()]
+        if missing_reports:
+            print(f"\n[ERROR] ADG generation incomplete: {len(missing_reports)} report(s) missing")
+            print(f"[ERROR] Missing: {', '.join(missing_reports)}")
+            print("[ERROR] This is a critical failure for full ADG generation")
+            sys.exit(1)
+        print(f"[ADG] Reports verification: {len(report_files)} reports exist")
+
+    # Full ADG generation verification
+    print("[ADG] Full ADG generation verification: all artifacts present")
+
+
+def _run_repair_orchestrator(adg_artifacts_dir: Path, ts: str, dry_run: bool) -> None:
+    """Run the ADG repair orchestrator if requested."""
+    print("\n" + "=" * 60)
+    print("ADG Repair Orchestrator Post-Generation")
+    print("=" * 60)
+
+    try:
+        from tools.adg.repair import ADGRepairOrchestrator
+
+        orchestrator = ADGRepairOrchestrator(
+            adg_dir=adg_artifacts_dir,
+            timestamp=ts,
+            repo_root=ROOT,
+        )
+
+        result = orchestrator.run(dry_run=dry_run)
+        orchestrator.print_summary()
+
+        # Log repair results
+        if result.fixes_applied > 0:
+            print(f"\n[ADG] Repair: {result.fixes_applied} fixes applied successfully")
+        if result.fixes_suggested > 0:
+            print(f"[ADG] Repair: {result.fixes_suggested} fixes suggested for review")
+        if result.fixes_blocked > 0:
+            print(f"[ADG] Repair: {result.fixes_blocked} fixes require human attention")
+        if result.failed_fixes > 0:
+            print(f"[ADG] Repair: {result.failed_fixes} fixes failed")
+
+        if result.log_path:
+            print(f"[ADG] Repair log: {result.log_path}")
+
+    except Exception as e:
+        print(f"[ADG] Repair orchestrator failed: {e}")
+        # Don't fail the whole ADG generation if repair fails
+        import traceback
+
+        traceback.print_exc()
+
+
 def main() -> None:
     """Main entry point with CLI argument parsing."""
     import argparse
@@ -2279,8 +2343,7 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--force", action="store_true", help="Force regeneration even if cache exists")
-    # Wave 1: CPU Optimization CLI Flags
-    parser.add_argument("--parallel", action="store_true", help="Enable parallel processing (Wave 2+)")
+    # CPU Optimization CLI Flags (parallel is now default)
     parser.add_argument(
         "--workers", type=int, default=None, help="Number of worker processes (default: auto)"
     )
@@ -2293,92 +2356,60 @@ def main() -> None:
     parser.add_argument("--repair", action="store_true", help="Run repair orchestrator after ADG generation")
     parser.add_argument("--repair-dry-run", action="store_true", help="Show repairs without applying them")
     parser.add_argument(
-        "--zip", action="store_true",
-        help="Create zip archive of all artifacts (default off for local runs)"
+        "--no-parallel", action="store_true", help="Disable parallel processing (default: enabled)"
     )
     parser.add_argument(
-        "--reports", action="store_true",
-        help="Generate all 8 standardized reports (default off for local runs)"
+        "--no-zip", action="store_true", help="Disable zip archive creation (default: enabled)"
     )
     parser.add_argument(
-        "--full", action="store_true",
-        help="Full fidelity mode: enable --zip, --reports, and --analysis (equivalent to ADG_MODE=full)"
-    )
-    parser.add_argument(
-        "--analysis", action="store_true",
-        help="Run score_edges + route_violations analytics (default off in local mode)"
+        "--no-reports", action="store_true", help="Disable report generation (default: enabled)"
     )
 
     args = parser.parse_args()
 
-    if args.full:
-        args.zip = True
-        args.reports = True
-        args.analysis = True
+    # Pre-flight checks
+    _check_mcp_config_drift()
+    _perform_wal_checkpoint()
+    _check_locked_files()
 
-    # Timestamp in US Eastern time, format MMDDYYYY_HHMM (military time)
-    est = timezone(timedelta(hours=-4))  # EDT (UTC-4); DST active Mar-Nov in US Eastern
-    now_est = datetime.now(est)
-    ts = now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
+    # Generate timestamp and artifacts directory
+    ts = _generate_timestamp()
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
 
     print(f"[ADG] Starting generation with timestamp: {ts}")
-    print(f"[ADG] Parallel mode: {args.parallel}")
-    if args.parallel:
+    print(f"[ADG] Parallel mode: {not args.no_parallel}")
+    if not args.no_parallel:
         print(f"[ADG] Workers: {args.workers or 'auto'}")
         print(f"[ADG] CPU affinity: {args.cpu_affinity}")
         print(f"[ADG] Batch size: {args.batch_size}")
 
-    # Pass all CPU optimization args to generate_full_adg
-    generate_full_adg(
-        adg_artifacts_dir,
-        ts,
-        parallel=args.parallel,
-        workers=args.workers,
-        cpu_affinity=args.cpu_affinity,
-        batch_size=args.batch_size,
-        enable_zip=args.zip,
-        enable_reports=args.reports,
-        enable_analysis=args.analysis,
-    )
+    # Generate ADG
+    try:
+        generate_full_adg(
+            adg_artifacts_dir,
+            ts,
+            parallel=not args.no_parallel,
+            workers=args.workers,
+            cpu_affinity=args.cpu_affinity,
+            batch_size=args.batch_size,
+            enable_zip=not args.no_zip,
+            enable_reports=not args.no_reports,
+            enable_analysis=True,
+        )
+    except RuntimeError as e:
+        if "Zip creation failed" in str(e) and not args.no_zip:
+            print(f"\n[ERROR] ADG generation failed: {e}")
+            print("[ERROR] Zip archive was requested but could not be created")
+            print("[ERROR] This is a critical failure for full ADG generation")
+            sys.exit(1)
+        raise
+
+    # Verify artifacts
+    _verify_artifacts(adg_artifacts_dir, ts, args.no_zip, args.no_reports)
 
     # Run repair orchestrator if requested
     if args.repair:
-        print("\n" + "=" * 60)
-        print("ADG Repair Orchestrator Post-Generation")
-        print("=" * 60)
-
-        try:
-            from tools.adg.repair import ADGRepairOrchestrator
-
-            orchestrator = ADGRepairOrchestrator(
-                adg_dir=adg_artifacts_dir,
-                timestamp=ts,
-                repo_root=ROOT,
-            )
-
-            result = orchestrator.run(dry_run=args.repair_dry_run)
-            orchestrator.print_summary()
-
-            # Log repair results
-            if result.fixes_applied > 0:
-                print(f"\n[ADG] Repair: {result.fixes_applied} fixes applied successfully")
-            if result.fixes_suggested > 0:
-                print(f"[ADG] Repair: {result.fixes_suggested} fixes suggested for review")
-            if result.fixes_blocked > 0:
-                print(f"[ADG] Repair: {result.fixes_blocked} fixes require human attention")
-            if result.failed_fixes > 0:
-                print(f"[ADG] Repair: {result.failed_fixes} fixes failed")
-
-            if result.log_path:
-                print(f"[ADG] Repair log: {result.log_path}")
-
-        except Exception as e:
-            print(f"[ADG] Repair orchestrator failed: {e}")
-            # Don't fail the whole ADG generation if repair fails
-            import traceback
-
-            traceback.print_exc()
+        _run_repair_orchestrator(adg_artifacts_dir, ts, args.repair_dry_run)
 
 
 if __name__ == "__main__":

@@ -16,6 +16,8 @@
 #   T11  mcp-config        — MCP config sovereignty (file-triggered; cheap)
 #   T12  exemption-gate    — guardian exemption quality ratchet
 #   T13  burndown          — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
+#   T13.5 layer-violation  — ADG layer boundary violations (warning mode)
+#   T13.6 p1-defect-gate   — ADG P1 (critical) defects — BLOCKING
 #   T14  grep-ban          — hard-fail if staged files use grep/rg as ADG substitute
 #   T15  mypy-ban          — hard-fail if staged files invoke mypy directly via subprocess
 #   T16  pytest-ban        — hard-fail if staged files invoke pytest broadly
@@ -438,6 +440,17 @@ repos:
       - id: adg-layer-violation-gate
         name: "T13.5: ADG Layer Violation Gate"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_layer_violation_gate.py --warn"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T13.6: ADG P1 Defect Gate — BLOCKING -----------------------------------
+      # Blocks commits if P1 (critical) ADG defects exist in the codebase.
+      # P1 defects are critical layer violations that must be resolved before committing.
+      - id: adg-p1-defect-gate
+        name: "T13.6: ADG P1 Defect Gate — BLOCKING on critical defects"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_p1_defect_gate.py"
         language: system
         pass_filenames: false
         always_run: true
