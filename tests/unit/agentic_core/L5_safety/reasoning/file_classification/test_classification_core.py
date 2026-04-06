@@ -22,6 +22,7 @@ from agentic_core.L5_safety.reasoning.file_classification.classification_core im
     _is_factory_class,
     _is_service_class,
     _is_true_agent,
+    classify_file_pure,
     validate_folder_suffix_consistency,
     validate_single_suffix,
 )
@@ -575,3 +576,55 @@ class TestValidateFolderSuffixConsistency:
         """Test that non-typed folders are not checked."""
         result = validate_folder_suffix_consistency(Path("config/reasoning/agent.py"))
         assert result is None
+
+
+class TestClassifyFilePure:
+    """Tests for classify_file_pure function."""
+
+    def test_classify_config_file(self):
+        """Test classification of a config file."""
+        import tempfile
+        import os
+
+        code = """
+class Config:
+    SETTINGS = "value"
+"""
+        with tempfile.NamedTemporaryFile(mode='w', suffix='_config.py', delete=False) as f:
+            f.write(code)
+            f.flush()
+            temp_path = Path(f.name)
+        
+        try:
+            result = classify_file_pure(temp_path)
+            assert result == "CONFIG"
+        finally:
+            os.unlink(temp_path)
+
+    def test_classify_test_file(self):
+        """Test classification of a test file."""
+        import tempfile
+        import os
+
+        code = """
+import unittest
+
+class MyTest(unittest.TestCase):
+    def test_something(self):
+        pass
+"""
+        with tempfile.NamedTemporaryFile(mode='w', suffix='_test.py', delete=False) as f:
+            f.write(code)
+            f.flush()
+            temp_path = Path(f.name)
+        
+        try:
+            result = classify_file_pure(temp_path)
+            assert result == "TEST"
+        finally:
+            os.unlink(temp_path)
+
+    def test_classify_nonexistent_file(self):
+        """Test classification of nonexistent file."""
+        result = classify_file_pure(Path("nonexistent_file.py"))
+        assert result == "IGNORE"

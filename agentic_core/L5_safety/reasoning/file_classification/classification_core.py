@@ -1056,3 +1056,65 @@ def _is_repository_class(node: ast.ClassDef) -> bool:
     TODO: Extract implementation.
     """
     return False
+
+
+def classify_file_pure(path: Path) -> str:
+    """Pure function to classify a file using extracted helper functions.
+
+    This is a simplified orchestrator that uses the extracted pure functions
+    from classification_core.py. It demonstrates how the modular functions
+    can be composed together without stateful dependencies.
+
+    Args:
+        path: File path to classify
+
+    Returns:
+        File type string (e.g., "CONFIG", "TYPES", "VALIDATOR", "UTILITY")
+
+    Note:
+        This is a simplified version. The full classify_file method in
+        FileClassificationAgent has additional logic for special cases,
+        logging, and stateful behavior that cannot be represented as a pure function.
+    """
+    # Read file content
+    try:
+        if not path.exists() or path.stat().st_size == 0:
+            return "IGNORE"
+        content = path.read_text(encoding="utf-8")
+        tree = ast.parse(content)
+    except (SyntaxError, UnicodeDecodeError, OSError):
+        return "IGNORE"
+
+    # Use extracted helper functions for classification
+    scores = _compute_content_scores(path)
+
+    # Check for specific patterns using extracted helpers
+    config_patterns = ["config", "settings", "blueprint"]
+    validator_patterns = ["validator", "check", "verify"]
+
+    if _detect_config_patterns(tree, path, content, config_patterns, set()):
+        return "CONFIG"
+
+    if _detect_validator_patterns(tree, path, content, validator_patterns):
+        return "VALIDATOR"
+
+    if _detect_test_patterns(tree, path)["is_test"]:
+        return "TEST"
+
+    if _detect_script_patterns(tree, path)["is_script"]:
+        return "SCRIPT"
+
+    if _detect_type_patterns(tree, path)["is_type"]:
+        return "TYPES"
+
+    if _detect_orchestrator_patterns(tree, path, content, path.stem):
+        return "ORCHESTRATOR"
+
+    # Use content scores as fallback
+    if scores:
+        winner = max(scores, key=scores.get)
+        if scores[winner] > 0:
+            return winner
+
+    # Default fallback
+    return "UTILITY"
