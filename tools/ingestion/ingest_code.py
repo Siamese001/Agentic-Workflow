@@ -31,11 +31,12 @@ class CodeChunker:
         "line_start", "line_end", "type"
     }
     OPTIONAL_METADATA_FIELDS = {
-        "args", "docstring", "methods", "adg_node_id", "embedding_model", "ingested_at"
+        "args", "docstring", "methods", "adg_node_id", "embedding_model", "ingested_at", "parent_id"
     }
 
     def __init__(self):
         self.chunks = []
+        self.parent_child_map = {}  # chunk_id -> parent_chunk_id
 
     @staticmethod
     def validate_metadata(metadata: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -71,6 +72,7 @@ class CodeChunker:
 
     def chunk_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Chunk a Python file using AST."""
+        self.parent_child_map = {}  # Reset for each file
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
@@ -84,6 +86,9 @@ class CodeChunker:
             # Get module-level info
             module_name = self._get_module_name(file_path)
             layer = self._detect_layer(file_path)
+
+            # Track class chunks for parent-child relationships
+            class_chunks = {}  # class_name -> (chunk_id, methods_set)
 
             # Walk through AST nodes
             for node in ast.walk(tree):
@@ -104,21 +109,25 @@ class CodeChunker:
                     if not methods:
                         continue
                     chunk = self._create_class_chunk(node, content, file_path, module_name, layer)
+                    class_chunks[node.name] = (chunk["id"], set(methods))
                 elif isinstance(node, ast.AsyncFunctionDef):
                     # Skip async functions with no args
                     if not node.args.args:
                         continue
                     chunk = self._create_function_chunk(
-                        node,
-                        content,
-                        file_path,
-                        module_name,
-                        layer,
-                        is_async=True,
+                        node, content, file_path, module_name, layer, is_async=True
                     )
 
                 if chunk:
                     chunks.append(chunk)
+                    # Track parent-child: if function is a method, set parent class
+                    if chunk["metadata"]["entity_type"] in ["function", "async_function"]:
+                        func_name = chunk["metadata"]["name"]
+                        for class_id, methods_set in class_chunks.values():
+                            if func_name in methods_set:
+                                self.parent_child_map[chunk["id"]] = class_id
+                                chunk["metadata"]["parent_id"] = class_id
+                                break
 
             return chunks
 
@@ -322,6 +331,11 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
         all_chunks.extend(valid_chunks)
 
     logger.info(f"Generated {len(all_chunks)} chunks from {len(python_files)} files")
+
+    # Log parent-child relationship statistics
+    total_parent_child = sum(1 for c in all_chunks if c["metadata"].get("parent_id") is not None)
+    if total_parent_child > 0:
+        logger.info(f"Parent-child relationships: {total_parent_child}/{len(all_chunks)} chunks have parent_id")
 
     # ADG sync validation: verify node_id mapping coverage
     chunks_with_adg_id = sum(1 for c in all_chunks if c["metadata"].get("adg_node_id") is not None)
