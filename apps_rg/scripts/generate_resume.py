@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,7 +84,7 @@ _emit_links_execution_to_snapshot("p4", "generate_resume", "exec_snapshot_link")
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

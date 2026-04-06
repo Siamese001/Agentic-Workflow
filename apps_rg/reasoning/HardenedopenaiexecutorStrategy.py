@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from agentic_core.interfaces.gateway import GenerationRequest
 from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.L2_execution.utils import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -82,7 +82,7 @@ _emit_captures_evaluation_metric("p4", "HardenedopenaiexecutorStrategy", "eval_m
 _emit_stores_embedding("p4", "HardenedopenaiexecutorStrategy", "embedding_store")
 _emit_updates_meta_learning_state("p4", "HardenedopenaiexecutorStrategy", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "HardenedopenaiexecutorStrategy", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

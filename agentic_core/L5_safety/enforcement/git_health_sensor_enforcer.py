@@ -22,7 +22,7 @@ from agentic_core.L5_safety.config.detection_signal_config import (
     ImpactScope,
     Severity,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -410,7 +410,7 @@ if __name__ == "__main__":
 
     signal = check_git_health()
     print(json.dumps(signal.to_dict(), indent=2, default=str))
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

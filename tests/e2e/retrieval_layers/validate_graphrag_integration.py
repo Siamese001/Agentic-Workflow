@@ -104,7 +104,7 @@ def validate_lifecycle_contracts() -> dict[str, bool]:
     results = {}
 
     try:
-        from agentic_core.runtime.lifecycle_trace_contract import (
+        from agentic_core.runtime.contracts.lifecycle_trace_contract import (
             _emit_captures_evaluation_metric,
             _emit_feeds_meta_learning,
             _emit_improves_agent_policy,

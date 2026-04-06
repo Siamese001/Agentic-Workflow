@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Literal
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -100,7 +100,7 @@ _emit_captures_evaluation_metric("p4", "critical_dual_enforcement_audit_enforcer
 _emit_stores_embedding("p4", "critical_dual_enforcement_audit_enforcer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "critical_dual_enforcement_audit_enforcer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "critical_dual_enforcement_audit_enforcer", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

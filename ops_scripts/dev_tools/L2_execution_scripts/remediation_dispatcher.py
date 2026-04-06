@@ -32,7 +32,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -170,7 +170,7 @@ from agentic_core.L2_execution.types.l2_phase_spec import (
     LEGACY_MIRROR_PLAN,
     L2ExecutionPlan,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -246,7 +246,7 @@ _emit_writes_through("p1", "remediation_dispatcher", "write_through_2")
 _emit_validated_by_safety_plane("p1", "remediation_dispatcher", "safety_validation")
 _emit_invokes_eval("p1", "remediation_dispatcher", "eval_call")
 _emit_proposal_commits_routing("p1", "remediation_dispatcher", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_dispatch_entry")
 emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_dispatch_exit")

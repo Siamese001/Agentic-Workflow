@@ -18,7 +18,7 @@ import logging
 from collections import deque
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -70,7 +70,7 @@ _emit_dispatches_execution_plan("p1", "vigilance_dispatcher_adapter", "apps")
 _emit_validates_agent_capability("p1", "vigilance_dispatcher_adapter", "apps")
 _emit_checks_agent_registry("p1", "vigilance_dispatcher_adapter", "apps")
 _emit_snapshots_state("p0", "vigilance_dispatcher_adapter", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

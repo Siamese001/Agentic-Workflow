@@ -72,7 +72,7 @@ class LayerGravityFixer:
 
         # Pattern to find imports from old location
         patterns = [
-            r'from agentic_core.runtime.lifecycle_trace_contract import',
+            r'from agentic_core.runtime.contracts.lifecycle_trace_contract import',
             r'import agentic_core.runtime.lifecycle_trace_contract',
             r'from agentic_core\.runtime import lifecycle_trace_contract',
         ]

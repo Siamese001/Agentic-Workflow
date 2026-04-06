@@ -4,7 +4,7 @@ Generate detailed syntax error report with file paths and error details.
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,7 @@ _emit_links_execution_to_snapshot("p4", "generate_syntax_report_util", "exec_sna
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

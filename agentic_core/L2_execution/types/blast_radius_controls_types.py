@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -93,7 +93,7 @@ _emit_captures_evaluation_metric("p4", "blast_radius_controls_types", "eval_metr
 _emit_stores_embedding("p4", "blast_radius_controls_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "blast_radius_controls_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "blast_radius_controls_types", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -21,7 +21,7 @@ except ImportError:
     Observer = None
     FileSystemEventHandler = object
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,

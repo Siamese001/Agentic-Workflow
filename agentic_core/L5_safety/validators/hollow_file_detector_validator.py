@@ -11,7 +11,7 @@ import logging
 from enum import Enum
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_reads_policy_state,

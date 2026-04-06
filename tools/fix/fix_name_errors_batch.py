@@ -154,7 +154,7 @@ for rel in EWT_FILES:
     src = open(fp, encoding="utf-8").read()
     if "_emit_writes_through" in src and "_emit_writes_through" not in [l.strip() for l in src.split("\n") if "import" in l and "_emit_writes_through" in l]:
         add_import_after_last_import(fp,
-            "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through")
+            "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through")
         print(f"  FIXED _emit_writes_through import in {rel}")
 
 # ── Fix 5: Other individual fixes ──

@@ -5,7 +5,7 @@ import logging
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,7 +81,7 @@ from agentic_core.L0_routing.enforcement.core_integrity_util import CoreIntegrit
 from apps_lic.engines.BiasDetectorAgent import BiasDetectorSpecialist
 from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

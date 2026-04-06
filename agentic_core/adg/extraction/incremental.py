@@ -38,7 +38,7 @@ from typing import TYPE_CHECKING
 
 from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
 from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -85,7 +85,7 @@ _emit_records_execution_trace("p0", "evidence", "incremental")
 _emit_applies_guardrail("p0", "incremental", "p0_governance")
 _emit_reads_policy_state("p0", "incremental", "policy_binding")
 _emit_snapshots_state("p0", "incremental", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

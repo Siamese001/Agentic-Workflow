@@ -12,7 +12,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Literal
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -97,7 +97,7 @@ _emit_captures_evaluation_metric("p4", "human_decision_artifact_types", "eval_me
 _emit_stores_embedding("p4", "human_decision_artifact_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "human_decision_artifact_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "human_decision_artifact_types", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

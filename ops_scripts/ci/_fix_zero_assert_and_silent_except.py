@@ -44,7 +44,7 @@ import pathlib
 import sys
 from collections import defaultdict
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCAN_DIRS = [TESTS_DIR]

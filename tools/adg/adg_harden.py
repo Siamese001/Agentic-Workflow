@@ -145,7 +145,7 @@ def _add_emitter_to_module(module_path: Path, symbol: str, apply: bool = False) 
         lines = content.split("\n")
         insert_line = last_import_end if last_import_end > 0 else 0
 
-        emitter_code = f"\n# ADG hardening: {symbol}\nfrom agentic_core.runtime.lifecycle_trace_contract import {symbol}\n{symbol}()\n"
+        emitter_code = f"\n# ADG hardening: {symbol}\nfrom agentic_core.runtime.contracts.lifecycle_trace_contract import {symbol}\n{symbol}()\n"
 
         if apply:
             lines.insert(insert_line, emitter_code)

@@ -62,7 +62,7 @@ from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import
 from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
 
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -149,7 +149,7 @@ _emit_orchestrates_workflow("p1", "orchestrator_engine", "L3")
 _emit_dispatches_execution_plan("p1", "orchestrator_engine", "L3")
 _emit_validates_agent_capability("p1", "orchestrator_engine", "L3")
 _emit_checks_agent_registry("p1", "orchestrator_engine", "L3")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -218,7 +218,7 @@ _emit_writes_through("p1", "orchestrator_engine", "write_through_2")
 _emit_validated_by_safety_plane("p1", "orchestrator_engine", "safety_validation")
 _emit_invokes_eval("p1", "orchestrator_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "orchestrator_engine", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 # Runtime ADG imports
 # guardian: allow-silent-degradation - Optional runtime ADG

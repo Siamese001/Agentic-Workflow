@@ -81,7 +81,7 @@ def _find_docstring_lines(lines):
 
 def _is_emit_line(stripped):
     """Return True if the line is an emit import or emit call."""
-    if stripped.startswith("from agentic_core.runtime.lifecycle_trace_contract import _emit"):
+    if stripped.startswith("from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit"):
         return True
     for prefix in EMIT_PREFIXES:
         if stripped.startswith(prefix + "("):

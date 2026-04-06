@@ -20,7 +20,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -102,7 +102,7 @@ _emit_captures_evaluation_metric("p4", "import_guard", "eval_metric")
 _emit_stores_embedding("p4", "import_guard", "embedding_store")
 _emit_updates_meta_learning_state("p4", "import_guard", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "import_guard", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

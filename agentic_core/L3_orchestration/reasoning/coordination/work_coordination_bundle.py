@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -70,7 +70,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 )
 from agentic_core.runtime.types.execution_trace import get_active_execution_trace
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

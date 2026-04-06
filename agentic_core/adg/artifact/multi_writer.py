@@ -41,7 +41,7 @@ from typing import TYPE_CHECKING
 
 from agentic_core.adg.artifact.layer_splitter import split_artifact
 from agentic_core.adg.artifact.normalizer import ArtifactNormalizer
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -112,7 +112,7 @@ _emit_links_execution_to_snapshot("p4", "multi_writer", "exec_snapshot_link")
 
 if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder import ADGArtifact
-from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: E402
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E402
     LayerSegment,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

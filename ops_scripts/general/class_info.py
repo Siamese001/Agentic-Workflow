@@ -70,7 +70,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 SKIP_FILES = {'__init__.py', 'conftest.py'}

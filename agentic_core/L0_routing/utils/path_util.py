@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -98,7 +98,7 @@ _emit_links_execution_to_snapshot("p4", "path_util", "exec_snapshot_link")
 if TYPE_CHECKING:
     from collections.abc import Iterator
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, PROJECT_ROOT_MARKERS
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

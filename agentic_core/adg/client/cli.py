@@ -23,7 +23,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_records_execution_trace("p0", "evidence", "cli")
 _emit_applies_guardrail("p0", "cli", "p0_governance")
 _emit_snapshots_state("p0", "cli", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -180,7 +180,7 @@ _emit_captures_evaluation_metric("p4", "cli", "eval_metric")
 _emit_stores_embedding("p4", "cli", "embedding_store")
 _emit_updates_meta_learning_state("p4", "cli", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "cli", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_cli", "cli_dispatch_entry")
 emit_determinism_digest("trace_cli", "cli_dispatch_exit")

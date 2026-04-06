@@ -14,7 +14,7 @@ except ImportError as e:
         pass
 
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -105,7 +105,7 @@ _emit_reads_policy_state("p1", "ConstitutionalReviewerAgent", "L5")
 import json
 import uuid
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

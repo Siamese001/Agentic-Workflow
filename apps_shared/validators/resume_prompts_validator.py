@@ -8,7 +8,7 @@ from agentic_core.L0_routing.config.path_constants import get_validated_project_
 _DATA_DIR = get_validated_project_root() / "data"
 
 # Emit trace events
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 _emit_reads_through("l4", "resume_prompts_validator", "urg_read_1")
 _emit_reads_through("l4", "resume_prompts_validator", "urg_read_2")

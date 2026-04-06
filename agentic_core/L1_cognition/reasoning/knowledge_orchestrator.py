@@ -30,7 +30,7 @@ from agentic_core.L1_cognition.reasoning.reasoning_knowledge import (
 )
 
 # ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L1->L5 violation
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

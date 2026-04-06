@@ -46,7 +46,7 @@ import tempfile
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -131,7 +131,7 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     get_validated_project_root,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

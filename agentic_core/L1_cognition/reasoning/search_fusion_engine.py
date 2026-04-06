@@ -24,7 +24,7 @@ from agentic_core.L1_cognition.types.search_types import (
     SearchQuery,
     SearchResponse,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,

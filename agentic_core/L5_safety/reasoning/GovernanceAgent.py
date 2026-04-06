@@ -6,7 +6,7 @@ import importlib
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -106,7 +106,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     enforce_policy_before_action,
 )
 from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 _guardrail = get_guardrail_gate()
 _pep = get_policy_enforcement_point()
@@ -124,7 +124,7 @@ except ImportError as e:
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, TESTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
@@ -201,7 +201,7 @@ _emit_writes_through("p1", "GovernanceAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "GovernanceAgent", "safety_validation")
 _emit_invokes_eval("p1", "GovernanceAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "GovernanceAgent", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_entry")
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_exit")

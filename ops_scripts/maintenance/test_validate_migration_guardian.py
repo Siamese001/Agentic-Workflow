@@ -8,7 +8,7 @@ import shutil
 import sys
 import tempfile
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,

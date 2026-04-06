@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -107,7 +107,7 @@ for t in sorted(territories, key=lambda x: x.get("Heal Cap %", 100)):
     total = t.get("Total", 0)
     if heal_cap < 100:
         print(f"  {t['Territory']}: {heal_cap}% ({total} agents)")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

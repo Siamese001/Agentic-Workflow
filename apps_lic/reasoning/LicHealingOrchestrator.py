@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.utils import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -84,7 +84,7 @@ from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrato
 _emit_reads_policy_state("p0", "LicHealingOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "LicHealingOrchestrator", "state_snapshot")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

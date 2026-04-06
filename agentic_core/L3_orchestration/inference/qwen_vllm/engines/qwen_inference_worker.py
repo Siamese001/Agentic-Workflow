@@ -14,7 +14,7 @@ from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
     QwenModelConfig,
     QwenPromptConfig,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_execution_output,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,

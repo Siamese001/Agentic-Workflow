@@ -14,7 +14,7 @@ from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_X as _CONF_X,
     HEALING_CONFIDENCE_Y as _CONF_Y,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -100,7 +100,7 @@ _emit_captures_evaluation_metric("p4", "_ssot_reporting", "eval_metric")
 _emit_stores_embedding("p4", "_ssot_reporting", "embedding_store")
 _emit_updates_meta_learning_state("p4", "_ssot_reporting", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "_ssot_reporting", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

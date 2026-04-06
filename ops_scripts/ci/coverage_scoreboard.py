@@ -56,7 +56,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 DEFAULT_GAP_JSON = Path('docs/reports/plans/v15_gap_analysis.json')
 CANONICAL_LAYER_KEYS = frozenset({'A_TYPES_DEFINED', 'B_CONTRACT_ENFORCER', 'C_TEST_COVERAGE', 'D_RUNTIME_WIRED', 'E_CI_ENFORCED'})

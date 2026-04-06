@@ -13,7 +13,7 @@ Pattern Detection:
 import ast
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -105,7 +105,7 @@ _emit_reads_policy_state("p1", "silent_swallower_validator", "L5")
 
 _emit_applies_guardrail("p0", "silent_swallower_validator", "p0_governance")
 _emit_snapshots_state("p0", "silent_swallower_validator", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

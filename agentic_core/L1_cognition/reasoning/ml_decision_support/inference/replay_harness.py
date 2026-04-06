@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace
 
 from ..models.base_model import ModelPrediction
 

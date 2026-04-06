@@ -17,7 +17,7 @@ from typing import Any
 
 import numpy as np
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_improves_agent_policy,
     _emit_records_learning_event,
     _emit_stores_learning_state,

@@ -39,7 +39,7 @@ from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
     HealContext,
 )
 from ops_scripts.dev_tools.L0_routing_scripts._ssot_validation_artifacts import _record_healing_action
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -83,7 +83,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -120,7 +120,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace__ssot_phases", "_ssot_phases_dispatch_entry")
 emit_determinism_digest("trace__ssot_phases", "_ssot_phases_dispatch_exit")

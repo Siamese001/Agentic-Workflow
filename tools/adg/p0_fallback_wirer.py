@@ -9,7 +9,7 @@ import ast
 import glob
 import os
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -41,22 +41,22 @@ LAYER_PATHS = {
 DIM_CONFIG = {
     "evidence": {
         "emit_func": "_emit_records_execution_trace",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402",
         "call_code": '_emit_records_execution_trace("p0", "evidence", "{basename}")',
     },
     "governance": {
         "emit_func": "_emit_applies_guardrail",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402",
         "call_code": '_emit_applies_guardrail("p0", "{basename}", "p0_governance")',
     },
     "trace": {
         "emit_func": "_emit_signs_execution_trace",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402",
         "call_code": '_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)',
     },
     "runtime": {
         "emit_func": "_emit_snapshots_state",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402",
         "call_code": '_emit_snapshots_state("p0", "{basename}", "state_snapshot")',
     },
 }

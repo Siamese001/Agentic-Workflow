@@ -66,7 +66,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 SSOT_TARGETS: dict[str, str] = {'archives': 'ARCHIVES_DIR', 'agentic_core': 'AGENTIC_CORE_DIR', 'apps_lic': 'APPS_LIC_DIR', 'apps_rg': 'APPS_RG_DIR', 'apps_shared': 'APPS_SHARED_DIR', 'ops_scripts': 'OPS_SCRIPTS_DIR', 'tests': 'TESTS_DIR', 'system_learning': 'SYSTEM_LEARNING_DIR', 'tools': 'TOOLS_DIR', 'agentic_core/L0_routing': 'L0_ROUTING_DIR', 'agentic_core/L1_cognition': 'L1_COGNITION_DIR', 'agentic_core/L2_execution': 'L2_EXECUTION_DIR', 'agentic_core/L3_orchestration': 'L3_ORCHESTRATION_DIR', 'agentic_core/L4_state': 'L4_STATE_DIR', 'agentic_core/L5_safety': 'L5_SAFETY_DIR', 'agentic_core/L6_observability': 'L6_OBSERVABILITY_DIR'}
 SCAN_ROOTS: list[str] = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, TESTS_DIR, TOOLS_DIR, SYSTEM_LEARNING_DIR, 'data', 'docs']

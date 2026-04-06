@@ -7,7 +7,7 @@ Scans the codebase for filename length violations (>5 words).
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -96,7 +96,7 @@ root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(root))
 from agentic_core.L0_routing.enforcement.safety_validators_seam import load_hygiene_guardian
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

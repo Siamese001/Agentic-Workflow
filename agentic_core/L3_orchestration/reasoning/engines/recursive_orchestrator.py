@@ -28,7 +28,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -115,7 +115,7 @@ _emit_validates_agent_capability("p1", "recursive_orchestrator", "L3")
 _emit_checks_agent_registry("p1", "recursive_orchestrator", "L3")
 
 _emit_snapshots_state("p0", "recursive_orchestrator", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

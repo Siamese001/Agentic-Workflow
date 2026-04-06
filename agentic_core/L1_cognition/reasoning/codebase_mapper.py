@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -55,7 +55,7 @@ from pathlib import Path
 from typing import Any
 
 # GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS imported lazily to avoid L1->L5 violation
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

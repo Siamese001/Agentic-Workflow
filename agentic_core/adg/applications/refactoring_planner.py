@@ -32,7 +32,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
 from agentic_core.adg.schema import module_path_to_layer
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -106,7 +106,7 @@ if TYPE_CHECKING:
     from agentic_core.adg.analysis.hotspot_index import HotspotIndex
     from agentic_core.adg.analysis.test_gap import TestGapReport
     from agentic_core.adg.extraction.static_scanner import ScanResult
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

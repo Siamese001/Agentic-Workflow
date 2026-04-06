@@ -14,7 +14,7 @@ from agentic_core.L5_safety.validators.structure_drift_validator import (
     generate_structure_manifest,
     load_manifest,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ _emit_records_execution_trace("p0", "evidence", "structure_drift_validator")
 _emit_applies_guardrail("p0", "structure_drift_validator", "p0_governance")
 _emit_reads_policy_state("p0", "structure_drift_validator", "policy_binding")
 _emit_snapshots_state("p0", "structure_drift_validator", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -59,7 +59,7 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     get_validated_project_root,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 _GOVERNANCE_EXCLUDES = frozenset({'__init__.py', 'active_set_helper.py', 'active_set_ssot_check.py', 'active_set_snapshot_check.py', 'baseline_io.py', 'gate_consistency_check.py', 'governance_coverage_check.py', 'mro_new_diamond_check.py'})
 _GOVERNANCE_MARKERS = ('active_set_helper', 'active set', 'get_active_set', 'agent_count_cap', 'registry_consistency_check')

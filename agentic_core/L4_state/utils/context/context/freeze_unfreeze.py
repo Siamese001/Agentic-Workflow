@@ -22,7 +22,7 @@ from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
     HumanDecisionArtifact,
     create_human_review_draft,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_dispatches_healing_run,

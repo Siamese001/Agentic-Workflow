@@ -26,10 +26,10 @@ FIXES = [
      "from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, TESTS_UNIT_DIR"),
     # _emit_writes_through in transcript_freezer.py
     ("agentic_core/L2_execution/enforcement/transcript_freezer.py", "_emit_writes_through",
-     "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through"),
+     "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through"),
     # _emit_writes_through in redis_coordination_fabric.py
     ("agentic_core/cache/redis_coordination_fabric.py", "_emit_writes_through",
-     "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through"),
+     "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through"),
     # AGENTIC_CORE_DIR in forge_fortress_util.py
     ("agentic_core/L5_safety/utils/forge_fortress_util.py", "AGENTIC_CORE_DIR",
      "from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR"),

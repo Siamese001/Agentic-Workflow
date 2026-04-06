@@ -23,7 +23,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
@@ -104,7 +104,7 @@ _emit_captures_evaluation_metric("p4", "UnifiedAgent", "eval_metric")
 _emit_stores_embedding("p4", "UnifiedAgent", "embedding_store")
 _emit_updates_meta_learning_state("p4", "UnifiedAgent", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "UnifiedAgent", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -864,7 +864,7 @@ class UnifiedAgent(SovereignBaseAgent):
         self, **kwargs: Any
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
-        from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
+        from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: PLC0415
             LayerSegment,
             _emit_records_execution_trace,
         )

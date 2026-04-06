@@ -11,7 +11,7 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
 

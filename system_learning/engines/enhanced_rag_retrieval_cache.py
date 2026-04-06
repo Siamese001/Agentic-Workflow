@@ -29,7 +29,7 @@ from agentic_core.embeddings.embedding_factory import (
     is_enabled,
 )
 from agentic_core.embeddings.embedding_input_guard import GuardedText
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_captures_pattern,

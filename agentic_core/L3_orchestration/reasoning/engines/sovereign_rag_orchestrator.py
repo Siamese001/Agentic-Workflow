@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -131,7 +131,7 @@ def _get_retrieval_anchor_types():
     return (AnchoredResult, RetrievalAnchor)
 
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -211,7 +211,7 @@ _emit_writes_through("p1", "sovereign_rag_orchestrator", "write_through_2")
 _emit_validated_by_safety_plane("p1", "sovereign_rag_orchestrator", "safety_validation")
 _emit_invokes_eval("p1", "sovereign_rag_orchestrator", "eval_call")
 _emit_proposal_commits_routing("p1", "sovereign_rag_orchestrator", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_dispatch_entry")
 emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_dispatch_exit")

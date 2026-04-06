@@ -10,7 +10,7 @@ Aligned with apps_* pattern with full lifecycle trace contract integration.
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_reads_environ,
     _emit_reads_policy_state,

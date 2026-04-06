@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -109,7 +109,7 @@ except ImportError:  # guardian: allow-silent-swallow
 
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase as L0RoutingBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.autonomy_mixin import AutonomyMixin
 from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
 from agentic_core.utils.timeout_decorator_util import timeout
@@ -126,7 +126,7 @@ except ImportError:
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,

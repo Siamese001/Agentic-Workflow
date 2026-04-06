@@ -14,7 +14,7 @@ import logging
 import re
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -83,7 +83,7 @@ from apps_rg.engines.base_rg_engine import BaseRGEngine
 _emit_applies_guardrail("p0", "ats_compatibility_engine", "p0_governance")
 _emit_reads_policy_state("p0", "ats_compatibility_engine", "policy_binding")
 _emit_snapshots_state("p0", "ats_compatibility_engine", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

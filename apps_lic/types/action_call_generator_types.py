@@ -1,5 +1,5 @@
 """Action Call Generator Agent - CTA Generator (K.5)
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 
 # NAMING FIXED: LOGGER → Logger

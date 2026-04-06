@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,7 +93,7 @@ _emit_dispatches_execution_plan("p1", "app_remediation_dispatcher", "apps")
 _emit_validates_agent_capability("p1", "app_remediation_dispatcher", "apps")
 _emit_checks_agent_registry("p1", "app_remediation_dispatcher", "apps")
 _emit_snapshots_state("p0", "app_remediation_dispatcher", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

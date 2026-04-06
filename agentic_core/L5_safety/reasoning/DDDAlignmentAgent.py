@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -95,7 +95,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -551,7 +551,7 @@ if __name__ == "__main__":
     result = agent.heal_repository(dry_run=True)
     print(f"\nAlignment Score: {result['alignment_score']:.1f}%")
     print(f"Violations: {result['violations_found']}")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,

@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from typing import Any, Callable
 
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -115,7 +115,7 @@ except ImportError:  # guardian: allow-silent-swallow
     _HAS_RESOURCE = False
 _HAS_SIGALRM = hasattr(signal, "SIGALRM")
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

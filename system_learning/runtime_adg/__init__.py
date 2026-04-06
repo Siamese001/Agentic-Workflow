@@ -14,7 +14,7 @@ FileBackedRuntimeADGStore  — file-backed L4 store (production)
 L6MetaLearningBridge        — L6 meta-learning integration (system learning)
 """
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )

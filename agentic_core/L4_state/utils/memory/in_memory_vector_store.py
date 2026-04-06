@@ -5,7 +5,7 @@ import math
 
 from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
 from agentic_core.L4_state.types.vector_store_types import BaseVectorStore
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -87,7 +87,7 @@ _emit_captures_evaluation_metric("p4", "in_memory_vector_store", "eval_metric")
 _emit_stores_embedding("p4", "in_memory_vector_store", "embedding_store")
 _emit_updates_meta_learning_state("p4", "in_memory_vector_store", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "in_memory_vector_store", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

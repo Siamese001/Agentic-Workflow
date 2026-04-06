@@ -28,7 +28,7 @@ from agentic_core.L0_routing.reasoning.routing_optimization import (
     RoutingOptimizationRecord,
     get_routing_optimization_registry,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

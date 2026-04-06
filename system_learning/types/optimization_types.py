@@ -25,7 +25,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass, field
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,7 +87,7 @@ _emit_captures_evaluation_metric("p4", "optimization_types", "eval_metric")
 _emit_stores_embedding("p4", "optimization_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "optimization_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "optimization_types", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

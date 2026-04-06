@@ -58,7 +58,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, THRESHOLD
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -129,7 +129,7 @@ _emit_links_execution_to_snapshot("p4", "bulkhead_manager_util", "exec_snapshot_
 _emit_applies_guardrail("p0", "bulkhead_manager_util", "p0_governance")
 _emit_reads_policy_state("p0", "bulkhead_manager_util", "policy_binding")
 _emit_snapshots_state("p0", "bulkhead_manager_util", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

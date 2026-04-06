@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -98,7 +98,7 @@ from agentic_core.L3_orchestration.reasoning.engines.coordinator_capability_orch
 )
 
 # get_breaker imported lazily to avoid L3->L5 violation
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -170,7 +170,7 @@ _emit_writes_through("p1", "rl_coordinator_orchestrator", "write_through_2")
 _emit_validated_by_safety_plane("p1", "rl_coordinator_orchestrator", "safety_validation")
 _emit_invokes_eval("p1", "rl_coordinator_orchestrator", "eval_call")
 _emit_proposal_commits_routing("p1", "rl_coordinator_orchestrator", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_rl_coordinator_orchestrator", "rl_coordinator_orchestrator_dispatch_entry")
 emit_determinism_digest("trace_rl_coordinator_orchestrator", "rl_coordinator_orchestrator_dispatch_exit")

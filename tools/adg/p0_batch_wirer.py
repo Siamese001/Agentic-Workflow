@@ -14,7 +14,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -36,7 +36,7 @@ DIMENSION_CONFIG = {
     "evidence": {
         "check_edges": ["records_execution_trace", "emits_replay_key", "emits_determinism_digest"],
         "emit_func": "_emit_records_execution_trace",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace",
         "call_lines": [
             "import uuid as _uuid  # noqa: PLC0415",
             "_trace_id = str(_uuid.uuid4())",
@@ -51,7 +51,7 @@ DIMENSION_CONFIG = {
             "verifies_boundary",
         ],
         "emit_func": "_emit_applies_guardrail",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_applies_guardrail",
         "call_lines": [
             "import uuid as _uuid  # noqa: PLC0415",
             '_emit_applies_guardrail(str(_uuid.uuid4()), "{method}", "p0_governance")',
@@ -60,7 +60,7 @@ DIMENSION_CONFIG = {
     "trace": {
         "check_edges": ["signs_execution_trace", "transcripts_response", "hard_fails_untranscripted"],
         "emit_func": "_emit_signs_execution_trace",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_signs_execution_trace",
         "call_lines": [
             "import uuid as _uuid  # noqa: PLC0415",
             "import hashlib as _hashlib  # noqa: PLC0415",
@@ -77,7 +77,7 @@ DIMENSION_CONFIG = {
             "gated_by_confidence",
         ],
         "emit_func": "_emit_snapshots_state",
-        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state",
+        "import_line": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_snapshots_state",
         "call_lines": [
             "import uuid as _uuid  # noqa: PLC0415",
             '_emit_snapshots_state(str(_uuid.uuid4()), "{method}", "state_snapshot")',

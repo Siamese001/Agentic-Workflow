@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -68,7 +68,7 @@ from agentic_core.L3_orchestration.types.coordination_ledger import (
     update_coordination_ledger,
 )
 from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_transcripts_response,
@@ -107,7 +107,7 @@ try:
 except ImportError:
     GITPYTHON_AVAILABLE = False
     Repo = None
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
@@ -142,7 +142,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")

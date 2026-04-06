@@ -4,7 +4,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     REPORTS_DIR,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -115,7 +115,7 @@ from agentic_core.L0_routing.config import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -193,7 +193,7 @@ _emit_writes_through("p1", "root_hygiene_healer", "write_through_2")
 _emit_validated_by_safety_plane("p1", "root_hygiene_healer", "safety_validation")
 _emit_invokes_eval("p1", "root_hygiene_healer", "eval_call")
 _emit_proposal_commits_routing("p1", "root_hygiene_healer", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_dispatch_entry")
 emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_dispatch_exit")

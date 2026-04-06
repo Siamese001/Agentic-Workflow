@@ -22,7 +22,7 @@ except ImportError:  # guardian: allow-silent-swallow
 
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -132,7 +132,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     has_forbidden_layer_prefix,
     is_broken_backup_file,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

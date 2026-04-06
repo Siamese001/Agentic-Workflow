@@ -26,37 +26,37 @@ EMIT_FUNCS = {
 DIM_CONFIG = {
     "records_execution_trace": {
         "emit_func": "_emit_records_execution_trace",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402",
         "call_code": '_emit_records_execution_trace("p0", "evidence", "{basename}")',
     },
     "applies_guardrail": {
         "emit_func": "_emit_applies_guardrail",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402",
         "call_code": '_emit_applies_guardrail("p0", "{basename}", "p0_governance")',
     },
     "reads_policy_state": {
         "emit_func": "_emit_reads_policy_state",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402",
         "call_code": '_emit_reads_policy_state("p0", "{basename}", "policy_binding")',
     },
     "snapshots_state": {
         "emit_func": "_emit_snapshots_state",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402",
         "call_code": '_emit_snapshots_state("p0", "{basename}", "state_snapshot")',
     },
     "emits_replay_key": {
         "emit_func": "emit_replay_key",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_replay_key  # noqa: E402",
         "call_code": 'emit_replay_key("p0", "{basename}")',
     },
     "emits_determinism_digest": {
         "emit_func": "emit_determinism_digest",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402",
         "call_code": 'emit_determinism_digest("p0", "{basename}")',
     },
     "signs_execution_trace": {
         "emit_func": "_emit_signs_execution_trace",
-        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402",
+        "import_from": "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402",
         "call_code": '_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)',
     },
 }
@@ -122,7 +122,7 @@ def get_emit_lines_from_docstring(lines: list[str], doc_start: int, doc_end: int
 
     for i in range(doc_start, doc_end):
         s = lines[i].strip()
-        if s.startswith("from agentic_core.runtime.lifecycle_trace_contract import"):
+        if s.startswith("from agentic_core.runtime.contracts.lifecycle_trace_contract import"):
             extracted_imports.append(s.split("#")[0].strip() + "  # noqa: E402")
             spurious_line_indices.append(i)
         elif any(f in s for f in EMIT_FUNCS) and "(" in s and not s.startswith("#"):

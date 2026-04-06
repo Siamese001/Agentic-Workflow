@@ -33,7 +33,7 @@ def _get_agent_dispatch_registry() -> Any:
             _agent_dispatch_registry_cache = _NoOpRegistry()
     return _agent_dispatch_registry_cache
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -83,7 +83,7 @@ _emit_dispatches_execution_plan("p1", "_ssot_pipeline", "L0")
 _emit_validates_agent_capability("p1", "_ssot_pipeline", "L0")
 _emit_checks_agent_registry("p1", "_ssot_pipeline", "L0")
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -116,7 +116,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace__ssot_pipeline", "_ssot_pipeline_dispatch_entry")
 emit_determinism_digest("trace__ssot_pipeline", "_ssot_pipeline_dispatch_exit")

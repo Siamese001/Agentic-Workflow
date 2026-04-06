@@ -1,5 +1,5 @@
 """
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 Optimization Strategies for Reasoning Engines
 
 Implements early stopping, path pruning, and convergence detection

@@ -8,7 +8,7 @@ from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -97,7 +97,7 @@ _emit_validates_agent_capability("p1", "DomainPlannerAgent", "L3")
 _emit_checks_agent_registry("p1", "DomainPlannerAgent", "L3")
 
 _emit_snapshots_state("p0", "DomainPlannerAgent", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

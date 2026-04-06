@@ -29,7 +29,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402  # noqa: E402
@@ -122,7 +122,7 @@ _emit_escalates_to_human("p1", "ReportLocationAgent", "L5")
 _emit_reads_policy_state("p1", "ReportLocationAgent", "L5")
 _emit_applies_guardrail("p0", "ReportLocationAgent", "p0_governance")
 _emit_snapshots_state("p0", "ReportLocationAgent", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

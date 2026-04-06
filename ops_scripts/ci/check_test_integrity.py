@@ -84,7 +84,7 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 _DEFAULT_SCAN_DIRS = [TESTS_DIR]
 _GUARDIAN_ALLOW_PREFIX = '# guardian: allow-'

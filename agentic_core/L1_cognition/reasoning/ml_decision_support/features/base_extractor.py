@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace
 
 from ..config.feature_schemas import FeatureDefinition, FeatureSchema, NullHandling
 

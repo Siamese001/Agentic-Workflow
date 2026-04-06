@@ -41,7 +41,7 @@ from agentic_core.L3_orchestration.utils.registry.capability_registry import (
     get_capability_registry,
     resolve_agent_for_capability,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -92,7 +92,7 @@ _emit_dispatches_execution_plan("p1", "agent_handoff", "L3")
 _emit_validates_agent_capability("p1", "agent_handoff", "L3")
 _emit_checks_agent_registry("p1", "agent_handoff", "L3")
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -124,7 +124,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_entry")
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_exit")

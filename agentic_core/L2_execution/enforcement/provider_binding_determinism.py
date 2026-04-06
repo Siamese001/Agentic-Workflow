@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -96,7 +96,7 @@ _emit_captures_evaluation_metric("p4", "provider_binding_determinism", "eval_met
 _emit_stores_embedding("p4", "provider_binding_determinism", "embedding_store")
 _emit_updates_meta_learning_state("p4", "provider_binding_determinism", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "provider_binding_determinism", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

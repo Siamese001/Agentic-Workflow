@@ -28,7 +28,7 @@ import logging
 import threading
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     emit_determinism_digest,
     emit_replay_key,

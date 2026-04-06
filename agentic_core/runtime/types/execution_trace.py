@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 def _bootstrap_determinism_digest() -> None:
     """Deferred bootstrap to avoid circular import with lifecycle_trace_contract."""
-    from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: PLC0415
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest  # noqa: PLC0415
 
     emit_determinism_digest("execution_trace", "execution_trace_digest")
     _logger.debug("execution_trace determinism digest emitted")

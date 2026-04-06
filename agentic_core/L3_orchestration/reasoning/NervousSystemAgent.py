@@ -7,7 +7,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402
@@ -103,7 +103,7 @@ from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
 
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -178,7 +178,7 @@ _emit_writes_through("p1", "NervousSystemAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "NervousSystemAgent", "safety_validation")
 _emit_invokes_eval("p1", "NervousSystemAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "NervousSystemAgent", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_dispatch_entry")
 emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_dispatch_exit")

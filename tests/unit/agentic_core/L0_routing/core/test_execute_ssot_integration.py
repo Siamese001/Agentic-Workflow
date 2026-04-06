@@ -141,7 +141,7 @@ class TestExecuteSsotEmitterSpyPattern:
 
     def test_emitters_log_to_trace_contract(self, captured_emitter_logs, tmp_path):
         """Verify that calling emitters produces log records (real behavior test)."""
-        from agentic_core.runtime.lifecycle_trace_contract import (
+        from agentic_core.runtime.contracts.lifecycle_trace_contract import (
             _emit_applies_guardrail,
             _emit_snapshots_state,
         )
@@ -156,7 +156,7 @@ class TestExecuteSsotEmitterSpyPattern:
 
     def test_emitter_produces_deterministic_output(self, tmp_path):
         """Verify emitter calls produce consistent, deterministic output."""
-        from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state
+        from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_policy_state
 
         # Call emitter twice with same args (including required layer argument)
         # Verify behavior is consistent (not testing mock calls)

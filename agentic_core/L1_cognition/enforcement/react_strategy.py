@@ -11,7 +11,7 @@ from agentic_core.L1_cognition.types.react_trace_types import (
     ReplayGuard,
     assert_c0_informational,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

@@ -23,7 +23,7 @@ from agentic_core.L1_cognition.types.observability_types import (
     HealthStatus,
     MetricPoint,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -109,7 +109,7 @@ _emit_captures_evaluation_metric("p4", "meta_observability", "eval_metric")
 _emit_stores_embedding("p4", "meta_observability", "embedding_store")
 _emit_updates_meta_learning_state("p4", "meta_observability", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "meta_observability", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -182,7 +182,7 @@ _emit_writes_through("p1", "meta_observability", "write_through_2")
 _emit_validated_by_safety_plane("p1", "meta_observability", "safety_validation")
 _emit_invokes_eval("p1", "meta_observability", "eval_call")
 _emit_proposal_commits_routing("p1", "meta_observability", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 record_execution_trace("meta_observability", "meta_observability_trace")
 

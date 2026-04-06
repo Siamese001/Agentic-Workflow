@@ -23,7 +23,7 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

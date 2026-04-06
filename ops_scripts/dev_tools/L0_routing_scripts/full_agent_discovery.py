@@ -59,7 +59,7 @@ from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import (
     invalidate_cache,
     load_agent_discovery,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -167,7 +167,7 @@ def _get_safe_subprocess_check_output():
 
 
 classification_cache_context = get_classification_cache_context()
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -247,7 +247,7 @@ _emit_writes_through("p1", "full_agent_discovery", "write_through_2")
 _emit_validated_by_safety_plane("p1", "full_agent_discovery", "safety_validation")
 _emit_invokes_eval("p1", "full_agent_discovery", "eval_call")
 _emit_proposal_commits_routing("p1", "full_agent_discovery", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 from agentic_core.config.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_entry")

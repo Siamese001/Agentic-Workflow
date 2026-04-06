@@ -10,7 +10,7 @@ from __future__ import annotations
 import builtins
 from typing import Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -94,7 +94,7 @@ _emit_hard_fails_untranscripted("p1", "ptc_registry")
 _emit_gated_by_confidence("p1", "ptc_registry", "confidence_gate")
 _emit_escalates_to_human("p1", "ptc_registry", "L3")
 _emit_reads_policy_state("p1", "ptc_registry", "L3")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

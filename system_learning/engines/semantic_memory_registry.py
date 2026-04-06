@@ -36,7 +36,7 @@ import logging
 import threading
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -113,7 +113,7 @@ from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmb
 
 _emit_applies_guardrail("p0", "semantic_memory_registry", "p0_governance")
 _emit_snapshots_state("p0", "semantic_memory_registry", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

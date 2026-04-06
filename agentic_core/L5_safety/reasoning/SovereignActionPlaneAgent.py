@@ -6,7 +6,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -107,7 +107,7 @@ from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionPro
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L5_safety.config.structure_blueprint import SCRIPTS_DIR
 from agentic_core.L5_safety.enforcement.gates.tool_safety_gate import ToolSafetyGate
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -187,7 +187,7 @@ _emit_writes_through("p1", "SovereignActionPlaneAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "SovereignActionPlaneAgent", "safety_validation")
 _emit_invokes_eval("p1", "SovereignActionPlaneAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "SovereignActionPlaneAgent", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_SovereignActionPlaneAgent", "SovereignActionPlaneAgent_dispatch_entry")
 emit_determinism_digest("trace_SovereignActionPlaneAgent", "SovereignActionPlaneAgent_dispatch_exit")

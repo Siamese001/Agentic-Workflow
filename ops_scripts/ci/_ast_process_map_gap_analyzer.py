@@ -37,7 +37,7 @@ from typing import Dict, List, Set, Tuple
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
 
 class FunctionalAreaExtractor(ast.NodeVisitor):

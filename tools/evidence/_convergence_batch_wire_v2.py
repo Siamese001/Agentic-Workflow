@@ -58,11 +58,11 @@ def find_last_import_line(source: str) -> int:
 def find_existing_lifecycle_import_line(lines: list[str]) -> int | None:
     """Find if there's already an import from lifecycle_trace_contract.
 
-    Returns 0-indexed line number of the 'from agentic_core.runtime.lifecycle_trace_contract import'
+    Returns 0-indexed line number of the 'from agentic_core.runtime.contracts.lifecycle_trace_contract import'
     line, or None.
     """
     for i, line in enumerate(lines):
-        if "from agentic_core.runtime.lifecycle_trace_contract import" in line:
+        if "from agentic_core.runtime.contracts.lifecycle_trace_contract import" in line:
             return i
     return None
 
@@ -168,10 +168,10 @@ def wire_module(module_rel: str) -> None:
         import_block = []
         if len(symbols_to_import) == 1:
             import_block.append(
-                f"from agentic_core.runtime.lifecycle_trace_contract import {symbols_to_import[0]}"
+                f"from agentic_core.runtime.contracts.lifecycle_trace_contract import {symbols_to_import[0]}"
             )
         else:
-            import_block.append("from agentic_core.runtime.lifecycle_trace_contract import (")
+            import_block.append("from agentic_core.runtime.contracts.lifecycle_trace_contract import (")
             for sym in symbols_to_import:
                 import_block.append(f"    {sym},")
             import_block.append(")")

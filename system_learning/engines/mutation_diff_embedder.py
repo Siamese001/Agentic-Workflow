@@ -23,7 +23,7 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -95,7 +95,7 @@ from system_learning.types.semantic_memory_types import MutationDiffRecord
 
 _emit_applies_guardrail("p0", "mutation_diff_embedder", "p0_governance")
 _emit_snapshots_state("p0", "mutation_diff_embedder", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

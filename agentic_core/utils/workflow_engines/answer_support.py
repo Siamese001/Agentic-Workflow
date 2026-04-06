@@ -18,7 +18,7 @@ that must be explicitly routed through existing governance patterns.
 from __future__ import annotations
 
 # Document imported dynamically to avoid circular import
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -175,7 +175,7 @@ class KeywordAnswerSupportValidator(IAnswerSupportValidator):
         2. Build evidence corpus from chunk content + parent section text.
         3. For each sentence, check whether at least min_overlap_words words
            from that sentence appear in the evidence corpus.
-    from agentic_core.runtime.lifecycle_trace_contract import (
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
         _emit_pulls_context,
         _emit_execution_terminates_at_uwg,
         _emit_writes_through,

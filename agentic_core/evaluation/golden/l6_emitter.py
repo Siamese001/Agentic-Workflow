@@ -10,7 +10,7 @@ import logging
 from typing import Any
 
 from agentic_core.evaluation.golden.golden_evaluator import GoldenEvalResult
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_evaluation_metric,
     _emit_emits_metric_event,
     _emit_records_telemetry_event,

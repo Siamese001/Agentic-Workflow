@@ -28,7 +28,7 @@ from agentic_core.runtime.eval_spine import (  # noqa: F401
 
 warnings.warn(
     "agentic_core.adg.runtime.eval_spine is deprecated. "
-    "Import from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_tracing, "
+    "Import from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_tracing, "
     "instead.",
     DeprecationWarning,
     stacklevel=2,

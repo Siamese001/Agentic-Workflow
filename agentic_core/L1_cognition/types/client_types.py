@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Final
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -94,7 +94,7 @@ _emit_captures_evaluation_metric("p4", "client_types", "eval_metric")
 _emit_stores_embedding("p4", "client_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "client_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "client_types", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

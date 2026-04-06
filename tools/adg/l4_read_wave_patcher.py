@@ -145,7 +145,7 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
         # Strategy A: Find existing parenthesized import from lifecycle_trace_contract
         paren_import_idx = None
         for i, line in enumerate(lines):
-            if "from agentic_core.runtime.lifecycle_trace_contract import (" in line:
+            if "from agentic_core.runtime.contracts.lifecycle_trace_contract import (" in line:
                 paren_import_idx = i
                 break
         if paren_import_idx is not None:
@@ -155,13 +155,13 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
             # Strategy B: Find single-line import from lifecycle_trace_contract
             single_import_idx = None
             for i, line in enumerate(lines):
-                if "from agentic_core.runtime.lifecycle_trace_contract import" in line:
+                if "from agentic_core.runtime.contracts.lifecycle_trace_contract import" in line:
                     single_import_idx = i
                     break
             if single_import_idx is not None:
                 # Add a separate import line right after it
                 lines.insert(single_import_idx + 1,
-                    "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through")
+                    "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through")
             else:
                 # Strategy C: Add new import after last import line
                 insert_idx = 0
@@ -177,7 +177,7 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
                         if ")" in stripped:
                             in_paren = False
                 lines.insert(insert_idx,
-                    "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through")
+                    "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through")
         text = "\n".join(lines)
 
     short_name = module_name.replace("/", "_").replace(".", "_").replace("-", "_")

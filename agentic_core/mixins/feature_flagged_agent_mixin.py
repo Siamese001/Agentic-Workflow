@@ -11,7 +11,7 @@ import uuid
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -100,7 +100,7 @@ from agentic_core.utils.verification_types_util import (
 
 _emit_applies_guardrail("p0", "feature_flagged_agent_mixin", "p0_governance")
 _emit_snapshots_state("p0", "feature_flagged_agent_mixin", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,7 +192,7 @@ _emit_gated_by_confidence("p1", "feature_flagged_agent_mixin", "confidence_gate"
 emit_replay_key("p0", "feature_flagged_agent_mixin")
 emit_determinism_digest("p0", "feature_flagged_agent_mixin")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_feature_flagged_agent_mixin", "feature_flagged_agent_mixin_dispatch_entry")
 emit_determinism_digest("trace_feature_flagged_agent_mixin", "feature_flagged_agent_mixin_dispatch_exit")
