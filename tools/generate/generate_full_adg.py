@@ -399,7 +399,7 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
             pass
 
 
-def _check_p2_pipeline_integrity(sqlite_path: Path | None = None, exempt_files: list[str] | None = None) -> None:
+def _check_p2_pipeline_integrity(sqlite_path: Path | None = None) -> None:
     """Warn if P2 exception swallows exist in ADG pipeline paths.
 
     Tier 2 warns if exception swallows exist in:
@@ -418,7 +418,6 @@ def _check_p2_pipeline_integrity(sqlite_path: Path | None = None, exempt_files: 
 
     Args:
         sqlite_path: Path to SQLite database for exception swallow queries
-        exempt_files: List of file paths to exempt from P2 checks (unused in warning mode)
     """
     if sqlite_path is None or not sqlite_path.exists():
         return

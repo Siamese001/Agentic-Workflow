@@ -323,6 +323,48 @@ class TestP1DefectsCheck:
             _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
         assert exc_info.value.code == 1
 
+    def test_exempt_files_excludes_from_p1_check(self, tmp_path):
+        """Test that exempt_files parameter excludes specific files from P1 layer violation checks."""
+        from tools.generate.generate_full_adg import _check_p1_defects
+        import sqlite3
+
+        routing_summary = {"by_severity": {"critical": 0}}
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite with violates edge in exempted file
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (relation_type TEXT, source_file TEXT)")
+        conn.execute(
+            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py')"
+        )
+        conn.commit()
+        conn.close()
+
+        # Should pass because file is exempted
+        _check_p1_defects(routing_summary, sqlite_path=sqlite_path, exempt_files=["ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py"])
+
+    def test_exempt_files_non_existent_violation_still_blocks(self, tmp_path):
+        """Test that exempt_files only exempts specified files, other violations still block."""
+        from tools.generate.generate_full_adg import _check_p1_defects
+        import sqlite3
+
+        routing_summary = {"by_severity": {"critical": 0}}
+        sqlite_path = tmp_path / "test.sqlite"
+
+        # Create SQLite with violates edge in non-exempted file
+        conn = sqlite3.connect(str(sqlite_path))
+        conn.execute("CREATE TABLE edges (relation_type TEXT, source_file TEXT)")
+        conn.execute(
+            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'other/file.py')"
+        )
+        conn.commit()
+        conn.close()
+
+        # Should fail because violation is in non-exempted file
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p1_defects(routing_summary, sqlite_path=sqlite_path, exempt_files=["ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py"])
+        assert exc_info.value.code == 1
+
     def test_no_graph_corruption_passes(self, tmp_path):
         """Test that clean graph (no in_cycle/dynamic_exec) passes P1 checks."""
         from tools.generate.generate_full_adg import _check_p1_defects
