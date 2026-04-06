@@ -11,34 +11,164 @@ from .models import Violation
 
 
 def _to_pascal_case(name: str) -> str:
-    """Convert string to PascalCase.
+    """Convert snake_case or mixed case to PascalCase.
 
-    TODO: Extract implementation from FileClassificationAgent._to_pascal_case.
+    Example: 'pii_sanitizer' -> 'PiiSanitizer', 'PDFLoader' -> 'PdfLoader'
     """
-    # Simple implementation for now
-    return "".join(word.capitalize() for word in name.split("_"))
+    # If already PascalCase, return as-is
+    if name and name[0].isupper() and "_" not in name:
+        return name
+
+    # Split on underscores and capitalize each part
+    parts = name.split("_")
+    return "".join(word.capitalize() for word in parts if word)
 
 
 def _to_smart_snake_case(name: str) -> str:
-    """Convert string to smart snake_case.
+    """Convert PascalCase to snake_case while preserving acronyms.
 
-    TODO: Extract implementation from FileClassificationAgent._to_smart_snake_case.
+    Example: 'PIISanitizer' -> 'pii_sanitizer', 'PDFLoader' -> 'pdf_loader'
+
+    Hardening: Recognizes project-specific atomic words to prevent false positives.
+    - "Grounding" stays as "grounding", not "g_r_ounding"
+    - "Routing" stays as "routing", not "r_outing"
     """
-    # Simple implementation for now
-    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+    # Project-specific atomic words that should not be split
+    atomic_words = {
+        "Grounding": "grounding",
+        "Routing": "routing",
+        "Sender": "sender",
+        "Receiver": "receiver",
+        "Planner": "planner",
+        "Scheduler": "scheduler",
+        "RG": "rg",  # Resume Generation acronym protection
+    }
+
+    # Check if the entire name is an atomic word
+    if name in atomic_words:
+        return atomic_words[name]
+
+    # Replace atomic words with placeholders before processing
+    placeholders = {}
+    temp_name = name
+    for idx, (word, replacement) in enumerate(atomic_words.items()):
+        if word in temp_name:
+            placeholder = f"__ATOMIC_{idx}__"
+            placeholders[placeholder] = replacement
+            temp_name = temp_name.replace(word, placeholder)
+
+    # Pass 1: Handle acronym boundaries (PDFLoader -> PDF_Loader)
+    s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", temp_name)
+    # Pass 2: Handle standard camel boundaries (LoaderFile -> Loader_File)
+    s2 = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+    # Restore atomic words from placeholders
+    result = s2
+    for placeholder, replacement in placeholders.items():
+        result = result.replace(placeholder.lower(), replacement)
+
+    return result
 
 
-def _sanitize_filename(filename: str) -> str:
-    """Sanitize filename by removing invalid characters.
+def _sanitize_filename(stem: str) -> str:
+    """Strip known architectural suffixes from a filename stem to prevent stuttering.
 
-    TODO: Extract implementation from FileClassificationAgent._sanitize_filename.
+    This prevents "stuttering" (e.g., feature_flags_config_util.py) and
+    "hybrid suffixes" (e.g., embedding_config_types_config.py).
+
+    Logic: Iteratively remove known suffixes until none remain.
+
+    IMPORTANT: Only strips TRAILING architectural suffixes, not semantic content.
+    For example, "agent_discovery" keeps "agent" because it's semantic, not a suffix.
+
+    Args:
+        stem: The filename stem (without .py extension)
+
+    Returns:
+        The sanitized core name with trailing architectural suffixes removed.
+
+    Examples:
+        - "feature_flags_config_util" -> "feature_flags"
+        - "embedding_config_types_config" -> "embedding"
+        - "user_profile_types" -> "user_profile"
+        - "agent_discovery_util" -> "agent_discovery" (keeps semantic "agent")
     """
-    # Simple implementation for now
-    invalid_chars = '<>:"/\\|?*'
-    for char in invalid_chars:
-        filename = filename.replace(char, "_")
-    return filename
+    # Known architectural suffixes to strip (trailing only)
+    # These are file-type markers, not semantic content
+    known_suffixes = [
+        "_config",
+        "_util",
+        "_types",
+        "_mixin",
+        "_base",
+        "_validator",
+        "_protocol",
+        "_strategy",
+        "_adapter",
+        "_factory",
+        "_orchestrator",
+        "_engine",
+        "_gateway",
+        "_stub",
+        "_test",
+        "Config",
+        "Util",
+        "Types",
+        "Script",
+        "Mixin",
+        "Base",
+        "Validator",
+        "Protocol",
+        "Strategy",
+        "Adapter",
+        "Factory",
+        "Orchestrator",
+        "Engine",
+        "Gateway",
+        "Stub",
+        "Test",
+    ]
+
+    # NOTE: "_agent" and "Agent" are NOT stripped because they often carry
+    # semantic meaning (e.g., "agent_discovery" describes what the utility does)
+    # Only strip "_agent" if it's a trailing suffix AND followed by another suffix
+
+    sanitized = stem
+    changed = True
+
+    # Iteratively strip suffixes until no more are found
+    while changed:
+        changed = False
+        for suffix in known_suffixes:
+            if sanitized.endswith(suffix) and len(sanitized) > len(suffix):
+                sanitized = sanitized[: -len(suffix)]
+                changed = True
+                break  # Restart from beginning of suffix list
+
+    # Special case: Strip trailing "_agent" or "Agent" if it appears AFTER a known suffix pattern
+    # This catches cases like "healing_mixin_agent" (mixin before agent) but not "agent_discovery"
+    # Check if the original stem had a pattern like *_mixin_agent, *_config_agent, etc.
+    agent_after_suffix_patterns = [
+        "_mixin_agent",
+        "_config_agent",
+        "_types_agent",
+        "_util_agent",
+        "_validator_agent",
+        "_base_agent",
+    ]
+    for pattern in agent_after_suffix_patterns:
+        if stem.endswith(pattern):
+            # Strip the trailing _agent since it was after another suffix
+            if sanitized.endswith("_agent"):
+                sanitized = sanitized[:-6]
+            elif sanitized.endswith("Agent"):
+                sanitized = sanitized[:-5]
+            break
+
+    # Clean up trailing underscores
+    sanitized = sanitized.rstrip("_")
+
+    return sanitized if sanitized else stem  # Fallback to original if fully stripped
 
 
 def normalize_filename(name: str) -> str:
@@ -93,12 +223,35 @@ def normalize_filename(name: str) -> str:
     return f"{stem}{ext}" if stem else name  # Fallback to original if empty
 
 
-def _check_forbidden_patterns(filename: str) -> list[str]:
-    """Check for forbidden patterns in filename.
+def _check_forbidden_patterns(filename: str) -> list[dict[str, str]]:
+    """Check a filename against FORBIDDEN_FILENAME_PATTERNS from the constitution.
 
-    TODO: Extract implementation from FileClassificationAgent._check_forbidden_patterns.
+    Args:
+        filename: The filename to check (without directory path)
+
+    Returns:
+        List of violation dicts with 'pattern' and 'reason' for each match.
     """
-    return []
+    from agentic_core.L5_safety.config.structure_blueprint import (
+        FORBIDDEN_FILENAME_PATTERNS,
+    )
+
+    violations: list[dict[str, str]] = []
+    # Skip __init__.py — always exempt
+    if filename == "__init__.py":
+        return violations
+
+    stem = filename.removesuffix(".py")
+    for rule in FORBIDDEN_FILENAME_PATTERNS:
+        if re.search(rule["pattern"], stem):
+            violations.append(
+                {
+                    "pattern": rule["pattern"],
+                    "reason": rule["reason"],
+                    "filename": filename,
+                },
+            )
+    return violations
 
 
 def get_compliant_name(

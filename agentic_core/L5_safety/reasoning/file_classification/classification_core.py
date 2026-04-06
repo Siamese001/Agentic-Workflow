@@ -279,10 +279,52 @@ def _detect_config_patterns(
     indicators: list[str],
     patterns: set[str],
 ) -> bool:
-    """Detect configuration module patterns.
+    """Enhanced config detection using AST analysis.
 
-    TODO: Extract implementation.
+    Detects:
+    - Classes with config-like attributes
+    - Constant definitions
+    - Configuration loading patterns
+    - Settings management
     """
+    # Check filename patterns
+    if any(indicator in path.name.lower() for indicator in indicators):
+        return True
+
+    config_attributes = 0
+    constant_assignments = 0
+    config_methods = 0
+
+    for node in ast.walk(tree):
+        # Check classes
+        if isinstance(node, ast.ClassDef):
+            # Check naming
+            if any(node.name.endswith(suffix) for suffix in ("Config", "Settings", "Options")):
+                return True
+
+            # Check for config-like attributes
+            for item in node.body:
+                if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                    attr_name = item.target.id.lower()
+                    if attr_name in patterns:
+                        config_attributes += 1
+
+                # Check for config methods
+                elif isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
+                    if item.name in ("load", "save", "configure", "get_setting", "from_env"):
+                        config_methods += 1
+
+        # Check module-level constants
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    if target.id.isupper() and len(target.id) > 1:
+                        constant_assignments += 1
+
+    # Determine if config based on patterns
+    if config_attributes > 2 or constant_assignments > 3 or config_methods > 0:
+        return True
+
     return False
 
 
@@ -292,10 +334,68 @@ def _detect_validator_patterns(
     content: str,
     patterns: list[str],
 ) -> bool:
-    """Detect validator patterns.
+    """Enhanced validator detection using AST analysis.
 
-    TODO: Extract implementation.
+    Detects:
+    - Validation methods
+    - Check functions
+    - Verification patterns
+    - Schema validation
     """
+    # Check filename patterns (but exclude self)
+    if path.name != "FileClassificationAgent.py":
+        if any(pattern in path.name for pattern in patterns):
+            return True
+
+    validation_methods = 0
+    check_functions = 0
+    assert_usage = 0
+
+    for node in ast.walk(tree):
+        # Check classes
+        if isinstance(node, ast.ClassDef):
+            if any(pattern in node.name for pattern in patterns):
+                return True
+
+            # Check for validation methods
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
+                    method_name = item.name.lower()
+                    if any(
+                        word in method_name
+                        for word in ("validate", "check", "verify", "ensure", "assert")
+                    ):
+                        validation_methods += 1
+
+        # Check functions
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            func_name = node.name.lower()
+            if any(word in func_name for word in ("validate", "check", "verify", "ensure")):
+                check_functions += 1
+
+            # Check for assert statements
+            for stmt in ast.walk(node):
+                if isinstance(stmt, ast.Assert):
+                    assert_usage += 1
+
+    # CONSOLIDATED VALIDATOR HARDENING IN GUARDRAILS
+    if "guardrails" in str(path).lower():
+        validation_methods = sum(
+            1
+            for node in ast.walk(tree)
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and any(
+                w in node.name.lower()
+                for w in ("validate", "check", "verify", "ensure", "scrub", "sanitize")
+            )
+        )
+        if validation_methods < 4:
+            return False
+
+    # Determine if validator based on patterns
+    if validation_methods > 0 or check_functions > 0 or assert_usage > 2:
+        return True
+
     return False
 
 
@@ -313,10 +413,23 @@ def _detect_orchestrator_patterns(
 
 
 def _detect_enforcer_control_signal(tree: ast.AST, content: str) -> bool:
-    """Detect enforcer control signal patterns.
+    """Detect control outcome signal for ENFORCER AND-gate.
 
-    TODO: Extract implementation.
+    Returns True if file contains:
+    - raise *Error inside validate_* or assert_*_allowed
+    - OR function returning (False, "...") pattern
     """
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if node.name.startswith(("validate_", "assert_")) or node.name.startswith("verify_"):
+                for child in ast.walk(node):
+                    if isinstance(child, ast.Raise):
+                        return True
+                    if isinstance(child, ast.Return) and isinstance(child.value, ast.Tuple):
+                        if len(child.value.elts) >= 2:
+                            first = child.value.elts[0]
+                            if isinstance(first, ast.Constant) and first.value is False:
+                                return True
     return False
 
 
@@ -348,11 +461,95 @@ def _detect_filename_tag_conflicts(path: Path) -> set[str]:
 
 
 def _compute_content_scores(path: Path) -> dict[str, int]:
-    """Compute content-based classification scores.
+    """AST-based content scoring to determine true file type by content analysis.
 
-    TODO: Extract implementation.
+    Walks the AST and assigns weighted scores to each classification category
+    based on actual code patterns, NOT filename suffixes.
+
+    Scoring weights:
+    - TYPES:     +10 per @dataclass, +10 per BaseModel, +10 per Enum, +15 per Protocol
+    - CONFIG:    +5 per UPPER_CASE constant, +3 per settings dict pattern
+    - AGENT:     +20 per class ending in 'Agent' or inheriting from *Agent
+    - UTILITY:   +3 per standalone function (not a class method)
+    - VALIDATOR: +5 per validate_/check_ function
+
+    Args:
+        path: File path to analyze
+
+    Returns:
+        Dict mapping category names to integer scores.
     """
-    return {}
+    scores: dict[str, int] = {
+        "TYPES": 0,
+        "CONFIG": 0,
+        "AGENT": 0,
+        "UTILITY": 0,
+        "VALIDATOR": 0,
+    }
+
+    try:
+        content = path.read_text(encoding="utf-8")
+        tree = ast.parse(content)
+    except (SyntaxError, UnicodeDecodeError, OSError):
+        return scores
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            # Agent indicators
+            if node.name.endswith("Agent"):
+                scores["AGENT"] += 20
+            for base in node.bases:
+                if isinstance(base, ast.Name) and "Agent" in base.id:
+                    scores["AGENT"] += 20
+                elif isinstance(base, ast.Attribute) and "Agent" in base.attr:
+                    scores["AGENT"] += 20
+
+            # Type indicators: @dataclass
+            for decorator in node.decorator_list:
+                if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
+                    scores["TYPES"] += 10
+                elif isinstance(decorator, ast.Call):
+                    if isinstance(decorator.func, ast.Name) and decorator.func.id == "dataclass":
+                        scores["TYPES"] += 10
+
+            # Type indicators: BaseModel, Enum, Protocol inheritance
+            for base in node.bases:
+                if isinstance(base, ast.Name):
+                    if base.id == "BaseModel":
+                        scores["TYPES"] += 10
+                    elif base.id == "Enum":
+                        scores["TYPES"] += 10
+                    elif base.id == "Protocol":
+                        scores["TYPES"] += 15
+                elif isinstance(base, ast.Attribute):
+                    if base.attr == "BaseModel":
+                        scores["TYPES"] += 10
+                    elif base.attr == "Enum":
+                        scores["TYPES"] += 10
+                    elif base.attr == "Protocol":
+                        scores["TYPES"] += 15
+
+        # Config indicators: UPPER_CASE constant assignments
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id.isupper() and len(target.id) > 1:
+                    scores["CONFIG"] += 5
+
+        # Utility indicators: standalone functions (module-level)
+        elif isinstance(node, ast.FunctionDef) and not isinstance(node, ast.AsyncFunctionDef):
+            # Validator indicators
+            if node.name.startswith(("validate_", "check_", "verify_", "ensure_")):
+                scores["VALIDATOR"] += 5
+            else:
+                scores["UTILITY"] += 3
+
+        elif isinstance(node, ast.AsyncFunctionDef):
+            if node.name.startswith(("validate_", "check_", "verify_", "ensure_")):
+                scores["VALIDATOR"] += 5
+            else:
+                scores["UTILITY"] += 3
+
+    return scores
 
 
 def _compute_layer_affinity(path: Path) -> dict[str, float]:

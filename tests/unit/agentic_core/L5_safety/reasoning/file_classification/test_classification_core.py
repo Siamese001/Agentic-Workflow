@@ -9,10 +9,14 @@ import pytest
 from pathlib import Path
 
 from agentic_core.L5_safety.reasoning.file_classification.classification_core import (
+    _compute_content_scores,
+    _detect_config_patterns,
+    _detect_enforcer_control_signal,
     _detect_filename_tag_conflicts,
     _detect_script_patterns,
     _detect_test_patterns,
     _detect_type_patterns,
+    _detect_validator_patterns,
 )
 
 
@@ -171,3 +175,174 @@ class TestDetectFilenameTagConflicts:
         result = _detect_filename_tag_conflicts(path)
         # "agents" is a domain word, not a classification tag
         assert len(result) == 0
+
+
+class TestComputeContentScores:
+    """Tests for _compute_content_scores function."""
+
+    def test_agent_detection(self, tmp_path):
+        """Test detection of agent classes."""
+        code = """
+class MyAgent:
+    def execute(self):
+        pass
+"""
+        test_file = tmp_path / "test_agent.py"
+        test_file.write_text(code)
+        result = _compute_content_scores(test_file)
+        assert result["AGENT"] > 0
+
+    def test_dataclass_detection(self, tmp_path):
+        """Test detection of dataclass types."""
+        code = """
+from dataclasses import dataclass
+
+@dataclass
+class MyModel:
+    name: str
+    value: int
+"""
+        test_file = tmp_path / "test_dataclass.py"
+        test_file.write_text(code)
+        result = _compute_content_scores(test_file)
+        assert result["TYPES"] > 0
+
+    def test_config_detection(self, tmp_path):
+        """Test detection of config constants."""
+        code = """
+MAX_RETRIES = 3
+TIMEOUT = 30
+API_KEY = "secret"
+"""
+        test_file = tmp_path / "test_config.py"
+        test_file.write_text(code)
+        result = _compute_content_scores(test_file)
+        assert result["CONFIG"] > 0
+
+
+class TestDetectEnforcerControlSignal:
+    """Tests for _detect_enforcer_control_signal function."""
+
+    def test_raise_in_validate(self):
+        """Test detection of raise in validate function."""
+        code = """
+def validate_input(data):
+    if not data:
+        raise ValueError("Invalid input")
+"""
+        tree = ast.parse(code)
+        result = _detect_enforcer_control_signal(tree, code)
+        assert result is True
+
+    def test_return_false_tuple(self):
+        """Test detection of (False, "...") return pattern."""
+        code = """
+def check_permission(user):
+    if not user.is_admin:
+        return (False, "Not authorized")
+"""
+        tree = ast.parse(code)
+        result = _detect_enforcer_control_signal(tree, code)
+        assert result is True
+
+    def test_no_control_signal(self):
+        """Test that functions without control signals return False."""
+        code = """
+def process_data(data):
+    return data.upper()
+"""
+        tree = ast.parse(code)
+        result = _detect_enforcer_control_signal(tree, code)
+        assert result is False
+
+
+class TestDetectConfigPatterns:
+    """Tests for _detect_config_patterns function."""
+
+    def test_config_class_name(self):
+        """Test detection of Config class suffix."""
+        code = """
+class AppConfig:
+    def __init__(self):
+        self.debug = False
+"""
+        tree = ast.parse(code)
+        result = _detect_config_patterns(
+            tree, Path("app_config.py"), code, ["config"], {"debug", "timeout"}
+        )
+        assert result is True
+
+    def test_config_attributes(self):
+        """Test detection of config-like attributes."""
+        code = """
+class Settings:
+    debug: bool
+    timeout: int
+    api_key: str
+"""
+        tree = ast.parse(code)
+        result = _detect_config_patterns(
+            tree, Path("settings.py"), code, [], {"debug", "timeout", "api_key"}
+        )
+        assert result is True
+
+    def test_non_config_file(self):
+        """Test that non-config files return False."""
+        code = """
+class MyClass:
+    def method(self):
+        return 42
+"""
+        tree = ast.parse(code)
+        result = _detect_config_patterns(
+            tree, Path("regular.py"), code, [], {"debug"}
+        )
+        assert result is False
+
+
+class TestDetectValidatorPatterns:
+    """Tests for _detect_validator_patterns function."""
+
+    def test_validate_method(self):
+        """Test detection of validate method."""
+        code = """
+class MyValidator:
+    def validate_input(self, data):
+        return True
+"""
+        tree = ast.parse(code)
+        result = _detect_validator_patterns(tree, Path("validator.py"), code, ["validate"])
+        assert result is True
+
+    def test_check_function(self):
+        """Test detection of check function."""
+        code = """
+def check_permissions(user):
+    return user.is_admin
+"""
+        tree = ast.parse(code)
+        result = _detect_validator_patterns(tree, Path("checks.py"), code, ["check"])
+        assert result is True
+
+    def test_assert_usage(self):
+        """Test detection of assert statements."""
+        code = """
+def verify_data(data):
+    assert data is not None
+    assert len(data) > 0
+    assert data.get("id") is not None
+"""
+        tree = ast.parse(code)
+        result = _detect_validator_patterns(tree, Path("verify.py"), code, [])
+        assert result is True
+
+    def test_non_validator_file(self):
+        """Test that non-validator files return False."""
+        code = """
+class MyClass:
+    def method(self):
+        return 42
+"""
+        tree = ast.parse(code)
+        result = _detect_validator_patterns(tree, Path("regular.py"), code, [])
+        assert result is False

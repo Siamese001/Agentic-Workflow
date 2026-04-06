@@ -297,6 +297,20 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T7.7: Windsurf Governance Health Check (P1) ----------------------------
+      # Validates Windsurf rules/skills/workflows governance health:
+      # 1) Cross-references to archived files (allows skills/workflows consolidation docs)
+      # 2) RULES_INDEX.md accuracy (validates referenced files exist, excludes glob patterns)
+      # 3) Duplicate content check (within categories only, excludes common template headers)
+      - id: windsurf-governance-health
+        name: "T7.7-P1: Windsurf Governance Health Check"
+        entry: python ops_scripts/ci/check_windsurf_governance.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        files: ^\.windsurf/
+
       # -- T8: Generated-artifact tracking guard ----------------------------------
       # Rejects commits if git tracks any of:
       #   **/guardian_report.json, **/.core_golden_seal, v15_d_evidence_*.json
