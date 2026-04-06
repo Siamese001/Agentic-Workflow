@@ -126,6 +126,18 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_community(self, community_id: str) -> GraphCommunity | None:
+        """Get a community by ID.
+
+        Args:
+            community_id: The ID of the community.
+
+        Returns:
+            GraphCommunity, or None if not found.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
