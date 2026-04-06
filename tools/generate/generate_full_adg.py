@@ -73,7 +73,7 @@ def _is_file_locked(filepath: Path) -> bool:
             return True  # File is locked
         ctypes.windll.kernel32.CloseHandle(handle)
         return False
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- Windows API best-effort: file lock check may fail unpredictably, treat failure as locked
         return True
 
 
@@ -352,8 +352,7 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
                     print("[ERROR] ADG generation failed - graph topology corrupted by cycles")
                     print("[ERROR] Fix circular imports before regenerating ADG")
                     sys.exit(1)
-        except Exception:
-            # If SQLite query fails, skip this check (non-critical at this stage)
+        except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during Tier 1A check falls back gracefully
             pass
 
     # Tier 1B: Check for dynamic_exec edges (graph incompleteness)
@@ -369,8 +368,7 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
                     print("[ERROR] ADG generation failed - graph is provably incomplete")
                     print("[ERROR] Replace eval/exec/dynamic imports with static alternatives")
                     sys.exit(1)
-        except Exception:
-            # If SQLite query fails, skip this check (non-critical at this stage)
+        except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during Tier 1B check falls back gracefully
             pass
 
 
@@ -567,8 +565,7 @@ def generate_full_adg(
 
             bridge = get_sl_memory_bridge()
             bridge.persist_adg_confidence_summary(conf_summary, ts)
-        except Exception:
-            # System learning unavailable - continue without persistence
+        except Exception:  # guardian: allow-silent-swallow -- system learning unavailable: continue ADG generation without confidence persistence
             pass
 
     # --- E10: Repair routing ---
@@ -1146,8 +1143,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                                 temp_conn = sqlite3.connect(str(file_path))
                                 temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                                 temp_conn.close()
-                            except Exception:
-                                pass  # Best-effort cleanup
+                            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure should not block archive deletion
+                                pass
                         file_path.unlink()
                     except OSError as e:
                         print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
@@ -1185,8 +1182,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                                 temp_conn = sqlite3.connect(str(file_path))
                                 temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                                 temp_conn.close()
-                            except Exception:
-                                pass  # Best-effort cleanup
+                            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure should not block orphan deletion
+                                pass
                         file_path.unlink()
 
                         # Delete associated WAL files for SQLite
@@ -2089,7 +2086,7 @@ def _generate_standardized_reports(
                 if app in adg_name or app in resolved_path:
                     unresolved_imports_by_prefix[app] += 1
                     break
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- non-critical: unresolved imports query failure should not block ADG generation
         print(f"[ADG] Warning: Failed to query unresolved imports: {e}")
 
     boundary_report = {
@@ -2472,7 +2469,7 @@ def _check_mcp_config_drift() -> None:
                 print("[WARNING]   Proceeding with ADG generation...")
             else:
                 print("[ADG] MCP config is in sync")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- non-critical: MCP config drift check failure should not block ADG generation
             print(f"[WARNING] Could not check MCP config drift: {e}")
             print("[WARNING]   Proceeding with ADG generation...")
     else:
@@ -2495,10 +2492,10 @@ def _perform_wal_checkpoint() -> None:
                 temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                 temp_conn.close()
                 print(f"[ADG] WAL checkpoint attempted for: {sqlite_file.name}")
-            except Exception:
-                pass  # Silent fail - will be caught by lock check
-    except Exception:
-        pass  # Silent fail - will be caught by lock check
+            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure during lock check
+                pass
+    except Exception:  # guardian: allow-silent-swallow -- best-effort lock check: failure caught by subsequent pre-generation check
+        pass
 
 
 def _check_locked_files() -> None:
@@ -2530,7 +2527,7 @@ def _check_locked_files() -> None:
             sys.exit(1)
         else:
             print("[ADG] No locked SQLite files found - proceeding with generation")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- non-critical: locked file check failure should not block ADG generation
         print(f"[WARNING] Could not check for locked SQLite files: {e}")
         print("[WARNING]   Proceeding with ADG generation...")
 
@@ -2607,7 +2604,7 @@ def _run_repair_orchestrator(adg_artifacts_dir: Path, ts: str, dry_run: bool) ->
         if result.log_path:
             print(f"[ADG] Repair log: {result.log_path}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- non-critical: repair orchestrator failure should not block ADG generation
         print(f"[ADG] Repair orchestrator failed: {e}")
         # Don't fail the whole ADG generation if repair fails
         import traceback
