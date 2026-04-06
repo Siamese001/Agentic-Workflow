@@ -80,6 +80,7 @@ data_dirs:
 special_dirs:
   - "_compat"  # Compatibility shims - re-exports only
   - ".hypothesis"  # Hypothesis test database
+  - "ops_scripts/dev_tools"  # Dev tool scripts that legitimately import higher layers for runtime operations
 
 # Pre-commit specific exclusions
 # These patterns are specific to pre-commit hooks and should be excluded
