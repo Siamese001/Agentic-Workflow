@@ -142,16 +142,16 @@ def _print_defect_table(routing_summary: dict[str, int], semantic_warnings: list
     total = p1_count + p2_count + p3_count + p4_count
 
     print("\n[ADG] Defect Summary:")
-    print("┌─────┬───────────────────────────────┬────────┐")
-    print("│ P#  │ Description                  │ Count  │")
-    print("├─────┼───────────────────────────────┼────────┤")
-    print(f"│ P1  │ CRITICAL - layer violations  │ {p1_count:6} │")
-    print(f"│ P2  │ HIGH - architectural issues  │ {p2_count:6} │")
-    print(f"│ P3  │ MEDIUM - code quality        │ {p3_count:6} │")
-    print(f"│ P4  │ LOW - semantic warnings      │ {p4_count:6} │")
-    print("├─────┼───────────────────────────────┼────────┤")
-    print(f"│ TOT │ TOTAL                        │ {total:6} │")
-    print("└─────┴───────────────────────────────┴────────┘")
+    print("+-----+-------------------------------+--------+")
+    print("| P#  | Description                   | Count  |")
+    print("+-----+-------------------------------+--------+")
+    print(f"| P1  | CRITICAL - layer violations   | {p1_count:6} |")
+    print(f"| P2  | HIGH - architectural issues   | {p2_count:6} |")
+    print(f"| P3  | MEDIUM - code quality         | {p3_count:6} |")
+    print(f"| P4  | LOW - semantic warnings       | {p4_count:6} |")
+    print("+-----+-------------------------------+--------+")
+    print(f"| TOT | TOTAL                         | {total:6} |")
+    print("+-----+-------------------------------+--------+")
 
     # Detail P4 breakdown if there are semantic warnings
     if semantic_warnings:

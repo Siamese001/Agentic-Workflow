@@ -7,9 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from agentic_core.L5_safety.config.severity import (
     SeverityLevel as ValidationSeverity,
+)
+from agentic_core.L5_safety.config.severity import (
     from_legacy_string,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -23,9 +26,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,
-    _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
@@ -72,7 +75,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    LayerSegment,
 )
 
 _emit_applies_guardrail("p0", "validation_severity_config", "p0_governance")
@@ -155,6 +157,7 @@ _emit_gated_by_confidence("p1", "validation_severity_config", "confidence_gate")
 
 _logger = logging.getLogger(__name__)
 
+
 # NAMING FIXED: Provider → Provider
 class Provider(str, Enum):
     """Available LLM providers."""
@@ -194,8 +197,13 @@ class ValidationSeverityConfig(BaseModel):
     def validate_severity(cls, value) -> ValidationSeverity:
         """[HARDENED] Ensure severity is a valid enum member. Converts legacy strings."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationSeverityConfig.validate_severity")
+        _emit_records_execution_trace(
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ValidationSeverityConfig.validate_severity",
+        )
 
         if value is None:
             raise ValueError("Severity is required")

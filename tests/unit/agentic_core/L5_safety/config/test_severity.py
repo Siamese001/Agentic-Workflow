@@ -1,7 +1,5 @@
 """Tests for SeverityLevel SSOT enum and conversion functions."""
 
-import pytest
-
 from agentic_core.L5_safety.config.severity import (
     SeverityLevel,
     from_adg_category,

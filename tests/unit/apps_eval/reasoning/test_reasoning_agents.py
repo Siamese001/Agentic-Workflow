@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch
 
 import pytest
 
@@ -53,7 +53,18 @@ class TestQualityGateAgent:
     @patch("apps_eval.reasoning.QualityGateAgent.emit_determinism_digest")
     @patch("apps_eval.reasoning.QualityGateAgent._emit_snapshots_state")
     @pytest.mark.asyncio
-    async def test_evaluate_quality_gate_passed(self, mock_snapshot, mock_digest, mock_replay, mock_guardrail, mock_gated, mock_telemetry, mock_dispatch, mock_orchestrate, mock_trace):
+    async def test_evaluate_quality_gate_passed(
+        self,
+        mock_snapshot,
+        mock_digest,
+        mock_replay,
+        mock_guardrail,
+        mock_gated,
+        mock_telemetry,
+        mock_dispatch,
+        mock_orchestrate,
+        mock_trace,
+    ):
         """Test quality gate evaluation when passed."""
         from apps_eval.reasoning.QualityGateAgent import QualityGateAgent
 
@@ -77,7 +88,18 @@ class TestQualityGateAgent:
     @patch("apps_eval.reasoning.QualityGateAgent.emit_determinism_digest")
     @patch("apps_eval.reasoning.QualityGateAgent._emit_snapshots_state")
     @pytest.mark.asyncio
-    async def test_evaluate_quality_gate_failed(self, mock_snapshot, mock_digest, mock_replay, mock_guardrail, mock_gated, mock_telemetry, mock_dispatch, mock_orchestrate, mock_trace):
+    async def test_evaluate_quality_gate_failed(
+        self,
+        mock_snapshot,
+        mock_digest,
+        mock_replay,
+        mock_guardrail,
+        mock_gated,
+        mock_telemetry,
+        mock_dispatch,
+        mock_orchestrate,
+        mock_trace,
+    ):
         """Test quality gate evaluation when failed."""
         from apps_eval.reasoning.QualityGateAgent import QualityGateAgent
 
@@ -100,7 +122,18 @@ class TestQualityGateAgent:
     @patch("apps_eval.reasoning.QualityGateAgent._emit_snapshots_state")
     @patch("apps_eval.reasoning.QualityGateAgent._emit_applies_guardrail")
     @pytest.mark.asyncio
-    async def test_evaluate_quality_gate_custom_threshold(self, mock_snapshot, mock_digest, mock_replay, mock_guardrail, mock_gated, mock_telemetry, mock_dispatch, mock_orchestrate, mock_trace):
+    async def test_evaluate_quality_gate_custom_threshold(
+        self,
+        mock_snapshot,
+        mock_digest,
+        mock_replay,
+        mock_guardrail,
+        mock_gated,
+        mock_telemetry,
+        mock_dispatch,
+        mock_orchestrate,
+        mock_trace,
+    ):
         """Test quality gate evaluation with custom threshold."""
         from apps_eval.reasoning.QualityGateAgent import QualityGateAgent
 
