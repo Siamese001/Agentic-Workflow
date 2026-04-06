@@ -7,10 +7,12 @@
 
 | Level | Name | Description | Blocks ADG Gen | Blocks Commit | Auto-Fix Timing | Pre-Commit Hooks | ADG Enforcement | Test Coverage | Current Count |
 |-------|------|-------------|----------------|---------------|-----------------|------------------|-----------------|---------------|---------------|
-| **P1** | CRITICAL | System-breaking or security-critical violations | ✅ YES (fail-fast) | ✅ YES | ✅ YES (before retry) | 7 hooks: T0-guard, T0 (merge conflicts), T1 (syntax), T2-P0 (Ruff CRITICAL), T9 (boundary), T10.6 (ADG unified), T11 (MCP config) | 8 fail-fast checks: `_check_p1_defects()`, layer violations, artifact validity, SQLite integrity, artifact consistency, closure validation, locked files, critical edge coverage (<95%), critical path linkage (>5%) | `test_p1_defects_fail_in_strict_mode()`, `test_no_p1_defects_pass_in_strict_mode()`, `test_p1_defects_ignored_in_non_strict_mode()` | 0 |
-| **P2** | HIGH | Bugs or architectural violations | ❌ NO (tracking only) | ✅ YES | ✅ YES (after generation) | 11 hooks: T2-P1 (Ruff HIGH), T6 (hollow file), T7 (report SSOT), T7.5 (plan SSOT), T7.7 (governance), T8 (generated artifacts), T10 (module collision), T11.3 (pytest SSOT), T12 (guardian exemption) | Architectural detection, module collision, silent swallower detection (tracking only), invalid stub detection (tracking only) | `test_severity.py` (SeverityLevel.HIGH tests), `test_pre_commit_summary_reporter.py` | 0 |
-| **P3** | MEDIUM | Code quality issues | ❌ NO | ❌ NO | ❌ NO | 2 hooks (non-blocking): T2-P2 (Ruff MEDIUM), T4 (guardian comment auto-fix) | Code quality metrics in ADG, semantic warnings | `test_severity.py` (SeverityLevel.MEDIUM tests) | 307 (antipattern) |
-| **P4** | LOW | Minor style issues | ❌ NO | ❌ NO | ❌ NO | 5 hooks (non-blocking): T0 (trailing whitespace, EOF, line endings), T2-P3 (Ruff LOW), T3 (Ruff format) | Semantic enrichment warnings in ADG | `test_severity.py` (SeverityLevel.LOW tests) | 4391 (antipattern) |
+| **P1** | CRITICAL | System-breaking or security-critical violations | ✅ YES (fail-fast) | ✅ YES | ✅ Fix scripts run before manual ADG re-run | 7 hooks: T0-guard, T0 (merge conflicts), T1 (syntax), T2-P0 (Ruff CRITICAL), T9 (boundary), T10.6 (ADG unified), T11 (MCP config) | 8 fail-fast checks: `_check_p1_defects()`, layer violations, artifact validity, SQLite integrity, artifact consistency, closure validation, locked files, critical edge coverage (<95%), critical path linkage (>5%) | `test_p1_defects_fail_in_strict_mode()`, `test_no_p1_defects_pass_in_strict_mode()`, `test_p1_defects_ignored_in_non_strict_mode()` | 0 |
+| **P2** | HIGH | Bugs or architectural violations | ❌ NO (tracking only) | ✅ YES (via T21 summary reporter) | ✅ Fix scripts run after ADG completion | 11 hooks: T2-P1 (Ruff HIGH), T6 (hollow file), T7 (report SSOT), T7.5 (plan SSOT), T7.7 (governance), T8 (generated artifacts), T10 (module collision), T11.3 (pytest SSOT), T12 (guardian exemption) | `SilentSwallowerDetector`, `InvalidStubDetector` in `anti_pattern_scanner_validator.py` (tracking only — recorded in SQLite, do not block) | `test_severity.py` (SeverityLevel.HIGH tests), `test_pre_commit_summary_reporter.py` | 0 |
+| **P3** | MEDIUM | Code quality issues | ❌ NO | ❌ NO | ❌ No auto-fix | 2 hooks (non-blocking): T2-P2 (Ruff MEDIUM), T4 (guardian comment auto-fix) | Code quality metrics in ADG, semantic warnings | `test_severity.py` (SeverityLevel.MEDIUM tests) | 307 ¹ |
+| **P4** | LOW | Minor style issues | ❌ NO | ❌ NO | ❌ No auto-fix | 5 hooks (non-blocking): T0 (trailing whitespace, EOF, line endings), T2-P3 (Ruff LOW), T3 (Ruff format) | Semantic enrichment warnings in ADG | `test_severity.py` (SeverityLevel.LOW tests) | 4391 ¹ |
+
+> ¹ Point-in-time counts from ADG snapshot `04062026_0751` — will drift over time.
 
 ### Key Enforcement Principles
 
@@ -69,10 +71,11 @@ ADG artifacts generated
 | **Impact** | Unused imports, global mutations, test coverage gaps, deprecated APIs, circular dependencies, silent swallowers, invalid stubs |
 | **Blocking Behavior** | Does NOT block ADG generation - tracks violations in SQLite database |
 | **Pre-Commit Hooks** | T2-P1 (Ruff HIGH), T6 (hollow file), T7 (report SSOT), T7.5 (plan SSOT), T7.7 (governance), T8 (generated artifacts), T10 (module collision), T11.3 (pytest SSOT), T12 (guardian exemption) |
-| **ADG Enforcement** | Architectural issue detection, module collision detection, silent swallower detection (tracking only), invalid stub detection (tracking only) |
+| **ADG Enforcement** | `SilentSwallowerDetector`, `InvalidStubDetector` in `anti_pattern_scanner_validator.py` — tracking only, recorded in SQLite, do not block generation |
 | **Fix Script Timing** | After ADG generation completes (automatic rectification) |
-| **Fix Scripts** | `tools/fix/fix_silent_swallowers.py`, `tools/fix/fix_high_severity_silent_swallowers.py`, `tools/fix/fix_invalid_stubs.py` |
-| **Example Violations** | Silent swallowers (except Exception: pass), invalid test stubs, unused imports, circular dependencies |
+| **Fix Scripts** | `tools/fix/fix_silent_swallowers.py`, `tools/fix/fix_high_severity_silent_swallowers.py`, `tools/fix/fix_invalid_stubs.py` (scripts exist on disk; wiring into ADG post-run pipeline is pending) |
+| **Exemption Mechanism** | `# guardian: allow-silent-swallow` (silent swallowers), `# guardian: allow-invalid-stub` (invalid stubs) — placed on line immediately before the violation |
+| **Example Violations** | Silent swallowers (`except Exception: pass`), invalid test stubs (success-only returns), unused imports, circular dependencies |
 
 ### P3 (MEDIUM) - Detailed Breakdown
 
