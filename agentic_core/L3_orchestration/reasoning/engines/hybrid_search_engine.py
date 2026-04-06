@@ -12,7 +12,9 @@ Provides unified 🔵 intent vs 🟠 fact matching across both search modalities
 from __future__ import annotations
 
 import logging
+import sqlite3
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 # BM25Index imported lazily to avoid L3->L4 violation
@@ -49,6 +51,7 @@ class HybridSearchEngine:
         vector_weight: float = 0.7,
         lexical_weight: float = 0.3,
         top_k: int = 10,
+        adg_db_path: str | None = None,
     ):
         """Initialize hybrid search engine.
 
@@ -58,6 +61,7 @@ class HybridSearchEngine:
             vector_weight: Weight for vector scores (default 0.7)
             lexical_weight: Weight for lexical scores (default 0.3)
             top_k: Number of results to return
+            adg_db_path: Path to ADG SQLite database for structural queries
         """
         self.chroma_client = chroma_client
         self.bm25_index = bm25_index
@@ -67,6 +71,10 @@ class HybridSearchEngine:
 
         self._search_count = 0
         self._avg_fusion_time_ms = 0.0
+
+        # ADG SQLite connection for structural queries
+        self.adg_db_path = adg_db_path or "artifacts/adg/adg_indexed_04062026_1246.sqlite"
+        self._adg_conn: sqlite3.Connection | None = None
 
     def search(
         self,
@@ -310,6 +318,166 @@ class HybridSearchEngine:
             "lexical_weight": self.lexical_weight,
             "top_k": self.top_k,
         }
+
+    def _get_adg_connection(self) -> sqlite3.Connection | None:
+        """Get ADG SQLite connection (lazy initialization)."""
+        if self._adg_conn is None:
+            try:
+                db_path = Path(self.adg_db_path)
+                if db_path.exists():
+                    self._adg_conn = sqlite3.connect(str(db_path))
+                    self._adg_conn.row_factory = sqlite3.Row
+                    Logger.info(f"ADG SQLite connection established: {self.adg_db_path}")
+                else:
+                    Logger.warning(f"ADG database not found: {self.adg_db_path}")
+            except Exception as e:
+                Logger.error(f"Failed to connect to ADG database: {e}")
+        return self._adg_conn
+
+    def close_adg_connection(self) -> None:
+        """Close ADG SQLite connection."""
+        if self._adg_conn is not None:
+            self._adg_conn.close()
+            self._adg_conn = None
+            Logger.info("ADG SQLite connection closed")
+
+    def get_callers(self, node_id: int, limit: int = 30) -> list[dict[str, Any]]:
+        """Get nodes that call this node via 'calls' edges (fan-in).
+
+        Args:
+            node_id: ADG node ID
+            limit: Maximum results
+
+        Returns:
+            List of caller nodes with metadata
+        """
+        conn = self._get_adg_connection()
+        if not conn:
+            return []
+
+        try:
+            cur = conn.execute(
+                """SELECT src_id, n.adg_name, n.resolved_path, n.entity_type, n.layer
+                   FROM edges e
+                   JOIN nodes n ON n.id = e.src_id
+                   WHERE e.dst_id = ? AND e.relation_type = 'calls'
+                   LIMIT ?""",
+                (node_id, limit),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except Exception as e:
+            Logger.error(f"ADG query failed (get_callers): {e}")
+            return []
+
+    def get_callees(self, node_id: int, limit: int = 30) -> list[dict[str, Any]]:
+        """Get nodes called by this node via 'calls' edges (fan-out).
+
+        Args:
+            node_id: ADG node ID
+            limit: Maximum results
+
+        Returns:
+            List of callee nodes with metadata
+        """
+        conn = self._get_adg_connection()
+        if not conn:
+            return []
+
+        try:
+            cur = conn.execute(
+                """SELECT dst_id, n.adg_name, n.resolved_path, n.entity_type, n.layer
+                   FROM edges e
+                   JOIN nodes n ON n.id = e.dst_id
+                   WHERE e.src_id = ? AND e.relation_type = 'calls'
+                   LIMIT ?""",
+                (node_id, limit),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except Exception as e:
+            Logger.error(f"ADG query failed (get_callees): {e}")
+            return []
+
+    def get_importers(self, node_id: int, limit: int = 30) -> list[dict[str, Any]]:
+        """Get nodes that import this node via 'imports' edges (fan-in).
+
+        Args:
+            node_id: ADG node ID
+            limit: Maximum results
+
+        Returns:
+            List of importer nodes with metadata
+        """
+        conn = self._get_adg_connection()
+        if not conn:
+            return []
+
+        try:
+            cur = conn.execute(
+                """SELECT src_id, n.adg_name, n.resolved_path, n.entity_type, n.layer
+                   FROM edges e
+                   JOIN nodes n ON n.id = e.src_id
+                   WHERE e.dst_id = ? AND e.relation_type = 'imports'
+                   LIMIT ?""",
+                (node_id, limit),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except Exception as e:
+            Logger.error(f"ADG query failed (get_importers): {e}")
+            return []
+
+    def get_imports(self, node_id: int, limit: int = 30) -> list[dict[str, Any]]:
+        """Get nodes imported by this node via 'imports' edges (fan-out).
+
+        Args:
+            node_id: ADG node ID
+            limit: Maximum results
+
+        Returns:
+            List of imported nodes with metadata
+        """
+        conn = self._get_adg_connection()
+        if not conn:
+            return []
+
+        try:
+            cur = conn.execute(
+                """SELECT dst_id, n.adg_name, n.resolved_path, n.entity_type, n.layer
+                   FROM edges e
+                   JOIN nodes n ON n.id = e.dst_id
+                   WHERE e.src_id = ? AND e.relation_type = 'imports'
+                   LIMIT ?""",
+                (node_id, limit),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except Exception as e:
+            Logger.error(f"ADG query failed (get_imports): {e}")
+            return []
+
+    def get_violations(self, node_id: int) -> list[dict[str, Any]]:
+        """Get governance violations for this node.
+
+        Args:
+            node_id: ADG node ID
+
+        Returns:
+            List of violation edges with metadata
+        """
+        conn = self._get_adg_connection()
+        if not conn:
+            return []
+
+        try:
+            cur = conn.execute(
+                """SELECT e.relation_type, n_dst.adg_name as target_name, n_dst.resolved_path
+                   FROM edges e
+                   JOIN nodes n_dst ON n_dst.id = e.dst_id
+                   WHERE e.src_id = ? AND e.relation_type IN ('violates', 'gravity_violates')""",
+                (node_id,),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except Exception as e:
+            Logger.error(f"ADG query failed (get_violations): {e}")
+            return []
 
 
 # Global instance
