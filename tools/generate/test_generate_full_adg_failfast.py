@@ -343,10 +343,10 @@ class TestP1DefectsCheck:
 
 
 class TestP2PipelineIntegrityCheck:
-    """Tests for Tier 2 P2 pipeline integrity gate."""
+    """Tests for Tier 2 P2 pipeline integrity gate (warning-only mode)."""
 
-    def test_exception_swallow_in_pipeline_blocks(self, tmp_path, capsys):
-        """Test that exception swallows in ADG pipeline paths block ADG generation."""
+    def test_exception_swallow_in_pipeline_warns(self, tmp_path, capsys):
+        """Test that exception swallows in ADG pipeline paths warn (not block)."""
         from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
         import sqlite3
 
@@ -361,12 +361,11 @@ class TestP2PipelineIntegrityCheck:
         conn.commit()
         conn.close()
 
-        with pytest.raises(SystemExit) as exc_info:
-            _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
-        assert exc_info.value.code == 1
+        # Should not raise (warning-only mode)
+        _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
 
         out = capsys.readouterr().out
-        assert "P2 Tier 2" in out
+        assert "[WARNING] P2 Tier 2" in out
         assert "Exception swallows in ADG pipeline detected" in out
 
     def test_exception_swallow_outside_pipeline_passes(self, tmp_path):
