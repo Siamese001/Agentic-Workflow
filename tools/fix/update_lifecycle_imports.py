@@ -22,7 +22,7 @@ def update_imports():
             
             # Update import paths
             content = content.replace(
-                "from agentic_core.runtime.contracts.lifecycle_trace_contract import",
+                "from agentic_core.runtime.lifecycle_trace_contract import",
                 "from agentic_core.runtime.contracts.lifecycle_trace_contract import"
             )
             

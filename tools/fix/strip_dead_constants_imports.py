@@ -44,7 +44,19 @@ def _collect_targets(
     result: dict[str, set[str]] = {}
 
     for rp in report_paths:
-        data = json.loads(pathlib.Path(rp).read_text(encoding="utf-8"))
+        report_file = pathlib.Path(rp)
+        if not report_file.exists():
+            print(f"  WARNING: Report file not found: {rp} — SKIPPING", file=sys.stderr)
+            continue
+        
+        try:
+            data = json.loads(report_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            print(f"  ERROR: Failed to parse JSON in {rp}: {e} — SKIPPING", file=sys.stderr)
+            continue
+        except OSError as e:
+            print(f"  ERROR: Failed to read {rp}: {e} — SKIPPING", file=sys.stderr)
+            continue
         for fdata in data["files"]:
             fpath = fdata["path"].replace("\\", "/")
 
@@ -84,7 +96,11 @@ def _strip_symbols_from_file(
     Parse the file and remove `symbols_to_remove` from any import statements
     that contain them.  Returns a diff summary string, or None if no changes.
     """
-    src = pathlib.Path(filepath).read_text(encoding="utf-8", errors="replace")
+    try:
+        src = pathlib.Path(filepath).read_text(encoding="utf-8", errors="replace")
+    except OSError as e:
+        print(f"  ERROR: Failed to read {filepath}: {e} — SKIPPING", file=sys.stderr)
+        return None
     lines = src.splitlines(keepends=True)
 
     # Strategy: find all import blocks that contain at least one target symbol,
@@ -209,7 +225,11 @@ def _strip_symbols_from_file(
     summary = "\n".join(log_entries)
 
     if not dry_run:
-        pathlib.Path(filepath).write_text(new_src, encoding="utf-8")
+        try:
+            pathlib.Path(filepath).write_text(new_src, encoding="utf-8")
+        except OSError as e:
+            print(f"  ERROR: Failed to write {filepath}: {e} — SKIPPING", file=sys.stderr)
+            return None
 
     return summary
 
