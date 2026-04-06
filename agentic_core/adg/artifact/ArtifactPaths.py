@@ -374,12 +374,12 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Write to temporary file first to avoid leaving 0-byte files on failure
-    import tempfile
     temp_db_path = db_path.parent / f"{db_path.name}.tmp"
     if temp_db_path.exists():
         temp_db_path.unlink()
 
     conn = sqlite3.connect(str(temp_db_path))
+    write_failed = False
     try:
         # D2b: bulk-insert PRAGMAs — keep journal in RAM and skip fsync barriers.
         # Saves ~1.4s on the node executemany phase (1.76s → 0.53s measured).
@@ -489,17 +489,20 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executemany("INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)", meta_rows)
 
         conn.commit()
-
-        # Atomic rename: only move to final path after successful commit
-        import shutil
-        if db_path.exists():
-            db_path.unlink()
-        shutil.move(str(temp_db_path), str(db_path))
+    except Exception:
+        write_failed = True
+        raise
     finally:
         conn.close()
-        # Clean up temp file if it still exists (error case)
-        if temp_db_path.exists():
+        if write_failed and temp_db_path.exists():
             temp_db_path.unlink()
+
+    # Atomic rename: only move to final path after successful commit and close
+    import shutil
+
+    if db_path.exists():
+        db_path.unlink()
+    shutil.move(str(temp_db_path), str(db_path))
 
     return db_path
 
