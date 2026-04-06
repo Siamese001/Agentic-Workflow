@@ -693,6 +693,79 @@ class HybridSearchEngine:
 
         return expanded_results
 
+    def expand_results_with_parent_child(
+        self, results: list[HybridSearchResult], max_depth: int = 1
+    ) -> list[HybridSearchResult]:
+        """Expand search results using parent-child relationships from metadata.
+
+        Args:
+            results: Original search results
+            max_depth: Maximum expansion depth (1 = direct parent/child only)
+
+        Returns:
+            Expanded results with parent/child chunks
+        """
+        if self.chroma_client is None:
+            Logger.warning("ChromaDB client not available for parent-child expansion")
+            return results
+
+        expanded_results = list(results)
+        seen_ids = {r.chunk_id for r in results}
+
+        try:
+            collection = self.chroma_client.get_collection("repo_code_chunks")
+
+            for result in results:
+                parent_id = result.metadata.get("parent_id")
+                chunk_id = result.chunk_id
+
+                # Expand to parent
+                if parent_id and parent_id not in seen_ids:
+                    parent_results = collection.get(ids=[parent_id])
+                    if parent_results["ids"]:
+                        parent_chunk = HybridSearchResult(
+                            chunk_id=parent_id,
+                            content=parent_results["documents"][0],
+                            metadata=parent_results["metadatas"][0],
+                            source="parent_expansion",
+                        )
+                        parent_chunk.metadata["expanded_via"] = "parent_child"
+                        parent_chunk.metadata["expanded_from"] = chunk_id
+                        expanded_results.append(parent_chunk)
+                        seen_ids.add(parent_id)
+
+                # Expand to children (find chunks with this as parent)
+                if max_depth > 0:
+                    # Query for chunks where parent_id matches this chunk_id
+                    child_results = collection.query(
+                        query_texts=[""],
+                        n_results=50,
+                        where={"parent_id": chunk_id},
+                    )
+
+                    if child_results["ids"] and child_results["ids"][0]:
+                        for i, child_id in enumerate(child_results["ids"][0]):
+                            if child_id not in seen_ids:
+                                child_chunk = HybridSearchResult(
+                                    chunk_id=child_id,
+                                    content=child_results["documents"][0][i],
+                                    metadata=child_results["metadatas"][0][i],
+                                    source="child_expansion",
+                                )
+                                child_chunk.metadata["expanded_via"] = "parent_child"
+                                child_chunk.metadata["expanded_from"] = chunk_id
+                                expanded_results.append(child_chunk)
+                                seen_ids.add(child_id)
+
+            if len(expanded_results) > len(results):
+                Logger.info(f"Parent-child expansion: {len(results)} -> {len(expanded_results)} results")
+
+            return expanded_results
+
+        except Exception as e:
+            Logger.error(f"Parent-child expansion failed: {e}")
+            return results
+
 
 # Global instance
 _global_hybrid_engine: HybridSearchEngine | None = None
