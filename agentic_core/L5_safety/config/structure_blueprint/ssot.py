@@ -262,6 +262,7 @@ _ENFORCED_TERRITORIES_BASE: frozenset[str] = frozenset(
         "tools",
         "data",
         "docs",
+        "config",
     },
 )
 
@@ -276,6 +277,7 @@ _CODE_TERRITORIES_BASE: frozenset[str] = frozenset(
         "ops_scripts",
         "system_learning",
         "tools",
+        "config",
     },
 )
 
