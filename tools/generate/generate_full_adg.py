@@ -1130,10 +1130,12 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                     try:
                         # Check if file is locked before attempting deletion
                         if _is_file_locked(file_path):
-                            print(f"[WARNING] Archive: skipping locked file {file_path.name}")
-                            print("[WARNING]   File held by MCP server or Redis cache")
-                            print("[WARNING]   Restart Windsurf to release file locks")
-                            continue
+                            print(f"[ERROR] Archive: locked file detected {file_path.name}")
+                            print("[ERROR]   File held by MCP server process")
+                            print("[ERROR]   REQUIRED ACTION: call adg_close_connections() MCP tool")
+                            print("[ERROR]   Fallback: restart Windsurf if MCP close tool unavailable")
+                            print("[ERROR] ADG generation aborted - archive cleanup must be complete")
+                            sys.exit(1)
 
                         # For SQLite files, try to close WAL checkpoint before deletion
                         if file_path.suffix == ".sqlite":
@@ -1161,9 +1163,12 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                         archived_count += 1
                     except OSError as e:
                         if "being used by another process" in str(e):
-                            print(f"[WARNING] Archive: skipping locked file {file_path.name}")
-                            print("[WARNING]   File held by MCP server or Redis cache")
-                            print("[WARNING]   Restart Windsurf to release file locks")
+                            print(f"[ERROR] Archive: locked file detected {file_path.name}")
+                            print("[ERROR]   File held by MCP server process")
+                            print("[ERROR]   REQUIRED ACTION: call adg_close_connections() MCP tool")
+                            print("[ERROR]   Fallback: restart Windsurf if MCP close tool unavailable")
+                            print("[ERROR] ADG generation aborted - archive cleanup must be complete")
+                            sys.exit(1)
                         else:
                             print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
                         continue
@@ -2478,7 +2483,8 @@ def _check_locked_files() -> None:
             print("[ERROR] The MCP server (adg_sqlite) has these files open.")
             print("[ERROR] Automatic lock release cannot close connections from another process.")
             print("[ERROR]")
-            print("[ERROR] REQUIRED ACTION: Restart Windsurf to release file locks")
+            print("[ERROR] REQUIRED ACTION: call adg_close_connections() MCP tool")
+            print("[ERROR] Fallback: restart Windsurf if MCP close tool unavailable")
             print("[ERROR]")
             print("[ERROR] ADG generation aborted - file locks prevent archive cleanup")
             sys.exit(1)
