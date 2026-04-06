@@ -189,12 +189,16 @@ overrides:
       "*_config.py": config
     node_count_adg: 4727
 
-  L_UNKNOWN:
-    purpose: "Unclassified nodes — agentic_core/L_CONTRACTS/, agentic_core/__init__.py, and other cross-cutting contracts not yet assigned to a layer. (1736 nodes in ADG — to be triaged)"
+  L_CONTRACTS:
+    purpose: "External interfaces, API contracts, and framework-level cross-cutting code — agentic_core/L_CONTRACTS/, agentic_core/case_memory/, agentic_core/cloud_native/, agentic_core/core/frameworks/, agentic_core/gateway/, agentic_core/tracing/, agentic_core/visualization/. These are interface definitions and framework infrastructure that don't belong in L0-L6. (1736 nodes in ADG)"
     forbidden_capabilities: []
     routing_rules:
       "*_contract.py": enforcement
       "*_exceptions.py": types
       "*_types.py": types
+      "*_gateway.py": reasoning
+      "*_coordinator.py": reasoning
+      "*_manager.py": reasoning
+      "*_framework.py": reasoning
     node_count_adg: 1736
-    triage_required: true
+    note: "Previously L_UNKNOWN - renamed to reflect actual purpose as interface/contract layer"
