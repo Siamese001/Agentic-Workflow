@@ -172,5 +172,54 @@ class SQLiteGraphStore(IGraphStore):
 
         return [self._row_to_relationship(row) for row in cursor.fetchall()]
 
+    def get_neighbors(self, entity_id: str, max_hops: int = 1) -> list[GraphEntity]:
+        """Get neighboring entities within a specified hop distance.
+
+        Args:
+            entity_id: The ID of the entity.
+            max_hops: Maximum number of hops (default: 1).
+
+        Returns:
+            List of neighboring entities.
+        """
+        if max_hops == 1:
+            # Direct neighbors only
+            relationships = self.get_relationships(entity_id, direction="both")
+            neighbor_ids = set()
+            for rel in relationships:
+                neighbor_ids.add(rel.source_id)
+                neighbor_ids.add(rel.target_id)
+            neighbor_ids.discard(entity_id)  # Remove self
+
+            neighbors = []
+            for nid in neighbor_ids:
+                entity = self.get_entity(nid)
+                if entity is not None:
+                    neighbors.append(entity)
+            return neighbors
+        else:
+            # Multi-hop neighbors (BFS)
+            visited = {entity_id}
+            current_level = {entity_id}
+            neighbors = []
+
+            for _ in range(max_hops):
+                next_level = set()
+                for eid in current_level:
+                    rels = self.get_relationships(eid, direction="both")
+                    for rel in rels:
+                        for nid in (rel.source_id, rel.target_id):
+                            if nid not in visited:
+                                visited.add(nid)
+                                next_level.add(nid)
+                                entity = self.get_entity(nid)
+                                if entity is not None:
+                                    neighbors.append(entity)
+                current_level = next_level
+                if not current_level:
+                    break
+
+            return neighbors
+
 
 __all__ = ["SQLiteGraphStore"]
