@@ -378,6 +378,24 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
     This agent provides comprehensive file system governance through intelligent
     categorization and naming enforcement across all architectural layers.
+
+    DEPRECATION NOTICE (Phase 8):
+    This monolithic agent is being modularized. Pure helper functions have been
+    extracted to:
+    - agentic_core.L5_safety.reasoning.file_classification.naming_policy
+    - agentic_core.L5_safety.reasoning.file_classification.classification_core
+
+    Use the modular functions for new code. This agent remains for backward
+    compatibility and will be deprecated once orchestration layers are extracted.
+
+    Modularization Progress:
+    - Phase 1: Naming policy functions (4 functions) ✅
+    - Phase 2: Classification helpers (6 functions) ✅
+    - Phase 3: Class type detection (3 functions) ✅
+    - Phase 5: Validation helpers (2 functions) ✅
+    - Phase 7: Pure orchestrator (1 function) ✅
+    - Phase 4: Main classification logic (deferred)
+    - Phase 6: Naming compliant logic (deferred)
     """
 
     project_root: Path = field(default_factory=Path.cwd)
