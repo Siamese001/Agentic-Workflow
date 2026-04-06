@@ -1,6 +1,6 @@
 # Structure Blueprint — Layer Overrides
-schema_version: "1.0.0"
-last_updated: "2026-04-04"
+schema_version: "1.1.0"
+last_updated: "2026-04-06"
 
 # Layer-specific template overrides
 overrides:
@@ -92,3 +92,109 @@ overrides:
       "*_dashboard*.py": reasoning
       "*_config.py": config
       "*_types.py": types
+
+  # ============================================================================
+  # Non-framework layers — confirmed from ADG SQLite (2026-04-06)
+  # ============================================================================
+
+  L_APP:
+    purpose: "Application-specific implementations — apps_eval, apps_exec, apps_lic, apps_research, apps_rfp, apps_rg, apps_shared, apps_underwriting_ai, apps_qwen. (2561 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_engine.py": reasoning
+      "*_agent.py": reasoning
+      "*Agent.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+      "*_adapter.py": reasoning
+    node_count_adg: 2561
+
+  L_INFRA:
+    purpose: "Infrastructure coordination and optimization — infrastructure/ directory. Adaptive optimizers, cross-layer coherence, implementation plans. (17 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_optimizer.py": reasoning
+      "*_coherence.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+    node_count_adg: 17
+
+  L_OPS:
+    purpose: "Operational scripts and CI/CD gate enforcement — ops_scripts/ directory. CI gates, SSOT validators, ADG analysis, pre-commit hooks. (3920 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_gate.py": enforcement
+      "*_validator.py": validators
+      "*_scanner.py": enforcement
+      "*_config.py": config
+    node_count_adg: 3920
+
+  L_PG:
+    purpose: "Prompt governance and knowledge layer — agentic_core/knowledge/ directory. Cache, catalog, policy evaluation, knowledge base infrastructure. (404 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_policy.py": enforcement
+      "*_catalog.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+    node_count_adg: 404
+
+  L_RUNTIME:
+    purpose: "Runtime lifecycle, anomaly detection, contextual routing — agentic_core/runtime/ directory. Anomaly reports, capability gaps, runtime config. (397 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_config.py": config
+      "*_types.py": types
+      "*_router.py": reasoning
+      "*_lifecycle.py": enforcement
+    node_count_adg: 397
+
+  L_SHARED:
+    purpose: "Shared cross-layer utilities — agentic_core/agents/, agentic_core/adg/adapters. Agent type definitions, ADG-backed registry, execution profiles. (1193 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_types.py": types
+      "*_registry.py": reasoning
+      "*_adapter.py": reasoning
+      "*_config.py": config
+    node_count_adg: 1193
+
+  L_SL:
+    purpose: "System learning layer — system_learning/ directory. Adapters, arbitration, confidence engines, learning pipelines. (800 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_adapter.py": reasoning
+      "*_engine.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+    node_count_adg: 800
+
+  L_TEST:
+    purpose: "Test suites — tests/ directory. Unit, integration, architecture, guardian, and app-specific tests. (8539 nodes in ADG — largest non-framework layer)"
+    forbidden_capabilities: []
+    routing_rules:
+      "test_*.py": tests
+      "*_test.py": tests
+      "conftest.py": config
+      "*_config.py": config
+    node_count_adg: 8539
+
+  L_TOOLS:
+    purpose: "Development and operational tools — tools/ and agentic_core/adg/. ADG generation, analysis, repair, ingestion, fix scripts. (4727 nodes in ADG)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_generator.py": reasoning
+      "*_analyzer.py": reasoning
+      "*_scanner.py": reasoning
+      "*_config.py": config
+    node_count_adg: 4727
+
+  L_UNKNOWN:
+    purpose: "Unclassified nodes — agentic_core/L_CONTRACTS/, agentic_core/__init__.py, and other cross-cutting contracts not yet assigned to a layer. (1736 nodes in ADG — to be triaged)"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_contract.py": enforcement
+      "*_exceptions.py": types
+      "*_types.py": types
+    node_count_adg: 1736
+    triage_required: true
