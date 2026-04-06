@@ -252,6 +252,7 @@ territories:
 
   apps_underwriting_ai:
     depth: 2
+    layer: L_APP
     purpose: "Underwriting AI application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
