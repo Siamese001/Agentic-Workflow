@@ -228,10 +228,10 @@ class GlobalSearchEngine:
         for community_result in top_communities:
             community_id = community_result.item_id
 
-            # Get community details (simplified)
-            community = await self.graph_store.get_community(community_id)
+            # Get community details (sync call)
+            community = self.graph_store.get_community(community_id)
 
-            if community and community.member_entity_ids:
+            if community and community.entities:
                 # Search within this community
                 community_entities = await self._search_community_entities(
                     community, query, community_result.relevance_score
@@ -250,18 +250,18 @@ class GlobalSearchEngine:
         entity_results = []
 
         # Limit entities per community
-        entity_ids = list(community.member_entity_ids)[:self.config.max_entities_per_community]
+        entity_ids = list(community.entities)[:self.config.max_entities_per_community]
 
         for entity_id in entity_ids:
-            # Get entity
-            entity = await self.graph_store.get_entity(entity_id)
+            # Get entity (sync call)
+            entity = self.graph_store.get_entity(entity_id)
 
             if entity:
                 # Calculate entity relevance
                 entity_score = self._calculate_entity_relevance(entity, query)
 
                 # Apply community boost
-                boosted_score = min(1.0, entity_score * community_boost * self.config.community_boost_weight)
+                boosted_score = min(1.0, entity_score * community_boost * self.config.community_summary_weight)
 
                 if boosted_score >= query.min_relevance_score:
                     result = SearchResult(
@@ -270,12 +270,11 @@ class GlobalSearchEngine:
                         title=entity.name,
                         description=entity.description,
                         relevance_score=boosted_score,
-                        context=f"In community: {community.title}",
-                        source_file=entity.metadata.get("resolved_path"),
+                        context=f"In community: {community.name}",
+                        source_file=entity.metadata.get("file_path"),
                         metadata={
                             "entity_type": entity.entity_type,
                             "community_id": community.id,
-                            "community_level": community.level,
                             "base_score": entity_score,
                             "community_boost": community_boost
                         }
@@ -373,12 +372,6 @@ class GlobalSearchEngine:
             # Minimum relevance score
             if result.relevance_score < query.min_relevance_score:
                 continue
-
-            # Community level filters
-            if query.community_levels:
-                community_level = result.metadata.get("community_level")
-                if community_level not in query.community_levels:
-                    continue
 
             # Include/exclude by type
             if query.include_communities and result.item_type != "community":
