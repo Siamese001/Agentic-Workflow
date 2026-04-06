@@ -60,20 +60,68 @@ class SQLiteGraphStore(IGraphStore):
         """Context manager exit."""
         self.close()
 
+    def _row_to_entity(self, row: sqlite3.Row) -> GraphEntity:
+        """Convert ADG node row to GraphEntity."""
+        return GraphEntity(
+            id=str(row["id"]),
+            name=row["adg_name"] or "",
+            entity_type=row["entity_type"] or "unknown",
+            description="",  # ADG doesn't have description
+            confidence=self._parse_confidence(row["confidence"]),
+            metadata={
+                "layer": row["layer"] or "",
+                "file_path": row["resolved_path"] or "",
+                "identity_kind": row["identity_kind"] or "",
+                "precision_type": row["precision_type"] or "",
+                "type_surface": row["type_surface"] or "",
+                "enclosing_symbol": row["enclosing_symbol"] or "",
+            },
+        )
+
+    def _parse_confidence(self, confidence: str | None) -> float:
+        """Parse ADG confidence string to float."""
+        if confidence is None:
+            return 1.0
+        confidence_map = {"HIGH": 1.0, "MEDIUM": 0.5, "LOW": 0.25}
+        return confidence_map.get(confidence, 0.5)
+
     def add_entity(self, entity: GraphEntity) -> None:
-        """Add an entity to the graph store."""
-        # Placeholder implementation
-        pass
+        """Add an entity to the graph store.
+
+        Note: ADG is read-only. This method is provided for interface
+        compatibility but will raise NotImplementedError.
+        """
+        raise NotImplementedError(
+            "ADG SQLite database is read-only. Cannot add entities."
+        )
 
     def get_entity(self, entity_id: str) -> GraphEntity | None:
         """Get an entity by ID."""
-        # Placeholder implementation
-        return None
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM nodes WHERE id = ?", (int(entity_id),))
+        row = cursor.fetchone()
+        if row is None:
+            return None
+        return self._row_to_entity(row)
 
     def search_entities(self, query: str, limit: int = 10) -> list[GraphEntity]:
-        """Search for entities."""
-        # Placeholder implementation
-        return []
+        """Search for entities.
+
+        Uses LIKE query on adg_name and resolved_path columns.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        pattern = f"%{query}%"
+        cursor.execute(
+            """
+            SELECT * FROM nodes
+            WHERE adg_name LIKE ? OR resolved_path LIKE ?
+            LIMIT ?
+            """,
+            (pattern, pattern, limit),
+        )
+        return [self._row_to_entity(row) for row in cursor.fetchall()]
 
 
 __all__ = ["SQLiteGraphStore"]
