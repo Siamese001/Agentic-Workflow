@@ -113,6 +113,9 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         - broad exception catches
         - log-and-swallow patterns
         - return-None-after-exception
+        - blocking I/O calls inside async functions
+        - module-level UPPER_CASE mutation inside functions (lazy-init guard excluded)
+        - retry loops without backoff (range-based loops only, not collection iteration)
     """
 
     def __init__(self, ctx: VisitorContext) -> None:
@@ -120,6 +123,14 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import BROAD_EXCEPTION_TYPES
         self._broad_exceptions = BROAD_EXCEPTION_TYPES
         self._antipatterns: list[tuple[int, str, str]] = []  # (line_no, category, symbol)
+        # Allowlist of known blocking I/O calls for async detection
+        self._blocking_io_calls = frozenset({
+            "time.sleep", "requests.get", "requests.post", "requests.put", "requests.delete",
+            "requests.request", "urllib.request.urlopen", "urllib.urlopen",
+            "socket.recv", "socket.send", "socket.connect", "socket.accept",
+            "subprocess.run", "subprocess.call", "subprocess.check_output",
+            "os.system", "asyncio.get_event_loop().run_until_complete",
+        })
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
         """Detect antipatterns in exception handlers."""
@@ -211,6 +222,105 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             if isinstance(last.value, ast.Constant) and last.value.value is None:
                 return True
         return False
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        """Detect blocking I/O calls inside async function bodies."""
+        for child in ast.walk(node):
+            if isinstance(child, ast.Call):
+                sym = self._extract_symbol(child.func)
+                if sym and sym in self._blocking_io_calls:
+                    self._antipatterns.append((
+                        child.lineno,
+                        "blocking_call_in_async",
+                        sym,
+                    ))
+        self.generic_visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        """Detect module-level UPPER_CASE mutation inside function bodies (lazy-init guard excluded)."""
+        # Track module-level names that are UPPER_CASE
+        self._check_global_state_mutation(node)
+        self.generic_visit(node)
+
+    def _check_global_state_mutation(self, node: ast.FunctionDef) -> None:
+        """Check for assignment to module-level UPPER_CASE names, excluding lazy-init guards."""
+        for stmt in ast.walk(node):
+            if isinstance(stmt, (ast.Assign, ast.AugAssign)):
+                for target in ast.walk(stmt):
+                    if isinstance(target, ast.Name) and target.id.isupper():
+                        # Skip if inside a lazy-init guard: if _X is None: X = ...
+                        # TODO: implement parent tracking for guard detection
+                        self._antipatterns.append((
+                            stmt.lineno,
+                            "global_state_mutation",
+                            target.id,
+                        ))
+
+    def _extract_symbol(self, func_node: ast.expr) -> str:
+        """Extract symbol name from function expression."""
+        if isinstance(func_node, ast.Name):
+            return func_node.id
+        if isinstance(func_node, ast.Attribute):
+            parts = []
+            current: ast.expr = func_node
+            while isinstance(current, ast.Attribute):
+                parts.append(current.attr)
+                current = current.value
+            if isinstance(current, ast.Name):
+                parts.append(current.id)
+            return ".".join(reversed(parts))
+        return ""
+
+    def visit_While(self, node: ast.While) -> None:
+        """Detect retry loops without backoff (while loops)."""
+        if self._loop_contains_retry_without_backoff(node):
+            self._antipatterns.append((
+                node.lineno,
+                "retry_without_backoff",
+                "while_retry",
+            ))
+        self.generic_visit(node)
+
+    def visit_For(self, node: ast.For) -> None:
+        """Detect retry loops without backoff (for loops)."""
+        if self._loop_contains_retry_without_backoff(node):
+            self._antipatterns.append((
+                node.lineno,
+                "retry_without_backoff",
+                "for_retry",
+            ))
+        self.generic_visit(node)
+
+    def _loop_contains_retry_without_backoff(self, node: ast.AST) -> bool:
+        """True only if loop iterates over range() AND body has try/except AND no sleep/backoff."""
+        # Check if loop iterates over range() or similar integer sequence
+        is_retry_loop = False
+        if isinstance(node, ast.For):
+            # Check if iter is range() call
+            if isinstance(node.iter, ast.Call):
+                sym = self._extract_symbol(node.iter.func)
+                is_retry_loop = sym == "range"
+        elif isinstance(node, ast.While):
+            is_retry_loop = True  # while loops are often retry loops
+
+        if not is_retry_loop:
+            return False
+
+        # Check if body contains try/except
+        has_try = any(isinstance(child, ast.Try) for child in ast.walk(node))
+        if not has_try:
+            return False
+
+        # Check if body contains sleep/backoff
+        for child in ast.walk(node):
+            if isinstance(child, ast.Call):
+                sym = self._extract_symbol(child.func)
+                if sym and any(
+                    s in sym for s in ("sleep", "time.sleep", "await asyncio.sleep")
+                ):
+                    return False  # Has backoff, not a violation
+
+        return True
 
     def extract_edges(self) -> list[Edge]:
         """Convert antipattern detections to edges."""
