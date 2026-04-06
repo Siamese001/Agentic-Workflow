@@ -155,16 +155,16 @@ class DRIFTSearchEngine:
 
     async def _semantic_search(self, query: SearchQuery) -> list[SearchResult]:
         """Perform semantic search using embeddings."""
-        # Find entities using text search (placeholder for embedding-based search)
-        search_result = await self.graph_store.search_entities(
+        # Find entities using text search (sync call)
+        search_result = self.graph_store.search_entities(
             query=query.text,
-            entity_types=query.entity_types,
             limit=query.max_results
         )
 
         results = []
-        for i, entity in enumerate(search_result.entities):
-            score = search_result.scores[i] if i < len(search_result.scores) else 0.5
+        for entity in search_result:
+            # Calculate relevance score
+            score = self._calculate_text_similarity(entity, query.text)
 
             result = SearchResult(
                 item_id=entity.id,
@@ -172,7 +172,7 @@ class DRIFTSearchEngine:
                 title=entity.name,
                 description=entity.description,
                 relevance_score=score,
-                source_file=entity.metadata.get("resolved_path"),
+                source_file=entity.metadata.get("file_path"),
                 metadata={
                     "search_type": "semantic",
                     "entity_type": entity.entity_type
@@ -184,46 +184,45 @@ class DRIFTSearchEngine:
 
     async def _structural_search(self, query: SearchQuery) -> list[SearchResult]:
         """Perform structural search based on graph topology."""
-        # Find seed entities first
-        seed_search = await self.graph_store.search_entities(
+        # Find seed entities first (sync call)
+        seed_search = self.graph_store.search_entities(
             query=query.text,
-            entity_types=query.entity_types,
             limit=5
         )
 
         results = []
 
         # For each seed, explore structural relationships
-        for entity in seed_search.entities[:3]:  # Limit to top 3 seeds
-            # Get traversal results
-            traversal = await self.graph_store.traverse(
-                start_entity_id=entity.id,
+        for entity in seed_search[:3]:  # Limit to top 3 seeds
+            # Get traversal results (sync call)
+            traversal = self.graph_store.traverse(
+                start_id=entity.id,
                 max_depth=2,
-                relation_types=query.relation_types,
-                entity_types=query.entity_types
+                relation_types=query.relation_types if hasattr(query, 'relation_types') else None
             )
 
             # Convert traversal results to search results
-            for traversed_entity in traversal.entities:
-                # Calculate structural relevance
-                struct_score = self._calculate_structural_relevance(
-                    traversed_entity, entity, query
-                )
+            for path in traversal:
+                for path_entity in path.nodes:
+                    # Calculate structural relevance
+                    struct_score = self._calculate_structural_relevance(
+                        path_entity, entity, query
+                    )
 
-                result = SearchResult(
-                    item_id=traversed_entity.id,
-                    item_type="entity",
-                    title=traversed_entity.name,
-                    description=traversed_entity.description,
-                    relevance_score=struct_score,
-                    path_to_root=traversal.paths[0] if traversal.paths else [],
-                    metadata={
-                        "search_type": "structural",
-                        "seed_entity": entity.id,
-                        "path_length": len(traversal.paths[0]) if traversal.paths else 0
-                    }
-                )
-                results.append(result)
+                    result = SearchResult(
+                        item_id=path_entity.id,
+                        item_type="entity",
+                        title=path_entity.name,
+                        description=path_entity.description,
+                        relevance_score=struct_score,
+                        path_to_root=[r.relation_type for r in path.relationships],
+                        metadata={
+                            "search_type": "structural",
+                            "seed_entity": entity.id,
+                            "path_length": len(path.relationships)
+                        }
+                    )
+                    results.append(result)
 
         return results
 
@@ -239,14 +238,14 @@ class DRIFTSearchEngine:
 
         # For each keyword, find related entities through reasoning
         for keyword in keywords[:3]:  # Limit keywords
-            # Find entities with keyword
-            keyword_search = await self.graph_store.search_entities(
+            # Find entities with keyword (sync call)
+            keyword_search = self.graph_store.search_entities(
                 query=keyword,
                 limit=10
             )
 
             # Apply reasoning depth
-            for entity in keyword_search.entities:
+            for entity in keyword_search:
                 reasoning_score = self._apply_reasoning_depth(entity, keyword, query)
 
                 if reasoning_score >= self.config.reasoning_confidence_threshold:
@@ -395,17 +394,23 @@ class DRIFTSearchEngine:
         enhanced_results = []
 
         for result in results[:20]:  # Limit traversal to top 20
-            # Get additional context through traversal
+            # Get additional context through traversal (sync call)
             if result.item_type == "entity":
-                traversal = await self.graph_store.traverse(
-                    start_entity_id=result.item_id,
+                traversal = self.graph_store.traverse(
+                    start_id=result.item_id,
                     max_depth=1,
-                    entity_types=query.entity_types
+                    relation_types=query.relation_types if hasattr(query, 'relation_types') else None
                 )
 
                 # Update result with traversal context
-                if traversal.entities:
-                    result.surrounding_entities = [e.id for e in traversal.entities[:5]]
+                if traversal:
+                    # Collect surrounding entity IDs from paths
+                    surrounding_ids = []
+                    for path in traversal:
+                        for entity in path.nodes:
+                            if entity.id != result.item_id:
+                                surrounding_ids.append(entity.id)
+                    result.surrounding_entities = surrounding_ids[:5]
                     result.metadata["traversal_expanded"] = True
 
             enhanced_results.append(result)
