@@ -44,6 +44,25 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def traverse(
+        self,
+        start_id: str,
+        max_depth: int = 2,
+        relation_types: list[str] | None = None,
+    ) -> list[GraphPath]:
+        """Traverse the graph from a starting entity.
+
+        Args:
+            start_id: The ID of the starting entity.
+            max_depth: Maximum traversal depth (default: 2).
+            relation_types: Optional list of relation types to filter by.
+
+        Returns:
+            List of paths discovered during traversal.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
@@ -53,6 +72,15 @@ class GraphCommunity:
     description: str = ""
     entities: list[str] = field(default_factory=list)
     confidence: float = 1.0
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class GraphPath:
+    """Represents a path through the knowledge graph."""
+    nodes: list[GraphEntity] = field(default_factory=list)
+    relationships: list[GraphRelationship] = field(default_factory=list)
+    cost: float = 0.0
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -78,4 +106,4 @@ class GraphEntity:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity", "GraphRelationship"]
+__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity", "GraphRelationship", "GraphPath"]
