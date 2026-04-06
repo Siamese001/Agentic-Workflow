@@ -101,6 +101,19 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_subgraph(self, center_id: str, radius: int = 2) -> GraphSubgraph:
+        """Extract a subgraph around a center entity.
+
+        Args:
+            center_id: The ID of the center entity.
+            radius: The radius in hops (default: 2).
+
+        Returns:
+            GraphSubgraph containing nodes and relationships within the radius.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
@@ -110,6 +123,16 @@ class GraphCommunity:
     description: str = ""
     entities: list[str] = field(default_factory=list)
     confidence: float = 1.0
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class GraphSubgraph:
+    """Represents a subgraph extracted from the knowledge graph."""
+    nodes: list[GraphEntity] = field(default_factory=list)
+    relationships: list[GraphRelationship] = field(default_factory=list)
+    center_id: str = ""
+    radius: int = 0
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -144,4 +167,4 @@ class GraphEntity:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity", "GraphRelationship", "GraphPath"]
+__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity", "GraphRelationship", "GraphPath", "GraphSubgraph"]
