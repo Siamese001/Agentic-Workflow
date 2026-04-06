@@ -1,6 +1,8 @@
 """
 Pre-Commit Summary Reporter — High-signal issue aggregation and display.
 
+# adg-grep-ban: skip-file -- Pre-commit summary reporter uses grep for text search in hook output files
+
 Collects issues from governance/security hooks and displays a formatted
 summary table at the end of pre-commit runs.
 
@@ -40,7 +42,7 @@ project_root: Path = Path(__file__).parents[2]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from ops_scripts.ci.pre_commit_issue_schema import (
+from ops_scripts.ci.pre_commit_issue_schema import (  # noqa: E402
     IssueCollection,
     PreCommitIssue,
     SeverityLevel,
@@ -174,13 +176,13 @@ def format_table_row(
 
     for i, msg_line in enumerate(msg_lines):
         if i == 0:
-            row = f"  {sev_col} │ {hook_col:<20} │ {file_col:<40} │ {msg_line}"
+            row = f"  {sev_col} | {hook_col:<20} | {file_col:<40} | {msg_line}"
         else:
-            row = f"  {'':<10} │ {'':<20} │ {'':<40} │ {msg_line}"
+            row = f"  {'':<10} | {'':<20} | {'':<40} | {msg_line}"
         rows.append(row)
 
     # Explanation row (indented)
-    expl_prefix = "    → "
+    expl_prefix = "    -> "
     expl_width = term_width - 10
     if len(explanation) > expl_width:
         expl_lines = [explanation[i : i + expl_width] for i in range(0, len(explanation), expl_width)]
@@ -239,9 +241,9 @@ def print_summary_table(use_color: bool = True, verbose: bool = False) -> int:
     # Print header
     print("\n" + "=" * min(term_width, 100))
     if use_color:
-        print("\033[1m📋 PRE-COMMIT GOVERNANCE SUMMARY\033[0m")
+        print("\033[1m[SUMMARY] PRE-COMMIT GOVERNANCE SUMMARY\033[0m")
     else:
-        print("📋 PRE-COMMIT GOVERNANCE SUMMARY")
+        print("[SUMMARY] PRE-COMMIT GOVERNANCE SUMMARY")
     print("=" * min(term_width, 100))
 
     # Print counts summary
@@ -262,9 +264,9 @@ def print_summary_table(use_color: bool = True, verbose: bool = False) -> int:
     print()
 
     # Print table header
-    header = f"  {'SEVERITY':<10} │ {'HOOK':<20} │ {'FILE':<40} │ {'ISSUE'}"
+    header = f"  {'SEVERITY':<10} | {'HOOK':<20} | {'FILE':<40} | {'ISSUE'}"
     print(header)
-    print("  " + "─" * (min(term_width, 100) - 4))
+    print("  " + "-" * (min(term_width, 100) - 4))
 
     # Print issues
     if all_issues:
@@ -287,7 +289,7 @@ def print_summary_table(use_color: bool = True, verbose: bool = False) -> int:
     if verbose and passed_hooks:
         print()
         for issue in passed_hooks[:5]:  # Show first 5 passed
-            sev_col = colorize_severity(issue.severity, f"✓ {issue.hook_name:<27}", use_color)
+            sev_col = colorize_severity(issue.severity, f"[OK] {issue.hook_name:<27}", use_color)
             print(f"  {sev_col}")
         if len(passed_hooks) > 5:
             print(f"  ... and {len(passed_hooks) - 5} more hooks passed")
@@ -296,17 +298,17 @@ def print_summary_table(use_color: bool = True, verbose: bool = False) -> int:
     print()
     print("  Legend:")
     if use_color:
-        print("    \033[91m⛔ CRITICAL\033[0m — Blocks commit, fix immediately")
-        print("    \033[93m⚠️ HIGH\033[0m — Should fix before commit")
-        print("    \033[94m🔹 MEDIUM\033[0m — Consider fixing")
-        print("    ℹ️ LOW — Informational")
-        print("    \033[92m✓ INFO\033[0m — Passed/clean")
+        print("    \033[91m[!] CRITICAL\033[0m — Blocks commit, fix immediately")
+        print("    \033[93m[!] HIGH\033[0m — Should fix before commit")
+        print("    \033[94m[*] MEDIUM\033[0m — Consider fixing")
+        print("    [i] LOW — Informational")
+        print("    \033[92m[OK] INFO\033[0m — Passed/clean")
     else:
-        print("    ⛔ CRITICAL — Blocks commit, fix immediately")
-        print("    ⚠️ HIGH — Should fix before commit")
-        print("    🔹 MEDIUM — Consider fixing")
-        print("    ℹ️ LOW — Informational")
-        print("    ✓ INFO — Passed/clean")
+        print("    [!] CRITICAL — Blocks commit, fix immediately")
+        print("    [!] HIGH — Should fix before commit")
+        print("    [*] MEDIUM — Consider fixing")
+        print("    [i] LOW — Informational")
+        print("    [OK] INFO — Passed/clean")
 
     # Determine exit code
     critical_high_count = counts[SeverityLevel.CRITICAL] + counts[SeverityLevel.HIGH]
@@ -314,23 +316,23 @@ def print_summary_table(use_color: bool = True, verbose: bool = False) -> int:
     print()
     if critical_high_count > 0:
         if use_color:
-            print(f"\033[91m⛔ {critical_high_count} critical/high issues require attention\033[0m")
+            print(f"\033[91m[!] {critical_high_count} critical/high issues require attention\033[0m")
         else:
-            print(f"⛔ {critical_high_count} critical/high issues require attention")
+            print(f"[!] {critical_high_count} critical/high issues require attention")
         return 1
     elif counts[SeverityLevel.MEDIUM] > 0 or counts[SeverityLevel.LOW] > 0:
         if use_color:
             print(
-                f"\033[93m⚠️ {counts[SeverityLevel.MEDIUM] + counts[SeverityLevel.LOW]} issues to consider\033[0m"
+                f"\033[93m[*] {counts[SeverityLevel.MEDIUM] + counts[SeverityLevel.LOW]} issues to consider\033[0m",
             )
         else:
-            print(f"⚠️ {counts[SeverityLevel.MEDIUM] + counts[SeverityLevel.LOW]} issues to consider")
+            print(f"[*] {counts[SeverityLevel.MEDIUM] + counts[SeverityLevel.LOW]} issues to consider")
         return 0
     else:
         if use_color:
-            print("\033[92m✓ All governance checks passed\033[0m")
+            print("\033[92m[OK] All governance checks passed\033[0m")
         else:
-            print("✓ All governance checks passed")
+            print("[OK] All governance checks passed")
         return 0
 
 

@@ -87,6 +87,12 @@ def _run_adg_generation() -> int:
     print("[ADG-UNIFIED] ADG-relevant files changed. Running full ADG generation...")
     print("[ADG-UNIFIED] This will take ~95 seconds...")
 
+    # Set ADG_SKIP_GIT to prevent auto-commit during pre-commit hook
+    # The pre-commit hook will commit the artifacts itself
+    import os
+
+    os.environ["ADG_SKIP_GIT"] = "1"
+
     result = subprocess.run(
         [sys.executable, "tools/generate/generate_full_adg.py", "--strict"],
         cwd=REPO_ROOT,
@@ -201,7 +207,7 @@ def main() -> int:
         print("[ADG-UNIFIED] ERROR: Skip-file ratchet check failed", file=sys.stderr)
         return exit_code
 
-    print("[ADG-UNIFIED] ✅ All checks passed")
+    print("[ADG-UNIFIED] [OK] All checks passed")
     return 0
 
 

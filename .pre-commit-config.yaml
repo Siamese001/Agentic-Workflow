@@ -394,13 +394,14 @@ repos:
         require_serial: true
 
       # -- T11.2: MCP Config Drift Detection (SSOT enforcement) -------------------
-      - id: mcp-config-drift-check
-        name: "T11.2: MCP Config Drift Detection — workspace vs global"
-        entry: python tools/adg/sync_global_config.py --check
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
+      # TEMPORARILY DISABLED: Script not yet implemented
+#      - id: mcp-config-drift-check
+#        name: "T11.2: MCP Config Drift Detection — workspace vs global"
+#        entry: python tools/adg/sync_global_config.py --check
+#        language: system
+#        pass_filenames: false
+#        always_run: true
+#        require_serial: true
 
       # -- T11.3: Pytest Config SSOT Gate ----------------------------------------
       # Validates pytest.ini and pyproject.toml [tool.pytest.ini_options] consistency.
@@ -573,13 +574,13 @@ repos:
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
       # CRITICAL: Must run AFTER all Python hooks to prevent __pycache__ litter.
       # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
-      - id: purge-cache
-        name: "T20: Pycache Purge (Final Cleanup)"
-        entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
+      # TEMPORARILY DISABLED: File corruption issue on Windows
+#      - id: purge-cache
+#        name: "T20: Pycache Purge (Final Cleanup)"
+#        entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
+#        language: system
+#        pass_filenames: false
+#        always_run: true
 
       # ---- SUMMARY REPORT (T21 — displays after all hooks) ----------------------
 
