@@ -795,18 +795,85 @@ def _fuzzy_match_name_or_content(
 
 
 def _is_true_agent(node: ast.ClassDef, file_path: Path) -> bool:
-    """Check if class is a true agent.
+    """Enhanced agent detection with multiple criteria.
 
-    TODO: Extract implementation.
+    Checks:
+    1. Naming convention (ends with Agent)
+    2. Inheritance from base agents
+    3. Decorator-based detection
+    4. Method-based detection (execute, act, heal, run)
     """
+    if node.name.endswith("Agent"):
+        return True
+
+    base_agents = {
+        "SovereignBaseAgent",
+        "L0RoutingBaseAgent",
+        "L1CognitionBase",
+        "L2ExecutionBase",
+        "L3OrchestrationBase",
+        "L4StateBase",
+        "L5SafetyBase",
+        "L6ObservabilityBase",
+    }
+    for base in node.bases:
+        if isinstance(base, ast.Name):
+            if base.id in base_agents or "Agent" in base.id:
+                return True
+        elif isinstance(base, ast.Attribute):
+            if base.attr in base_agents or "Agent" in base.attr:
+                return True
+
+    agent_decorators = {"agent", "sovereign_agent", "register_agent"}
+    for decorator in node.decorator_list:
+        if isinstance(decorator, ast.Name):
+            if decorator.id in agent_decorators:
+                return True
+        elif isinstance(decorator, ast.Attribute):
+            if decorator.attr in agent_decorators:
+                return True
+
+    agent_methods = {"execute", "act", "heal"}
+    has_agent_method = False
+    for item in node.body:
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if item.name in agent_methods:
+                has_agent_method = True
+                break
+    if has_agent_method:
+        if "reasoning" in file_path.parts:
+            return True
+        docstring = ast.get_docstring(node)
+        if docstring and "agent" in docstring.lower():
+            return True
+
     return False
 
 
 def _is_service_class(node: ast.ClassDef, file_path: Path) -> bool:
-    """Check if class is a service.
+    """Detect service classes with dependency injection patterns.
 
-    TODO: Extract implementation.
+    Checks:
+    1. @service decorator
+    2. Constructor with service_container/injector/container parameter
+    3. Name ends with Service
     """
+    for decorator in node.decorator_list:
+        if isinstance(decorator, ast.Name) and decorator.id == "service":
+            return True
+        elif isinstance(decorator, ast.Attribute) and decorator.attr == "service":
+            return True
+
+    di_params = {"service_container", "injector", "container", "dependencies"}
+    for item in node.body:
+        if isinstance(item, ast.FunctionDef) and item.name == "__init__":
+            for arg in item.args.args:
+                if arg.arg in di_params:
+                    return True
+
+    if node.name.endswith("Service"):
+        return True
+
     return False
 
 
@@ -819,10 +886,25 @@ def _is_service_singleton(node: ast.ClassDef, class_name: str) -> bool:
 
 
 def _is_factory_class(node: ast.ClassDef) -> bool:
-    """Check if class is a factory.
+    """Detect factory classes for object creation.
 
-    TODO: Extract implementation.
+    Checks:
+    1. Name ends with Factory
+    2. Has create_* or make_* methods
+    3. Has @factory decorator
     """
+    if node.name.endswith("Factory"):
+        return True
+
+    for item in node.body:
+        if isinstance(item, ast.FunctionDef):
+            if item.name.startswith("create_") or item.name.startswith("make_"):
+                return True
+
+    for decorator in node.decorator_list:
+        if isinstance(decorator, ast.Name) and decorator.id == "factory":
+            return True
+
     return False
 
 

@@ -19,6 +19,9 @@ from agentic_core.L5_safety.reasoning.file_classification.classification_core im
     _detect_type_patterns,
     _detect_validator_patterns,
     _fuzzy_match_name_or_content,
+    _is_factory_class,
+    _is_service_class,
+    _is_true_agent,
 )
 
 
@@ -413,4 +416,113 @@ def process_data(data):
     return data.upper()
 """
         result = _fuzzy_match_name_or_content("test.py", Path("test.py"), code, ["validate"])
+        assert result is False
+
+
+class TestIsTrueAgent:
+    """Tests for _is_true_agent function."""
+
+    def test_agent_naming_convention(self):
+        """Test detection by Agent suffix."""
+        code = """
+class MyAgent:
+    def execute(self):
+        pass
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_true_agent(node, Path("test.py"))
+        assert result is True
+
+    def test_non_agent_class(self):
+        """Test that non-agent classes return False."""
+        code = """
+class MyClass:
+    def method(self):
+        return 42
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_true_agent(node, Path("test.py"))
+        assert result is False
+
+
+class TestIsServiceClass:
+    """Tests for _is_service_class function."""
+
+    def test_service_decorator(self):
+        """Test detection by @service decorator."""
+        code = """
+@service
+class MyService:
+    def method(self):
+        pass
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_service_class(node, Path("test.py"))
+        assert result is True
+
+    def test_service_naming(self):
+        """Test detection by Service suffix."""
+        code = """
+class DataService:
+    def method(self):
+        pass
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_service_class(node, Path("test.py"))
+        assert result is True
+
+    def test_non_service_class(self):
+        """Test that non-service classes return False."""
+        code = """
+class MyClass:
+    def method(self):
+        return 42
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_service_class(node, Path("test.py"))
+        assert result is False
+
+
+class TestIsFactoryClass:
+    """Tests for _is_factory_class function."""
+
+    def test_factory_naming(self):
+        """Test detection by Factory suffix."""
+        code = """
+class MyFactory:
+    def method(self):
+        pass
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_factory_class(node)
+        assert result is True
+
+    def test_factory_methods(self):
+        """Test detection by create_* methods."""
+        code = """
+class Builder:
+    def create_instance(self):
+        return None
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_factory_class(node)
+        assert result is True
+
+    def test_non_factory_class(self):
+        """Test that non-factory classes return False."""
+        code = """
+class MyClass:
+    def method(self):
+        return 42
+"""
+        tree = ast.parse(code)
+        node = tree.body[0]
+        result = _is_factory_class(node)
         assert result is False
