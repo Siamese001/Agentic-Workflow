@@ -82,6 +82,7 @@ class HybridSearchEngine:
         query_embedding: list[float] | None = None,
         collection_name: str = "docs",
         filter_dict: dict[str, Any] | None = None,
+        governance_filter: dict[str, Any] | None = None,
     ) -> list[HybridSearchResult]:
         """Execute hybrid search (4a+4b parallel).
 
@@ -90,6 +91,10 @@ class HybridSearchEngine:
             query_embedding: Pre-computed query embedding (🔵 intent_vec)
             collection_name: ChromaDB collection to search
             filter_dict: Optional metadata filters
+            governance_filter: Optional ADG governance filters
+                - exclude_violations: bool - exclude nodes with violations
+                - layers: list[str] - only include specific layers
+                - entity_types: list[str] - only include specific entity types
 
         Returns:
             Fused hybrid search results sorted by combined score
@@ -108,6 +113,10 @@ class HybridSearchEngine:
 
         # Fuse results (4d: Score-Based Fusion)
         fused_results = self._fuse_results(vector_results, lexical_results)
+
+        # Apply governance filters
+        if governance_filter:
+            fused_results = self._apply_governance_filters(fused_results, governance_filter)
 
         # Update stats
         elapsed_ms = (time.time() - start_time) * 1000
@@ -478,6 +487,55 @@ class HybridSearchEngine:
         except Exception as e:
             Logger.error(f"ADG query failed (get_violations): {e}")
             return []
+
+    def _apply_governance_filters(
+        self, results: list[HybridSearchResult], filters: dict[str, Any]
+    ) -> list[HybridSearchResult]:
+        """Apply ADG governance filters to search results.
+
+        Args:
+            results: Fused hybrid search results
+            filters: Governance filter dict
+                - exclude_violations: bool - exclude nodes with violations
+                - layers: list[str] - only include specific layers
+                - entity_types: list[str] - only include specific entity types
+
+        Returns:
+            Filtered results
+        """
+        filtered_results = []
+
+        for result in results:
+            metadata = result.metadata
+            should_include = True
+
+            # Filter by layer
+            if filters.get("layers"):
+                result_layer = metadata.get("layer", "Unknown")
+                if result_layer not in filters["layers"]:
+                    should_include = False
+
+            # Filter by entity type
+            if filters.get("entity_types"):
+                result_entity = metadata.get("entity_type", "unknown")
+                if result_entity not in filters["entity_types"]:
+                    should_include = False
+
+            # Exclude nodes with violations
+            if filters.get("exclude_violations"):
+                adg_node_id = metadata.get("adg_node_id")
+                if adg_node_id:
+                    violations = self.get_violations(adg_node_id)
+                    if violations:
+                        should_include = False
+
+            if should_include:
+                filtered_results.append(result)
+
+        if len(filtered_results) < len(results):
+            Logger.info(f"Governance filters reduced results from {len(results)} to {len(filtered_results)}")
+
+        return filtered_results
 
 
 # Global instance
