@@ -93,7 +93,7 @@ def adg_health() -> dict[str, Any]:
         svc = _init_service()
         report = _health.full_report()
         return {"status": "ok", "data": report}
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Health check failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -112,7 +112,7 @@ def adg_status() -> dict[str, Any]:
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Status query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -132,7 +132,7 @@ def adg_node(node_id: str) -> dict[str, Any]:
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Node query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -151,7 +151,7 @@ def adg_nodes_by_layer(layer: str, limit: int = 100) -> dict[str, Any]:
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Nodes by layer query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -170,7 +170,7 @@ def adg_nodes_by_file(file_path: str, limit: int = 100) -> dict[str, Any]:
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Nodes by file query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -189,7 +189,7 @@ def adg_edge_fanout(src_id: str, relation_type: str, limit: int = 30) -> dict[st
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Edge fanout query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -208,7 +208,7 @@ def adg_edge_fanin(tgt_id: str, relation_type: str, limit: int = 30) -> dict[str
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Edge fanin query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -227,7 +227,7 @@ def adg_violations(limit: int = 100) -> dict[str, Any]:
             "data": resp.data,
             "backend_used": resp.backend_used,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Violations query failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -260,7 +260,7 @@ def adg_close_connections() -> dict[str, Any]:
                 "message": "ADG connections closed. SQLite file locks released.",
             },
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Close connections failed: %s", e)
         return {"status": "error", "message": str(e)}
 
@@ -278,7 +278,7 @@ def adg_reopen_connections() -> dict[str, Any]:
                 "message": "ADG connections reopened.",
             },
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         _log.error("Reopen connections failed: %s", e)
         return {"status": "error", "message": str(e)}
 
