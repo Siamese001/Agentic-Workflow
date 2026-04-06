@@ -37,6 +37,10 @@ def _get_critical_violations() -> list[dict]:
         adg_dir = repo_root / "artifacts" / "adg"
         sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"), reverse=True)
         if not sqlite_files:
+            print(
+                "[ADG-P1-GATE] Warning: No ADG SQLite found. Run: python tools/generate/generate_full_adg.py",
+                file=sys.stderr,
+            )
             return []
 
         sqlite_path = sqlite_files[0]
@@ -65,11 +69,12 @@ def _get_critical_violations() -> list[dict]:
                     "symbol": row["edge_id"] or "unknown",
                     "line_no": row["line_no"] or 0,
                     "category": row.get("category", "unknown"),
-                }
+                },
             )
 
     except (OSError, sqlite3.Error) as e:
         print(f"[ADG-P1-GATE] Warning: Could not query ADG SQLite: {e}", file=sys.stderr)
+        print("[ADG-P1-GATE] Run: python tools/generate/generate_full_adg.py", file=sys.stderr)
 
     return violations
 
@@ -88,7 +93,7 @@ def main() -> int:
 
     # Get critical violations
     violations = _get_critical_violations()
-    
+
     if not violations:
         print("[ADG-P1-GATE] OK: No P1 (critical) defects found in ADG.")
         print("[ADG-P1-GATE] Commit allowed.")

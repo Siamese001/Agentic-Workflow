@@ -39,6 +39,10 @@ def _load_adg_violations() -> list[dict]:
         adg_dir = repo_root / "artifacts" / "adg"
         sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"), reverse=True)
         if not sqlite_files:
+            print(
+                "[ADG-LAYER-GATE] Warning: No ADG SQLite found. Run: python tools/generate/generate_full_adg.py",
+                file=sys.stderr,
+            )
             return []
 
         sqlite_path = sqlite_files[0]
@@ -66,11 +70,12 @@ def _load_adg_violations() -> list[dict]:
                     "symbol": row["symbol"] or "unknown",
                     "line_no": row["line_no"] or 0,
                     "relation_type": row["relation_type"],
-                }
+                },
             )
 
     except (OSError, json.JSONDecodeError, sqlite3.Error) as e:
         print(f"[ADG-LAYER-GATE] Warning: Could not query ADG: {e}", file=sys.stderr)
+        print("[ADG-LAYER-GATE] Run: python tools/generate/generate_full_adg.py", file=sys.stderr)
 
     return violations
 

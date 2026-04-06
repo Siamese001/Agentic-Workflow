@@ -9,7 +9,7 @@ Non-redundant output set (5 files, 100% edge coverage):
 
 Timestamp format: MMDDYYYY in US Eastern time  (e.g. 03122026 for March 12, 2026)
 Internal state file (not part of the 5-file model):
-    adg_graphsnap_<ts>.json       E7 drift detection — previous-run snapshot for diff
+    adg_graphsnap_<ts>.json       E7 drift detection — previous-run snapshot for diff (uncompressed)
 
 NOTE: adg_full.json removed (SQLite supersedes it). test_graph removed (covers lives in file_graph).
 NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default).
@@ -76,81 +76,83 @@ def _is_file_locked(filepath: Path) -> bool:
     except Exception:
         return True
 
-from agentic_core.adg.analysis.CanonicalSnapshot import (
+
+from agentic_core.adg.analysis.CanonicalSnapshot import (  # noqa: E402
     build_snapshot,
     load_latest_snapshot,
     save_snapshot,
 )
-from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
-from agentic_core.adg.analysis.GraphDiff import diff_snapshots
-from agentic_core.adg.analysis.ImpactReport import impact_summary, predict_impact
-from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_ownership
-from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
-from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
-from agentic_core.adg.artifact.builder_types import build_artifact
-from agentic_core.adg.extraction.static_scanner import (
+from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges  # noqa: E402
+from agentic_core.adg.analysis.GraphDiff import diff_snapshots  # noqa: E402
+from agentic_core.adg.analysis.ImpactReport import impact_summary, predict_impact  # noqa: E402
+from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_ownership  # noqa: E402
+from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations  # noqa: E402
+from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts  # noqa: E402
+from agentic_core.adg.artifact.builder_types import build_artifact  # noqa: E402
+from agentic_core.adg.contracts.schema_util import canonical_name  # noqa: E402
+from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
     ADGStaticScanner,
     _ExecutionSemanticVisitor,
     _iter_python_files,
     _repo_relative,
     _TypeSurfaceCollector,
 )
-from agentic_core.adg.contracts.schema_util import canonical_name
-from agentic_core.L2_execution.utils.async_file_ops import (
+from agentic_core.L2_execution.utils.async_file_ops import (  # noqa: E402
     BufferedFileWriter,
 )
-from agentic_core.L2_execution.utils.batch_processor import BatchProcessor
+from agentic_core.L2_execution.utils.batch_processor import BatchProcessor  # noqa: E402
 
 # CPU Optimization Imports
-from agentic_core.L2_execution.utils.cpu_optimizer import (
+from agentic_core.L2_execution.utils.cpu_optimizer import (  # noqa: E402
     CPUConfig,
     get_cpu_optimizer,
     shutdown_cpu_optimizer,
 )
-from agentic_core.L2_execution.utils.parallel_file_processor import (
+from agentic_core.L2_execution.utils.parallel_file_processor import (  # noqa: E402
     shutdown_file_processor,
 )
 
 
 def _print_defect_table(routing_summary: dict[str, int], semantic_warnings: list[str] | None = None) -> None:
     """Print P1-P4 defect table in terminal output.
-    
+
+    SEVERITY SSOT: See agentic_core.L5_safety.config.severity.SeverityLevel
     Maps severity levels to priority system:
-    - P1: critical (highest priority) - Layer violations, critical repair routes
-    - P2: high - High severity repair routes, architectural issues
-    - P3: medium - Medium severity repair routes, code quality issues
-    - P4: low (lowest priority) - Low severity repair routes, semantic enrichment warnings
-    
+    - P1: CRITICAL - Layer violations, critical repair routes (blocks commit)
+    - P2: HIGH - High severity repair routes, architectural issues
+    - P3: MEDIUM - Medium severity repair routes, code quality issues
+    - P4: LOW - Low severity repair routes, semantic enrichment warnings
+
     Args:
         routing_summary: Dictionary with by_severity counts
         semantic_warnings: List of semantic enrichment warnings (EDGE SEMANTIC PRECISION, etc.)
     """
     by_severity = routing_summary.get("by_severity", {})
-    
+
     # Map severity to priority
     p1_count = by_severity.get("critical", 0)
     p2_count = by_severity.get("high", 0)
     p3_count = by_severity.get("medium", 0)
-    
+
     # P4 includes low severity + semantic enrichment warnings
     p4_count = by_severity.get("low", 0)
     if semantic_warnings:
         p4_count += len(semantic_warnings)
-    
+
     total = p1_count + p2_count + p3_count + p4_count
-    
+
     print("\n[ADG] Defect Summary:")
     print("┌─────┬───────────────────────────────┬────────┐")
     print("│ P#  │ Description                  │ Count  │")
     print("├─────┼───────────────────────────────┼────────┤")
-    print(f"│ P1  │ Critical - layer violations  │ {p1_count:6} │")
-    print(f"│ P2  │ High - architectural issues  │ {p2_count:6} │")
-    print(f"│ P3  │ Medium - code quality        │ {p3_count:6} │")
-    print(f"│ P4  │ Low - semantic warnings      │ {p4_count:6} │")
+    print(f"│ P1  │ CRITICAL - layer violations  │ {p1_count:6} │")
+    print(f"│ P2  │ HIGH - architectural issues  │ {p2_count:6} │")
+    print(f"│ P3  │ MEDIUM - code quality        │ {p3_count:6} │")
+    print(f"│ P4  │ LOW - semantic warnings      │ {p4_count:6} │")
     print("├─────┼───────────────────────────────┼────────┤")
     print(f"│ TOT │ TOTAL                        │ {total:6} │")
     print("└─────┴───────────────────────────────┴────────┘")
-    
+
     # Detail P4 breakdown if there are semantic warnings
     if semantic_warnings:
         low_count = by_severity.get("low", 0)
@@ -158,6 +160,152 @@ def _print_defect_table(routing_summary: dict[str, int], semantic_warnings: list
         print(f"[ADG] P4 breakdown: {low_count} low severity + {warning_count} semantic warnings")
         for warning in semantic_warnings:
             print(f"[ADG]   - {warning}")
+
+
+def _check_artifact_validity(paths: object) -> None:
+    """Verify all required artifacts exist and are valid.
+
+    Fails with sys.exit(1) if any artifact is missing, zero-byte, or invalid.
+
+    Args:
+        paths: ArtifactPaths object containing file paths
+    """
+    required = {
+        "snapshot": paths.snapshot,
+        "sqlite": paths.sqlite,
+    }
+
+    missing = []
+    zero_byte = []
+    invalid = []
+
+    for name, path in required.items():
+        if not path.exists():
+            missing.append(name)
+            continue
+
+        if path.stat().st_size == 0:
+            zero_byte.append(name)
+            continue
+
+        if name == "sqlite":
+            try:
+                conn = sqlite3.connect(str(path))
+                conn.execute("SELECT 1 FROM nodes LIMIT 1")
+                conn.close()
+            except sqlite3.Error as e:
+                invalid.append((name, str(e)))
+        elif path.suffix == ".json":
+            try:
+                json.loads(path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as e:
+                invalid.append((name, str(e)))
+
+    if missing or zero_byte or invalid:
+        print("\n[ERROR] ADG artifact validation failed:")
+        if missing:
+            print(f"[ERROR] Missing artifacts: {', '.join(missing)}")
+        if zero_byte:
+            print(f"[ERROR] Zero-byte artifacts: {', '.join(zero_byte)}")
+        if invalid:
+            for name, err in invalid:
+                print(f"[ERROR] Invalid {name}: {err}")
+        print("[ERROR] Partial ADG generation detected - failing fast")
+        sys.exit(1)
+
+
+def _check_sqlite_integrity(sqlite_path: Path) -> None:
+    """Verify SQLite database integrity and schema completeness.
+
+    Fails with sys.exit(1) if integrity check fails or required tables are missing.
+
+    Args:
+        sqlite_path: Path to the SQLite database
+    """
+    try:
+        conn = sqlite3.connect(str(sqlite_path))
+        cur = conn.cursor()
+
+        integrity_result = cur.execute("PRAGMA integrity_check").fetchone()[0]
+        if integrity_result != "ok":
+            print(f"\n[ERROR] SQLite integrity check failed: {integrity_result}")
+            conn.close()
+            sys.exit(1)
+
+        required_tables = {"nodes", "edges", "violations", "meta"}
+        existing_tables = {
+            row[0] for row in cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        }
+
+        missing_tables = required_tables - existing_tables
+        if missing_tables:
+            print(f"\n[ERROR] SQLite missing required tables: {', '.join(missing_tables)}")
+            conn.close()
+            sys.exit(1)
+
+        conn.close()
+    except sqlite3.Error as e:
+        print(f"\n[ERROR] SQLite validation failed: {e}")
+        sys.exit(1)
+
+
+def _check_artifact_consistency(paths: object, artifact: object) -> None:
+    """Verify artifact entity/relation counts match SQLite node/edge counts.
+
+    Fails with sys.exit(1) if counts don't match. Skipped if JSON graphs not generated.
+
+    Args:
+        paths: ArtifactPaths object containing file paths
+        artifact: ADGArtifact with entity and relation counts
+    """
+    # Skip consistency check if JSON graphs are not generated
+    # (indicated by file_graph not existing)
+    if not hasattr(paths, "file_graph") or not paths.file_graph.exists():
+        print("[ADG] Skipping artifact consistency check (JSON graphs disabled)")
+        return
+
+    import sqlite3
+
+    conn = sqlite3.connect(str(paths.sqlite))
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM nodes")
+        node_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM edges")
+        edge_count = cursor.fetchone()[0]
+    finally:
+        conn.close()
+
+    entity_count = len(artifact.entities) if hasattr(artifact, "entities") else 0
+    relation_count = len(artifact.relations) if hasattr(artifact, "relations") else 0
+
+    if entity_count != node_count or relation_count != edge_count:
+        print("\n[ERROR] Artifact↔SQLite count mismatch:")
+        print(f"[ERROR]   entities (JSON): {entity_count}")
+        print(f"[ERROR]   nodes (SQLite): {node_count}")
+        print(f"[ERROR]   relations (JSON): {relation_count}")
+        print(f"[ERROR]   edges (SQLite): {edge_count}")
+        print("[ERROR] Partial ADG generation detected - failing fast")
+        sys.exit(1)
+
+
+def _check_p1_defects(routing_summary: dict[str, int], strict_mode: bool = False) -> None:
+    """Fail if P1 critical defects are present (in strict mode).
+
+    Args:
+        routing_summary: Dictionary with by_severity counts
+        strict_mode: If True, fail on P1 defects
+    """
+    if not strict_mode:
+        return
+
+    p1_count = routing_summary.get("by_severity", {}).get("critical", 0)
+    if p1_count > 0:
+        print(f"\n[ERROR] P1 critical defects detected: {p1_count}")
+        print("[ERROR] ADG generation failed - P1 defects present in strict mode")
+        print("[ERROR] Fix critical layer violations before regenerating ADG")
+        sys.exit(1)
 
 
 def generate_full_adg(
@@ -171,7 +319,8 @@ def generate_full_adg(
     enable_zip: bool = True,
     enable_reports: bool = True,
     enable_analysis: bool = True,
-) -> None:
+    strict_mode: bool = False,
+) -> tuple[ADGArtifact, dict[str, int], list[str]]:
     """Generate full ADG and write all artifact tiers.
 
     Args:
@@ -211,7 +360,7 @@ def generate_full_adg(
     if parallel:
         print(
             f"[ADG] CPU Optimizer: {optimizer.get_optimal_workers()} workers "
-            f"(AMD={optimizer._is_amd}, affinity={cpu_affinity})"
+            f"(AMD={optimizer._is_amd}, affinity={cpu_affinity})",
         )
         if cpu_affinity:
             optimizer.set_cpu_affinity()
@@ -219,7 +368,7 @@ def generate_full_adg(
         cpu_metrics_start = optimizer.get_cpu_metrics()
         print(
             f"[ADG] CPU baseline: {cpu_metrics_start.get('cpu_percent_avg', 0):.1f}% avg "
-            f"({cpu_metrics_start.get('cpu_count_physical', '?')} physical cores)"
+            f"({cpu_metrics_start.get('cpu_count_physical', '?')} physical cores)",
         )
     else:
         print("[ADG] Running in sequential mode (--parallel disabled)")
@@ -230,6 +379,7 @@ def generate_full_adg(
     import subprocess as _subprocess
 
     try:
+        # ruff: noqa: S607 - Git command is trusted, internal tool usage
         commit_sha = _subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         print(f"[ADG] Captured commit SHA: {commit_sha}")
     except (ValueError, TypeError, RuntimeError) as e:
@@ -238,8 +388,11 @@ def generate_full_adg(
 
     # Capture repo state hash (tree hash)
     try:
+        # ruff: noqa: S607 - Git command is trusted, internal tool usage
         repo_state_hash = _subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True
+            ["git", "rev-parse", "HEAD^{tree}"],
+            cwd=ROOT,
+            text=True,
         ).strip()
         print(f"[ADG] Captured repo state hash: {repo_state_hash}")
     except (ValueError, TypeError, RuntimeError) as e:
@@ -265,7 +418,7 @@ def generate_full_adg(
     print(f"[ADG] Modules: {len(result.modules)}")
     print(f"[ADG] Edges: {len(result.edges)}")
     print(
-        f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}"
+        f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}",
     )
 
     # Fail if syntax errors were detected
@@ -286,16 +439,24 @@ def generate_full_adg(
 
     # --- Write all three tiers + split planes ---
     print("[ADG] Writing artifact tiers...")
-    paths = write_all_artifacts(artifact, out_dir=adg_artifacts_dir, ts=ts)
+    paths = write_all_artifacts(
+        artifact,
+        out_dir=adg_artifacts_dir,
+        ts=ts,
+        write_split_planes=False,  # Disable redundant JSON graph files (100.75 MB savings)
+    )
+
+    # --- Fail-fast: Artifact validity checks ---
+    _check_artifact_validity(paths)
+    _check_sqlite_integrity(paths.sqlite)
+    _check_artifact_consistency(paths, artifact)
 
     # Size report
     sizes = paths.size_report()
 
     print(f"[ADG] Tier 1 snapshot:  {paths.snapshot.name}  ({sizes['snapshot']})")
     print(f"[ADG] Tier 2 sqlite:    {paths.sqlite.name}  ({sizes['sqlite']})")
-    print(f"[ADG] file_graph:       {paths.file_graph.name}  ({sizes['file_graph']})")
-    print(f"[ADG] symbol_graph:     {paths.symbol_graph.name}  ({sizes['symbol_graph']})")
-    print(f"[ADG] governance_graph: {paths.governance_graph.name}  ({sizes['governance_graph']})")
+    print("[ADG] JSON graphs:     DISABLED (100.75 MB savings, use SQLite for queries)")
     print(f"[ADG] entities={len(artifact.entities)}  relations={len(artifact.relations)}")
     print(f"[ADG] artifact_digest={artifact.artifact_digest[:16]}...")
 
@@ -310,7 +471,7 @@ def generate_full_adg(
         print("[ADG] E7 diff: no previous snapshot found (first run)")
 
     snap_path = adg_artifacts_dir / f"adg_graphsnap_{ts}.json"
-    save_snapshot(snapshot, snap_path)
+    save_snapshot(snapshot, snap_path, compress=False)
     print(f"[ADG] E7 snapshot saved: {snap_path.name}")
 
     # --- E8: Ownership ---
@@ -327,7 +488,9 @@ def generate_full_adg(
                 max_workers=workers,
             )
             scored_edges = score_edges(edge_list)
-            print(f"[ADG] E9 edge scoring: {len(edge_list)} edges in {_time.time() - _e9_start:.2f}s (parallel)")
+            print(
+                f"[ADG] E9 edge scoring: {len(edge_list)} edges in {_time.time() - _e9_start:.2f}s (parallel)",
+            )
         else:
             scored_edges = score_edges(list(result.edges))
         conf_summary = confidence_summary(scored_edges)
@@ -348,6 +511,9 @@ def generate_full_adg(
     ]
     repair_routes = route_violations(violation_edges)
     routing_summary = repair_routing_summary(repair_routes)
+
+    # --- Fail-fast: P1 critical defects (strict mode only) ---
+    _check_p1_defects(routing_summary, strict_mode=strict_mode)
 
     # --- E5: Impact prediction ---
     violation_sources = [
@@ -374,7 +540,7 @@ def generate_full_adg(
             break
     if not seed_files:
         seed_files = list(
-            result.modules[:5]
+            result.modules[:5],
         )  # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
     impact_report = predict_impact(result, seed_files)
     imp_summary = impact_summary(impact_report)
@@ -391,10 +557,10 @@ def generate_full_adg(
     print("[ADG] Enhancement 5-10 analysis:")
     print(
         f"      E5 impact: {imp_summary['impacted_module_count']} impacted  "
-        f"{imp_summary['covering_test_count']} tests  risk={imp_summary['risk_label']} ({imp_summary['risk_score']:.4f})"
+        f"{imp_summary['covering_test_count']} tests  risk={imp_summary['risk_label']} ({imp_summary['risk_score']:.4f})",
     )
     print(
-        f"      E6 graph_hash={snapshot.graph_hash[:16]}...  nodes={snapshot.node_count}  edges={snapshot.edge_count}"
+        f"      E6 graph_hash={snapshot.graph_hash[:16]}...  nodes={snapshot.node_count}  edges={snapshot.edge_count}",
     )
     if graph_diff is not None:
         print(f"      E7 drift: {graph_diff.summary}")
@@ -409,10 +575,10 @@ def generate_full_adg(
     print(f"      E8 ownership: {len(result.modules)} modules  high_criticality={owned_high}")
     print(
         f"      E9 confidence: avg={conf_summary['average_confidence']}  "
-        f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
+        f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}",
     )
     print(
-        f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
+        f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}",
     )
 
     # --- Memory MCP persistence ---
@@ -429,14 +595,13 @@ def generate_full_adg(
         not in ("0", "false", "no"),
     )
 
-    # --- Create zip archive of all 6 artifacts + Wave 6 reports (full mode only) ---
+    # --- Create zip archive of consolidated artifacts + Wave 6 reports ---
+    # Build artifact file list for zip (no JSON graphs - 100.75 MB savings)
+    # NOTE: adg_graphsnap_*.json is an internal drift detection state file, not archived
+    # Zip contains: 2 ADG artifacts (snapshot.json, sqlite) + reports
     artifact_files = [
         paths.snapshot,
         paths.sqlite,
-        paths.file_graph,
-        paths.symbol_graph,
-        paths.governance_graph,
-        adg_artifacts_dir / f"adg_graphsnap_{ts}.json",
     ]
 
     # Add Wave 6 standardized reports + test surface report
@@ -488,14 +653,18 @@ def generate_full_adg(
             semantic_warnings.append("DETERMINISM (ARTIFACT LEVEL)")
         elif set(failed_caps) == {"EDGE SEMANTIC PRECISION", "DETERMINISM (ARTIFACT LEVEL)"}:
             print(
-                "[ADG] WARNING: EDGE SEMANTIC PRECISION and DETERMINISM (ARTIFACT LEVEL) validation failed (known issues)"
+                "[ADG] WARNING: EDGE SEMANTIC PRECISION and DETERMINISM (ARTIFACT LEVEL) validation failed (known issues)",
             )
             print("[ADG] This does not block ADG generation - these systems need investigation")
             semantic_warnings.append("EDGE SEMANTIC PRECISION")
             semantic_warnings.append("DETERMINISM (ARTIFACT LEVEL)")
+        elif strict_mode:
+            print(f"\n[ERROR] ADG closure validation failed in strict mode: {failed_caps}")
+            print("[ERROR] Fix all closure validation gaps before regenerating ADG in strict mode")
+            sys.exit(1)
         else:
             raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
-    
+
     # Print P1-P4 defect table (including semantic warnings as P4)
     _print_defect_table(routing_summary, semantic_warnings)
 
@@ -505,8 +674,31 @@ def generate_full_adg(
     # --- Auto-commit artifacts to git ---
     if os.environ.get("ADG_SKIP_GIT", "").strip().lower() not in ("1", "true", "yes"):
         _auto_commit_artifacts(
-            adg_dir=adg_artifacts_dir, ts=ts, node_count=len(result.modules), edge_count=len(result.edges)
+            adg_dir=adg_artifacts_dir,
+            ts=ts,
+            node_count=len(result.modules),
+            edge_count=len(result.edges),
         )
+
+    # --- Fail-fast: Repo state change check ---
+    end_repo_state_hash = ""
+    try:
+        # ruff: noqa: S607 - Git command is trusted, internal tool usage
+        end_repo_state_hash = _subprocess.check_output(
+            ["git", "rev-parse", "HEAD^{tree}"],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    except (ValueError, TypeError, RuntimeError):
+        pass
+
+    if repo_state_hash and end_repo_state_hash and repo_state_hash != end_repo_state_hash:
+        print("\n[ERROR] Repository state changed during ADG generation")
+        print(f"[ERROR]   Start state: {repo_state_hash}")
+        print(f"[ERROR]   End state:   {end_repo_state_hash}")
+        print("[ERROR] This indicates concurrent modifications during generation")
+        print("[ERROR] Re-run ADG generation in a stable repository state")
+        sys.exit(1)
 
     # --- CPU Optimization: Final metrics and cleanup ---
     _adg_elapsed = _time.time() - _adg_start
@@ -529,14 +721,9 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
 
     Args:
         adg_dir: ADG artifacts directory
-        sqlite_path: Path to the just-created .sqlite file
-
-    Raises:
-        RuntimeError: If ingest script is not found
-        subprocess.TimeoutExpired: If ingest takes longer than configured timeout
-        subprocess.CalledProcessError: If ingest script fails
     """
     import subprocess
+    import time
 
     from agentic_core.config.redis_config import get_adg_cache_config
 
@@ -546,27 +733,21 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
         raise RuntimeError(f"Redis ingest script not found: {ingest_script}")
 
     print("[ADG] Auto-ingesting to Redis hot cache...")
-    try:
-        result = subprocess.run(
-            [sys.executable, str(ingest_script), "--force"],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-            timeout=config.ingest_timeout,
-            check=True,
-        )
-        print("[ADG] Redis ingest complete - ADG cache is HOT")
-        # Show last 3 lines of output for confirmation
-        lines = [line for line in result.stdout.strip().split("\n") if line.strip()]
-        for line in lines[-3:]:
-            print(f"      {line}")
-    except subprocess.TimeoutExpired:
-        print(f"[ADG] WARNING: Redis ingest timed out after {config.ingest_timeout}s — cache may be stale")
-        raise
-    except subprocess.CalledProcessError as e:
-        print(f"[ADG] ERROR: Redis ingest failed (exit {e.returncode}):")
-        print(f"      {e.stderr.strip()[:200]}")
-        raise
+    start_time = time.time()
+    # ruff: noqa: S603 - Python script is trusted, internal tool usage
+    result = subprocess.run(
+        [sys.executable, str(ingest_script), "--force"],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        timeout=config.ingest_timeout,
+        check=True,
+    )
+    print("[ADG] Redis ingest complete - ADG cache is HOT")
+    # Show last 3 lines of output for confirmation
+    lines = [line for line in result.stdout.strip().split("\n") if line.strip()]
+    for line in lines[-3:]:
+        print(f"      {line}")
 
 
 def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: int) -> None:
@@ -609,6 +790,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             artifact_path = adg_dir / pattern
             if artifact_path.exists():
                 # Skip ignored artifacts to avoid repeated git add failures/noise
+                # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
                 check_ignore = subprocess.run(
                     ["git", "check-ignore", str(artifact_path)],
                     cwd=str(ROOT),
@@ -619,6 +801,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
                     skipped_ignored_count += 1
                     continue
 
+                # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
                 subprocess.run(
                     ["git", "add", str(artifact_path)],
                     cwd=str(ROOT),
@@ -629,6 +812,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
                 staged_count += 1
 
         # Stage deletions of old artifacts (moved to _archive/)
+        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
         subprocess.run(
             ["git", "add", "-u", "artifacts/adg/"],
             cwd=str(ROOT),
@@ -639,10 +823,11 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
 
         if skipped_ignored_count:
             print(
-                f"[ADG] Git: skipped {skipped_ignored_count} ignored artifacts; staged {staged_count} trackable artifacts"
+                f"[ADG] Git: skipped {skipped_ignored_count} ignored artifacts; staged {staged_count} trackable artifacts",
             )
 
         # If nothing is staged, skip commit cleanly
+        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
         staged_check = subprocess.run(
             ["git", "diff", "--cached", "--quiet"],
             cwd=str(ROOT),
@@ -656,6 +841,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
         # Commit with descriptive message, bypassing pre-commit hooks
         # ADG artifacts are auto-generated and don't need validation
         commit_msg = f"ADG: regenerate artifacts {ts} — {node_count} modules, {edge_count} edges"
+        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
         result = subprocess.run(
             ["git", "commit", "--no-verify", "-m", commit_msg],
             cwd=str(ROOT),
@@ -706,7 +892,7 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
     total_violations = len(violation_edges)
     critical_count = routing_summary.get("by_severity", {}).get("critical", 0)
     print(
-        f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})"
+        f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})",
     )
 
 
@@ -744,13 +930,11 @@ def _extract_timestamp(filename: str) -> str | None:
         return ts
     return None
 
-    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
-
 
 def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
-    Args:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    Args:
         ts: Timestamp string — "03122026_0512" (MMDDYYYY_HHMM), "03122026" (MMDDYYYY),
             "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
 
@@ -808,12 +992,12 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
             # Extract timestamp (handles both regular artifacts and zip files)
             if path.name.startswith("adg_run_") and path.suffix == ".zip":
-                # Extract timestamp from zip filename: adg_run_03132026_0512.zip    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+                # Extract timestamp from zip filename: adg_run_03132026_0512.zip
                 ts = path.stem.replace("adg_run_", "")
             else:
                 ts = _extract_timestamp(
-                    path.name
-                )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                    path.name,
+                )
 
             if ts:
                 runs[ts].append(path)
@@ -845,20 +1029,19 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             archive_month_dir.mkdir(parents=True, exist_ok=True)
         except (ValueError, OSError) as e:
             print(
-                f"[ADG] Archive: failed to create archive dir for {ts}: {e}"
-            )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                f"[ADG] Archive: failed to create archive dir for {ts}: {e}",
+            )
             continue
 
         # Check if this run has a zip file (preferred storage)
-        zip_files = [
-            f for f in files if f.name.startswith("adg_run_") and f.suffix == ".zip"
-        ]  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        zip_files = [f for f in files if f.name.startswith("adg_run_") and f.suffix == ".zip"]
 
         if zip_files:
             # Archive only the zip file (most efficient)
             print(f"[ADG] Archive: Processing run {ts} with {len(zip_files)} zip file(s)")
             zip_archived, zip_bytes_original, zip_bytes_archived = _archive_zip_files(
-                zip_files, archive_month_dir
+                zip_files,
+                archive_month_dir,
             )
             archived_count += zip_archived
             bytes_original += zip_bytes_original
@@ -868,16 +1051,17 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             for file_path in files:
                 if file_path not in zip_files and file_path.exists():
                     try:
-                        # guardian: allow-silent-swallow - acceptable exception handling
+                        # ruff: noqa: S607 - acceptable exception handling
                         file_size = file_path.stat().st_size
                     except OSError:
                         file_size = 0
-                    # guardian: allow-silent-swallow - acceptable exception handling
+                    # ruff: noqa: S607 - acceptable exception handling
                     try:
                         # For SQLite files, try to close WAL checkpoint before deletion
                         if file_path.suffix == ".sqlite":
                             try:
                                 import sqlite3
+
                                 temp_conn = sqlite3.connect(str(file_path))
                                 temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                                 temp_conn.close()
@@ -892,7 +1076,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         else:
             # No zip file - delete orphaned individual files (no longer archiving them)
             print(
-                f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files - DELETING (no longer archiving individual files)"
+                f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files - DELETING (no longer archiving individual files)",
             )
             for file_path in files:
                 if file_path.exists():
@@ -901,13 +1085,13 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                         bytes_original += file_size
                     except OSError:
                         file_size = 0
-                    # guardian: allow-silent-swallow - acceptable exception handling
+                    # ruff: noqa: S607 - acceptable exception handling
                     try:
                         # Check if file is locked before attempting deletion
                         if _is_file_locked(file_path):
                             print(f"[WARNING] Archive: skipping locked file {file_path.name}")
-                            print(f"[WARNING]   File held by MCP server or Redis cache")
-                            print(f"[WARNING]   Restart Windsurf to release file locks")
+                            print("[WARNING]   File held by MCP server or Redis cache")
+                            print("[WARNING]   Restart Windsurf to release file locks")
                             continue
 
                         # For SQLite files, try to close WAL checkpoint before deletion
@@ -921,7 +1105,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                             except Exception:
                                 pass  # Best-effort cleanup
                         file_path.unlink()
-                        
+
                         # Delete associated WAL files for SQLite
                         if file_path.suffix == ".sqlite":
                             wal_path = file_path.with_suffix(".sqlite-wal")
@@ -932,13 +1116,13 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                                         aux_file.unlink()
                                     except OSError as e:
                                         pass  # Silent fail - WAL cleanup is best-effort
-                        
+
                         archived_count += 1
                     except OSError as e:
                         if "being used by another process" in str(e):
                             print(f"[WARNING] Archive: skipping locked file {file_path.name}")
-                            print(f"[WARNING]   File held by MCP server or Redis cache")
-                            print(f"[WARNING]   Restart Windsurf to release file locks")
+                            print("[WARNING]   File held by MCP server or Redis cache")
+                            print("[WARNING]   Restart Windsurf to release file locks")
                         else:
                             print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
                         continue
@@ -960,11 +1144,12 @@ def _ratio(numerator: int, denominator: int) -> float:
 
 def _stable_digest(payload: object) -> str:
     text = json.dumps(
-        payload, sort_keys=True, separators=(",", ":"), default=str
-    )  # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 
 
 def _sqlite_table_digest(sqlite_path: Path, table_name: str) -> str:
@@ -989,10 +1174,10 @@ def _audit_semantic_surfaces(repo_root: Path, realized_node_names: set[str]) -> 
         rel = _repo_relative(filepath, repo_root)
         try:
             source = filepath.read_text(encoding="utf-8", errors="replace")
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # ruff: noqa: S607 - acceptable exception handling
             tree = ast.parse(source, filename=str(filepath))
         except SyntaxError:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # ruff: noqa: S607 - acceptable exception handling
             counts["syntax_error_files"] += 1
             continue
         except OSError:
@@ -1042,36 +1227,36 @@ def _semantic_precision_stats(conn: sqlite3.Connection) -> dict[str, int | float
     semantic_edges = cur.execute("SELECT COUNT(*) FROM edges WHERE semantic_type != ''").fetchone()[0]
     execution_total = cur.execute("SELECT COUNT(*) FROM edges WHERE edge_kind='execution'").fetchone()[0]
     ordered_execution = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' AND dynamic_resolution LIKE 'seq=%'"
+        "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' AND dynamic_resolution LIKE 'seq=%'",
     ).fetchone()[0]
     controls_flow_total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow'",
     ).fetchone()[0]
     flows_to_total = cur.execute("SELECT COUNT(*) FROM edges WHERE relation_type='flows_to'").fetchone()[0]
     side_effect_total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect'",
     ).fetchone()[0]
     callsite_total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite'",
     ).fetchone()[0]
     controls_flow_specific = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow' "
-        "AND semantic_type IN ('branch','loop','exception_handler')"
+        "AND semantic_type IN ('branch','loop','exception_handler')",
     ).fetchone()[0]
     flows_to_specific = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='flows_to' AND semantic_type='data_lineage'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='flows_to' AND semantic_type='data_lineage'",
     ).fetchone()[0]
     side_effect_specific = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect' "
-        "AND semantic_type IN ('io','mutation')"
+        "AND semantic_type IN ('io','mutation')",
     ).fetchone()[0]
     callsite_specific = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite' "
-        "AND semantic_type='attribute_dispatch'"
+        "AND semantic_type='attribute_dispatch'",
     ).fetchone()[0]
     execution_generic = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' "
-        "AND semantic_type IN ('execution','call','read','write','controls_flow','flows_to','emits_side_effect','resolves_callsite')"
+        "AND semantic_type IN ('execution','call','read','write','controls_flow','flows_to','emits_side_effect','resolves_callsite')",
     ).fetchone()[0]
     return {
         "total_edges": total_edges,
@@ -1103,19 +1288,19 @@ def _violation_surface_stats(conn: sqlite3.Connection) -> dict[str, int | bool]:
     if "violations" in tables:
         violation_table_count = cur.execute("SELECT COUNT(*) FROM violations").fetchone()[0]
     layer_violation_edges = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'",
     ).fetchone()[0]
     layer_violation_sources = cur.execute(
-        "SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type='violates'"
+        "SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type='violates'",
     ).fetchone()[0]
     antipattern_edges = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='antipattern'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='antipattern'",
     ).fetchone()[0]
     surfaces_reconciled = bool(
         "violations" in tables
         and violation_table_count >= antipattern_edges
         and violation_table_count >= layer_violation_edges
-        and layer_violation_edges >= layer_violation_sources
+        and layer_violation_edges >= layer_violation_sources,
     )
     return {
         "violations_table_exists": "violations" in tables,
@@ -1134,7 +1319,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         "FROM edges e "
         "JOIN nodes src ON src.id = e.src_id "
         "JOIN nodes dst ON dst.id = e.dst_id "
-        "WHERE e.relation_type IN ('imports','violates')"
+        "WHERE e.relation_type IN ('imports','violates')",
     ).fetchall()
 
     def _symbol_to_module_key(adg_name: str) -> str:
@@ -1172,7 +1357,8 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         frontier = {
             importer
             for importer in importers_of.get(
-                violating_key, set()
+                violating_key,
+                set(),
             )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             if importer not in violating_modules and importer not in visited
         }
@@ -1183,7 +1369,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             next_frontier: set[str] = set()
             for node in frontier:
                 node_key = _module_to_key(
-                    node
+                    node,
                 )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 for importer in importers_of.get(node_key, set()):
                     if importer not in visited:
@@ -1194,12 +1380,12 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             eligible_edge_count += len(frontier)
 
     actual_edge_count = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='violation_propagates_through'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violation_propagates_through'",
     ).fetchone()[0]
     actual_depth_counts = dict(
         cur.execute(
-            "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol"
-        ).fetchall()
+            "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol",
+        ).fetchall(),
     )
     return {  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         "eligible_edge_count": eligible_edge_count,
@@ -1256,7 +1442,7 @@ def _artifact_determinism_probe(
             "artifact_digest_match": artifact.artifact_digest == probe_artifact.artifact_digest,
             "node_row_digest_match": current_node_row_digest == probe_node_row_digest,
             "edge_row_digest_match": current_edge_row_digest == probe_edge_row_digest,
-        }
+        },
     )
     proof["determinism_status"] = (
         "closed"
@@ -1546,8 +1732,9 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
 
     zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
     report_count = len([p for p in artifact_paths if "report" in p.name.lower()])
+    adg_count = len(artifact_paths) - report_count
     print(
-        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports)"
+        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, {adg_count} ADG + {report_count} reports)",
     )
 
     return zip_path
@@ -1594,7 +1781,7 @@ def _generate_standardized_reports(
                         "adg_name": entity.adg_name,
                         "resolved_path": entity.resolved_path,
                         "identity_kind": entity.identity_kind,
-                    }
+                    },
                 )
     layer_report["layer_distribution"] = dict(layer_counts)
     layer_report["unknown_modules"] = unknown_modules[:50]
@@ -1612,7 +1799,7 @@ def _generate_standardized_reports(
     cur = conn.cursor()
     total_edges = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
     sqlite_edge_counts = dict(
-        cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type").fetchall()
+        cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type").fetchall(),
     )
     stored_edge_counts = sqlite_edge_counts.copy()
 
@@ -1657,7 +1844,7 @@ def _generate_standardized_reports(
     total_modules = cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0]
     node_names = {row[0] for row in cur.execute("SELECT adg_name FROM nodes").fetchall()}
     type_surface_count = cur.execute(
-        "SELECT COUNT(*) FROM nodes WHERE type_surface IS NOT NULL AND type_surface != ''"
+        "SELECT COUNT(*) FROM nodes WHERE type_surface IS NOT NULL AND type_surface != ''",
     ).fetchone()[0]
     test_node_types = ["test_suite", "test_case", "invariant_family"]
     test_node_counts = {
@@ -1680,8 +1867,8 @@ def _generate_standardized_reports(
             "SELECT n.layer, COUNT(*) as count "
             "FROM nodes n "
             "WHERE n.entity_type IN ('test_suite', 'test_case', 'invariant_family') "
-            "GROUP BY n.layer"
-        ).fetchall()
+            "GROUP BY n.layer",
+        ).fetchall(),
     )
 
     provenance_report = {
@@ -1732,10 +1919,10 @@ def _generate_standardized_reports(
         },
         "determinism_coverage": {
             "modules_with_determinism_digest": cur.execute(
-                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_determinism_digest'"
+                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_determinism_digest'",
             ).fetchone()[0],
             "modules_with_replay_keys": cur.execute(
-                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_replay_key'"
+                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_replay_key'",
             ).fetchone()[0],
             "determinism_score": _ratio(
                 sum(
@@ -1792,7 +1979,7 @@ def _generate_standardized_reports(
             WHERE e.relation_type = 'imports'
             AND e.dst_id NOT IN (SELECT id FROM nodes WHERE entity_type = 'module')
             LIMIT 1000
-            """
+            """,
         )
         for row in cursor.fetchall():
             total_unresolved += 1
@@ -1921,7 +2108,7 @@ def _generate_standardized_reports(
                 "semantic_fallback_count": result.manifest.semantic_fallback_count,
                 "semantic_raw_edge_kind_count": result.manifest.semantic_raw_edge_kind_count,
                 "execution_generic_semantic_count": result.manifest.execution_generic_semantic_count,
-            }
+            },
         )
         violation_stats = _violation_surface_stats(conn)
         propagation_stats = {
@@ -1935,8 +2122,8 @@ def _generate_standardized_reports(
             "depth_counts": dict(
                 cur.execute(
                     "SELECT symbol, COUNT(*) FROM edges "
-                    "WHERE relation_type='violation_propagates_through' GROUP BY symbol"
-                ).fetchall()
+                    "WHERE relation_type='violation_propagates_through' GROUP BY symbol",
+                ).fetchall(),
             ),
         }
         closure_rows = [
@@ -2022,7 +2209,7 @@ def _generate_standardized_reports(
                     and semantic_stats["controls_flow_specific_ratio"] >= 0.95
                     and semantic_stats["flows_to_specific_ratio"] >= 0.95
                     and semantic_stats["side_effect_specific_ratio"] >= 0.95
-                    and semantic_stats["callsite_specific_ratio"] >= 0.95
+                    and semantic_stats["callsite_specific_ratio"] >= 0.95,
                 ),
                 "evidence": semantic_stats,
             },
@@ -2192,10 +2379,10 @@ def _check_mcp_config_drift() -> None:
             global_count = len(global_config.get("mcpServers", {}))
 
             if yaml_count != global_count:
-                print(f"[WARNING] MCP config drift detected!")
+                print("[WARNING] MCP config drift detected!")
                 print(f"[WARNING]   YAML enabled servers: {yaml_count}")
                 print(f"[WARNING]   Global enabled servers: {global_count}")
-                print(f"[WARNING]   Run: python tools/adg/sync_yaml_to_global.py")
+                print("[WARNING]   Run: python tools/adg/sync_yaml_to_global.py")
                 print("[WARNING]   Proceeding with ADG generation...")
             else:
                 print("[ADG] MCP config is in sync")
@@ -2246,13 +2433,13 @@ def _check_locked_files() -> None:
         if locked_count > 0:
             print(f"\n[ERROR] {locked_count} SQLite file(s) are locked by MCP server process")
             print(f"[ERROR] Locked files: {', '.join(locked_files_list)}")
-            print(f"[ERROR]")
-            print(f"[ERROR] The MCP server (adg_sqlite) has these files open.")
-            print(f"[ERROR] Automatic lock release cannot close connections from another process.")
-            print(f"[ERROR]")
-            print(f"[ERROR] REQUIRED ACTION: Restart Windsurf to release file locks")
-            print(f"[ERROR]")
-            print(f"[ERROR] ADG generation aborted - file locks prevent archive cleanup")
+            print("[ERROR]")
+            print("[ERROR] The MCP server (adg_sqlite) has these files open.")
+            print("[ERROR] Automatic lock release cannot close connections from another process.")
+            print("[ERROR]")
+            print("[ERROR] REQUIRED ACTION: Restart Windsurf to release file locks")
+            print("[ERROR]")
+            print("[ERROR] ADG generation aborted - file locks prevent archive cleanup")
             sys.exit(1)
         else:
             print("[ADG] No locked SQLite files found - proceeding with generation")
@@ -2352,24 +2539,43 @@ def main() -> None:
     parser.add_argument("--force", action="store_true", help="Force regeneration even if cache exists")
     # CPU Optimization CLI Flags (parallel is now default)
     parser.add_argument(
-        "--workers", type=int, default=None, help="Number of worker processes (default: auto)"
+        "--workers",
+        type=int,
+        default=None,
+        help="Number of worker processes (default: auto)",
     )
     parser.add_argument(
-        "--cpu-affinity", action="store_true", help="Enable CPU affinity for AMD processors (Wave 5)"
+        "--cpu-affinity",
+        action="store_true",
+        help="Enable CPU affinity for AMD processors (Wave 5)",
     )
     parser.add_argument(
-        "--batch-size", type=int, default=100, help="Batch size for file processing (default: 100)"
+        "--batch-size",
+        type=int,
+        default=100,
+        help="Batch size for file processing (default: 100)",
     )
     parser.add_argument("--repair", action="store_true", help="Run repair orchestrator after ADG generation")
     parser.add_argument("--repair-dry-run", action="store_true", help="Show repairs without applying them")
     parser.add_argument(
-        "--no-parallel", action="store_true", help="Disable parallel processing (default: enabled)"
+        "--no-parallel",
+        action="store_true",
+        help="Disable parallel processing (default: enabled)",
     )
     parser.add_argument(
-        "--no-zip", action="store_true", help="Disable zip archive creation (default: enabled)"
+        "--no-zip",
+        action="store_true",
+        help="Disable zip archive creation (default: enabled)",
     )
     parser.add_argument(
-        "--no-reports", action="store_true", help="Disable report generation (default: enabled)"
+        "--no-reports",
+        action="store_true",
+        help="Disable report generation (default: enabled)",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Enable strict mode: fail on P1 defects and closure validation gaps",
     )
 
     args = parser.parse_args()
@@ -2385,6 +2591,7 @@ def main() -> None:
 
     print(f"[ADG] Starting generation with timestamp: {ts}")
     print(f"[ADG] Parallel mode: {not args.no_parallel}")
+    print(f"[ADG] Strict mode: {args.strict}")
     if not args.no_parallel:
         print(f"[ADG] Workers: {args.workers or 'auto'}")
         print(f"[ADG] CPU affinity: {args.cpu_affinity}")
@@ -2402,6 +2609,7 @@ def main() -> None:
             enable_zip=not args.no_zip,
             enable_reports=not args.no_reports,
             enable_analysis=True,
+            strict_mode=args.strict,
         )
     except RuntimeError as e:
         if "Zip creation failed" in str(e) and not args.no_zip:

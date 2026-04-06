@@ -20,7 +20,6 @@ LEVEL DEFINITIONS
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal
 
 
 class SeverityLevel(Enum):
@@ -57,7 +56,7 @@ class SeverityLevel(Enum):
         - IMPACT: Minor style issues, formatting, informational
         - URGENCY: Low - nice to have, can be deferred
         - EXAMPLES: Line length violations, trailing whitespace, missing type hints in utility code,
-                    unused variables in tests, debug print statements
+                    unused variables in tests, debug print statements, semantic enrichment warnings
 
     INFO:
         - IMPACT: No issue - informational or passed status
@@ -66,10 +65,10 @@ class SeverityLevel(Enum):
     """
 
     CRITICAL = "critical"  # P0/P1 - Blocks commit
-    HIGH = "high"          # P1/P2 - Should fix before commit
-    MEDIUM = "medium"      # P2/P3 - Consider fixing
-    LOW = "low"            # P3/P4 - Informational
-    INFO = "info"          # Passed/clean status
+    HIGH = "high"  # P1/P2 - Should fix before commit
+    MEDIUM = "medium"  # P2/P3 - Consider fixing
+    LOW = "low"  # P3/P4 - Informational
+    INFO = "info"  # Passed/clean status
 
     def __str__(self) -> str:
         return self.value

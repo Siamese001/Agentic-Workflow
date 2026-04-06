@@ -102,7 +102,7 @@ def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
     Args:
-        ts: Timestamp string — "03122026" (MMDDYYYY), "04042026_1942" (MMDDYYYY + time), 
+        ts: Timestamp string — "03122026" (MMDDYYYY), "04042026_1942" (MMDDYYYY + time),
             "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
 
     Returns:
@@ -119,7 +119,7 @@ def _parse_timestamp(ts: str) -> datetime:
     if len(ts) == 8 and ts.isdigit():
         # Distinguish MMDDYYYY (new) from YYYYMMDD (legacy)
         # If first 4 chars are a plausible year (2020-2099), it's YYYYMMDD
-        if ts.startswith(('202', '203', '204', '205', '206')):
+        if ts.startswith(("202", "203", "204", "205", "206")):
             return datetime.strptime(ts, "%Y%m%d")
         return datetime.strptime(ts, "%m%d%Y")
     return datetime.strptime(ts, "%Y%m%dT%H%M%SZ")
@@ -148,10 +148,19 @@ def discover_runs() -> dict[str, list[Path]]:
     runs: dict[str, list[Path]] = defaultdict(list)
     seen_files: set[Path] = set()
 
-    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_*.md", "adg_repair_*.json",
-                    "*_report_*.json", "test_surface_coverage_*.json", "*_log_*.json",
-                    "execution_impact_*.json", "repair_log_*.json", "scan_result_cache.json",
-                    "adg_*.zip"]:
+    for pattern in [
+        "adg_*.json",
+        "adg_*.sqlite",
+        "adg_*.md",
+        "adg_repair_*.json",
+        "*_report_*.json",
+        "test_surface_coverage_*.json",
+        "*_log_*.json",
+        "execution_impact_*.json",
+        "repair_log_*.json",
+        "scan_result_cache.json",
+        "adg_*.zip",
+    ]:
         for path in ADG_DIR.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name:
@@ -196,8 +205,13 @@ def identify_runs_to_archive(runs: dict[str, list[Path]], keep_runs: int) -> lis
     return sorted(to_archive, key=_parse_timestamp)
 
 
-def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool,
-                active_timestamp: str | None = None) -> dict:
+def archive_run(
+    ts: str,
+    files: list[Path],
+    compress: bool,
+    dry_run: bool,
+    active_timestamp: str | None = None,
+) -> dict:
     """Archive a single ADG run.
 
     Args:
@@ -479,10 +493,14 @@ def main() -> None:
         archive_dir = _get_archive_month_dir(ts)
         print(f"    → {archive_dir.relative_to(ROOT)}")
         if stats["files_skipped"] > 0:
-            print(f"    → {stats['files_archived']} files archived, {stats['files_skipped']} files skipped (locked or active)")
+            print(
+                f"    → {stats['files_archived']} files archived, {stats['files_skipped']} files skipped (locked or active)",
+            )
             print(f"    → {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}")
         else:
-            print(f"    → {stats['files_archived']} files, {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}")
+            print(
+                f"    → {stats['files_archived']} files, {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}",
+            )
 
     print()
     print("[ADG Archive] Summary:")
@@ -494,8 +512,8 @@ def main() -> None:
     print(f"    Archived size: {format_bytes(total_stats['bytes_archived'])}")
 
     if compress:
-        savings = total_stats['bytes_original'] - total_stats['bytes_archived']
-        pct = (savings / total_stats['bytes_original'] * 100) if total_stats['bytes_original'] > 0 else 0
+        savings = total_stats["bytes_original"] - total_stats["bytes_archived"]
+        pct = (savings / total_stats["bytes_original"] * 100) if total_stats["bytes_original"] > 0 else 0
         print(f"    Space saved: {format_bytes(savings)} ({pct:.1f}%)")
 
     # Show skip reasons if any files were skipped

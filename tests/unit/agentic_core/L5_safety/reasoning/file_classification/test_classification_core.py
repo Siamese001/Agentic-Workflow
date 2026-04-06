@@ -5,7 +5,6 @@ functions maintain behavioral equivalence with the original implementation.
 """
 
 import ast
-import pytest
 from pathlib import Path
 
 from agentic_core.L5_safety.reasoning.file_classification.classification_core import (
@@ -276,7 +275,11 @@ class AppConfig:
 """
         tree = ast.parse(code)
         result = _detect_config_patterns(
-            tree, Path("app_config.py"), code, ["config"], {"debug", "timeout"}
+            tree,
+            Path("app_config.py"),
+            code,
+            ["config"],
+            {"debug", "timeout"},
         )
         assert result is True
 
@@ -290,7 +293,11 @@ class Settings:
 """
         tree = ast.parse(code)
         result = _detect_config_patterns(
-            tree, Path("settings.py"), code, [], {"debug", "timeout", "api_key"}
+            tree,
+            Path("settings.py"),
+            code,
+            [],
+            {"debug", "timeout", "api_key"},
         )
         assert result is True
 
@@ -303,7 +310,11 @@ class MyClass:
 """
         tree = ast.parse(code)
         result = _detect_config_patterns(
-            tree, Path("regular.py"), code, [], {"debug"}
+            tree,
+            Path("regular.py"),
+            code,
+            [],
+            {"debug"},
         )
         assert result is False
 
@@ -380,7 +391,12 @@ class PipelineOrchestrator:
         pass
 """
         tree = ast.parse(code)
-        result = _detect_orchestrator_patterns(tree, Path("pipeline_orchestrator.py"), code, "PipelineOrchestrator")
+        result = _detect_orchestrator_patterns(
+            tree,
+            Path("pipeline_orchestrator.py"),
+            code,
+            "PipelineOrchestrator",
+        )
         assert result is True
 
     def test_non_orchestrator_file(self):
@@ -583,18 +599,18 @@ class TestClassifyFilePure:
 
     def test_classify_config_file(self):
         """Test classification of a config file."""
-        import tempfile
         import os
+        import tempfile
 
         code = """
 class Config:
     SETTINGS = "value"
 """
-        with tempfile.NamedTemporaryFile(mode='w', suffix='_config.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix="_config.py", delete=False) as f:
             f.write(code)
             f.flush()
             temp_path = Path(f.name)
-        
+
         try:
             result = classify_file_pure(temp_path)
             assert result == "CONFIG"
@@ -603,8 +619,8 @@ class Config:
 
     def test_classify_test_file(self):
         """Test classification of a test file."""
-        import tempfile
         import os
+        import tempfile
 
         code = """
 import unittest
@@ -613,11 +629,11 @@ class MyTest(unittest.TestCase):
     def test_something(self):
         pass
 """
-        with tempfile.NamedTemporaryFile(mode='w', suffix='_test.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix="_test.py", delete=False) as f:
             f.write(code)
             f.flush()
             temp_path = Path(f.name)
-        
+
         try:
             result = classify_file_pure(temp_path)
             assert result == "TEST"

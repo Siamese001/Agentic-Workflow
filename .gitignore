@@ -80,3 +80,6 @@
 *.tmp
 .coverage.*/
 /Thumbs.db/
+agentic_core/L0_routing/logs/
+agentic_core/L0_routing/utils/.core_golden_seal
+docs/reports/guardian_report.json

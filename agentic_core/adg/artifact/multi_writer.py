@@ -112,23 +112,16 @@ _emit_links_execution_to_snapshot("p4", "multi_writer", "exec_snapshot_link")
 
 if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder import ADGArtifact
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: E402
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -136,17 +129,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -474,7 +461,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     node.get("to", None),  # temporal_order
                     node.get("ts", None),  # type_surface
                     node.get("es", None),  # enclosing_symbol
-                )
+                ),
             )
         conn.executemany(
             "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path,"
@@ -508,7 +495,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     e.get("tsl", 0),  # target_span_line
                     e.get("tsc", 0),  # target_span_column
                     e.get("dr", None),  # dynamic_resolution
-                )
+                ),
             )
         conn.executemany(
             "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol,"
@@ -539,7 +526,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     WHEN relation_type = 'antipattern' THEN 'LOW'
                     ELSE 'MEDIUM'
                 END as severity
-            FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"""
+            FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')""",
         )
 
         # Meta
@@ -553,6 +540,11 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         ]
         conn.executemany("INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)", meta_rows)
 
+        conn.commit()
+
+        # Optimize SQLite database (3-13 MB savings)
+        conn.execute("PRAGMA optimize")
+        conn.execute("VACUUM")
         conn.commit()
     finally:
         conn.close()
@@ -573,6 +565,7 @@ def _create_latest_symlinks(
     On Windows, creates copies instead of symlinks if symlink creation fails.
     """
     import shutil
+
     # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling
     symlink_map = {
         "adg_LATEST.sqlite": sqlite_path,

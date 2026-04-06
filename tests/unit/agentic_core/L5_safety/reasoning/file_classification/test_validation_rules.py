@@ -1,7 +1,5 @@
 """Tests for validation_rules module."""
 
-import ast
-import pytest
 from pathlib import Path
 
 from agentic_core.L5_safety.reasoning.file_classification.validation_rules import (
@@ -19,7 +17,7 @@ class TestCheckFakeConfig:
 class MyConfig:
     def __init__(self):
         self.value = 42
-    
+
     def process_data(self):
         return self.value * 2
 """

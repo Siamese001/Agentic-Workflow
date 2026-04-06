@@ -8,10 +8,10 @@ Usage:
     python tools/generate/check_exclusion_sync.py      # Check sync
     python tools/generate/check_exclusion_sync.py --fix # Generate report (future)
 """
+
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -30,7 +30,7 @@ def load_excluded_paths() -> Any:
     if not config_path.exists():
         print(f"Error: Config not found: {config_path}")
         sys.exit(1)
-    
+
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
@@ -73,7 +73,7 @@ def load_precommit_excludes() -> list[str]:
             paren_count -= 1
             if paren_count == 0:
                 # Found the closing parenthesis
-                patterns_text = content[regex_start + 6:i]
+                patterns_text = content[regex_start + 6 : i]
                 break
 
     if not patterns_text:
@@ -133,17 +133,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fix", action="store_true", help="Generate sync report (future)")
 
     _ = parser.parse_args(argv)
-    
+
     print("Checking exclusion synchronization...")
     print("=" * 60)
-    
+
     # Load data
     excluded_data = load_excluded_paths()
     precommit_patterns = load_precommit_excludes()
-    
+
     # Compare
     comparison = compare_patterns(excluded_data, precommit_patterns)
-    
+
     # Report
     print(f"\nYAML precommit_excludes: {comparison['total_yaml']}")
     print(f"Pre-commit patterns: {comparison['total_precommit']}")
