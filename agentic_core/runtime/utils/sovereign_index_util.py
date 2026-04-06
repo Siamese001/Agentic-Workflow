@@ -86,7 +86,8 @@ try:
 
     _SSOT_EXCLUSIONS_AVAILABLE = True
 except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
+
+    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     _SSOT_EXCLUSIONS_AVAILABLE = False
     GLOBAL_EXCLUDED_DIRS = None
 from agentic_core.runtime.lifecycle_trace_contract import (

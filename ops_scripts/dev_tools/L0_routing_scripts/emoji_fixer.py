@@ -169,19 +169,25 @@ _emit_validated_by_safety_plane("p1", "emoji_fixer", "safety_validation")
 _emit_invokes_eval("p1", "emoji_fixer", "eval_call")
 _emit_proposal_commits_routing("p1", "emoji_fixer", "routing_commit")
 
+# Default values - guardian: allow-hardcoded - fallback for optional dependency
+AGENTIC_CORE_DIR = Path(".")
+APPS_SHARED_DIR = Path(".")
+
+def get_python_files(directory):
+    return directory.rglob("*.py")
+
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
-        AGENTIC_CORE_DIR,
-        APPS_SHARED_DIR,
-        get_python_files,
+        AGENTIC_CORE_DIR as _acquired_core_dir,
+        APPS_SHARED_DIR as _acquired_shared_dir,
+        get_python_files as _acquired_get_files,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:  # guardian: allow-silent-swallow
-    AGENTIC_CORE_DIR = Path(AGENTIC_CORE_DIR)
-    APPS_SHARED_DIR = Path(APPS_SHARED_DIR)
-
-    def get_python_files(directory):
-        return directory.rglob("*.py")
+    # Update if import succeeds
+    AGENTIC_CORE_DIR = Path(_acquired_core_dir)
+    APPS_SHARED_DIR = Path(_acquired_shared_dir)
+    get_python_files = _acquired_get_files
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
+    pass
 
 
 EMOJI_MAP = {

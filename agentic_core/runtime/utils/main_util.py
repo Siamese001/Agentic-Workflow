@@ -177,7 +177,8 @@ try:
 
     load_dotenv()
 except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
+
+    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     pass
 
 

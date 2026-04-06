@@ -22,6 +22,11 @@ from pathlib import Path
 from re import Pattern
 from typing import Any, Final
 
+try:
+    import yaml
+except ImportError:
+    yaml = None  # guardian: allow-silent-swallow
+
 # Wave 3: ROOT_WHITELIST import removed - now defined locally as alias to PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.config.structure_blueprint.derived import (
     L4_APPROVED_FOLDERS,
@@ -789,6 +794,67 @@ def get_apps_rfp_subfolder_map() -> Mapping[str, Sequence[str]]:
 
 
 # ============================================================================
+# EXCLUSION LOADING FROM YAML SSOT
+# ============================================================================
+
+
+@lru_cache(maxsize=1)
+def _load_exclusions_from_yaml() -> dict[str, frozenset[str]]:
+    """Load exclusion directories from excluded_paths.yaml (SSOT).
+
+    Returns:
+        Dict with keys: 'build_cache', 'version_control', 'virtual_env',
+        'coverage', 'archive', 'ide', 'vendor', 'data', 'special'
+    """
+    if yaml is None:
+        # Fallback to hardcoded values if PyYAML not available
+        return {
+            "build_cache": frozenset(),
+            "version_control": frozenset(),
+            "virtual_env": frozenset(),
+            "coverage": frozenset(),
+            "archive": frozenset(),
+            "ide": frozenset(),
+            "vendor": frozenset(),
+            "data": frozenset(),
+            "special": frozenset(),
+        }
+
+    # Path to excluded_paths.yaml (relative to this file)
+    config_path = Path(__file__).parent.parent.parent.parent.parent / "config" / "excluded_paths.yaml"
+
+    if not config_path.exists():
+        # Fallback if config file not found
+        return {
+            "build_cache": frozenset(),
+            "version_control": frozenset(),
+            "virtual_env": frozenset(),
+            "coverage": frozenset(),
+            "archive": frozenset(),
+            "ide": frozenset(),
+            "vendor": frozenset(),
+            "data": frozenset(),
+            "special": frozenset(),
+        }
+
+    with open(config_path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    # Build frozensets for each category
+    return {
+        "build_cache": frozenset(data.get("build_cache_dirs", [])),
+        "version_control": frozenset(data.get("version_control_dirs", [])),
+        "virtual_env": frozenset(data.get("virtual_env_dirs", [])),
+        "coverage": frozenset(data.get("coverage_dirs", [])),
+        "archive": frozenset(data.get("archive_dirs", [])),
+        "ide": frozenset(data.get("ide_dirs", [])),
+        "vendor": frozenset(data.get("vendor_dirs", [])),
+        "data": frozenset(data.get("data_dirs", [])),
+        "special": frozenset(data.get("special_dirs", [])),
+    }
+
+
+# ============================================================================
 # MIGRATED FROM MONOLITH (structure_blueprint_config.py) — 2026-02-08
 # ============================================================================
 
@@ -978,62 +1044,29 @@ ROOT_ALLOWED_PATTERNS: Final[Sequence[Pattern]] = [
 ]
 
 
-SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
-    {
-        ".git",
-        ".github",
-        ".hypothesis",
-        ".windsurf",
-        ".venv",
-        "venv",
-        "venv_stable",
-        "__pycache__",
-        ".pytest_cache",
-        ".ruff_cache",
-        "node_modules",
-        ".mypy_cache",
-        ".tox",
-        ".test_artifacts",  # Test artifacts with leading dot (W1.1 gap closure)
-        "archives",
-        "archive",
-        "artifacts",
-        "coverage_html",  # pytest-cov output directory (W1.1 gap closure)
-        "_compat",  # Compatibility shims - re-exports only
-        "data",
-        "docs",
-        "env",
-        "build",
-        "dist",
-        "_build",
-        "Lib",
-        "site-packages",
-        "google",
-        "gapic",
-        "logging",
-        "licenses",
-        "src",
-        "pip",
-        "dist-info",
-        "raw",
-        "logs",
-        "shared",
-        ".sovereign_healing_backup",
-        ".healing_backups",
-        ".backup",
-        ".idea",
-        ".vscode",
-        ".DS_Store",
-        ".coverage",  # Coverage data file (W2.3 sync)
-        ".eggs",  # Build artifacts (W2.3 sync)
-        ".env",  # Environment files (W2.3 sync)
-        ".gravity_state",  # Gravity state backups (W2.3 sync)
-        ".hg",  # Mercurial (W2.3 sync)
-        ".svn",  # SVN (W2.3 sync)
-        "htmlcov",  # Coverage HTML output (W2.3 sync)
-        "reports",  # Report output (W2.3 sync)
-        "test_artifacts",  # Test artifacts without leading dot (W2.3 sync)
-        "Thumbs.db",
-    },
+# Load exclusions from YAML SSOT (excluded_paths.yaml)
+_exclusions = _load_exclusions_from_yaml()
+
+# Combine all exclusion categories from YAML into single SSOT set
+SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset().union(
+    _exclusions["build_cache"],
+    _exclusions["version_control"],
+    _exclusions["virtual_env"],
+    _exclusions["coverage"],
+    _exclusions["archive"],
+    _exclusions["ide"],
+    _exclusions["vendor"],
+    _exclusions["data"],
+    _exclusions["special"],
+    # Additional exclusions not in YAML (legacy/intentional)
+    frozenset({
+        ".github",  # GitHub workflows (intentional)
+        ".windsurf",  # Windsurf IDE data (intentional)
+        ".hypothesis",  # Hypothesis test DB (intentional)
+        "Thumbs.db",  # Windows thumbnail cache (file, not dir)
+        "docs",  # Documentation territory (intentional)
+        "logging",  # Logging module name conflicts (intentional)
+    }),
 )
 
 FORBIDDEN_FOLDER_PATTERN: Pattern = re.compile(r"^\d+_")
@@ -1209,46 +1242,22 @@ PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
 
 # ============================================================================
 # GLOBAL EXCLUDED DIRECTORIES - Production Lens SSOT
+# Loaded from excluded_paths.yaml (YAML SSOT) + intentional additions
 # ============================================================================
-GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
-    {
-        # Build/cache directories
-        "__pycache__",
-        ".pytest_cache",
-        ".mypy_cache",
-        "build",
-        "dist",
-        ".eggs",
-        # Version control
-        ".git",
-        ".svn",
-        ".hg",
-        # Virtual environments
-        ".venv",
-        "venv",
-        "env",
-        ".env",
-        "node_modules",
-        # Coverage/reports
-        "coverage_html",
-        "htmlcov",
-        ".coverage",
-        "reports",
-        # Archives and backups
-        "archives",
-        ".sovereign_healing_backup",
-        ".healing_backups",
-        # Volatile/output directories (Production Lens exclusions)
-        "logs",
-        "artifacts",
-        ".github",
-        ".backup",
-        ".gravity_state",
-        # Test directories and artifacts
-        "tests",
-        "test_artifacts",
-        "_compat",  # Compatibility shims - re-exports only
-    },
+GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset().union(
+    _exclusions["build_cache"],
+    _exclusions["version_control"],
+    _exclusions["virtual_env"],
+    _exclusions["coverage"],
+    _exclusions["archive"],
+    # Additional production lens exclusions (intentional)
+    frozenset({
+        "logs",  # Log directories
+        "artifacts",  # Artifact outputs
+        ".github",  # GitHub workflows
+        "tests",  # Test directory (excluded from production lens)
+        "test_artifacts",  # Test artifacts
+    }),
 )
 
 

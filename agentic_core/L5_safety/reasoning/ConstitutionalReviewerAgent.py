@@ -5,7 +5,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 try:
     from agentic_core.L5_safety.base import L5SafetyBase
 except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-degradation - Optional L5 safety base
+
+    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-degradation - Optional L5 safety base
 
     class L5SafetyBase:  # type: ignore[no-redef]
         """Stub L5SafetyBase."""

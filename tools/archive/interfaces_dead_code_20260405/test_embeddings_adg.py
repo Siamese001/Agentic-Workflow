@@ -1,0 +1,29 @@
+"""Test EmbeddingsAdg functionality."""
+
+import sys
+from pathlib import Path
+
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+
+@pytest.mark.unit
+class TestEmbeddingsAdg:
+    """Test EmbeddingsAdg functionality."""
+
+    def test_embeddings_adg_imports(self):
+        """Test embeddings_adg module imports."""
+        from agentic_core import embeddings_adg
+        assert embeddings_adg is not None
+
+    def test_embeddings_adg_class(self):
+        """Test EmbeddingsAdg class exists."""
+        from agentic_core import EmbeddingsAdg
+        assert EmbeddingsAdg is not None
+
+    def test_embeddings_adg_callable(self):
+        """Test embeddings_adg functions are callable."""
+        from agentic_core import validate_embeddings_adg
+        assert callable(validate_embeddings_adg)

@@ -5,8 +5,9 @@ SSOT: config/excluded_paths.yaml
 This script generates .gitignore entries from the canonical exclusion list.
 
 Usage:
-    python tools/generate_gitignore.py --write    # Update .gitignore
-    python tools/generate_gitignore.py --check    # Verify sync (CI mode)
+    python tools/generate/gitignore.py --write              # Update .gitignore
+    python tools/generate/gitignore.py --check              # Verify sync (CI mode)
+    python tools/generate/gitignore.py --write-precommit   # Generate pre-commit exclude section
 """
 from __future__ import annotations
 
@@ -27,7 +28,7 @@ GITIGNORE_HEADER = """# Generated from config/excluded_paths.yaml
 """
 
 
-def load_exclusions() -> tuple[set[str], set[str]]:
+def load_exclusions() -> tuple[set[str], set[str], set[str]]:
     """Load exclusions from YAML config."""
     config_path = Path(__file__).parent.parent.parent / "config" / "excluded_paths.yaml"
 
@@ -66,7 +67,10 @@ def load_exclusions() -> tuple[set[str], set[str]]:
     # File patterns
     file_patterns = set(data.get("file_patterns", []))
 
-    return all_dirs, file_patterns
+    # Pre-commit specific exclusions
+    precommit_excludes = set(data.get("precommit_excludes", []))
+
+    return all_dirs, file_patterns, precommit_excludes
 
 
 def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
@@ -76,7 +80,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     lines = [GITIGNORE_HEADER.format(timestamp=datetime.now().isoformat())]
 
     # Group by category for readability
-    groups = {
+    groups: dict[str, list[str]] = {
         "Build & Cache": [],
         "Version Control": [],
         "Virtual Environments": [],
@@ -140,6 +144,32 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     return "\n".join(lines)
 
 
+def generate_precommit_exclude(precommit_patterns: set[str]) -> str:
+    """Generate pre-commit exclude section from precommit_excludes."""
+    from datetime import datetime
+
+    header = f"""# Generated from config/excluded_paths.yaml
+# Do not edit manually - run: python tools/generate/gitignore.py --write-precommit
+# Last generated: {datetime.now().isoformat()}
+"""
+
+    lines = [header, "exclude: |"]
+    lines.append("  (?x)^(")
+
+    # Sort patterns for consistency
+    sorted_patterns = sorted(precommit_patterns)
+
+    for pattern in sorted_patterns:
+        lines.append(f"    {pattern}|")
+
+    # Remove trailing pipe from last pattern
+    lines[-1] = lines[-1].rstrip("|")
+
+    lines.append("  )")
+
+    return "\n".join(lines)
+
+
 def read_current_gitignore() -> str | None:
     """Read current .gitignore content."""
     gitignore_path = Path(__file__).parent.parent.parent / ".gitignore"
@@ -157,7 +187,7 @@ def write_gitignore(content: str) -> None:
 
 def check_sync() -> bool:
     """Check if .gitignore is in sync with YAML config."""
-    dirs, patterns = load_exclusions()
+    dirs, patterns, _ = load_exclusions()
     generated = generate_gitignore_content(dirs, patterns)
     current = read_current_gitignore()
 
@@ -174,7 +204,7 @@ def check_sync() -> bool:
         return True
     else:
         print("❌ .gitignore is out of sync with config/excluded_paths.yaml")
-        print("Run: python tools/generate_gitignore.py --write")
+        print("Run: python tools/generate/gitignore.py --write")
         return False
 
 
@@ -182,6 +212,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate .gitignore from YAML config")
     parser.add_argument("--write", action="store_true", help="Write .gitignore file")
     parser.add_argument("--check", action="store_true", help="Check if .gitignore is in sync (CI mode)")
+    parser.add_argument("--write-precommit", action="store_true", help="Write pre-commit exclude section to stdout")
 
     args = parser.parse_args(argv)
 
@@ -189,13 +220,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0 if check_sync() else 1
 
     if args.write:
-        dirs, patterns = load_exclusions()
+        dirs, patterns, _ = load_exclusions()
         content = generate_gitignore_content(dirs, patterns)
         write_gitignore(content)
         return 0
 
+    if args.write_precommit:
+        _, _, precommit_patterns = load_exclusions()
+        content = generate_precommit_exclude(precommit_patterns)
+        print(content)
+        return 0
+
     # Default: print to stdout
-    dirs, patterns = load_exclusions()
+    dirs, patterns, _ = load_exclusions()
     content = generate_gitignore_content(dirs, patterns)
     print(content)
     return 0

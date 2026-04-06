@@ -69,9 +69,10 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (  # no
 
 # Wave 3: SOVEREIGN_TERRITORIES removed - use get_all_territories() from territories module
 # Backward-compat alias: SOVEREIGN_REGISTRY -> SOVEREIGN_TERRITORIES
-# from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
-#     SOVEREIGN_TERRITORIES as SOVEREIGN_REGISTRY,
-# )
+# Now imports from main package which uses __getattr__ fallback to get_all_territories()
+from agentic_core.L5_safety.config.structure_blueprint import (  # noqa: F401
+    SOVEREIGN_TERRITORIES as SOVEREIGN_REGISTRY,
+)
 from agentic_core.L5_safety.config.structure_blueprint.artifacts import (  # noqa: F401
     get_app_specific_patterns_compiled,
 )

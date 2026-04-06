@@ -16,9 +16,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from agentic_core.L5_safety.config.structure_blueprint._constants import (
-    SOVEREIGN_TERRITORIES,  # Internal use only - not re-exported
     SubfolderDefinition,  # noqa: F401
     TerritoryDefinition,  # noqa: F401
+)
+from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
+    load_territories,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -197,7 +199,9 @@ def get_territory_metadata(territory_name: str) -> TerritoryDefinition | None:
         >>> if meta:
         ...     print(meta.get("purpose"))
     """
-    return SOVEREIGN_TERRITORIES.get(territory_name)
+    data = load_territories()
+    territories = data.get("territories", {})
+    return territories.get(territory_name)
 
 
 def get_all_territories() -> Mapping[str, TerritoryDefinition]:
@@ -212,7 +216,8 @@ def get_all_territories() -> Mapping[str, TerritoryDefinition]:
         >>> for name, meta in territories.items():
         ...     print(f"{name}: {meta.get('purpose')}")
     """
-    return SOVEREIGN_TERRITORIES
+    data = load_territories()
+    return data.get("territories", {})
 
 
 def is_valid_root_folder(folder_name: str) -> bool:

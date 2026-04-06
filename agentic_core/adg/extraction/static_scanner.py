@@ -2203,6 +2203,8 @@ class ADGStaticScanner:
             if had_error:
                 syntax_error_count += 1
                 syntax_errors.append(rel)
+                # Fail fast on first syntax error to prevent wasted scanning
+                raise SyntaxError(f"Syntax error in {rel}: parsing failed. Fix all syntax errors before running ADG generation.")
             else:
                 manifest.parsed_module_count += 1
                 all_type_surface.update(file_type_map)

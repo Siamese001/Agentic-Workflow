@@ -185,8 +185,8 @@ def _get_create_autonomous_checkpoint_manager():
 
         return create_autonomous_checkpoint_manager
     except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-        return None
+
+        raise
 
 
 create_autonomous_checkpoint_manager = _get_create_autonomous_checkpoint_manager()
@@ -236,6 +236,7 @@ class autonomous_execution_engine:
                 self.last_mission_result = data.get("last_mission")
                 Logger.info("L3: Loaded execution state")
             except Exception as e:
+
                 raise
                 Logger.error(f"Failed to load execution state: {e}")
 
@@ -250,6 +251,7 @@ class autonomous_execution_engine:
             _wg.write_json_atomic(self.state_path, data)
             Logger.debug("L3: Execution state saved atomically")
         except Exception as e:
+
             raise
             Logger.error(f"Execution state save failed: {e}")
 
@@ -286,6 +288,7 @@ class autonomous_execution_engine:
             self.consecutive_failures = 0
             Logger.info("L3 MISSION COMPLETE: Canon state verified")
         except Exception as e:
+
             raise
             Logger.error(f"L3 MISSION FAILED: {e}")
             self.consecutive_failures += 1
@@ -317,6 +320,7 @@ class autonomous_execution_engine:
                 await self.execute_validation_mission()
                 self.save_state()
             except Exception as e:
+
                 raise
                 Logger.error(f"L3 Execution cycle error: {e}")
                 self.consecutive_failures += 1

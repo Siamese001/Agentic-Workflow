@@ -104,15 +104,20 @@ warnings.warn(
 import ast
 from pathlib import Path
 
+# Module-level variables with defaults
+AGENTIC_CORE_DIR = "."
+ARCHIVES_DIR = ".sovereign_healing_backup"
+
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
-        AGENTIC_CORE_DIR,
-        ARCHIVES_DIR,
+        AGENTIC_CORE_DIR as _acquired_core_dir,
+        ARCHIVES_DIR as _acquired_archives_dir,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:  # guardian: allow-silent-swallow
-    AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
-    ARCHIVES_DIR = ".sovereign_healing_backup"
+    # Update if import succeeds
+    AGENTIC_CORE_DIR = _acquired_core_dir
+    ARCHIVES_DIR = _acquired_archives_dir
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
+    pass
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

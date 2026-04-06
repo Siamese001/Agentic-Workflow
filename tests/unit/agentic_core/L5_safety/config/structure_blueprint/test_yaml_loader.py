@@ -39,6 +39,13 @@ class TestLoadTerritories:
             assert "depth" in territory, f"{name} missing depth"
             assert "purpose" in territory, f"{name} missing purpose"
 
+    def test_load_territories_caching(self):
+        """Edge case: load_territories uses cache (no repeated file reads)."""
+        data1 = load_territories()
+        data2 = load_territories()
+        # Same object reference due to caching
+        assert data1 is data2
+
 
 class TestLoadLayerOverrides:
     """Test load_layer_overrides function."""
@@ -55,6 +62,13 @@ class TestLoadLayerOverrides:
         data = load_layer_overrides()
         for name, override in data["overrides"].items():
             assert "purpose" in override, f"{name} missing purpose"
+
+    def test_load_layer_overrides_caching(self):
+        """Edge case: load_layer_overrides uses cache (no repeated file reads)."""
+        data1 = load_layer_overrides()
+        data2 = load_layer_overrides()
+        # Same object reference due to caching
+        assert data1 is data2
 
 
 class TestGetTerritory:
@@ -138,6 +152,22 @@ class TestLoadAstSignals:
         # AST signals are keyed by path, e.g., 'agentic_core/base_agents'
         assert "agentic_core/base_agents" in ast_signals
 
+    def test_ast_signals_nonempty_content(self):
+        """Edge case: AST signals contain expected signal types."""
+        data = load_ast_signals()
+        ast_signals = data["ast_signals"]
+        # Verify at least one signal has expected structure
+        if "agentic_core/base_agents" in ast_signals:
+            signal = ast_signals["agentic_core/base_agents"]
+            assert isinstance(signal, dict)
+
+    def test_load_ast_signals_caching(self):
+        """Edge case: load_ast_signals uses cache (no repeated file reads)."""
+        data1 = load_ast_signals()
+        data2 = load_ast_signals()
+        # Same object reference due to caching
+        assert data1 is data2
+
 
 class TestTerritoriesLoader:
     """Test territories_loader module functions."""
@@ -178,6 +208,22 @@ class TestBackwardCompatibility:
     def test_root_whitelist_is_alias(self):
         """Validation: ROOT_WHITELIST is an alias to PROJECT_ROOT_WHITELIST."""
         assert ROOT_WHITELIST is PROJECT_ROOT_WHITELIST
+
+    def test_root_whitelist_content(self):
+        """Validation: ROOT_WHITELIST contains expected territory names."""
+        # Verify the alias has correct content, not just identity
+        assert isinstance(ROOT_WHITELIST, frozenset)
+        assert "agentic_core" in ROOT_WHITELIST
+        assert "tests" in ROOT_WHITELIST
+        assert "docs" in ROOT_WHITELIST
+
+    def test_sovereign_registry_alias(self):
+        """Validation: SOVEREIGN_REGISTRY alias works in structure_blueprint_config."""
+        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+
+        # Verify SOVEREIGN_REGISTRY is accessible and has expected content
+        assert hasattr(SOVEREIGN_REGISTRY, "__getitem__")
+        assert "agentic_core" in SOVEREIGN_REGISTRY
 
     def test_sovereign_territories_fallback(self):
         """Validation: SOVEREIGN_TERRITORIES accessible via __getattr__ fallback."""

@@ -288,7 +288,8 @@ class PreventativeSandbox:
                 setattr(mod, target.attr_name, self._make_guard(target))
                 Logger.debug(f"[sandbox] patched {key}")
             except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
+
+                raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
                 Logger.debug(f"[sandbox] skip {key}: module not available")
 
     def _restore_all(self) -> None:

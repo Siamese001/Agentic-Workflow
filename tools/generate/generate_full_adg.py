@@ -249,7 +249,14 @@ def generate_full_adg(
     cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
     cache_path.parent.mkdir(exist_ok=True)
     scanner = ADGStaticScanner(repo_root=ROOT, include_tests=True, cache_path=cache_path)
-    result = scanner.scan(commit_sha=commit_sha)
+
+    try:
+        result = scanner.scan(commit_sha=commit_sha)
+    except SyntaxError as e:
+        print(f"\n[ERROR] {e}")
+        print("[ERROR] ADG generation aborted due to syntax error")
+        print("[ERROR] Fix the syntax error above and re-run ADG generation")
+        sys.exit(1)
 
     # Set repo_state_hash in the result
     result.repo_state_hash = repo_state_hash

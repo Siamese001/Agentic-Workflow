@@ -3,6 +3,8 @@ Pre-Commit Issue Schema — Dataclasses for structured issue reporting.
 
 Provides a standardized format for pre-commit hooks to emit issues
 for aggregation into the end-of-run summary table.
+
+SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
 """
 
 from __future__ import annotations
@@ -13,15 +15,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
+from agentic_core.L5_safety.config.severity import SeverityLevel as _SeverityLevel
 
-class SeverityLevel(Enum):
-    """Canonical severity levels for pre-commit issues."""
-
-    CRITICAL = "CRITICAL"  # Blocks commit, must fix immediately
-    HIGH = "HIGH"  # Should fix before commit
-    MEDIUM = "MEDIUM"  # Consider fixing
-    LOW = "LOW"  # Informational, low priority
-    INFO = "INFO"  # Passed/clean status
+# Backward-compatible alias
+SeverityLevel = _SeverityLevel
 
 
 @dataclass(frozen=True)

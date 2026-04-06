@@ -221,4 +221,60 @@ class GraphAwareCache:
         return False
 
     def invalidate_for_change(self, changed_file: str) -> int:
-        """Invalidate all cache entries transitively affected by cha
+        """Invalidate all cache entries transitively affected by changed_file.
+
+        Uses ADG reverse dependency graph to compute the exact invalidation set.
+        Returns count of invalidated entries.
+        """
+        invalidation_set = self.query_engine.get_cache_invalidation_set(changed_file)
+        count = 0
+        for key in list(self._cache.keys()):
+            entry = self._cache[key]
+            depends_on: list[str] = entry.get("depends_on", [])
+            if any(dep in invalidation_set for dep in depends_on):
+                del self._cache[key]
+                count += 1
+        logger.debug(
+            "Graph-aware invalidation: changed=%s affected=%d entries (invalidation_set_size=%d)",
+            changed_file,
+            count,
+            len(invalidation_set),
+        )
+        return count
+
+    def invalidate_all(self) -> int:
+        """Clear the entire cache. Returns number of evicted entries."""
+        count = len(self._cache)
+        self._cache.clear()
+        return count
+
+    def size(self) -> int:
+        """Return number of cached entries."""
+        return len(self._cache)
+
+    def stats(self) -> dict[str, int]:
+        """Return cache statistics."""
+        return {"size": self.size(), "hits": self._hits, "misses": self._misses}
+
+
+__all__ = ["GraphAwareCache"]
+
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_1")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_2")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_3")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_4")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_5")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_6")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_7")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_8")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_9")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_10")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_11")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_12")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_13")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_14")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_15")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_16")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_17")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_18")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_19")

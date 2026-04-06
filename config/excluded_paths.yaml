@@ -81,6 +81,43 @@ special_dirs:
   - "_compat"  # Compatibility shims - re-exports only
   - ".hypothesis"  # Hypothesis test database
 
+# Pre-commit specific exclusions
+# These patterns are specific to pre-commit hooks and should be excluded
+# from hook execution to prevent infinite loops and unnecessary processing
+precommit_excludes:
+  - "artifacts/adg_ci_lane_gate_result.json"
+  - "artifacts/healing/healing_events.jsonl"
+  - "artifacts/bypass_audit.jsonl"
+  - "artifacts/import_health/import_health_report.json"
+  - "artifacts/windsurf/*"  # Windsurf temporary output files
+  - "temp_[^/]*/.*"  # Temporary directories
+  - "tmp.*"  # Generic temp files
+  - "_temp_cmd.*"  # Temp command files
+  - "_out_.*"  # Temp output files
+  - "_typed_.*"  # Temp typed files
+  - "_typed_emitted_.*"  # Temp typed emitted files
+  - "_rebuild_.*"  # Temp rebuild files
+  - "_selfcheck_.*"  # Temp selfcheck files
+  - "_run_.*"  # Temp run files
+  - "_capture_.*"  # Temp capture files
+  - "_make_.*"  # Temp make files
+  - ".tmp/.*"  # Hidden tmp directories
+  - "runtime_state.*.json"  # Runtime state files
+  - "temp_complete_rules.*.md"  # Temp rule files
+  - "guardian_.*.(txt|json)"  # Guardian temporary files
+  - ".*.debug.log"  # Debug logs
+  - "pytestdebug.log"  # Pytest debug log
+  - ".tmp_.*sites.txt"  # Temp sites files
+  - ".*_sites.txt"  # Generic sites files
+  - "0[0-9]_[^/]*/.*"  # Numbered temp directories
+  - "core/.*"  # Core directory (legacy)
+  - ".backup/guardian_tests/.*"  # Backup test files
+  - "v15_d_evidence_.*.json"  # Legacy evidence files
+  - "v15_p2_evidence_temp.json"  # Legacy temp evidence
+  - "v15_d_inventory_p4.json"  # Legacy inventory
+  - ".*/logs/.*"  # Log directories
+  - "docs/store/.*"  # Docs store directory
+
 # File patterns to exclude (glob-style)
 file_patterns:
   - "*.pyc"

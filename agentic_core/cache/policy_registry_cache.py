@@ -1,17 +1,14 @@
-"""Policy Registry Cache — Redis-backed cache for L5 policy registry lookups.
+"""Policy Registry Cache — Redis-backed cache for sovereign policy lookups.
 
-Caches parsed policy registry entries to eliminate repeated YAML parsing.
-Keyed by policy file content hash for automatic invalidation on policy changes.
+Caches immutable policy definitions to eliminate repeated registry scans.
+Keyed by policy ID for fast O(1) lookups.
 """
 
 from __future__ import annotations
 
-import hashlib
 import logging
-from pathlib import Path
 from typing import Any
 
-from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
@@ -34,7 +31,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
     _emit_reads_through,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
@@ -59,7 +55,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 )
 
 _emit_applies_guardrail("p0", "policy_registry_cache", "p0_governance")
-_emit_reads_policy_state("p0", "policy_registry_cache", "policy_binding")
 _emit_snapshots_state("p0", "policy_registry_cache", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -175,47 +170,80 @@ _emit_updates_meta_learning_state("p4", "policy_registry_cache", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "policy_registry_cache", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
-_DEFAULT_POLICY_TTL = 3600 * 24  # 24 hours - policies change infrequently
+_DEFAULT_POLICY_TTL = 3600 * 24 * 30
 
 
 class PolicyRegistryCache:
-    """Cache for parsed L5 policy registry entries.
+    """Cache for sovereign policy registry lookups.
 
-    Eliminates repeated YAML parsing for policy files.
-    Automatically invalidates when policy file content changes.
+    Eliminates repeated policy registry scans for the same policy IDs.
+    Policies are immutable, so cache is long-lived.
     """
 
-    def __init__(
-        self,
-        cache: DeterministicRedisCache | None = None,
-        ttl_seconds: int = _DEFAULT_POLICY_TTL,
-    ):
+    def __init__(self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_POLICY_TTL):
         self._cache = cache or get_hot_cache()
         self._ttl = ttl_seconds
 
-    def get_or_fetch(
-        self,
-        policy_path: Path,
-        fetch_from_disk: Any,
-        *,
-        replay_mode: bool = False,
-    ) -> dict[str, Any]:
-        """Read-through helper: return cached parsed policy or call *fetch_from_disk*.
+    def get_or_fetch(self, policy_id: str, fetch_policy: Any, *, replay_mode: bool = False) -> dict[str, Any]:
+        """Read-through helper: return cached policy or call *fetch_policy*.
+
+        *fetch_policy* is a zero-argument callable that fetches the policy
+        definition from the registry.  Called only on cache miss.
 
         Args:
-            policy_path: Path to policy YAML file
-            fetch_from_disk: Callable that returns parsed policy dict
+            policy_id: Unique policy identifier (e.g., "GOV-001")
+            fetch_policy: Callable that returns policy definition dict
             replay_mode: If True, bypass cache entirely
 
         Returns:
-            Parsed policy registry dict
+            Policy definition dict
         """
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyRegistryCache.get_or_fetch")
 
+        if not policy_id or not policy_id.strip():
+            raise ValueError("Policy ID must not be empty")
         if not replay_mode:
             try:
-                content_hash = self._compute_file_hash(policy_path)
-                cache_key = f"policy_registry:{content_hash}"
-            # guardian: allow-silent-swallow - optional file resource
+                cache_key = f"policy:{policy_id}"
+                cached = self._cache.get_json(cache_key)
+                if cached is not None:
+                    logger.debug(f"[Policy cache] HIT for {policy_id}")
+                    return cached
+            # guardian: allow-silent-swallow
+            except Exception as e:
+                logger.warning(f"[Policy cache] Cache read failed: {e}")
+        logger.debug(f"[Policy cache] MISS for {policy_id} — fetching from registry")
+        result = fetch_policy()
+        if not replay_mode:
+            try:
+                cache_key = f"policy:{policy_id}"
+                self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
+            # guardian: allow-silent-swallow
+            except Exception as e:
+                logger.warning(f"[Policy cache] Cache write failed: {e}")
+        return result
+
+    def invalidate(self, policy_id: str) -> None:
+        """Invalidate cached policy for specific ID."""
+        try:
+            cache_key = f"policy:{policy_id}"
+            self._cache.delete(cache_key)
+            logger.debug(f"[Policy cache] Invalidated {policy_id}")
+        # guardian: allow-silent-swallow
+        except Exception as e:
+            logger.warning(f"[Policy cache] Invalidation failed: {e}")
+
+
+def get_policy_registry_cache() -> PolicyRegistryCache:
+    """Get the singleton policy registry cache instance."""
+    return PolicyRegistryCache()
+
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_1")
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_2")
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_3")
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_4")
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_5")
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_6")
+_emit_reads_through("l4", "policy_registry_cache", "urg_read_7")

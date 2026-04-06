@@ -667,18 +667,16 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
         from agentic_core.L6_observability.utils.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter as _DE,
         )
-    except ImportError as _exc:
-        logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
-        return _h.sha256(b"determinism-digest:import-failed").hexdigest()
-    try:
         _policy_file = Path(__file__).resolve().parents[1] / "policy" / "v15_policy_pack.json"
         if _policy_file.exists():
             _policy_hash = _h.sha256(_policy_file.read_bytes()).hexdigest()
-
-_reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
-_registry_hash = _h.sha256(_reg_bytes).hexdigest()
-except (ImportError, AttributeError, TypeError):
-_registry_hash = _h.sha256(b"registry:fallback").hexdigest()
+        _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+        _registry_hash = _h.sha256(_reg_bytes).hexdigest()
+    except ImportError as _exc:
+        logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
+        return _h.sha256(b"determinism-digest:import-failed").hexdigest()
+    except (AttributeError, TypeError):
+        _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
 _config_hash = _hcs(_gcs())
 _transcript_bytes = _j.dumps(
 sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True
@@ -693,19 +691,6 @@ config_surface_hash=_config_hash,
 transcript_hash=_transcript_hash,
 dependency_lock_hash=_dep_lock_hash,
 )
-    _transcript_bytes = _j.dumps(
-        sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True
-    ).encode("utf-8")
-    _transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
-    _dep_lock_hash = _h.sha256(b"dependency-lock:stable").hexdigest()
-    _emitter = _DE()
-    return _emitter.compute(
-        policy_hash=_policy_hash,
-        registry_hash=_registry_hash,
-        config_surface_hash=_config_hash,
-        transcript_hash=_transcript_hash,
-        dependency_lock_hash=_dep_lock_hash,
-    )
 
 
 def try_summon_orchestrator(

@@ -315,7 +315,8 @@ def get_file_info(path: str | Path) -> dict[str, Any]:
         result: Any = mcp6_get_file_info(path=str(p))
         return result if isinstance(result, dict) else {"raw": result}
     except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")
+
+        raise ImportError(f"Required dependency missing: {e}")
         Logger.debug("[ReadGateway] mcp6_get_file_info unavailable, using direct stat")
     except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         Logger.warning(f"[ReadGateway] mcp6 file_info failed for {p}, falling back: {e}")

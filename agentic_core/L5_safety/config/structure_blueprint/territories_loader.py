@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
     load_territories,
-    load_layer_overrides,
     load_ast_signals,
 )
 

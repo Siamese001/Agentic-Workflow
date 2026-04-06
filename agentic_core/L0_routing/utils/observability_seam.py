@@ -194,5 +194,5 @@ def load_meta_learning_agent():
         mod = importlib.import_module("agentic_core.L1_cognition.engines.meta_client")
         return mod.MetaLearningClient
     except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-        return None
+
+        raise

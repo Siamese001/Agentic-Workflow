@@ -89,7 +89,8 @@ try:
     "Brief description of functionality and purpose."
     from neo4j import GraphDatabase
 except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
+
+    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     GraphDatabase = None
 import os
 import uuid

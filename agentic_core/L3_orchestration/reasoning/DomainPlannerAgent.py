@@ -179,7 +179,8 @@ if TYPE_CHECKING:
 try:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 except ImportError as e:
-            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
+
+    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
     class SubatomicTestingMixin:
         pass
@@ -329,6 +330,7 @@ class DomainPlannerAgent(L3OrchestrationBase):
             Logger.info(f"[{agent_name}] L3 orchestration - domain planning validation")
             metrics["skipped"] = 1
         except Exception as e:
+
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -437,6 +439,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - risk assessment validation")
             metrics["skipped"] = 1
         except Exception as e:
+
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -546,6 +549,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - feasibility analysis validation")
             metrics["skipped"] = 1
         except Exception as e:
+
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -687,6 +691,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - scenario simulation validation")
             metrics["skipped"] = 1
         except Exception as e:
+
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -848,6 +853,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - strategy coordination validation")
             metrics["skipped"] = 1
         except Exception as e:
+
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
