@@ -850,7 +850,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             check=True,
         )
 
-        print(f"[ADG] ✓ Git commit complete — {commit_msg}")
+        print(f"[ADG] [OK] Git commit complete — {commit_msg}")
 
     except (ValueError, TypeError, RuntimeError) as e:
         # Check if failure was due to "nothing to commit"
