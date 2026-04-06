@@ -467,7 +467,33 @@ def create_local_search_engine(
     return LocalSearchEngine(graph_store, config)
 
 
+def create_local_search_engine_with_sqlite(
+    db_path: str | None = None,
+    config: LocalSearchConfig | None = None
+) -> LocalSearchEngine:
+    """Create a local search engine with SQLiteGraphStore backend.
+    
+    Convenience function that creates a SQLiteGraphStore instance
+    and initializes a LocalSearchEngine with it.
+    
+    Args:
+        db_path: Path to ADG SQLite database. If None, uses default path.
+        config: Local search configuration
+    
+    Returns:
+        LocalSearchEngine instance with SQLiteGraphStore backend
+    
+    Raises:
+        FileNotFoundError: If ADG database not found
+    """
+    from agentic_core.L4_state.utils.memory.graph_store_factory import create_sqlite_graph_store
+    
+    graph_store = create_sqlite_graph_store(db_path)
+    return create_local_search_engine(graph_store, config)
+
+
 __all__ = [
     "LocalSearchEngine",
     "create_local_search_engine",
+    "create_local_search_engine_with_sqlite",
 ]
