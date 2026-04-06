@@ -114,6 +114,18 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def detect_communities(self, algorithm: str = "leiden") -> list[GraphCommunity]:
+        """Detect communities in the graph.
+
+        Args:
+            algorithm: Community detection algorithm (default: "leiden").
+
+        Returns:
+            List of detected communities.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
