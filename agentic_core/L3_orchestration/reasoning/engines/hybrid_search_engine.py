@@ -537,6 +537,130 @@ class HybridSearchEngine:
 
         return filtered_results
 
+    def get_node_by_id(self, node_id: int) -> dict[str, Any] | None:
+        """Get ADG node by ID.
+
+        Args:
+            node_id: ADG node ID
+
+        Returns:
+            Node dict or None
+        """
+        conn = self._get_adg_connection()
+        if not conn:
+            return None
+
+        try:
+            cur = conn.execute(
+                """SELECT id, adg_name, resolved_path, entity_type, layer, territory
+                   FROM nodes WHERE id = ?""",
+                (node_id,),
+            )
+            row = cur.fetchone()
+            return dict(row) if row else None
+        except Exception as e:
+            Logger.error(f"ADG query failed (get_node_by_id): {e}")
+            return None
+
+    def get_chunks_by_adg_node(self, adg_node_id: int, collection_name: str = "repo_code_chunks") -> list[HybridSearchResult]:
+        """Get ChromaDB chunks for a specific ADG node ID.
+
+        Args:
+            adg_node_id: ADG node ID
+            collection_name: ChromaDB collection name
+
+        Returns:
+            List of HybridSearchResult for matching chunks
+        """
+        if self.chroma_client is None:
+            Logger.warning("ChromaDB client not available")
+            return []
+
+        try:
+            collection = self.chroma_client.get_collection(collection_name)
+            results = collection.query(
+                query_texts=[""],  # Empty query, filter only
+                n_results=100,
+                where={"adg_node_id": adg_node_id},
+            )
+
+            chunks = []
+            if results["ids"] and results["ids"][0]:
+                for i, chunk_id in enumerate(results["ids"][0]):
+                    chunks.append(
+                        HybridSearchResult(
+                            chunk_id=chunk_id,
+                            content=results["documents"][0][i],
+                            metadata=results["metadatas"][0][i],
+                            source="chromadb",
+                        )
+                    )
+
+            Logger.info(f"Found {len(chunks)} chunks for ADG node {adg_node_id}")
+            return chunks
+
+        except Exception as e:
+            Logger.error(f"Failed to get chunks by ADG node: {e}")
+            return []
+
+    def get_related_chunks(self, chunk_id: str, relation_type: str = "calls", limit: int = 10) -> list[HybridSearchResult]:
+        """Get chunks related to a given chunk via ADG structural relationships.
+
+        Args:
+            chunk_id: ChromaDB chunk ID
+            relation_type: ADG relation type (calls, imports, etc.)
+            limit: Maximum results
+
+        Returns:
+            List of related HybridSearchResult
+        """
+        if self.chroma_client is None:
+            Logger.warning("ChromaDB client not available")
+            return []
+
+        conn = self._get_adg_connection()
+        if not conn:
+            return []
+
+        try:
+            # Get the chunk's metadata to find ADG node ID
+            collection = self.chroma_client.get_collection("repo_code_chunks")
+            chunk_results = collection.get(ids=[chunk_id])
+
+            if not chunk_results["ids"]:
+                Logger.warning(f"Chunk {chunk_id} not found in ChromaDB")
+                return []
+
+            metadata = chunk_results["metadatas"][0]
+            adg_node_id = metadata.get("adg_node_id")
+
+            if not adg_node_id:
+                Logger.warning(f"Chunk {chunk_id} has no ADG node ID")
+                return []
+
+            # Query ADG for related nodes
+            if relation_type == "calls":
+                related_nodes = self.get_callees(adg_node_id, limit)
+            elif relation_type == "importers":
+                related_nodes = self.get_importers(adg_node_id, limit)
+            elif relation_type == "imports":
+                related_nodes = self.get_imports(adg_node_id, limit)
+            else:
+                Logger.warning(f"Unsupported relation type: {relation_type}")
+                return []
+
+            # Get chunks for related nodes
+            related_chunks = []
+            for node in related_nodes:
+                chunks = self.get_chunks_by_adg_node(node["src_id"] if relation_type in ["calls", "imports"] else node["dst_id"])
+                related_chunks.extend(chunks)
+
+            return related_chunks[:limit]
+
+        except Exception as e:
+            Logger.error(f"Failed to get related chunks: {e}")
+            return []
+
 
 # Global instance
 _global_hybrid_engine: HybridSearchEngine | None = None
