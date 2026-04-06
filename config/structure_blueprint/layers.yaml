@@ -98,7 +98,7 @@ overrides:
   # ============================================================================
 
   L_APP:
-    purpose: "Application-specific implementations — apps_eval, apps_exec, apps_lic, apps_research, apps_rfp, apps_rg, apps_shared, apps_underwriting_ai, apps_qwen. (2561 nodes in ADG)"
+    purpose: "Application-specific implementations — apps_eval, apps_exec, apps_lic, apps_research, apps_rfp, apps_rg, apps_shared, apps_underwriting_ai. (2561 nodes in ADG)"
     forbidden_capabilities: []
     routing_rules:
       "*_engine.py": reasoning

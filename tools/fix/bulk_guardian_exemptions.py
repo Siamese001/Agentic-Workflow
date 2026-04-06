@@ -20,7 +20,6 @@ FILE_EXEMPTIONS = {
     "agentic_core/L1_cognition/engines/meta_client.py": ["silent_swallower"],
     "agentic_core/L1_cognition/engines/query_planner.py": ["silent_swallower"],
     "agentic_core/L1_cognition/memory/healing_memory_retriever.py": ["silent_swallower"],
-    "agentic_core/L2_execution/apps_qwen/apps_qwen_config.py": ["config_with_logic"],
     "agentic_core/L2_execution/tools/file_io_impl.py": ["silent_swallower"],
     "agentic_core/L2_execution/tools/read_gateway.py": ["silent_swallower"],
     "agentic_core/L2_execution/types/ephemeral_vm_types.py": ["silent_swallower"],

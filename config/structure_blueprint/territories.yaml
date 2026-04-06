@@ -8,9 +8,7 @@ last_updated: "2026-04-05"
 # - ops_scripts/dev_tools/ contains 1,052 utility scripts for SSOT management, not framework logic
 
 # NOTE: Backward Compatibility Wrappers
-# - apps_qwen is now a backward compatibility wrapper that re-exports from agentic_core/L3_orchestration/inference/qwen_vllm
-# - This wrapper will be removed in a future version after all importers have been updated
-# - New code should import directly from agentic_core.L3_orchestration.inference.qwen_vllm
+# None currently active
 
 territories:
   config:
