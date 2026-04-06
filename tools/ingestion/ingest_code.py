@@ -323,6 +323,13 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
 
     logger.info(f"Generated {len(all_chunks)} chunks from {len(python_files)} files")
 
+    # ADG sync validation: verify node_id mapping coverage
+    chunks_with_adg_id = sum(1 for c in all_chunks if c["metadata"].get("adg_node_id") is not None)
+    coverage_pct = (chunks_with_adg_id / len(all_chunks) * 100) if all_chunks else 0
+    logger.info(f"ADG node ID coverage: {chunks_with_adg_id}/{len(all_chunks)} ({coverage_pct:.1f}%)")
+    if coverage_pct < 50:
+        logger.warning(f"Low ADG node ID coverage ({coverage_pct:.1f}%). Consider regenerating ADG.")
+
     if dry_run:
         logger.info("DRY RUN - Not ingesting into ChromaDB")
         if all_chunks:
