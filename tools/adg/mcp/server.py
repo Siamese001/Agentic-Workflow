@@ -48,11 +48,12 @@ def _init_service() -> ADGService:
 
 def _shutdown_service() -> None:
     """Gracefully shutdown ADGService and release all connections."""
-    global _service
+    global _service, _health
     if _service:
         _log.info("Shutting down ADGService...")
         _service.close()
         _service = None
+        _health = None
         _log.info("ADGService shutdown complete")
 
 
@@ -228,6 +229,57 @@ def adg_violations(limit: int = 100) -> dict[str, Any]:
         }
     except Exception as e:
         _log.error("Violations query failed: %s", e)
+        return {"status": "error", "message": str(e)}
+
+
+@mcp.tool()
+def adg_close_connections() -> dict[str, Any]:
+    """Close ADG backend connections to release SQLite file locks without restarting IDE.
+
+    Use this before running full ADG generation when lock checks report files in use.
+    Connections can be reopened with adg_reopen_connections() or automatically on next query.
+    """
+    global _service, _health
+    try:
+        if _service is None:
+            return {
+                "status": "ok",
+                "data": {
+                    "closed": False,
+                    "message": "No active ADG service instance to close.",
+                },
+            }
+
+        _service.close()
+        _service = None
+        _health = None
+        return {
+            "status": "ok",
+            "data": {
+                "closed": True,
+                "message": "ADG connections closed. SQLite file locks released.",
+            },
+        }
+    except Exception as e:
+        _log.error("Close connections failed: %s", e)
+        return {"status": "error", "message": str(e)}
+
+
+@mcp.tool()
+def adg_reopen_connections() -> dict[str, Any]:
+    """Reopen ADG backend connections after adg_close_connections()."""
+    try:
+        svc = _init_service()
+        svc.reopen()
+        return {
+            "status": "ok",
+            "data": {
+                "reopened": True,
+                "message": "ADG connections reopened.",
+            },
+        }
+    except Exception as e:
+        _log.error("Reopen connections failed: %s", e)
         return {"status": "error", "message": str(e)}
 
 

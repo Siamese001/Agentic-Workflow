@@ -135,3 +135,10 @@ class SQLiteBackend:
                 logger.error(f"Error closing SQLite connection: {e}")
             finally:
                 self._conn = None
+
+    def reopen(self) -> None:
+        """Reopen SQLite connection after closing to refresh/release locks lifecycle."""
+        if self._conn is not None:
+            self.close()
+        self._connect()
+        logger.info(f"Reopened SQLite connection to {self._sqlite_path}")

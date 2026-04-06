@@ -218,3 +218,9 @@ class ADGService:
         if self._redis:
             self._redis.close()
         logger.info("ADGService closed all connections")
+
+    def reopen(self) -> None:
+        """Reopen backend connections after explicit close for lock release workflows."""
+        if self._sqlite:
+            self._sqlite.reopen()
+        logger.info("ADGService reopened SQLite connection")
