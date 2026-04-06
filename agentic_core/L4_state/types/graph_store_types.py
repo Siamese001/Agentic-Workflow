@@ -63,6 +63,19 @@ class IGraphStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_neighbors(self, entity_id: str, max_hops: int = 1) -> list[GraphEntity]:
+        """Get neighboring entities within a specified hop distance.
+
+        Args:
+            entity_id: The ID of the entity.
+            max_hops: Maximum number of hops (default: 1).
+
+        Returns:
+            List of neighboring entities.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
