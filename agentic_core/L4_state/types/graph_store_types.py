@@ -29,6 +29,21 @@ class IGraphStore(ABC):
         """Search for entities."""
         pass
 
+    @abstractmethod
+    def get_relationships(
+        self, entity_id: str, direction: str = "both"
+    ) -> list[GraphRelationship]:
+        """Get relationships for an entity.
+
+        Args:
+            entity_id: The ID of the entity.
+            direction: "outgoing", "incoming", or "both" (default: "both").
+
+        Returns:
+            List of relationships connected to the entity.
+        """
+        pass
+
 
 @dataclass
 class GraphCommunity:
@@ -37,6 +52,17 @@ class GraphCommunity:
     name: str
     description: str = ""
     entities: list[str] = field(default_factory=list)
+    confidence: float = 1.0
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class GraphRelationship:
+    """Represents a relationship between entities in the knowledge graph."""
+    source_id: str
+    target_id: str
+    relation_type: str
+    edge_kind: str = ""
     confidence: float = 1.0
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -52,4 +78,4 @@ class GraphEntity:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity"]
+__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity", "GraphRelationship"]
