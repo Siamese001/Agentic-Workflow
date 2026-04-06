@@ -6,6 +6,4 @@ importable directly from their modules, e.g.:
     from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 """
 
-from apps_rg.engines.base_rg_engine import BaseRGEngine
 
-__all__ = ["BaseRGEngine"]
