@@ -372,10 +372,14 @@ JOIN nodes n ON n.id = e.src_id;
 def _write_sqlite(ng_full, db_path: Path) -> Path:
     """Write a NormalizedGraph to SQLite for fast querying."""
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    if db_path.exists():
-        db_path.unlink()
 
-    conn = sqlite3.connect(str(db_path))
+    # Write to temporary file first to avoid leaving 0-byte files on failure
+    import tempfile
+    temp_db_path = db_path.parent / f"{db_path.name}.tmp"
+    if temp_db_path.exists():
+        temp_db_path.unlink()
+
+    conn = sqlite3.connect(str(temp_db_path))
     try:
         # D2b: bulk-insert PRAGMAs — keep journal in RAM and skip fsync barriers.
         # Saves ~1.4s on the node executemany phase (1.76s → 0.53s measured).
@@ -457,23 +461,19 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             """INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
             SELECT id, relation_type, symbol, source_file, line_no,
                 CASE
-                    WHEN relation_type = 'antipattern' AND (
-                        symbol LIKE 'except:Exception%' OR
-                        symbol LIKE 'except:bare%'
-                    ) AND (
-                        source_file LIKE 'agentic_core/L0_routing/%' OR
-                        source_file LIKE 'agentic_core/L5_safety/%' OR
-                        source_file LIKE 'agentic_core/L2_execution/%' OR
-                        source_file LIKE 'agentic_core/L3_orchestration/%'
-                    ) THEN 'HIGH'
-                    WHEN relation_type = 'antipattern' AND (
-                        symbol LIKE 'except:Exception%' OR
-                        symbol LIKE 'except:bare%'
-                    ) THEN 'MEDIUM'
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
+                                       'log_and_swallow','return_none_swallow')
+                     AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
+                    THEN 'HIGH'
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
+                                       'log_and_swallow','return_none_swallow')
+                    THEN 'MEDIUM'
                     WHEN relation_type = 'antipattern' THEN 'LOW'
                     ELSE 'MEDIUM'
                 END as severity
-            FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"""
+            FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')""",
         )
 
         # Meta
@@ -489,8 +489,17 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executemany("INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)", meta_rows)
 
         conn.commit()
+
+        # Atomic rename: only move to final path after successful commit
+        import shutil
+        if db_path.exists():
+            db_path.unlink()
+        shutil.move(str(temp_db_path), str(db_path))
     finally:
         conn.close()
+        # Clean up temp file if it still exists (error case)
+        if temp_db_path.exists():
+            temp_db_path.unlink()
 
     return db_path
 

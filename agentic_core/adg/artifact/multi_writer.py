@@ -510,19 +510,15 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             """INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
             SELECT id, relation_type, symbol, source_file, line_no,
                 CASE
-                    WHEN relation_type = 'antipattern' AND (
-                        symbol LIKE 'except:Exception%' OR
-                        symbol LIKE 'except:bare%'
-                    ) AND (
-                        source_file LIKE 'agentic_core/L0_routing/%' OR
-                        source_file LIKE 'agentic_core/L5_safety/%' OR
-                        source_file LIKE 'agentic_core/L2_execution/%' OR
-                        source_file LIKE 'agentic_core/L3_orchestration/%'
-                    ) THEN 'HIGH'
-                    WHEN relation_type = 'antipattern' AND (
-                        symbol LIKE 'except:Exception%' OR
-                        symbol LIKE 'except:bare%'
-                    ) THEN 'MEDIUM'
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
+                                       'log_and_swallow','return_none_swallow')
+                     AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
+                    THEN 'HIGH'
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
+                                       'log_and_swallow','return_none_swallow')
+                    THEN 'MEDIUM'
                     WHEN relation_type = 'antipattern' THEN 'LOW'
                     ELSE 'MEDIUM'
                 END as severity
