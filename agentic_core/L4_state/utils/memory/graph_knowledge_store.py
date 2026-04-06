@@ -289,5 +289,53 @@ class SQLiteGraphStore(IGraphStore):
 
         return paths
 
+    def find_shortest_path(self, src_id: str, dst_id: str) -> GraphPath | None:
+        """Find the shortest path between two entities.
+
+        Args:
+            src_id: The ID of the source entity.
+            dst_id: The ID of the destination entity.
+
+        Returns:
+            GraphPath representing the shortest path, or None if no path exists.
+        """
+        if src_id == dst_id:
+            # Same node
+            entity = self.get_entity(src_id)
+            if entity is None:
+                return None
+            return GraphPath(nodes=[entity], relationships=[], cost=0.0)
+
+        from collections import deque
+
+        queue: deque[tuple[str, list[str], list[GraphRelationship]]] = deque()
+        queue.append((src_id, [], []))
+        visited = {src_id}
+
+        while queue:
+            current_id, path_ids, path_rels = queue.popleft()
+
+            if current_id == dst_id:
+                # Reconstruct path
+                nodes = [self.get_entity(pid) for pid in path_ids + [dst_id]]
+                nodes = [n for n in nodes if n is not None]
+                return GraphPath(
+                    nodes=nodes,
+                    relationships=path_rels,
+                    cost=float(len(path_rels)),
+                )
+
+            # Get neighbors
+            rels = self.get_relationships(current_id, direction="outgoing")
+            for rel in rels:
+                next_id = rel.target_id
+                if next_id not in visited:
+                    visited.add(next_id)
+                    queue.append(
+                        (next_id, path_ids + [current_id], path_rels + [rel])
+                    )
+
+        return None  # No path found
+
 
 __all__ = ["SQLiteGraphStore"]
