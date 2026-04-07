@@ -77,6 +77,13 @@ from tools.generate.validation import (  # noqa: E402  # M.3 modularization
     _check_p3_ratchet,
     _check_dead_production_imports,
 )
+from tools.generate.integration import (  # noqa: E402  # M.5 modularization
+    _auto_ingest_to_redis,
+    _auto_commit_artifacts,
+    _persist_adg_to_memory,
+    _check_mcp_config_drift,
+    _run_p1_p2_auto_fix,
+)
 from tools.generate.reporting import (  # noqa: E402  # M.4 modularization
     _audit_semantic_surfaces,
     _semantic_precision_stats,
@@ -583,187 +590,14 @@ def generate_full_adg(
         print("[ADG] CPU optimizer shutdown complete")
 
 
-def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
-    """Automatically ingest the freshly-generated ADG into Redis hot cache.
-
-    Runs tools/adg/adg_redis_ingest.py --force as a subprocess to ensure the
-    Redis cache is immediately hot after ADG generation completes.
-
-    Args:
-        adg_dir: ADG artifacts directory
-    """
-    import subprocess
-    import time
-
-    from agentic_core.config.redis_config import get_adg_cache_config
-
-    config = get_adg_cache_config()
-    ingest_script = ROOT / "tools" / "adg" / "adg_redis_ingest.py"
-    if not ingest_script.exists():
-        raise RuntimeError(f"Redis ingest script not found: {ingest_script}")
-
-    print("[ADG] Auto-ingesting to Redis hot cache...")
-    start_time = time.time()
-    # ruff: noqa: S603 - Python script is trusted, internal tool usage
-    result = subprocess.run(
-        [sys.executable, str(ingest_script), "--force"],
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        timeout=config.ingest_timeout,
-        check=True,
-    )
-    print("[ADG] Redis ingest complete - ADG cache is HOT")
-    # Show last 3 lines of output for confirmation
-    lines = [line for line in result.stdout.strip().split("\n") if line.strip()]
-    for line in lines[-3:]:
-        print(f"      {line}")
+# M.5: _auto_ingest_to_redis extracted to tools.generate.integration.redis_ingest
 
 
-def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: int) -> None:
-    """Automatically commit newly generated ADG artifacts to git.
-
-    Stages new artifacts and deletions of old artifacts, then commits with
-    a descriptive message including timestamp and graph metrics.
-
-    Uses --no-verify to bypass pre-commit hooks since ADG artifacts are
-    auto-generated and don't require validation.
-
-    Args:
-        adg_dir: ADG artifacts directory
-        ts: Timestamp string (MMDDYYYY_HHMM format)
-        node_count: Number of modules in the graph
-        edge_count: Number of edges in the graph
-
-    Raises:
-        subprocess.CalledProcessError: If git commands fail
-    """
-    import subprocess
-
-    print("[ADG] Auto-committing artifacts to git...")
-
-    try:
-        # Stage new ADG artifacts
-        artifact_patterns = [
-            f"adg_snapshot_{ts}.json",
-            f"adg_indexed_{ts}.sqlite",
-            f"adg_file_graph_{ts}.json",
-            f"adg_symbol_graph_{ts}.json",
-            f"adg_governance_graph_{ts}.json",
-            f"adg_graphsnap_{ts}.json",
-        ]
-
-        staged_count = 0
-        skipped_ignored_count = 0
-
-        for pattern in artifact_patterns:
-            artifact_path = adg_dir / pattern
-            if artifact_path.exists():
-                # Skip ignored artifacts to avoid repeated git add failures/noise
-                # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
-                check_ignore = subprocess.run(
-                    ["git", "check-ignore", str(artifact_path)],
-                    cwd=str(ROOT),
-                    capture_output=True,
-                    text=True,
-                )
-                if check_ignore.returncode == 0:
-                    skipped_ignored_count += 1
-                    continue
-
-                # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
-                subprocess.run(
-                    ["git", "add", str(artifact_path)],
-                    cwd=str(ROOT),
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                staged_count += 1
-
-        # Stage deletions of old artifacts (moved to _archive/)
-        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
-        subprocess.run(
-            ["git", "add", "-u", "artifacts/adg/"],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-
-        if skipped_ignored_count:
-            print(
-                f"[ADG] Git: skipped {skipped_ignored_count} ignored artifacts; staged {staged_count} trackable artifacts",
-            )
-
-        # If nothing is staged, skip commit cleanly
-        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
-        staged_check = subprocess.run(
-            ["git", "diff", "--cached", "--quiet"],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-        )
-        if staged_check.returncode == 0:
-            print("[ADG] Git: no staged artifact changes to commit")
-            return
-
-        # Commit with descriptive message, bypassing pre-commit hooks
-        # ADG artifacts are auto-generated and don't need validation
-        commit_msg = f"ADG: regenerate artifacts {ts} — {node_count} modules, {edge_count} edges"
-        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
-        result = subprocess.run(
-            ["git", "commit", "--no-verify", "-m", commit_msg],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-
-        print(f"[ADG] [OK] Git commit complete — {commit_msg}")
-
-    except (ValueError, TypeError, RuntimeError) as e:
-        # Check if failure was due to "nothing to commit"
-        if "nothing to commit" in e.stdout or "nothing to commit" in e.stderr:
-            print("[ADG] Git: no changes to commit (artifacts already committed)")
-        else:
-            print(f"[ADG] WARNING: Git commit failed (exit {e.returncode}):")
-            print(f"      stdout: {e.stdout.strip()[:200]}")
-            print(f"      stderr: {e.stderr.strip()[:200]}")
+# M.5: _auto_commit_artifacts extracted to tools.generate.integration.git_commit
             # Don't raise - git failure shouldn't block ADG generation
 
 
-def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
-    """Persist key ADG signals to Memory MCP knowledge graph via ADGMemoryAdapter."""
-    try:
-        from agentic_core.adg.adapters.ADGMemoryAdapter import get_adapter
-
-        adapter = get_adapter()
-    except (ImportError, AttributeError, RuntimeError) as e:
-        print(f"[ADG] Memory MCP unavailable — skipping persistence: {e}")
-        return
-
-    diff_edges = 0
-    if graph_diff and hasattr(graph_diff, "summary"):
-        summary = graph_diff.summary or ""
-        import re as _re
-
-        m = _re.search(r"([+-]\d+)\s*edges", summary)
-        if m:
-            diff_edges = int(m.group(1))
-
-    try:
-        adapter.ingest_snapshot(result, ts, diff_edges=diff_edges)
-    except (ValueError, TypeError, AttributeError, RuntimeError, OSError) as e:
-        print(f"[ADG] Memory MCP: ingest_snapshot failed: {e}")
-        return
-
-    violation_edges = [e for e in result.edges if e.relation_type == "violates"]
-    total_violations = len(violation_edges)
-    critical_count = routing_summary.get("by_severity", {}).get("critical", 0)
-    print(
-        f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})",
-    )
+# M.5: _persist_adg_to_memory extracted to tools.generate.integration.memory_persist
 
 
 # _extract_timestamp, _parse_timestamp, _archive_old_artifacts imported above from tools.generate.archiving (M.2)
@@ -852,37 +686,7 @@ _RUNTIME_ENFORCEMENT_FILES = [
 # M.4: _generate_standardized_reports extracted to tools.generate.reporting.reports
 
 
-def _check_mcp_config_drift() -> None:
-    """Check for MCP config drift between YAML and global config."""
-    print("[ADG] Checking MCP config drift...")
-    yaml_config_path = ROOT / "config" / "mcp_servers.yaml"
-    global_config_path = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
-
-    if yaml_config_path.exists() and global_config_path.exists():
-        try:
-            from agentic_core.config.mcp_loader import MCPLoader
-
-            loader = MCPLoader(yaml_config_path)
-            yaml_config = loader.load()
-            yaml_count = len([s for s in yaml_config.servers.values() if s.enabled])
-
-            with open(global_config_path, encoding="utf-8") as f:
-                global_config = json.load(f)
-            global_count = len(global_config.get("mcpServers", {}))
-
-            if yaml_count != global_count:
-                print("[WARNING] MCP config drift detected!")
-                print(f"[WARNING]   YAML enabled servers: {yaml_count}")
-                print(f"[WARNING]   Global enabled servers: {global_count}")
-                print("[WARNING]   Run: python tools/adg/sync_yaml_to_global.py")
-                print("[WARNING]   Proceeding with ADG generation...")
-            else:
-                print("[ADG] MCP config is in sync")
-        except Exception as e:  # guardian: allow-broad-exception -- non-critical: MCP config drift check failure should not block ADG generation
-            print(f"[WARNING] Could not check MCP config drift: {e}")
-            print("[WARNING]   Proceeding with ADG generation...")
-    else:
-        print("[WARNING] MCP config files not found, skipping drift check")
+# M.5: _check_mcp_config_drift extracted to tools.generate.integration.mcp_drift
 
 
 # _perform_wal_checkpoint, _check_locked_files imported above from tools.generate.utils.file_utils (M.1)
@@ -929,41 +733,7 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
     print("[ADG] Full ADG generation verification: all artifacts present")
 
 
-def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str) -> None:
-    """Run P1/P2 auto-fix via repair orchestrator.
-
-    Args:
-        adg_artifacts_dir: Directory containing ADG artifacts
-        ts: ADG timestamp (for logging)
-    """
-    from tools.adg.repair import ADGRepairOrchestrator
-    from tools.adg.repair.rule_engine import register_builtin_rules
-
-    # Register built-in rules
-    register_builtin_rules()
-
-    # Find SQLite database
-    sqlite_path = None
-    sqlite_files = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
-    if sqlite_files:
-        sqlite_path = sqlite_files[-1]
-
-    # Run orchestrator in dry-run mode (classification only)
-    orchestrator = ADGRepairOrchestrator(
-        adg_dir=adg_artifacts_dir,
-        timestamp=ts,
-        repo_root=ROOT,
-        sqlite_path=sqlite_path,
-    )
-
-    try:
-        result = orchestrator.run(dry_run=False)
-        print(f"[ADG] Repair orchestrator completed: {result.deficiencies_found} deficiencies found")
-        print(f"[ADG]   AUTO_FIX: {result.fixes_applied}")
-        print(f"[ADG]   SUGGEST_FIX: {result.fixes_suggested}")
-        print(f"[ADG]   BLOCK_FIX: {result.fixes_blocked}")
-    except Exception as e:
-        print(f"[WARNING] Repair orchestrator failed: {e}")
+# M.5: _run_p1_p2_auto_fix extracted to tools.generate.integration.repair_runner
 
 
 def main() -> None:
