@@ -221,6 +221,9 @@ def _print_defect_table(
     _sev_top_layer: dict[str, str] = {}
     _sev_prod_pct: dict[str, dict[str, int]] = {}  # sev -> {kind: prod_pct}
     _hotspot_pct: dict[str, int] = {}               # sev -> top-10-file % of total
+    _guardian_total = 0
+    _guardian_by_sev: dict[str, int] = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+    _guardian_by_kind: dict[str, dict[str, int]] = {}  # sev -> {kind: exempt_count}
     if sqlite_path is not None and sqlite_path.exists():
         try:
             import sqlite3 as _sqlite3_cats
@@ -282,14 +285,44 @@ def _print_defect_table(
                         "GROUP BY e.source_file ORDER BY c DESC LIMIT 10)"
                     ).fetchone()[0] or 0
                     _hotspot_pct[_sev] = (_top10 * 100 // _total_sev) if _total_sev else 0
+
+                # Guardian exemption counts — edges NOT in violations = exempted
+                _meta_row = _cc.execute(
+                    "SELECT value FROM meta WHERE key='guardian_exemptions'"
+                ).fetchone()
+                _guardian_total = int(_meta_row[0]) if _meta_row else 0
+
+                # Compute per-severity exemptions from edge-level data
+                # An exempted edge: exists in edges.relation_type='antipattern' but NOT in violations
+                _high_kinds = ('broad_exception_catch', 'silent_exception_swallow',
+                               'log_and_swallow', 'return_none_swallow')
+                _prod_prefixes = ('agentic_core/', 'system_learning/')
+                _exempt_rows = _cc.execute("""
+                    SELECT e.edge_kind, e.source_file
+                    FROM edges e
+                    WHERE e.relation_type='antipattern'
+                      AND e.id NOT IN (SELECT edge_id FROM violations WHERE category='antipattern')
+                """).fetchall()
+                for _ek, _sf in _exempt_rows:
+                    if _ek in _high_kinds and any(_sf.startswith(p) for p in _prod_prefixes):
+                        _s = "HIGH"
+                    elif _ek in _high_kinds:
+                        _s = "MEDIUM"
+                    else:
+                        _s = "LOW"
+                    _guardian_by_sev[_s] = _guardian_by_sev.get(_s, 0) + 1
+                    if _s not in _guardian_by_kind:
+                        _guardian_by_kind[_s] = {}
+                    _guardian_by_kind[_s][_ek] = _guardian_by_kind[_s].get(_ek, 0) + 1
+
         except Exception:  # guardian: allow-silent-swallow -- non-critical: category query failure
             pass
 
     # ── Table layout ──────────────────────────────────────────────────────────
-    # Header rows: P# | Description | Count | Files | Prod% | TopLayer | Gate
-    # Sub-rows:    category | count | share% | prod%
-    _H   = "+-----+------------------------------+-------+-------+-------+----------+--------+"
-    _HDR = "| P#  | Description / Category       | Count | Files | Prod% | TopLayer | Gate   |"
+    # Header rows: P# | Description | Gross | Guard | Net | Files | Prod% | TopLayer | Gate
+    # Sub-rows:    category | gross | guard | net | share% | prod%
+    _H   = "+-----+------------------------------+-------+-------+-------+-------+-------+----------+--------+"
+    _HDR = "| P#  | Description / Category       | Gross | Guard |   Net | Files | Prod% | TopLayer | Gate   |"
     print("\n[ADG] Defect Summary:")
     print(_H)
     print(_HDR)
@@ -297,17 +330,17 @@ def _print_defect_table(
 
     # ── P1 ────────────────────────────────────────────────────────────────────
     _p1_gate = "BLOCKS" if p1_count > 0 else "PASS"
-    print(f"| P1  | CRITICAL (blocks on any > 0) | {p1_count:5} | {'':5} | {'':5} | {'':8} | {_p1_gate:6} |")
     _p1_viol = sum(c for _, _, c in _p1_layer_pairs) if _p1_layer_pairs else 0
     _p1_exempt = len(_violation_rows) - p1_count if _violation_rows else 0
+    _p1_gross = p1_count + _p1_exempt
+    print(f"| P1  | CRITICAL (blocks on any > 0) | {_p1_gross:5} | {_p1_exempt:5} | {p1_count:5} | {'':5} | {'':5} | {'':8} | {_p1_gate:6} |")
     _viol_label = f"{_p1_viol}" if _p1_viol else "0"
-    _exempt_note = f" ({_p1_exempt} exempt)" if _p1_exempt > 0 else ""
-    print(f"|     |  layer_violation{_exempt_note:<14} | {_viol_label:>5} |       |       |          |        |")
+    print(f"|     |  layer_violation              | {_viol_label:>5} | {_p1_exempt:5} | {p1_count:5} |       |       |          |        |")
     for _src_l, _dst_l, _cnt in _p1_layer_pairs:
         _pair = f"    {_src_l or '?'} -> {_dst_l or '?'}"
-        print(f"|     | {_pair:<30}| {_cnt:5} |       |       |          |        |")
-    print(f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |          |        |")
-    print(f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |          |        |")
+        print(f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |          |        |")
+    print(f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |       |       |          |        |")
+    print(f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |       |       |          |        |")
     print(_H)
 
     # Helper for P2/P3/P4 blocks
@@ -315,17 +348,22 @@ def _print_defect_table(
         _files = _sev_files.get(sev_key, 0)
         _top = _sev_top_layer.get(sev_key, "N/A")
         _cats = _cat_data.get(sev_key, [])
+        _guard_sev = _guardian_by_sev.get(sev_key, 0)
+        _gross = count + _guard_sev
+        _guard_kinds = _guardian_by_kind.get(sev_key, {})
         # Overall prod %
         _total_prod = sum(c[2] for c in _cats)
         _overall_prod_pct = f"{_total_prod * 100 // count}%" if count else "N/A"
-        print(f"| {p_tag:<3} | {label:<29}| {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_top:8} | {gate:6} |")
+        print(f"| {p_tag:<3} | {label:<29}| {_gross:5} | {_guard_sev:5} | {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_top:8} | {gate:6} |")
         for _kind, _cnt, _prod in _cats:
-            _share = f"{_cnt * 100 // count}%" if count else "  "
+            _gk = _guard_kinds.get(_kind, 0)
+            _gross_k = _cnt + _gk
+            _share = f"{_gross_k * 100 // _gross}%" if _gross else "  "
             _ppct = f"{_prod * 100 // _cnt}%" if _cnt else "  "
-            print(f"|     |  {_kind:<28}  | {_cnt:5} | {_share:>5} | {_ppct:>5} |          |        |")
+            print(f"|     |  {_kind:<28}  | {_gross_k:5} | {_gk:5} | {_cnt:5} | {_share:>5} | {_ppct:>5} |          |        |")
         _hp = _hotspot_pct.get(sev_key, 0)
         if _hp > 0:
-            print(f"|     |  (top-10 files = {_hp}% of total)  |       |       |       |          |        |")
+            print(f"|     |  (top-10 files = {_hp}% of net)   |       |       |       |       |       |          |        |")
         print(_H)
 
     # ── P2 ────────────────────────────────────────────────────────────────────
@@ -342,15 +380,17 @@ def _print_defect_table(
     if semantic_warnings:
         _sw = len(semantic_warnings)
         _pct = f"{_sw * 100 // p4_count}%" if p4_count else "  "
-        print(f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} | {_pct:>5} |       |          |        |")
+        print(f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |          |        |")
         print(_H)
 
     # ── Totals + legend ──────────────────────────────────────────────────────
-    print(f"| TOT | ALL defects                  | {total:5} |       |       |          |        |")
+    _total_gross = total + _guardian_total
+    print(f"| TOT | ALL defects                  | {_total_gross:5} | {_guardian_total:5} | {total:5} |       |       |          |        |")
     print(_H)
-    print("| Gate: BLOCKS=halts ADG  ratchet=blocks on increase  watch=monitored only  |")
-    print("| Prod%: header=overall  sub-row=per-category  (prod layers: L0-L6+shared)  |")
-    print("| Files: sub-row=share of P-level total  TopLayer: highest-violation layer   |")
+    print("| Gross: total edges detected  Guard: guardian-exempted  Net: actionable (Gross - Guard)  |")
+    print("| Gate: BLOCKS=halts ADG  ratchet=blocks on increase  watch=monitored only               |")
+    print("| Prod%: header=overall  sub-row=per-category  (prod layers: L0-L6+shared)               |")
+    print("| Files/Share: of net (post-filter) total  TopLayer: highest-violation layer              |")
     print(_H)
     _p2_ratchet_label = "stable" if _p2_delta == 0 else "REGRESSION"
     print(f"[ADG] P2 ratchet: {p2_count}/{_p2_ceiling} ({_p2_delta:+d} — {_p2_ratchet_label})")
