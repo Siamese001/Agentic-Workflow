@@ -1561,11 +1561,10 @@ trigger:
 ## CI Integration
 
 When `config/mcp_servers.yaml` changes:
-1. Run validation: `python ops_scripts/ci/validate_mcp_yaml.py`
-2. If validation passes, sync to global: `python tools/adg/sync_yaml_to_global.py`
-3. CI gate enforces validation before merge
+1. Edit `.windsurf/mcp_config.json` directly — it is now the canonical source.
+2. The YAML SSOT infrastructure (`validate_mcp_yaml.py`, `sync_yaml_to_global.py`) was archived in W5.2.
 
-Pre-commit hook triggers validation on commit.
+Pre-commit hook `T11: mcp-config-sovereignty` validates `mcp_config.json` directly.
 
 ## Source of Truth Location
 
@@ -1577,10 +1576,9 @@ The YAML configuration file is the **SSOT** for all MCP server definitions and t
 
 ## Hard Constraints
 
-- **NEVER** edit the global file directly — always edit `config/mcp_servers.yaml` first
-- **AFTER** every edit to `config/mcp_servers.yaml`, run: `python tools/adg/sync_yaml_to_global.py`
-- **ALL** Python MCP servers MUST have `"cwd": "C:\\Git\\Agentic-Workflow"` in the YAML
-- **Drift check** (no writes): `python tools/adg/sync_yaml_to_global.py --check`
+- **EDIT** `.windsurf/mcp_config.json` directly — YAML SSOT archived W5.2
+- **ALL** Python MCP servers MUST have `"cwd": "C:\\Git\\Agentic-Workflow"` in the JSON
+- **Drift check**: T11 pre-commit hook `check_mcp_config_sovereignty.py` runs on `mcp_config.json`
 
 ## Why YAML SSOT
 
@@ -1598,23 +1596,18 @@ python ops_scripts/ci/validate_mcp_yaml.py
 
 Exit 0 = YAML is valid and complete, Exit 1 = validation failed.
 
-## Sync to Global Config
+## MCP Config Source of Truth
 
-```
-python tools/adg/sync_yaml_to_global.py
-```
-
-This converts `config/mcp_servers.yaml` to Windsurf's JSON format and writes to the global config path.
+As of W5.2, `.windsurf/mcp_config.json` is the canonical source. Edit it directly.
+The YAML SSOT infrastructure has been archived to `tools/archive/mcp_yaml_infra_w5.2/`.
 
 ## Enforcement Layers
 
 | Layer | Mechanism |
 |-------|-----------|
 | Windsurf rule | `.windsurf/rules/mcp-config-ssot.md` (this file) |
-| Workflow | `.windsurf/workflows/mcp-yaml-sync.md` (invoke with `/mcp-yaml-sync`) |
-| Git hook | `.git/hooks/post-commit` — auto-syncs when `config/mcp_servers.yaml` is committed |
-| Sync script | `tools/adg/sync_yaml_to_global.py` (validates, backs up, syncs, verifies) |
-| Validation | `ops_scripts/ci/validate_mcp_yaml.py` (CI gate) |
+| Pre-commit gate | `T11: check_mcp_config_sovereignty.py` — validates `mcp_config.json` |
+| YAML infra (archived) | `tools/archive/mcp_yaml_infra_w5.2/` — W5.2 |
 
 ## Deprecated Files (DO NOT EDIT)
 
@@ -1626,11 +1619,10 @@ This converts `config/mcp_servers.yaml` to Windsurf's JSON format and writes to 
 
 ## References
 
-- YAML SSOT: `config/mcp_servers.yaml`
-- Global target (read-only): `C:\Users\amita\.codeium\windsurf\mcp_config.json`
-- Sync script: `tools/adg/sync_yaml_to_global.py`
-- Validation script: `ops_scripts/ci/validate_mcp_yaml.py`
+- Canonical config: `.windsurf/mcp_config.json`
+- Pre-commit gate: `ops_scripts/ci/check_mcp_config_sovereignty.py`
 - Loader module: `agentic_core/config/mcp_loader.py`
+- Archived YAML infra: `tools/archive/mcp_yaml_infra_w5.2/`
 - RCA: `docs/reports/plans/RCA_enhanced_http_vector_db_unused.md`
 
 
