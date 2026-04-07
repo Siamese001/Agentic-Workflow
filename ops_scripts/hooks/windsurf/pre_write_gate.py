@@ -163,6 +163,9 @@ def main() -> int:
     file_path = tool_info.get("file_path", "")
     edits = tool_info.get("edits", [])
 
+    if not file_path.endswith(".py") and not file_path.endswith(MCP_CONFIG_SUFFIX):
+        return 0
+
     violations = []
 
     for edit in edits:

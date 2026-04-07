@@ -161,3 +161,21 @@ class TestMain:
     def test_no_edits_field_allowed(self):
         payload = {"tool_info": {"file_path": "anything.txt"}}
         assert self._run(payload) == 0
+
+    def test_markdown_file_always_allowed(self):
+        payload = {
+            "tool_info": {
+                "file_path": ".windsurf/rules/constitutional.md",
+                "edits": [{"old_string": "x", "new_string": "except:\n    pass\n"}],
+            }
+        }
+        assert self._run(payload) == 0
+
+    def test_non_py_json_doc_always_allowed(self):
+        payload = {
+            "tool_info": {
+                "file_path": "docs/reference/some_doc.json",
+                "edits": [{"old_string": "", "new_string": "shell=True"}],
+            }
+        }
+        assert self._run(payload) == 0

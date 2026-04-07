@@ -18,7 +18,7 @@ trigger: always_on
 > 11. **TERMINAL PROCESS LIFECYCLE MANAGEMENT.** All terminal processes spawned via `run_command` or `subprocess` MUST be explicitly terminated when the query completes. Non-blocking commands MUST set `WaitMsBeforeAsync` or implement explicit process cleanup. Hanging terminal processes after query finish = CONSTITUTIONAL VIOLATION. Gate: `ops_scripts/ci/check_terminal_cleanup.py`.
 > 12. **NO IMPORTS FROM ARCHIVES/ IN PRODUCTION CODE.** The `archives/` directory is a backup graveyard — imports from it are FORBIDDEN in production code (`agentic_core/`, `apps_*/`, `system_learning/`). During module migration, imports MUST be updated to canonical locations, not left pointing to archived copies. CI blocks any commit with active `from archives.` or `import archives.` statements. Gate: `ops_scripts/ci/check_no_archives_imports.py`.
 > 13. **MCP GREEN LIGHT PREREQUISITE.** Before beginning ANY T2/T3 work, call `mcp1_adg_health`. If the result is unhealthy or stale (>30 min), run `/mcp-failure-rca` and wait for recovery. NEVER begin multi-file work with unhealthy MCPs. Reinforced at runtime by `pre_mcp_tool_use` hook (Wave 1 Phase 1.3).
-
+> 14. **SUBPROCESS TIMEOUT DISCIPLINE.** ALL subprocess calls MUST include `timeout=`. No exceptions. `subprocess.run(argv, shell=False, timeout=30)` is the REQUIRED pattern. Omitting `timeout=` is a constitutional violation - runaway subprocesses are PP-9 zombie sources. PowerShell (`powershell`, `pwsh`) is FORBIDDEN - use `subprocess.run(argv, shell=False)`. Reinforced at runtime by `pre_run_command` hook (Wave 1 Phase 1.1). Policy SSOT: `global_rules.md` Section Subprocess Timeout Discipline.
 ## §0. DEFAULT ANALYSIS MODE — Tier-Aware
 
 **DEFAULT = AST DEPENDENCY GRAPH, scaled to change complexity.**
