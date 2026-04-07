@@ -58,13 +58,13 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 | **W2.5** | **M.5** | **Extract integration/** | Move 5 integration functions (redis, git, memory, mcp, repair) | PP-19 | ~2K | ✅ DONE |
 | **W2.5** | **M.6** | **Extract core/ + main.py** | Move orchestrator + CLI + config to core package, slim monolith to shim | PP-19 | ~3K | ✅ DONE |
 | **W2.5** | **M.7** | **Modularization Verification** | Full E2E: generate ADG, tests green, pre-commit green, no import breakage | PP-19 | ~3K | ✅ DONE |
-| W3 | 3.1 | ADG Scope Clarification | Explicit in-scope / out-of-scope boundary for ADG | — | ~1K | 🟡 |
-| W3 | 3.2 | ADG Structural Outputs | Burndown table, blast radius, seam detection, centrality | PP-17 | ~3K | 🟡 |
-| W3 | 3.3 | Refactor Accelerator Design | RA spec: inputs (ADG + git + lint + test), outputs (ranked candidates, safe cuts) | — | ~3K | 🟡 |
-| W3 | 3.4 | Refactor Accelerator MVP | RA produces ranked refactor list, impacted tests, migration order | — | ~3K | 🟡 |
-| W3 | 3.5 | Write-time Syntax Gate | AST parse in pre_write_gate blocks syntax errors | PP-13 | ~2K | 🟡 |
-| W3 | 3.6 | Guardian Idempotency | Harden antipattern fixer, block duplicate guardians | PP-14 | ~2K | 🟡 |
-| W3 | 3.7 | Guardian Quality Scanner | ADG flags weak justifications, P1 ratchet | PP-14 | ~1K | 🟡 |
+| W3 | 3.1 | ADG Scope Clarification | Explicit in-scope / out-of-scope boundary for ADG | — | ~1K | ✅ DONE |
+| W3 | 3.2 | ADG Structural Outputs | Burndown table, blast radius, seam detection, centrality | PP-17 | ~3K | ✅ DONE |
+| W3 | 3.3 | Refactor Accelerator Design | RA spec: inputs (ADG + git + lint + test), outputs (ranked candidates, safe cuts) | — | ~3K | ✅ DONE |
+| W3 | 3.4 | Refactor Accelerator MVP | RA produces ranked refactor list, impacted tests, migration order | — | ~3K | ✅ DONE |
+| W3 | 3.5 | Write-time Syntax Gate | AST parse in pre_write_gate blocks syntax errors | PP-13 | ~2K | ✅ DONE (pre-existing, 25 tests) |
+| W3 | 3.6 | Guardian Idempotency | Harden antipattern fixer, block duplicate guardians | PP-14 | ~2K | ✅ DONE |
+| W3 | 3.7 | Guardian Quality Scanner | ADG flags weak justifications, P1 ratchet | PP-14 | ~1K | ✅ DONE |
 | W4 | 4.1 | Pre-commit Slim-down | Fast local quality ratchet — evidence checks + syntax + format only | — | ~2K | 🟢 |
 | W4 | 4.2 | Dead Script Archival | Archive ~96 dead scripts from ops_scripts/ci/ | GAP-13 | ~2K | 🟢 |
 | W4 | 4.3 | Wire Missing Gates | Connect 5 existing-but-unwired enforcement scripts | GAP-7,9,10,11,12 | ~2K | 🟢 |
