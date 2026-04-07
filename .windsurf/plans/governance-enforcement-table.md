@@ -6,27 +6,32 @@ Complete inventory of all enforcement across the five tiers with SSOT owner and 
 
 ## Tier 1: Windsurf Cascade Hooks (`.windsurf/hooks.json`)
 
-### Pre-Hooks — HARD GATES (can BLOCK, exit 2)
+### Pre-Hooks — HARD GATES (can BLOCK, exit 2, FAIL-CLOSED per H-6)
 
 | Hook Event | Gate Script | What It Enforces | Exit Code | Test File |
-|------------|------------|-----------------|-----------|-----------|
+|------------|------------|-----------------|-----------|----------|
 | `pre_run_command` | `pre_run_gate.py` | PowerShell ban (PP-4), dangerous commands | 2 = BLOCK | `test_pre_run_gate.py` |
-| `pre_write_code` | `pre_write_gate.py` | Anti-pattern injection (PP-3), MCP config protection (PP-2), syntax errors via `ast.parse()` (PP-13) | 2 = BLOCK | `test_pre_write_gate.py` |
-| `pre_mcp_tool_use` | `pre_mcp_gate.py` | ADG SQLite lock check (PP-10), ADG health prerequisite (PP-1) | 2 = BLOCK | `test_pre_mcp_gate.py` |
-| `pre_user_prompt` | `pre_prompt_gate.py` | Scope enforcement, tier classification, plan prerequisite | 2 = BLOCK | `test_pre_prompt_gate.py` |
+| `pre_write_code` | `pre_write_gate.py` | Anti-pattern injection (PP-3), syntax errors via edit reconstruction + `ast.parse()` (PP-13), MCP config tiered validation (PP-2) | 2 = BLOCK (or ALLOW/REQUIRE_APPROVAL for MCP config) | `test_pre_write_gate.py` |
+| `pre_mcp_tool_use` | `pre_mcp_gate.py` | ADG SQLite lock check (PP-10), ADG health prerequisite (PP-1) | 2 = BLOCK (ADG), 0 = pass (non-ADG) | `test_pre_mcp_gate.py` |
 
-### Post-Hooks — ADVISORY ONLY (never block, exit 0 always)
+### Pre-Hook — ADVISORY CLASSIFIER (always exit 0, FAIL-OPEN per H-6)
+
+| Hook Event | Script | What It Does | Blocks? | Test File |
+|------------|--------|-------------|---------|----------|
+| `pre_user_prompt` | `pre_prompt_classifier.py` | Tier classification (T0-T3), context seeding, plan/MCP warnings | **NO** (exit 0 always) | `test_pre_prompt_classifier.py` |
+
+### Post-Hooks — ADVISORY ONLY (never block, exit 0 always, FAIL-OPEN per H-6)
 
 | Hook Event | Audit Script | What It Does | Blocks? | Test File |
-|------------|-------------|-------------|---------|-----------|
-| `post_write_code` | `post_write_audit.py` | MCP config drift detection, lint suggestions (PP-2) | **NO** (exit 0) | `test_post_write_audit.py` |
-| `post_run_command` | `post_run_audit.py` | PID registry for zombie tracking, command telemetry (PP-9) | **NO** (exit 0) | `test_post_run_audit.py` |
+|------------|-------------|-------------|---------|----------|
+| `post_write_code` | `post_write_audit.py` | MCP JSON-native lint (schema, env vars, tool count, risky edits), write telemetry (PP-2) | **NO** (exit 0) | `test_post_write_audit.py` |
+| `post_run_command` | `post_run_audit.py` | Command tracking, best-effort PID registry (PP-9). PID not in native payload. | **NO** (exit 0) | `test_post_run_audit.py` |
 | `post_mcp_tool_use` | `post_mcp_audit.py` | MCP tool usage telemetry, response time tracking | **NO** (exit 0) | `test_post_mcp_audit.py` |
-| `post_cascade_response` | `post_cascade_cleanup.py` | Kill zombies (PP-9), release ADG locks (PP-10), session telemetry | **NO** (exit 0) | `test_post_cascade_cleanup.py` |
+| `post_cascade_response` | `post_cascade_cleanup.py` | Response-tail cleanup attempt: best-effort zombie kill (PP-9), ADG lock release (PP-10). Fires per-response, NOT per-session. | **NO** (exit 0) | `test_post_cascade_cleanup.py` |
 
 All scripts in `ops_scripts/hooks/windsurf/`. Paths repo-relative via `working_directory: "."`.
 
-**Hardening**: Zero hardcoded paths. `pathlib.Path(__file__).resolve().parents[N]` for repo root. Graceful on malformed stdin JSON (exit 0, log warning). Post-hooks: `show_output: false` default.
+**Hardening**: Zero hardcoded paths. `pathlib.Path(__file__).resolve().parents[N]` for repo root. Risk-based fail policy per H-6: critical pre-hooks fail-closed (exit 2), advisory hooks fail-open (exit 0). Post-hooks: `show_output: false` default.
 
 ---
 

@@ -11,6 +11,18 @@ Items removed or descoped from `five-tier-governance-model-a3f7c2.md` during the
 | ADG blast radius (PP-17) | Wave 2 (Phase 2.9) | Wave 3 (Phase 3.2) | Belongs in structural truth layer, not policy layer |
 | Pre-commit slim-down | Wave 3 (Phase 3.2) | Wave 4 (Phase 4.1) | Pre-commit is Tier 4 local ratchet, not Tier 3 structural |
 | ADG evidence gate | Wave 3 (Phase 3.3) | Wave 4 (Phase 4.1) merged | Consumed into pre-commit slim-down as evidence check |
+| PP-6 plan format (ownership) | T1 hard gate (Phase 1.2) | T2 policy (Phase 2.9) | Plan format is policy, not platform interception. Classifier in Phase 1.4 warns only. |
+
+## Items Redefined (Not Removed)
+
+| Item | Original | Redefined To | Rationale |
+|------|----------|-------------|-----------|
+| Phase 1.4 `pre_user_prompt` | HARD GATE (exit 2) | ADVISORY CLASSIFIER (exit 0 always) | Implementation text said "exit 0 on all edge cases" — contradicted hard gate label |
+| Phase 1.5 MCP drift detection | YAML→JSON drift check | JSON-native lint (schema, env vars, tool count, risky edit notice) | Once YAML archived (W2.7), drift is meaningless — replaced with JSON-native validation |
+| Phase 1.2 MCP config protection | Blanket DENY (exit 2 on all `mcp_config.json` writes) | Tiered: ALLOW (schema-valid) / REQUIRE_APPROVAL (risky) / DENY (delete only) | Blanket deny contradicts JSON-as-SSOT; normal config maintenance must be possible |
+| H-6 graceful degradation | Blanket fail-open (exit 0 on all errors) | Risk-based: fail-closed for critical pre-hooks, fail-open for advisory hooks | Universal fail-open weakens safety-critical gates |
+| Phase 1.6 PID tracking | Assumed native PID in payload | Best-effort PID via OS process table lookup | Windsurf `post_run_command` payload has `command_line` + `cwd` only, no PID |
+| Phase 1.8 session-end cleanup | "Cleanup on session end" | "Response-tail cleanup attempt" | `post_cascade_response` fires per-response, not per-session; not guaranteed session-end |
 
 ## Items Genuinely Descoped
 
