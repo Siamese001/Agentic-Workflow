@@ -350,6 +350,42 @@ Respond with ONLY valid JSON."""
             "model": self.model,
         }
 
+    def enrich_chunk_adapter(
+        self,
+        chunk_text: str,
+        metadata: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Adapter method for legacy pipeline compatibility.
+
+        Matches the interface of the rule-based SemanticEnricher in tools/scripts/enrich_embeddings.py.
+        Returns a dict with enriched fields for pipeline compatibility.
+
+        Args:
+            chunk_text: Raw chunk content
+            metadata: Source metadata dict
+
+        Returns:
+            Dict with enriched fields (enriched_text, title, summary, key_concepts, etc.)
+        """
+        chunk_id = metadata.get("chunk_id", metadata.get("id", "unknown")) if isinstance(metadata, dict) else "unknown"
+        knowledge_obj = self.enrich_chunk(
+            chunk_id=chunk_id,
+            raw_text=chunk_text,
+            chunk_type="general",
+            source_metadata=metadata if isinstance(metadata, dict) else {},
+        )
+
+        return {
+            "enriched_text": knowledge_obj.to_enriched_text(),
+            "title": knowledge_obj.title,
+            "summary": knowledge_obj.summary,
+            "key_concepts": knowledge_obj.key_concepts,
+            "agentic_patterns": knowledge_obj.agentic_patterns,
+            "execution_insight": knowledge_obj.execution_insight,
+            "query_expansion": knowledge_obj.query_expansion_terms,
+            "enrichment_hash": knowledge_obj.enrichment_hash,
+        }
+
 
 # Global enricher instance for convenience
 _global_enricher: SemanticEnricher | None = None

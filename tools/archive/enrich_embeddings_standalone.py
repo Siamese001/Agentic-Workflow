@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-Semantic Enrichment and Embedding Optimization Pipeline
+ARCHIVED: Semantic Enrichment and Embedding Optimization Pipeline
 
+This script has been archived because:
+1. It has been migrated to use the canonical SemanticEnricher from agentic_core
+2. The script writes to 'agentic_best_practices_semantic' collection which is not read by production code
+3. New code should use agentic_core.knowledge.enrichment.semantic_enricher.SemanticEnricher directly
+
+Archived: 2026-04-06
+Reason: GAP-4 remediation - orphaned semantic collection writes
+Reference: .windsurf/plans/fact-vec-gap-remediation-bf6908.md
+
+Original description:
 Transforms raw ChromaDB chunks into higher-quality semantic units
 optimized for agentic AI retrieval.
 
@@ -19,9 +29,18 @@ from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
+# Use canonical SemanticEnricher from agentic_core
+from agentic_core.knowledge.enrichment.semantic_enricher import SemanticEnricher
 
-class SemanticEnricher:
-    """Deterministic semantic enrichment for agentic AI content."""
+
+class _LegacyRuleBasedEnricher:
+    """DEPRECATED: Rule-based semantic enrichment for agentic AI content.
+
+    This is the legacy implementation. New code should use:
+    agentic_core.knowledge.enrichment.semantic_enricher.SemanticEnricher
+
+    Kept for reference only; this entire script is archived.
+    """
 
     # Agentic AI pattern keywords
     AGENTIC_PATTERNS = {
@@ -199,7 +218,7 @@ class SemanticPipeline:
     def __init__(self, chroma_path: str, rebuild: bool = False):
         self.chroma_path = Path(chroma_path)
         self.rebuild = rebuild
-        self.enricher = SemanticEnricher()
+        self.enricher = SemanticEnricher()  # Canonical from agentic_core
 
         # Initialize ChromaDB
         self.client = chromadb.PersistentClient(path=str(self.chroma_path), settings=Settings(allow_reset=True))
@@ -252,8 +271,8 @@ class SemanticPipeline:
     def _process_chunk(self, chunk_id: str, chunk_text: str, metadata: dict) -> dict | None:
         """Process a single chunk through enrichment pipeline."""
         try:
-            # Enrich chunk
-            enriched = self.enricher.enrich_chunk(chunk_text, metadata)
+            # Enrich chunk using canonical SemanticEnricher adapter
+            enriched = self.enricher.enrich_chunk_adapter(chunk_text, metadata)
 
             # Check for duplicates
             if self._check_existing_hash(enriched['enrichment_hash']):

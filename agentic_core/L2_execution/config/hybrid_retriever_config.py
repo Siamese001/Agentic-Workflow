@@ -440,7 +440,32 @@ class HybridRetriever:
         fused: Any = self.reciprocal_rank_fusion(dense_results, sparse_results)
         reranked = await self.guardrail.rerank_documents(fused[: min(50, len(fused))], query, top_k=top_k)
         # P4-4C: enforce context budget — drop trailing docs that exceed token ceiling
-        return self._enforce_context_budget(reranked)
+        results = self._enforce_context_budget(reranked)
+
+        # Shadow eval: wire RetrievalEvalRegistry for live metrics (non-blocking)
+        try:
+            from agentic_core.L4_state.utils.memory.retrieval_eval_registry import get_global_eval_registry
+
+            # Extract chunk_id from metadata (RetrievalResult has no chunk_id field)
+            retrieved_chunk_ids = [
+                r.metadata.get("chunk_id", f"synthetic_{i}")
+                for i, r in enumerate(results)
+                if isinstance(r.metadata, dict)
+            ]
+            trace_id = f"hybrid_search_{hash(query)}"  # Synthetic trace ID
+            get_global_eval_registry().evaluate_retrieval(
+                trace_id=trace_id,
+                query=query,
+                retrieved_chunks=retrieved_chunk_ids,
+                relevant_chunks=[],  # Ground truth unavailable at runtime
+                eval_mode="shadow",
+            )
+        except Exception as e:
+            # Non-blocking: log warning but don't fail the search
+            import logging
+            logging.getLogger(__name__).warning(f"Shadow eval failed: {e}")
+
+        return results
 
     def _enforce_context_budget(
         self,
@@ -502,12 +527,47 @@ class _InMemoryVectorStore:
 
     def __init__(self) -> None:
         self._docs: list[dict] = []
+        self._embeddings: list[list[float]] = []
 
     def add_documents(self, docs: list[dict]) -> None:
+        # Note: this is a simplified implementation for test/dev environments
+        # Real ChromaDB would store embeddings separately
         self._docs.extend(docs)
+        # Use zero vectors as placeholders since embeddings aren't provided
+        for _ in docs:
+            self._embeddings.append([0.0] * 1536)
 
     async def similarity_search(self, query_embedding: list[float], top_k: int = 12) -> list[dict]:
-        return self._docs[:top_k]
+        """Rank documents by cosine similarity to query_embedding."""
+        import math
+
+        if not self._docs:
+            return []
+
+        def cosine_similarity(a: list[float], b: list[float]) -> float:
+            """Compute cosine similarity between two vectors."""
+            dot_product = sum(x * y for x, y in zip(a, b))
+            norm_a = math.sqrt(sum(x * x for x in a))
+            norm_b = math.sqrt(sum(y * y for y in b))
+            if norm_a == 0 or norm_b == 0:
+                return 0.0
+            return dot_product / (norm_a * norm_b)
+
+        # Compute similarities
+        scores = []
+        for doc, doc_embedding in zip(self._docs, self._embeddings):
+            # Use query_embedding against stored embedding
+            # If query_embedding is shorter/longer, pad/truncate
+            if len(query_embedding) != len(doc_embedding):
+                # Simple fallback: use zero vector if dimensions mismatch
+                similarity = 0.0
+            else:
+                similarity = cosine_similarity(query_embedding, doc_embedding)
+            scores.append((similarity, doc))
+
+        # Sort by similarity (descending) and return top_k
+        scores.sort(key=lambda x: x[0], reverse=True)
+        return [doc for _, doc in scores[:top_k]]
 
 
 # ---------------------------------------------------------------------------

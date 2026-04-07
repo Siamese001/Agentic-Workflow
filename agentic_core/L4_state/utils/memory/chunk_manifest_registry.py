@@ -15,6 +15,7 @@ Provides persistent storage for enriched chunk manifests with:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import sqlite3
@@ -383,6 +384,71 @@ class ChunkManifestRegistry:
 
         finally:
             conn.close()
+
+    def check_drift(self, chroma_collection: Any) -> dict[str, list[str]]:
+        """Check for drift between ChromaDB and SQLite manifest registry.
+
+        Compares chunk IDs in ChromaDB vs. manifests in SQLite.
+        Returns dict with 'missing_in_chroma' and 'missing_in_sqlite' lists.
+
+        Args:
+            chroma_collection: ChromaDB collection object (must support .get())
+
+        Returns:
+            Dict with keys 'missing_in_chroma' and 'missing_in_sqlite'
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        try:
+            # Get all chunk_ids from SQLite
+            cursor.execute("SELECT chunk_id FROM chunk_manifests")
+            sqlite_ids = {row[0] for row in cursor.fetchall()}
+
+            # Get all chunk_ids from ChromaDB
+            try:
+                if not hasattr(chroma_collection, "get"):
+                    Logger.warning("chroma_collection missing get() method for drift check")
+                    chroma_ids = set()
+                else:
+                    chroma_result = chroma_collection.get()
+                    chroma_ids = set(chroma_result.get("ids", []))
+            except Exception as e:
+                Logger.warning(f"Failed to query ChromaDB for drift check: {e}")
+                chroma_ids = set()
+
+            # Identify drift
+            missing_in_chroma = list(sqlite_ids - chroma_ids)
+            missing_in_sqlite = list(chroma_ids - sqlite_ids)
+
+            return {
+                "missing_in_chroma": missing_in_chroma,
+                "missing_in_sqlite": missing_in_sqlite,
+            }
+
+        finally:
+            conn.close()
+
+    def verify_fact_vec_hash(self, manifest: EnrichedChunkManifest) -> bool:
+        """Verify fact_vec hash integrity for a manifest.
+
+        Re-hashes the manifest's fact_vec and compares to stored fact_vec_hash.
+
+        Args:
+            manifest: EnrichedChunkManifest to verify
+
+        Returns:
+            True if hash matches, False otherwise
+        """
+        if not manifest.fact_vec:
+            # No embedding to verify
+            return True
+
+        computed_hash = hashlib.sha256(
+            json.dumps(manifest.fact_vec, sort_keys=True).encode()
+        ).hexdigest()[:16]
+
+        return computed_hash == manifest.fact_vec_hash
 
     def _row_to_manifest(
         self,

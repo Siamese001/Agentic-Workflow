@@ -34,7 +34,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-# ChunkManifestRegistry, EnrichedChunkManifest imported lazily to avoid L3->L4 violation
+# ChunkManifestRegistry, EnrichedChunkManifest, SemanticEnricher imported lazily to avoid L3->L4 violation
 
 Logger = logging.getLogger(__name__)
 
@@ -259,24 +259,61 @@ class GraphAwareIndexer:
                 json.dumps(embedding, sort_keys=True).encode()
             ).hexdigest()[:16]
 
-        # Extract enrichment fields from metadata
+        # Lazy import to avoid L3->L4 violation
+        from agentic_core.knowledge.enrichment.semantic_enricher import SemanticEnricher
+
+        # Try semantic enrichment; fall back to metadata on failure (fail-open)
+        enrichment_source = "metadata_fallback"
+        title = metadata.get("title", "")
+        summary = metadata.get("summary", "")
+        key_concepts = metadata.get("key_concepts", [])
+        agentic_patterns = metadata.get("agentic_patterns", [])
+        execution_insight = metadata.get("execution_insight", "")
+        query_expansion_terms = metadata.get("query_expansion_terms", [])
+
+        try:
+            enricher = SemanticEnricher()
+            knowledge_obj = enricher.enrich_chunk(
+                chunk_id=chunk_id,
+                raw_text=content,
+                chunk_type="general",
+                source_metadata=metadata,
+            )
+            # Validate enrichment produced non-empty fields
+            if knowledge_obj.title and knowledge_obj.key_concepts:
+                # Populate from enriched knowledge object
+                title = knowledge_obj.title
+                summary = knowledge_obj.summary
+                key_concepts = knowledge_obj.key_concepts
+                agentic_patterns = knowledge_obj.agentic_patterns
+                execution_insight = knowledge_obj.execution_insight
+                query_expansion_terms = knowledge_obj.query_expansion_terms
+                enrichment_source = "semantic_enricher"
+                Logger.debug(f"Enriched chunk {chunk_id} via SemanticEnricher")
+            else:
+                Logger.warning(f"Semantic enrichment produced empty fields for chunk {chunk_id}; using metadata fallback")
+        except Exception as e:
+            Logger.warning(f"Semantic enrichment failed for chunk {chunk_id}: {e}; using metadata fallback")
+
+        # Extract enrichment fields from metadata or enrichment
         enriched_content = {
             "raw": content,
             "adg_edges": adg_edges.to_dict(),
             "extracted_entities": metadata.get("entities", []),
             "extracted_relationships": metadata.get("relationships", []),
+            "enrichment_source": enrichment_source,
         }
 
         return EnrichedChunkManifest(
             chunk_id=chunk_id,
             raw_content=content,
             enriched_content=enriched_content,
-            title=metadata.get("title", ""),
-            summary=metadata.get("summary", ""),
-            key_concepts=metadata.get("key_concepts", []),
-            agentic_patterns=metadata.get("agentic_patterns", []),
-            execution_insight=metadata.get("execution_insight", ""),
-            query_expansion_terms=metadata.get("query_expansion_terms", []),
+            title=title,
+            summary=summary,
+            key_concepts=key_concepts,
+            agentic_patterns=agentic_patterns,
+            execution_insight=execution_insight,
+            query_expansion_terms=query_expansion_terms,
             source_file=source_path,
             doc_id=doc_id,
             chunk_index=chunk_index,
