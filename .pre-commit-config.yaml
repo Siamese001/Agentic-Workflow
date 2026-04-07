@@ -239,7 +239,8 @@ repos:
       # flip to enforce via: python ops_scripts/ci/_adg_ci_gates.py --set-enforce M1,M2,M3
       - id: adg-ci-gates
         name: "T5: ADG CI Delta Gates (Wave 0 M1-M6)"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/_adg_ci_gates.py"
+        entry: py ops_scripts/ci/_adg_ci_gates.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -267,7 +268,8 @@ repos:
       # AST parse with --changed-only: cheap. Must run before burndown.
       - id: hollow-file-gate
         name: "T6: Hollow File Gate — AST Semantic Verification"
-        entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& py ops_scripts/ci/hollow_file_gate.py --changed-only --json-output %TEMP%/pre-commit-issues/hollow_file_gate.jsonl"
+        entry: py ops_scripts/ci/hollow_file_gate.py --changed-only
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -276,7 +278,8 @@ repos:
       # -- T7: Report location SSOT (staged-only, structural) -------------------
       - id: check-report-location
         name: "T7: Report Location SSOT Check"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/hooks/validate_report_location.py --staged-only"
+        entry: py ops_scripts/hooks/validate_report_location.py --staged-only
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -391,7 +394,8 @@ repos:
       # On failure: prints tracked paths + exact `git rm --cached` fix.
       - id: reject-generated-artifacts-tracked
         name: "T8: Reject Tracked Generated Artifacts"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/hooks/reject_tracked_generated_artifacts.py"
+        entry: py ops_scripts/hooks/reject_tracked_generated_artifacts.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -402,7 +406,8 @@ repos:
       # Tooling must remain pure — apps_* only referenced as strings/paths.
       - id: check-tooling-apps-boundary
         name: "T9: Tooling/Apps Boundary Guard (§8.3)"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_tooling_apps_boundary.py --staged-only"
+        entry: py ops_scripts/ci/check_tooling_apps_boundary.py --staged-only
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: false
@@ -414,7 +419,8 @@ repos:
       # Blocks commits that violate architectural module integrity
       - id: module-collision-guard
         name: "T10: Module Collision Guard"
-        entry: cmd /c "set PYTHONPATH=.&& py agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
+        entry: py agentic_core/L5_safety/enforcement/module_collision_guardrail.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -471,7 +477,8 @@ repos:
       # paths in any server args or cwd.
       - id: mcp-config-sovereignty
         name: "T11: MCP Config Sovereignty — filesystem allowedDirectories locked to repo root (Rule #0)"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_mcp_config_sovereignty.py"
+        entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         files: ^mcp_config\.json$
@@ -527,7 +534,8 @@ repos:
       # Init:  ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py
       - id: guardian-exemption-gate
         name: "T12: Guardian Exemption Quality Ratchet"
-        entry: cmd /c "set PYTHONPATH=.&& set ADG_EXEMPTION_JSON_OUTPUT=%TEMP%/pre-commit-issues/guardian_exemption_gate.jsonl&& py ops_scripts/ci/guardian_exemption_gate.py"
+        entry: py ops_scripts/ci/guardian_exemption_gate.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -653,7 +661,8 @@ repos:
       # -- C0 Sovereignty Guardian (embedding must not drive routing) ----------
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty — Embedding Boundary Enforcement"
-        entry: cmd /c "set PYTHONPATH=.&& py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
+        entry: py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -663,7 +672,8 @@ repos:
       # -- Dedup Guard (prevent duplicate symbols) ----------------------------
       - id: check-dedup-violations
         name: "CI: Dedup Guard — Prevent Duplicate Symbols"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_dedup_violations.py"
+        entry: py ops_scripts/ci/check_dedup_violations.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -673,7 +683,8 @@ repos:
       # -- Script Sprawl Guard (block new runner scripts) --------------------
       - id: check-script-sprawl
         name: "CI: Script Sprawl Guard — Block New Runners"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_script_sprawl.py"
+        entry: py ops_scripts/ci/check_script_sprawl.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -683,7 +694,8 @@ repos:
       # -- Shim Discipline (backward-compatibility enforcement) --------------
       - id: check-shim-discipline
         name: "CI: Shim Discipline — Backward-Compatibility"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_shim_discipline.py"
+        entry: py ops_scripts/ci/check_shim_discipline.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -695,7 +707,8 @@ repos:
       # Run manually: pre-commit run check-rollback-checkpoints --hook-stage manual
       - id: check-rollback-checkpoints
         name: "T18: Rollback Gate — Phase Checkpoints"
-        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_rollback_checkpoints.py"
+        entry: py ops_scripts/ci/check_rollback_checkpoints.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
