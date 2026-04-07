@@ -10,10 +10,12 @@ import subprocess
 import time
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 class MCPTester:
     def __init__(self):
-        self.config_file = Path('C:\\Git\\Agentic-Workflow\\.windsurf\\mcp_config.json')
+        self.config_file = REPO_ROOT / '.windsurf' / 'mcp_config.json'
         self.results = {}
         self.npm_prefix = 'C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation'
 
@@ -81,7 +83,7 @@ class MCPTester:
     def test_python_server(self, name, config):
         """Test Python-based MCP server."""
         args = config.get('args', [])
-        cwd = config.get('cwd', 'C:\\Git\\Agentic-Workflow')
+        cwd = config.get('cwd', str(REPO_ROOT))
 
         if not args:
             return {'status': 'error', 'message': 'No script path provided'}
@@ -250,7 +252,7 @@ def main():
     metrics = tester.run_comprehensive_test()
 
     # Save results
-    results_file = Path('C:\\Git\\Agentic-Workflow\\mcp_test_results.json')
+    results_file = REPO_ROOT / 'mcp_test_results.json'
     with open(results_file, 'w') as f:
         json.dump({
             'timestamp': time.time(),

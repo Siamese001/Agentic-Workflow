@@ -9,7 +9,8 @@ from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
-TARGET_DIR = 'C:\\Git\\Agentic-Workflow\\apps_shared\\common_utils'
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TARGET_DIR = str(REPO_ROOT / 'apps_shared' / 'common_utils')
 
 @dataclass
 class FileDisposition:
@@ -85,7 +86,7 @@ def generate_report(results: list[FileDisposition]):
     print('-' * 100)
     for r in results:
         disp = 'MOVE' if r.is_agent else 'STAY'
-        rel_path = r.filepath.replace('C:\\Git\\Agentic-Workflow', '...')
+        rel_path = r.filepath.replace(str(REPO_ROOT), '...')
         signals = ', '.join(r.signals[:2])
         if r.is_agent:
             print(f'!! {disp:<9} | {rel_path:<60} | {signals}')

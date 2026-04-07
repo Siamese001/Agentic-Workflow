@@ -1,4 +1,8 @@
 from agentic_core.L2_execution.utils import write_gateway as _wg
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -437,7 +441,7 @@ def print_report(results: dict):
             print(f"\n[DUPLICATE GROUP] Fingerprint: {fingerprint}")
             print("-" * 60)
             for agent in agents:
-                rel_path = agent.file_path.replace("C:\\Git\\Agentic-Workflow\\", "")
+                rel_path = agent.file_path.replace(str(REPO_ROOT) + "/", "")
                 print(f"  - {agent.name}")
                 print(f"    File: {rel_path}")
                 print(f"    Layer: {agent.layer}, Methods: {agent.method_count}")
@@ -482,10 +486,10 @@ def print_report(results: dict):
 
 
 if __name__ == "__main__":
-    base_path = "C:\\Git\\Agentic-Workflow\\agentic_core"
+    base_path = str(REPO_ROOT / "agentic_core")
     results = analyze_redundancy(base_path)
     print_report(results)
-    report_path = Path("C:\\Git\\Agentic-Workflow\\ast_redundancy_report.json")
+    report_path = REPO_ROOT / "ast_redundancy_report.json"
     json_data = {
         "total_agents": results["total_agents"],
         "agents": [

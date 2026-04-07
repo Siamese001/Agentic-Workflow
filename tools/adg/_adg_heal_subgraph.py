@@ -7,7 +7,8 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-ADG_DIR = 'C:\\Git\\Agentic-Workflow\\artifacts\\adg'
+REPO_ROOT = Path(__file__).resolve().parents[2]
+ADG_DIR = str(REPO_ROOT / 'artifacts' / 'adg')
 fg_path = sorted(glob.glob(Path(ADG_DIR) / 'adg_file_graph_*.json'))[-1]
 print(f'Loading: {Path(fg_path).name}')
 with open(fg_path, encoding='utf-8') as f:

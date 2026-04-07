@@ -10,10 +10,12 @@ import subprocess
 import time
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 class FilesystemMCPDebugger:
     def __init__(self):
-        self.config_file = Path('C:\\Git\\Agentic-Workflow\\.windsurf\\mcp_config.json')
+        self.config_file = REPO_ROOT / '.windsurf' / 'mcp_config.json'
         self.npm_prefix = 'C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation'
 
     def load_config(self):
@@ -101,7 +103,7 @@ class FilesystemMCPDebugger:
             # Test 3: Try with repository argument
             print('\\n   Testing with repository argument...')
             repo_result = subprocess.run(
-                ['node', package_path, 'C:\\Git\\Agentic-Workflow', '--help'],
+                ['node', package_path, str(REPO_ROOT), '--help'],
                 capture_output=True,
                 text=True,
                 timeout=10
@@ -236,7 +238,7 @@ class FilesystemMCPDebugger:
         optimized_config = {
             "_comment": "Filesystem MCP — OPTIMIZED: Using global npm for best performance. allowedDirectories LOCKED to repo root only. SSOT enforced by pre-commit.",
             "command": "node",
-            "args": [fs_config.get('args', [''])[0], "C:\\Git\\Agentic-Workflow"],
+            "args": [fs_config.get('args', [''])[0], str(REPO_ROOT)],
             "disabled": False,
             "env": {
                 "NODE_ENV": "production"
@@ -256,7 +258,7 @@ class FilesystemMCPDebugger:
             print(f'   ❌ Config update failed: {e}')
 
         # Fix 3: Verify repository path
-        repo_path = "C:\\Git\\Agentic-Workflow"
+        repo_path = str(REPO_ROOT)
         if not os.path.exists(repo_path):
             fixes_applied.append('Repository path not found')
             print('   ❌ Repository path not found')
@@ -371,7 +373,7 @@ def main():
     result = debugger.run_complete_debug_cycle()
 
     # Save results
-    results_file = Path('C:\\Git\\Agentic-Workflow\\filesystem_debug_results.json')
+    results_file = REPO_ROOT / 'filesystem_debug_results.json'
     with open(results_file, 'w') as f:
         json.dump(result, f, indent=2)
 

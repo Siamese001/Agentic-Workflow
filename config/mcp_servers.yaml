@@ -10,6 +10,12 @@
 #
 # After editing this file, run: python tools/adg/sync_global_config.py
 
+# ============================================================================
+# REPOSITORY ROOT — Single point of change for repo location
+# All server paths use ${REPO_ROOT} placeholder. Expanded by expand_mcp_config.py.
+# ============================================================================
+repo_root: "${REPO_ROOT}"
+
 schema_version: "1.0.0"
 last_updated: "2026-04-04"
 description: "Canonical MCP server and tool configuration for Agentic-Workflow"
@@ -32,7 +38,7 @@ servers:
     command: "gk"
     args:
       - "mcp"
-    cwd: "C:\\Git\\Agentic-Workflow"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - git_operations
       - issue_tracking
@@ -112,13 +118,13 @@ servers:
     enabled: true
     target_layer: "L0"
     description: "AST Dependency Graph operations via SQLite"
-    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    command: "python"
     args:
       - "-c"
-      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\adg\\\\mcp\\\\server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\adg\\\\mcp\\\\server.py', encoding='utf-8').read())"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/adg/mcp/server.py'; exec(open(r'${REPO_ROOT}/tools/adg/mcp/server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     env:
-      ADG_DIR: "C:\\Git\\Agentic-Workflow\\artifacts\\adg"
+      ADG_DIR: "${REPO_ROOT}/artifacts/adg"
       ADG_MCP_PAGE_SIZE: "500"
       ADG_MCP_CACHE_META_TTL: "5"
     capabilities:
@@ -162,11 +168,11 @@ servers:
     enabled: true
     target_layer: "L2"
     description: "Web search, local search, news, video, and image search"
-    command: "npx"
+    command: "npx.cmd"
     args:
       - "-y"
       - "@modelcontextprotocol/server-brave-search"
-    cwd: "C:\\Git\\Agentic-Workflow"
+    cwd: "${REPO_ROOT}"
     env:
       BRAVE_API_KEY: "${BRAVE_API_KEY}"
     capabilities:
@@ -206,11 +212,11 @@ servers:
     enabled: true
     target_layer: "L6"
     description: "AI-powered repository documentation and analysis"
-    command: "npx"
+    command: "npx.cmd"
     args:
       - "-y"
       - "@iflow-mcp/deepwiki-mcp"
-    cwd: "C:\\Git\\Agentic-Workflow"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - repo_documentation
       - code_analysis
@@ -235,11 +241,11 @@ servers:
     enabled: true
     target_layer: "L2"
     description: "Advanced HTTP client with batch requests and connectivity testing"
-    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    command: "python"
     args:
       - "-c"
-      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\enhanced_http_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\enhanced_http_server.py', encoding='utf-8').read())"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/mcp/enhanced_http_server.py'; exec(open(r'${REPO_ROOT}/tools/mcp/enhanced_http_server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - http_requests
       - batch_requests
@@ -278,12 +284,12 @@ servers:
     enabled: true
     target_layer: "L0"
     description: "File system operations within allowed directories"
-    command: "npx"
+    command: "npx.cmd"
     args:
       - "-y"
       - "@modelcontextprotocol/server-filesystem"
-      - "C:\\Git\\Agentic-Workflow"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "${REPO_ROOT}"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - file_read
       - file_write
@@ -334,12 +340,12 @@ servers:
     prefix: "mcp6"
     enabled: true
     target_layer: "L4"
-    description: "Persistent knowledge graph for entities, observations, and relations"
-    command: "npx"
+    description: "Persistent SQLite-backed knowledge graph (custom server replaces npx @modelcontextprotocol/server-memory)"
+    command: "python"
     args:
-      - "-y"
-      - "@modelcontextprotocol/server-memory"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "-c"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/memory/adg_memory_server.py'; exec(open(r'${REPO_ROOT}/tools/memory/adg_memory_server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - knowledge_graph
       - entity_persistence
@@ -395,11 +401,11 @@ servers:
     enabled: true
     target_layer: "L1"
     description: "Dynamic and reflective problem-solving through structured thinking"
-    command: "npx"
+    command: "npx.cmd"
     args:
       - "-y"
       - "@modelcontextprotocol/server-sequential-thinking"
-    cwd: "C:\\Git\\Agentic-Workflow"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - hypothesis_branching
       - logic_pruning
@@ -419,11 +425,11 @@ servers:
     enabled: true
     target_layer: "L4"
     description: "Vector database for embeddings and semantic search"
-    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    command: "python"
     args:
       - "-c"
-      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\vector_db_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\vector_db_server.py', encoding='utf-8').read())"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/mcp/vector_db_server.py'; exec(open(r'${REPO_ROOT}/tools/mcp/vector_db_server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - embeddings
       - semantic_search
@@ -467,11 +473,11 @@ servers:
     enabled: true
     target_layer: "L6"
     description: "Runtime ADG tracing, OTel span queries, Prometheus metrics, healing chain analysis"
-    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    command: "python"
     args:
       - "-c"
-      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\otel\\\\otel_mcp_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\otel\\\\otel_mcp_server.py', encoding='utf-8').read())"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/otel/otel_mcp_server.py'; exec(open(r'${REPO_ROOT}/tools/otel/otel_mcp_server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - otel_tracing
       - runtime_adg
@@ -514,11 +520,11 @@ servers:
     enabled: true
     target_layer: "L4"
     description: "Redis cache/state inspection for ADG hot cache, sovereign orchestration fabric, and tool embedding cache"
-    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    command: "python"
     args:
       - "-c"
-      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\redis_mcp_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\redis_mcp_server.py', encoding='utf-8').read())"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/mcp/redis_mcp_server.py'; exec(open(r'${REPO_ROOT}/tools/mcp/redis_mcp_server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     env:
       REDIS_HOST: "localhost"
       REDIS_PORT: "6379"
@@ -571,11 +577,11 @@ servers:
     enabled: true
     target_layer: "L5"
     description: "Test discovery, targeted execution, CI gate analysis, and failure triage for the 2,771-module test suite"
-    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    command: "python"
     args:
       - "-c"
-      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\pytest_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\pytest_server.py', encoding='utf-8').read())"
-    cwd: "C:\\Git\\Agentic-Workflow"
+      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/mcp/pytest_server.py'; exec(open(r'${REPO_ROOT}/tools/mcp/pytest_server.py', encoding='utf-8').read())"
+    cwd: "${REPO_ROOT}"
     capabilities:
       - test_discovery
       - test_execution

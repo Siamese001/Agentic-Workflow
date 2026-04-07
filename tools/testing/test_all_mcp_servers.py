@@ -10,6 +10,8 @@ import subprocess
 import time
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def test_mcp_server(name, server_config):
     """Test individual MCP server functionality and performance."""
@@ -176,7 +178,7 @@ def main():
     print('=' * 55)
 
     # Load configuration
-    config_file = Path('C:\\Git\\Agentic-Workflow\\.windsurf\\mcp_config.json')
+    config_file = REPO_ROOT / '.windsurf' / 'mcp_config.json'
     with open(config_file) as f:
         config = json.load(f)
 

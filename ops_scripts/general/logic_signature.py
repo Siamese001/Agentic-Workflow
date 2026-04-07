@@ -12,8 +12,13 @@ from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-ARCHIVE_ROOTS = ['C:\\Git\\Agentic-Workflow\\archives\\Reachout Engine Archive', 'C:\\Git\\Agentic-Workflow\\archives\\resume_gen_json']
-TARGET_ROOT = Path('C:\\Git\\Agentic-Workflow\\apps_rg')
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+ARCHIVE_ROOTS = [
+    str(REPO_ROOT / 'archives' / 'Reachout Engine Archive'),
+    str(REPO_ROOT / 'archives' / 'resume_gen_json')
+]
+TARGET_ROOT = REPO_ROOT / 'apps_rg'
 OUTPUT_JSON = TARGET_ROOT / 'RG_ARCHIVE_RECOVERY_PLAN.json'
 
 @dataclass

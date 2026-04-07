@@ -9,7 +9,8 @@ from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
-TARGET_DIR = 'C:\\Git\\Agentic-Workflow\\apps_shared\\common_utils'
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TARGET_DIR = str(REPO_ROOT / 'apps_shared' / 'common_utils')
 BANNED_SUFFIXES = ['Executor', 'Agent', 'Orchestrator', 'Strategist']
 BANNED_IMPORTS = ['langchain', 'crewai', 'autogen', 'semantic_kernel']
 BANNED_BASES = ['BaseAgent', 'Agent', 'LLMChain']

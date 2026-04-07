@@ -13,6 +13,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
 )
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 _emit_writes_through("p1", "fix_all_dataclass_underscores", "uwg_governed_write")
 _emit_writes_through("p1", "fix_all_dataclass_underscores", "uwg_governed_write_2")
 _emit_pulls_context("p1", "fix_all_dataclass_underscores", "context_retrieval")
@@ -58,7 +60,7 @@ def fix_dataclass_underscores(file_path: Path) -> tuple[int, list[str]]:
 
 def main():
     """Run the fix on core_contracts_types.py"""
-    file_path = Path("c:\\Git\\Agentic-Workflow\\agentic_core\\schemas\\models\\core_contracts_types.py")
+    file_path = REPO_ROOT / "agentic_core" / "schemas" / "models" / "core_contracts_types.py"
     print("=" * 70)
     print("EMERGENCY FIX: Removing ALL dataclass underscore prefixes")
     print("=" * 70)

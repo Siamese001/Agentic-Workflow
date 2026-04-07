@@ -29,27 +29,23 @@ CANONICAL_MANIFEST = {
             "_type": "local_python",
             "_description": "ADG-aware Redis MCP with HASH/SET/LIST operations",
             "command": "python",
-            "args": ["C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"],
-            "cwd": "C:\\Git\\Agentic-Workflow",
+            "args": [str(REPO_ROOT / "tools" / "adg" / "adg_mcp_server.py")],
+            "cwd": str(REPO_ROOT),
             "disabled": False,
             "env": {
-                "ADG_REDIS_URL": "redis://localhost:6379/0",
-                "ADG_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\adg",
-                "ADG_MCP_PAGE_SIZE": "500",
-                "ADG_MCP_CACHE_META_TTL": "5",
+                "ADG_DIR": str(REPO_ROOT / "artifacts" / "adg"),
             },
         },
-        "memory": {
+        "memory_mcp": {
             "_type": "local_python",
-            "_description": "Persistent memory/knowledge graph MCP",
+            "_description": "Custom SQLite-backed memory MCP (replaces npx server-memory)",
             "command": "python",
-            "args": ["C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"],
-            "cwd": "C:\\Git\\Agentic-Workflow",
+            "args": [str(REPO_ROOT / "tools" / "memory" / "adg_memory_server.py")],
+            "cwd": str(REPO_ROOT),
             "disabled": False,
             "env": {
-                "ADG_REDIS_URL": "redis://localhost:6379/0",
-                "MEMORY_DB": "C:\\Git\\Agentic-Workflow\\artifacts\\memory\\knowledge_graph.sqlite",
-                "PYTHONPATH": "C:\\Git\\Agentic-Workflow",
+                "MEMORY_DB": str(REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"),
+                "PYTHONPATH": str(REPO_ROOT),
             },
         },
         "filesystem": {
@@ -58,7 +54,7 @@ CANONICAL_MANIFEST = {
             "command": "node",
             "args": [
                 "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-filesystem\\dist\\index.js",
-                "C:\\Git\\Agentic-Workflow"
+                str(REPO_ROOT)
             ],
             "disabled": False,
             "env": {"NODE_ENV": "production"},

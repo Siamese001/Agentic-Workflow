@@ -4,6 +4,7 @@ The generated test files have problematic headers with Windows paths.
 """
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def fix_test_headers(project_root: Path):
@@ -15,7 +16,7 @@ def fix_test_headers(project_root: Path):
             continue
         try:
             content = test_file.read_text(encoding='utf-8')
-            if 'Source: C:\\Git\\Agentic-Workflow' in content:
+            if f'Source: {project_root}' in content:
                 lines = content.split('\n')
                 if len(lines) > 7 and 'Source:' in lines[4]:
                     content = '\n'.join(lines[7:])

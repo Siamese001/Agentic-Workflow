@@ -1,7 +1,656 @@
-{
-  "_comment": "MOVED: MCP configuration now lives at config/mcp_servers.yaml",
-  "_warning": "This file is no longer used. Edit config/mcp_servers.yaml instead.",
-  "_action": "Edit config/mcp_servers.yaml, then run: python tools/adg/sync_yaml_to_global.py",
-  "_rca": "docs/reports/plans/RCA_enhanced_http_vector_db_unused.md",
-  "mcpServers": {}
-}
+# MCP Servers Configuration - Single Source of Truth (SSOT)
+# Version: 1.0.0
+# Schema: mcp_servers_v1
+#
+# This file is the canonical configuration for all MCP servers and their tools.
+# DO NOT EDIT OTHER LOCATIONS:
+#   - .windsurf/mcp_config.json (DEPRECATED)
+#   - agentic_core/L3_orchestration/reasoning/mcp_manager.py (hardcoded _TOOL_DISPATCH - DEPRECATED)
+#   - agentic_core/L2_execution/config/mcp_registry.py (hardcoded _BASE_MCP_REGISTRY - DEPRECATED)
+#
+# After editing this file, run: python tools/adg/sync_global_config.py
+
+# ============================================================================
+# REPOSITORY ROOT — Single point of change for repo location
+# All server paths use C:\Git\Agentic-Workflow placeholder. Expanded by expand_mcp_config.py.
+# ============================================================================
+repo_root: "C:\Git\Agentic-Workflow"
+
+schema_version: "1.0.0"
+last_updated: "2026-04-04"
+description: "Canonical MCP server and tool configuration for Agentic-Workflow"
+
+# ============================================================================
+# SERVER DEFINITIONS
+# Each server has a prefix that matches Windsurf's mcpN_ tool naming convention
+# ============================================================================
+
+servers:
+  # ==========================================================================
+  # GitKraken (mcp0_*) - Git operations, issues, PRs
+  # ==========================================================================
+  gitkraken:
+    name: "GitKraken"
+    prefix: "mcp0"
+    enabled: true
+    target_layer: "L0"
+    description: "Git operations, issue tracking, and pull request management"
+    command: "gk"
+    args:
+      - "mcp"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - git_operations
+      - issue_tracking
+      - pull_requests
+      - git_history
+    tools:
+      git_status:
+        target: "mcp0_git_status"
+        description: "Get git repository status"
+      git_log:
+        target: "mcp0_git_log_or_diff"
+        description: "Show git commit history"
+      git_add:
+        target: "mcp0_git_add_or_commit"
+        description: "Stage files or commit changes"
+      git_branch:
+        target: "mcp0_git_branch"
+        description: "List or create branches"
+      git_checkout:
+        target: "mcp0_git_checkout"
+        description: "Switch branches or restore files"
+      git_push:
+        target: "mcp0_git_push"
+        description: "Push commits to remote"
+      git_stash:
+        target: "mcp0_git_stash"
+        description: "Stash changes"
+      git_worktree:
+        target: "mcp0_git_worktree"
+        description: "Manage worktrees"
+      gitlens_launchpad:
+        target: "mcp0_gitlens_launchpad"
+        description: "Get prioritized pull requests"
+      gitlens_start_work:
+        target: "mcp0_gitlens_start_work"
+        description: "Start work on an issue"
+      gitlens_start_review:
+        target: "mcp0_gitlens_start_review"
+        description: "Start PR review"
+      gitlens_commit_composer:
+        target: "mcp0_gitlens_commit_composer"
+        description: "Organize changes into commits"
+      issues_assigned:
+        target: "mcp0_issues_assigned_to_me"
+        description: "Get issues assigned to user"
+      issues_detail:
+        target: "mcp0_issues_get_detail"
+        description: "Get detailed issue information"
+      issues_add_comment:
+        target: "mcp0_issues_add_comment"
+        description: "Add comment to issue"
+      pr_assigned:
+        target: "mcp0_pull_request_assigned_to_me"
+        description: "Get PRs assigned to user"
+      pr_create:
+        target: "mcp0_pull_request_create"
+        description: "Create a new pull request"
+      pr_create_review:
+        target: "mcp0_pull_request_create_review"
+        description: "Create review for pull request"
+      pr_get_comments:
+        target: "mcp0_pull_request_get_comments"
+        description: "Get PR comments"
+      pr_get_detail:
+        target: "mcp0_pull_request_get_detail"
+        description: "Get detailed PR information"
+      repo_get_file:
+        target: "mcp0_repository_get_file_content"
+        description: "Get file content from repository"
+
+  # ==========================================================================
+  # ADG SQLite (mcp1_*) - Graph database operations
+  # ==========================================================================
+  adg_sqlite:
+    name: "ADG SQLite"
+    prefix: "mcp1"
+    enabled: true
+    target_layer: "L0"
+    description: "AST Dependency Graph operations via SQLite"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/adg/mcp/server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/adg/mcp/server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    env:
+      ADG_DIR: "C:\Git\Agentic-Workflow/artifacts/adg"
+      ADG_MCP_PAGE_SIZE: "500"
+      ADG_MCP_CACHE_META_TTL: "5"
+    capabilities:
+      - graph_queries
+      - node_lookup
+      - edge_traversal
+      - violation_tracking
+      - semantic_analysis
+    tools:
+      adg_health:
+        target: "mcp1_adg_health"
+        description: "Check ADG health status (primary check)"
+      adg_status:
+        target: "mcp1_adg_status"
+        description: "Get ADG snapshot status"
+      adg_node:
+        target: "mcp1_adg_node"
+        description: "Get node by ID"
+      adg_edge_fanout:
+        target: "mcp1_adg_edge_fanout"
+        description: "Get outgoing edges from source"
+      adg_edge_fanin:
+        target: "mcp1_adg_edge_fanin"
+        description: "Get incoming edges to target"
+      adg_nodes_by_layer:
+        target: "mcp1_adg_nodes_by_layer"
+        description: "Get nodes by layer (L0-L6)"
+      adg_nodes_by_file:
+        target: "mcp1_adg_nodes_by_file"
+        description: "Get nodes by file path"
+      adg_violations:
+        target: "mcp1_adg_violations"
+        description: "Get anti-pattern violations"
+
+  # ==========================================================================
+  # Brave Search (mcp2_*) - Web and content search
+  # ==========================================================================
+  brave_search:
+    name: "Brave Search"
+    prefix: "mcp2"
+    enabled: true
+    target_layer: "L2"
+    description: "Web search, local search, news, video, and image search"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-brave-search"
+    cwd: "C:\Git\Agentic-Workflow"
+    env:
+      BRAVE_API_KEY: "${BRAVE_API_KEY}"
+    capabilities:
+      - web_search
+      - local_search
+      - news_search
+      - video_search
+      - image_search
+      - real_time_data
+    tools:
+      brave_search:
+        target: "mcp2_brave_web_search"
+        aliases: ["brave_web_search"]
+        description: "Search the web"
+      brave_local_search:
+        target: "mcp2_brave_local_search"
+        description: "Search for local businesses and places"
+      brave_news:
+        target: "mcp2_brave_news_search"
+        description: "Search for news articles"
+      brave_video:
+        target: "mcp2_brave_video_search"
+        description: "Search for videos"
+      brave_image:
+        target: "mcp2_brave_image_search"
+        description: "Search for images"
+      brave_summarizer:
+        target: "mcp2_brave_summarizer"
+        description: "Get AI summary of search results"
+
+  # ==========================================================================
+  # DeepWiki (mcp3_*) - Repository documentation
+  # ==========================================================================
+  deepwiki:
+    name: "DeepWiki"
+    prefix: "mcp3"
+    enabled: true
+    target_layer: "L6"
+    description: "AI-powered repository documentation and analysis"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@iflow-mcp/deepwiki-mcp"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - repo_documentation
+      - code_analysis
+      - structure_queries
+    tools:
+      deepwiki_ask:
+        target: "mcp3_ask_question"
+        description: "Ask question about a GitHub repository"
+      deepwiki_structure:
+        target: "mcp3_read_wiki_structure"
+        description: "Get documentation topics for a repo"
+      deepwiki_read:
+        target: "mcp3_read_wiki_contents"
+        description: "View full repo documentation"
+
+  # ==========================================================================
+  # Enhanced HTTP (mcp4_*) - HTTP requests and API calls
+  # ==========================================================================
+  enhanced_http:
+    name: "Enhanced HTTP"
+    prefix: "mcp4"
+    enabled: true
+    target_layer: "L2"
+    description: "Advanced HTTP client with batch requests and connectivity testing"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/mcp/enhanced_http_server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/mcp/enhanced_http_server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - http_requests
+      - batch_requests
+      - connectivity_testing
+      - api_integration
+    tools:
+      http_get:
+        target: "mcp4_http_get"
+        aliases: ["fetch"]
+        description: "Perform HTTP GET request"
+      http_post:
+        target: "mcp4_http_post"
+        description: "Perform HTTP POST request"
+      http_put:
+        target: "mcp4_http_put"
+        description: "Perform HTTP PUT request"
+      http_delete:
+        target: "mcp4_http_delete"
+        description: "Perform HTTP DELETE request"
+      http_head:
+        target: "mcp4_http_head"
+        description: "Perform HTTP HEAD request"
+      http_batch:
+        target: "mcp4_batch_requests"
+        description: "Execute multiple HTTP requests in parallel"
+      http_test:
+        target: "mcp4_test_connectivity"
+        description: "Test HTTP connectivity to a URL"
+
+  # ==========================================================================
+  # Filesystem (mcp5_*) - File and directory operations
+  # ==========================================================================
+  filesystem:
+    name: "Filesystem"
+    prefix: "mcp5"
+    enabled: true
+    target_layer: "L0"
+    description: "File system operations within allowed directories"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-filesystem"
+      - "C:\Git\Agentic-Workflow"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - file_read
+      - file_write
+      - directory_operations
+      - file_search
+      - media_handling
+    _comment: "Constitutional Rule #0: Filesystem server provides access to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Read-sensitive: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py"
+    tools:
+      read_file:
+        target: "mcp5_read_text_file"
+        description: "Read text file contents"
+      write_file:
+        target: "mcp5_write_file"
+        description: "Create or overwrite file"
+      edit_file:
+        target: "mcp5_edit_file"
+        description: "Edit file with line-based changes"
+      move_file:
+        target: "mcp5_move_file"
+        description: "Move or rename files and directories"
+      create_directory:
+        target: "mcp5_create_directory"
+        description: "Create new directory"
+      list_directory:
+        target: "mcp5_list_directory"
+        description: "List files and directories"
+      directory_tree:
+        target: "mcp5_directory_tree"
+        description: "Get recursive directory tree"
+      get_file_info:
+        target: "mcp5_get_file_info"
+        description: "Get detailed file metadata"
+      search_files:
+        target: "mcp5_search_files"
+        description: "Search for files by pattern"
+      read_media:
+        target: "mcp5_read_media_file"
+        description: "Read image or audio file"
+      read_multiple:
+        target: "mcp5_read_multiple_files"
+        description: "Read multiple files at once"
+
+  # ==========================================================================
+  # Memory (mcp6_*) - Knowledge graph operations
+  # ==========================================================================
+  memory:
+    name: "Memory"
+    prefix: "mcp6"
+    enabled: true
+    target_layer: "L4"
+    description: "Persistent SQLite-backed knowledge graph (custom server replaces npx @modelcontextprotocol/server-memory)"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/memory/adg_memory_server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/memory/adg_memory_server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - knowledge_graph
+      - entity_persistence
+      - relation_tracking
+      - observation_management
+    tools:
+      create_entities:
+        target: "mcp6_create_entities"
+        description: "Create new entities in knowledge graph"
+      create_relations:
+        target: "mcp6_create_relations"
+        description: "Create relations between entities"
+      add_observations:
+        target: "mcp6_add_observations"
+        description: "Add observations to entities"
+      search_nodes:
+        target: "mcp6_search_nodes"
+        description: "Search entities by name/type/content"
+      read_graph:
+        target: "mcp6_read_graph"
+        description: "Read complete knowledge graph"
+      open_nodes:
+        target: "mcp6_open_nodes"
+        description: "Retrieve specific entities by name"
+      delete_entities:
+        target: "mcp6_delete_entities"
+        description: "Delete entities and their relations"
+      delete_relations:
+        target: "mcp6_delete_relations"
+        description: "Delete specific relations"
+      delete_observations:
+        target: "mcp6_delete_observations"
+        description: "Delete specific observations"
+      mem_stats:
+        target: "mcp6_mem_get_stats"
+        description: "Get knowledge graph statistics"
+      mem_cleanup:
+        target: "mcp6_mem_cleanup_stale"
+        description: "Clean up stale entities"
+      mem_import_adg:
+        target: "mcp6_mem_import_adg_context"
+        description: "Import ADG context into memory"
+      mem_recall:
+        target: "mcp6_mem_recall_session_start"
+        description: "Recall persistent project context"
+
+  # ==========================================================================
+  # Sequential Thinking (mcp7_*) - Problem solving workflow
+  # ==========================================================================
+  sequential_thinking:
+    name: "Sequential Thinking"
+    prefix: "mcp7"
+    enabled: true
+    target_layer: "L1"
+    description: "Dynamic and reflective problem-solving through structured thinking"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-sequential-thinking"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - hypothesis_branching
+      - logic_pruning
+      - dynamic_reasoning
+      - problem_decomposition
+    tools:
+      sequential_thinking:
+        target: "mcp7_sequentialthinking"
+        description: "Execute structured sequential thinking workflow"
+
+  # ==========================================================================
+  # Vector DB (mcp8_*) - Embeddings and semantic search
+  # ==========================================================================
+  vector_db:
+    name: "Vector DB"
+    prefix: "mcp8"
+    enabled: true
+    target_layer: "L4"
+    description: "Vector database for embeddings and semantic search"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/mcp/vector_db_server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/mcp/vector_db_server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - embeddings
+      - semantic_search
+      - collection_management
+      - document_indexing
+    tools:
+      vdb_create:
+        target: "mcp8_create_collection"
+        description: "Create new vector collection"
+      vdb_delete:
+        target: "mcp8_delete_collection"
+        description: "Delete vector collection"
+      vdb_list:
+        target: "mcp8_list_collections"
+        description: "List all collections"
+      vdb_info:
+        target: "mcp8_get_collection_info"
+        description: "Get collection information"
+      vdb_add:
+        target: "mcp8_add_documents"
+        description: "Add documents to collection"
+      vdb_query:
+        target: "mcp8_query_collection"
+        description: "Query collection for similar documents"
+      vdb_embed:
+        target: "mcp8_embed_text"
+        description: "Generate embeddings for text"
+      vdb_search:
+        target: "mcp8_semantic_search"
+        description: "Search across all collections"
+      vdb_stats:
+        target: "mcp8_vector_stats"
+        description: "Get vector database statistics"
+
+  # ==========================================================================
+  # OpenTelemetry MCP (mcp9_*) - Runtime tracing and execution observability
+  # ==========================================================================
+  otel_mcp:
+    name: "OpenTelemetry MCP"
+    prefix: "mcp9"
+    enabled: true
+    target_layer: "L6"
+    description: "Runtime ADG tracing, OTel span queries, Prometheus metrics, healing chain analysis"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/otel/otel_mcp_server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/otel/otel_mcp_server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - otel_tracing
+      - runtime_adg
+      - prometheus_metrics
+      - healing_chain_analysis
+      - policy_decision_tracing
+      - span_anomaly_detection
+    tools:
+      otel_status:
+        target: "mcp9_otel_status"
+        description: "Check OTel collector health and runtime ADG freshness"
+      otel_trace:
+        target: "mcp9_otel_trace"
+        description: "Fetch trace by CID as ADG edges"
+      otel_spans_by_agent:
+        target: "mcp9_otel_spans_by_agent"
+        description: "Get OTel spans for a specific agent class/instance"
+      otel_healing_chain:
+        target: "mcp9_otel_healing_chain"
+        description: "Follow healing dispatch->outcome->escalation chain"
+      otel_policy_decisions:
+        target: "mcp9_otel_policy_decisions"
+        description: "Path A/B/C/D verdicts with safety plane evidence"
+      otel_metrics_summary:
+        target: "mcp9_otel_metrics_summary"
+        description: "Aggregated runtime edge counters per layer"
+      otel_anomalies:
+        target: "mcp9_otel_anomalies"
+        description: "Spans flagged by circuit breaker or safety plane"
+      otel_ingest_to_runtime_adg:
+        target: "mcp9_otel_ingest_to_runtime_adg"
+        description: "Push collected OTel spans to runtime_adg_*.sqlite"
+
+  # ==========================================================================
+  # Redis MCP (mcp10_*) - Cache/state inspection and targeted invalidation
+  # ==========================================================================
+  redis_mcp:
+    name: "Redis MCP"
+    prefix: "mcp10"
+    enabled: true
+    target_layer: "L4"
+    description: "Redis cache/state inspection for ADG hot cache, sovereign orchestration fabric, and tool embedding cache"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/mcp/redis_mcp_server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/mcp/redis_mcp_server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    env:
+      REDIS_HOST: "localhost"
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+      REDIS_TIMEOUT: "5"
+    capabilities:
+      - cache_inspection
+      - key_scanning
+      - namespace_stats
+      - targeted_invalidation
+      - adg_cache_management
+    tools:
+      redis_health:
+        target: "mcp10_redis_health"
+        description: "Ping Redis and return INFO stats (memory, keyspace, uptime)"
+      redis_dbsize:
+        target: "mcp10_redis_dbsize"
+        description: "Total key count in the current Redis database"
+      redis_namespace_stats:
+        target: "mcp10_redis_namespace_stats"
+        description: "Key counts grouped by namespace prefix"
+      redis_keys:
+        target: "mcp10_redis_keys"
+        description: "SCAN for keys matching a pattern (safe, non-blocking)"
+      redis_get:
+        target: "mcp10_redis_get"
+        description: "GET a single key (auto-detects string/hash/list/set)"
+      redis_hgetall:
+        target: "mcp10_redis_hgetall"
+        description: "HGETALL a hash key (e.g. ADG node cache entries)"
+      redis_ttl:
+        target: "mcp10_redis_ttl"
+        description: "TTL remaining on a key"
+      redis_del_key:
+        target: "mcp10_redis_del_key"
+        description: "DEL a single specific key (targeted invalidation)"
+      redis_flush_namespace:
+        target: "mcp10_redis_flush_namespace"
+        description: "DEL all keys matching a pattern (dry_run=True by default)"
+      redis_stats:
+        target: "mcp10_redis_stats"
+        description: "Full Redis INFO: memory, persistence, replication, clients"
+
+  # ==========================================================================
+  # Pytest MCP (mcp11_*) - Test discovery, execution, and triage
+  # ==========================================================================
+  pytest_mcp:
+    name: "Pytest MCP"
+    prefix: "mcp11"
+    enabled: true
+    target_layer: "L5"
+    description: "Test discovery, targeted execution, CI gate analysis, and failure triage for the 2,771-module test suite"
+    command: "python"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\Git\Agentic-Workflow'); __file__ = r'C:\Git\Agentic-Workflow/tools/mcp/pytest_server.py'; exec(open(r'C:\Git\Agentic-Workflow/tools/mcp/pytest_server.py', encoding='utf-8').read())"
+    cwd: "C:\Git\Agentic-Workflow"
+    capabilities:
+      - test_discovery
+      - test_execution
+      - failure_triage
+      - coverage_reporting
+      - marker_filtering
+      - ci_gate_analysis
+    tools:
+      pytest_discover:
+        target: "mcp11_discover_tests"
+        description: "Discover all tests in the repository by path/pattern"
+      pytest_run:
+        target: "mcp11_run_tests"
+        description: "Run pytest with specified path, markers, and options"
+      pytest_run_file:
+        target: "mcp11_run_test_file"
+        description: "Run a single test file"
+      pytest_run_function:
+        target: "mcp11_run_test_function"
+        description: "Run a specific test function by ID"
+      pytest_last_results:
+        target: "mcp11_get_last_results"
+        description: "Get results from the last test run"
+      pytest_coverage:
+        target: "mcp11_get_coverage"
+        description: "Get test coverage report"
+      pytest_markers:
+        target: "mcp11_list_markers"
+        description: "List all pytest markers defined in the project"
+      pytest_failing:
+        target: "mcp11_get_failing_tests"
+        description: "Get currently failing tests from last run"
+
+# ============================================================================
+# TOOL ALIASES (convenience mappings)
+# ============================================================================
+tool_aliases:
+  fetch: http_get              # mcp4_http_get
+  brave_web_search: brave_search  # mcp2_brave_web_search
+
+# ============================================================================
+# VALIDATION RULES
+# ============================================================================
+validation:
+  required_fields:
+    - name
+    - prefix
+    - enabled
+    - target_layer
+    - description
+    - capabilities
+  valid_layers:
+    - L0
+    - L1
+    - L2
+    - L3
+    - L4
+    - L5
+    - L6
+  valid_prefixes:
+    - mcp0
+    - mcp1
+    - mcp2
+    - mcp3
+    - mcp4
+    - mcp5
+    - mcp6
+    - mcp7
+    - mcp8
+    - mcp9
+    - mcp10
+    - mcp11

@@ -12,6 +12,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
 )
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 _emit_writes_through("p1", "_compare_adg_format", "uwg_governed_write")
 _emit_writes_through("p1", "_compare_adg_format", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_compare_adg_format", "context_retrieval")
@@ -19,9 +21,9 @@ _emit_pulls_context("p1", "_compare_adg_format", "context_retrieval_2")
 emit_determinism_digest("trace__compare_adg_format", "_compare_adg_format_dispatch")
 emit_determinism_digest("trace__compare_adg_format", "_compare_adg_format_complete")
 _emit_validated_by_safety_plane("p1", "_compare_adg_format", "safety_validation")
-ZIP_PATH = 'C:\\Git\\Agentic-Workflow\\artifacts\\adg\\adg_file_graph_20260311T171158Z.zip'
-ADG_DIR = 'C:\\Git\\Agentic-Workflow\\artifacts\\adg'
-EXTRACT_DIR = 'C:\\Git\\Agentic-Workflow\\artifacts\\adg\\_prior_format'
+ZIP_PATH = str(REPO_ROOT / 'artifacts' / 'adg' / 'adg_file_graph_20260311T171158Z.zip')
+ADG_DIR = str(REPO_ROOT / 'artifacts' / 'adg')
+EXTRACT_DIR = str(REPO_ROOT / 'artifacts' / 'adg' / '_prior_format')
 os.makedirs(EXTRACT_DIR, exist_ok=True)
 print('=== EXTRACTING ZIP ===')
 with zipfile.ZipFile(ZIP_PATH) as z:
