@@ -22,6 +22,7 @@
 #   T11.2 mcp-config-drift  — MCP config drift detection (always runs; prevents drift)
 #   T11.3 pytest-config    — pytest.ini vs pyproject.toml consistency
 #   T12  exemption-gate    — guardian exemption quality ratchet
+#   T14  adg-accelerator-compliance — unified Python+YAML ban gate (4→1, Wave 3)
 #   T20  purge-cache       — cleanup, always last
 #
 # Manual / CI-only lane (stages: [manual]):
@@ -548,41 +549,30 @@ repos:
       #   always_run: true
       #   require_serial: true
 
-      # -- T14: ADG Python Ban Gate (Accelerator enforcement) ------------------------
-      # NOTE: Now handled by adg-unified-gate
-      # Consolidated gate: hard-fail if staged Python files use grep/mypy/pytest as ADG substitutes.
-      # Exempt a specific line with: # guardian: allow-<type> -- <justification>
-      # Exempt an entire file with: # adg-<type>-ban: skip-file (first 5 lines)
-      # - id: adg-python-ban-gate
-      #   name: "T14: ADG Python Ban Gate — no grep/mypy/pytest as ADG substitutes"
-      #   entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& python ops_scripts/ci/adg_python_ban_gate.py --staged --json-output %TEMP%/pre-commit-issues/adg_python_ban_gate.jsonl"
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: false
-      #   types: [python]
-      #   require_serial: true
+      # -- T14: ADG Accelerator Compliance Gate (Wave 3 consolidation) -----------
+      # Merges adg_python_ban_gate.py (T14) + adg_yaml_grep_ban_gate.py (T15) into one.
+      # Python: hard-fail if staged .py files use grep/mypy/pytest as ADG substitutes.
+      # YAML:   hard-fail if staged .yml/.yaml files invoke grep/rg in run: steps.
+      # Exemptions:
+      #   Python per-line  : # guardian: allow-<grep|mypy|pytest> -- <justification>
+      #   Python file-level: # adg-<grep|mypy|pytest>-ban: skip-file (first 5 lines)
+      #   YAML per-line    : # guardian: allow-grep-yaml -- <justification>
+      #   YAML file-level  : # adg-yaml-grep-ban: skip-file (first 5 lines)
+      - id: adg-accelerator-compliance-gate
+        name: "T14: ADG Accelerator Compliance Gate — no grep/mypy/pytest (Python) or grep/rg (YAML)"
+        entry: python ops_scripts/ci/adg_accelerator_compliance_gate.py
+        language: system
+        pass_filenames: false
+        always_run: false
+        require_serial: true
 
-      # -- T15: ADG YAML Grep-Ban Gate -------------------------------------------
-      # NOTE: Now handled by adg-unified-gate
-      # Hard-fail if staged YAML workflow files invoke grep/rg in run: steps.
-      # Use Python-based ADG accelerators or explicit Python scripts instead.
-      # Exempt a line with: # guardian: allow-grep-yaml -- <justification>
-      # - id: adg-yaml-grep-ban-gate
-      #   name: "T15: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
-      #   entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& python ops_scripts/ci/adg_yaml_grep_ban_gate.py --staged --json-output %TEMP%/pre-commit-issues/adg_yaml_grep_ban_gate.jsonl"
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: false
-      #   types: [yaml]
-      #   require_serial: true
-
-      # -- T18: Skip-File Ratchet ------------------------------------------------
+      # -- T15: Skip-File Ratchet (renamed from T16) -----------------------------
       # NOTE: Now handled by adg-unified-gate
       # Hard-fail if new # adg-grep-ban: skip-file directives were added without
       # updating the baseline in ops_scripts/hooks/skip_file_budget.json.
       # To legitimately add: run python ops_scripts/ci/adg_skip_file_ratchet.py --update
       # - id: adg-skip-file-ratchet
-      #   name: "T16: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
+      #   name: "T15: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
       #   entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_skip_file_ratchet.py"
       #   language: system
       #   pass_filenames: false

@@ -1,14 +1,14 @@
-"""V15 Enforcement Exceptions — Zero-dependency module to break circular imports.
+"""Guardian Enforcement Exceptions — Zero-dependency module to break circular imports.
 
-This module contains ONLY the V15 exception classes and check functions,
+This module contains ONLY the guardian enforcement exception classes and check functions,
 with no imports from other agentic_core modules. This breaks the circular
 dependency between guardian_contract_types and enforcement modules.
 
-SSOT for V15 exception types consumed by:
+SSOT for guardian enforcement exception types consumed by:
 - ExecutionGateway (enforcement)
 - RuntimeGuard (enforcement)
 - GuardianContractTypes (types)
-- All V15-related tests
+- All guardian-related tests
 """
 
 from __future__ import annotations
