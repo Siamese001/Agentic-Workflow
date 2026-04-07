@@ -457,3 +457,36 @@ If `mcp1_adg_health` is unhealthy:
 3. Run /mcp-failure-rca workflow
 4. Re-run mcp1_adg_health to confirm recovery before proceeding
 ```
+
+---
+
+## §14. SUBPROCESS TIMEOUT DISCIPLINE
+
+### 14.1 Rule
+
+ALL subprocess calls MUST include `timeout=`. No exceptions.
+
+```python
+subprocess.run(argv, shell=False, timeout=30)    # REQUIRED
+subprocess.run(argv, shell=False)                 # FORBIDDEN — no timeout
+subprocess.run(cmd, shell=True)                   # FORBIDDEN — shell=True
+subprocess.run(["powershell", ...])               # FORBIDDEN — PowerShell
+```
+
+Omitting `timeout=` creates zombie processes (PP-9) and session hangs.
+
+### 14.2 Recommended Timeouts
+
+| Operation | Recommended Timeout |
+|-----------|-------------------|
+| Quick validation / health check | 10s |
+| File operations, git commands | 30s |
+| Test runs (single file) | 60s |
+| ADG generation, full scans | 180s |
+| Network / MCP calls | 30s |
+
+### 14.3 Runtime Enforcement
+
+- **Wave 1 Phase 1.1**: `pre_run_command` hook blocks PowerShell commands
+- **Policy SSOT**: `global_rules.md` Section Subprocess Timeout Discipline
+- **CI gate**: `ops_scripts/ci/check_terminal_cleanup.py` (Constitutional §11)
