@@ -224,6 +224,9 @@ def _print_defect_table(
     _guardian_total = 0
     _guardian_by_sev: dict[str, int] = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
     _guardian_by_kind: dict[str, dict[str, int]] = {}  # sev -> {kind: exempt_count}
+    _sev_top_hotspot: dict[str, str] = {}  # sev -> "filename (APxFI=risk)"
+    _sev_density: dict[str, str] = {}      # sev -> "N.N/100"
+    _refactor_top5: list[tuple] = []       # (risk, file, layer, ap_count, fan_in)
     if sqlite_path is not None and sqlite_path.exists():
         try:
             import sqlite3 as _sqlite3_cats
@@ -315,14 +318,95 @@ def _print_defect_table(
                         _guardian_by_kind[_s] = {}
                     _guardian_by_kind[_s][_ek] = _guardian_by_kind[_s].get(_ek, 0) + 1
 
+                # AP density per severity: antipatterns / nodes in layers contributing to that sev
+                _total_prod_nodes = _cc.execute(
+                    "SELECT COUNT(*) FROM nodes WHERE layer IN (%s)"
+                    % ",".join("?" for _ in _prod_layers), _prod_layers
+                ).fetchone()[0] or 1
+                _total_all_nodes = _cc.execute(
+                    "SELECT COUNT(*) FROM nodes WHERE layer IS NOT NULL AND layer != ''"
+                ).fetchone()[0] or 1
+                _sev_counts = {"HIGH": p2_antipattern, "MEDIUM": p3_antipattern, "LOW": p4_antipattern}
+                for _sk, _sc in _sev_counts.items():
+                    # HIGH uses prod nodes, MEDIUM/LOW use all nodes
+                    _base = _total_prod_nodes if _sk == "HIGH" else _total_all_nodes
+                    _d = _sc * 100 / _base if _base else 0
+                    _sev_density[_sk] = f"{_d:.1f}"
+
+                # Top hotspot per severity: file with highest risk (AP count × fan-in)
+                # Precompute fan-in map once for efficiency
+                _fan_in_map: dict[str, int] = {}
+                for _fip, _fic in _cc.execute("""
+                    SELECT n2.resolved_path, COUNT(DISTINCT e2.src_id)
+                    FROM edges e2 JOIN nodes n2 ON e2.dst_id=n2.id
+                    WHERE e2.relation_type IN ('imports','calls')
+                    AND n2.resolved_path != ''
+                    GROUP BY 1
+                """).fetchall():
+                    _fan_in_map[_fip] = _fic
+
+                for _sk in ("HIGH", "MEDIUM", "LOW"):
+                    _hs_rows = _cc.execute("""
+                        SELECT e_ap.source_file,
+                               COUNT(DISTINCT e_ap.id) ap_cnt
+                        FROM edges e_ap
+                        JOIN violations v ON v.edge_id=e_ap.id
+                        WHERE e_ap.relation_type='antipattern' AND v.severity=?
+                        GROUP BY 1
+                        ORDER BY ap_cnt DESC
+                        LIMIT 20
+                    """, (_sk,)).fetchall()
+                    # Pick highest risk = ap × fan_in
+                    _best = None
+                    for _hsf, _hsa in _hs_rows:
+                        _hsfi = _fan_in_map.get(_hsf, 0)
+                        _hsr = _hsa * _hsfi
+                        if _best is None or _hsr > _best[0]:
+                            _best = (_hsr, _hsf, _hsa, _hsfi)
+                    _hs_row = (_best[1], _best[2], _best[3]) if _best else None
+                    if _hs_row:
+                        _hf, _ha, _hfi = _hs_row
+                        _short = _hf.rsplit("/", 1)[-1] if "/" in _hf else _hf
+                        _risk_tag = f" [{_ha}x{_hfi}={_ha*_hfi}]"
+                        _max_name = 32 - len(_risk_tag)
+                        _trunc = _short[:_max_name]
+                        _sev_top_hotspot[_sk] = f"{_trunc}{_risk_tag}"
+                    else:
+                        _sev_top_hotspot[_sk] = "—"
+
+                # Global top-5 refactoring priority: risk = AP × fan_in
+                # Fan-in = distinct src_ids importing INTO this file (dst side)
+                _refactor_top5 = _cc.execute("""
+                    SELECT
+                        COUNT(DISTINCT e_ap.id) * COALESCE(MAX(sub.fan_in), 0) risk,
+                        e_ap.source_file,
+                        n.layer,
+                        COUNT(DISTINCT e_ap.id) ap_cnt,
+                        COALESCE(MAX(sub.fan_in), 0) fan_in
+                    FROM edges e_ap
+                    JOIN nodes n ON e_ap.src_id=n.id
+                    LEFT JOIN (
+                        SELECT n2.resolved_path rp,
+                               COUNT(DISTINCT e2.src_id) fan_in
+                        FROM edges e2
+                        JOIN nodes n2 ON e2.dst_id=n2.id
+                        WHERE e2.relation_type IN ('imports','calls')
+                        GROUP BY 1
+                    ) sub ON sub.rp = e_ap.source_file
+                    WHERE e_ap.relation_type='antipattern'
+                    GROUP BY e_ap.source_file
+                    HAVING ap_cnt >= 3 AND fan_in >= 2
+                    ORDER BY risk DESC
+                    LIMIT 5
+                """).fetchall()
+
         except Exception:  # guardian: allow-silent-swallow -- non-critical: category query failure
             pass
 
     # ── Table layout ──────────────────────────────────────────────────────────
-    # Header rows: P# | Description | Gross | Guard | Net | Files | Prod% | TopLayer | Gate
-    # Sub-rows:    category | gross | guard | net | share% | prod%
-    _H   = "+-----+------------------------------+-------+-------+-------+-------+-------+----------+--------+"
-    _HDR = "| P#  | Description / Category       | Gross | Guard |   Net | Files | Prod% | TopLayer | Gate   |"
+    # Columns: P# | Description | Gross | Guard | Net | Files | Prod% | Density | Top Hotspot (AP×FI)
+    _H   = "+-----+------------------------------+-------+-------+-------+-------+-------+---------+----------------------------------+"
+    _HDR = "| P#  | Description / Category       | Gross | Guard |   Net | Files | Prod% | Density | Top Hotspot (AP×FI)             |"
     print("\n[ADG] Defect Summary:")
     print(_H)
     print(_HDR)
@@ -333,70 +417,93 @@ def _print_defect_table(
     _p1_viol = sum(c for _, _, c in _p1_layer_pairs) if _p1_layer_pairs else 0
     _p1_exempt = len(_violation_rows) - p1_count if _violation_rows else 0
     _p1_gross = p1_count + _p1_exempt
-    print(f"| P1  | CRITICAL (blocks on any > 0) | {_p1_gross:5} | {_p1_exempt:5} | {p1_count:5} | {'':5} | {'':5} | {'':8} | {_p1_gate:6} |")
+    print(f"| P1* | CRITICAL (blocks on any > 0) | {_p1_gross:5} | {_p1_exempt:5} | {p1_count:5} | {'':5} | {'':5} | {'':7} | {'':32} |")
     _viol_label = f"{_p1_viol}" if _p1_viol else "0"
-    print(f"|     |  layer_violation              | {_viol_label:>5} | {_p1_exempt:5} | {p1_count:5} |       |       |          |        |")
+    print(f"|     |  layer_violation              | {_viol_label:>5} | {_p1_exempt:5} | {p1_count:5} |       |       |         |                                  |")
     for _src_l, _dst_l, _cnt in _p1_layer_pairs:
         _pair = f"    {_src_l or '?'} -> {_dst_l or '?'}"
-        print(f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |          |        |")
-    print(f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |       |       |          |        |")
-    print(f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |       |       |          |        |")
+        print(f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |         |                                  |")
+    print(f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |       |       |         |                                  |")
+    print(f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |       |       |         |                                  |")
     print(_H)
 
     # Helper for P2/P3/P4 blocks
-    def _print_sev_block(label, p_tag, count, sev_key, ceiling, gate):
+    def _print_sev_block(label, p_tag, count, sev_key, ceiling, gate_sym):
         _files = _sev_files.get(sev_key, 0)
-        _top = _sev_top_layer.get(sev_key, "N/A")
         _cats = _cat_data.get(sev_key, [])
         _guard_sev = _guardian_by_sev.get(sev_key, 0)
         _gross = count + _guard_sev
         _guard_kinds = _guardian_by_kind.get(sev_key, {})
+        _dens = _sev_density.get(sev_key, "—")
+        _hs = _sev_top_hotspot.get(sev_key, "—")
         # Overall prod %
         _total_prod = sum(c[2] for c in _cats)
         _overall_prod_pct = f"{_total_prod * 100 // count}%" if count else "N/A"
-        print(f"| {p_tag:<3} | {label:<29}| {_gross:5} | {_guard_sev:5} | {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_top:8} | {gate:6} |")
+        # Ratchet delta inline
+        _delta_str = ""
+        if ceiling is not None:
+            _dv = max(0, count - ceiling)
+            _delta_str = f" ({_dv:+d})" if _dv != 0 else " (=)"
+        _tag = f"{p_tag}{gate_sym}"
+        print(f"| {_tag:<4}| {label:<29}| {_gross:5} | {_guard_sev:5} | {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_dens:>5}/c | {_hs:<32} |")
         for _kind, _cnt, _prod in _cats:
             _gk = _guard_kinds.get(_kind, 0)
             _gross_k = _cnt + _gk
             _share = f"{_gross_k * 100 // _gross}%" if _gross else "  "
             _ppct = f"{_prod * 100 // _cnt}%" if _cnt else "  "
-            print(f"|     |  {_kind:<28}  | {_gross_k:5} | {_gk:5} | {_cnt:5} | {_share:>5} | {_ppct:>5} |          |        |")
+            print(f"|     |  {_kind:<28}  | {_gross_k:5} | {_gk:5} | {_cnt:5} | {_share:>5} | {_ppct:>5} |         |                                  |")
         _hp = _hotspot_pct.get(sev_key, 0)
         if _hp > 0:
-            print(f"|     |  (top-10 files = {_hp}% of net)   |       |       |       |       |       |          |        |")
+            print(f"|     |  (top-10 files = {_hp}% of net)   |       |       |       |       |       |         |                                  |")
         print(_H)
 
     # ── P2 ────────────────────────────────────────────────────────────────────
-    _p2_gate = "BLOCKS" if _p2_delta > 0 else "ratchet"
-    _print_sev_block("HIGH antipatterns", "P2", p2_count, "HIGH", _p2_ceiling, _p2_gate)
+    # Gate symbols: * = BLOCKS (halts ADG)  ^ = ratchet (blocks on increase)  ~ = watch only
+    _p2_gate_sym = "*" if _p2_delta > 0 else "^"
+    _print_sev_block("HIGH antipatterns", "P2", p2_count, "HIGH", _p2_ceiling, _p2_gate_sym)
 
     # ── P3 ────────────────────────────────────────────────────────────────────
     _p3_delta_val = max(0, p3_count - _p3_ceiling) if _p3_ceiling is not None else 0
-    _p3_gate = "BLOCKS" if _p3_delta_val > 0 else "ratchet"
-    _print_sev_block("MEDIUM antipatterns", "P3", p3_count, "MEDIUM", _p3_ceiling, _p3_gate)
+    _p3_gate_sym = "*" if _p3_delta_val > 0 else "^"
+    _print_sev_block("MEDIUM antipatterns", "P3", p3_count, "MEDIUM", _p3_ceiling, _p3_gate_sym)
 
     # ── P4 ────────────────────────────────────────────────────────────────────
-    _print_sev_block("LOW style / warnings", "P4", p4_count, "LOW", None, "watch")
+    _print_sev_block("LOW style / warnings", "P4", p4_count, "LOW", None, "~")
     if semantic_warnings:
         _sw = len(semantic_warnings)
         _pct = f"{_sw * 100 // p4_count}%" if p4_count else "  "
-        print(f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |          |        |")
+        print(f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |         |                                  |")
         print(_H)
 
-    # ── Totals + legend ──────────────────────────────────────────────────────
+    # ── Totals ──────────────────────────────────────────────────────────────
     _total_gross = total + _guardian_total
-    print(f"| TOT | ALL defects                  | {_total_gross:5} | {_guardian_total:5} | {total:5} |       |       |          |        |")
+    print(f"| TOT | ALL defects                  | {_total_gross:5} | {_guardian_total:5} | {total:5} |       |       |         |                                  |")
     print(_H)
-    print("| Gross: total edges detected  Guard: guardian-exempted  Net: actionable (Gross - Guard)  |")
-    print("| Gate: BLOCKS=halts ADG  ratchet=blocks on increase  watch=monitored only               |")
-    print("| Prod%: header=overall  sub-row=per-category  (prod layers: L0-L6+shared)               |")
-    print("| Files/Share: of net (post-filter) total  TopLayer: highest-violation layer              |")
-    print(_H)
+
+    # ── Legend (compact footnotes) ──────────────────────────────────────────
+    print("  Gross=total edges  Guard=exempted  Net=actionable  Density=APs per 100 nodes (/c=per centum)")
+    print("  Prod%=production layers (L0-L6+shared)  Top Hotspot=riskiest file (antipattern_count × fan_in)")
+    print("  Gate: *=BLOCKS (halts ADG)  ^=ratchet (blocks on increase)  ~=watch only")
+
+    # ── Ratchet status ──────────────────────────────────────────────────────
     _p2_ratchet_label = "stable" if _p2_delta == 0 else "REGRESSION"
     print(f"[ADG] P2 ratchet: {p2_count}/{_p2_ceiling} ({_p2_delta:+d} — {_p2_ratchet_label})")
     if _p3_ceiling is not None:
         _p3_label = "stable" if _p3_delta_val == 0 else "REGRESSION"
         print(f"[ADG] P3 ratchet: {p3_count}/{_p3_ceiling} ({_p3_delta_val:+d} — {_p3_label})")
+
+    # ── Refactoring Priority (risk = antipatterns × fan-in) ───────────────
+    if _refactor_top5:
+        print("\n[ADG] Refactoring Priority (risk = antipatterns × fan-in):")
+        _RH = "+------+------+------+----------+-----------------------------------------------------+"
+        print(_RH)
+        print("| Risk |   AP | FanI | Layer    | File                                                |")
+        print(_RH)
+        for _risk, _rf, _rl, _ra, _rfi in _refactor_top5:
+            _rf_short = _rf if len(_rf) <= 51 else "..." + _rf[-(51-3):]
+            print(f"| {_risk:4} | {_ra:4} | {_rfi:4} | {_rl or '?':<8} | {_rf_short:<51} |")
+        print(_RH)
+        print("  AP=antipattern count in file  FanI=distinct importers/callers  Risk=AP×FanI")
 
 
 def _check_artifact_validity(paths: object) -> None:
