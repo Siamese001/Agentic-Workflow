@@ -26,8 +26,9 @@ Before writing any execution plan:
 2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
 3. Include per-wave token budgets with GREEN 🟢 / YELLOW 🟡 / RED 🔴 status
 4. Run token estimation via `tools/utils/planning/token_estimator.py` (`ContextWindowEstimator`) — execute with `python tools/utils/planning/token_estimator.py` using `run_command` (Python, NOT PowerShell). Constitutional §3.2 forbids PowerShell, not Python commands. **For T2/T3 plans:** If the estimator cannot run, mark token estimates as `UNRESOLVED` and this is a **BLOCKER** — do not proceed with T2/T3 plans without valid token estimates. For T0/T1 (question/trivial), this is a warning, not a blocker.
+5. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — this table must appear before the Gap Register section.
 
-A plan missing the wave summary table is **invalid and must not be saved**.
+A plan missing the wave summary table **or** the phase-level summary table is **invalid and must not be saved**.
 
 ## Overwrite Default
 

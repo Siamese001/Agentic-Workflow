@@ -17,6 +17,21 @@ One-sentence summary of what this plan accomplishes.
 
 ---
 
+## Phase-Level Summary
+
+> **MANDATORY for T2/T3 plans.** A plan missing this table is invalid and must not be saved.
+
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|----------|-------|---------------|-------------|-------------|--------|
+| 1.1 | [Phase 1.1 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
+| 1.2 | [Phase 1.2 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
+| 2.1 | [Phase 2.1 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
+| 2.2 | [Phase 2.2 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
+
+**Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
+
+---
+
 ## Gap Register
 
 **GAP-1: [Gap description]**
