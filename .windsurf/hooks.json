@@ -3,56 +3,56 @@
     "pre_run_command": [
       {
         "command": "python ops_scripts/hooks/windsurf/pre_run_gate.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": true
       }
     ],
     "pre_write_code": [
       {
         "command": "python ops_scripts/hooks/windsurf/pre_write_gate.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": true
       }
     ],
     "pre_mcp_tool_use": [
       {
         "command": "python ops_scripts/hooks/windsurf/pre_mcp_gate.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": true
       }
     ],
     "pre_user_prompt": [
       {
         "command": "python ops_scripts/hooks/windsurf/pre_prompt_classifier.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
       }
     ],
     "post_write_code": [
       {
         "command": "python ops_scripts/hooks/windsurf/post_write_audit.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
       }
     ],
     "post_run_command": [
       {
         "command": "python ops_scripts/hooks/windsurf/post_run_audit.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
       }
     ],
     "post_mcp_tool_use": [
       {
         "command": "python ops_scripts/hooks/windsurf/post_mcp_audit.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
       }
     ],
     "post_cascade_response": [
       {
         "command": "python ops_scripts/hooks/windsurf/post_cascade_cleanup.py",
-        "working_directory": ".",
+        "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
       }
     ]
