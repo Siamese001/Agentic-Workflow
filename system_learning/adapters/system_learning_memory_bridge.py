@@ -10,7 +10,7 @@ knowledge graph via GraphMemoryBridge, enabling cross-session learning for:
   - HealingOutcomeAggregator — aggregate snapshots queryable across restarts
 
 Design constraints:
-  - Resilient: MCP unavailability is logged, never raises
+  - Fail-fast: MCP errors are logged then re-raised; callers must handle exceptions explicitly
   - Non-authoritative: MCP is a read-supplement; file/in-memory stores remain authoritative
   - Idempotent: repeated calls for the same content_hash are safe (entity upsert)
   - Bounded: observations capped at _MAX_OBS chars to stay within MCP payload limits
@@ -188,8 +188,8 @@ def _content_hash(payload: str) -> str:
 class SystemLearningMemoryBridge:
     """Persists system_learning signals into the Memory MCP knowledge graph.
 
-    All public methods are fire-and-forget: they log on failure and return
-    a bool indicating whether the write succeeded.
+    All public methods log on failure then re-raise; callers must handle
+    exceptions explicitly. Methods return True on success.
 
     Usage::
 
@@ -273,6 +273,7 @@ class SystemLearningMemoryBridge:
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] UnifiedMemoryManager unavailable: %s", e)
             raise
+        return self._sqlite_memory
 
     @staticmethod
     def _normalize_persistable_event(event: Any) -> dict[str, Any]:
@@ -954,14 +955,18 @@ class SystemLearningMemoryBridge:
         """Extract timestamp from snapshot entity."""
         for obs in snapshot.get("observations", []):
             if obs.startswith("ts="):
-                return int(obs[3:])
+                raw = obs[3:]
+                if raw.lstrip("-").isdigit():
+                    return int(raw)
         return 0
 
     def _extract_violation_count(self, snapshot: dict[str, Any]) -> int:
         """Extract violation count from snapshot entity."""
         for obs in snapshot.get("observations", []):
             if obs.startswith("violation_count="):
-                return int(obs[16:])
+                raw = obs[16:]
+                if raw.lstrip("-").isdigit():
+                    return int(raw)
         return 0
 
     def persist_circuit_breaker_event(
@@ -1009,7 +1014,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_circuit_breaker_event failed: %s", e)
-            return False
+            raise
 
     def persist_adg_confidence_summary(self, conf_summary: dict[str, Any], timestamp: str) -> bool:
         """Persist ADG confidence tier distribution.
@@ -1048,7 +1053,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_adg_confidence_summary failed: %s", e)
-            return False
+            raise
 
     def persist_injection_detection_counts(
         self,
@@ -1090,7 +1095,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_injection_detection_counts failed: %s", e)
-            return False
+            raise
 
     def persist_healing_tier_outcome(
         self,
@@ -1142,7 +1147,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_healing_tier_outcome failed: %s", e)
-            return False
+            raise
 
     def persist_workflow_outcome(
         self,
@@ -1201,7 +1206,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_workflow_outcome failed: %s", e)
-            return False
+            raise
 
     def persist_eval_regression_results(
         self,
@@ -1253,7 +1258,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_eval_regression_results failed: %s", e)
-            return False
+            raise
 
     def persist_cognitive_dispositions(
         self,
@@ -1290,7 +1295,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_cognitive_dispositions failed: %s", e)
-            return False
+            raise
 
     def persist_safety_audit_record(
         self,
@@ -1348,7 +1353,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_safety_audit_record failed: %s", e)
-            return False
+            raise
 
     def persist_resource_prediction_feedback(
         self,
@@ -1418,7 +1423,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_resource_prediction_feedback failed: %s", e)
-            return False
+            raise
 
     def persist_rollback_strategy_outcome(
         self,
@@ -1473,7 +1478,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_rollback_strategy_outcome failed: %s", e)
-            return False
+            raise
 
     def persist_healing_memory_retrieval_quality(
         self,
@@ -1522,7 +1527,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_healing_memory_retrieval_quality failed: %s", e)
-            return False
+            raise
 
     def persist_execute_ssot_phase_outcomes(
         self,
@@ -1562,7 +1567,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_execute_ssot_phase_outcomes failed: %s", e)
-            return False
+            raise
 
     def persist_repair_routes(
         self,
@@ -1599,7 +1604,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_repair_routes failed: %s", e)
-            return False
+            raise
 
     def _query_execute_ssot_outcomes(self, timestamp_utc: int) -> None:
         """Query recent Execute_SSOT outcomes (placeholder for future implementation).
@@ -1667,7 +1672,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_cache_coherence_violation failed: %s", e)
-            return False
+            raise
 
     def persist_infrastructure_drift_analysis(
         self,
@@ -1713,7 +1718,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_infrastructure_drift_analysis failed: %s", e)
-            return False
+            raise
 
     def persist_cross_domain_healing_event(
         self,
@@ -1765,7 +1770,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_cross_domain_healing_event failed: %s", e)
-            return False
+            raise
 
     def persist_cross_domain_pattern_analysis(
         self,
@@ -1808,7 +1813,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_cross_domain_pattern_analysis failed: %s", e)
-            return False
+            raise
 
     def persist_otel_span(
         self,
@@ -1851,7 +1856,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_otel_span failed: %s", e)
-            return False
+            raise
 
     def persist_otel_span_metrics(
         self,
@@ -1885,49 +1890,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_otel_span_metrics failed: %s", e)
-            return False
-
-    def persist_injection_detection_counts(
-        self,
-        total_scans: int,
-        detection_counts: dict[str, int],
-        timestamp_utc: int,
-    ) -> bool:
-        """Persist injection detection counts.
-
-        Args:
-            total_scans: Total number of scans performed
-            detection_counts: Detection counts by signature ID
-            timestamp_utc: Timestamp in milliseconds
-
-        Returns:
-            True if persisted, False on failure
-        """
-        if not self._bridge:
-            return False
-
-        try:
-            entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"total_scans={total_scans}",
-                f"total_detections={sum(detection_counts.values())}",
-            ]
-
-            # Add top detection signatures
-            sorted_detections = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-            for sig_id, count in sorted_detections:
-                observations.append(f"{sig_id}={count}")
-
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_injection_detection_counts failed: %s", e)
-            return False
+            raise
 
     def persist_injection_context_data(
         self,
@@ -1970,7 +1933,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_injection_context_data failed: %s", e)
-            return False
+            raise
 
     def persist_signal_spike_detection(
         self,
@@ -2010,7 +1973,7 @@ class SystemLearningMemoryBridge:
             return True
         except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_signal_spike_detection failed: %s", e)
-            return False
+            raise
 
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
