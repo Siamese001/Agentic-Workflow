@@ -59,7 +59,7 @@ _BANNED_DIRECT_MYPY_RE = re.compile(
 )
 _BANNED_PYTHON_M_MYPY_RE = re.compile(
     r"\bsubprocess\s*\.\s*(?:run|call|check_output|check_call|Popen)"
-    r"\s*\(\s*\[\s*['\"]python[23]?['\"]\s*,",
+    r"\s*\(\s*\[\s*['\"]python[23]?['\"]\s*,.*['\"]-m['\"]\s*,\s*['\"]mypy['\"]",
 )
 _BANNED_OS_POPEN_MYPY_RE = re.compile(
     r"\bos\s*\.\s*popen\s*\(\s*['\"](?:mypy|python\s+-m\s+mypy)\s",
@@ -154,8 +154,12 @@ def check_python_bans(staged_files: list[Path]) -> list[dict]:
                     continue
                 for pattern in pattern_map[check]:
                     if pattern.search(line):
+                        try:
+                            rel = str(path.relative_to(ROOT))
+                        except ValueError:
+                            rel = str(path)
                         issues.append({
-                            "file": str(path.relative_to(ROOT)),
+                            "file": rel,
                             "line": line_no,
                             "check": check,
                             "text": line.rstrip(),
@@ -205,7 +209,13 @@ def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
         for line_no, line in enumerate(lines, start=1):
             stripped = line.strip()
 
-            if re.match(r"^\s+run:\s*[|>]?\s*$", line) or re.match(r"^\s+run:\s+\S", line):
+            # Match both '    run: ...' and '    - run: ...' (list-item form)
+            if (
+                re.match(r"^\s+run:\s*[|>]?\s*$", line)
+                or re.match(r"^\s+run:\s+\S", line)
+                or re.match(r"^\s+-\s+run:\s*[|>]?\s*$", line)
+                or re.match(r"^\s+-\s+run:\s+\S", line)
+            ):
                 in_run_block = True
             if in_run_block and line_no > 1:
                 if re.match(r"^\s{2,4}[a-zA-Z_-]+:", line) and not re.match(r"^\s{6,}", line):
@@ -216,14 +226,22 @@ def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
             if _YAML_EXEMPTION_RE.search(line):
                 continue
 
-            is_inline = bool(re.match(r"^\s+run:\s+\S", line))
+            # Inline: '    run: cmd' or '    - run: cmd'
+            is_inline = bool(
+                re.match(r"^\s+run:\s+\S", line)
+                or re.match(r"^\s+-\s+run:\s+\S", line)
+            )
             is_in_block = in_run_block and _yaml_is_shell_line(line)
 
             if is_inline or is_in_block:
-                check_content = re.sub(r"^\s+run:\s+", "", line) if is_inline else line
+                check_content = re.sub(r"^.*run:\s+", "", line) if is_inline else line
                 if _YAML_SHELL_GREP_CMD_RE.search(check_content):
+                    try:
+                        rel = str(path.relative_to(ROOT))
+                    except ValueError:
+                        rel = str(path)
                     issues.append({
-                        "file": str(path.relative_to(ROOT)),
+                        "file": rel,
                         "line": line_no,
                         "check": "grep-yaml",
                         "text": line.rstrip(),
@@ -239,10 +257,13 @@ def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
 
 
 def _get_staged_files(root: Path) -> list[Path]:
-    r = subprocess.run(
-        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
-        cwd=str(root), capture_output=True, encoding="utf-8", timeout=30,
-    )
+    try:
+        r = subprocess.run(
+            ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
+            cwd=str(root), capture_output=True, encoding="utf-8", timeout=30,
+        )
+    except OSError:
+        return []
     return [root / f for f in r.stdout.splitlines()]
 
 
