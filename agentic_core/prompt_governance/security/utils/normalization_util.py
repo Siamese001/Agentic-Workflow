@@ -20,7 +20,7 @@ MAX_INPUT_CHARS: int = 100000
 MAX_DECODED_CHARS: int = 8000
 MAX_URL_DECODE_PASSES: int = 2
 _ZERO_WIDTH_CHARS: frozenset[int] = frozenset(
-    {8203, 8204, 8205, 8206, 8207, 8288, 8289, 8290, 8291, 8292, 65279}
+    {8203, 8204, 8205, 8206, 8207, 8288, 8289, 8290, 8291, 8292, 65279},
 )
 _LEET_MAP: dict[str, str] = {
     "0": "o",
@@ -86,7 +86,7 @@ def _base64_high_confidence_decode(text: str) -> str | None:
     if len(decoded) > MAX_DECODED_CHARS:
         return None
     printable_ratio = sum(1 for c in decoded if c.isprintable() or c in ("\n", "\r", "\t")) / max(
-        len(decoded), 1
+        len(decoded), 1,
     )
     if printable_ratio < 0.8:
         return None

@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -284,7 +283,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
         if not hasattr(self, "audit_log"):
             self.audit_log = []
         self.audit_log.append(
-            {"op": operation, "key": key[:32], "success": success, "ts": get_clock().now_epoch()}
+            {"op": operation, "key": key[:32], "success": success, "ts": get_clock().now_epoch()},
         )
         self.operation_stats["total"] += 1
         self.operation_stats[operation] = self.operation_stats.get(operation, 0) + 1

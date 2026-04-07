@@ -421,7 +421,7 @@ class ADGQueryClient:
             graph_store = create_sqlite_graph_store_or_none()
             if graph_store is not None:
                 return self._analyze_impact_via_graph_store(
-                    graph_store, root_node_id, max_depth, relation_types
+                    graph_store, root_node_id, max_depth, relation_types,
                 )
         except Exception as e:
             Logger.warning(f"Graph store impact analysis failed: {e}, using manual BFS")
@@ -503,7 +503,7 @@ class ADGQueryClient:
         """
         # Use graph store traverse for BFS
         paths = graph_store.traverse(
-            root_node_id, max_depth=max_depth, relation_types=relation_types
+            root_node_id, max_depth=max_depth, relation_types=relation_types,
         )
 
         # Collect affected nodes and edges
@@ -524,7 +524,7 @@ class ADGQueryClient:
                             file_path=node.metadata.get("file_path", ""),
                             symbol_name=node.name,
                             confidence=node.confidence,
-                        )
+                        ),
                     )
 
             for rel in path.relationships:
@@ -540,7 +540,7 @@ class ADGQueryClient:
                         line_no=rel.metadata.get("line_no", 0),
                         symbol=rel.metadata.get("symbol", ""),
                         confidence_score=rel.confidence,
-                    )
+                    ),
                 )
 
         # Get centrality score for root node
@@ -595,7 +595,7 @@ class ADGQueryClient:
             graph_store = create_sqlite_graph_store_or_none()
             if graph_store is not None:
                 return self._detect_layer_violations_via_graph_store(
-                    graph_store, file_path
+                    graph_store, file_path,
                 )
         except Exception as e:
             Logger.warning(f"Graph store layer violation detection failed: {e}, using manual SQL")
@@ -648,7 +648,7 @@ class ADGQueryClient:
                         line_no=row["line_no"] or 0,
                         symbol=row["symbol"] or "",
                         evidence=f"{src_layer} (higher) imports from {dst_layer} (lower)",
-                    )
+                    ),
                 )
 
         return violations
@@ -684,13 +684,13 @@ class ADGQueryClient:
             # This would be expensive - better to query directly
             # For now, fall back to SQL
             raise NotImplementedError(
-                "Full graph-based layer violation detection not yet implemented for all files"
+                "Full graph-based layer violation detection not yet implemented for all files",
             )
 
         for node in nodes:
             # Get all outgoing relationships
             relationships = graph_store.get_relationships(
-                node.id, direction="outgoing"
+                node.id, direction="outgoing",
             )
 
             for rel in relationships:
@@ -721,7 +721,7 @@ class ADGQueryClient:
                             line_no=rel.metadata.get("line_no", 0),
                             symbol=rel.metadata.get("symbol", ""),
                             evidence=f"{src_layer} (higher) imports from {dst_layer} (lower)",
-                        )
+                        ),
                     )
 
         return violations
@@ -757,7 +757,7 @@ class ADGQueryClient:
                     "confidence": 1.0 if node else 0.5,
                     "adg_node_id": node.node_id if node else None,
                     "found_in_adg": node is not None,
-                }
+                },
             )
 
         return resolved
@@ -793,7 +793,7 @@ class ADGQueryClient:
                    FROM edges
                    GROUP BY relation_type
                    ORDER BY count DESC
-                   LIMIT 20"""
+                   LIMIT 20""",
             )
 
         relation_counts = {row["relation_type"]: row["count"] for row in cursor.fetchall()}
@@ -811,7 +811,7 @@ class ADGQueryClient:
                FROM nodes
                WHERE layer != 'unknown'
                GROUP BY layer
-               ORDER BY layer"""
+               ORDER BY layer""",
         )
         layer_distribution = {row["layer"]: row["count"] for row in cursor.fetchall()}
 
@@ -978,7 +978,7 @@ class GraphRAGADGIntegration:
                         "symbol": e.symbol,
                     }
                     for e in impact.affected_edges
-                ]
+                ],
             )
 
         return {

@@ -14,7 +14,7 @@ def extract_skipped_tests():
         ["python", "-m", "pytest", "--collect-only", "--tb=no"],
         capture_output=True,
         text=True,
-        cwd="C:\\Git\\Agentic-Workflow"
+        cwd=str(REPO_ROOT),
     )
 
     output = result.stdout
@@ -34,7 +34,7 @@ def extract_skipped_tests():
                 skipped_tests.append({
                     'test_name': current_test,
                     'reason': current_reason or 'skip decorator detected',
-                    'file_path': extract_file_path(line)
+                    'file_path': extract_file_path(line),
                 })
                 current_reason = ""
             else:
@@ -47,7 +47,7 @@ def extract_skipped_tests():
             skipped_tests.append({
                 'test_name': module_name,
                 'reason': current_reason or 'module skip',
-                'file_path': module_name
+                'file_path': module_name,
             })
             current_reason = ""
 
@@ -72,7 +72,7 @@ def categorize_by_phase(skipped_tests):
         'Phase 3 - Test Quality': [],
         'Phase 4 - Documentation': [],
         'Phase 5 - Integration': [],
-        'Uncategorized': []
+        'Uncategorized': [],
     }
 
     for test in skipped_tests:
@@ -119,7 +119,7 @@ def create_burndown_plan(phases):
                 'phase': phase_name,
                 'files': wave_files,
                 'test_count': sum(len(files[f]) for f in wave_files),
-                'description': f"Fix {len(wave_files)} files with {sum(len(files[f]) for f in wave_files)} skipped tests"
+                'description': f"Fix {len(wave_files)} files with {sum(len(files[f]) for f in wave_files)} skipped tests",
             }
             wave_num += 1
 
@@ -144,7 +144,7 @@ def main():
         'total_skipped': len(skipped_tests),
         'phases': {k: len(v) for k, v in phases.items()},
         'burndown_plan': plan,
-        'all_skipped_tests': skipped_tests
+        'all_skipped_tests': skipped_tests,
     }
 
     with open('artifacts/skip_burndown_plan.json', 'w') as f:

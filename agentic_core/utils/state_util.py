@@ -2,6 +2,7 @@
 State utilities for common operations across the codebase.
 """
 
+from agentic_core.mixins.safety_mixin import StateAnalysisMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -66,7 +67,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.mixins.safety_mixin import StateAnalysisMixin
 
 _emit_emits_metric_event("state_util", "p4obs", "metric_1")
 _emit_emits_metric_event("state_util", "p4obs", "metric_2")

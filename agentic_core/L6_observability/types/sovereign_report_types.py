@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -203,7 +202,7 @@ class SovereignReport:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignReport.get_overall_score"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignReport.get_overall_score",
         )
 
         if not self.scores:
@@ -233,7 +232,7 @@ class SovereignReport:
             self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
 
         def with_dimension(
-            self, name: str, score: float, issues: list[str] = None
+            self, name: str, score: float, issues: list[str] = None,
         ) -> SovereignReport.Builder:
             """Sets a validated dimension score."""
             import uuid as _uuid  # noqa: PLC0415
@@ -285,7 +284,7 @@ class SovereignReport:
                 if match:
                     line_num = int(match.group(1))
                 all_issues.append(
-                    {"dimension": dimension, "description": message, "file": file_path, "line": line_num}
+                    {"dimension": dimension, "description": message, "file": file_path, "line": line_num},
                 )
         return all_issues
 

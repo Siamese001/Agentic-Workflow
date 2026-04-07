@@ -264,15 +264,19 @@ def main() -> int:
         help="ADG artifacts directory (default: artifacts/adg)",
     )
     repair_parser.add_argument(
+        "--report", "-r",
+        action="store_true",
+        help="Report-only mode (show what would be fixed without making changes)",
+    )
+    repair_parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Show what would be fixed without making changes",
+        help=argparse.SUPPRESS,  # Deprecated, use --report
     )
     repair_parser.add_argument(
         "--apply",
         action="store_true",
-        dest="apply_mode",
-        help="Apply fixes (default is dry-run)",
+        help=argparse.SUPPRESS,  # Deprecated, default is now execute
     )
     repair_parser.add_argument(
         "--skip-rule",
@@ -284,13 +288,13 @@ def main() -> int:
         action="store_true",
         help="Create a git checkpoint before applying fixes",
     )
-    repair_parser.set_defaults(func=cmd_repair, dry_run=True)
+    repair_parser.set_defaults(func=cmd_repair, dry_run=False)
 
     args = parser.parse_args()
 
-    # Handle --apply flag
-    if hasattr(args, "apply_mode") and args.apply_mode:
-        args.dry_run = False
+    # Handle --report flag for dry_run
+    if hasattr(args, "report") and args.report:
+        args.dry_run = True
 
     if not args.command:
         parser.print_help()

@@ -1,7 +1,5 @@
 """Tests for Qwen vLLM gateway orchestration."""
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 
 from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning import (
     QwenInferenceGateway,

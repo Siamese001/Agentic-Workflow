@@ -82,20 +82,14 @@ _emit_applies_guardrail("p0", "lifecycle_policy_applier", "p0_governance")
 _emit_snapshots_state("p0", "lifecycle_policy_applier", "state_snapshot")
 _emit_escalates_to_human("p1", "lifecycle_policy_applier", "human_escalation")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -103,17 +97,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -313,7 +301,7 @@ def apply_state_lifecycle_policy(
     lifecycle_policy = _resolve_lifecycle_policy(state_namespace, retention_class, _registry)
     if not lifecycle_policy:
         raise StateLifecycleError(
-            f"apply_state_lifecycle_policy: no lifecycle policy for namespace {state_namespace}"
+            f"apply_state_lifecycle_policy: no lifecycle policy for namespace {state_namespace}",
         )
 
     # --- Step 3: determine retention / expiration / archival requirement ---
@@ -428,19 +416,19 @@ def _resolve_lifecycle_policy(
 
     if retention_class == RetentionClass.SHORT_TERM:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 3600, 7200, 8640
+            policy_id, retention_class, 3600, 7200, 8640,
         )  # 1h, 2h, 2.4h
     elif retention_class == RetentionClass.MEDIUM_TERM:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 86400, 604800, 2592000
+            policy_id, retention_class, 86400, 604800, 2592000,
         )  # 1d, 1w, 30d
     elif retention_class == RetentionClass.LONG_TERM:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 2592000, 7776000, 31536000
+            policy_id, retention_class, 2592000, 7776000, 31536000,
         )  # 30d, 90d, 365d
     elif retention_class == RetentionClass.PERMANENT:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 31536000, 63072000, 126144000
+            policy_id, retention_class, 31536000, 63072000, 126144000,
         )  # 365d, 730d, 1460d
     else:
         return None
@@ -485,11 +473,11 @@ def _determine_status_transition(
         if current_status == LifecycleStatus.ACTIVE:
             return LifecycleStatus.EXPIRED.value
         elif current_status == LifecycleStatus.EXPIRED and policy.should_archive(
-            record.created_at_tick, current_time
+            record.created_at_tick, current_time,
         ):
             return LifecycleStatus.ARCHIVED.value
         elif current_status == LifecycleStatus.ARCHIVED and policy.should_delete(
-            record.created_at_tick, current_time
+            record.created_at_tick, current_time,
         ):
             return LifecycleStatus.PENDING_DELETION.value
 

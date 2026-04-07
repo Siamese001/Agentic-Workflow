@@ -10,10 +10,13 @@ import subprocess
 import time
 from pathlib import Path
 
+# Dynamic repo root resolution
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 class MCPSmokeTester:
     def __init__(self):
-        self.config_file = Path('C:\\Git\\Agentic-Workflow\\.windsurf\\mcp_config.json')
+        self.config_file = REPO_ROOT / ".windsurf" / "mcp_config.json"
         self.results = {}
         self.npm_prefix = 'C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation'
 
@@ -41,7 +44,7 @@ class MCPSmokeTester:
                 ['node', package_path, '--help'],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
             startup_time = end_time - start_time
@@ -57,7 +60,7 @@ class MCPSmokeTester:
                     ['node', package_path, '--version'],
                     capture_output=True,
                     text=True,
-                    timeout=5
+                    timeout=5,
                 )
                 version = version_result.stdout.strip() if version_result.returncode == 0 else 'unknown'
             except Exception:
@@ -67,7 +70,7 @@ class MCPSmokeTester:
             package_info = {
                 'path': package_path,
                 'size': os.path.getsize(package_path) if os.path.exists(package_path) else 0,
-                'modified': os.path.getmtime(package_path) if os.path.exists(package_path) else 0
+                'modified': os.path.getmtime(package_path) if os.path.exists(package_path) else 0,
             }
 
             return {
@@ -75,7 +78,7 @@ class MCPSmokeTester:
                 'startup_time': startup_time,
                 'version': version,
                 'package_info': package_info,
-                'message': f'Server starts in {startup_time:.3f}s, version: {version}'
+                'message': f'Server starts in {startup_time:.3f}s, version: {version}',
             }
 
         except subprocess.TimeoutExpired:
@@ -84,7 +87,7 @@ class MCPSmokeTester:
                 'startup_time': 10.0,
                 'version': 'unknown',
                 'package_info': {'path': package_path, 'size': 0, 'modified': 0},
-                'message': 'Server started (timeout expected for MCP servers)'
+                'message': 'Server started (timeout expected for MCP servers)',
             }
         except Exception as e:
             return {
@@ -92,13 +95,13 @@ class MCPSmokeTester:
                 'startup_time': 0,
                 'version': 'unknown',
                 'package_info': {'path': package_path, 'size': 0, 'modified': 0},
-                'message': f'Exception: {str(e)}'
+                'message': f'Exception: {str(e)}',
             }
 
     def smoke_test_python_server(self, name, config):
         """Smoke test for Python MCP server."""
         args = config.get('args', [])
-        cwd = config.get('cwd', 'C:\\Git\\Agentic-Workflow')
+        cwd = config.get('cwd', str(REPO_ROOT))
 
         if not args:
             return {'status': 'error', 'message': 'No script path provided'}
@@ -115,13 +118,13 @@ class MCPSmokeTester:
                 capture_output=True,
                 text=True,
                 timeout=15,
-                cwd=cwd
+                cwd=cwd,
             )
 
             if result.returncode != 0:
                 return {
                     'status': 'syntax_error',
-                    'message': f'Syntax error: {result.stderr[:200]}'
+                    'message': f'Syntax error: {result.stderr[:200]}',
                 }
 
             # Test 2: Import test
@@ -134,7 +137,7 @@ class MCPSmokeTester:
                     capture_output=True,
                     text=True,
                     timeout=10,
-                    cwd=cwd
+                    cwd=cwd,
                 )
 
                 if import_result.returncode == 0:
@@ -152,7 +155,7 @@ class MCPSmokeTester:
                 'path': script_path,
                 'size': os.path.getsize(script_path),
                 'modified': os.path.getmtime(script_path),
-                'lines': 0
+                'lines': 0,
             }
 
             try:
@@ -164,18 +167,18 @@ class MCPSmokeTester:
             return {
                 'status': import_status,
                 'script_info': script_info,
-                'message': f'Script valid: {import_message}'
+                'message': f'Script valid: {import_message}',
             }
 
         except subprocess.TimeoutExpired:
             return {
                 'status': 'timeout',
-                'message': 'Compilation timeout'
+                'message': 'Compilation timeout',
             }
         except Exception as e:
             return {
                 'status': 'error',
-                'message': f'Exception: {str(e)}'
+                'message': f'Exception: {str(e)}',
             }
 
     def smoke_test_server(self, name, config):
@@ -210,13 +213,13 @@ class MCPSmokeTester:
             builtin_results['fetch'] = {
                 'status': 'available',
                 'message': 'Built-in fetch tool available in session',
-                'tool_name': 'mcp4_fetch'
+                'tool_name': 'mcp4_fetch',
             }
             print('   ✅ Built-in fetch tool available')
         except Exception as e:
             builtin_results['fetch'] = {
                 'status': 'error',
-                'message': f'Error checking fetch: {str(e)}'
+                'message': f'Error checking fetch: {str(e)}',
             }
             print(f'   ❌ Error: {e}')
 
@@ -226,20 +229,20 @@ class MCPSmokeTester:
             'mcp3_read_wiki_structure',
             'mcp3_read_wiki_contents',
             'mcp3_ask_question',
-            'mcp3_list_available_repos'
+            'mcp3_list_available_repos',
         ]
 
         try:
             builtin_results['deepwiki'] = {
                 'status': 'available',
                 'message': f'Built-in Deep Wiki tools available: {", ".join(deepwiki_tools)}',
-                'tools': deepwiki_tools
+                'tools': deepwiki_tools,
             }
             print(f'   ✅ Deep Wiki tools available: {len(deepwiki_tools)} tools')
         except Exception as e:
             builtin_results['deepwiki'] = {
                 'status': 'error',
-                'message': f'Error checking Deep Wiki: {str(e)}'
+                'message': f'Error checking Deep Wiki: {str(e)}',
             }
             print(f'   ❌ Error: {e}')
 
@@ -274,7 +277,7 @@ class MCPSmokeTester:
                 'syntax_error': '❌',
                 'import_error': '❌',
                 'error': '❌',
-                'unknown_command': '❌'
+                'unknown_command': '❌',
             }
 
             icon = status_icons.get(result['status'], '❓')
@@ -385,7 +388,7 @@ class MCPSmokeTester:
             print('   🟢 All systems ready for production use')
 
         # Save detailed results
-        results_file = Path('C:\\Git\\Agentic-Workflow\\mcp_smoke_test_results.json')
+        results_file = REPO_ROOT / "mcp_smoke_test_results.json"
         with open(results_file, 'w') as f:
             json.dump({
                 'timestamp': time.time(),
@@ -395,8 +398,8 @@ class MCPSmokeTester:
                     'total_servers': total_servers,
                     'status_counts': status_counts,
                     'critical_issues': critical_issues,
-                    'warnings': warnings
-                }
+                    'warnings': warnings,
+                },
             }, f, indent=2)
 
         print(f'\\n💾 Detailed results saved to: {results_file}')

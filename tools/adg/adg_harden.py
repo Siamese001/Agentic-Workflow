@@ -36,20 +36,20 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 P0_DIMENSIONS = {
     "evidence": {
         "symbols": ["records_execution_trace", "emits_replay_key", "emits_determinism_digest"],
-        "description": "Execution evidence capture"
+        "description": "Execution evidence capture",
     },
     "governance": {
         "symbols": ["applies_guardrail", "verifies_policy", "validated_by_safety_plane"],
-        "description": "Policy governance enforcement"
+        "description": "Policy governance enforcement",
     },
     "trace": {
         "symbols": ["signs_execution_trace", "snapshots_state"],
-        "description": "Execution trace signing"
+        "description": "Execution trace signing",
     },
     "runtime": {
         "symbols": ["emits_replay_key", "emits_determinism_digest", "observes_runtime_state"],
-        "description": "Runtime observability"
-    }
+        "description": "Runtime observability",
+    },
 }
 
 P1_DIMENSIONS = {
@@ -57,7 +57,7 @@ P1_DIMENSIONS = {
     "orchestrates_workflow": {"description": "Orchestrate workflow execution"},
     "dispatches_execution_plan": {"description": "Dispatch execution plans"},
     "validates_agent_capability": {"description": "Validate agent capabilities"},
-    "checks_agent_registry": {"description": "Check agent registry"}
+    "checks_agent_registry": {"description": "Check agent registry"},
 }
 
 P2_DIMENSIONS = {
@@ -67,7 +67,7 @@ P2_DIMENSIONS = {
     "writes_via_uwg": {"description": "Write via Universal Write Gateway"},
     "blocks_direct_write": {"description": "Block direct writes"},
     "records_tool_invocation": {"description": "Record tool invocations"},
-    "captures_execution_output": {"description": "Capture execution outputs"}
+    "captures_execution_output": {"description": "Capture execution outputs"},
 }
 
 
@@ -185,7 +185,7 @@ def cmd_p0(args: argparse.Namespace) -> int:
         "layer": layer,
         "modules_processed": 0,
         "modules_modified": 0,
-        "symbols_added": []
+        "symbols_added": [],
     }
 
     for module in modules[:args.limit] if args.limit else modules:
@@ -197,7 +197,7 @@ def cmd_p0(args: argparse.Namespace) -> int:
                     results["modules_modified"] += 1
                     results["symbols_added"].append({
                         "module": str(module.relative_to(REPO_ROOT)),
-                        "symbol": symbol
+                        "symbol": symbol,
                     })
 
     if args.json:
@@ -230,7 +230,7 @@ def cmd_p1(args: argparse.Namespace) -> int:
     results = {
         "phase": "P1",
         "modules_processed": len(modules),
-        "dimensions": list(P1_DIMENSIONS.keys())
+        "dimensions": list(P1_DIMENSIONS.keys()),
     }
 
     if args.json:
@@ -258,7 +258,7 @@ def cmd_p2(args: argparse.Namespace) -> int:
     results = {
         "phase": "P2",
         "modules_processed": len(modules),
-        "dimensions": list(P2_DIMENSIONS.keys())
+        "dimensions": list(P2_DIMENSIONS.keys()),
     }
 
     if args.json:
@@ -283,7 +283,7 @@ def cmd_check(args: argparse.Namespace) -> int:
 
     results = {
         "database": str(db_path),
-        "phases": {}
+        "phases": {},
     }
 
     # Check P0 dimensions
@@ -294,7 +294,7 @@ def cmd_check(args: argparse.Namespace) -> int:
             for symbol in config["symbols"]:
                 cursor = conn.execute(
                     "SELECT COUNT(*) FROM edges WHERE edge_kind = ? OR relation_type = ?",
-                    (symbol, symbol)
+                    (symbol, symbol),
                 )
                 counts[symbol] = cursor.fetchone()[0]
             results["phases"]["P0"][dim] = counts
@@ -305,7 +305,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         for dim in P1_DIMENSIONS:
             cursor = conn.execute(
                 "SELECT COUNT(*) FROM edges WHERE edge_kind = ? OR relation_type = ?",
-                (dim, dim)
+                (dim, dim),
             )
             results["phases"]["P1"][dim] = cursor.fetchone()[0]
 
@@ -315,7 +315,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         for dim in P2_DIMENSIONS:
             cursor = conn.execute(
                 "SELECT COUNT(*) FROM edges WHERE edge_kind = ? OR relation_type = ?",
-                (dim, dim)
+                (dim, dim),
             )
             results["phases"]["P2"][dim] = cursor.fetchone()[0]
 
@@ -341,7 +341,7 @@ def cmd_full(args: argparse.Namespace) -> int:
         phase_args = argparse.Namespace(
             apply=args.apply,
             json=None,
-            limit=args.limit if args.micro_wave else None
+            limit=args.limit if args.micro_wave else None,
         )
 
         if phase == "p0":
@@ -363,7 +363,7 @@ def cmd_full(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(
         prog="adg_harden",
-        description="ADG Unified Hardening Accelerator"
+        description="ADG Unified Hardening Accelerator",
     )
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
 
@@ -371,18 +371,21 @@ def main() -> int:
     p0_parser = subparsers.add_parser("p0", help="P0 dimension hardening")
     p0_parser.add_argument("--dim", required=True, choices=list(P0_DIMENSIONS.keys()))
     p0_parser.add_argument("--layer", help="Target layer (L0-L6)")
-    p0_parser.add_argument("--apply", action="store_true", help="Apply changes (default: dry-run)")
+    p0_parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
+    p0_parser.add_argument("--apply", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
     p0_parser.add_argument("--limit", type=int, help="Limit modules processed (micro-wave)")
     p0_parser.add_argument("--json", help="JSON output file")
 
     # p1 command
     p1_parser = subparsers.add_parser("p1", help="P1 orchestration hardening")
-    p1_parser.add_argument("--apply", action="store_true", help="Apply changes")
+    p1_parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
+    p1_parser.add_argument("--apply", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
     p1_parser.add_argument("--json", help="JSON output file")
 
     # p2 command
     p2_parser = subparsers.add_parser("p2", help="P2 execution hardening")
-    p2_parser.add_argument("--apply", action="store_true", help="Apply changes")
+    p2_parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
+    p2_parser.add_argument("--apply", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
     p2_parser.add_argument("--json", help="JSON output file")
 
     # check command
@@ -393,7 +396,8 @@ def main() -> int:
 
     # full command
     full_parser = subparsers.add_parser("full", help="Full hardening (P0-P4)")
-    full_parser.add_argument("--apply", action="store_true", help="Apply changes")
+    full_parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
+    full_parser.add_argument("--apply", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
     full_parser.add_argument("--micro-wave", action="store_true", help="Micro-wave mode (15 modules)")
     full_parser.add_argument("--limit", type=int, default=15, help="Modules per wave")
 
@@ -402,6 +406,12 @@ def main() -> int:
     if not args.command:
         parser.print_help()
         return 1
+
+    # Handle --report flag for apply mode (default is execute)
+    if hasattr(args, 'report') and args.report:
+        args.apply = False
+    elif not hasattr(args, 'apply'):
+        args.apply = True
 
     commands = {
         "p0": cmd_p0,
@@ -432,7 +442,7 @@ def check_invariants() -> dict:
     return {
         "status": "ok",
         "invariants_checked": ["P0", "P1", "P2"],
-        "violations": []
+        "violations": [],
     }
 
 

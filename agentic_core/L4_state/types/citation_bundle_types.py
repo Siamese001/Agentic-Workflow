@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -203,7 +202,7 @@ class CitationBundle:
     def __post_init__(self) -> None:
         if self.schema_version != _SCHEMA_VERSION:
             raise ValueError(
-                f"CitationBundle: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}"
+                f"CitationBundle: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}",
             )
         if not self.request_hash:
             raise ValueError("CitationBundle: request_hash must be non-empty")

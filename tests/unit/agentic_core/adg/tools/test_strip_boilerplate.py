@@ -209,7 +209,7 @@ def test_strip_directory(mock_strip):
     mock_strip.side_effect = [
         StripResult(action="cleaned", reason="test", lines_removed=5),
         StripResult(action="skipped", reason="no boilerplate"),
-        StripResult(action="deleted", reason="became hollow")
+        StripResult(action="deleted", reason="became hollow"),
     ]
 
     with patch('pathlib.Path.rglob') as mock_rglob:
@@ -231,7 +231,7 @@ def test_generate_report():
         StripResult(action="cleaned", reason="test", lines_removed=5, emit_calls_removed=2),
         StripResult(action="deleted", reason="hollow", lines_removed=10, emit_calls_removed=5),
         StripResult(action="skipped", reason="no boilerplate"),
-        StripResult(action="cleaned", reason="test2", lines_removed=3, became_hollow=True)
+        StripResult(action="cleaned", reason="test2", lines_removed=3, became_hollow=True),
     ]
 
     stripper = SafeBoilerplateStripper(Path("."))

@@ -130,7 +130,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -256,7 +255,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         except (RuntimeError, OSError):
             pass
         Logger.info(
-            f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})"
+            f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})",
         )
 
     def _get_structure_validator(self):
@@ -264,7 +263,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "state_snapshot"
+            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -274,7 +273,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "p0_governance"
+            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "p0_governance",
         )
         if self._structure_validator is None:
             from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import (
@@ -316,7 +315,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
 
             self._cognitive_agent = CognitiveDispositionAgent(
-                project_root=self.project_root, confidence_threshold=THRESHOLD
+                project_root=self.project_root, confidence_threshold=THRESHOLD,
             )
         return self._cognitive_agent
 
@@ -331,7 +330,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ArchitectureGovernorAgent.heal"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ArchitectureGovernorAgent.heal",
         )
         if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
             return self.ml_enhanced_heal(violation, self._do_heal)
@@ -514,18 +513,18 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             self.violations = all_violations
             if dry_run:
                 Logger.info(
-                    f"[DRY-RUN] Found {violations_found} violations across {len(roots_scanned)} territories"
+                    f"[DRY-RUN] Found {violations_found} violations across {len(roots_scanned)} territories",
                 )
             else:
                 Logger.info(f"Found {violations_found} violations, fixed {violations_fixed}")
             if violations_found > 0 and (not execute):
                 Logger.warning(
-                    f"[{agent_name}] SHIELD ALERT: {violations_found} violations blocking baseline purity."
+                    f"[{agent_name}] SHIELD ALERT: {violations_found} violations blocking baseline purity.",
                 )
             if violations_found > 0:
                 self._log_categorical_drift(all_violations)
             dedup_results = self._trigger_deduplication_audit(
-                roots_scanned, execute=execute and (not dry_run)
+                roots_scanned, execute=execute and (not dry_run),
             )
             if self.healing_enabled and execute and (not dry_run) and (violations_fixed > 0):
                 Logger.info("[Phase 3] Running post-healing cleanup...")
@@ -543,7 +542,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     violations_fixed += ssot_moves
                     if cleanup_stats.get("errors", 0) > 0:
                         Logger.warning(
-                            f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}"
+                            f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}",
                         )
                 # guardian: allow-silent-swallow
                 except (RuntimeError, OSError) as e:
@@ -585,7 +584,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             target_territories: [STRICT SCOPE] Optional list of specific paths/domains to audit.
         """
         Logger.info(
-            f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})"
+            f"🚀 Starting Sovereign Audit (CI_MODE: {self.ci_mode}, SCOPE: {target_territories or 'GLOBAL'})",
         )
         structural_results = self._orchestrate_guardian_scan(target_territories)
         drift_violations = []
@@ -597,13 +596,13 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 "violations_found": total_violations,
                 "drift_detected": len(drift_violations),
                 "errors": structural_results.get("total_errors", 0),
-            }
+            },
         )
         self._persist_audit_report(structural_results, drift_violations)
         success = self.stats["violations_found"] == 0 and self.stats["errors"] == 0
         if self.ci_mode and (not success):
             Logger.critical(
-                f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})"
+                f"🛑 CI FAILURE: {self.stats['violations_found']} violations (Drift: {len(drift_violations)})",
             )
         return {
             "success": success,
@@ -659,7 +658,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "message": "File sitting in territory root. Should be in SSOT subfolder.",
                                 "severity": "ERROR",
                                 "suggestion": "Relocate to approved subfolder (reasoning/, enforcement/, validators/, etc.)",
-                            }
+                            },
                         )
                 # guardian: allow-silent-swallow
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -964,7 +963,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         "message": dup.message,
                         "file": str(dup.file_path) if dup.file_path else None,
                         "violation": dup,
-                    }
+                    },
                 )
         collisions_fixed = 0
         if execute and self.auto_approve and self.healing_enabled and collisions:
@@ -976,7 +975,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     collisions_fixed += fixed
         if collisions:
             Logger.warning(
-                f"  [DEDUP] Found {len(collisions)} potential collisions, fixed {collisions_fixed}"
+                f"  [DEDUP] Found {len(collisions)} potential collisions, fixed {collisions_fixed}",
             )
         else:
             Logger.info(f"  [DEDUP] No collisions found across {len(roots)} roots")
@@ -1176,7 +1175,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "expected": expected_hash,
                             "actual": current_hash,
                             "severity": "CRITICAL",
-                        }
+                        },
                     )
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
@@ -1184,7 +1183,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         return violations
 
     def _persist_audit_report(
-        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]]
+        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]],
     ) -> None:
         """[PHASE 8] Saves immutable audit record."""
         _wg.ensure_dir(self.audit_log_dir)
@@ -1287,7 +1286,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         return {"purge_status": purge_results, "lockdown_status": lockdown_result, "final_purity": is_pure}
 
     def execute_cognitive_purge(
-        self, checkpoint_file: str = "cognitive_checkpoint.json", rate_limit_delay: float = 1.0
+        self, checkpoint_file: str = "cognitive_checkpoint.json", rate_limit_delay: float = 1.0,
     ) -> dict[str, Any]:
         """
         [PHASE 13] Execute AI-driven purge using Cognitive Batch Processor.
@@ -1321,7 +1320,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         cognitive = self._get_cognitive_agent()
         processor = CognitiveBatchProcessor(
-            agent=cognitive, checkpoint_file=checkpoint_file, rate_limit_delay=rate_limit_delay
+            agent=cognitive, checkpoint_file=checkpoint_file, rate_limit_delay=rate_limit_delay,
         )
         Logger.info(f"[{agent_name}] Starting batch processing...")
         batch_stats = processor.process_batch(violations)
@@ -1368,7 +1367,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "file": v.get("file"),
                             "message": "File sitting in territory root; must be in SSOT subfolder.",
                             "severity": "ERROR",
-                        }
+                        },
                     )
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -1389,7 +1388,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "file": territory,
                                 "message": f"Circular dependency detected: {circ}",
                                 "severity": "CRITICAL",
-                            }
+                            },
                         )
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -1424,7 +1423,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "message": f"{py_file.name}: {line_count} lines exceeds max {max_lines}",
                             "severity": "medium",
                             "recommended_action": "Split or refactor file to reduce line count",
-                        }
+                        },
                     )
             except (OSError, UnicodeDecodeError, KeyError, AttributeError) as e:
                 self.logger.warning(f"Failed to analyze {py_file.name}: {type(e).__name__}")

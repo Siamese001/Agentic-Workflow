@@ -8,7 +8,6 @@ import json
 import re
 from pathlib import Path
 
-
 PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
 FLAGGED_AGENTS = ['BareExceptValidatorAgent.py', 'DangerousBuiltinsValidatorAgent.py', 'DebuggerValidatorAgent.py', 'EmptyExceptValidatorAgent.py', 'EvalExecValidatorAgent.py', 'AutonomousCheckpointManagerAgent.py', 'AutonomousStateGuardianAgent.py', 'CheckpointManagerAgent.py', 'L4Agent.py', 'ManifestManagerAgent.py', 'MemoryManagerAgent.py', 'BaseClassEnforcerAgent.py', 'HygieneGuardianAgent.py', 'HygieneValidatorAgent.py', 'PatternEnforcerAgent.py', 'TypeHintEnforcementAgent.py']
 

@@ -224,7 +224,7 @@ AGENT_SIDE_EDGES: frozenset[str] = frozenset(
         "retrieves_via",
         "pulls_context",
         "observes_policy_state",
-    }
+    },
 )
 
 SCRIPT_SIDE_EDGES: frozenset[str] = frozenset(
@@ -234,14 +234,14 @@ SCRIPT_SIDE_EDGES: frozenset[str] = frozenset(
         "reads_env",
         "reads_config",
         "reads_governed_config",
-    }
+    },
 )
 
 # Antipattern symbol values that indicate agent-like retry behaviour
 AGENT_ANTIPATTERN_SYMBOLS: frozenset[str] = frozenset(
     {
         "for_retry",
-    }
+    },
 )
 
 # All edge types we need to query in a single IN clause

@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"reasoning_plan_emitted exported={emitter_function} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1), "
             f"transcripts_response sources={transcript_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -135,7 +135,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"ReasoningPlan exported={reasoning_plan} (>=1), "
             f"PlanStep exported={plan_step} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -165,7 +165,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"PlanStep exported={plan_step} (>=1), "
             f"StepStatus exported={step_status} (>=1), "
             f"plan_step_executed exported={step_executor} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -195,7 +195,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"PlanRevision exported={plan_revision} (>=1), "
             f"plan_revision_recorded exported={revision_emitter} (>=1), "
             f"ReasoningPlan exported={reasoning_plan} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -227,7 +227,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"CheckpointResult exported={checkpoint_result} (>=1), "
             f"plan_checkpoint_enforced exported={checkpoint_emitter} (>=1), "
             f"references_policy_hash sources={policy_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -292,7 +292,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L1_cognition/planning%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

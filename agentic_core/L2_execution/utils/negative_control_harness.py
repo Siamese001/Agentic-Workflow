@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -251,7 +250,7 @@ def assert_digest_differs(clean_digest: str, tampered_digest: str) -> None:
     """
     if clean_digest == tampered_digest:
         raise AssertionError(
-            f"NegativeControlHarness: digests are identical — tampering was NOT detected by the digest surface. This is a security failure.\n  clean    = {clean_digest}\n  tampered = {tampered_digest}"
+            f"NegativeControlHarness: digests are identical — tampering was NOT detected by the digest surface. This is a security failure.\n  clean    = {clean_digest}\n  tampered = {tampered_digest}",
         )
 
 
@@ -263,7 +262,7 @@ def assert_digest_stable(digest1: str, digest2: str) -> None:
     """
     if digest1 != digest2:
         raise AssertionError(
-            f"NegativeControlHarness: digests differ across runs — non-determinism detected.\n  run1 = {digest1}\n  run2 = {digest2}"
+            f"NegativeControlHarness: digests differ across runs — non-determinism detected.\n  run1 = {digest1}\n  run2 = {digest2}",
         )
 
 

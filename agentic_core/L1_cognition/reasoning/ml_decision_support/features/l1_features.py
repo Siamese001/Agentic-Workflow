@@ -45,78 +45,78 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Growth rate of traffic over time window",
                 provenance="traffic.growth.rate",
-                validation_rules={"min_value": -1.0, "max_value": 5.0}
+                validation_rules={"min_value": -1.0, "max_value": 5.0},
             ),
             FeatureDefinition(
                 name="demand_volatility",
                 feature_type=FeatureType.NUMERIC,
                 description="Volatility in demand patterns",
                 provenance="demand.volatility",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="current_capacity_utilization",
                 feature_type=FeatureType.NUMERIC,
                 description="Current capacity utilization percentage",
                 provenance="capacity.utilization.current",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="peak_demand_ratio",
                 feature_type=FeatureType.NUMERIC,
                 description="Ratio of peak to average demand",
                 provenance="demand.peak_ratio",
-                validation_rules={"min_value": 1.0, "max_value": 10.0}
+                validation_rules={"min_value": 1.0, "max_value": 10.0},
             ),
             FeatureDefinition(
                 name="scaling_frequency",
                 feature_type=FeatureType.NUMERIC,
                 description="Frequency of scaling events per day",
                 provenance="scaling.frequency",
-                validation_rules={"min_value": 0.0, "max_value": 100.0}
+                validation_rules={"min_value": 0.0, "max_value": 100.0},
             ),
             FeatureDefinition(
                 name="seasonal_pattern_strength",
                 feature_type=FeatureType.NUMERIC,
                 description="Strength of seasonal patterns in demand",
                 provenance="seasonal.pattern_strength",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="forecast_accuracy",
                 feature_type=FeatureType.NUMERIC,
                 description="Accuracy of demand forecasts",
                 provenance="forecast.accuracy",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_efficiency",
                 feature_type=FeatureType.NUMERIC,
                 description="Efficiency of resource utilization",
                 provenance="resource.efficiency",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="cost_per_request",
                 feature_type=FeatureType.NUMERIC,
                 description="Cost per request in current configuration",
                 provenance="cost.per_request",
-                validation_rules={"min_value": 0.0, "max_value": 1000.0}
+                validation_rules={"min_value": 0.0, "max_value": 1000.0},
             ),
             FeatureDefinition(
                 name="capacity_buffer",
                 feature_type=FeatureType.NUMERIC,
                 description="Current capacity buffer percentage",
                 provenance="capacity.buffer",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="l1_capacity_planner",
             schema_version="1.0",
             description="Features for L1 capacity planning model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:

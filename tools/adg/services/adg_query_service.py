@@ -119,7 +119,7 @@ class ADGQueryService:
 
         logger.info(
             f"Initialized snapshot {snapshot_id}: {meta.node_count} nodes, "
-            f"{meta.edge_count} edges, coherent={meta.projection_coherent}"
+            f"{meta.edge_count} edges, coherent={meta.projection_coherent}",
         )
 
         return meta
@@ -198,7 +198,7 @@ class ADGQueryService:
         if not self._current_snapshot:
             return NodeQueryResult(
                 success=False,
-                error="No snapshot initialized. Call initialize_snapshot() first."
+                error="No snapshot initialized. Call initialize_snapshot() first.",
             )
 
         # Try Redis cache first
@@ -300,7 +300,7 @@ class ADGQueryService:
         if not self._current_snapshot:
             return EdgeQueryResult(
                 success=False,
-                error="No snapshot initialized. Call initialize_snapshot() first."
+                error="No snapshot initialized. Call initialize_snapshot() first.",
             )
 
         # Try Redis cache first

@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -236,7 +235,7 @@ class GitKrakenHealingStrategy:
                     "details": file_issues,
                     "priority": self.priority,
                     "strategy": self.name,
-                }
+                },
             )
         Logger.info(f"[L0 GITHUB HEALING] Diagnosed {len(fixes)} version control operations")
         return fixes
@@ -266,11 +265,11 @@ class GitKrakenHealingStrategy:
             if result:
                 commit_sha: Any = result.get("commit_sha", "unknown")
                 Logger.info(
-                    f"[L0 GITHUB HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}"
+                    f"[L0 GITHUB HEALING] Commit Successful: {(commit_sha[:8] if len(commit_sha) > 8 else commit_sha)}",
                 )
                 if config.GITKRAKEN_HEALING_AUTO_PR:
                     pr_desc: Any = "\n".join(
-                        [f"- {i.get('reason', 'Unknown reason')}" for i in fix.get("details", [])]
+                        [f"- {i.get('reason', 'Unknown reason')}" for i in fix.get("details", [])],
                     )
                     Logger.info("[L0 GITHUB HEALING] Creating PR for review")
                     await self._create_pr(summary, pr_desc)

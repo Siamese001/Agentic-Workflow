@@ -64,7 +64,7 @@ class MultiQueryFusion:
             "reciprocal_rank_fusion",
             "score_fusion",
             "collection_priority_fusion",
-            "hybrid_fusion"
+            "hybrid_fusion",
         ]
 
         logger.info("Multi-query fusion engine initialized")
@@ -74,7 +74,7 @@ class MultiQueryFusion:
         query: str,
         fusion_strategy: str = "reciprocal_rank_fusion",
         max_results_per_collection: int = 20,
-        generate_variations: bool = True
+        generate_variations: bool = True,
     ) -> FusionResult:
         """
         Execute multi-query fusion search.
@@ -105,7 +105,7 @@ class MultiQueryFusion:
             routing_decision=routing_decision,
             query_variations=query_variations,
             max_results_per_collection=max_results_per_collection,
-            fusion_strategy=fusion_strategy
+            fusion_strategy=fusion_strategy,
         )
 
         # Execute parallel searches
@@ -121,7 +121,7 @@ class MultiQueryFusion:
             fusion_strategy=fusion_strategy,
             total_results=sum(len(results) for results in collection_results.values()),
             execution_time_ms=execution_time_ms,
-            query_variations_used=query_variations
+            query_variations_used=query_variations,
         )
 
         logger.info(f"Fusion search completed: {result.total_results} results in {execution_time_ms:.2f}ms")
@@ -176,7 +176,7 @@ class MultiQueryFusion:
         self,
         collection: str,
         query_text: str,
-        fusion_query: FusionQuery
+        fusion_query: FusionQuery,
     ) -> tuple[str, list[RetrievalResult]]:
         """Search a single collection."""
         try:
@@ -184,7 +184,7 @@ class MultiQueryFusion:
             retrieval_query = RetrievalQuery(
                 text=query_text,
                 collections=[collection],
-                max_results=fusion_query.max_results_per_collection
+                max_results=fusion_query.max_results_per_collection,
             )
 
             # Execute search
@@ -210,7 +210,7 @@ class MultiQueryFusion:
             "component": ["module", "part", "element"],
             "failure": ["error", "bug", "issue", "problem"],
             "performance": ["speed", "efficiency", "optimization"],
-            "dependency": ["reliance", "requirement", "coupling"]
+            "dependency": ["reliance", "requirement", "coupling"],
         }
 
         # Generate synonym variations
@@ -248,7 +248,7 @@ class MultiQueryFusion:
         self,
         collection_results: dict[str, list[RetrievalResult]],
         fusion_strategy: str,
-        max_final_results: int = 50
+        max_final_results: int = 50,
     ) -> list[RetrievalResult]:
         """
         Apply fusion strategy to merge results from multiple collections.
@@ -280,7 +280,7 @@ class MultiQueryFusion:
         self,
         collection_results: dict[str, list[RetrievalResult]],
         max_results: int,
-        k: int = 60
+        k: int = 60,
     ) -> list[RetrievalResult]:
         """Apply Reciprocal Rank Fusion (RRF)."""
         # Collect all unique results
@@ -296,7 +296,7 @@ class MultiQueryFusion:
                         'result': result,
                         'rrf_score': 0.0,
                         'collections': set(),
-                        'ranks': []
+                        'ranks': [],
                     }
 
                 # Add RRF score: 1 / (k + rank)
@@ -309,7 +309,7 @@ class MultiQueryFusion:
         sorted_results = sorted(
             all_results.values(),
             key=lambda x: x['rrf_score'],
-            reverse=True
+            reverse=True,
         )
 
         # Create final results
@@ -324,7 +324,7 @@ class MultiQueryFusion:
     def _score_fusion(
         self,
         collection_results: dict[str, list[RetrievalResult]],
-        max_results: int
+        max_results: int,
     ) -> list[RetrievalResult]:
         """Apply score-based fusion."""
         all_results = []
@@ -360,7 +360,7 @@ class MultiQueryFusion:
     def _collection_priority_fusion(
         self,
         collection_results: dict[str, list[RetrievalResult]],
-        max_results: int
+        max_results: int,
     ) -> list[RetrievalResult]:
         """Apply collection priority fusion."""
         # Define collection priorities
@@ -368,7 +368,7 @@ class MultiQueryFusion:
             "repo_symbols", "repo_adg_graph",  # Highest priority
             "repo_code_chunks", "repo_runtime_evidence",  # Medium priority
             "repo_arch_docs", "repo_tests_guardrails",  # Lower priority
-            "repo_git_history", "repo_incidents_rca"  # Lowest priority
+            "repo_git_history", "repo_incidents_rca",  # Lowest priority
         ]
 
         final_results = []
@@ -390,7 +390,7 @@ class MultiQueryFusion:
     def _hybrid_fusion(
         self,
         collection_results: dict[str, list[RetrievalResult]],
-        max_results: int
+        max_results: int,
     ) -> list[RetrievalResult]:
         """Apply hybrid fusion (combination of strategies)."""
         # First apply collection priority for top candidates
@@ -413,7 +413,7 @@ class MultiQueryFusion:
         return {
             "fusion_strategies": self.fusion_strategies,
             "max_workers": 10,
-            "router_stats": self.router.get_routing_stats()
+            "router_stats": self.router.get_routing_stats(),
         }
 
 
@@ -429,7 +429,7 @@ async def main():
     test_queries = [
         "What does the UniversalWriteGateway do?",
         "Show me the blast radius for ADG scanner changes",
-        "Find failures related to memory leaks in L1 cognition"
+        "Find failures related to memory leaks in L1 cognition",
     ]
 
     print("Multi-Query Fusion Test:")
@@ -442,7 +442,7 @@ async def main():
                 result = await fusion_engine.execute_fusion_search(
                     query=query,
                     fusion_strategy=strategy,
-                    max_results_per_collection=10
+                    max_results_per_collection=10,
                 )
 
                 print(f"  {strategy}: {result.total_results} results in {result.execution_time_ms:.2f}ms")

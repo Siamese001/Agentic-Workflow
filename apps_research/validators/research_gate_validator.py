@@ -57,7 +57,7 @@ class ResearchGateValidator:
                     rule_id="RES_NO_SOURCE_REGISTER",
                     severity="BLOCK",
                     message="Source register is empty — at least one source required.",
-                )
+                ),
             )
 
         present_ids = {s.section_id for s in sections}
@@ -69,7 +69,7 @@ class ResearchGateValidator:
                         severity="BLOCK",
                         message=f"Required section '{req_id}' is missing.",
                         section_id=req_id,
-                    )
+                    ),
                 )
 
         for section in sections:
@@ -80,7 +80,7 @@ class ResearchGateValidator:
                         severity="BLOCK",
                         message=f"Section '{section.section_id}' has empty body.",
                         section_id=section.section_id,
-                    )
+                    ),
                 )
 
         block_count = sum(1 for v in violations if v.severity == "BLOCK")

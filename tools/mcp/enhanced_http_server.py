@@ -12,6 +12,8 @@ import time
 from typing import Any
 from urllib.parse import urlparse
 
+import anyio
+
 # HTTP libraries
 try:
     import aiohttp
@@ -29,9 +31,7 @@ try:
     from mcp.server.models import InitializationOptions
     from mcp.server.stdio import stdio_server
     from mcp.types import (
-        CallToolRequest,
         CallToolResult,
-        ListToolsRequest,
         ListToolsResult,
         TextContent,
         Tool,
@@ -52,7 +52,7 @@ MAX_RESPONSE_SIZE = 1000000  # 1MB
 ALLOWED_SCHEMES = {"http", "https"}
 BLOCKED_DOMAINS = {
     "localhost", "127.0.0.1", "0.0.0.0", "::1",
-    "internal", "intranet", "corp", "private"
+    "internal", "intranet", "corp", "private",
 }
 
 class EnhancedHTTPMCPServer:
@@ -75,33 +75,33 @@ class EnhancedHTTPMCPServer:
                             "properties": {
                                 "url": {
                                     "type": "string",
-                                    "description": "URL to fetch"
+                                    "description": "URL to fetch",
                                 },
                                 "headers": {
                                     "type": "object",
                                     "description": "HTTP headers",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "params": {
                                     "type": "object",
                                     "description": "Query parameters",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds (max 300)",
                                     "default": 30,
-                                    "maximum": 300
+                                    "maximum": 300,
                                 },
                                 "follow_redirects": {
                                     "type": "boolean",
                                     "description": "Follow redirects",
-                                    "default": True
+                                    "default": True,
                                 },
                                 "verify_ssl": {
                                     "type": "boolean",
                                     "description": "Verify SSL certificates",
-                                    "default": True
+                                    "default": True,
                                 },
                                 "auth": {
                                     "type": "object",
@@ -110,12 +110,12 @@ class EnhancedHTTPMCPServer:
                                         "type": {"type": "string", "enum": ["basic", "bearer"]},
                                         "username": {"type": "string"},
                                         "password": {"type": "string"},
-                                        "token": {"type": "string"}
-                                    }
-                                }
+                                        "token": {"type": "string"},
+                                    },
+                                },
                             },
-                            "required": ["url"]
-                        }
+                            "required": ["url"],
+                        },
                     ),
                     Tool(
                         name="http_post",
@@ -125,41 +125,41 @@ class EnhancedHTTPMCPServer:
                             "properties": {
                                 "url": {
                                     "type": "string",
-                                    "description": "URL to post to"
+                                    "description": "URL to post to",
                                 },
                                 "headers": {
                                     "type": "object",
                                     "description": "HTTP headers",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "params": {
                                     "type": "object",
                                     "description": "Query parameters",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "data": {
                                     "description": "Request body (string, object, or form data)",
                                     "oneOf": [
                                         {"type": "string"},
                                         {"type": "object"},
-                                        {"type": "array", "items": {}}
-                                    ]
+                                        {"type": "array", "items": {}},
+                                    ],
                                 },
                                 "json": {
                                     "type": "boolean",
                                     "description": "Send data as JSON",
-                                    "default": False
+                                    "default": False,
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds (max 300)",
                                     "default": 30,
-                                    "maximum": 300
+                                    "maximum": 300,
                                 },
                                 "verify_ssl": {
                                     "type": "boolean",
                                     "description": "Verify SSL certificates",
-                                    "default": True
+                                    "default": True,
                                 },
                                 "auth": {
                                     "type": "object",
@@ -168,12 +168,12 @@ class EnhancedHTTPMCPServer:
                                         "type": {"type": "string", "enum": ["basic", "bearer"]},
                                         "username": {"type": "string"},
                                         "password": {"type": "string"},
-                                        "token": {"type": "string"}
-                                    }
-                                }
+                                        "token": {"type": "string"},
+                                    },
+                                },
                             },
-                            "required": ["url"]
-                        }
+                            "required": ["url"],
+                        },
                     ),
                     Tool(
                         name="http_put",
@@ -183,36 +183,36 @@ class EnhancedHTTPMCPServer:
                             "properties": {
                                 "url": {
                                     "type": "string",
-                                    "description": "URL to PUT to"
+                                    "description": "URL to PUT to",
                                 },
                                 "headers": {
                                     "type": "object",
                                     "description": "HTTP headers",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "data": {
                                     "description": "Request body",
                                     "oneOf": [
                                         {"type": "string"},
                                         {"type": "object"},
-                                        {"type": "array", "items": {}}
-                                    ]
+                                        {"type": "array", "items": {}},
+                                    ],
                                 },
                                 "json": {
                                     "type": "boolean",
                                     "description": "Send data as JSON",
-                                    "default": False
+                                    "default": False,
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds",
                                     "default": 30,
-                                    "maximum": 300
+                                    "maximum": 300,
                                 },
                                 "verify_ssl": {
                                     "type": "boolean",
                                     "description": "Verify SSL certificates",
-                                    "default": True
+                                    "default": True,
                                 },
                                 "auth": {
                                     "type": "object",
@@ -221,12 +221,12 @@ class EnhancedHTTPMCPServer:
                                         "type": {"type": "string", "enum": ["basic", "bearer"]},
                                         "username": {"type": "string"},
                                         "password": {"type": "string"},
-                                        "token": {"type": "string"}
-                                    }
-                                }
+                                        "token": {"type": "string"},
+                                    },
+                                },
                             },
-                            "required": ["url"]
-                        }
+                            "required": ["url"],
+                        },
                     ),
                     Tool(
                         name="http_delete",
@@ -236,23 +236,23 @@ class EnhancedHTTPMCPServer:
                             "properties": {
                                 "url": {
                                     "type": "string",
-                                    "description": "URL to DELETE"
+                                    "description": "URL to DELETE",
                                 },
                                 "headers": {
                                     "type": "object",
                                     "description": "HTTP headers",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds",
                                     "default": 30,
-                                    "maximum": 300
+                                    "maximum": 300,
                                 },
                                 "verify_ssl": {
                                     "type": "boolean",
                                     "description": "Verify SSL certificates",
-                                    "default": True
+                                    "default": True,
                                 },
                                 "auth": {
                                     "type": "object",
@@ -261,12 +261,12 @@ class EnhancedHTTPMCPServer:
                                         "type": {"type": "string", "enum": ["basic", "bearer"]},
                                         "username": {"type": "string"},
                                         "password": {"type": "string"},
-                                        "token": {"type": "string"}
-                                    }
-                                }
+                                        "token": {"type": "string"},
+                                    },
+                                },
                             },
-                            "required": ["url"]
-                        }
+                            "required": ["url"],
+                        },
                     ),
                     Tool(
                         name="http_head",
@@ -276,27 +276,27 @@ class EnhancedHTTPMCPServer:
                             "properties": {
                                 "url": {
                                     "type": "string",
-                                    "description": "URL to HEAD"
+                                    "description": "URL to HEAD",
                                 },
                                 "headers": {
                                     "type": "object",
                                     "description": "HTTP headers",
-                                    "additionalProperties": {"type": "string"}
+                                    "additionalProperties": {"type": "string"},
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds",
                                     "default": 30,
-                                    "maximum": 300
+                                    "maximum": 300,
                                 },
                                 "verify_ssl": {
                                     "type": "boolean",
                                     "description": "Verify SSL certificates",
-                                    "default": True
-                                }
+                                    "default": True,
+                                },
                             },
-                            "required": ["url"]
-                        }
+                            "required": ["url"],
+                        },
                     ),
                     Tool(
                         name="test_connectivity",
@@ -306,17 +306,17 @@ class EnhancedHTTPMCPServer:
                             "properties": {
                                 "url": {
                                     "type": "string",
-                                    "description": "URL to test connectivity"
+                                    "description": "URL to test connectivity",
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds",
                                     "default": 10,
-                                    "maximum": 60
-                                }
+                                    "maximum": 60,
+                                },
                             },
-                            "required": ["url"]
-                        }
+                            "required": ["url"],
+                        },
                     ),
                     Tool(
                         name="batch_requests",
@@ -334,22 +334,22 @@ class EnhancedHTTPMCPServer:
                                             "url": {"type": "string"},
                                             "headers": {"type": "object"},
                                             "data": {},
-                                            "timeout": {"type": "integer", "maximum": 300}
+                                            "timeout": {"type": "integer", "maximum": 300},
                                         },
-                                        "required": ["method", "url"]
-                                    }
+                                        "required": ["method", "url"],
+                                    },
                                 },
                                 "max_concurrent": {
                                     "type": "integer",
                                     "description": "Maximum concurrent requests",
                                     "default": 5,
-                                    "maximum": 10
-                                }
+                                    "maximum": 10,
+                                },
                             },
-                            "required": ["requests"]
-                        }
-                    )
-                ]
+                            "required": ["requests"],
+                        },
+                    ),
+                ],
             )
 
         @self.server.call_tool()
@@ -376,7 +376,7 @@ class EnhancedHTTPMCPServer:
                 logger.error(f"Error in tool {name}: {e}")
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error: {str(e)}")],
-                    isError=True
+                    isError=True,
                 )
 
     def _validate_url(self, url: str) -> bool:
@@ -440,7 +440,7 @@ class EnhancedHTTPMCPServer:
         if not self._validate_url(url):
             return CallToolResult(
                 content=[TextContent(type="text", text="Invalid or unsafe URL")],
-                isError=True
+                isError=True,
             )
 
         headers = self._prepare_headers(args.get("headers", {}), args.get("auth", {}))
@@ -459,7 +459,7 @@ class EnhancedHTTPMCPServer:
                     params=params,
                     timeout=aiohttp.ClientTimeout(total=timeout),
                     ssl=verify_ssl,
-                    allow_redirects=follow_redirects
+                    allow_redirects=follow_redirects,
                 ) as response:
                     content = await response.text()
                     response_time = time.time() - start_time
@@ -484,18 +484,18 @@ class EnhancedHTTPMCPServer:
                         result += f"Response body:\n{content}"
 
                     return CallToolResult(
-                        content=[TextContent(type="text", text=result)]
+                        content=[TextContent(type="text", text=result)],
                     )
 
         except asyncio.TimeoutError:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP GET error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _http_post(self, args: dict[str, Any]) -> CallToolResult:
@@ -505,7 +505,7 @@ class EnhancedHTTPMCPServer:
         if not self._validate_url(url):
             return CallToolResult(
                 content=[TextContent(type="text", text="Invalid or unsafe URL")],
-                isError=True
+                isError=True,
             )
 
         headers = self._prepare_headers(args.get("headers", {}), args.get("auth", {}))
@@ -534,7 +534,7 @@ class EnhancedHTTPMCPServer:
                     headers=headers,
                     data=request_data,
                     timeout=aiohttp.ClientTimeout(total=timeout),
-                    ssl=verify_ssl
+                    ssl=verify_ssl,
                 ) as response:
                     content = await response.text()
                     response_time = time.time() - start_time
@@ -559,18 +559,18 @@ class EnhancedHTTPMCPServer:
                         result += f"Response body:\n{content}"
 
                     return CallToolResult(
-                        content=[TextContent(type="text", text=result)]
+                        content=[TextContent(type="text", text=result)],
                     )
 
         except asyncio.TimeoutError:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP POST error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _http_put(self, args: dict[str, Any]) -> CallToolResult:
@@ -580,7 +580,7 @@ class EnhancedHTTPMCPServer:
         if not self._validate_url(url):
             return CallToolResult(
                 content=[TextContent(type="text", text="Invalid or unsafe URL")],
-                isError=True
+                isError=True,
             )
 
         headers = self._prepare_headers(args.get("headers", {}), args.get("auth", {}))
@@ -608,7 +608,7 @@ class EnhancedHTTPMCPServer:
                     headers=headers,
                     data=request_data,
                     timeout=aiohttp.ClientTimeout(total=timeout),
-                    ssl=verify_ssl
+                    ssl=verify_ssl,
                 ) as response:
                     content = await response.text()
                     response_time = time.time() - start_time
@@ -624,18 +624,18 @@ class EnhancedHTTPMCPServer:
                         result += f"Response body:\n{content}"
 
                     return CallToolResult(
-                        content=[TextContent(type="text", text=result)]
+                        content=[TextContent(type="text", text=result)],
                     )
 
         except asyncio.TimeoutError:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP PUT error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _http_delete(self, args: dict[str, Any]) -> CallToolResult:
@@ -645,7 +645,7 @@ class EnhancedHTTPMCPServer:
         if not self._validate_url(url):
             return CallToolResult(
                 content=[TextContent(type="text", text="Invalid or unsafe URL")],
-                isError=True
+                isError=True,
             )
 
         headers = self._prepare_headers(args.get("headers", {}), args.get("auth", {}))
@@ -660,7 +660,7 @@ class EnhancedHTTPMCPServer:
                     url,
                     headers=headers,
                     timeout=aiohttp.ClientTimeout(total=timeout),
-                    ssl=verify_ssl
+                    ssl=verify_ssl,
                 ) as response:
                     content = await response.text()
                     response_time = time.time() - start_time
@@ -673,18 +673,18 @@ class EnhancedHTTPMCPServer:
                         result += f"Response body:\n{content}"
 
                     return CallToolResult(
-                        content=[TextContent(type="text", text=result)]
+                        content=[TextContent(type="text", text=result)],
                     )
 
         except asyncio.TimeoutError:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP DELETE error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _http_head(self, args: dict[str, Any]) -> CallToolResult:
@@ -694,7 +694,7 @@ class EnhancedHTTPMCPServer:
         if not self._validate_url(url):
             return CallToolResult(
                 content=[TextContent(type="text", text="Invalid or unsafe URL")],
-                isError=True
+                isError=True,
             )
 
         headers = self._prepare_headers(args.get("headers", {}), {})
@@ -709,7 +709,7 @@ class EnhancedHTTPMCPServer:
                     url,
                     headers=headers,
                     timeout=aiohttp.ClientTimeout(total=timeout),
-                    ssl=verify_ssl
+                    ssl=verify_ssl,
                 ) as response:
                     response_time = time.time() - start_time
 
@@ -722,18 +722,18 @@ class EnhancedHTTPMCPServer:
                         result += f"{key}: {value}\n"
 
                     return CallToolResult(
-                        content=[TextContent(type="text", text=result)]
+                        content=[TextContent(type="text", text=result)],
                     )
 
         except asyncio.TimeoutError:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP HEAD error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _test_connectivity(self, args: dict[str, Any]) -> CallToolResult:
@@ -744,7 +744,7 @@ class EnhancedHTTPMCPServer:
         if not self._validate_url(url):
             return CallToolResult(
                 content=[TextContent(type="text", text="Invalid or unsafe URL")],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -753,7 +753,7 @@ class EnhancedHTTPMCPServer:
             async with aiohttp.ClientSession() as session:
                 async with session.head(
                     url,
-                    timeout=aiohttp.ClientTimeout(total=timeout)
+                    timeout=aiohttp.ClientTimeout(total=timeout),
                 ) as response:
                     response_time = time.time() - start_time
 
@@ -768,24 +768,24 @@ class EnhancedHTTPMCPServer:
                         result += f"Result: ⚠️ Connection returned status {response.status}"
 
                     return CallToolResult(
-                        content=[TextContent(type="text", text=result)]
+                        content=[TextContent(type="text", text=result)],
                     )
 
         except asyncio.TimeoutError:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"❌ Connection test timed out after {timeout}s"
+                    text=f"❌ Connection test timed out after {timeout}s",
                 )],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"❌ Connection test failed: {str(e)}"
+                    text=f"❌ Connection test failed: {str(e)}",
                 )],
-                isError=True
+                isError=True,
             )
 
     async def _batch_requests(self, args: dict[str, Any]) -> CallToolResult:
@@ -797,9 +797,9 @@ class EnhancedHTTPMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text="Too many requests (max 20)"
+                    text="Too many requests (max 20)",
                 )],
-                isError=True
+                isError=True,
             )
 
         async def execute_request(req):
@@ -810,7 +810,7 @@ class EnhancedHTTPMCPServer:
                 return {
                     "method": method,
                     "url": url,
-                    "error": "Invalid or unsafe URL"
+                    "error": "Invalid or unsafe URL",
                 }
 
             headers = self._prepare_headers(req.get("headers", {}), req.get("auth", {}))
@@ -822,7 +822,7 @@ class EnhancedHTTPMCPServer:
                         url,
                         headers=headers,
                         data=req.get("data"),
-                        timeout=aiohttp.ClientTimeout(total=timeout)
+                        timeout=aiohttp.ClientTimeout(total=timeout),
                     ) as response:
                         content = await response.text()
 
@@ -832,13 +832,13 @@ class EnhancedHTTPMCPServer:
                             "status": response.status,
                             "response_time": 0,  # Would need timing implementation
                             "content_length": len(content),
-                            "headers": dict(response.headers)
+                            "headers": dict(response.headers),
                         }
             except Exception as e:
                 return {
                     "method": method,
                     "url": url,
-                    "error": str(e)
+                    "error": str(e),
                 }
 
         try:
@@ -867,13 +867,13 @@ class EnhancedHTTPMCPServer:
                 result_text += "\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result_text)]
+                content=[TextContent(type="text", text=result_text)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Batch request error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
 async def main():
@@ -901,7 +901,7 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        anyio.run(main)
     except KeyboardInterrupt:
         print("Enhanced HTTP MCP Server stopped by user")
     except Exception as e:

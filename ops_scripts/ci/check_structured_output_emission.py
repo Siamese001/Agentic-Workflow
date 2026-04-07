@@ -15,7 +15,6 @@ import ast
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_RETURN_ANNOTATIONS = {'StructuredAgentOutput'}
 SCAN_DIRS = ['apps_lic/reasoning', 'apps_lic/engines', 'apps_rg/reasoning', 'apps_rg/engines', 'apps_shared/reasoning', 'apps_shared/engines']

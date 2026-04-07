@@ -242,7 +242,7 @@ def validate_denominator_integrity(conn):
     }
     for dt in denom_types:
         count = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (dt,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (dt,),
         ).fetchone()[0]
         denom_types[dt] = count
 
@@ -340,12 +340,12 @@ def validate_scanner_vs_reality(conn):
         rel = _repo_relative(fpath, ROOT)
         count = cur.execute(
             "SELECT COUNT(*) FROM edges WHERE source_file = ? AND relation_type = 'imports'",
-            (rel,)
+            (rel,),
         ).fetchone()[0]
         if count > 0:
             adg_import_files.add(rel)
         any_edge = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE source_file = ?", (rel,)
+            "SELECT COUNT(*) FROM edges WHERE source_file = ?", (rel,),
         ).fetchone()[0]
         if any_edge > 0:
             adg_edge_files.add(rel)
@@ -370,7 +370,7 @@ def validate_scanner_vs_reality(conn):
         rel = _repo_relative(fpath, ROOT)
         count = cur.execute(
             "SELECT COUNT(*) FROM edges WHERE source_file = ? AND relation_type IN ('calls', 'resolves_callsite')",
-            (rel,)
+            (rel,),
         ).fetchone()[0]
         if count > 0:
             adg_call_files.add(rel)
@@ -567,7 +567,7 @@ def validate_no_synthetics(conn):
     print("  " + "-" * 50)
     for rt in p1608_types:
         count = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (rt,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (rt,),
         ).fetchone()[0]
         total_p1608 += count
         if count > 0:
@@ -634,11 +634,11 @@ def validate_13_gaps(conn):
     gap_results = {}
     for i, (gap_type, phase) in enumerate(gaps, 1):
         total = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (gap_type,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (gap_type,),
         ).fetchone()[0]
 
         real_lines = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1", (gap_type,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1", (gap_type,),
         ).fetchone()[0]
 
         ast_pct = real_lines / total if total > 0 else 0
@@ -686,10 +686,10 @@ def validate_uwg_alignment(conn):
     total_ast_backed = 0
     for ut in uwg_types:
         total = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (ut,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (ut,),
         ).fetchone()[0]
         ast_backed = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1", (ut,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1", (ut,),
         ).fetchone()[0]
         ast_pct = ast_backed / total if total > 0 else 0
         total_uwg += total

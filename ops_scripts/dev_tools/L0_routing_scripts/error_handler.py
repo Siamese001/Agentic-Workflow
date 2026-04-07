@@ -108,7 +108,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -214,7 +213,7 @@ class ErrorHandler:
         self.max_retries = 3
 
     async def handle_error(
-        self, error: Exception, context: WorkflowContext, recovery_type: str = "retry"
+        self, error: Exception, context: WorkflowContext, recovery_type: str = "retry",
     ) -> WorkflowResult:
         """Handle workflow error with recovery strategy."""
         import uuid as _uuid  # noqa: PLC0415
@@ -260,7 +259,7 @@ class ErrorHandler:
     async def _abort_strategy(self, error: Exception, context: WorkflowContext) -> WorkflowResult:
         """Abort workflow."""
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=str(error)
+            workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=str(error),
         )
 
 
@@ -351,7 +350,7 @@ class UnifiedWorkflowEngine:
                 del self.active_workflows[workflow_id]
 
     async def execute_with_coordinator(
-        self, coordinator_name: str, input_data: dict[str, Any], metadata: dict[str, Any] | None = None
+        self, coordinator_name: str, input_data: dict[str, Any], metadata: dict[str, Any] | None = None,
     ) -> WorkflowResult:
         """
         Execute workflow using specific coordinator.

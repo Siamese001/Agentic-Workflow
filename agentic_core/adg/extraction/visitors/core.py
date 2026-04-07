@@ -48,8 +48,8 @@ class _CallVisitor(BaseStructuralVisitor):
 
             edge_kind, relation = self._classify_call(sym)
             if edge_kind:
-                from agentic_core.adg.extraction.static_scanner import Edge as _Edge
                 from agentic_core.adg.contracts.schema_util import canonical_name
+                from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
@@ -61,7 +61,7 @@ class _CallVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=sym,
-                    )
+                    ),
                 )
         self.generic_visit(node)
 
@@ -131,6 +131,27 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             "subprocess.run", "subprocess.call", "subprocess.check_output",
             "os.system", "asyncio.get_event_loop().run_until_complete",
         })
+        # Hardcoded path patterns to detect (AST stores string values without escapes)
+        self._hardcoded_path_patterns = frozenset({
+            "C:\\Git\\",        # Windows backslash path
+            "C:/Git/",          # Windows forward slash path
+            "/home/amita/",     # Unix user home
+            "/Users/amita/",    # macOS user home
+            "D:\\",             # Secondary drive
+        })
+
+    def visit_Constant(self, node: ast.Constant) -> None:
+        """Detect hardcoded absolute paths in string constants."""
+        if isinstance(node.value, str):
+            for pattern in self._hardcoded_path_patterns:
+                if pattern in node.value:
+                    self._antipatterns.append((
+                        node.lineno,
+                        "hardcoded_path",
+                        pattern,
+                    ))
+                    break
+        self.generic_visit(node)
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
         """Detect antipatterns in exception handlers."""
@@ -324,8 +345,8 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
     def extract_edges(self) -> list[Edge]:
         """Convert antipattern detections to edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         for line_no, category, symbol in self._antipatterns:
             self.edges.append(
@@ -337,6 +358,6 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=line_no,
                     symbol=symbol,
-                )
+                ),
             )
         return self.edges

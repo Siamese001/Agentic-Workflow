@@ -278,7 +278,7 @@ class GuardianCommentFixer:
                         line_no=i + 1,
                         old_line=line.rstrip("\r\n"),
                         new_line=fixed,
-                    )
+                    ),
                 )
                 lines[i] = fixed + ending
 
@@ -365,15 +365,23 @@ def _cli() -> None:
         help="Use 'git diff --cached' (staged files only) — implies --from-diff",
     )
     parser.add_argument(
+        "--report", "-r",
+        action="store_true",
+        help="Report-only mode (no modifications)",
+    )
+    parser.add_argument(
         "--check-only",
         action="store_true",
-        help="Report violations without modifying files (exit 1 if violations found)",
+        help=argparse.SUPPRESS,  # Deprecated, use --report
     )
     args = parser.parse_args()
 
     use_diff = args.from_diff or args.staged
     if not args.files and not use_diff:
         parser.error("Provide FILE arguments or --from-diff / --staged")
+
+    # Default to execute mode, report mode only if --report flag is set
+    check_only = args.report
 
     fixer = GuardianCommentFixer()
 
@@ -393,13 +401,13 @@ def _cli() -> None:
             print(f"SKIP (not found): {f}")
             continue
         try:
-            result = fixer.fix_file(p, check_only=args.check_only)
+            result = fixer.fix_file(p, check_only=check_only)
         except OSError as exc:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             print(f"ERROR reading {f}: {exc}", file=sys.stderr)
             continue
 
         if result.had_violations:
-            action = "WOULD FIX" if args.check_only else "FIXED"
+            action = "WOULD FIX" if check_only else "FIXED"
             if result.fixed_count:
                 print(f"{action}: {f} — {result.fixed_count} guardian comment(s) corrected")
                 for ch in result.changes:
@@ -413,9 +421,9 @@ def _cli() -> None:
             print(f"OK: {f}")
 
     if total_fixed or total_warnings:
-        action = "would be fixed" if args.check_only else "fixed"
+        action = "would be fixed" if check_only else "fixed"
         print(f"\nTotal: {total_fixed} violation(s) {action}, {total_warnings} warning(s)")
-        if args.check_only:
+        if check_only:
             sys.exit(1)
     else:
         print("\nAll guardian comments are canonical.")

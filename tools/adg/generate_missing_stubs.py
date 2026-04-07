@@ -167,7 +167,7 @@ def main(dry_run: bool = True) -> None:
             "SELECT resolved_path FROM nodes "
             "WHERE entity_type='module' "
             "AND resolved_path LIKE 'agentic_core/%' "
-            "AND resolved_path NOT LIKE '%__pycache__%' "
+            "AND resolved_path NOT LIKE '%__pycache__%' ",
         )
     }
 
@@ -180,8 +180,8 @@ def main(dry_run: bool = True) -> None:
             "WHERE e.relation_type='imports' "
             "AND n1.resolved_path LIKE 'tests/%' "
             "AND n2.resolved_path LIKE 'agentic_core/%' "
-            "AND n2.resolved_path NOT LIKE '%__pycache__%' "
-        )
+            "AND n2.resolved_path NOT LIKE '%__pycache__%' ",
+        ),
     )
 
     covered = {r["src_file"].split("::")[0] for r in cov_rows}

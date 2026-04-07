@@ -64,38 +64,25 @@ _emit_applies_guardrail("p0", "pattern_analysis_engine", "p0_governance")
 _emit_reads_policy_state("p0", "pattern_analysis_engine", "policy_binding")
 _emit_snapshots_state("p0", "pattern_analysis_engine", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -390,7 +377,7 @@ class PatternAnalysisEngine:
                                 severity=severity,
                                 evidence=evidence,
                                 metrics=metrics,
-                            )
+                            ),
                         )
         if drift_snapshot_bytes is not None:
             try:
@@ -406,12 +393,12 @@ class PatternAnalysisEngine:
                         findings.append(
                             PatternFinding(
                                 key=PatternFindingKey(
-                                    label="ROUTING_DRIFT_HIGH", component=component, dimension="drift"
+                                    label="ROUTING_DRIFT_HIGH", component=component, dimension="drift",
                                 ),
                                 severity=round(score, 6),
                                 evidence=evidence,
                                 metrics=tuple(sorted([("drift_score", round(score, 6))])),
-                            )
+                            ),
                         )
             # guardian: allow-silent-swallow
             except Exception:
@@ -445,7 +432,7 @@ class PatternAnalysisEngine:
         return PatternAnalysisReport(findings=tuple(findings), source_ids=source_ids, _digest=digest)
 
     def _analyze_embeddings(
-        self, historical_embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int
+        self, historical_embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int,
     ) -> PatternSummary:
         """Analyze historical embeddings for deterministic patterns.
 
@@ -467,7 +454,7 @@ class PatternAnalysisEngine:
         return PatternSummary(clusters=clusters, pattern_digest=digest)
 
     async def analyze_texts(
-        self, texts: list[str], metadata: list[dict[str, Any]], *, min_cluster_size: int
+        self, texts: list[str], metadata: list[dict[str, Any]], *, min_cluster_size: int,
     ) -> PatternSummary:
         """Analyze texts by embedding them first and then clustering."""
         if not self.embedder:
@@ -480,7 +467,7 @@ class PatternAnalysisEngine:
         return [round(x, self._precision) for x in vector]
 
     def _deterministic_cluster(
-        self, embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int
+        self, embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int,
     ) -> list[Cluster]:
         """Perform deterministic clustering using distance threshold."""
         if not embeddings:
@@ -523,7 +510,7 @@ class PatternAnalysisEngine:
                         centroid=centroid,
                         cluster_size=len(cluster_indices),
                         representative_metadata_keys=unique_keys[:10],
-                    )
+                    ),
                 )
         clusters.sort(key=lambda c: self._vector_hash(c.centroid))
         return clusters

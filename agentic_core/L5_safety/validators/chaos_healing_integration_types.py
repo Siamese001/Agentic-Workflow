@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -204,7 +203,7 @@ class ChaosResilienceStrategy:
             "post_healing_validation",
             "chaos_test_required",
             "system_stability_check",
-        }
+        },
     )
 
     def __init__(self) -> None:

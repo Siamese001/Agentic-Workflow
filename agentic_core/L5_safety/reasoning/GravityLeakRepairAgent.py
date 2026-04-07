@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -42,7 +43,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "GravityLeakRepairAgent")
 emit_determinism_digest("p0", "GravityLeakRepairAgent")
@@ -187,7 +187,7 @@ class GravityRepairProhibitedError(Exception):
         self.layer = layer
         self.op = op
         super().__init__(
-            f"GRAVITY_REPAIR_PROHIBITED: file={file_path} layer={layer} op={op} — downgraded to PLAN-ONLY"
+            f"GRAVITY_REPAIR_PROHIBITED: file={file_path} layer={layer} op={op} — downgraded to PLAN-ONLY",
         )
 
 
@@ -226,7 +226,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         self._prohibition_hits: dict[tuple[str, str], int] = {}
 
     def analyze_violation(
-        self, file_path: Path, import_statement: str, file_layer: str, import_layer: str
+        self, file_path: Path, import_statement: str, file_layer: str, import_layer: str,
     ) -> GravityFix:
         """
         Analyze a gravity violation and recommend a fix.
@@ -261,7 +261,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         cached_pattern = self.context.recall_healing_pattern(violation, agent="GravityLeakRepairAgent")
         if cached_pattern:
             self.logger.info(
-                f"[GravityLeakRepairAgent] Using cached fix pattern from {cached_pattern.get('discovered_by')}"
+                f"[GravityLeakRepairAgent] Using cached fix pattern from {cached_pattern.get('discovered_by')}",
             )
             metadata = cached_pattern.get("metadata", {})
             return GravityFix(
@@ -370,7 +370,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
     def _check_prohibition_circuit_breaker(self, file_path: Path, op: str) -> None:
         """Increment hit counter; raise GravityRepairProhibitedError on second hit."""
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "GravityLeakRepairAgent._check_prohibition_circuit_breaker", "L5_POLICY"
+            str(uuid.uuid4()), "GravityLeakRepairAgent._check_prohibition_circuit_breaker", "L5_POLICY",
         )
         key = (str(file_path), op)
         self._prohibition_hits[key] = self._prohibition_hits.get(key, 0) + 1
@@ -381,7 +381,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
     def _emit_plan_only(self, fix: GravityFix) -> dict[str, Any]:
         """Emit a PLAN-ONLY artifact without attempting any write."""
         self.logger.warning(
-            f"[PLAN-ONLY] GRAVITY_REPAIR_PROHIBITED — requires privileged mutation context: file={fix.file_path} fix_type={fix.fix_type} old_import={fix.old_import!r} new_import={fix.new_import!r}"
+            f"[PLAN-ONLY] GRAVITY_REPAIR_PROHIBITED — requires privileged mutation context: file={fix.file_path} fix_type={fix.fix_type} old_import={fix.old_import!r} new_import={fix.new_import!r}",
         )
         return {
             "status": "plan_only",
@@ -510,7 +510,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         stripped = old_import.strip()
         if len(stripped) <= 1:
             raise ValueError(
-                f"Refusing content.replace: old_import is too short ({stripped!r}), would cause catastrophic file corruption."
+                f"Refusing content.replace: old_import is too short ({stripped!r}), would cause catastrophic file corruption.",
             )
         lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
         new_lines = []
@@ -535,7 +535,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
 
     # guardian: allow-type-erasure -- returns status dict with dynamic keys depending on fix outcome
     def apply_fix(
-        self, fix: GravityFix, dry_run: bool = True, privileged_mutation_context: bool = False
+        self, fix: GravityFix, dry_run: bool = True, privileged_mutation_context: bool = False,
     ) -> dict[str, Any]:
         """
         Apply a gravity fix to a file using Atomic Write Safety.
@@ -592,7 +592,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         except (RuntimeError, OSError):
                             pass
                     self.logger.warning(
-                        f"[PLAN-ONLY] old_import too short ({stripped_old!r}), refusing replace to prevent corruption."
+                        f"[PLAN-ONLY] old_import too short ({stripped_old!r}), refusing replace to prevent corruption.",
                     )
                     return self._emit_plan_only(fix)
                 lines = content.splitlines(keepends=True)
@@ -673,7 +673,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                 "summary": "no gravity violations to repair",
             }
         self.logger.info(
-            f"[GravityLeakRepairAgent.heal_violations] {len(violations)} violations (dry_run={dry_run})"
+            f"[GravityLeakRepairAgent.heal_violations] {len(violations)} violations (dry_run={dry_run})",
         )
         fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0, "DEFERRED": 0}
         fixes_applied = 0
@@ -707,7 +707,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                             _import_stmt = _lines[_ln - 1].strip()
                 except (OSError, UnicodeDecodeError, IndexError, TypeError) as e:
                     self.logger.warning(
-                        f"Failed to extract import statement from {v.get('file_path', 'unknown')}: {e}"
+                        f"Failed to extract import statement from {v.get('file_path', 'unknown')}: {e}",
                     )
                     _import_stmt = ""
                 fix = self.analyze_violation(
@@ -766,7 +766,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
             )
 
             config = StructureConfig(
-                project_root=self.project_root, excluded_paths=(OPS_SCRIPTS_DIR, "scripts")
+                project_root=self.project_root, excluded_paths=(OPS_SCRIPTS_DIR, "scripts"),
             )
             enforcer = StructuralValidatorAgent(config=config)
             results = enforcer.validate_structure(self.project_root)
@@ -784,7 +784,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     == ex
                     or ex
                     in str(
-                        getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")
+                        getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else ""),
                     ).replace("\\", "/")
                     for ex in _excluded
                 )
@@ -801,7 +801,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
 
             def _in_sovereign_scope(v: object) -> bool:
                 fp = str(
-                    getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")
+                    getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else ""),
                 ).replace("\\", "/")
                 try:
                     # guardian: allow-path-string -- computing relative path from project_root string for scope filtering
@@ -852,7 +852,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         _import_stmt = _lines[_ln - 1].strip()
                 except (OSError, UnicodeDecodeError, IndexError, AttributeError) as e:
                     self.logger.warning(
-                        f"Failed to extract import statement from {getattr(v.file_path, 'name', 'unknown')}: {e}"
+                        f"Failed to extract import statement from {getattr(v.file_path, 'name', 'unknown')}: {e}",
                     )
                     _import_stmt = ""
                 fix = self.analyze_violation(
@@ -872,7 +872,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                             _import_stmt = _lines[_ln - 1].strip()
                 except (OSError, UnicodeDecodeError, IndexError, TypeError) as e:
                     self.logger.warning(
-                        f"Failed to extract import statement from {v.get('file_path', 'unknown')}: {e}"
+                        f"Failed to extract import statement from {v.get('file_path', 'unknown')}: {e}",
                     )
                     _import_stmt = ""
                 fix = self.analyze_violation(
@@ -950,7 +950,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                             "line_number": fix.line_number,
                         }
                         self.context.store_healing_pattern(
-                            violation, healing_result, agent="GravityLeakRepairAgent"
+                            violation, healing_result, agent="GravityLeakRepairAgent",
                         )
                         return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
                 # guardian: allow-silent-swallow -- gravity heal failure returns error count with error logged

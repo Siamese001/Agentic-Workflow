@@ -78,39 +78,25 @@ _emit_applies_guardrail("p0", "sovereign_dependency_error_util", "p0_governance"
 _emit_reads_policy_state("p0", "sovereign_dependency_error_util", "policy_binding")
 _emit_snapshots_state("p0", "sovereign_dependency_error_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -239,12 +225,12 @@ class SubatomicHop:
         self.config = config
         if storage is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'storage' (LocalDiskAdapter) to be injected. Cannot import from higher layers - must be passed from orchestrator."
+                "SubatomicHop requires 'storage' (LocalDiskAdapter) to be injected. Cannot import from higher layers - must be passed from orchestrator.",
             )
         self.storage = storage
         if genealogy is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'genealogy' (GenealogyRegistry) to be injected."
+                "SubatomicHop requires 'genealogy' (GenealogyRegistry) to be injected.",
             )
         self.genealogy = genealogy
         if PiiVault is None:
@@ -252,12 +238,12 @@ class SubatomicHop:
         self.pii = PiiVault
         if CostGovernor is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'CostGovernor' (CostGovernor) to be injected."
+                "SubatomicHop requires 'CostGovernor' (CostGovernor) to be injected.",
             )
         self.governor = CostGovernor
         if overseer is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'overseer' (ConstitutionalOverseer) to be injected."
+                "SubatomicHop requires 'overseer' (ConstitutionalOverseer) to be injected.",
             )
         self.overseer = overseer
         if membrane is None:
@@ -265,17 +251,17 @@ class SubatomicHop:
         self.membrane = membrane
         if airlock is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'airlock' (AirlockProtocol) to be injected."
+                "SubatomicHop requires 'airlock' (AirlockProtocol) to be injected.",
             )
         self.airlock = airlock
         if SupremeCourt is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'SupremeCourt' (SupremeCourt) to be injected."
+                "SubatomicHop requires 'SupremeCourt' (SupremeCourt) to be injected.",
             )
         self.SupremeCourt = SupremeCourt
         if mcp_manager is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'mcp_manager' (MCPConnectionManager) to be injected."
+                "SubatomicHop requires 'mcp_manager' (MCPConnectionManager) to be injected.",
             )
         self.mcp = mcp_manager
         if sandbox is None:
@@ -283,17 +269,17 @@ class SubatomicHop:
         self.sandbox = sandbox
         if StructuredEngineAgent is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'StructuredEngineAgent' (StructuredEngineAgent) to be injected."
+                "SubatomicHop requires 'StructuredEngineAgent' (StructuredEngineAgent) to be injected.",
             )
         self.StructuredEngineAgent = StructuredEngineAgent
         if gatekeeper is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'gatekeeper' (semantic_gatekeeper) to be injected."
+                "SubatomicHop requires 'gatekeeper' (semantic_gatekeeper) to be injected.",
             )
         self.gatekeeper = gatekeeper
         if telemetry is None:
             raise SovereignDependencyError(
-                "SubatomicHop requires 'telemetry' (TelemetryRecorder) to be injected."
+                "SubatomicHop requires 'telemetry' (TelemetryRecorder) to be injected.",
             )
         self.telemetry = telemetry
 
@@ -322,7 +308,7 @@ class SubatomicHop:
                     event_type="SUCCESS",
                     PAYLOAD={"total_cost": think_cost + act_cost, "zero_trust": True},
                     TIMESTAMP=time.time(),
-                )
+                ),
             )
             return results
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -353,7 +339,7 @@ class SubatomicHop:
                 event_type="PREFLIGHT_COMPLETE",
                 PAYLOAD={"checks": ["genealogy", "mcp", "membrane"]},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
 
     async def _sanitize_input(self, context: dict, trace_id: str) -> dict:
@@ -361,7 +347,7 @@ class SubatomicHop:
         for _key, _value in ConfigurationService().context.items():
             if isinstance(ConfigurationService().value, str):
                 await self.membrane.sanitize(
-                    ConfigurationService().value, f"context_{ConfigurationService().key}"
+                    ConfigurationService().value, f"context_{ConfigurationService().key}",
                 )
                 ConfigurationService().SANITIZED[ConfigurationService().KEY] = (
                     ConfigurationService().sanitized_value
@@ -378,14 +364,14 @@ class SubatomicHop:
                                 "sanitized_length": len(ConfigurationService().sanitized_value),
                             },
                             TIMESTAMP=time.time(),
-                        )
+                        ),
                     )
             else:
                 ConfigurationService().SANITIZED[ConfigurationService().KEY] = ConfigurationService().value
         return ConfigurationService().sanitized
 
     async def _execute_think_stage_with_consensus(
-        self, context: dict, trace_id: str
+        self, context: dict, trace_id: str,
     ) -> tuple[AgentPlan, float]:
         """Execute the thinking stage with multi-model consensus."""
         self._assess_task_risk(ConfigurationService().context.get("Task", ""))
@@ -413,7 +399,7 @@ class SubatomicHop:
                         "cost": ConfigurationService().think_cost,
                     },
                     TIMESTAMP=time.time(),
-                )
+                ),
             )
             return (ConfigurationService().plan, ConfigurationService().think_cost)
         except ValueError as e:
@@ -425,7 +411,7 @@ class SubatomicHop:
                     event_type="CONSENSUS_FAILED",
                     PAYLOAD={"error": str(e)},
                     TIMESTAMP=time.time(),
-                )
+                ),
             )
             raise
 
@@ -474,7 +460,7 @@ class SubatomicHop:
                         event_type="AIRLOCK_BLOCKED",
                         PAYLOAD={"tool": tool_name, "error": str(e)},
                         TIMESTAMP=time.time(),
-                    )
+                    ),
                 )
                 raise
         self.telemetry.record(
@@ -489,7 +475,7 @@ class SubatomicHop:
                     "airlock_checks": len(plan.tool_calls),
                 },
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
         return (results, total_cost)
 
@@ -519,7 +505,7 @@ class SubatomicHop:
                 event_type="CRITIQUE_COMPLETE",
                 PAYLOAD={"budget_used": self.governor.spend, "sanitized": True},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
         return sanitized_output
 
@@ -539,7 +525,7 @@ class SubatomicHop:
                 event_type="COMMIT_COMPLETE",
                 PAYLOAD={"storage_key": f"hops/{self.id}.txt"},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
         return final_output
 
@@ -553,7 +539,7 @@ class SubatomicHop:
                 event_type="BUDGET_EXCEEDED",
                 PAYLOAD={"current_spend": error.current_spend, "limit": error.limit},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
 
     def _handle_execution_error(self, trace_id: str, error: Exception) -> None:
@@ -566,7 +552,7 @@ class SubatomicHop:
                 event_type="EXECUTION_ERROR",
                 PAYLOAD={"error": str(error), "type": type(error).__name__},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )
 
     async def _cleanup(self, trace_id: str) -> None:
@@ -580,5 +566,5 @@ class SubatomicHop:
                 event_type="CLEANUP_COMPLETE",
                 PAYLOAD={"zero_trust": True},
                 TIMESTAMP=time.time(),
-            )
+            ),
         )

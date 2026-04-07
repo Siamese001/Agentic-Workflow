@@ -17,7 +17,7 @@ src_mods = {
         "WHERE entity_type='module' "
         "AND resolved_path LIKE 'agentic_core/%' "
         "AND resolved_path NOT LIKE '%__pycache__%' "
-        "AND resolved_path NOT LIKE '%::%'"
+        "AND resolved_path NOT LIKE '%::%'",
     )
 }
 
@@ -31,7 +31,7 @@ covered_raw = {
         "WHERE e.relation_type='imports' "
         "AND n1.resolved_path LIKE 'tests/%' "
         "AND n2.resolved_path LIKE 'agentic_core/%' "
-        "AND n2.resolved_path NOT LIKE '%__pycache__%'"
+        "AND n2.resolved_path NOT LIKE '%__pycache__%'",
     )
 }
 covered = covered_raw & src_mods

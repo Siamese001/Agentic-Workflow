@@ -121,7 +121,7 @@ def delegate_task(
             agent_class=None,
             method=None,
             confidence=0.0,
-            message=f"No agent found for task: {task[:50]}..."
+            message=f"No agent found for task: {task[:50]}...",
         )
 
     best = capable[0]
@@ -131,7 +131,7 @@ def delegate_task(
         agent_class=best["agent_class"],
         method=best["method"],
         confidence=best["confidence"],
-        message=f"{best['agent_class']}.{best['method']} ({best['confidence']:.2f})"
+        message=f"{best['agent_class']}.{best['method']} ({best['confidence']:.2f})",
     )
 
 

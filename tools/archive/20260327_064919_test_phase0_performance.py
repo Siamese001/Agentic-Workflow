@@ -14,7 +14,7 @@ def run_pytest_with_fixture(test_file, timeout=60):
         "-s",  # Show stdout from fixtures
         "-v",  # Verbose
         "--tb=short",  # Short traceback
-        test_file
+        test_file,
     ]
 
     start = time.time()
@@ -23,7 +23,7 @@ def run_pytest_with_fixture(test_file, timeout=60):
         capture_output=True,
         text=True,
         timeout=timeout,
-        cwd="."
+        cwd=".",
     )
     end = time.time()
 

@@ -211,7 +211,7 @@ class SystemLearningTelemetryEmitter:
 
         # Emit execution trace start
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L3_ORCHESTRATION, f"{self.component_name}.{operation_type.value}"
+            trace_id, LayerSegment.L3_ORCHESTRATION, f"{self.component_name}.{operation_type.value}",
         )
 
         # Emit telemetry event for operation start
@@ -289,7 +289,7 @@ class SystemLearningTelemetryEmitter:
                 {
                     "error_type": context.error_type,
                     "error_message": context.error_message,
-                }
+                },
             )
 
             # Update error counts
@@ -298,7 +298,7 @@ class SystemLearningTelemetryEmitter:
 
             # Emit error-specific telemetry
             _emit_captures_runtime_anomaly(
-                "p4obs", self.component_name, f"operation_error:{context.operation_type.value}"
+                "p4obs", self.component_name, f"operation_error:{context.operation_type.value}",
             )
             _emit_records_incident_event("p4obs", self.component_name, f"error:{context.error_type}")
 
@@ -327,7 +327,7 @@ class SystemLearningTelemetryEmitter:
             SystemLearningOperationType.RETRIEVAL_QUERY,
         ]:
             _emit_records_learning_event(
-                "p3lm", self.component_name, f"operation_completed:{context.operation_type.value}"
+                "p3lm", self.component_name, f"operation_completed:{context.operation_type.value}",
             )
 
     def emit_metric(
@@ -473,7 +473,7 @@ class SystemLearningTelemetryEmitter:
         if size_bytes is not None:
             telemetry_data["size_bytes"] = size_bytes
             self.emit_metric(
-                f"cache_{operation}_size", size_bytes, unit="bytes", tags={"component": self.component_name}
+                f"cache_{operation}_size", size_bytes, unit="bytes", tags={"component": self.component_name},
             )
 
         if ttl_seconds is not None:

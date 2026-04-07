@@ -27,7 +27,7 @@ from agentic_core.core.documentation_framework import (
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bo
                 artifact = documentation_manager.generate_documentation(
                     DocumentationType.API_REFERENCE,
                     py_file,
-                    output_path
+                    output_path,
                 )
 
                 logger.info(f"✅ Generated: {output_path}")
@@ -83,7 +83,7 @@ def generate_architecture_documentation(source_path: Path, output_dir: Path) -> 
         artifact = documentation_manager.generate_documentation(
             DocumentationType.ARCHITECTURAL_OVERVIEW,
             source_path,
-            output_path
+            output_path,
         )
 
         logger.info(f"✅ Generated: {output_path}")
@@ -104,7 +104,7 @@ def generate_knowledge_transfer_docs(output_dir: Path) -> bool:
         artifact = documentation_manager.generate_documentation(
             DocumentationType.KNOWLEDGE_TRANSFER,
             None,  # Knowledge transfer doesn't require source
-            output_path
+            output_path,
         )
 
         logger.info(f"✅ Generated: {output_path}")
@@ -401,7 +401,7 @@ Now that you've completed this tutorial:
 
 Happy coding with Agentic Workflow!
 """,
-            "file_name": "getting_started.md"
+            "file_name": "getting_started.md",
         },
         {
             "title": "Agent Development Guide",
@@ -800,8 +800,8 @@ class VersionedAgent(SovereignBaseAgent):
 
 This guide provides comprehensive patterns and best practices for developing robust agents in the Agentic Workflow system.
 """,
-            "file_name": "agent_development.md"
-        }
+            "file_name": "agent_development.md",
+        },
     ]
 
     success = True
@@ -987,7 +987,7 @@ If you need help with the documentation:
 def main():
     """Main entry point for documentation generation."""
     parser = argparse.ArgumentParser(
-        description="Documentation Generation Tool - Phase 4 Implementation"
+        description="Documentation Generation Tool - Phase 4 Implementation",
     )
 
     subparsers = parser.add_subparsers(dest='command', help='Available commands')

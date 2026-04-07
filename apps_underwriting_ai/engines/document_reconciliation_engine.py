@@ -1,17 +1,17 @@
 """
 Document Reconciliation Engine - Compares structured values vs parsed document values.
 """
-from typing import Any, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, List, Optional
 
-from ..types import UnderwritingRequest
 from ..parsers import (
-    FinancialStatementParser,
-    DebtScheduleParser,
-    CollateralSummaryParser,
     ARAgingParser,
+    CollateralSummaryParser,
+    DebtScheduleParser,
+    FinancialStatementParser,
 )
+from ..types import UnderwritingRequest
 
 # L4 retrieval wiring (Turn 3, Wave 36): Import creates ADG edge to L4_state
 
@@ -121,7 +121,7 @@ class DocumentReconciliationEngine:
         result: ReconciliationResult,
         request: UnderwritingRequest,
         parsed: Any,
-        doc_id: str
+        doc_id: str,
     ) -> None:
         """Reconcile financial statement values."""
         fields_to_check = [
@@ -142,7 +142,7 @@ class DocumentReconciliationEngine:
         result: ReconciliationResult,
         request: UnderwritingRequest,
         parsed: Any,
-        doc_id: str
+        doc_id: str,
     ) -> None:
         """Reconcile debt schedule values."""
         if parsed.total_current_debt and request.financials.periods:
@@ -155,7 +155,7 @@ class DocumentReconciliationEngine:
         result: ReconciliationResult,
         request: UnderwritingRequest,
         parsed: Any,
-        doc_id: str
+        doc_id: str,
     ) -> None:
         """Reconcile collateral values."""
         if parsed.appraised_value and request.collateral.estimated_value:
@@ -164,7 +164,7 @@ class DocumentReconciliationEngine:
                 "collateral_value",
                 request.collateral.estimated_value,
                 parsed.appraised_value,
-                doc_id
+                doc_id,
             )
 
     def _check_field(
@@ -173,7 +173,7 @@ class DocumentReconciliationEngine:
         field_name: str,
         structured_val: float,
         parsed_val: float,
-        doc_id: str
+        doc_id: str,
     ) -> None:
         """Check a single field for contradictions."""
         if structured_val == 0:
@@ -201,7 +201,7 @@ class DocumentReconciliationEngine:
                 variance_pct=variance_pct,
                 severity=severity,
                 source_doc_id=doc_id,
-                explanation=f"Variance of {variance_pct:.1%} exceeds threshold of {threshold:.1%}"
+                explanation=f"Variance of {variance_pct:.1%} exceeds threshold of {threshold:.1%}",
             )
             result.contradictions.append(contradiction)
             result.mismatch_count += 1

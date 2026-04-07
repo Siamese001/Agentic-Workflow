@@ -1,0 +1,53 @@
+{
+  "runtime_adg_1775551281_c3d297b7": {
+    "component_distribution": {
+      "ExecOrchestrator": 1,
+      "HitlGate": 1,
+      "IntentExpansionAgent": 1,
+      "MetricsCollector": 1,
+      "RoutingGateway": 1,
+      "UniversalWriteGateway": 1,
+      "VersionStore": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1775551281,
+      "total_nodes": 7
+    },
+    "layer_distribution": {
+      "L0": 1,
+      "L1": 1,
+      "L2": 1,
+      "L3": 1,
+      "L4": 1,
+      "L5": 1,
+      "L6": 1
+    },
+    "relation_patterns": {
+      "outcome_edge": 1,
+      "parent_child": 7,
+      "temporal_sequence": 6
+    },
+    "span_type_distribution": {
+      "action": 4,
+      "cognitive": 1,
+      "orchestrator": 1,
+      "router": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "RoutingGateway",
+          "duration_ms": 5.0,
+          "node_id": "L0-001"
+        },
+        {
+          "component": "MetricsCollector",
+          "duration_ms": 5.0,
+          "node_id": "L6-001"
+        }
+      ],
+      "slow_operations": []
+    }
+  }
+}

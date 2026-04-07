@@ -149,5 +149,5 @@ class ResumeRunSummary(BaseModel):
                 "target_role": "Senior Software Engineer",
                 "ats_score": 85.5,
                 "quality_score": 0.88,
-            }
+            },
         }

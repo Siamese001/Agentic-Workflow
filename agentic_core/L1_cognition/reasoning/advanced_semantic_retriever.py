@@ -100,7 +100,7 @@ class AdvancedSemanticRetriever:
             "primary_collections": routing_decision.primary_collections,
             "secondary_collections": routing_decision.secondary_collections,
             "confidence": routing_decision.confidence,
-            "reasoning": routing_decision.reasoning
+            "reasoning": routing_decision.reasoning,
         }
 
         logger.info(f"Query routed to {len(routing_decision.primary_collections)} primary collections")
@@ -110,7 +110,7 @@ class AdvancedSemanticRetriever:
             query=request.query,
             fusion_strategy=request.fusion_strategy,
             max_results_per_collection=request.max_results_per_collection,
-            generate_variations=request.generate_query_variations
+            generate_variations=request.generate_query_variations,
         )
 
         logger.info(f"Fusion search: {fusion_result.total_results} results in {fusion_result.execution_time_ms:.2f}ms")
@@ -123,7 +123,7 @@ class AdvancedSemanticRetriever:
             reranking_result = self.reranking_engine.rerank_results(
                 fusion_result=fusion_result,
                 query=request.query,
-                max_results=request.max_final_results
+                max_results=request.max_final_results,
             )
             final_results = reranking_result.reranked_results
 
@@ -137,7 +137,7 @@ class AdvancedSemanticRetriever:
             final_results = self.fusion_engine.apply_fusion_strategy(
                 collection_results=fusion_result.collection_results,
                 fusion_strategy=request.fusion_strategy,
-                max_final_results=request.max_final_results
+                max_final_results=request.max_final_results,
             )
 
             logger.info(f"Fusion strategy applied: {len(final_results)} final results")
@@ -147,7 +147,7 @@ class AdvancedSemanticRetriever:
 
         # Generate component breakdown
         component_breakdown = self._generate_component_breakdown(
-            fusion_result, reranking_result, total_time_ms
+            fusion_result, reranking_result, total_time_ms,
         )
 
         # Create response
@@ -159,7 +159,7 @@ class AdvancedSemanticRetriever:
             reranking_result=reranking_result,
             final_results=final_results,
             execution_time_ms=total_time_ms,
-            component_breakdown=component_breakdown
+            component_breakdown=component_breakdown,
         )
 
         logger.info(f"Advanced retrieval completed: {len(final_results)} final results in {total_time_ms:.2f}ms")
@@ -180,7 +180,7 @@ class AdvancedSemanticRetriever:
         request = AdvancedRetrievalRequest(
             query=query,
             max_final_results=max_results,
-            enable_reranking=True
+            enable_reranking=True,
         )
 
         response = await self.retrieve(request)
@@ -190,7 +190,7 @@ class AdvancedSemanticRetriever:
         self,
         fusion_result: FusionResult,
         reranking_result: RerankingResult | None,
-        total_time_ms: float
+        total_time_ms: float,
     ) -> dict[str, Any]:
         """Generate breakdown of component performance."""
         breakdown = {
@@ -199,7 +199,7 @@ class AdvancedSemanticRetriever:
             "collections_searched": len(fusion_result.collection_results),
             "total_fusion_results": fusion_result.total_results,
             "fusion_strategy": fusion_result.fusion_strategy,
-            "query_variations_used": len(fusion_result.query_variations_used)
+            "query_variations_used": len(fusion_result.query_variations_used),
         }
 
         # Add reranking breakdown if available
@@ -210,12 +210,12 @@ class AdvancedSemanticRetriever:
                 "reranking_model": reranking_result.model_info,
                 "original_results": len(reranking_result.original_results),
                 "reranked_results": len(reranking_result.reranked_results),
-                "features_used": reranking_result.features_used
+                "features_used": reranking_result.features_used,
             })
         else:
             breakdown.update({
                 "reranking_enabled": False,
-                "reranking_reason": "Disabled or no results to rerank"
+                "reranking_reason": "Disabled or no results to rerank",
             })
 
         # Add collection-specific breakdown
@@ -224,7 +224,7 @@ class AdvancedSemanticRetriever:
             collection_stats[collection] = {
                 "result_count": len(results),
                 "avg_score": np.mean([getattr(r, 'score', 0.5) for r in results]) if results else 0.0,
-                "top_score": max([getattr(r, 'score', 0.5) for r in results]) if results else 0.0
+                "top_score": max([getattr(r, 'score', 0.5) for r in results]) if results else 0.0,
             }
 
         breakdown["collection_stats"] = collection_stats
@@ -236,17 +236,17 @@ class AdvancedSemanticRetriever:
         return {
             "base_retriever": {
                 "collections": list(self.base_retriever.get_collection_stats().keys()),
-                "total_documents": sum(stats['document_count'] for stats in self.base_retriever.get_collection_stats().values())
+                "total_documents": sum(stats['document_count'] for stats in self.base_retriever.get_collection_stats().values()),
             },
             "query_router": self.query_router.get_routing_stats(),
             "fusion_engine": self.fusion_engine.get_fusion_stats(),
-            "reranking_engine": self.reranking_engine.get_reranking_stats()
+            "reranking_engine": self.reranking_engine.get_reranking_stats(),
         }
 
     async def benchmark_retrieval(
         self,
         queries: list[str],
-        strategies: list[str] = None
+        strategies: list[str] = None,
     ) -> dict[str, Any]:
         """
         Benchmark different retrieval strategies.
@@ -271,7 +271,7 @@ class AdvancedSemanticRetriever:
                     request = AdvancedRetrievalRequest(
                         query=query,
                         fusion_strategy=strategy,
-                        enable_reranking=False  # Disable for fair comparison
+                        enable_reranking=False,  # Disable for fair comparison
                     )
 
                     response = await self.retrieve(request)
@@ -280,14 +280,14 @@ class AdvancedSemanticRetriever:
                         "query": query,
                         "total_results": len(response.final_results),
                         "execution_time_ms": response.execution_time_ms,
-                        "collections_searched": len(response.fusion_result.collection_results)
+                        "collections_searched": len(response.fusion_result.collection_results),
                     })
 
                 except Exception as e:
                     logger.error(f"Benchmark query failed: {query} - {e}")
                     strategy_results.append({
                         "query": query,
-                        "error": str(e)
+                        "error": str(e),
                     })
 
             # Calculate strategy statistics
@@ -301,14 +301,14 @@ class AdvancedSemanticRetriever:
                     "avg_execution_time_ms": avg_time,
                     "avg_results_count": avg_results,
                     "success_rate": len(successful_results) / len(strategy_results),
-                    "detailed_results": strategy_results
+                    "detailed_results": strategy_results,
                 }
             else:
                 benchmark_results[strategy] = {
                     "avg_execution_time_ms": 0,
                     "avg_results_count": 0,
                     "success_rate": 0,
-                    "detailed_results": strategy_results
+                    "detailed_results": strategy_results,
                 }
 
         return benchmark_results
@@ -325,7 +325,7 @@ async def main():
         "Show me the blast radius for ADG scanner changes",
         "Find failures related to memory leaks in L1 cognition",
         "How does the routing between L0 and L2 work?",
-        "What were the recent commits affecting safety layer?"
+        "What were the recent commits affecting safety layer?",
     ]
 
     print("Advanced Semantic Retriever Test:")
@@ -340,7 +340,7 @@ async def main():
                 query=query,
                 fusion_strategy="reciprocal_rank_fusion",
                 enable_reranking=True,
-                max_final_results=10
+                max_final_results=10,
             )
 
             response = await retriever.retrieve(request)

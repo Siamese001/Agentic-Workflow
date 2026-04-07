@@ -19,10 +19,10 @@ from pathlib import Path
 INVENTORY_PATH = Path("artifacts/adg_analysis/p2_high_severity_inventory.csv")
 
 TEARDOWN_KEYWORDS = frozenset(
-    ["teardown", "cleanup", "close", "exit", "destroy", "dispose", "finalize", "__del__", "__exit__"]
+    ["teardown", "cleanup", "close", "exit", "destroy", "dispose", "finalize", "__del__", "__exit__"],
 )
 BEST_EFFORT_KEYWORDS = frozenset(
-    ["cache", "optional", "enrich", "augment", "fallback", "hint", "suggest", "metric"]
+    ["cache", "optional", "enrich", "augment", "fallback", "hint", "suggest", "metric"],
 )
 
 
@@ -97,7 +97,7 @@ def process_kind(kind: str, all_entries: list[dict]) -> dict:
             for line in details[cat][:5]:
                 print(f"  {line}")
 
-    print(f"\nre_raise_possible (first 5):")
+    print("\nre_raise_possible (first 5):")
     for line in details["re_raise_possible"][:5]:
         print(f"  {line}")
 

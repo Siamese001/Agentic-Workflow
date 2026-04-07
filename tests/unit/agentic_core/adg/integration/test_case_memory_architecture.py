@@ -248,7 +248,7 @@ class TestCacheAdmissionGate:
 
                 return MockDecision(
                     admitted=len(deny_reasons) == 0,
-                    reasons=deny_reasons
+                    reasons=deny_reasons,
                 )
 
         return MockGate(support_threshold=support, completeness_threshold=completeness)

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Fix archive inefficiency by removing duplicate individual files and keeping only zip files."""
 
-import gzip
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_DIR = ROOT / "artifacts" / "adg" / "_archive"
@@ -51,7 +50,7 @@ def analyze_archive_inefficiency():
                 'individual_files': len(files['individual']),
                 'individual_size': individual_size,
                 'zip_size': zip_size,
-                'waste': waste
+                'waste': waste,
             })
 
     # Print analysis
@@ -140,7 +139,7 @@ def create_efficient_archive_structure():
 
     print(f"\n✅ Efficient archive created: {efficient_archive}")
     print(f"  Zip files: {len(zip_files)}")
-    print(f"  Storage: Only zip files, no duplicates!")
+    print("  Storage: Only zip files, no duplicates!")
 
     return efficient_archive, len(zip_files)
 

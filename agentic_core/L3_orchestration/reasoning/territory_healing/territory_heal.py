@@ -26,7 +26,7 @@ def setup_logging(verbose: bool = False) -> None:
     logging.basicConfig(
         level=level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[logging.StreamHandler()]
+        handlers=[logging.StreamHandler()],
     )
 
 
@@ -48,34 +48,34 @@ Examples:
 
   # Verbose output
   python -m agentic_core.L0_routing.orchestration.territory_heal --territory tests --verbose
-        """
+        """,
     )
 
     parser.add_argument(
         "--territory",
         type=str,
-        help="Specific territory to heal (e.g., tests, agentic_core, apps_eval)"
+        help="Specific territory to heal (e.g., tests, agentic_core, apps_eval)",
     )
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Heal all detected territories"
+        help="Heal all detected territories",
     )
     parser.add_argument(
         "--scan-only",
         action="store_true",
-        help="Scan for violations without healing (dry-run)"
+        help="Scan for violations without healing (dry-run)",
     )
     parser.add_argument(
         "--verbose", "-v",
         action="store_true",
-        help="Enable verbose logging"
+        help="Enable verbose logging",
     )
     parser.add_argument(
         "--project-root",
         type=str,
         default=str(REPO_ROOT),
-        help=f"Project root directory (default: {REPO_ROOT})"
+        help=f"Project root directory (default: {REPO_ROOT})",
     )
 
     args = parser.parse_args()
@@ -115,7 +115,7 @@ Examples:
                 logger.info(
                     f"\n=== SCAN RESULTS FOR {territory} ===\n"
                     f"  Violations found: {report.total_violations_found}\n"
-                    f"  Agents scanned: {len(report.scan_results)}"
+                    f"  Agents scanned: {len(report.scan_results)}",
                 )
             else:
                 report = coordinator.heal_territory(territory, verbose=args.verbose)
@@ -124,7 +124,7 @@ Examples:
                     f"  Violations found: {report.total_violations_found}\n"
                     f"  Violations fixed: {report.total_violations_fixed}\n"
                     f"  Agents executed: {len(report.agents_executed)}\n"
-                    f"  Success: {report.success}"
+                    f"  Success: {report.success}",
                 )
 
                 if report.errors:

@@ -143,7 +143,7 @@ class InMemoryProposalStore:
                     metadata=meta,
                     similarity_score=score,
                     source_path=meta.get("source_path", ""),
-                )
+                ),
             )
 
         return results
@@ -164,7 +164,7 @@ class InMemoryProposalStore:
                         metadata=meta,
                         similarity_score=1.0,  # Exact match
                         source_path=meta.get("source_path", ""),
-                    )
+                    ),
                 )
 
         return results[:limit]

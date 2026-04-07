@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -249,7 +248,7 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "AdversarialRedTeamerAgent.execute"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "AdversarialRedTeamerAgent.execute",
         )
         Logger.info("🔴 Adversarial Red-Teamer: Initiating vulnerability scan...")
         await self._test_preservation_boundaries()
@@ -399,7 +398,7 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
         test_id = "PRES-001"
         original_code = textwrap.dedent()
         modified_code = textwrap.dedent(
-            "\n            def function1():\n                pass\n\n            def function2():\n                pass\n        "
+            "\n            def function1():\n                pass\n\n            def function2():\n                pass\n        ",
         )
         original_lines = len([l for l in original_code.split("\n") if l.strip()])
         modified_lines = len([l for l in modified_code.split("\n") if l.strip()])
@@ -437,10 +436,10 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
         """Attempt to preserve line count with only comments."""
         test_id = "PRES-003"
         original_code = textwrap.dedent(
-            "\n            def process_data(data):\n                result = []\n                for item in data:\n                    result.append(item * 2)\n                return result\n        "
+            "\n            def process_data(data):\n                result = []\n                for item in data:\n                    result.append(item * 2)\n                return result\n        ",
         )
         modified_code = textwrap.dedent(
-            "\n            def process_data(data):\n                # result = []\n                # for item in data:\n                #     result.append(item * 2)\n                # return result\n                pass\n        "
+            "\n            def process_data(data):\n                # result = []\n                # for item in data:\n                #     result.append(item * 2)\n                # return result\n                pass\n        ",
         )
         try:
             original_tree = ast.parse(original_code)

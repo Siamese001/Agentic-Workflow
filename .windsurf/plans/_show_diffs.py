@@ -6,7 +6,7 @@ result = subprocess.run(
     ['git', 'diff', 'agentic_core/L2_execution/engines/tool_intent_executor.py'],
     capture_output=True,
     text=True,
-    cwd=r'c:\Git\Agentic-Workflow'
+    cwd=r'c:\Git\Agentic-Workflow',
 )
 
 print("=== DIFF: tool_intent_executor.py ===")
@@ -17,7 +17,7 @@ result2 = subprocess.run(
     ['git', 'diff', 'agentic_core/L2_execution/wrappers/l2_agent_wrappers.py'],
     capture_output=True,
     text=True,
-    cwd=r'c:\Git\Agentic-Workflow'
+    cwd=r'c:\Git\Agentic-Workflow',
 )
 
 print("=== DIFF: l2_agent_wrappers.py (first 200 lines) ===")

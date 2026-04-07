@@ -3,12 +3,12 @@ Test Compliance Validator.
 """
 import unittest
 
-from apps_underwriting_ai.validators.compliance_validator import ComplianceValidator
 from apps_underwriting_ai.types import (
-    PolicyContext,
     CollateralRules,
+    PolicyContext,
     RiskFeatures,
 )
+from apps_underwriting_ai.validators.compliance_validator import ComplianceValidator
 
 
 class TestComplianceValidator(unittest.TestCase):
@@ -25,8 +25,8 @@ class TestComplianceValidator(unittest.TestCase):
             max_debt_to_ebitda=3.5,
             min_fico=680,
             collateral_rules=CollateralRules(
-                eligible_collateral=["ar"]
-            )
+                eligible_collateral=["ar"],
+            ),
         )
 
         features = RiskFeatures()

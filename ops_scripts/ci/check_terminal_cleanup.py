@@ -39,7 +39,7 @@ def get_windsurf_terminals() -> list[dict]:
                 text=True,
                 timeout=10,
                 encoding="utf-8",
-                errors="replace"
+                errors="replace",
             )
 
             for line in result.stdout.splitlines():
@@ -63,7 +63,7 @@ def get_windsurf_terminals() -> list[dict]:
                 text=True,
                 timeout=10,
                 encoding="utf-8",
-                errors="replace"
+                errors="replace",
             )
 
             for line in result.stdout.splitlines():
@@ -112,7 +112,7 @@ def get_orphaned_terminals(max_age_seconds: int = 300) -> list[ProcessViolation]
                 parent_pid=proc["parent_pid"],
                 query_id=None,
                 age_seconds=0,
-                violation_type="excess_terminal_accumulation"
+                violation_type="excess_terminal_accumulation",
             ))
 
     return violations

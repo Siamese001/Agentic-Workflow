@@ -47,7 +47,7 @@ class ConfigLoaderService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ConfigLoaderService.load_json_config"
+            _trace_id, LayerSegment.L2_EXECUTION, "ConfigLoaderService.load_json_config",
         )
         _emit_routes_to_capability("p2", "config_loader", "json_parse")
         _emit_validates_capability("p2", "config_loader", "file_read")

@@ -59,7 +59,7 @@ async def test_guardian_mcp():
         "guardian_healing",
         "guardian_audit",
         "guardian_impact_analysis",
-        "guardian_registry"
+        "guardian_registry",
     ]
 
     missing_tools = [tool for tool in expected_tools if tool not in tool_names]
@@ -147,7 +147,7 @@ async def test_pytest_mcp():
         "pytest_run_guardians",
         "pytest_run_smoke",
         "pytest_coverage_analysis",
-        "pytest_failure_analysis"
+        "pytest_failure_analysis",
     ]
 
     missing_tools = [tool for tool in expected_tools if tool not in tool_names]

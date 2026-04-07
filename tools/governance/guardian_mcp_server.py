@@ -133,7 +133,7 @@ GUARDIAN_SCRIPTS = [
     "run_guardian_deployment.py",
     "run_guardian_monitoring.py",
     "run_guardian_backup.py",
-    "run_guardian_recovery.py"
+    "run_guardian_recovery.py",
 ]
 
 # Cache for guardian status
@@ -167,7 +167,7 @@ def _refresh_guardian_cache():
                     "last_run": report.get("timestamp", 0),
                     "summary": report.get("summary", ""),
                     "issues_found": report.get("issues_count", 0),
-                    "report_file": str(report_file)
+                    "report_file": str(report_file),
                 }
             except Exception as e:
                 logger.warning(f"Failed to load guardian report for {guardian_name}: {e}")
@@ -178,7 +178,7 @@ def _refresh_guardian_cache():
                     "last_run": 0,
                     "summary": f"Failed to load report: {e}",
                     "issues_found": 0,
-                    "report_file": str(report_file)
+                    "report_file": str(report_file),
                 }
         else:
             _guardian_cache[guardian_name] = {
@@ -188,7 +188,7 @@ def _refresh_guardian_cache():
                 "last_run": 0,
                 "summary": "No report available",
                 "issues_found": 0,
-                "report_file": str(report_file)
+                "report_file": str(report_file),
             }
 
     _last_cache_update = current_time
@@ -215,7 +215,7 @@ def guardian_status() -> dict[str, Any]:
             "status": status,
             "last_run": cache_entry["last_run"],
             "issues_found": cache_entry["issues_found"],
-            "summary": cache_entry["summary"]
+            "summary": cache_entry["summary"],
         })
 
     result = {
@@ -223,7 +223,7 @@ def guardian_status() -> dict[str, Any]:
         "total_guardians": len(_guardian_cache),
         "status_counts": status_counts,
         "overall_health": status_counts["passed"] / max(len(_guardian_cache), 1),
-        "guardians": guardian_details
+        "guardians": guardian_details,
     }
 
     logger.info("guardian_status_checked", extra=result)
@@ -258,7 +258,7 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
         return {
             "success": False,
             "error": f"Guardian script not found: {script_name}",
-            "guardian_name": guardian_name
+            "guardian_name": guardian_name,
         }
 
     # Check if recently run (unless forced)
@@ -271,7 +271,7 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
                 "success": False,
                 "error": f"Guardian {guardian_name} recently run (use force=True)",
                 "guardian_name": guardian_name,
-                "last_run": last_run
+                "last_run": last_run,
             }
 
     try:
@@ -281,7 +281,7 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
             capture_output=True,
             text=True,
             timeout=timeout,  # Use provided timeout
-            cwd="C:/Git/Agentic-Workflow"
+            cwd="C:/Git/Agentic-Workflow",
         )
 
         execution_result = {
@@ -291,7 +291,7 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
             "return_code": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "timestamp": int(time.time())
+            "timestamp": int(time.time()),
         }
 
         # Refresh cache after execution
@@ -300,7 +300,7 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
         logger.info("guardian_run_executed", extra={
             "guardian_name": guardian_name,
             "success": execution_result["success"],
-            "return_code": result.returncode
+            "return_code": result.returncode,
         })
 
         return execution_result
@@ -310,18 +310,18 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
             "success": False,
             "error": f"Guardian {guardian_name} execution timed out",
             "guardian_name": guardian_name,
-            "script": script_name
+            "script": script_name,
         }
     except Exception as e:
         logger.error("guardian_run_error", extra={
             "guardian_name": guardian_name,
-            "error": str(e)
+            "error": str(e),
         })
         return {
             "success": False,
             "error": str(e),
             "guardian_name": guardian_name,
-            "script": script_name
+            "script": script_name,
         }
 
 
@@ -341,7 +341,7 @@ def guardian_report(guardian_name: str = None) -> dict[str, Any]:
         if guardian_name not in _guardian_cache:
             return {
                 "success": False,
-                "error": f"Guardian not found: {guardian_name}"
+                "error": f"Guardian not found: {guardian_name}",
             }
 
         cache_entry = _guardian_cache[guardian_name]
@@ -355,19 +355,19 @@ def guardian_report(guardian_name: str = None) -> dict[str, Any]:
                 return {
                     "success": True,
                     "guardian_name": guardian_name,
-                    "report": report
+                    "report": report,
                 }
             except Exception as e:
                 return {
                     "success": False,
                     "error": f"Failed to load report: {e}",
-                    "guardian_name": guardian_name
+                    "guardian_name": guardian_name,
                 }
         else:
             return {
                 "success": False,
                 "error": f"No report file found for {guardian_name}",
-                "guardian_name": guardian_name
+                "guardian_name": guardian_name,
             }
     else:
         # Return summary of all guardians
@@ -377,13 +377,13 @@ def guardian_report(guardian_name: str = None) -> dict[str, Any]:
                 "status": cache_entry["status"],
                 "last_run": cache_entry["last_run"],
                 "summary": cache_entry["summary"],
-                "issues_found": cache_entry["issues_found"]
+                "issues_found": cache_entry["issues_found"],
             }
 
         return {
             "success": True,
             "guardian_count": len(reports),
-            "reports": reports
+            "reports": reports,
         }
 
 
@@ -398,7 +398,7 @@ def guardian_manifest() -> dict[str, Any]:
     manifest_files = [
         "sovereignty_manifest.json",
         "hygiene_manifest.json",
-        "architecture_manifest.json"
+        "architecture_manifest.json",
     ]
 
     manifests = {}
@@ -410,7 +410,7 @@ def guardian_manifest() -> dict[str, Any]:
                     manifests[manifest_file.replace(".json", "")] = json.load(f)
             except Exception as e:
                 manifests[manifest_file.replace(".json", "")] = {
-                    "error": f"Failed to load: {e}"
+                    "error": f"Failed to load: {e}",
                 }
 
     # Calculate overall compliance
@@ -429,7 +429,7 @@ def guardian_manifest() -> dict[str, Any]:
         "overall_compliance": overall_compliance,
         "manifest_count": len(manifests),
         "manifests": manifests,
-        "status": "compliant" if overall_compliance >= 0.95 else "non_compliant"
+        "status": "compliant" if overall_compliance >= 0.95 else "non_compliant",
     }
 
     logger.info("guardian_manifest_checked", extra=result)
@@ -462,7 +462,7 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
         return {
             "success": False,
             "error": f"No failed guardian found for failure_id: {failure_id}. Available failed guardians: {list(_guardian_cache.keys())}",
-            "failure_id": failure_id
+            "failure_id": failure_id,
         }
 
     try:
@@ -475,7 +475,7 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
             "target_guardian": target_guardian,
             "healing_type": healing_type,
             "timestamp": int(time.time()),
-            "execution_result": healing_result
+            "execution_result": healing_result,
         }
 
         # If healing succeeded, update cache
@@ -485,7 +485,7 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
         logger.info("guardian_healing_triggered", extra={
             "failure_id": failure_id,
             "target_guardian": target_guardian,
-            "success": healing_response["success"]
+            "success": healing_response["success"],
         })
 
         return healing_response
@@ -493,12 +493,12 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
     except Exception as e:
         logger.error("guardian_healing_error", extra={
             "failure_id": failure_id,
-            "error": str(e)
+            "error": str(e),
         })
         return {
             "success": False,
             "error": str(e),
-            "failure_id": failure_id
+            "failure_id": failure_id,
         }
 
 
@@ -526,7 +526,7 @@ def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
                 "guardian_name": guardian_name,
                 "status": cache_entry["status"],
                 "issues_found": cache_entry["issues_found"],
-                "summary": cache_entry["summary"]
+                "summary": cache_entry["summary"],
             })
 
     # Sort by timestamp (most recent first)
@@ -545,7 +545,7 @@ def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
         "success_rate": (total_executions - failed_executions) / max(total_executions, 1),
         "total_issues_found": total_issues,
         "audit_events": audit_events[:100],  # Limit to 100 most recent
-        "governance_health": "healthy" if failed_executions == 0 else "degraded"
+        "governance_health": "healthy" if failed_executions == 0 else "degraded",
     }
 
     logger.info("guardian_audit_generated", extra=result)
@@ -593,7 +593,7 @@ def guardian_impact_analysis(change_set: list[str]) -> dict[str, Any]:
         "impact_level": impact_level,
         "guardian_count": len(affected_guardians),
         "recommendation": _get_impact_recommendation(impact_level),
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
     }
 
     logger.info("guardian_impact_analyzed", extra=result)
@@ -621,7 +621,7 @@ def guardian_registry() -> dict[str, Any]:
             "exists": script_path.exists(),
             "category": _get_guardian_category(guardian_name),
             "description": _get_guardian_description(guardian_name),
-            "typical_duration": _get_guardian_duration(guardian_name)
+            "typical_duration": _get_guardian_duration(guardian_name),
         }
 
         # Add current status if available
@@ -631,7 +631,7 @@ def guardian_registry() -> dict[str, Any]:
             metadata.update({
                 "current_status": cache_entry["status"],
                 "last_run": cache_entry["last_run"],
-                "issues_found": cache_entry["issues_found"]
+                "issues_found": cache_entry["issues_found"],
             })
 
         registry.append(metadata)
@@ -640,7 +640,7 @@ def guardian_registry() -> dict[str, Any]:
         "timestamp": int(time.time()),
         "total_guardians": len(registry),
         "guardians": registry,
-        "categories": list(set(g["category"] for g in registry))
+        "categories": list(set(g["category"] for g in registry)),
     }
 
     logger.info("guardian_registry_generated", extra=result)
@@ -686,7 +686,7 @@ def _get_guardian_description(guardian_name: str) -> str:
         "deployment": "Deployment readiness and compliance",
         "monitoring": "Monitoring configuration and alerts",
         "backup": "Backup strategy and compliance",
-        "recovery": "Recovery procedures and testing"
+        "recovery": "Recovery procedures and testing",
     }
     return descriptions.get(guardian_name, f"Guardian for {guardian_name}")
 
@@ -710,7 +710,7 @@ def _get_guardian_duration(guardian_name: str) -> str:
         "deployment": "2-5 minutes",
         "monitoring": "1-2 minutes",
         "backup": "1-3 minutes",
-        "recovery": "2-5 minutes"
+        "recovery": "2-5 minutes",
     }
     return durations.get(guardian_name, "2-5 minutes")
 
@@ -720,7 +720,7 @@ def _get_impact_recommendation(impact_level: str) -> str:
     recommendations = {
         "low": "Changes are low risk, standard review process sufficient",
         "medium": "Changes may affect some guardians, run affected guardians before commit",
-        "high": "High impact changes, run full guardian suite and review results carefully"
+        "high": "High impact changes, run full guardian suite and review results carefully",
     }
     return recommendations.get(impact_level, "Unknown impact level")
 

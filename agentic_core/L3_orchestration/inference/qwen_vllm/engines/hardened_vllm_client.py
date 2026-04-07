@@ -181,7 +181,7 @@ class HardenedVLLMClient:
         try:
             # Try with circuit breaker
             response = await self.circuit.call(
-                lambda: self._infer_with_retry(request)
+                lambda: self._infer_with_retry(request),
             )
 
             if response.success:

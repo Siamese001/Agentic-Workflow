@@ -148,7 +148,7 @@ for row in cur.fetchall():
 # --- 6. identity_kind breakdown ---
 print("\n=== IDENTITY KIND BREAKDOWN ===\n")
 cur.execute(
-    "SELECT identity_kind, COUNT(*) FROM nodes GROUP BY identity_kind ORDER BY COUNT(*) DESC LIMIT 20"
+    "SELECT identity_kind, COUNT(*) FROM nodes GROUP BY identity_kind ORDER BY COUNT(*) DESC LIMIT 20",
 )
 for row in cur.fetchall():
     print(f"  {row[0]:<30} {row[1]}")

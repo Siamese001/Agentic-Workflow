@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -170,7 +169,10 @@ _emit_invokes_eval("p1", "verify_no_mock_data_util", "eval_call")
 _emit_proposal_commits_routing("p1", "verify_no_mock_data_util", "routing_commit")
 
 try:
-    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import DASHBOARD_DIR, get_validated_project_root
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
+        DASHBOARD_DIR,
+        get_validated_project_root,
+    )
 except ImportError as e:
 
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
@@ -232,7 +234,7 @@ def verify_no_mock_data():
         issues.append("Still calling generateMockAgentData")
     print("\n4. Checking getMockFanInData...")
     fanin_match = re.search(
-        "function getMockFanInData\\([^)]+\\)\\s*\\{[^}]*return\\s+(\\d+)", html, re.DOTALL
+        "function getMockFanInData\\([^)]+\\)\\s*\\{[^}]*return\\s+(\\d+)", html, re.DOTALL,
     )
     if fanin_match:
         return_val = fanin_match.group(1)

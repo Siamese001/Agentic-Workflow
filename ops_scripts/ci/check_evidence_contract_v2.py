@@ -76,7 +76,7 @@ class EvidenceContractChecker:
         """Validate that commit hash is 40-character hex."""
         if len(commit_hash) != 40:
             self.violations.append(
-                f"{filepath}: {field_name} must be 40 characters (got {len(commit_hash)}): {commit_hash}"
+                f"{filepath}: {field_name} must be 40 characters (got {len(commit_hash)}): {commit_hash}",
             )
         elif not all(c in "0123456789abcdefABCDEF" for c in commit_hash):
             self.violations.append(f"{filepath}: {field_name} must be hex: {commit_hash}")
@@ -93,7 +93,7 @@ class EvidenceContractChecker:
                 )
                 if result.returncode != 0:
                     self.violations.append(
-                        f"{filepath}: {field_name} does not exist in repository: {commit_hash}"
+                        f"{filepath}: {field_name} does not exist in repository: {commit_hash}",
                     )
             except (subprocess.CalledProcessError, ValueError) as e:
                 # If git check fails, just warn but don't fail
@@ -117,7 +117,7 @@ class EvidenceContractChecker:
                 self.violations.append(f"{filepath}: Missing required heading: ## {heading}")
             elif len(matches) > 1:
                 self.violations.append(
-                    f"{filepath}: Duplicate heading: ## {heading} (found {len(matches)} times)"
+                    f"{filepath}: Duplicate heading: ## {heading} (found {len(matches)} times)",
                 )
             else:
                 found_headings.add(heading)
@@ -173,7 +173,7 @@ class EvidenceContractChecker:
                         # Skip if it's clearly just a comment about Python code
                         if not check_line.strip().startswith("#") and "python" not in check_line.lower():
                             self.violations.append(
-                                f"{filepath}: Suspicious Python code pattern detected outside code block at line {j + 1}: {pattern}"
+                                f"{filepath}: Suspicious Python code pattern detected outside code block at line {j + 1}: {pattern}",
                             )
                             break  # One violation per pattern is enough
 

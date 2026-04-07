@@ -17,7 +17,6 @@ import tempfile
 from pathlib import Path
 
 
-
 class CIWriteBlockedError(RuntimeError):
     """Raised when a write is attempted in CI without explicit override."""
 

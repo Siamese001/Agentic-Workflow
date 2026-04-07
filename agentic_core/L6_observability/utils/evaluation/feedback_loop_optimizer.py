@@ -330,7 +330,7 @@ class FeedbackLoopOptimizer:
         # Clamp to min/max
         self._current_sampling_rate = max(
             self._min_sampling_rate,
-            min(self._max_sampling_rate, self._current_sampling_rate)
+            min(self._max_sampling_rate, self._current_sampling_rate),
         )
 
 

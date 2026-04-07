@@ -101,7 +101,7 @@ print(f"  Overall:               {'PASS ✓' if all_pass and gov_pass else 'FAIL
 
 # === Save post-rollback snapshot ===
 all_types = dict(conn.execute(
-    "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC"
+    "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC",
 ).fetchall())
 
 post_snapshot = {

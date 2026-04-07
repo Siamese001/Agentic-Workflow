@@ -65,39 +65,25 @@ _emit_applies_guardrail("p0", "meta_learning_storage_util", "p0_governance")
 _emit_reads_policy_state("p0", "meta_learning_storage_util", "policy_binding")
 _emit_snapshots_state("p0", "meta_learning_storage_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -205,7 +191,9 @@ class MetaLearningStorage:
             with cls._memory_lock:
                 if cls._memory is None:
                     try:
-                        from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
+                        from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+                            SemanticCacheManager,
+                        )
 
                         cls._memory = SemanticCacheManager.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
@@ -213,7 +201,7 @@ class MetaLearningStorage:
                         raise
                         cls._lobotomized = True
                         Logger.critical(
-                            f"[{agent_name}] LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable ({e})"
+                            f"[{agent_name}] LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable ({e})",
                         )
 
     @classmethod
@@ -244,7 +232,7 @@ class MetaLearningStorage:
 
     @classmethod
     def learn_with_feedback(
-        cls, context: str, namespace: str, result: dict[str, Any], feedback_score: float
+        cls, context: str, namespace: str, result: dict[str, Any], feedback_score: float,
     ) -> bool:
         """Learn with feedback score, promoting to long-term DNA if threshold met."""
         if cls._lobotomized or cls._memory is None:
@@ -260,7 +248,7 @@ class MetaLearningStorage:
                         sanitized_context = cls._memory.sanitizer.sanitize(context)
                     cls._create_mastered_task_relation(namespace, sanitized_context, feedback_score)
                     Logger.info(
-                        f"[{namespace}] DNA PROMOTION: Memory promoted with feedback_score={feedback_score:.2f}"
+                        f"[{namespace}] DNA PROMOTION: Memory promoted with feedback_score={feedback_score:.2f}",
                     )
                     return True
             return False
@@ -285,7 +273,9 @@ class MetaLearningStorage:
             with cls._graph_lock:
                 if cls._graph_bridge is None:
                     try:
-                        from agentic_core.L4_state.utils.memory.graph_memory_bridge_types import GraphMemoryBridge
+                        from agentic_core.L4_state.utils.memory.graph_memory_bridge_types import (
+                            GraphMemoryBridge,
+                        )
 
                         cls._graph_bridge = GraphMemoryBridge.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Graph Memory Bridge")
@@ -300,7 +290,7 @@ class MetaLearningStorage:
             return
         try:
             cls._graph_bridge.create_agent_entity(
-                agent_name=agent_name, agent_type="Agent", observations=[f"Agent {agent_name} initialized"]
+                agent_name=agent_name, agent_type="Agent", observations=[f"Agent {agent_name} initialized"],
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
@@ -313,7 +303,7 @@ class MetaLearningStorage:
             return
         try:
             cls._graph_bridge.create_mastered_task_relation(
-                agent_name=agent_name, task_description=context, feedback_score=feedback_score
+                agent_name=agent_name, task_description=context, feedback_score=feedback_score,
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise

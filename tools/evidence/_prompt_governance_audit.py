@@ -61,7 +61,7 @@ def main():
     print("\n=== PROMPT SLOT GENERATION (generates_prompt by symbol) ===")
     cur.execute(
         "SELECT symbol, COUNT(*) FROM edges WHERE relation_type = 'generates_prompt' "
-        "GROUP BY symbol ORDER BY COUNT(*) DESC LIMIT 20"
+        "GROUP BY symbol ORDER BY COUNT(*) DESC LIMIT 20",
     )
     for sym, cnt in cur.fetchall():
         print(f"  {sym}: {cnt}")
@@ -70,7 +70,7 @@ def main():
     print("\n=== D0 INJECTION FENCE ANALYSIS ===")
     cur.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
-        "WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'"
+        "WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'",
     )
     d0_count = cur.fetchone()[0]
     cur.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'generates_prompt'")
@@ -89,7 +89,7 @@ def main():
         "WHERE relation_type = 'consumes_prompt' "
         "AND source_file NOT IN ("
         "  SELECT DISTINCT source_file FROM edges WHERE relation_type = 'generates_prompt'"
-        ")"
+        ")",
     )
     orphan = cur.fetchone()[0]
     print(f"  Orphan consumers (consume but dont generate): {orphan}")
@@ -99,7 +99,7 @@ def main():
     cur.execute(
         "SELECT relation_type, COUNT(*) FROM edges "
         "WHERE relation_type LIKE '%inject%' OR relation_type LIKE '%injection%' "
-        "GROUP BY relation_type ORDER BY COUNT(*) DESC"
+        "GROUP BY relation_type ORDER BY COUNT(*) DESC",
     )
     for rt, cnt in cur.fetchall():
         print(f"  {rt}: {cnt}")
@@ -111,7 +111,7 @@ def main():
         "SELECT DISTINCT source_file FROM edges "
         "WHERE source_file LIKE 'apps_lic/reasoning/%' OR source_file LIKE 'apps_rg/reasoning/%' "
         "OR source_file LIKE 'apps_shared/reasoning/%' "
-        "ORDER BY source_file"
+        "ORDER BY source_file",
     )
     agent_files = [r[0] for r in cur.fetchall()]
     print(f"  Total agent reasoning files in ADG: {len(agent_files)}")
@@ -134,7 +134,7 @@ def main():
     cur.execute(
         "SELECT relation_type, COUNT(*) FROM edges "
         "WHERE relation_type LIKE '%prompt%' "
-        "GROUP BY relation_type ORDER BY COUNT(*) DESC"
+        "GROUP BY relation_type ORDER BY COUNT(*) DESC",
     )
     for rt, cnt in cur.fetchall():
         print(f"  {rt}: {cnt}")
@@ -147,7 +147,7 @@ def main():
         "AND source_file NOT IN ("
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type = 'generates_prompt' AND symbol LIKE '%I0%'"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     no_i0 = cur.fetchall()
     print(f"  Count: {len(no_i0)}")

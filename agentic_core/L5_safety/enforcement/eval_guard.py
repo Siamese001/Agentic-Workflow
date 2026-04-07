@@ -89,7 +89,7 @@ class EvalGuard:
 
         if violations and self._mode == "enforce":
             raise EvalExecutionDeniedError(
-                f"Eval guard blocked {operation}: {violations}"
+                f"Eval guard blocked {operation}: {violations}",
             )
 
         return {"verdict": verdict, "violations": violations, "timestamp": datetime.now(timezone.utc).isoformat()}

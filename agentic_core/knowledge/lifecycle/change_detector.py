@@ -84,7 +84,7 @@ class ChangeHandler(FileSystemEventHandler if HAS_WATCHDOG else object):
             self._emit_event(
                 event.dest_path,
                 ChangeType.MOVED,
-                src_path=event.src_path
+                src_path=event.src_path,
             )
 
     def _emit_event(self, file_path: str, change_type: ChangeType, src_path: str | None = None):
@@ -233,12 +233,12 @@ class ChangeDetector:
         """Handle a change event."""
         trace_id = f"change_{event.change_type.value}_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "ChangeDetector._handle_change"
+            trace_id, LayerSegment.L4_STATE, "ChangeDetector._handle_change",
         )
 
         _emit_records_telemetry_event(
             "file_change",
-            f"{event.change_type.value}_{Path(event.file_path).name}"
+            f"{event.change_type.value}_{Path(event.file_path).name}",
         )
 
         # Notify all callbacks

@@ -44,8 +44,8 @@ async def test_runtime_adg_integration():
                 "metadata": {
                     "test": True,
                     "runtime_adg": True,
-                    "execution_time": 0.1
-                }
+                    "execution_time": 0.1,
+                },
             }
 
     try:
@@ -121,9 +121,9 @@ async def test_runtime_adg_integration():
                         "started_at_utc": 1774428403178,
                         "duration_ms": 61,
                         "status": "ok",
-                        "attributes_json": json.dumps({"test": True})
-                    }
-                ]
+                        "attributes_json": json.dumps({"test": True}),
+                    },
+                ],
             }
 
             snapshot_file = runtime_adg_dir / f"runtime_adg_{int(time.time() * 1000)}.json"

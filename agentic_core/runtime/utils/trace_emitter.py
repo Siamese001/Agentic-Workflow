@@ -70,39 +70,25 @@ _emit_applies_guardrail("p0", "trace_emitter", "p0_governance")
 _emit_reads_policy_state("p0", "trace_emitter", "policy_binding")
 _emit_snapshots_state("p0", "trace_emitter", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -291,7 +277,7 @@ class TraceEmitter:
             elapsed_ms = (time.monotonic() - self._start) * 1000.0
             success = exc_type is None
             self._record = self._emitter.emit_trace_record(
-                self._operation, elapsed_ms, success=success, metadata=self._metadata
+                self._operation, elapsed_ms, success=success, metadata=self._metadata,
             )
             return False
 
@@ -300,7 +286,7 @@ class TraceEmitter:
             return self._record
 
     def trace_op(
-        self, operation: str, metadata: dict[str, Any] | None = None
+        self, operation: str, metadata: dict[str, Any] | None = None,
     ) -> TraceEmitter.trace_operation:
         """Return a context manager that traces `operation`."""
         return TraceEmitter.trace_operation(self, operation, metadata)
@@ -331,7 +317,7 @@ def emit_trace(layer: str, operation: str | None = None) -> Callable:
                 result = fn(*args, **kwargs)
                 elapsed_ms = (time.monotonic() - start) * 1000.0
                 digest = hashlib.sha256(
-                    f"{layer}:{module_name}:{op_name}:{elapsed_ms:.3f}".encode()
+                    f"{layer}:{module_name}:{op_name}:{elapsed_ms:.3f}".encode(),
                 ).hexdigest()[:16]
                 logger.debug(
                     "TRACE_EMIT layer=%s module=%s op=%s trace_id=%s elapsed_ms=%.1f ok=True digest=%s",

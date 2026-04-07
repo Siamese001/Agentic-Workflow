@@ -12,7 +12,7 @@ print("edges:", c.fetchone()[0])
 
 print("\n=== TOP RELATION TYPES ===")
 c.execute(
-    "SELECT relation_type, COUNT(*) as cnt FROM edges GROUP BY relation_type ORDER BY cnt DESC LIMIT 25"
+    "SELECT relation_type, COUNT(*) as cnt FROM edges GROUP BY relation_type ORDER BY cnt DESC LIMIT 25",
 )
 for row in c.fetchall():
     print(f"  {row[0]}: {row[1]}")

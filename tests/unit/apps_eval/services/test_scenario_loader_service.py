@@ -43,14 +43,14 @@ class TestScenarioLoaderService:
                     {
                         "scenario_id": "test_1",
                         "description": "Test scenario 1",
-                        "expected_behavior": "Pass"
+                        "expected_behavior": "Pass",
                     },
                     {
                         "scenario_id": "test_2",
                         "description": "Test scenario 2",
-                        "expected_behavior": "Fail"
-                    }
-                ]
+                        "expected_behavior": "Fail",
+                    },
+                ],
             }
             file_path.write_text(json.dumps(test_data), encoding="utf-8")
 
@@ -120,9 +120,9 @@ class TestScenarioLoaderService:
                 "scenarios": [
                     {
                         "description": "Test scenario",
-                        "expected_behavior": "Pass"
-                    }
-                ]
+                        "expected_behavior": "Pass",
+                    },
+                ],
             }
             file_path.write_text(json.dumps(test_data), encoding="utf-8")
 
@@ -190,9 +190,9 @@ class TestScenarioLoaderService:
                     {
                         "scenario_id": "test_1",
                         "description": "Test scenario 1",
-                        "expected_behavior": "Pass"
-                    }
-                ]
+                        "expected_behavior": "Pass",
+                    },
+                ],
             }
             file_path.write_text(json.dumps(test_data), encoding="utf-8")
 
@@ -222,14 +222,14 @@ class TestScenarioLoaderService:
                     {
                         "scenario_id": "test_1",
                         "description": "Test scenario 1",
-                        "expected_behavior": "Pass"
+                        "expected_behavior": "Pass",
                     },
                     {
                         "scenario_id": "test_2",
                         "description": "Test scenario 2",
-                        "expected_behavior": "Fail"
-                    }
-                ]
+                        "expected_behavior": "Fail",
+                    },
+                ],
             }
             file_path.write_text(json.dumps(test_data), encoding="utf-8")
 
@@ -247,7 +247,7 @@ class TestScenarioLoaderService:
         scenario = {
             "scenario_id": "test_1",
             "description": "Test scenario",
-            "expected_behavior": "Pass"
+            "expected_behavior": "Pass",
         }
         is_valid, errors = service.validate_scenario(scenario)
         assert is_valid is True
@@ -260,7 +260,7 @@ class TestScenarioLoaderService:
         service = ScenarioLoaderService()
         scenario = {
             "description": "Test scenario",
-            "expected_behavior": "Pass"
+            "expected_behavior": "Pass",
         }
         is_valid, errors = service.validate_scenario(scenario)
         assert is_valid is False
@@ -273,7 +273,7 @@ class TestScenarioLoaderService:
         service = ScenarioLoaderService()
         scenario = {
             "scenario_id": "test_1",
-            "expected_behavior": "Pass"
+            "expected_behavior": "Pass",
         }
         is_valid, errors = service.validate_scenario(scenario)
         assert is_valid is False
@@ -286,7 +286,7 @@ class TestScenarioLoaderService:
         service = ScenarioLoaderService()
         scenario = {
             "scenario_id": "test_1",
-            "description": "Test scenario"
+            "description": "Test scenario",
         }
         is_valid, errors = service.validate_scenario(scenario)
         assert is_valid is False
@@ -310,7 +310,7 @@ class TestScenarioLoaderService:
         scenario = {
             "scenario_id": "",
             "description": "",
-            "expected_behavior": ""
+            "expected_behavior": "",
         }
         # Empty strings are present, so validation passes
         is_valid, _errors = service.validate_scenario(scenario)

@@ -54,7 +54,7 @@ CANONICAL_MANIFEST = {
             "command": "node",
             "args": [
                 "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-filesystem\\dist\\index.js",
-                str(REPO_ROOT)
+                str(REPO_ROOT),
             ],
             "disabled": False,
             "env": {"NODE_ENV": "production"},
@@ -64,7 +64,7 @@ CANONICAL_MANIFEST = {
             "_description": "Sequential thinking MCP server",
             "command": "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node.exe",
             "args": [
-                "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"
+                "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js",
             ],
             "disabled": False,
             "env": {
@@ -83,7 +83,7 @@ CANONICAL_MANIFEST = {
             "_description": "Brave Search MCP",
             "command": "node",
             "args": [
-                "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@brave\\brave-search-mcp-server\\dist\\index.js"
+                "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@brave\\brave-search-mcp-server\\dist\\index.js",
             ],
             "disabled": False,
             "env": {"BRAVE_API_KEY": "BSAr2wedArAn5uzkoHBpQegHvaEfPxZ"},

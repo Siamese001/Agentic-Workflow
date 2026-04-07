@@ -122,7 +122,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Add wave tables to execution plans")
     parser.add_argument(
-        "--type", choices=["execution", "all"], default="execution", help="Type of plans to process"
+        "--type", choices=["execution", "all"], default="execution", help="Type of plans to process",
     )
     parser.add_argument("--dry-run", action="store_true", help="Show what would be changed")
     parser.add_argument("--execute", action="store_true", help="Actually make changes")

@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 REPORTS = {
     "system_learning":           "docs/reports/plans/deep_analysis_system_learning.json",
     "agentic_core/prompt_governance": "docs/reports/plans/deep_analysis_prompt_governance.json",
@@ -58,8 +57,8 @@ def build_report() -> str:
         grand_misplaced       += s["total_misplaced_files"]
 
     lines.append(section("Grand Totals"))
-    lines.append(f"| Metric | Count |")
-    lines.append(f"|--------|-------|")
+    lines.append("| Metric | Count |")
+    lines.append("|--------|-------|")
     lines.append(f"| Total files scanned | {grand_files} |")
     lines.append(f"| Files with dead-code issues | {grand_issues} |")
     lines.append(f"| Root-level violations | {grand_root_violations} |")
@@ -74,7 +73,7 @@ def build_report() -> str:
         lines.append(
             f"| `{dir_key}` | {s['total_files']} | {s['total_with_issues']} "
             f"| {s['total_root_violations']} | {s['total_dead_code_files']} "
-            f"| {s['total_misplaced_files']} |"
+            f"| {s['total_misplaced_files']} |",
         )
 
     # ── Per-directory deep drill-down ─────────────────────────────────────
@@ -96,7 +95,7 @@ def build_report() -> str:
                 marker = "⚠️" if (rv + dc + mp) > 0 else "✅"
                 lines.append(
                     f"| {marker} `{folder}/` | {fs['files']} | {fs['total_lines']} "
-                    f"| {rv} | {dc} | {mp} |"
+                    f"| {rv} | {dc} | {mp} |",
                 )
 
         # Root violations detail
@@ -107,7 +106,7 @@ def build_report() -> str:
                 funcs = r.get("functions", [])
                 lines.append(
                     f"- `{r['path']}` — {r['code_lines']} code lines, "
-                    f"{len(funcs)} functions, {r['size_bytes']} bytes"
+                    f"{len(funcs)} functions, {r['size_bytes']} bytes",
                 )
                 if funcs:
                     lines.append(f"  - Functions: `{'`, `'.join(funcs[:8])}`{'…' if len(funcs) > 8 else ''}")

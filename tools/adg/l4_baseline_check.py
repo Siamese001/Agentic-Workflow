@@ -19,7 +19,7 @@ conn = sqlite3.connect(str(db))
 rows = conn.execute(
     "SELECT relation_type, COUNT(*) FROM edges "
     "WHERE relation_type IN ('writes_to','writes_through') "
-    "GROUP BY relation_type"
+    "GROUP BY relation_type",
 ).fetchall()
 counts = dict(rows)
 wt = counts.get("writes_to", 0)

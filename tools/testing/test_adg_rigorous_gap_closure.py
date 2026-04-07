@@ -37,7 +37,7 @@ class ADGRigorousTestSuite:
             "boundary_regression_tests": {},
             "test_binding_tests": {},
             "end_to_end_tests": {},
-            "overall_success": False
+            "overall_success": False,
         }
 
     def connect(self):
@@ -108,14 +108,14 @@ class ADGRigorousTestSuite:
                 "adg_name": null_adg_name,
                 "entity_type": null_entity_type,
                 "resolved_path_critical": null_resolved_path_critical,
-                "valid": null_adg_name == 0 and null_entity_type == 0 and null_resolved_path_critical == 0
+                "valid": null_adg_name == 0 and null_entity_type == 0 and null_resolved_path_critical == 0,
             },
             "edge_fields": {
                 "src_id": null_src_id,
                 "dst_id": null_dst_id,
                 "relation_type": null_relation_type,
-                "valid": null_src_id == 0 and null_dst_id == 0 and null_relation_type == 0
-            }
+                "valid": null_src_id == 0 and null_dst_id == 0 and null_relation_type == 0,
+            },
         }
 
         overall_valid = all(
@@ -181,7 +181,7 @@ class ADGRigorousTestSuite:
             "symbol_module_consistency": symbol_layer_mismatches == 0,
             "symbol_mismatch_count": symbol_layer_mismatches,
             "layer_distribution": layer_distribution,
-            "total_layers": len(layer_distribution)
+            "total_layers": len(layer_distribution),
         }
 
         overall_valid = architecture_status["valid_layers_only"] and architecture_status["symbol_module_consistency"]
@@ -253,7 +253,7 @@ class ADGRigorousTestSuite:
             "edge_hash_consistency": edge_consistent,
             "hash_stability": hash_stable,
             "final_node_hash": node_hashes[0][:20] + "...",
-            "final_edge_hash": edge_hashes[0][:20] + "..."
+            "final_edge_hash": edge_hashes[0][:20] + "...",
         }
 
         overall_valid = node_consistent and edge_consistent and hash_stable
@@ -288,7 +288,7 @@ class ADGRigorousTestSuite:
             'references_policy_hash',
             'mutation_signature',
             'parent_snapshot_hash',
-            'links_to_execution_trace'
+            'links_to_execution_trace',
         ]
 
         mutation_edge_counts = {}
@@ -315,7 +315,7 @@ class ADGRigorousTestSuite:
                     "total": null_checks["total"],
                     "null_src": null_checks["null_src"],
                     "null_dst": null_checks["null_dst"],
-                    "integrity": null_checks["null_src"] == 0 and null_checks["null_dst"] == 0
+                    "integrity": null_checks["null_src"] == 0 and null_checks["null_dst"] == 0,
                 }
 
         # Test 4.3: Verify mutation chain connectivity (replay keys can have different connectivity patterns)
@@ -348,9 +348,9 @@ class ADGRigorousTestSuite:
                 "disconnected_count": replay_key_connectivity,
                 "connected_count": total_replay_keys - replay_key_connectivity,
                 "connectivity_ratio": round(connectivity_ratio, 2),
-                "connectivity_acceptable": connectivity_acceptable
+                "connectivity_acceptable": connectivity_acceptable,
             },
-            "completeness": len(missing_mutation_edges) == 0 and connectivity_acceptable
+            "completeness": len(missing_mutation_edges) == 0 and connectivity_acceptable,
         }
 
         overall_valid = lineage_status["completeness"]
@@ -395,7 +395,7 @@ class ADGRigorousTestSuite:
             'determinism_seed',
             'determinism_digest_emit',
             'policy_verification',
-            'execution_plan_dispatch'
+            'execution_plan_dispatch',
         ]
 
         coverage_results = []
@@ -418,7 +418,7 @@ class ADGRigorousTestSuite:
                 "layer": module['layer'],
                 "has_required_edges": len(missing_edges) == 0,
                 "missing_edges": missing_edges,
-                "present_edge_types": list(module_edge_types)
+                "present_edge_types": list(module_edge_types),
             }
 
             coverage_results.append(coverage_result)
@@ -427,7 +427,7 @@ class ADGRigorousTestSuite:
                 modules_missing_edges.append({
                     "module": module['adg_name'],
                     "layer": module['layer'],
-                    "missing_edges": missing_edges
+                    "missing_edges": missing_edges,
                 })
 
         # Test 5.3: Edge type distribution sanity
@@ -440,7 +440,7 @@ class ADGRigorousTestSuite:
             "module_coverage_results": coverage_results,
             "modules_missing_edges": modules_missing_edges,
             "coverage_complete": len(modules_missing_edges) == 0,
-            "edge_distribution_sample": edge_distribution
+            "edge_distribution_sample": edge_distribution,
         }
 
         overall_valid = len(modules_missing_edges) == 0
@@ -522,9 +522,9 @@ class ADGRigorousTestSuite:
             "boundary_integrity": {
                 "no_critical_unresolved": critical_unresolved == 0,
                 "all_edges_classified": unclassified_edges == 0,
-                "no_production_security_violations": production_security_violations == 0
+                "no_production_security_violations": production_security_violations == 0,
             },
-            "overall_integrity": critical_unresolved == 0 and unclassified_edges == 0 and production_security_violations == 0
+            "overall_integrity": critical_unresolved == 0 and unclassified_edges == 0 and production_security_violations == 0,
         }
 
         overall_valid = boundary_status["overall_integrity"]
@@ -587,7 +587,7 @@ class ADGRigorousTestSuite:
                 "has_regression_detection": regression_detection_edges > 0,
                 "has_promotion_gating": promotion_gating_edges > 0,
                 "has_test_cases": test_case_definitions > 0,
-                "has_coverage": coverage_edges > 0
+                "has_coverage": coverage_edges > 0,
             },
             "overall_binding": all([
                 execution_trace_edges > 0,
@@ -595,8 +595,8 @@ class ADGRigorousTestSuite:
                 regression_detection_edges > 0,
                 promotion_gating_edges > 0,
                 test_case_definitions > 0,
-                coverage_edges > 0
-            ])
+                coverage_edges > 0,
+            ]),
         }
 
         overall_valid = binding_status["overall_binding"]
@@ -655,14 +655,14 @@ class ADGRigorousTestSuite:
             "reference_integrity": {
                 "invalid_src_refs": invalid_src_refs,
                 "invalid_dst_refs": invalid_dst_refs,
-                "references_valid": invalid_src_refs == 0 and invalid_dst_refs == 0
+                "references_valid": invalid_src_refs == 0 and invalid_dst_refs == 0,
             },
             "entity_types": entity_type_list,
             "relation_types": relation_type_list,
             "database_size": {
                 "bytes": db_size,
                 "mb": round(db_size / 1024 / 1024, 2),
-                "reasonable": size_reasonable
+                "reasonable": size_reasonable,
             },
             "overall_consistency": (
                 invalid_src_refs == 0 and
@@ -670,7 +670,7 @@ class ADGRigorousTestSuite:
                 size_reasonable and
                 node_count > 0 and
                 edge_count > 0
-            )
+            ),
         }
 
         overall_valid = consistency_status["overall_consistency"]

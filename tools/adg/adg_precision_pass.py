@@ -45,7 +45,7 @@ class ADGPrecisionPass:
         results = {
             "timestamp": self.timestamp,
             "checks": {},
-            "overall_success": True
+            "overall_success": True,
         }
 
         # 1. Report <-> SQLite Hard Parity
@@ -108,7 +108,7 @@ class ADGPrecisionPass:
             "sqlite_nodes": sqlite_nodes,
             "sqlite_edges": sqlite_edges,
             "sqlite_edge_distribution": sqlite_edge_dist,
-            "sqlite_layer_distribution": sqlite_layer_dist
+            "sqlite_layer_distribution": sqlite_layer_dist,
         }
 
         print(f"  SQLite: {sqlite_nodes} nodes, {sqlite_edges} edges")
@@ -179,7 +179,7 @@ class ADGPrecisionPass:
             'mutation_signature',
             'parent_snapshot_hash',
             'emits_replay_key',
-            'references_policy_hash'
+            'references_policy_hash',
         ]
 
         for edge_type in determinism_edges:
@@ -288,7 +288,7 @@ class ADGPrecisionPass:
             "modules_with_execution": 0,
             "missing_determinism": [],
             "missing_governance": [],
-            "missing_execution": []
+            "missing_execution": [],
         }
 
         for module_adg, module_id, layer in core_modules:
@@ -393,7 +393,7 @@ class ADGPrecisionPass:
         result["details"] = {
             "final_nodes": final_nodes,
             "final_edges": final_edges,
-            "final_edge_types": final_edge_types
+            "final_edge_types": final_edge_types,
         }
 
         print(f"  Final state: {final_nodes} nodes, {final_edges} edges")
@@ -439,7 +439,7 @@ class ADGPrecisionPass:
             "timestamp": results["timestamp"],
             "sqlite_nodes": results["checks"]["parity"]["details"]["sqlite_nodes"],
             "sqlite_edges": results["checks"]["parity"]["details"]["sqlite_edges"],
-            "parity_success": results["checks"]["parity"]["success"]
+            "parity_success": results["checks"]["parity"]["success"],
         }
         with open(report_dir / "reconciliation_report.json", 'w') as f:
             json.dump(reconciliation, f, indent=2)
@@ -449,7 +449,7 @@ class ADGPrecisionPass:
             "timestamp": results["timestamp"],
             "critical_unresolved": results["checks"]["boundary"]["details"]["critical_unresolved"],
             "unclassified_edges": results["checks"]["boundary"]["details"]["unclassified_edges"],
-            "boundary_success": results["checks"]["boundary"]["success"]
+            "boundary_success": results["checks"]["boundary"]["success"],
         }
         with open(report_dir / "boundary_report.json", 'w') as f:
             json.dump(boundary, f, indent=2)
@@ -461,7 +461,7 @@ class ADGPrecisionPass:
             "modules_with_determinism": results["checks"]["edge_coverage"]["details"]["modules_with_determinism"],
             "modules_with_governance": results["checks"]["edge_coverage"]["details"]["modules_with_governance"],
             "modules_with_execution": results["checks"]["edge_coverage"]["details"]["modules_with_execution"],
-            "coverage_success": results["checks"]["edge_coverage"]["success"]
+            "coverage_success": results["checks"]["edge_coverage"]["success"],
         }
         with open(report_dir / "critical_edge_coverage.json", 'w') as f:
             json.dump(coverage, f, indent=2)
@@ -472,7 +472,7 @@ class ADGPrecisionPass:
             "total_test_cases": results["checks"]["test_binding"]["details"]["total_test_cases"],
             "linked_test_cases": results["checks"]["test_binding"]["details"]["linked_test_cases"],
             "test_linkage": results["checks"]["test_binding"]["details"]["test_linkage"],
-            "test_binding_success": results["checks"]["test_binding"]["success"]
+            "test_binding_success": results["checks"]["test_binding"]["success"],
         }
         with open(report_dir / "test_surface_coverage.json", 'w') as f:
             json.dump(test_surface, f, indent=2)
@@ -482,7 +482,7 @@ class ADGPrecisionPass:
             "timestamp": results["timestamp"],
             "lineage_coverage": results["checks"]["replay"]["details"]["lineage_coverage"],
             "database_hash": results["checks"]["replay"]["details"]["database_hash"],
-            "replay_success": results["checks"]["replay"]["success"]
+            "replay_success": results["checks"]["replay"]["success"],
         }
         with open(report_dir / "replay_convergence_report.json", 'w') as f:
             json.dump(replay, f, indent=2)

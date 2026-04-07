@@ -6,7 +6,6 @@ import sys
 from typing import Any
 
 
-
 def create_init_files(paths: list[str]) -> int:
     """
     Create __init__.py files for the given paths.

@@ -30,7 +30,7 @@ from agentic_core.core.test_quality_framework import (
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 logger = logging.getLogger(__name__)
 
@@ -236,7 +236,7 @@ def improve_test_directory(test_dir: Path, recursive: bool = True) -> bool:
 def main():
     """Main entry point for test quality improvement."""
     parser = argparse.ArgumentParser(
-        description="Test Quality Improvement Tool - Phase 3 Implementation"
+        description="Test Quality Improvement Tool - Phase 3 Implementation",
     )
 
     subparsers = parser.add_subparsers(dest='command', help='Available commands')

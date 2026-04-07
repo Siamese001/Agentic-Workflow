@@ -67,39 +67,25 @@ _emit_applies_guardrail("p0", "node_negotiator_util", "p0_governance")
 _emit_reads_policy_state("p0", "node_negotiator_util", "policy_binding")
 _emit_snapshots_state("p0", "node_negotiator_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -303,11 +289,11 @@ class NegotiationConfig(BaseModel):
     max_rounds: int = Field(default_factory=lambda: int(os.getenv("NEGOTIATION_MAX_ROUNDS", "2")), ge=1, le=5)
     max_message_length: int = Field(default=1000, ge=100, le=10000)
     response_timeout: float = Field(
-        default_factory=lambda: float(os.getenv("NEGOTIATION_RESPONSE_TIMEOUT", "30.0")), ge=5.0, le=300.0
+        default_factory=lambda: float(os.getenv("NEGOTIATION_RESPONSE_TIMEOUT", "30.0")), ge=5.0, le=300.0,
     )
     enable_persistence: bool = True
     auto_resolve_threshold: float = Field(
-        default_factory=lambda: float(os.getenv("NEGOTIATION_AUTO_RESOLVE_THRESHOLD", "0.8")), ge=0.0, le=1.0
+        default_factory=lambda: float(os.getenv("NEGOTIATION_AUTO_RESOLVE_THRESHOLD", "0.8")), ge=0.0, le=1.0,
     )
 
 
@@ -350,7 +336,7 @@ class NodeNegotiator:
                 "CLARIFICATION_REQUEST": self._handle_clarification,
                 "CHANGE_REQUEST": self._handle_change_request,
                 "REJECTION": self._handle_rejection,
-            }
+            },
         )
 
     async def send_feedback(
@@ -456,7 +442,7 @@ class NodeNegotiator:
         negotiation.messages.append(response)
 
     async def _handle_change_request(
-        self, message: NegotiationMessage, negotiation: NegotiationRound
+        self, message: NegotiationMessage, negotiation: NegotiationRound,
     ) -> None:
         """Handle change request."""
         logger.info(f"Change requested: {message.payload}")
@@ -480,7 +466,7 @@ class NodeNegotiator:
                     "timestamp": message.timestamp.isoformat(),
                     "from": message.from_hop,
                     "message": message.payload,
-                }
+                },
             )
             logger.info(f"Rolled back {message.to_hop} for negotiation")
 
@@ -501,7 +487,7 @@ class NodeNegotiator:
                 return round_id
         round_id = f"neg_{int(time.time() * 1000)}_{hop1_id}_{hop2_id}"
         self.active_negotiations[round_id] = NegotiationRound(
-            round_id=round_id, participants=[hop1_id, hop2_id]
+            round_id=round_id, participants=[hop1_id, hop2_id],
         )
         return round_id
 
@@ -577,7 +563,7 @@ def get_node_negotiator(**kwargs) -> NodeNegotiator:
 
 
 async def request_upstream_change(
-    downstream_hop: SubatomicHop, upstream_hop_id: str, change_request: str, reason: str, **kwargs
+    downstream_hop: SubatomicHop, upstream_hop_id: str, change_request: str, reason: str, **kwargs,
 ) -> NegotiationResult:
     """Convenience function for requesting upstream changes.
 
@@ -633,7 +619,7 @@ class NegotiatingHop(SubatomicHop):
         self.negotiation_enabled = True
 
     async def evaluate_downstream_feedback(
-        self, downstream_output: Any, expected_criteria: list[str]
+        self, downstream_output: Any, expected_criteria: list[str],
     ) -> bool:
         """Evaluate if downstream feedback requires negotiation.
 
@@ -649,7 +635,7 @@ class NegotiatingHop(SubatomicHop):
         return False
 
     async def request_upstream_modification(
-        self, upstream_hop_id: str, modification: str, reason: str
+        self, upstream_hop_id: str, modification: str, reason: str,
     ) -> NegotiationResult:
         """Request modification from upstream node.
 
@@ -664,5 +650,5 @@ class NegotiatingHop(SubatomicHop):
         if not self.negotiation_enabled:
             raise RuntimeError("Negotiation not enabled")
         return await request_upstream_change(
-            downstream_hop=self, upstream_hop_id=upstream_hop_id, change_request=modification, reason=reason
+            downstream_hop=self, upstream_hop_id=upstream_hop_id, change_request=modification, reason=reason,
         )

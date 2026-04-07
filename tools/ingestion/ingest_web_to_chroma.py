@@ -118,7 +118,7 @@ class WebRAGIngestionPipeline:
 
         logger.info(f"Initializing ChromaDB at: {self.chroma_path}")
         self.chroma_client = chromadb.PersistentClient(
-            path=str(self.chroma_path), settings=Settings(anonymized_telemetry=False)
+            path=str(self.chroma_path), settings=Settings(anonymized_telemetry=False),
         )
 
         # Get or create collection
@@ -156,7 +156,7 @@ class WebRAGIngestionPipeline:
             HTML content or None if failed
         """
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         }
 
         try:
@@ -259,7 +259,7 @@ class WebRAGIngestionPipeline:
 
         # Get all elements in order - expanded to catch more content
         elements = main_content.find_all(
-            ["h1", "h2", "h3", "h4", "p", "ul", "ol", "pre", "div", "span", "li", "section", "article"]
+            ["h1", "h2", "h3", "h4", "p", "ul", "ol", "pre", "div", "span", "li", "section", "article"],
         )
 
         if self.debug_chunks:
@@ -282,14 +282,14 @@ class WebRAGIngestionPipeline:
                 if level == 1 or level == 2:
                     # New main section
                     current_section = Section(
-                        level=level, title=heading_text, content_blocks=[], subsections=[]
+                        level=level, title=heading_text, content_blocks=[], subsections=[],
                     )
                     sections.append(current_section)
                     current_subsection = None
                 elif level == 3 and current_section:
                     # New subsection
                     current_subsection = Section(
-                        level=level, title=heading_text, content_blocks=[], subsections=[]
+                        level=level, title=heading_text, content_blocks=[], subsections=[],
                     )
                     current_section.subsections.append(current_subsection)
 
@@ -319,7 +319,7 @@ class WebRAGIngestionPipeline:
                     )
                 )
                 content_block = ContentBlock(
-                    block_type=block_type, content=content_text, raw_html=str(element)
+                    block_type=block_type, content=content_text, raw_html=str(element),
                 )
 
                 # Add to appropriate section
@@ -331,7 +331,7 @@ class WebRAGIngestionPipeline:
                     # Create default section if no headings found
                     if not sections:
                         current_section = Section(
-                            level=1, title="Introduction", content_blocks=[], subsections=[]
+                            level=1, title="Introduction", content_blocks=[], subsections=[],
                         )
                         sections.append(current_section)
                         if self.debug_chunks:
@@ -342,7 +342,7 @@ class WebRAGIngestionPipeline:
             print(f"Created {len(sections)} sections")
             for i, section in enumerate(sections):
                 print(
-                    f"  Section {i + 1}: {section.title} ({len(section.content_blocks)} blocks, {len(section.subsections)} subsections)"
+                    f"  Section {i + 1}: {section.title} ({len(section.content_blocks)} blocks, {len(section.subsections)} subsections)",
                 )
 
         return DocumentStructure(title=doc_title, sections=sections)
@@ -583,7 +583,7 @@ class WebRAGIngestionPipeline:
         return chunks
 
     def chunk_text(
-        self, text: str, chunk_size: int = 700, overlap: int = 100, html: str = "", url: str = ""
+        self, text: str, chunk_size: int = 700, overlap: int = 100, html: str = "", url: str = "",
     ) -> list[tuple[str, dict]]:
         """
         Split text into semantic chunks using structure-aware approach.
@@ -640,7 +640,7 @@ class WebRAGIngestionPipeline:
         return result
 
     def _fallback_chunking(
-        self, text: str, chunk_size: int = 700, overlap: int = 100
+        self, text: str, chunk_size: int = 700, overlap: int = 100,
     ) -> list[tuple[str, dict]]:
         """
         Fallback chunking method for when HTML is not available.
@@ -810,7 +810,7 @@ class WebRAGIngestionPipeline:
                             "Success": self.stats["urls_successful"],
                             "Failed": self.stats["urls_failed"],
                             "Chunks": self.stats["chunks_stored"],
-                        }
+                        },
                     )
 
                 except Exception as e:

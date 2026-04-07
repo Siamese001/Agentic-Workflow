@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
-from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tools.adg.repair.types import Deficiency, FixResult
 
 
 @repair_rule("fix_p2_antipatterns", priority=15)

@@ -10,9 +10,9 @@ Priority 1: 8,468 HIGH severity violations
 Phase 2.1: Systematic application of ImportError fixes
 """
 
+import argparse
 import json
 import re
-import argparse
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -54,13 +54,13 @@ class HighSeveritySilentSwallowerFixer:
                         # For test files, suggest pytest.importorskip
                         new_line = original_line.replace(
                             'except ImportError:',
-                            'pytest.importorskip("missing_dependency")  # TODO: specify actual dependency'
+                            'pytest.importorskip("missing_dependency")  # TODO: specify actual dependency',
                         )
                     else:
                         # For non-test files, add guardian comment if it's truly optional
                         new_line = original_line.replace(
                             'except ImportError:',
-                            '# guardian: allow-silent-swallow - optional dependency\n        except ImportError:'
+                            '# guardian: allow-silent-swallow - optional dependency\n        except ImportError:',
                         )
 
                     if new_line != original_line:
@@ -103,7 +103,7 @@ class HighSeveritySilentSwallowerFixer:
                     # Add proper error handling for ValueError
                     new_line = original_line.replace(
                         'except ValueError:',
-                        'except ValueError as e:\n        # TODO: Add proper input validation\n        logger.warning(f"Invalid input: {e}")'
+                        'except ValueError as e:\n        # TODO: Add proper input validation\n        logger.warning(f"Invalid input: {e}")',
                     )
 
                     if new_line != original_line:
@@ -118,7 +118,7 @@ class HighSeveritySilentSwallowerFixer:
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
-        print(f"  ✅ Fixed additional ValueError violations")
+        print("  ✅ Fixed additional ValueError violations")
 
     def fix_attribute_type_errors(self):
         """Fix AttributeError/TypeError violations - programming errors."""
@@ -145,7 +145,7 @@ class HighSeveritySilentSwallowerFixer:
                     # Programming errors should not be silent
                     new_line = original_line.replace(
                         f'except {exception_type}:',
-                        f'except {exception_type} as e:\n        # TODO: Fix programming error - {exception_type} should not occur\n        raise e  # Re-raise to surface the issue'
+                        f'except {exception_type} as e:\n        # TODO: Fix programming error - {exception_type} should not occur\n        raise e  # Re-raise to surface the issue',
                     )
 
                     if new_line != original_line:
@@ -160,7 +160,7 @@ class HighSeveritySilentSwallowerFixer:
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
-        print(f"  ✅ Fixed programming error violations")
+        print("  ✅ Fixed programming error violations")
 
     def apply_fixes_to_all_remaining_violations(self):
         """Phase 2.1: Apply fixes to ALL remaining violations systematically."""
@@ -195,20 +195,20 @@ class HighSeveritySilentSwallowerFixer:
                         module_name = self._extract_module_name_from_context(violation.get('context', ''))
                         new_line = original_line.replace(
                             'except ImportError:',
-                            f'pytest.importorskip("{module_name}")'
+                            f'pytest.importorskip("{module_name}")',
                         )
                     else:
                         # For non-test files: surface the error or add explicit guardian
                         if self._is_optional_dependency(violation.get('context', '')):
                             new_line = original_line.replace(
                                 'except ImportError:',
-                                f'# guardian: allow-silent-swallow - optional dependency\n        except ImportError as e:\n            logger.debug(f"Optional dependency unavailable: {{e}}")'
+                                '# guardian: allow-silent-swallow - optional dependency\n        except ImportError as e:\n            logger.debug(f"Optional dependency unavailable: {e}")',
                             )
                         else:
                             # Surface the error for required dependencies
                             new_line = original_line.replace(
                                 'except ImportError:',
-                                'except ImportError as e:\n            raise ImportError(f"Required dependency missing: {e}")'
+                                'except ImportError as e:\n            raise ImportError(f"Required dependency missing: {e}")',
                             )
 
                     if new_line != original_line:
@@ -234,7 +234,7 @@ class HighSeveritySilentSwallowerFixer:
             'total_violations': len(import_errors),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining': len(import_errors) - self.fixes_applied
+            'remaining': len(import_errors) - self.fixes_applied,
         }
 
     def _extract_module_name_from_context(self, context):
@@ -279,9 +279,9 @@ class HighSeveritySilentSwallowerFixer:
             'patterns_used': {
                 'test_files': 'pytest.importorskip()',
                 'optional_dependencies': '# guardian: allow-silent-swallow',
-                'required_dependencies': 'raise ImportError()'
+                'required_dependencies': 'raise ImportError()',
             },
-            'phase_status': 'COMPLETED' if self.fixes_applied == len(import_errors) else 'PARTIAL'
+            'phase_status': 'COMPLETED' if self.fixes_applied == len(import_errors) else 'PARTIAL',
         }
 
         report_file = PROJECT_ROOT / "tools" / "phase21_import_error_fixes_report.json"
@@ -305,7 +305,7 @@ class HighSeveritySilentSwallowerFixer:
             'total_high_severity_violations': len(self.violations),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining_violations': len(self.violations) - self.fixes_applied
+            'remaining_violations': len(self.violations) - self.fixes_applied,
         }
 
         report_file = PROJECT_ROOT / "tools" / "high_severity_fixes_report.json"

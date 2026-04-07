@@ -1,12 +1,12 @@
 """
 Document Manifest Builder - Builds and manages document manifests.
 """
-from typing import Dict, Any, List
 from dataclasses import dataclass, field
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
-from ..types import DocumentRef, DocumentPackage
+from ..types import DocumentPackage, DocumentRef
 
 
 @dataclass
@@ -46,7 +46,7 @@ class DocumentManifestBuilder:
             hash=doc_ref.hash,
             upload_timestamp=datetime.now().isoformat(),
             extracted_fields=doc_ref.parsed_structured_fields,
-            flags=doc_ref.document_flags
+            flags=doc_ref.document_flags,
         )
         self.entries.append(entry)
         return entry
@@ -71,7 +71,7 @@ class DocumentManifestBuilder:
             "required_count": len(required_types),
             "present_count": len(present),
             "missing_types": list(missing),
-            "present_types": list(present)
+            "present_types": list(present),
         }
 
     def get_by_type(self, doc_type: str) -> List[ManifestEntry]:
@@ -90,7 +90,7 @@ class DocumentManifestBuilder:
                 hash=entry.hash,
                 extracted_text_available=bool(entry.extracted_fields),
                 parsed_structured_fields=entry.extracted_fields,
-                document_flags=entry.flags
+                document_flags=entry.flags,
             )
 
             # Add to appropriate category
@@ -129,10 +129,10 @@ class DocumentManifestBuilder:
                     "hash": e.hash,
                     "upload_timestamp": e.upload_timestamp,
                     "extracted_fields": e.extracted_fields,
-                    "flags": e.flags
+                    "flags": e.flags,
                 }
                 for e in self.entries
             ],
             "required_docs": self.required_docs,
-            "completeness_check": self.check_completeness()
+            "completeness_check": self.check_completeness(),
         }

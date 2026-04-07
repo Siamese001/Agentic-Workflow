@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -223,7 +222,7 @@ def scan_docs_directory(docs_path: Path) -> dict[str, Any]:
                     "file": str(relative_path),
                     "type": "backup_suffix",
                     "detail": f"File has backup suffix: {filename}",
-                }
+                },
             )
         filename_lower = filename.lower()
         if filename_lower in filenames_seen:
@@ -232,12 +231,12 @@ def scan_docs_directory(docs_path: Path) -> dict[str, Any]:
                     "file": str(relative_path),
                     "type": "duplicate_filename",
                     "detail": f"Duplicate filename (case-insensitive): {filename}",
-                }
+                },
             )
         filenames_seen.add(filename_lower)
         if file_path.suffix.lower() == ".md" and file_path.stat().st_size == 0:
             violations.append(
-                {"file": str(relative_path), "type": "empty_markdown", "detail": "Empty markdown file"}
+                {"file": str(relative_path), "type": "empty_markdown", "detail": "Empty markdown file"},
             )
         depth = len(relative_path.parts) - 1
         if depth > 6:
@@ -246,7 +245,7 @@ def scan_docs_directory(docs_path: Path) -> dict[str, Any]:
                     "file": str(relative_path),
                     "type": "depth_exceeded",
                     "detail": f"File depth {depth} exceeds maximum of 6 levels",
-                }
+                },
             )
         if file_path.suffix.lower() == ".md" and (not has_h1_heading(file_path)):
             violations.append(
@@ -254,7 +253,7 @@ def scan_docs_directory(docs_path: Path) -> dict[str, Any]:
                     "file": str(relative_path),
                     "type": "missing_h1",
                     "detail": "Markdown file missing H1 heading (# )",
-                }
+                },
             )
     return {"files_scanned": files_scanned, "violations": violations}
 

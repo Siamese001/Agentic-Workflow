@@ -7,7 +7,7 @@ from collections import Counter
 
 result = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/agentic_core/", "-q", "--tb=line", "--no-header"],
-    capture_output=True, text=True, cwd="."
+    capture_output=True, text=True, cwd=".",
 )
 
 output = result.stdout + result.stderr

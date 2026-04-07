@@ -14,6 +14,7 @@ Tests for:
 from __future__ import annotations
 
 import pytest
+from agentic_core.L5_safety.audit.human_review_queue import HumanReviewQueue, PendingVerdict
 
 # DEAD CODE: c0_guard.py was deleted - context folder removed
 # from agentic_core.L0_routing.context.c0_guard import guard_c0_payload, verify_c0_immutability
@@ -23,11 +24,8 @@ from agentic_core.L2_execution.enforcement.boundary_validator import (
 )
 from agentic_core.L4_state.utils.commit.two_phase_coordinator import TwoPhaseCoordinator
 from agentic_core.L4_state.utils.ledger.integrity_validator import append_with_hash, validate_ledger_chain
-from agentic_core.L5_safety.audit.human_review_queue import HumanReviewQueue, PendingVerdict
 from agentic_core.L5_safety.enforcement.hitl.patch_validator import validate_patch
 from agentic_core.L5_safety.types.hardening_errors import (
-    C0AuthorityLeakError,
-    C0MutationViolation,
     HumanPatchValidationError,
     MutationCommitFailure,
     RuntimePolicyMutationViolation,

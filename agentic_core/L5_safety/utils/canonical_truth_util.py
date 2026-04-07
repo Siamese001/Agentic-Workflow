@@ -128,7 +128,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -186,7 +185,7 @@ _emit_proposal_commits_routing("p1", "canonical_truth_util", "routing_commit")
 
 
 def calculate_health_score(
-    violations: list[dict[str, Any]], weights: dict[str, float] | None = None
+    violations: list[dict[str, Any]], weights: dict[str, float] | None = None,
 ) -> float:
     """
     Calculate a normalized health score (0-100) from violation data.
@@ -288,7 +287,7 @@ def validate_health_components(components: dict[str, Any]) -> dict[str, Any]:
     if "weights" in components:
         weights = components["weights"]
         if isinstance(weights, dict) and all(
-            (isinstance(k, str) and isinstance(v, int | float) for k, v in weights.items())
+            (isinstance(k, str) and isinstance(v, int | float) for k, v in weights.items()),
         ):
             results["valid"].append("weights")
         else:

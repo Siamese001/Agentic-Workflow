@@ -112,7 +112,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -226,7 +225,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                     "type": "Parse Error",
                     "description": f"Invalid syntax: {e}",
                     "Severity": "LOW",
-                }
+                },
             )
             continue
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -239,7 +238,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                     "type": "Read Error",
                     "description": f"Failed to read/parse: {e}",
                     "Severity": "LOW",
-                }
+                },
             )
             continue
         for node in ast.walk(tree):
@@ -322,7 +321,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                             "type": "Anemic Domain Model",
                             "description": f"Class '{node.name}' has {total_attrs} attributes but only {total_methods} behaviors — probable data holder without domain logic",
                             "Severity": "HIGH",
-                        }
+                        },
                     )
             if total_methods > 25:
                 violations.append(
@@ -332,7 +331,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                         "type": "God Class",
                         "description": f"Class '{node.name}' has {total_methods} methods — potential Violation of Single Responsibility Principle",
                         "Severity": "MEDIUM",
-                    }
+                    },
                 )
             bases = []
             for base in node.bases:
@@ -357,13 +356,13 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                             "type": "Mutable Value Object",
                             "description": f"Value Object '{node.name}' contains mutating methods ({[m.name for m in setters_or_mutators]}) — VOs must be immutable",
                             "Severity": "CRITICAL",
-                        }
+                        },
                     )
             if node.name.endswith("Service") or node.name.endswith("Manager"):
                 complex_methods = 0
                 for method in methods:
                     method_complexity = len(
-                        [n for n in ast.walk(method) if isinstance(n, ast.If | ast.For | ast.While | ast.Try)]
+                        [n for n in ast.walk(method) if isinstance(n, ast.If | ast.For | ast.While | ast.Try)],
                     )
                     if method_complexity > 8:
                         complex_methods += 1
@@ -375,7 +374,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                             "type": "Fat Service",
                             "description": f"Service '{node.name}' has {complex_methods} complex methods — likely containing domain logic instead of orchestration",
                             "Severity": "MEDIUM",
-                        }
+                        },
                     )
     return violations
 

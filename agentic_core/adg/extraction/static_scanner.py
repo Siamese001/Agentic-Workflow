@@ -28,6 +28,10 @@ from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
 from typing import Iterator
 
+from agentic_core.adg.contracts.schema_util import (
+    canonical_name,
+    module_path_to_layer,
+)
 from agentic_core.adg.extraction.scanner_utils import (
     _HollowFileAnnotator,
     _TypeSurfaceCollector,
@@ -71,10 +75,6 @@ from agentic_core.adg.extraction.visitors import (
     _UnusedImportVisitor,
     # L4 waves visitors
     _UWGIngressGateVisitor,
-)
-from agentic_core.adg.contracts.schema_util import (
-    canonical_name,
-    module_path_to_layer,
 )
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,

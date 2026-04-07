@@ -114,7 +114,7 @@ Please analyze this systematically using the sequential thinking approach.""",
         tags=["swe", "analysis", "sequential", "thinking", "systematic"],
         variables=["problem_title", "context", "core_question"],
         complexity_threshold="medium",
-        estimated_tokens=6000
+        estimated_tokens=6000,
     ),
 
     SequentialThinkingTemplate.SWE_DEBUGGING: SequentialThinkingPrompt(
@@ -182,7 +182,7 @@ Please debug this systematically using sequential thinking.""",
         tags=["swe", "debugging", "sequential", "thinking", "systematic"],
         variables=["problem_title", "context", "error_details"],
         complexity_threshold="medium",
-        estimated_tokens=5500
+        estimated_tokens=5500,
     ),
 
     SequentialThinkingTemplate.SWE_IMPLEMENTATION: SequentialThinkingPrompt(
@@ -250,7 +250,7 @@ Please plan this implementation systematically using sequential thinking.""",
         tags=["swe", "implementation", "sequential", "thinking", "planning"],
         variables=["feature_title", "context", "requirements"],
         complexity_threshold="high",
-        estimated_tokens=6500
+        estimated_tokens=6500,
     ),
 
     SequentialThinkingTemplate.SWE_ARCHITECTURE: SequentialThinkingPrompt(
@@ -318,7 +318,7 @@ Please analyze this architecture systematically using sequential thinking.""",
         tags=["swe", "architecture", "sequential", "thinking", "design"],
         variables=["system_title", "context", "architecture_challenge"],
         complexity_threshold="high",
-        estimated_tokens=7000
+        estimated_tokens=7000,
     ),
 
     SequentialThinkingTemplate.SWE_REFACTORING: SequentialThinkingPrompt(
@@ -386,7 +386,7 @@ Please plan this refactoring systematically using sequential thinking.""",
         tags=["swe", "refactoring", "sequential", "thinking", "quality"],
         variables=["refactoring_title", "context", "refactoring_goals"],
         complexity_threshold="medium",
-        estimated_tokens=6000
+        estimated_tokens=6000,
     ),
 
     SequentialThinkingTemplate.SWE_TESTING: SequentialThinkingPrompt(
@@ -454,7 +454,7 @@ Please design this testing strategy systematically using sequential thinking."""
         tags=["swe", "testing", "sequential", "thinking", "quality"],
         variables=["testing_title", "context", "testing_requirements"],
         complexity_threshold="medium",
-        estimated_tokens=5500
+        estimated_tokens=5500,
     ),
 
     SequentialThinkingTemplate.SWE_PLANNING: SequentialThinkingPrompt(
@@ -522,7 +522,7 @@ Please develop this plan systematically using sequential thinking.""",
         tags=["swe", "planning", "sequential", "thinking", "strategy"],
         variables=["planning_title", "context", "planning_objectives"],
         complexity_threshold="high",
-        estimated_tokens=6500
+        estimated_tokens=6500,
     ),
 
     SequentialThinkingTemplate.SWE_INTEGRATION: SequentialThinkingPrompt(
@@ -590,7 +590,7 @@ Please design this integration systematically using sequential thinking.""",
         tags=["swe", "integration", "sequential", "thinking", "architecture"],
         variables=["integration_title", "context", "integration_requirements"],
         complexity_threshold="high",
-        estimated_tokens=7000
+        estimated_tokens=7000,
     ),
 
     # ADG-based Templates
@@ -662,7 +662,7 @@ Please analyze this ADG graph systematically using sequential thinking.""",
         tags=["adg", "graph", "analysis", "architecture", "dependencies"],
         variables=["analysis_title", "context", "node_count", "edge_count", "layer_info", "violation_count"],
         complexity_threshold="high",
-        estimated_tokens=7500
+        estimated_tokens=7500,
     ),
 
     SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION: SequentialThinkingPrompt(
@@ -734,7 +734,7 @@ Please remediate these violations systematically using sequential thinking.""",
         tags=["violations", "remediation", "quality", "anti-patterns", "architecture"],
         variables=["remediation_title", "context", "violation_count", "high_severity_count", "medium_severity_count", "low_severity_count", "common_violation_types"],
         complexity_threshold="high",
-        estimated_tokens=7000
+        estimated_tokens=7000,
     ),
 
     SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT: SequentialThinkingPrompt(
@@ -805,7 +805,7 @@ Please audit these layer boundaries systematically using sequential thinking."""
         tags=["layers", "boundaries", "architecture", "governance", "violations"],
         variables=["audit_title", "context", "layer_count", "layer_distribution", "boundary_violations", "gravity_violations"],
         complexity_threshold="high",
-        estimated_tokens=6500
+        estimated_tokens=6500,
     ),
 
     SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS: SequentialThinkingPrompt(
@@ -876,7 +876,7 @@ Please analyze this dependency graph systematically using sequential thinking.""
         tags=["dependencies", "graph", "coupling", "architecture", "refactoring"],
         variables=["analysis_title", "context", "dependency_count", "circular_deps", "longest_chain", "hub_nodes"],
         complexity_threshold="high",
-        estimated_tokens=7000
+        estimated_tokens=7000,
     ),
 
     SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW: SequentialThinkingPrompt(
@@ -947,7 +947,7 @@ Please conduct this architectural review systematically using sequential thinkin
         tags=["architecture", "review", "quality", "patterns", "design"],
         variables=["review_title", "context", "component_count", "patterns_used", "integration_points", "quality_attributes"],
         complexity_threshold="high",
-        estimated_tokens=7500
+        estimated_tokens=7500,
     ),
 
     SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION: SequentialThinkingPrompt(
@@ -1018,7 +1018,7 @@ Please detect and analyze these anti-patterns systematically using sequential th
         tags=["anti-patterns", "quality", "refactoring", "technical-debt", "best-practices"],
         variables=["detection_title", "context", "antipattern_count", "high_impact_count", "common_categories", "affected_files"],
         complexity_threshold="medium",
-        estimated_tokens=6500
+        estimated_tokens=6500,
     ),
 
     SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING: SequentialThinkingPrompt(
@@ -1089,7 +1089,7 @@ Please plan this system restructuring systematically using sequential thinking."
         tags=["restructuring", "architecture", "migration", "transformation", "strategy"],
         variables=["restructuring_title", "context", "system_size", "complexity_metrics", "identified_issues", "restructuring_goals"],
         complexity_threshold="critical",
-        estimated_tokens=8000
+        estimated_tokens=8000,
     ),
 
     SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION: SequentialThinkingPrompt(
@@ -1160,8 +1160,8 @@ Please optimize this graph traversal systematically using sequential thinking.""
         tags=["optimization", "performance", "graph", "algorithms", "traversal"],
         variables=["optimization_title", "context", "current_traversal_time", "graph_size", "traversal_frequency", "bottlenecks"],
         complexity_threshold="high",
-        estimated_tokens=7000
-    )
+        estimated_tokens=7000,
+    ),
 }
 
 def get_template(template_type: SequentialThinkingTemplate) -> SequentialThinkingPrompt:
@@ -1201,7 +1201,7 @@ def get_template_for_complexity(complexity: str) -> list[SequentialThinkingTempl
                  SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT, SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
                  SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW, SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION,
                  SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION],
-        "critical": list(SequentialThinkingTemplate)  # All templates for critical complexity
+        "critical": list(SequentialThinkingTemplate),  # All templates for critical complexity
     }
 
     return complexity_map.get(complexity.lower(), [])
@@ -1218,7 +1218,7 @@ def example_usage():
         SequentialThinkingTemplate.SWE_ANALYSIS,
         problem_title="Database Performance Issue",
         context="User reports slow query performance",
-        core_question="How can we optimize database performance?"
+        core_question="How can we optimize database performance?",
     )
 
     print("Template rendered successfully")

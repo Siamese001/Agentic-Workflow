@@ -222,7 +222,7 @@ class RetrievalEvalRegistry:
         """
         _trace_id = f"l4f_eval_{trace_id[:16]}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "RetrievalEvalRegistry.evaluate_retrieval"
+            _trace_id, LayerSegment.L4_STATE, "RetrievalEvalRegistry.evaluate_retrieval",
         )
 
         # Generate eval_id
@@ -272,7 +272,7 @@ class RetrievalEvalRegistry:
         # Emit meta-learning signal
         if triggers:
             _emit_feeds_meta_learning(
-                _trace_id, "RetrievalEvalRegistry", json.dumps(triggers)
+                _trace_id, "RetrievalEvalRegistry", json.dumps(triggers),
             )
 
         Logger.info(f"Evaluated retrieval: {eval_id[:32]}... (NDCG={metrics['ndcg']:.2f})")
@@ -305,7 +305,7 @@ class RetrievalEvalRegistry:
         if f1_groundedness < 0.5:
             triggers.append("groundedness")
             _emit_captures_evaluation_metric(
-                _trace_id, "retrieval", "f1_groundedness_low", f1_groundedness
+                _trace_id, "retrieval", "f1_groundedness_low", f1_groundedness,
             )
 
         conn = sqlite3.connect(self.db_path)
@@ -334,7 +334,7 @@ class RetrievalEvalRegistry:
 
             if triggers:
                 _emit_feeds_meta_learning(
-                    _trace_id, "RetrievalEvalRegistry", json.dumps(triggers)
+                    _trace_id, "RetrievalEvalRegistry", json.dumps(triggers),
                 )
 
             Logger.info(f"Evaluated answer: {eval_id[:32]}... (F1={f1_groundedness:.2f})")

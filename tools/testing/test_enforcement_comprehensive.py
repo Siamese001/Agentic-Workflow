@@ -37,33 +37,33 @@ def test_enforcement_mandatory():
             'name': 'Direct ADG Task',
             'type': 'adg_analysis',
             'complexity': 'high',
-            'reason': 'Direct ADG tasks are always enforced'
+            'reason': 'Direct ADG tasks are always enforced',
         },
         {
             'name': 'Critical Complexity',
             'type': 'implementation',
             'complexity': 'critical',
-            'reason': 'Critical complexity forces ADG templates'
+            'reason': 'Critical complexity forces ADG templates',
         },
         {
             'name': 'High Complexity Architecture',
             'type': 'architecture',
             'complexity': 'high',
-            'reason': 'High complexity architecture requires ADG review'
+            'reason': 'High complexity architecture requires ADG review',
         },
         {
             'name': 'Multi-file Operation',
             'type': 'refactoring',
             'complexity': 'medium',
             'files': ['file1.py', 'file2.py', 'file3.py', 'file4.py', 'file5.py', 'file6.py', 'file7.py'],
-            'reason': 'Multi-file operations enforce dependency analysis'
+            'reason': 'Multi-file operations enforce dependency analysis',
         },
         {
             'name': 'Violation Remediation',
             'type': 'debugging',
             'complexity': 'medium',
-            'reason': 'Debugging mapped to violation remediation'
-        }
+            'reason': 'Debugging mapped to violation remediation',
+        },
     ]
 
     results = []
@@ -80,7 +80,7 @@ def test_enforcement_mandatory():
                 'type': scenario['type'],
                 'complexity': scenario.get('complexity', 'medium'),
                 'files': scenario.get('files', ['single_file.py']),
-                'description': f"Mandatory enforcement test for {scenario['name']}"
+                'description': f"Mandatory enforcement test for {scenario['name']}",
             }
 
             # Check if enforcement is required
@@ -107,7 +107,7 @@ def test_enforcement_mandatory():
                 'has_enforcement_log': has_enforcement_log,
                 'template_length': len(template),
                 'compliant': enforcement_required and is_adg_template,
-                'success': True
+                'success': True,
             }
 
             # Display results
@@ -128,7 +128,7 @@ def test_enforcement_mandatory():
             results.append({
                 'scenario': scenario['name'],
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     return results
@@ -147,35 +147,35 @@ def test_enforcement_bypass_attempts():
             'name': 'Empty Step Config',
             'type': 'architecture',
             'config': {},  # Try to bypass with empty config
-            'expected': 'Should still enforce ADG template'
+            'expected': 'Should still enforce ADG template',
         },
         {
             'name': 'Low Complexity with High Files',
             'type': 'implementation',
             'config': {
                 'complexity': 'low',
-                'files': ['f1.py', 'f2.py', 'f3.py', 'f4.py', 'f5.py', 'f6.py', 'f7.py', 'f8.py']
+                'files': ['f1.py', 'f2.py', 'f3.py', 'f4.py', 'f5.py', 'f6.py', 'f7.py', 'f8.py'],
             },
-            'expected': 'Should enforce due to multi-file rule'
+            'expected': 'Should enforce due to multi-file rule',
         },
         {
             'name': 'Medium Complexity Architecture',
             'type': 'architecture',
             'config': {
                 'complexity': 'medium',
-                'files': ['design.md']
+                'files': ['design.md'],
             },
-            'expected': 'Should enforce due to task type mapping'
+            'expected': 'Should enforce due to task type mapping',
         },
         {
             'name': 'Unknown Task Type High Complexity',
             'type': 'unknown_task',
             'config': {
                 'complexity': 'high',
-                'files': ['file.py']
+                'files': ['file.py'],
             },
-            'expected': 'Should enforce due to high complexity'
-        }
+            'expected': 'Should enforce due to high complexity',
+        },
     ]
 
     results = []
@@ -188,7 +188,7 @@ def test_enforcement_bypass_attempts():
             step_config = {
                 'name': attempt['name'],
                 'type': attempt['type'],
-                **attempt['config']
+                **attempt['config'],
             }
 
             # Check enforcement
@@ -213,7 +213,7 @@ def test_enforcement_bypass_attempts():
                 'is_adg_template': is_adg_template,
                 'bypass_successful': bypass_successful,
                 'bypass_blocked': not bypass_successful,
-                'success': True
+                'success': True,
             }
 
             if result['bypass_blocked']:
@@ -230,7 +230,7 @@ def test_enforcement_bypass_attempts():
             results.append({
                 'attempt': attempt['name'],
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     return results
@@ -247,32 +247,32 @@ def test_enforcement_configuration():
             'name': 'Enforcement Enabled',
             'test': ENFORCEMENT_CONFIG.get('enabled', False),
             'expected': True,
-            'description': 'Enforcement should be enabled'
+            'description': 'Enforcement should be enabled',
         },
         {
             'name': 'Strict Mode Enabled',
             'test': ENFORCEMENT_CONFIG.get('strict_mode', False),
             'expected': True,
-            'description': 'Strict mode should be enabled'
+            'description': 'Strict mode should be enabled',
         },
         {
             'name': 'Fallback Disabled',
             'test': not ENFORCEMENT_CONFIG.get('fallback_allowed', True),
             'expected': True,
-            'description': 'Fallback should be disabled for enforced tasks'
+            'description': 'Fallback should be disabled for enforced tasks',
         },
         {
             'name': 'Audit Trail Enabled',
             'test': ENFORCEMENT_CONFIG.get('audit_trail', False),
             'expected': True,
-            'description': 'Audit trail should be enabled'
+            'description': 'Audit trail should be enabled',
         },
         {
             'name': 'Auto Trigger Enabled',
             'test': ENFORCEMENT_CONFIG.get('auto_trigger', False),
             'expected': True,
-            'description': 'Auto-trigger should be enabled'
-        }
+            'description': 'Auto-trigger should be enabled',
+        },
     ]
 
     results = []
@@ -288,7 +288,7 @@ def test_enforcement_configuration():
                 'expected': test['expected'],
                 'actual': actual,
                 'passed': passed,
-                'success': True
+                'success': True,
             }
 
             status = "✅ PASS" if passed else "❌ FAIL"
@@ -302,7 +302,7 @@ def test_enforcement_configuration():
             results.append({
                 'test': test['name'],
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     return results
@@ -327,7 +327,7 @@ def test_enforcement_rules_coverage():
             'task_type': task_type,
             'expected_template': template,
             'actual_template': enforced_template,
-            'covered': enforced_template == template
+            'covered': enforced_template == template,
         })
 
     # SWE task mapping
@@ -340,7 +340,7 @@ def test_enforcement_rules_coverage():
             'task_type': task_type,
             'expected_template': template,
             'actual_template': enforced_template,
-            'covered': enforced_template == template
+            'covered': enforced_template == template,
         })
 
     # Complexity enforcement
@@ -352,7 +352,7 @@ def test_enforcement_rules_coverage():
         'task_type': 'implementation (critical)',
         'expected_template': 'SWE_SYSTEM_RESTRUCTURING',
         'actual_template': critical_template,
-        'covered': critical_template == 'SWE_SYSTEM_RESTRUCTURING'
+        'covered': critical_template == 'SWE_SYSTEM_RESTRUCTURING',
     })
 
     # File enforcement
@@ -364,7 +364,7 @@ def test_enforcement_rules_coverage():
         'task_type': 'analysis (multi-file)',
         'expected_template': 'SWE_DEPENDENCY_GRAPH_ANALYSIS',
         'actual_template': multi_file_template,
-        'covered': multi_file_template == 'SWE_DEPENDENCY_GRAPH_ANALYSIS'
+        'covered': multi_file_template == 'SWE_DEPENDENCY_GRAPH_ANALYSIS',
     })
 
     results = []
@@ -383,7 +383,7 @@ def test_enforcement_rules_coverage():
             'category': test['category'],
             'task_type': test['task_type'],
             'covered': test['covered'],
-            'success': True
+            'success': True,
         })
 
     return results

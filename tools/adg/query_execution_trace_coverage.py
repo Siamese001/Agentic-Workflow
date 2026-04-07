@@ -39,7 +39,7 @@ def main() -> None:
 
     # Files with execution trace
     cur.execute(
-        'SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = "records_execution_trace"'
+        'SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = "records_execution_trace"',
     )
     files_with_trace = cur.fetchone()[0]
     print(f"Files with execution trace: {files_with_trace}")

@@ -45,12 +45,12 @@ class _MutationTransportVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract mutation transport edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             MUTATION_TRANSPORT_CLASSES,
             RFC6902_DIFF_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -69,7 +69,7 @@ class _MutationTransportVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in MUTATION_TRANSPORT_CLASSES or base in MUTATION_TRANSPORT_CLASSES:
             if "commit" in tail.lower() or "TwoPhase" in tail:
@@ -87,7 +87,7 @@ class _MutationTransportVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -122,12 +122,12 @@ class _ExecutionProofVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract execution proof edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             EXECUTION_TRACE_CLASSES,
             REPLAY_KEY_METHODS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -142,7 +142,7 @@ class _ExecutionProofVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in REPLAY_KEY_METHODS:
             if "compare" in tail:
@@ -168,7 +168,7 @@ class _ExecutionProofVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -204,8 +204,12 @@ class _PathControlVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract path control edges from call expressions."""
+        from agentic_core.adg.contracts.schema_util import (
+            PATH_CONTROL_CLASSES,
+            PATH_REROUTE_METHODS,
+            canonical_name,
+        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.contracts.schema_util import PATH_CONTROL_CLASSES, PATH_REROUTE_METHODS, canonical_name
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -220,7 +224,7 @@ class _PathControlVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in PATH_REROUTE_METHODS:
             if "stall" in tail or "force" in tail:
@@ -240,7 +244,7 @@ class _PathControlVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 

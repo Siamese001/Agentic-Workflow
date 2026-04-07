@@ -154,7 +154,7 @@ class TestShadowEvaluationIntegrator:
         }
 
         result = integrator.evaluate_shadow_deployment(
-            production_metrics, shadow_metrics, strict_thresholds
+            production_metrics, shadow_metrics, strict_thresholds,
         )
 
         assert result.passed is False

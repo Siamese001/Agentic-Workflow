@@ -89,7 +89,7 @@ class SLOTracker:
         """
         trace_id = f"slo_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "SLOTracker.check_slos"
+            trace_id, LayerSegment.L1_REASONING, "SLOTracker.check_slos",
         )
 
         results = []

@@ -75,14 +75,14 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE (symbol LIKE '%update_coordination_ledger%' OR symbol LIKE '%initialise_coordination_ledger%') "
-        f"AND source_file LIKE '%L3%' {NON_TEST}"
+        f"AND source_file LIKE '%L3%' {NON_TEST}",
     )
     update_sources = c.fetchone()[0]
 
     # Also count files with agent_executes_agent in L3
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
-        f"WHERE relation_type='agent_executes_agent' {L3_FILTER}"
+        f"WHERE relation_type='agent_executes_agent' {L3_FILTER}",
     )
     handoff_sources = c.fetchone()[0]
 
@@ -93,7 +93,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             ok,
             f"L3 coordination_ledger update sources={update_sources} (>=1), "
             f"L3 agent_executes_agent sources={handoff_sources}",
-        )
+        ),
     )
     return ok
 
@@ -107,7 +107,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"L3 observes_runtime_state sources={n} (required>=5)",
-        )
+        ),
     )
     return ok
 
@@ -121,7 +121,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE (symbol LIKE '%update_coordination_ledger%' OR symbol LIKE '%initialise_coordination_ledger%') "
-        f"{NON_TEST}"
+        f"{NON_TEST}",
     )
     n = c.fetchone()[0]
     ok = n >= 2
@@ -130,7 +130,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             "C",
             ok,
             f"update_coordination_ledger/initialise sources={n} (required>=2)",
-        )
+        ),
     )
     return ok
 
@@ -148,7 +148,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             "D",
             ok,
             f"L3 CoordinationLedger sources={coord_sources} (>=1), WorkflowStatus sources={ws_sources} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -165,7 +165,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(*) FROM edges "
         "WHERE symbol LIKE '%TaskStatus%' "
-        "AND source_file LIKE '%coordination_ledger%'"
+        "AND source_file LIKE '%coordination_ledger%'",
     )
     ts_in_ledger = c.fetchone()[0]
 
@@ -178,7 +178,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             "E",
             ok,
             f"TaskStatus in coordination_ledger={ts_in_ledger} (>=1), L3 TaskStatus sources total={ts_total}",
-        )
+        ),
     )
     return ok
 

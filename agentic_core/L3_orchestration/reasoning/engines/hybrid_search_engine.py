@@ -179,7 +179,7 @@ class HybridSearchEngine:
                     chroma_results["documents"][0],
                     chroma_results["metadatas"][0],
                     chroma_results["distances"][0],
-                )
+                ),
             ):
                 # Convert distance to similarity score (cosine distance -> similarity)
                 similarity = 1.0 - distance
@@ -490,7 +490,7 @@ class HybridSearchEngine:
             return []
 
     def _apply_governance_filters(
-        self, results: list[HybridSearchResult], filters: dict[str, Any]
+        self, results: list[HybridSearchResult], filters: dict[str, Any],
     ) -> list[HybridSearchResult]:
         """Apply ADG governance filters to search results.
 
@@ -594,7 +594,7 @@ class HybridSearchEngine:
                             content=results["documents"][0][i],
                             metadata=results["metadatas"][0][i],
                             source="chromadb",
-                        )
+                        ),
                     )
 
             Logger.info(f"Found {len(chunks)} chunks for ADG node {adg_node_id}")
@@ -663,7 +663,7 @@ class HybridSearchEngine:
             return []
 
     def expand_results_with_adg(
-        self, results: list[HybridSearchResult], relation_types: list[str] = ["calls"], limit_per_relation: int = 3
+        self, results: list[HybridSearchResult], relation_types: list[str] = ["calls"], limit_per_relation: int = 3,
     ) -> list[HybridSearchResult]:
         """Expand search results with ADG-related chunks.
 
@@ -695,7 +695,7 @@ class HybridSearchEngine:
         return expanded_results
 
     def expand_results_with_parent_child(
-        self, results: list[HybridSearchResult], max_depth: int = 1
+        self, results: list[HybridSearchResult], max_depth: int = 1,
     ) -> list[HybridSearchResult]:
         """Expand search results using parent-child relationships from metadata.
 
@@ -768,7 +768,7 @@ class HybridSearchEngine:
             return results
 
     def enforce_context_budget(
-        self, results: list[HybridSearchResult], max_tokens: int = 4000, avg_tokens_per_chunk: int = 100
+        self, results: list[HybridSearchResult], max_tokens: int = 4000, avg_tokens_per_chunk: int = 100,
     ) -> list[HybridSearchResult]:
         """Enforce context budget by limiting number of chunks.
 
@@ -796,7 +796,7 @@ class HybridSearchEngine:
 
         Logger.info(
             f"Context budget enforcement: {len(results)} -> {len(filtered)} chunks "
-            f"(budget: {max_tokens} tokens, max_chunks: {max_chunks})"
+            f"(budget: {max_tokens} tokens, max_chunks: {max_chunks})",
         )
 
         return filtered

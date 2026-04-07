@@ -6,7 +6,6 @@ import sys
 sys.path.insert(0, '.')
 from pathlib import Path
 
-
 content = Path('agentic_core/L0_routing/utils/scorched_earth_merge_util.py').read_text(encoding='utf-8')
 tree = ast.parse(content)
 for node in ast.walk(tree):

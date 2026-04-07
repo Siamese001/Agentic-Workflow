@@ -1,11 +1,11 @@
 """
 Observability Adapter - Emits app-specific telemetry fields.
 """
-from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, Optional
 
-from ..types import UnderwritingRequest, DecisionMemo
+from ..types import DecisionMemo, UnderwritingRequest
 
 
 @dataclass
@@ -46,7 +46,7 @@ class ObservabilityAdapter:
         self,
         request: UnderwritingRequest,
         memo: DecisionMemo,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> UnderwritingTelemetry:
         """
         Emit underwriting-specific telemetry.

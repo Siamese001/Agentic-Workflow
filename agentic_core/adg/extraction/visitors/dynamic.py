@@ -195,7 +195,7 @@ class _InternalCallGraphVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=full_sym,
-                    )
+                    ),
                 )
         self.generic_visit(node)
 

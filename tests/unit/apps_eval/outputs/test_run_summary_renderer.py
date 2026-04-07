@@ -37,7 +37,7 @@ class TestRunSummaryRenderer:
             "trace_id": "trace-123",
             "app": "test_app",
             "version": "1.0.0",
-            "status": "completed"
+            "status": "completed",
         }
 
         renderer = RunSummaryRenderer()

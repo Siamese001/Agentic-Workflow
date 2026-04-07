@@ -130,12 +130,12 @@ def identify_guardrail_gaps():
     # D0 injection fence coverage
     cur.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
-        "WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'"
+        "WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'",
     )
     d0_files = cur.fetchone()[0]
     cur.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
-        "WHERE relation_type = 'generates_prompt'"
+        "WHERE relation_type = 'generates_prompt'",
     )
     total_prompt_files = cur.fetchone()[0]
     if total_prompt_files > 0:
@@ -149,7 +149,7 @@ def identify_guardrail_gaps():
                 "AND source_file NOT IN ("
                 "  SELECT DISTINCT source_file FROM edges "
                 "  WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'"
-                ") AND source_file NOT LIKE 'tests/%'"
+                ") AND source_file NOT LIKE 'tests/%'",
             )
             for (f,) in cur.fetchall():
                 print(f"  MISSING D0: {f}")
@@ -164,7 +164,7 @@ def identify_guardrail_gaps():
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type IN ('generates_prompt', 'consumes_prompt', "
         "    'instruction_injection_source', 'prompt_template_used_by')"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     agents_no_prompt = [r[0] for r in cur.fetchall()]
     print(f"\nAgent reasoning files WITHOUT prompt governance edges: {len(agents_no_prompt)}")
@@ -180,7 +180,7 @@ def identify_guardrail_gaps():
     if inj_count < 5:
         print(
             "  WARNING: Very low injection source tracking — "
-            "scanner may need wider symbol coverage"
+            "scanner may need wider symbol coverage",
         )
 
     # Summary

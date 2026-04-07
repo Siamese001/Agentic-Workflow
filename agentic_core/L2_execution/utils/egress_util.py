@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -234,7 +233,7 @@ class NetworkingUtility:
             return EgressResult(status="FAIL", reason=f"Parse error: {str(e)}", host="unknown")
 
     def send_email(
-        self, to: str, subject: str, body: str, send_time: str | None = None, dry_run: bool = True
+        self, to: str, subject: str, body: str, send_time: str | None = None, dry_run: bool = True,
     ) -> dict:
         """
         Send email with P8 enforcement.

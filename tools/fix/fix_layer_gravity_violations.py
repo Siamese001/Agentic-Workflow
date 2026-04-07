@@ -6,9 +6,8 @@ Problem: 817 L0-L6 modules importing from L_RUNTIME layer
 Solution: Move lifecycle_trace_contract to L_CONTRACTS layer for cross-layer interfaces
 """
 
-import json
-from pathlib import Path
 import re
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -51,16 +50,16 @@ class LayerGravityFixer:
             # Update docstring to reflect new location
             content = content.replace(
                 'agentic_core/runtime/lifecycle_trace_contract.py',
-                'agentic_core/L_CONTRACTS/lifecycle_trace_contract.py'
+                'agentic_core/L_CONTRACTS/lifecycle_trace_contract.py',
             )
 
             # Write to destination
             dest.write_text(content, encoding='utf-8')
 
-            print(f"✅ Moved lifecycle_trace_contract to L_CONTRACTS")
+            print("✅ Moved lifecycle_trace_contract to L_CONTRACTS")
             return True
         elif dest.exists():
-            print(f"⚠️  lifecycle_trace_contract already exists in L_CONTRACTS")
+            print("⚠️  lifecycle_trace_contract already exists in L_CONTRACTS")
             return True
         else:
             print(f"❌ Source file not found: {source}")
@@ -105,7 +104,7 @@ class LayerGravityFixer:
                 new_content = re.sub(
                     pattern,
                     pattern.replace('runtime', 'L_CONTRACTS'),
-                    content
+                    content,
                 )
                 content = new_content
 
@@ -136,7 +135,7 @@ class LayerGravityFixer:
                 # Add L_CONTRACTS to layer inference
                 new_content = content.replace(
                     'elif "tools" in rel_path:\n        return "TOOLS"',
-                    'elif "tools" in rel_path:\n        return "TOOLS"\n    elif "L_CONTRACTS" in rel_path:\n        return "L_CONTRACTS"'
+                    'elif "tools" in rel_path:\n        return "TOOLS"\n    elif "L_CONTRACTS" in rel_path:\n        return "L_CONTRACTS"',
                 )
 
                 if new_content != content:
@@ -148,7 +147,7 @@ class LayerGravityFixer:
                 # Add L_CONTRACTS to layer definitions
                 new_content = content.replace(
                     'L_RUNTIME',
-                    'L_CONTRACTS\nL_RUNTIME'
+                    'L_CONTRACTS\nL_RUNTIME',
                 )
 
                 if new_content != content:
@@ -170,9 +169,9 @@ class LayerGravityFixer:
             print("❌ lifecycle_trace_contract not moved to L_CONTRACTS")
             return False
 
-        print(f"✅ Layer gravity fixes completed:")
-        print(f"  - L_CONTRACTS layer created")
-        print(f"  - lifecycle_trace_contract moved")
+        print("✅ Layer gravity fixes completed:")
+        print("  - L_CONTRACTS layer created")
+        print("  - lifecycle_trace_contract moved")
         print(f"  - {self.violations_fixed} import statements fixed")
 
         return True

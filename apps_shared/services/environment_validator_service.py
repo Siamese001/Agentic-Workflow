@@ -47,7 +47,7 @@ class EnvironmentValidatorService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "EnvironmentValidatorService.validate_environment"
+            _trace_id, LayerSegment.L2_EXECUTION, "EnvironmentValidatorService.validate_environment",
         )
         _emit_reads_environ("p2", "env_validator", "env_read")
         _emit_validates_capability("p2", "env_validator", "validation")
@@ -74,7 +74,7 @@ class EnvironmentValidatorService:
             _emit_applies_guardrail("p0", "env_validator", "missing_env_vars")
 
         _emit_records_telemetry_event(
-            "p4", "env_validator", f"validation_complete:{'valid' if result['valid'] else 'invalid'}"
+            "p4", "env_validator", f"validation_complete:{'valid' if result['valid'] else 'invalid'}",
         )
 
         return result

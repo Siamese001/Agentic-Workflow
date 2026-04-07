@@ -139,7 +139,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -340,7 +339,7 @@ if __name__ == "__main__":
     print("=" * 80)
     if not os.getenv("GOOGLE_API_KEY"):
         print(
-            "❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode."
+            "❌ CRITICAL: GOOGLE_API_KEY missing. Semantic Meta-Learning will remain in 'Logging Only' mode.",
         )
         print("   → Set GOOGLE_API_KEY environment variable to activate Gemini embedder")
         print("   → Without this key, healing events will be logged but not embedded")

@@ -1,6 +1,5 @@
 """Tests for apps_eval reasoning components."""
 
-import pytest
 
 from apps_eval.reasoning.EvalOrchestrator import (
     EvalOrchestrator,

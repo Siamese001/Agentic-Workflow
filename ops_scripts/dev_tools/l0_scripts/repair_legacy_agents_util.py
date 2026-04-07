@@ -5,7 +5,6 @@ import ast
 import re
 from pathlib import Path
 
-
 LEGACY_ROOT = Path('apps_shared/legacy')
 STUB_IMPORTS = '\nfrom typing import Any, List, Dict, Optional, Union, Tuple\nfrom dataclasses import dataclass, field\nfrom enum import Enum\ntry:\n    from pydantic import BaseModel, Field\nexcept ImportError:\n    class BaseModel: pass\n    def Field(*args, **kwargs): return None\n'
 

@@ -244,7 +244,7 @@ class WriteAmplificationError(RuntimeError):
         self.proposed_bytes = proposed_bytes
         self.growth_ratio = growth_ratio
         super().__init__(
-            f"WRITE_AMPLIFICATION_DETECTED: path={path} original={original_bytes} proposed={proposed_bytes} growth_ratio={growth_ratio:.2f}x max={MAX_GROWTH_RATIO}x"
+            f"WRITE_AMPLIFICATION_DETECTED: path={path} original={original_bytes} proposed={proposed_bytes} growth_ratio={growth_ratio:.2f}x max={MAX_GROWTH_RATIO}x",
         )
 
 
@@ -256,7 +256,7 @@ class MutationEntropyError(RuntimeError):
         self.substitution_count = substitution_count
         self.expected_max = expected_max
         super().__init__(
-            f"MUTATION_ENTROPY_EXCEEDED: path={path} substitutions={substitution_count} expected_max={expected_max}"
+            f"MUTATION_ENTROPY_EXCEEDED: path={path} substitutions={substitution_count} expected_max={expected_max}",
         )
 
 
@@ -317,7 +317,7 @@ def _get_repo_root() -> Path:
 
 
 _SOURCE_ROOTS_RELATIVE: frozenset[str] = frozenset(
-    {AGENTIC_CORE_DIR, "prompt_governance", TESTS_DIR, OPS_SCRIPTS_DIR, APPS_SHARED_DIR}
+    {AGENTIC_CORE_DIR, "prompt_governance", TESTS_DIR, OPS_SCRIPTS_DIR, APPS_SHARED_DIR},
 )
 _SAFE_OUTPUT_PREFIXES: tuple[str, ...] = (
     "docs/evidence",

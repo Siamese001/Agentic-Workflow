@@ -16,7 +16,7 @@ class AggressiveSyntaxFixer:
             'total_files': 0,
             'syntax_errors_fixed': 0,
             'all_migration_artifacts_removed': 0,
-            'files_with_errors': 0
+            'files_with_errors': 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 

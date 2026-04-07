@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -224,17 +223,17 @@ class ReplayBundle:
     def __post_init__(self) -> None:
         if self.schema_version != _SCHEMA_VERSION:
             raise ValueError(
-                f"ReplayBundle: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}"
+                f"ReplayBundle: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}",
             )
         if not self.mission_id:
             raise ValueError("ReplayBundle: mission_id must be non-empty")
         if self.execution_start_tick < 0:
             raise ValueError(
-                f"ReplayBundle: execution_start_tick must be >= 0, got {self.execution_start_tick}"
+                f"ReplayBundle: execution_start_tick must be >= 0, got {self.execution_start_tick}",
             )
         if self.execution_end_tick < self.execution_start_tick:
             raise ValueError(
-                f"ReplayBundle: execution_end_tick ({self.execution_end_tick}) must be >= execution_start_tick ({self.execution_start_tick})"
+                f"ReplayBundle: execution_end_tick ({self.execution_end_tick}) must be >= execution_start_tick ({self.execution_start_tick})",
             )
         if not self.manifest_hash:
             raise ValueError("ReplayBundle: manifest_hash must be non-empty")

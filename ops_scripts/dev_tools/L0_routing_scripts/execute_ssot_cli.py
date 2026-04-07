@@ -138,7 +138,7 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
 
 
 def _legacy_main(
-    args: argparse.Namespace, repo_root: Path, allow_protected_root_mutation: bool = True
+    args: argparse.Namespace, repo_root: Path, allow_protected_root_mutation: bool = True,
 ) -> int:
     """Legacy main function for backward compatibility.
 

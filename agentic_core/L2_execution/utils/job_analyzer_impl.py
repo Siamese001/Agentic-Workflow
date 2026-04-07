@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -178,7 +177,7 @@ class JobAnalyzer:
 
 
 def __init__(
-    self: Any, llm_client: Any | None, Provider: Provider | None, workflow_config: Any | None
+    self: Any, llm_client: Any | None, Provider: Provider | None, workflow_config: Any | None,
 ) -> None:
     """
     Initialize JobAnalyzer.

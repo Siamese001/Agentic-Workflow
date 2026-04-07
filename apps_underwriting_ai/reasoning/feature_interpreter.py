@@ -16,7 +16,7 @@ class FeatureInterpreter:
     def interpret_features(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """
         Generate human-readable interpretations of risk features.
@@ -53,7 +53,7 @@ class FeatureInterpreter:
     def _interpret_capacity(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Interpret capacity features."""
         interpretations = []
@@ -65,16 +65,16 @@ class FeatureInterpreter:
                 if dscr >= policy.min_dscr * 1.5:
                     interpretations.append(
                         f"DSCR of {dscr:.2f}x provides strong coverage cushion "
-                        f"against policy minimum of {policy.min_dscr:.2f}x"
+                        f"against policy minimum of {policy.min_dscr:.2f}x",
                     )
                 elif dscr >= policy.min_dscr:
                     interpretations.append(
-                        f"DSCR of {dscr:.2f}x meets policy minimum of {policy.min_dscr:.2f}x"
+                        f"DSCR of {dscr:.2f}x meets policy minimum of {policy.min_dscr:.2f}x",
                     )
                 else:
                     interpretations.append(
                         f"DSCR of {dscr:.2f}x falls below policy minimum of {policy.min_dscr:.2f}x - "
-                        "exception or structure adjustment required"
+                        "exception or structure adjustment required",
                     )
             else:
                 interpretations.append(f"Debt service coverage ratio is {dscr:.2f}x")
@@ -84,15 +84,15 @@ class FeatureInterpreter:
             if policy.max_debt_to_ebitda:
                 if lev <= policy.max_debt_to_ebitda * 0.7:
                     interpretations.append(
-                        f"Conservative leverage at {lev:.2f}x vs policy maximum {policy.max_debt_to_ebitda:.2f}x"
+                        f"Conservative leverage at {lev:.2f}x vs policy maximum {policy.max_debt_to_ebitda:.2f}x",
                     )
                 elif lev <= policy.max_debt_to_ebitda:
                     interpretations.append(
-                        f"Leverage at {lev:.2f}x is within policy limits"
+                        f"Leverage at {lev:.2f}x is within policy limits",
                     )
                 else:
                     interpretations.append(
-                        f"Leverage of {lev:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x"
+                        f"Leverage of {lev:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x",
                     )
 
         if features.capacity.ebitda_margin_ttm:
@@ -109,7 +109,7 @@ class FeatureInterpreter:
     def _interpret_liquidity(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Interpret liquidity features."""
         interpretations = []
@@ -137,7 +137,7 @@ class FeatureInterpreter:
     def _interpret_collateral(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Interpret collateral features."""
         interpretations = []
@@ -167,7 +167,7 @@ class FeatureInterpreter:
     def _interpret_credit(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Interpret credit features."""
         interpretations = []
@@ -182,7 +182,7 @@ class FeatureInterpreter:
                     interpretations.append(f"Personal FICO of {fico} meets policy minimum of {policy.min_fico}")
                 else:
                     interpretations.append(
-                        f"Personal FICO of {fico} falls below policy minimum of {policy.min_fico}"
+                        f"Personal FICO of {fico} falls below policy minimum of {policy.min_fico}",
                     )
             else:
                 if fico >= 720:
@@ -200,7 +200,7 @@ class FeatureInterpreter:
     def _interpret_operating_risk(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Interpret operating risk features."""
         interpretations = []
@@ -208,7 +208,7 @@ class FeatureInterpreter:
 
         if features.operating_risk.industry_risk_score >= 0.7:
             interpretations.append(
-                f"{borrower.industry_description} sector carries elevated industry risk - price accordingly"
+                f"{borrower.industry_description} sector carries elevated industry risk - price accordingly",
             )
 
         if features.operating_risk.years_in_business_score:
@@ -224,7 +224,7 @@ class FeatureInterpreter:
     def _interpret_relationship(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Interpret relationship features."""
         interpretations = []
@@ -233,11 +233,11 @@ class FeatureInterpreter:
         if rel.existing_customer and rel.tenure_years:
             if rel.tenure_years >= 5:
                 interpretations.append(
-                    f"Strong {rel.tenure_years:.1f}-year banking relationship supports credit decision"
+                    f"Strong {rel.tenure_years:.1f}-year banking relationship supports credit decision",
                 )
             else:
                 interpretations.append(
-                    f"Building {rel.tenure_years:.1f}-year relationship with positive history"
+                    f"Building {rel.tenure_years:.1f}-year relationship with positive history",
                 )
 
         if rel.deposit_relationship:

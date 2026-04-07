@@ -2,8 +2,8 @@
 Risk Feature Types - Domain contracts for derived risk features.
 """
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 RiskGrade = Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
@@ -98,12 +98,12 @@ class RiskFeatures(BaseModel):
                     "debt_to_ebitda_ttm": 1.87,
                     "ebitda_margin_ttm": 0.15,
                     "revenue_trend_score": 0.65,
-                    "earnings_stability_score": 0.70
+                    "earnings_stability_score": 0.70,
                 },
                 "composite": {
                     "raw_risk_score": 0.35,
                     "normalized_risk_grade": "3",
-                    "confidence_score": 0.85
-                }
-            }
+                    "confidence_score": 0.85,
+                },
+            },
         }

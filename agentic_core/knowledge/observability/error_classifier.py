@@ -123,7 +123,7 @@ class ErrorClassifier:
         """
         trace_id = f"error_{hash(str(error)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ErrorClassifier.classify"
+            trace_id, LayerSegment.L1_REASONING, "ErrorClassifier.classify",
         )
 
         error_msg = str(error).lower()

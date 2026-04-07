@@ -94,7 +94,7 @@ VALID_TERRITORIES: frozenset[str] = frozenset(
         ".git",
         "temp_quiet_test",
         "temp_verbose_test",
-    }
+    },
 )
 APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset(
     {
@@ -115,7 +115,7 @@ APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset(
         "core_components",
         "data",
         "utils",
-    }
+    },
 )
 AGENTIC_CORE_VALID_SUBFOLDERS: frozenset[str] = frozenset(
     {
@@ -136,10 +136,10 @@ AGENTIC_CORE_VALID_SUBFOLDERS: frozenset[str] = frozenset(
         "patterns",
         "semantic_memory",
         "knowledge",
-    }
+    },
 )
 TESTS_VALID_TYPES: frozenset[str] = frozenset(
-    {"unit", "integration", "e2e", "fixtures", "guardian", "autogen"}
+    {"unit", "integration", "e2e", "fixtures", "guardian", "autogen"},
 )
 BASE_AGENT_PATTERN = re.compile(".*BaseAgent\\.py$")
 BASE_AGENT_CANONICAL_DIR = "agentic_core/base_agents"
@@ -153,7 +153,7 @@ FORBIDDEN_PATTERNS: list[tuple[str, str]] = [
 ]
 ROOT_FORBIDDEN_PATTERNS: list[str] = ["^[A-Z].*Agent\\.py$"]
 ROOT_ALLOWED_FILES: frozenset[str] = frozenset(
-    {"conftest.py", "setup.py", "AgentTechnicalStatus.py", "NuclearAuditAgent.py"}
+    {"conftest.py", "setup.py", "AgentTechnicalStatus.py", "NuclearAuditAgent.py"},
 )
 
 

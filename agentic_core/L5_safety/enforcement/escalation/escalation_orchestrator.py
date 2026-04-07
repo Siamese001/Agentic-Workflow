@@ -22,13 +22,6 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from .human_escalation import (
-    EscalationTriggerType,
-    HumanEscalationError,
-    HumanEscalationRecord,
-    ReviewerOutcome,
-    get_human_escalation_registry,
-)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -92,6 +85,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+
+from .human_escalation import (
+    EscalationTriggerType,
+    HumanEscalationError,
+    HumanEscalationRecord,
+    ReviewerOutcome,
+    get_human_escalation_registry,
 )
 
 _emit_emits_metric_event("escalation_orchestrator", "p4obs", "metric_1")

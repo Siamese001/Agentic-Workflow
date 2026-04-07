@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Simple fix for archive inefficiency - remove individual files when zip exists."""
 
-import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +40,7 @@ def find_duplicate_runs():
                     'individual_count': len(individual_files),
                     'individual_size': individual_size,
                     'zip_size': zip_size,
-                    'waste': individual_size
+                    'waste': individual_size,
                 })
 
                 print(f"  {timestamp}: {len(individual_files)} individual files, "
@@ -56,7 +55,7 @@ def find_duplicate_runs():
 
 def cleanup_duplicates(duplicate_runs):
     """Remove individual files when zip exists."""
-    print(f"\n🗑️  CLEANING UP DUPLICATES")
+    print("\n🗑️  CLEANING UP DUPLICATES")
     print("=" * 60)
 
     total_freed = 0
@@ -83,7 +82,7 @@ def cleanup_duplicates(duplicate_runs):
 
 def verify_cleanup():
     """Verify cleanup was successful."""
-    print(f"\n🔍 VERIFYING CLEANUP")
+    print("\n🔍 VERIFYING CLEANUP")
     print("=" * 60)
 
     # Check remaining files

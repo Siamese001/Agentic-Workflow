@@ -186,7 +186,7 @@ _INTERNAL_ROOTS: frozenset[str] = frozenset(
         "tools",
         "tests",
         "ops_scripts",
-    ]
+    ],
 )
 
 
@@ -287,7 +287,7 @@ class IdentityNormalizer:
             "venv",
             ".eggs",
             ".ruff_cache",
-        }
+        },
     )
 
     def _get_known_files(self) -> frozenset[str]:
@@ -335,7 +335,7 @@ class IdentityNormalizer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "IdentityNormalizer.normalize"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "IdentityNormalizer.normalize",
         )
 
         if raw_name in self._cache:
@@ -457,7 +457,7 @@ class IdentityNormalizer:
         return rpt
 
     def normalize_from_scan_result(
-        self, result: object
+        self, result: object,
     ) -> tuple[dict[str, IdentityRecord], NormalizationReport]:
         """Normalize all imported names found in a ScanResult.
 

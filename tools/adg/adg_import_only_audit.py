@@ -133,7 +133,7 @@ def main():
     rows = conn.execute(
         "SELECT source_file, relation_type, COUNT(*) "
         "FROM edges WHERE source_file LIKE 'tests/%' "
-        "GROUP BY source_file, relation_type"
+        "GROUP BY source_file, relation_type",
     ).fetchall()
     for source_file, rel_type, cnt in rows:
         test_edge_profile[source_file][rel_type] = cnt
@@ -201,7 +201,7 @@ def main():
     module_testers: dict[str, set[str]] = defaultdict(set)
     tex_rows = conn.execute(
         "SELECT source_file, symbol FROM edges "
-        "WHERE relation_type='tests_execution_of' AND source_file LIKE 'tests/%'"
+        "WHERE relation_type='tests_execution_of' AND source_file LIKE 'tests/%'",
     ).fetchall()
     for sf, sym in tex_rows:
         module_testers[sym].add(sf)
@@ -211,7 +211,7 @@ def main():
     imp_rows = conn.execute(
         "SELECT e.source_file, n.resolved_path FROM edges e "
         "JOIN nodes n ON e.dst_id = n.id "
-        "WHERE e.relation_type='imports' AND e.source_file LIKE 'tests/%'"
+        "WHERE e.relation_type='imports' AND e.source_file LIKE 'tests/%'",
     ).fetchall()
     for sf, rp in imp_rows:
         if rp and not rp.startswith("tests/"):

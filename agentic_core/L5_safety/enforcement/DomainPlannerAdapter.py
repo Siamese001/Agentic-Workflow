@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -252,7 +251,7 @@ class DomainPlannerAdapter:
             return False
         if not any(key in job_context for key in self._required_job_context_keys):
             logger.warning(
-                f"DomainPlannerAdapter: job_context must contain at least one of {self._required_job_context_keys}"
+                f"DomainPlannerAdapter: job_context must contain at least one of {self._required_job_context_keys}",
             )
             return False
         if plan is None:
@@ -335,14 +334,14 @@ class DomainPlannerAdapter:
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
-                    asyncio.run, self._legacy_agent.run_async(plan, job_context, workflow_id)
+                    asyncio.run, self._legacy_agent.run_async(plan, job_context, workflow_id),
                 )
                 return future.result()
         else:
             return loop.run_until_complete(self._legacy_agent.run_async(plan, job_context, workflow_id))
 
     def plan(
-        self, plan: Any, job_context: dict[str, Any], workflow_id: str, context: AdapterContext | None = None
+        self, plan: Any, job_context: dict[str, Any], workflow_id: str, context: AdapterContext | None = None,
     ) -> AdapterResult:
         """
         Convenience method matching the expected domain planner interface.
@@ -359,7 +358,7 @@ class DomainPlannerAdapter:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(_uuid.uuid4()), LayerSegment.L5_POLICY, f"DomainPlannerAdapter.plan:{workflow_id}"
+            str(_uuid.uuid4()), LayerSegment.L5_POLICY, f"DomainPlannerAdapter.plan:{workflow_id}",
         )
         return self.execute(context=context, plan=plan, job_context=job_context, workflow_id=workflow_id)
 

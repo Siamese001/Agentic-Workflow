@@ -1,16 +1,16 @@
 """
 Borrower Profile Types - Domain contracts for borrower entity information.
 """
-from typing import Literal, Optional, List
-from pydantic import BaseModel, Field, validator
+from typing import List, Literal, Optional
 
+from pydantic import BaseModel, Field, validator
 
 EntityType = Literal[
     "llc",
     "corp",
     "partnership",
     "sole_prop",
-    "nonprofit"
+    "nonprofit",
 ]
 
 
@@ -81,17 +81,17 @@ class BorrowerProfile(BaseModel):
                         "ownership_pct": 60.0,
                         "role": "CEO",
                         "fico": 745,
-                        "guarantor": True
+                        "guarantor": True,
                     },
                     {
                         "owner_name": "Jane Doe",
                         "ownership_pct": 40.0,
                         "role": "CFO",
                         "fico": 720,
-                        "guarantor": True
-                    }
+                        "guarantor": True,
+                    },
                 ],
                 "naics_risk_flags": [],
-                "sanctions_or_watchlist_hits": []
-            }
+                "sanctions_or_watchlist_hits": [],
+            },
         }

@@ -108,7 +108,7 @@ def test_opentelemetry_runtime_adg_integration():
             snapshot = materializer.materialize(
                 spans,
                 mission="integration-test-mission",
-                trace_id="integration-test-trace"
+                trace_id="integration-test-trace",
             )
 
             results['materialization_success'] = True
@@ -263,7 +263,7 @@ def test_opentelemetry_runtime_adg_integration():
         'otel_available', 'orchestrator_span', 'cognitive_span', 'action_span', 'tool_span',
         'drain_success', 'span_structure', 'materialization_success', 'snapshot_valid',
         'tracing_mixin_init', 'mixin_span', 'trace_context', 'trace_flush',
-        'store_snapshot', 'retrieve_snapshot', 'retrieve_match', 'e2e_success'
+        'store_snapshot', 'retrieve_snapshot', 'retrieve_match', 'e2e_success',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)

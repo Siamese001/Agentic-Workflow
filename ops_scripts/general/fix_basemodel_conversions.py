@@ -6,7 +6,6 @@ import re
 from pathlib import Path
 
 
-
 def convert_basemodel_to_dataclass(file_path: Path) -> bool:
     """Convert Pydantic BaseModel classes to dataclasses."""
     content = file_path.read_text(encoding='utf-8')

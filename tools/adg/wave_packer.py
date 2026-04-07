@@ -82,7 +82,7 @@ def pack_waves(
                     "phases": current_wave,
                     "tokens": compute_total_context(incremental_tokens),
                     "break_reason": "context_limit",
-                }
+                },
             )
 
             current_wave = []
@@ -97,7 +97,7 @@ def pack_waves(
                 "phases": current_wave,
                 "tokens": compute_total_context(incremental_tokens),
                 "break_reason": "end",
-            }
+            },
         )
 
     return waves

@@ -1,0 +1,80 @@
+{
+  "runtime_adg_1775551281_b732bb79": {
+    "component_distribution": {
+      "CognitivePlane": 1,
+      "DAGEngine": 1,
+      "NervousSystem": 1,
+      "Tool.execute_action": 1,
+      "Tool.read_state": 1,
+      "Tool.record_metric": 1,
+      "Tool.route_request": 1,
+      "Tool.validate_safety": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1775551281,
+      "total_nodes": 8
+    },
+    "layer_distribution": {
+      "L1_Cogni": 1,
+      "L2_Execu": 5,
+      "L3_Orche": 2
+    },
+    "relation_patterns": {
+      "actor": 8,
+      "parent_child": 8,
+      "temporal_sequence": 7
+    },
+    "span_type_distribution": {
+      "cognitive": 1,
+      "dag_node": 1,
+      "orchestrator": 1,
+      "tool": 5
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "Tool.validate_safety",
+          "duration_ms": 0.0,
+          "node_id": "2537175cc2b5eca0"
+        },
+        {
+          "component": "DAGEngine",
+          "duration_ms": 0.0,
+          "node_id": "2931a321fc41dbf2"
+        },
+        {
+          "component": "Tool.route_request",
+          "duration_ms": 0.0,
+          "node_id": "7c146cf69bf71342"
+        },
+        {
+          "component": "Tool.execute_action",
+          "duration_ms": 0.0,
+          "node_id": "92f1c2de4ee156c4"
+        },
+        {
+          "component": "Tool.record_metric",
+          "duration_ms": 0.0,
+          "node_id": "c844fb21d3e7c6d1"
+        },
+        {
+          "component": "CognitivePlane",
+          "duration_ms": 0.0,
+          "node_id": "c887691a73a90ffb"
+        },
+        {
+          "component": "Tool.read_state",
+          "duration_ms": 0.0,
+          "node_id": "c8f56e8bab113651"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "db6d5e22dcd66686"
+        }
+      ],
+      "slow_operations": []
+    }
+  }
+}

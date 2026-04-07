@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Any
 
-from apps_rg.types import ResumeResult, ResumeRunSummary, ResumeSection
+from apps_rg.types import ResumeResult, ResumeRunSummary
 
 _log = logging.getLogger(__name__)
 

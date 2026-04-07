@@ -16,7 +16,6 @@ import pathlib
 import re
 import sys
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TESTS_DIR = ROOT / TESTS_DIR
 # guardian: allow-global-mutation

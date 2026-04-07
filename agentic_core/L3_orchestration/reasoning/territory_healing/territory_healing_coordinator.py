@@ -96,7 +96,7 @@ class TerritoryHealingCoordinator:
     def _process_territory(
         self,
         territory: str,
-        context: HealingContext
+        context: HealingContext,
     ) -> TerritoryHealingReport:
         """
         Process a territory through all applicable agents.
@@ -145,7 +145,7 @@ class TerritoryHealingCoordinator:
                 report.total_violations_found += scan_result.violations_found
 
                 logger.info(
-                    f"  [{agent.agent_name}] Scanned: {scan_result.violations_found} violations"
+                    f"  [{agent.agent_name}] Scanned: {scan_result.violations_found} violations",
                 )
 
                 # Step 2: Heal if in heal mode and violations exist
@@ -156,7 +156,7 @@ class TerritoryHealingCoordinator:
                     report.agents_executed.append(agent.agent_name)
 
                     logger.info(
-                        f"  [{agent.agent_name}] Healed: {healing_result.violations_fixed}/{healing_result.violations_found}"
+                        f"  [{agent.agent_name}] Healed: {healing_result.violations_fixed}/{healing_result.violations_found}",
                     )
 
                     if healing_result.errors:
@@ -177,12 +177,12 @@ class TerritoryHealingCoordinator:
                 f"=== TERRITORY HEALING COMPLETE: {territory} ===\n"
                 f"  Agents executed: {len(report.agents_executed)}\n"
                 f"  Total violations: {report.total_violations_found}\n"
-                f"  Total fixed: {report.total_violations_fixed}"
+                f"  Total fixed: {report.total_violations_fixed}",
             )
         else:
             logger.info(
                 f"=== TERRITORY SCAN COMPLETE: {territory} ===\n"
-                f"  Total violations: {report.total_violations_found}"
+                f"  Total violations: {report.total_violations_found}",
             )
 
         return report
@@ -190,7 +190,7 @@ class TerritoryHealingCoordinator:
     def heal_all_territories(
         self,
         territories: list[str] | None = None,
-        verbose: bool = False
+        verbose: bool = False,
     ) -> dict[str, TerritoryHealingReport]:
         """
         Heal multiple territories.

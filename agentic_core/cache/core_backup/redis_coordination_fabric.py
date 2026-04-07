@@ -337,7 +337,7 @@ class RedisCoordinationFabric:
         return self._cache.set(key, canonical_json_bytes(state), ttl_seconds=ttl_seconds)
 
     def get_trace_working_set(
-        self, trace_id_hash: str, *, replay_mode: bool = False
+        self, trace_id_hash: str, *, replay_mode: bool = False,
     ) -> dict[str, Any] | None:
         """Return active request context for a trace, or None on miss/bypass."""
         key = _trace_ws_key(trace_id_hash)
@@ -385,8 +385,8 @@ class RedisCoordinationFabric:
         key = _team_lock_key(resource_hash)
         nonce = content_hash(
             canonical_json_bytes(
-                {"holder_id": holder_id, "resource_hash": resource_hash, "tick": semantic_clock_tick}
-            )
+                {"holder_id": holder_id, "resource_hash": resource_hash, "tick": semantic_clock_tick},
+            ),
         )
         return self._cache.acquire_lease(
             key,
@@ -404,8 +404,8 @@ class RedisCoordinationFabric:
         key = _team_lock_key(resource_hash)
         nonce = content_hash(
             canonical_json_bytes(
-                {"holder_id": holder_id, "resource_hash": resource_hash, "tick": semantic_clock_tick}
-            )
+                {"holder_id": holder_id, "resource_hash": resource_hash, "tick": semantic_clock_tick},
+            ),
         )
         return self._cache.release_lease(key, holder_id=holder_id, nonce=nonce)
 
@@ -481,7 +481,7 @@ class RedisCoordinationFabric:
         return self._cache.set(key, canonical_json_bytes(fragment), ttl_seconds=ttl_seconds)
 
     def get_replay_fragment(
-        self, replay_key_hash: str, *, replay_mode: bool = False
+        self, replay_key_hash: str, *, replay_mode: bool = False,
     ) -> dict[str, Any] | None:
         """Return a cached replay fragment.
 

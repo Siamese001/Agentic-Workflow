@@ -57,39 +57,25 @@ _emit_applies_guardrail("p0", "rg_sovereign_auditor", "p0_governance")
 _emit_reads_policy_state("p0", "rg_sovereign_auditor", "policy_binding")
 _emit_snapshots_state("p0", "rg_sovereign_auditor", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -199,7 +185,7 @@ class RGSovereignAuditor:
             imports = self._extract_imports(tree)
             functions = self._extract_functions(tree)
             classification, details = self._classify_file_logic(
-                file_path.name, content, classes, imports, functions
+                file_path.name, content, classes, imports, functions,
             )
             return {
                 "classification": classification,
@@ -223,7 +209,7 @@ class RGSovereignAuditor:
                         bases.append(base.id)
                     elif isinstance(base, ast.Attribute):
                         bases.append(
-                            f"{base.value.id}.{base.attr}" if hasattr(base.value, "id") else str(base)
+                            f"{base.value.id}.{base.attr}" if hasattr(base.value, "id") else str(base),
                         )
                 methods = []
                 for item in node.body:
@@ -250,7 +236,7 @@ class RGSovereignAuditor:
                         "is_model": "Model" in node.name or "Schema" in node.name,
                         "is_enum": "Enum" in node.name or node.name.endswith("Type"),
                         "line_count": node.end_lineno - node.lineno if hasattr(node, "end_lineno") else 0,
-                    }
+                    },
                 )
         return classes
 
@@ -278,12 +264,12 @@ class RGSovereignAuditor:
                         "args_count": len(node.args.args),
                         "is_generator": any(isinstance(item, ast.Yield) for item in ast.walk(node)),
                         "is_async": isinstance(node, ast.AsyncFunctionDef),
-                    }
+                    },
                 )
         return functions
 
     def _classify_file_logic(
-        self, filename: str, content: str, classes: list[dict], imports: list[str], functions: list[dict]
+        self, filename: str, content: str, classes: list[dict], imports: list[str], functions: list[dict],
     ) -> tuple[str, dict]:
         """Classify file based on actual logic and structure."""
         legacy_indicators = ["v1", "v2", "v3", "_old", "_deprecated", "_legacy", "old_", "deprecated"]
@@ -385,7 +371,7 @@ class RGSovereignAuditor:
                 return (
                     "SOVEREIGN_AGENT",
                     {
-                        "reason": "Contains classes with execute/process methods and state or agent inheritance"
+                        "reason": "Contains classes with execute/process methods and state or agent inheritance",
                     },
                 )
             elif not has_state_classes and (not inherits_from_agent_base):
@@ -484,7 +470,7 @@ class RGSovereignAuditor:
                             "reason": analysis.get("details", {}).get("reason", "Unknown"),
                             "classes": [cls["name"] for cls in classes],
                             "inherits_from_base": inherits_from_base,
-                        }
+                        },
                     )
         results["unknown_ledger"] = unknown_ledger
 
@@ -500,7 +486,7 @@ class RGSovereignAuditor:
                             "current_name": Path(file_path).name,
                             "suggested_name": self._suggest_fixed_name(file_path, analysis),
                             "reason": analysis.get("details", {}).get("reason", "Unknown"),
-                        }
+                        },
                     )
         results["nomenclature_fixes"] = nomenclature_fixes
 
@@ -516,7 +502,7 @@ class RGSovereignAuditor:
                         "current_location": "engines/",
                         "target_location": "shared/tools/",
                         "reason": analysis.get("details", {}).get("reason", "Unknown"),
-                    }
+                    },
                 )
         results["migration_candidates"] = migration_candidates
 

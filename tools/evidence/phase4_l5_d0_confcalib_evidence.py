@@ -100,7 +100,7 @@ def main():
                 "unit",
             ],
             repo_root,
-        )
+        ),
     )
     sections.append("```\n\n")
 
@@ -120,7 +120,7 @@ def main():
                 "unit",
             ],
             repo_root,
-        )
+        ),
     )
     sections.append("```\n\n")
 
@@ -129,7 +129,7 @@ def main():
     sections.append("# All L5 Safety Tests\n")
     sections.append("```")
     sections.append(
-        run_command([sys.executable, "-m", "pytest", "-q", "tests/unit/L5_safety", "-m", "unit"], repo_root)
+        run_command([sys.executable, "-m", "pytest", "-q", "tests/unit/L5_safety", "-m", "unit"], repo_root),
     )
     sections.append("```\n\n")
 

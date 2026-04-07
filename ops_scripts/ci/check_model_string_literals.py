@@ -6,7 +6,6 @@ import re
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATTERN = re.compile('(gpt-[0-9]|claude-[0-9]|gemini-[0-9]|text-embedding-3|qwen|llama)', re.I)
 ALLOWED_PATHS = {'agentic_core/config/core/sovereign_config.py', 'agentic_core/agents/agent_registry.py', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'infrastructure/sdks_mcps/client_wrappers.py'}

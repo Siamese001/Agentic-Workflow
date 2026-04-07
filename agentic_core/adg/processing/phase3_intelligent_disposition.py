@@ -178,7 +178,7 @@ class FeatureExtractor:
         if self.conn:
             try:
                 cursor = self.conn.execute(
-                    "SELECT layer FROM nodes WHERE resolved_path = ? LIMIT 1", (file_path,)
+                    "SELECT layer FROM nodes WHERE resolved_path = ? LIMIT 1", (file_path,),
                 )
                 row = cursor.fetchone()
                 if row and row[0] and row[0] not in ("", "tests", "unknown"):
@@ -442,7 +442,7 @@ class DispositionClassifier:
                     "disposition": DispositionType.REMEDIATED,
                     "confidence": 0.7,
                     "reasoning": "Simple function with test coverage, no guardian comment",
-                }
+                },
             ],
         }
 
@@ -625,7 +625,7 @@ class DispositionClassifier:
         return evidence
 
     def _generate_alternatives(
-        self, features: ViolationFeatures, primary: DispositionType
+        self, features: ViolationFeatures, primary: DispositionType,
     ) -> list[tuple[DispositionType, float]]:
         """Generate alternative disposition suggestions."""
         alternatives = []
@@ -691,7 +691,7 @@ class IntelligentDispositionSystem:
                     "evidence": violation["evidence"],
                     "features": asdict(features),
                     "recommendation": asdict(recommendation),
-                }
+                },
             )
 
         # Sort by priority score
@@ -741,7 +741,7 @@ class IntelligentDispositionSystem:
                 try:
                     features = self.feature_extractor.extract_features(violation_data)
                     historical_data.append(
-                        {"disposition": disposition, "source": source, "features": asdict(features)}
+                        {"disposition": disposition, "source": source, "features": asdict(features)},
                     )
                 except Exception as e:  # Intentionally allow silent swallow to prevent feature extraction from blocking analysis
                     # Fail-closed: feature extraction unavailable, skip this historical data point
@@ -774,7 +774,7 @@ class IntelligentDispositionSystem:
             for row in cursor.fetchall():
                 file_path, line_no, evidence, severity = row
                 violations.append(
-                    {"file_path": file_path, "line_no": line_no, "evidence": evidence, "severity": severity}
+                    {"file_path": file_path, "line_no": line_no, "evidence": evidence, "severity": severity},
                 )
 
             return violations
@@ -809,10 +809,10 @@ class IntelligentDispositionSystem:
         return {
             "total_recommendations": len(recommendations),
             "high_priority_count": len(
-                [r for r in recommendations if r["recommendation"]["priority_score"] > 0.8]
+                [r for r in recommendations if r["recommendation"]["priority_score"] > 0.8],
             ),
             "high_confidence_count": len(
-                [r for r in recommendations if r["recommendation"]["confidence"] > 0.7]
+                [r for r in recommendations if r["recommendation"]["confidence"] > 0.7],
             ),
             "disposition_breakdown": dict(disposition_counts),
             "risk_level_breakdown": dict(risk_counts),
@@ -841,5 +841,5 @@ if __name__ == "__main__":
 
     results = run_phase3_intelligent_disposition(adg_path)
     print(
-        f"\nPhase 3.3 Analysis Complete: {results['summary']['total_recommendations']} recommendations generated"
+        f"\nPhase 3.3 Analysis Complete: {results['summary']['total_recommendations']} recommendations generated",
     )

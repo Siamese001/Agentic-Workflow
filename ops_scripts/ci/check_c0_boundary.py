@@ -78,13 +78,13 @@ class C0BoundaryVisitor(ast.NodeVisitor):
                 self.violations.append(
                     f"{self.filepath}:{node.lineno}: "
                     f"C0 boundary violation — informational value assigned directly to "
-                    f"control variable '{target.id}' without governed decision function (§21.3)"
+                    f"control variable '{target.id}' without governed decision function (§21.3)",
                 )
             elif isinstance(target, ast.Attribute) and _name_matches(target.attr, CONTROL_STEMS):
                 self.violations.append(
                     f"{self.filepath}:{node.lineno}: "
                     f"C0 boundary violation — informational value assigned directly to "
-                    f"control attribute '{target.attr}' without governed decision function (§21.3)"
+                    f"control attribute '{target.attr}' without governed decision function (§21.3)",
                 )
 
         self.generic_visit(node)

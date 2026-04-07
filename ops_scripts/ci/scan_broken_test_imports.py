@@ -14,6 +14,7 @@ Usage:
 """
 
 import ast
+import json
 import sys
 import warnings
 from pathlib import Path
@@ -49,6 +50,7 @@ PROJECT_PREFIXES = (
 EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 FULLY_ORPHANED_THRESHOLD = 0
 STALE_MIRROR_THRESHOLD = 0
+PARTIAL_BREAK_BASELINE_PATH = ROOT / "artifacts" / "import_health" / "test_partial_break_baseline.json"
 
 # Try to import ADG Query Bridge for ADG-powered import validation
 try:
@@ -103,9 +105,40 @@ def _is_project_import(mod: str) -> bool:
     return any(mod.startswith(p) for p in PROJECT_PREFIXES)
 
 
-def scan_tests() -> tuple[list[str], list[str]]:
+def _load_partial_break_baseline() -> set[str]:
+    """Load baseline of known-broken import keys (file::module)."""
+    if not PARTIAL_BREAK_BASELINE_PATH.is_file():
+        return set()
+    try:
+        data = json.loads(PARTIAL_BREAK_BASELINE_PATH.read_text(encoding="utf-8"))
+        return set(data.get("broken_imports", []))
+    except Exception:  # guardian: allow-broad-exception -- non-critical: baseline read failure falls back to empty set
+        return set()
+
+
+def _save_partial_break_baseline(broken: list[tuple[str, str]]) -> None:
+    """Persist the current broken-import set as the new baseline."""
+    PARTIAL_BREAK_BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    keys = sorted(f"{rel}::{mod}" for rel, mod in broken)
+    data = {"schema_version": 1, "broken_import_count": len(keys), "broken_imports": keys}
+    PARTIAL_BREAK_BASELINE_PATH.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    )
+
+
+def _collect_partially_broken(tree: ast.AST) -> list[str]:
+    """Return list of project import modules that do NOT resolve on disk."""
+    broken = []
+    for mod in _extract_imports(tree):
+        if _is_project_import(mod) and not _module_exists(mod):
+            broken.append(mod)
+    return broken
+
+
+def scan_tests() -> tuple[list[str], list[str], list[tuple[str, str]]]:
     fully_orphaned: list[str] = []
     stale_mirrors: list[str] = []
+    partial_breaks: list[tuple[str, str]] = []  # (rel_path, broken_module)
     # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
     for fpath in TESTS_DIR.rglob("*.py"):
         if any(part in EXCLUDE_DIRS for part in fpath.parts):
@@ -143,7 +176,11 @@ def scan_tests() -> tuple[list[str], list[str]]:
             if stale_mirror_check:
                 stale_mirrors.append(rel)
 
-    return fully_orphaned, stale_mirrors
+        # Guard 4: any broken project import (partial-break regression detection)
+        for broken_mod in _collect_partially_broken(tree):
+            partial_breaks.append((rel, broken_mod))
+
+    return fully_orphaned, stale_mirrors, partial_breaks
 
 
 def _scan_test_with_adg(fpath: Path, tree: ast.AST, source: str, rel: str) -> tuple[bool, bool]:
@@ -207,14 +244,25 @@ def _scan_test_with_ast(fpath: Path, tree: ast.AST, source: str, rel: str) -> tu
 
 
 def main() -> int:
-    fully_orphaned, stale_mirrors = scan_tests()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Broken test import scanner (Guards 1+3+4)")
+    parser.add_argument(
+        "--update-test-baseline",
+        action="store_true",
+        help="Advance the Guard 4 partial-break baseline to the current state (use after intentional fixes)",
+    )
+    parser.add_argument("--threshold", type=int, default=None, help="Override FULLY_ORPHANED_THRESHOLD")
+    args = parser.parse_args()
+
+    fully_orphaned, stale_mirrors, partial_breaks = scan_tests()
 
     violations = 0
 
     print(f"Broken import scan: fully_orphaned={len(fully_orphaned)}  threshold={FULLY_ORPHANED_THRESHOLD}")
     if len(fully_orphaned) > FULLY_ORPHANED_THRESHOLD:
         print(
-            f"FAIL: {len(fully_orphaned)} fully-orphaned test files (threshold={FULLY_ORPHANED_THRESHOLD}):"
+            f"FAIL: {len(fully_orphaned)} fully-orphaned test files (threshold={FULLY_ORPHANED_THRESHOLD}):",
         )
         for f in sorted(fully_orphaned)[:30]:
             print(f"  {f}")
@@ -225,13 +273,37 @@ def main() -> int:
     print(f"Stale mirror scan: stale_mirrors={len(stale_mirrors)}  threshold={STALE_MIRROR_THRESHOLD}")
     if len(stale_mirrors) > STALE_MIRROR_THRESHOLD:
         print(
-            f"FAIL: {len(stale_mirrors)} stale GENERATED_MIRROR_TEST files (threshold={STALE_MIRROR_THRESHOLD}):"
+            f"FAIL: {len(stale_mirrors)} stale GENERATED_MIRROR_TEST files (threshold={STALE_MIRROR_THRESHOLD}):",
         )
         for f in sorted(stale_mirrors)[:20]:
             print(f"  {f}")
         violations += len(stale_mirrors)
     else:
         print(f"OK: stale_mirrors={len(stale_mirrors)} <= {STALE_MIRROR_THRESHOLD}")
+
+    # Guard 4: partial-break regression detection (baseline-drift)
+    if args.update_test_baseline:
+        _save_partial_break_baseline(partial_breaks)
+        print(f"[Guard 4] Baseline updated: {len(partial_breaks)} broken import(s) recorded")
+        print(f"[Guard 4] Baseline path: {PARTIAL_BREAK_BASELINE_PATH}")
+        return 0 if violations == 0 else 1
+
+    baseline = _load_partial_break_baseline()
+    current_keys = {f"{rel}::{mod}" for rel, mod in partial_breaks}
+    new_breaks = sorted(current_keys - baseline)
+    fixed_breaks = sorted(baseline - current_keys)
+
+    print(f"Partial-break scan (Guard 4): total={len(partial_breaks)}  baseline={len(baseline)}  new={len(new_breaks)}  fixed={len(fixed_breaks)}")
+    if new_breaks:
+        print(f"FAIL: {len(new_breaks)} new broken project import(s) in tests (not in baseline):")
+        for entry in new_breaks[:30]:
+            print(f"  {entry}")
+        print("  Fix the broken imports, then run: python ops_scripts/ci/scan_broken_test_imports.py --update-test-baseline")
+        violations += len(new_breaks)
+    else:
+        print("OK: no new broken imports in tests")
+    if fixed_breaks:
+        print(f"  [{len(fixed_breaks)} previously-broken import(s) now resolve \u2014 run --update-test-baseline to shrink the baseline]")
 
     return 0 if violations == 0 else 1
 

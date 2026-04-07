@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -236,7 +235,7 @@ class VectorHealingStrategy:
                         "reason": "Vector drift detected (L4 state inconsistency)",
                         "priority": self.priority,
                         "strategy": self.name,
-                    }
+                    },
                 )
         Logger.info(f"[L0 VECTOR HEALING] Diagnosed {len(fixes)} vector drift issues")
         return fixes
@@ -285,11 +284,11 @@ class VectorHealingStrategy:
                         "healing_id": f"heal_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
                         "content_hash": vector_id[:16],
                     },
-                }
+                },
             ]
             Logger.info(f"[L0 VECTOR HEALING] Upserting vector for {file_path}")
             result: Any = await self.pinecone_client.upsert(
-                vectors=payload, namespace=config.PINECONE_DEFAULT_NAMESPACE
+                vectors=payload, namespace=config.PINECONE_DEFAULT_NAMESPACE,
             )
             if result and result.get("upserted_count", 0) > 0:
                 self.processed_today += 1

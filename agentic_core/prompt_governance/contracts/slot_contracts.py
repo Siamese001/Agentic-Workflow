@@ -115,7 +115,7 @@ def validate_slot_order(prompt_text: str) -> None:
         curr_key, curr_pos = positions[i]
         if curr_pos <= prev_pos:
             raise SlotOrderViolation(
-                f"SLOT_ORDER_VIOLATED: <SLOT_{curr_key}> (pos {curr_pos}) must appear after <SLOT_{prev_key}> (pos {prev_pos})"
+                f"SLOT_ORDER_VIOLATED: <SLOT_{curr_key}> (pos {curr_pos}) must appear after <SLOT_{prev_key}> (pos {prev_pos})",
             )
 
 

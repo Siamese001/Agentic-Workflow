@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -209,13 +208,13 @@ def validate_ledger_chain(entries: list[dict[str, Any]]) -> None:
         stored_hash = entry.get("_hash")
         if stored_hash is None:
             raise LedgerIntegrityViolation(
-                f"Ledger entry {idx} missing '_hash' field — integrity cannot be verified"
+                f"Ledger entry {idx} missing '_hash' field — integrity cannot be verified",
             )
         entry_without_hash = {k: v for k, v in entry.items() if k != "_hash"}
         expected_hash = compute_entry_hash(prev_hash, entry_without_hash)
         if expected_hash != stored_hash:
             raise LedgerIntegrityViolation(
-                f"Ledger hash mismatch at entry {idx}: expected={expected_hash[:16]}... stored={stored_hash[:16]}..."
+                f"Ledger hash mismatch at entry {idx}: expected={expected_hash[:16]}... stored={stored_hash[:16]}...",
             )
         prev_hash = stored_hash
 

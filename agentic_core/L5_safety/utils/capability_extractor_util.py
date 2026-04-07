@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -206,12 +205,12 @@ class CapabilityExtractor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CapabilityExtractor.extract_capabilities"
+            _trace_id, LayerSegment.L5_POLICY, "CapabilityExtractor.extract_capabilities",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:CapabilityExtractor.extract_capabilities".encode()
+            f"{_trace_id}:CapabilityExtractor.extract_capabilities".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -241,7 +240,7 @@ class CapabilityExtractor:
                 caps["semantic_tags"].add(tag)
 
     def _analyze_method_body(
-        self, item: ast.FunctionDef, method_name: str, method_loc: int, caps: dict
+        self, item: ast.FunctionDef, method_name: str, method_loc: int, caps: dict,
     ) -> None:
         """Analyze method body for specialized patterns.
 

@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai validators module."""
 
-import pytest
 
 
 class TestValidatorsImportable:

@@ -73,7 +73,7 @@ class BackpressureController:
         """
         trace_id = f"backpressure_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "BackpressureController.update_load"
+            trace_id, LayerSegment.L1_REASONING, "BackpressureController.update_load",
         )
 
         # Calculate composite load score
@@ -91,7 +91,7 @@ class BackpressureController:
 
             _emit_records_telemetry_event(
                 "backpressure",
-                f"level_{new_level.value}"
+                f"level_{new_level.value}",
             )
 
         self._current_level = new_level

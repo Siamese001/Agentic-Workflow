@@ -126,7 +126,7 @@ def _resolve_node_id(conn: sqlite3.Connection, adg_name: str, cache: dict[str, i
     if adg_name in cache:
         return cache[adg_name]
     row = conn.execute(
-        "SELECT id FROM nodes WHERE adg_name = ?", (adg_name,)
+        "SELECT id FROM nodes WHERE adg_name = ?", (adg_name,),
     ).fetchone()
     if row:
         cache[adg_name] = row[0]
@@ -288,7 +288,7 @@ def main():
         status = "PASS" if info["pass"] else f"gap={info['gap']}"
         print(
             f"  {label:25s} {info['numerator']:>8d}/{info['denominator']:<8d} "
-            f"= {info['ratio']:.4f}  target={info['target']}  {status}"
+            f"= {info['ratio']:.4f}  target={info['target']}  {status}",
         )
 
     return 0

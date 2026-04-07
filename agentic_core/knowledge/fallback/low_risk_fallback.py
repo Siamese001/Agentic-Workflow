@@ -57,7 +57,7 @@ class LowRiskFallback:
         """
         trace_id = f"fallback_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "LowRiskFallback.generate"
+            trace_id, LayerSegment.L1_REASONING, "LowRiskFallback.generate",
         )
 
         # Determine risk level
@@ -86,7 +86,7 @@ class LowRiskFallback:
 
         _emit_records_telemetry_event(
             "fallback_generated",
-            f"risk_{risk_level}"
+            f"risk_{risk_level}",
         )
 
         log.debug(f"Generated fallback response (risk={risk_level})")

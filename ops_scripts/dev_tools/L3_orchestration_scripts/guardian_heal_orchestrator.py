@@ -28,7 +28,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 from agentic_core.L2_execution.utils import write_gateway as _wg
 
 # REPORTS_DIR imported lazily to avoid L3->L5 violation
@@ -75,6 +74,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 
 emit_replay_key("p0", "guardian_heal_orchestrator")
 emit_determinism_digest("p0", "guardian_heal_orchestrator")
@@ -133,7 +133,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -193,7 +192,7 @@ TOOL_ID = "guardian_heal_orchestrator"
 
 
 def _run_guardians(
-    repo_root: Path, timestamp: str, correlation_id: str | None = None, write_artifacts_dir: str | None = None
+    repo_root: Path, timestamp: str, correlation_id: str | None = None, write_artifacts_dir: str | None = None,
 ) -> dict:
     """Run all enabled guardians and return aggregate result as dict."""
     import uuid as _uuid  # noqa: PLC0415
@@ -334,7 +333,7 @@ def main() -> int:
     parser.add_argument("--correlation-id", default=None, help="Trace correlation ID")
     parser.add_argument("--allow-repo-mutation", action="store_true", help="Allow apply on non-sandbox")
     parser.add_argument(
-        "--format", choices=["json", "summary"], default="json", help="Output format (default: json)"
+        "--format", choices=["json", "summary"], default="json", help="Output format (default: json)",
     )
     args = parser.parse_args()
     if args.apply:

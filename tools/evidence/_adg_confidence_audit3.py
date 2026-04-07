@@ -25,7 +25,7 @@ cur.execute(
     "SELECT e.symbol, n_src.resolved_path FROM edges e "
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "WHERE e.edge_kind='dead_imports' "
-    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%'"
+    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%'",
 )
 dead = [r for r in cur.fetchall() if any(p in (r["resolved_path"] or "") for p in TARGET)]
 print("  count:", len(dead))
@@ -40,14 +40,14 @@ cur.execute(
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "JOIN nodes n_dst ON e.dst_id=n_dst.id "
     "WHERE e.edge_kind='antipattern' "
-    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%'"
+    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%'",
 )
 aps = [r for r in cur.fetchall() if any(p in (r["resolved_path"] or "") for p in TARGET)]
 print("  count:", len(aps))
 for r in aps:
     print(
         "    [%s] sym=%-40s  dst=%s  file=%s"
-        % (r["edge_kind"], str(r["symbol"])[:40], r["n_dst.adg_name"], r["resolved_path"])
+        % (r["edge_kind"], str(r["symbol"])[:40], r["n_dst.adg_name"], r["resolved_path"]),
     )
 
 # --- Q25: reads_env in target files ---
@@ -56,7 +56,7 @@ cur.execute(
     "SELECT e.symbol, e.relation_type, n_src.resolved_path FROM edges e "
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "WHERE e.relation_type='reads_env' "
-    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%'"
+    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%'",
 )
 envs = [r for r in cur.fetchall() if any(p in (r["resolved_path"] or "") for p in TARGET)]
 print("  count:", len(envs))
@@ -75,7 +75,7 @@ cur.execute(
     "WHERE resolved_path LIKE '%execute_ssot.py' "
     "AND entity_type IN ('class','function','constant') "
     "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%test%' "
-    "LIMIT 40"
+    "LIMIT 40",
 )
 for r in cur.fetchall():
     print("  [%s] %s" % (r["entity_type"], r["adg_name"]))
@@ -85,7 +85,7 @@ print("\n=== Q28: _ssot_reporting.py MODULE + IMPORTS ===")
 cur.execute(
     "SELECT id, adg_name, entity_type, layer, resolved_path FROM nodes "
     "WHERE resolved_path LIKE '%_ssot_reporting%' AND entity_type='module' "
-    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'"
+    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'",
 )
 rep_nodes = {r["id"]: dict(r) for r in cur.fetchall()}
 for nid, r in rep_nodes.items():
@@ -120,7 +120,7 @@ cur.execute(
     "SELECT e.symbol, n_src.resolved_path FROM edges e "
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "WHERE e.symbol LIKE '%SOVEREIGN%CONFIDENCE%' "
-    "AND n_src.resolved_path NOT LIKE '%archive%'"
+    "AND n_src.resolved_path NOT LIKE '%archive%'",
 )
 sov = cur.fetchall()
 print("  count:", len(sov))

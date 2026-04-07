@@ -147,10 +147,10 @@ for layer in LAYERS:
 
     print(f"\n--- {layer} ({total} files, {len(has_any_p0)} with P0 edges) ---")
     print(
-        f"  Evidence:   {len(has_evidence):>4}/{total} ({ev_pct:5.1f}%)  gap={len(wirable_evidence)} wirable"
+        f"  Evidence:   {len(has_evidence):>4}/{total} ({ev_pct:5.1f}%)  gap={len(wirable_evidence)} wirable",
     )
     print(
-        f"  Governance: {len(has_governance):>4}/{total} ({gov_pct:5.1f}%)  gap={len(wirable_governance)} wirable"
+        f"  Governance: {len(has_governance):>4}/{total} ({gov_pct:5.1f}%)  gap={len(wirable_governance)} wirable",
     )
     print(f"  Trace:      {len(has_trace):>4}/{total} ({tr_pct:5.1f}%)  gap={len(wirable_trace)} wirable")
     print(f"  Runtime:    {len(has_runtime):>4}/{total} ({rt_pct:5.1f}%)  gap={len(wirable_runtime)} wirable")

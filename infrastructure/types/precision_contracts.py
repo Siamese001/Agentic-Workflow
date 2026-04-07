@@ -138,7 +138,7 @@ class PrecisionContractError(Exception):
             "message": str(self),
             "violation_type": self.violation_type,
             "context": self.context,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
         }
 
 
@@ -204,7 +204,7 @@ class PrecisionFourLayerContractGuard:
         self.l4_rate_limit_per_minute = l4_rate_limit_per_minute
         self.l4_rate_limiter = PrecisionTokenBucket[str](
             capacity=l4_rate_limit_per_minute,
-            refill_rate=l4_rate_limit_per_minute / 60.0
+            refill_rate=l4_rate_limit_per_minute / 60.0,
         )
 
         # Contract violation tracking with precise metrics
@@ -214,7 +214,7 @@ class PrecisionFourLayerContractGuard:
             "request_validation": 0,
             "layer_sequence": 0,
             "rate_limiting": 0,
-            "key_validation": 0
+            "key_validation": 0,
         }
 
     def validate_query_request(self, request: PrecisionQueryRequest) -> bool:
@@ -227,7 +227,7 @@ class PrecisionFourLayerContractGuard:
             if not request.verify_integrity():
                 self._record_violation("cryptographic_integrity", {
                     "query_id": request.query_id,
-                    "provided_checksum": request.checksum
+                    "provided_checksum": request.checksum,
                 })
                 return False
 
@@ -236,7 +236,7 @@ class PrecisionFourLayerContractGuard:
                 self._record_violation("invalid_query_content", {
                     "query_id": request.query_id,
                     "query_length": len(request.user_query),
-                    "query_preview": request.user_query[:100]
+                    "query_preview": request.user_query[:100],
                 })
                 return False
 
@@ -246,7 +246,7 @@ class PrecisionFourLayerContractGuard:
                 self._record_violation("timestamp_out_of_range", {
                     "query_id": request.query_id,
                     "timestamp": request.timestamp.isoformat(),
-                    "current_time": now.isoformat()
+                    "current_time": now.isoformat(),
                 })
                 return False
 
@@ -255,7 +255,7 @@ class PrecisionFourLayerContractGuard:
         except Exception as e:
             self._record_violation("validation_exception", {
                 "query_id": request.query_id,
-                "error": str(e)
+                "error": str(e),
             })
             return False
 
@@ -271,7 +271,7 @@ class PrecisionFourLayerContractGuard:
         if len(set(layers)) != len(layers):
             self._record_violation("duplicate_layers", {
                 "layers": [l.value for l in layers],
-                "duplicates": [l.value for l in layers if layers.count(l) > 1]
+                "duplicates": [l.value for l in layers if layers.count(l) > 1],
             })
             return False
 
@@ -282,7 +282,7 @@ class PrecisionFourLayerContractGuard:
                     "sequence": [l.value for l in layers],
                     "violation_at_index": i,
                     "current": layers[i].value,
-                    "next": layers[i + 1].value
+                    "next": layers[i + 1].value,
                 })
                 return False
 
@@ -295,7 +295,7 @@ class PrecisionFourLayerContractGuard:
                     self._record_violation("skipped_layer", {
                         "sequence": [l.value for l in layers],
                         "skipped_from": current_val,
-                        "skipped_to": next_val
+                        "skipped_to": next_val,
                     })
                     return False
 
@@ -314,7 +314,7 @@ class PrecisionFourLayerContractGuard:
             self._record_violation("layer4_rate_limit", {
                 "key": key,
                 "available_tokens": self.l4_rate_limiter.available_tokens(key),
-                "limit": self.l4_rate_limit_per_minute
+                "limit": self.l4_rate_limit_per_minute,
             })
             return False
 
@@ -326,7 +326,7 @@ class PrecisionFourLayerContractGuard:
 
         if not isinstance(key, str):
             self._record_violation("invalid_key_type", {
-                "key_type": type(key).__name__
+                "key_type": type(key).__name__,
             })
             return False
 
@@ -337,14 +337,14 @@ class PrecisionFourLayerContractGuard:
         if len(key) > 255:
             self._record_violation("key_too_long", {
                 "length": len(key),
-                "max_length": 255
+                "max_length": 255,
             })
             return False
 
         if not self.VALID_KEY_PATTERN.match(key):
             self._record_violation("invalid_key_format", {
                 "key": key,
-                "length": len(key)
+                "length": len(key),
             })
             return False
 
@@ -371,15 +371,15 @@ class PrecisionFourLayerContractGuard:
                 k: {
                     "count": v["count"],
                     "last_occurrence": v.get("last_occurrence", datetime.now()).isoformat(),
-                    "recent_context": v.get("recent_context", {})
+                    "recent_context": v.get("recent_context", {}),
                 }
                 for k, v in self.violations.items()
             },
             "layer4_rate_limit": {
                 "limit_per_minute": self.l4_rate_limit_per_minute,
                 "current_tokens": int(self.l4_rate_limiter.tokens),
-                "capacity": self.l4_rate_limiter.capacity
-            }
+                "capacity": self.l4_rate_limiter.capacity,
+            },
         }
 
     def reset_metrics(self) -> None:
@@ -425,7 +425,7 @@ class PrecisionCircuitBreaker:
                 raise PrecisionContractError(
                     "Circuit breaker OPEN",
                     "circuit_open",
-                    {"failure_count": self.failure_count, "time_until_reset": self._time_until_reset()}
+                    {"failure_count": self.failure_count, "time_until_reset": self._time_until_reset()},
                 )
 
         try:
@@ -493,7 +493,7 @@ class PrecisionCircuitBreaker:
             "failure_rate": self.total_failures / max(1, self.total_requests),
             "last_failure_time": self.last_failure_time.isoformat() if self.last_failure_time else None,
             "last_state_change": self.last_state_change.isoformat(),
-            "time_until_reset": self._time_until_reset()
+            "time_until_reset": self._time_until_reset(),
         }
 
 
@@ -506,5 +506,5 @@ __all__ = [
     "PrecisionContractError",
     "PrecisionTokenBucket",
     "PrecisionFourLayerContractGuard",
-    "PrecisionCircuitBreaker"
+    "PrecisionCircuitBreaker",
 ]

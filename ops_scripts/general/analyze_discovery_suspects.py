@@ -10,7 +10,6 @@ This script identifies entries that may be misclassified as Sovereign Agents:
 import json
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
 

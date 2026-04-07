@@ -40,13 +40,13 @@ class ADGRuntimeStructuralBalanceVerifier:
         "execution_terminates_at_uwg", "validated_by_safety_plane", "validated_by_llm_gateway",
         "writes_to", "writes_through", "invokes_provider", "invokes_dynamic",
         "applies_guardrail", "verifies_policy", "stores_validation_artifact",
-        "captures_execution_output", "records_tool_invocation"
+        "captures_execution_output", "records_tool_invocation",
     }
 
     # Structural edge types
     STRUCTURAL_EDGES = {
         "imports", "calls", "belongs_to_layer", "implements", "instantiates",
-        "produces", "consumes", "decorated_by", "exports", "re_exports"
+        "produces", "consumes", "decorated_by", "exports", "re_exports",
     }
 
     def __init__(self, adg_dir: Path):
@@ -104,7 +104,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 return {
                     "total_runtime_edges": total_runtime,
                     "runtime_edge_counts": runtime_counts,
-                    "runtime_by_layer": runtime_by_layer
+                    "runtime_by_layer": runtime_by_layer,
                 }
 
         except Exception as e:
@@ -151,7 +151,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 return {
                     "total_structural_edges": total_structural,
                     "structural_edge_counts": structural_counts,
-                    "structural_by_layer": structural_by_layer
+                    "structural_by_layer": structural_by_layer,
                 }
 
         except Exception as e:
@@ -209,7 +209,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                     "runtime_coverage_ratio": runtime_coverage_ratio,
                     "structural_dominance_ratio": structural_dominance_ratio,
                     "balance_ratio": balance_ratio,
-                    "balance_score": balance_score
+                    "balance_score": balance_score,
                 }
 
         except Exception as e:
@@ -260,7 +260,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                         "structural_edges": structural_count,
                         "total_edges": total_layer_edges,
                         "runtime_percentage": runtime_percentage,
-                        "structural_percentage": structural_percentage
+                        "structural_percentage": structural_percentage,
                     }
 
                 print("   📊 Layer balance analysis:")
@@ -280,7 +280,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                         imbalanced_layers.append({
                             "layer": layer,
                             "runtime_percentage": balance["runtime_percentage"],
-                            "structural_percentage": balance["structural_percentage"]
+                            "structural_percentage": balance["structural_percentage"],
                         })
 
                 if imbalanced_layers:
@@ -291,7 +291,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 return {
                     "layer_balance": layer_balance,
                     "imbalanced_layers": imbalanced_layers,
-                    "total_imbalanced_layers": len(imbalanced_layers)
+                    "total_imbalanced_layers": len(imbalanced_layers),
                 }
 
         except Exception as e:
@@ -350,7 +350,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                         "structural_edges": structural_count,
                         "total_edges": total_domain_edges,
                         "runtime_percentage": runtime_percentage,
-                        "structural_percentage": structural_percentage
+                        "structural_percentage": structural_percentage,
                     }
 
                 print("   📊 Domain balance analysis:")
@@ -387,7 +387,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 return {
                     "domain_available": True,
                     "domain_balance": domain_balance,
-                    "domain_issues": domain_issues
+                    "domain_issues": domain_issues,
                 }
 
         except Exception as e:
@@ -455,7 +455,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                     "first_party_runtime_percentage": fp_runtime_percentage,
                     "first_party_structural_percentage": fp_structural_percentage,
                     "overall_runtime_contribution": overall_runtime_pct,
-                    "overall_structural_contribution": overall_structural_pct
+                    "overall_structural_contribution": overall_structural_pct,
                 }
 
         except Exception as e:
@@ -510,8 +510,8 @@ class ADGRuntimeStructuralBalanceVerifier:
                 "structural_dominance_ratio": balance.get("structural_dominance_ratio", 0),
                 "balance_score": balance.get("balance_score", 0),
                 "imbalanced_layers": layer_balance.get("total_imbalanced_layers", 0),
-                "first_party_runtime_percentage": fp_balance.get("first_party_runtime_percentage", 0)
-            }
+                "first_party_runtime_percentage": fp_balance.get("first_party_runtime_percentage", 0),
+            },
         }
 
         # Print results
@@ -546,12 +546,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

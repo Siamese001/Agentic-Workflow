@@ -58,7 +58,7 @@ class TestDiscoveryService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "TestDiscoveryService.discover_from_adg"
+            _trace_id, LayerSegment.L2_EXECUTION, "TestDiscoveryService.discover_from_adg",
         )
         _emit_routes_to_capability("p2", "test_discovery", "adg_query")
         _emit_validates_capability("p2", "test_discovery", "adg_access")
@@ -105,7 +105,7 @@ class TestDiscoveryService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "TestDiscoveryService.discover_from_codebase"
+            _trace_id, LayerSegment.L2_EXECUTION, "TestDiscoveryService.discover_from_codebase",
         )
         _emit_routes_to_capability("p2", "test_discovery", "filesystem_scan")
 

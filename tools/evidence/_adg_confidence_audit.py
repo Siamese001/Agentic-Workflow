@@ -47,7 +47,7 @@ for frag in TARGET_FRAGMENTS:
 print("\n=== Q2: HEALING_CONFIDENCE SYMBOL DEFINITIONS ===")
 cur.execute(
     "SELECT id, adg_name, entity_type, layer, resolved_path FROM nodes "
-    "WHERE adg_name LIKE '%HEALING_CONFIDENCE%' AND resolved_path NOT LIKE '%archive%'"
+    "WHERE adg_name LIKE '%HEALING_CONFIDENCE%' AND resolved_path NOT LIKE '%archive%'",
 )
 hc_nodes = {r["id"]: r for r in cur.fetchall()}
 for nid, r in hc_nodes.items():
@@ -76,7 +76,7 @@ if hc_nodes:
 print("\n=== Q4: EDGES TO/FROM _ssot_routing ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%_ssot_routing%' AND entity_type='module' "
-    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'"
+    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'",
 )
 ssot_ids = [r[0] for r in cur.fetchall()]
 if ssot_ids:
@@ -107,7 +107,7 @@ cur.execute(
     "AND (n_src.resolved_path LIKE '%ssot%' OR n_src.resolved_path LIKE '%healing%' "
     "     OR n_dst.resolved_path LIKE '%ssot%' OR n_dst.resolved_path LIKE '%healing%') "
     "AND n_src.resolved_path NOT LIKE '%archive%' "
-    "ORDER BY n_src.resolved_path LIMIT 40"
+    "ORDER BY n_src.resolved_path LIMIT 40",
 )
 rows = cur.fetchall()
 if not rows:
@@ -124,7 +124,7 @@ cur.execute(
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "JOIN nodes n_dst ON e.dst_id=n_dst.id "
     "WHERE e.edge_kind='layer_violation' "
-    "GROUP BY n_src.layer, n_dst.layer ORDER BY cnt DESC LIMIT 20"
+    "GROUP BY n_src.layer, n_dst.layer ORDER BY cnt DESC LIMIT 20",
 )
 for r in cur.fetchall():
     print("  L%s -> L%s: %d violations" % (r[0], r[1], r[2]))
@@ -134,7 +134,7 @@ print("\n=== Q7: NODES NAMED ConfidenceScore ===")
 cur.execute(
     "SELECT id, adg_name, entity_type, layer, resolved_path FROM nodes "
     "WHERE adg_name LIKE '%ConfidenceScore%' "
-    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'"
+    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'",
 )
 cs_nodes = {r["id"]: r for r in cur.fetchall()}
 for nid, r in cs_nodes.items():
@@ -161,7 +161,7 @@ print("\n=== Q9: SovereignDecisionEngine / calculate_healing_confidence NODES ==
 cur.execute(
     "SELECT id, adg_name, entity_type, layer, resolved_path FROM nodes "
     "WHERE (adg_name LIKE '%SovereignDecisionEngine%' OR adg_name LIKE '%calculate_healing_confidence%') "
-    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'"
+    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'",
 )
 for r in cur.fetchall():
     print("  [%s] %s  path=%s" % (r["entity_type"], r["adg_name"], r["resolved_path"]))

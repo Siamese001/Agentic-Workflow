@@ -128,7 +128,7 @@ class BoilerplateRatioAnalyzer:
             "total_nodes": total_nodes,
             "classification": classification,
             "lines": len(content.splitlines()),
-            "violations": len(violations)
+            "violations": len(violations),
         }
 
         return ratio, metadata
@@ -173,7 +173,7 @@ class BoilerplateRatioAnalyzer:
                 "classification": metadata.get("classification", "healthy"),
                 "behavioral_nodes": metadata.get("behavioral_nodes", 0),
                 "boilerplate_nodes": metadata.get("boilerplate_nodes", 0),
-                "lines": metadata.get("lines", 0)
+                "lines": metadata.get("lines", 0),
             })
 
         # Calculate layer statistics
@@ -219,7 +219,7 @@ class BoilerplateRatioAnalyzer:
                 median_ratio=median_ratio,
                 total_lines=total_lines,
                 behavioral_nodes=behavioral_nodes,
-                boilerplate_nodes=boilerplate_nodes
+                boilerplate_nodes=boilerplate_nodes,
             )
 
             total_files += len(data)
@@ -239,8 +239,8 @@ class BoilerplateRatioAnalyzer:
                 "total_boilerplate_heavy": total_boilerplate_heavy,
                 "total_healthy": total_healthy,
                 "overall_hollow_percentage": (total_hollow / total_files * 100) if total_files > 0 else 0,
-                "overall_boilerplate_heavy_percentage": (total_boilerplate_heavy / total_files * 100) if total_files > 0 else 0
-            }
+                "overall_boilerplate_heavy_percentage": (total_boilerplate_heavy / total_files * 100) if total_files > 0 else 0,
+            },
         )
 
         return report
@@ -344,11 +344,11 @@ def main():
                     "median_ratio": stats.median_ratio,
                     "total_lines": stats.total_lines,
                     "behavioral_nodes": stats.behavioral_nodes,
-                    "boilerplate_nodes": stats.boilerplate_nodes
+                    "boilerplate_nodes": stats.boilerplate_nodes,
                 }
                 for layer, stats in report.layer_stats.items()
             },
-            "file_details": report.file_details
+            "file_details": report.file_details,
         }
 
         args.output.write_text(json.dumps(output_data, indent=2))

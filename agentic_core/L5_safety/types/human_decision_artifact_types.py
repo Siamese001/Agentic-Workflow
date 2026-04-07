@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -248,5 +247,5 @@ class HumanDecisionArtifact:
         """Hard-fail if this artifact references a different plan than what was submitted."""
         if self.original_plan_hash != submitted_plan_hash:
             raise HumanDecisionViolation(
-                f"original_plan_hash mismatch: artifact={self.original_plan_hash[:12]} submitted={submitted_plan_hash[:12]}"
+                f"original_plan_hash mismatch: artifact={self.original_plan_hash[:12]} submitted={submitted_plan_hash[:12]}",
             )

@@ -271,13 +271,13 @@ class BaseStrategy(ABC):
 
     @abstractmethod
     async def execute(
-        self, agent: UnifiedAgent, **kwargs: Any
+        self, agent: UnifiedAgent, **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Execute strategy logic."""
         pass
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
     ) -> dict[str, int]:
         """Base healing implementation."""
         return {"violations_found": 0, "violations_fixed": 0, "errors": [], "skipped": []}
@@ -320,7 +320,7 @@ class ValidatorStrategy(BaseStrategy):
         target_data = kwargs.get("data") or self._get_target_data(agent)
         if not target_data:
             return ValidationResult(
-                passed=False, issues=["No target data available for validation"], suggestions=[]
+                passed=False, issues=["No target data available for validation"], suggestions=[],
             )
         issues: list[str] = []
         suggestions: list[str] = []
@@ -359,7 +359,7 @@ class ValidatorStrategy(BaseStrategy):
         return None
 
     def _apply_validation_rule(
-        self, data: Any, rule_name: str, rule_config: dict[str, Any]
+        self, data: Any, rule_name: str, rule_config: dict[str, Any],
     ) -> dict[str, Any]:
         """Apply a single validation rule."""
         issues: list[str] = []
@@ -450,7 +450,7 @@ class OrchestrationStrategy(BaseStrategy):
         )
 
     async def _execute_workflow_step(
-        self, agent: UnifiedAgent, step: dict[str, Any], **kwargs: Any
+        self, agent: UnifiedAgent, step: dict[str, Any], **kwargs: Any,
     ) -> dict[str, Any]:
         """Execute a single workflow step."""
         step_type = step.get("type", "agent_call")
@@ -531,7 +531,7 @@ class HealingStrategy(BaseStrategy):
                             "type": rule_name,
                             "pattern": pattern,
                             "severity": rule_config.get("severity", "medium"),
-                        }
+                        },
                     )
         return violations
 
@@ -542,7 +542,7 @@ class HealingStrategy(BaseStrategy):
         return {"fixed": False, "artifacts": []}
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
     ) -> dict[str, int]:
         """Heal repository violations."""
         import asyncio
@@ -623,7 +623,7 @@ class LocationHealingStrategy(HealingStrategy):
         )
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
     ) -> dict[str, Any]:
         """Heal repository location violations."""
         if hasattr(agent, "heal_repository"):
@@ -774,7 +774,7 @@ class StructureHealingStrategy(HealingStrategy):
         )
 
     def heal_repository(
-        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any
+        self, agent: UnifiedAgent, dry_run: bool, execute: bool, **kwargs: Any,
     ) -> dict[str, Any]:
         """Heal repository structure violations."""
         violations_found = 0
@@ -829,7 +829,7 @@ class UnifiedAgent(SovereignBaseAgent):
         self._unified_config = self._load_unified_config()
         self._strategy = self._create_strategy()
         self.log_info(
-            f"UnifiedAgent initialized: category={self._category.value}, config={self._config_name}"
+            f"UnifiedAgent initialized: category={self._category.value}, config={self._config_name}",
         )
 
     def _load_unified_config(self) -> dict[str, Any]:
@@ -861,7 +861,7 @@ class UnifiedAgent(SovereignBaseAgent):
         return active.trace_id if (active and active.trace_id) else str(uuid.uuid4())
 
     async def execute(
-        self, **kwargs: Any
+        self, **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
         from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: PLC0415
@@ -891,7 +891,7 @@ class UnifiedAgent(SovereignBaseAgent):
         return await self._strategy.execute(self, **kwargs)
 
     def execute_sync(
-        self, **kwargs: Any
+        self, **kwargs: Any,
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Synchronous wrapper for execute."""
         import asyncio

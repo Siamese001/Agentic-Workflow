@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -224,7 +223,7 @@ class AgentHealAuditScanner:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "AgentHealAuditScanner._is_runtime_agent", "p0_governance"
+            str(_uuid.uuid4()), "AgentHealAuditScanner._is_runtime_agent", "p0_governance",
         )
         # Rule 1: Inherits from known agent base
         for base_name in base_names:
@@ -253,7 +252,7 @@ class AgentHealAuditScanner:
         """Scan a single Python file for Agent classes and their healing methods."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"AgentHealAudit.scan_agent_file:{file_path.name}"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"AgentHealAudit.scan_agent_file:{file_path.name}",
         )
         try:
             with open(file_path, encoding="utf-8") as f:
@@ -299,7 +298,7 @@ class AgentHealAuditScanner:
                             "base_class_names": sorted(base_class_names),  # Ensure deterministic ordering
                             "is_runtime_agent": is_runtime,
                             "classification_reason": reason,
-                        }
+                        },
                     )
 
             return sorted(agents, key=lambda x: (x["repo_relative_path"], x["class_name"]))
@@ -634,7 +633,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "| Path | Class | Reason |",
             "|------|-------|--------|",
-        ]
+        ],
     )
 
     for agent in non_agents:
@@ -656,7 +655,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             f"| Runtime Agents | {summary['runtime_agents']['total']} | ✓ (via standard_heal) |",
             f"| Non-Agent Classes | {len(non_agents)} | N/A |",
             "",
-        ]
+        ],
     )
 
     # LLM Escalation Simulation section
@@ -669,14 +668,14 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "| Scenario | Confidence | LLM Enabled | Complexity | Failures | Proceed | Tier | Threshold |",
             "|----------|------------|-------------|------------|----------|---------|------|-----------|",
-        ]
+        ],
     )
 
     for r in escalation_results:
         tier_str = r["tier"] if r["tier"] else "NONE"
         lines.append(
             f"| {r['scenario']} | {r['confidence']} | {r['enable_llm']} | "
-            f"{r['complexity']} | {r['prior_failures']} | {r['proceed']} | {tier_str} | {r['threshold_used']} |"
+            f"{r['complexity']} | {r['prior_failures']} | {r['proceed']} | {tier_str} | {r['threshold_used']} |",
         )
 
     # Phase 4: Repo-heal Coverage section
@@ -694,7 +693,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             f"| Inherits Baseline | {repo_heal_coverage['inherits']} | Uses SovereignBaseAgent baseline |",
             f"| Raises NotImplementedError | {repo_heal_coverage['not_implemented']} | Explicitly unimplemented |",
             "",
-        ]
+        ],
     )
 
     # Phase 4: Repo-heal Outcomes (simulated) section
@@ -713,7 +712,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             f"| Plan Hash | {repo_heal_outcomes['plan_hash']} |",
             f"| Is Idempotent | {repo_heal_outcomes['is_idempotent']} |",
             "",
-        ]
+        ],
     )
 
     # Phase 5: Telemetry Schema Summary section
@@ -726,7 +725,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "| Field | Description |",
             "|-------|-------------|",
-        ]
+        ],
     )
     for field_name in telemetry_schema["fields"]:
         lines.append(f"| {field_name} | Deterministic |")
@@ -736,7 +735,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "Determinism rules:",
             "",
-        ]
+        ],
     )
     for rule in telemetry_schema["determinism_rules"]:
         lines.append(f"- {rule}")
@@ -746,7 +745,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "Outcome values: " + ", ".join(telemetry_schema["outcome_values"]),
             "",
-        ]
+        ],
     )
 
     # Phase 5: Telemetry Aggregates section
@@ -770,7 +769,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             f"| Total Applied Ops | {telemetry_aggregates['total_applied_ops']} |",
             f"| Idempotent Passes | {telemetry_aggregates['idempotent_passes']} |",
             "",
-        ]
+        ],
     )
 
     # Phase 5: Budget Caps Summary section
@@ -783,7 +782,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "| Cap | Default Value |",
             "|-----|---------------|",
-        ]
+        ],
     )
     for cap_name, cap_value in budget_caps["defaults"].items():
         lines.append(f"| {cap_name} | {cap_value} |")
@@ -793,7 +792,7 @@ def generate_markdown_report(audit_data: dict[str, Any]) -> str:
             "",
             "Enforcement rules:",
             "",
-        ]
+        ],
     )
     for rule in budget_caps["enforcement"]:
         lines.append(f"- {rule}")

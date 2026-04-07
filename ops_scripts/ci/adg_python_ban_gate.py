@@ -164,7 +164,7 @@ def scan_file(path: Path, checks: list[str]) -> dict[str, list[tuple[int, str]]]
     violations: dict[str, list[tuple[int, str]]] = {
         "grep": [],
         "mypy": [],
-        "pytest": []
+        "pytest": [],
     }
 
     try:

@@ -248,7 +248,7 @@ def safe_subprocess_run(
                 cwd_path = Path(cwd).resolve()
                 if enforce_protected_root(cwd_path, operation="check"):
                     raise RuntimeError(
-                        f"Command '{argv[0]}' may affect protected root {cwd_path}. Use allow_protected_root_mutation=True if intentional."
+                        f"Command '{argv[0]}' may affect protected root {cwd_path}. Use allow_protected_root_mutation=True if intentional.",
                     )
     if not isinstance(argv, list):
         raise TypeError("argv must be a list of strings")
@@ -272,7 +272,7 @@ def safe_subprocess_call(
 ) -> int:
     """Safe subprocess.call wrapper."""
     result = safe_subprocess_run(
-        argv, cwd=cwd, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs
+        argv, cwd=cwd, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs,
     )
     return result.returncode
 
@@ -286,7 +286,7 @@ def safe_subprocess_check_call(
 ) -> None:
     """Safe subprocess.check_call wrapper."""
     safe_subprocess_run(
-        argv, cwd=cwd, check=True, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs
+        argv, cwd=cwd, check=True, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs,
     )
 
 
@@ -343,7 +343,7 @@ def safe_subprocess_popen(
                 cwd_path = Path(cwd).resolve()
                 if enforce_protected_root(cwd_path, operation="check"):
                     raise RuntimeError(
-                        f"Command '{argv[0]}' may affect protected root {cwd_path}. Use allow_protected_root_mutation=True if intentional."
+                        f"Command '{argv[0]}' may affect protected root {cwd_path}. Use allow_protected_root_mutation=True if intentional.",
                     )
     if not isinstance(argv, list):
         raise TypeError("argv must be a list of strings")

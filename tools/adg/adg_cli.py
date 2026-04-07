@@ -96,21 +96,14 @@ _emit_applies_guardrail("p0", "adg_cli", "p0_governance")
 _emit_reads_policy_state("p0", "adg_cli", "policy_binding")
 _emit_snapshots_state("p0", "adg_cli", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -118,17 +111,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -594,7 +581,7 @@ def cmd_stats(repo_root: Path) -> int:
                 "structural_metrics": sm,
                 "identity_health": ih,
                 "blind_spots": bs,
-            }
+            },
         )
     else:
         result = _load_scan(repo_root)
@@ -605,7 +592,7 @@ def cmd_stats(repo_root: Path) -> int:
                 "edges": len(result.edges),
                 "digest": result.digest or "",
                 "note": "Run 'python tools/adg_cli.py build --rebuild' for full artifact stats",
-            }
+            },
         )
     return 0
 
@@ -681,7 +668,7 @@ def cmd_impact_symbol(symbol_name: str, repo_root: Path) -> int:
                     "widening_action": "MANUAL_REVIEW_REQUIRED",
                 },
                 indent=2,
-            )
+            ),
         )
         return 1
 
@@ -731,7 +718,7 @@ def cmd_who_uses(symbol_or_file: str, repo_root: Path) -> int:
             "source_importers": sorted(p for p in set(importers) if not p.startswith("tests/")),
             "total_count": len(set(importers)),
             "note": "Resolved as symbol" if importers else "No importers found — try as module path",
-        }
+        },
     )
     return 0
 
@@ -769,7 +756,7 @@ def cmd_neighbors(file_path: str, repo_root: Path) -> int:
             "dependency_count": len(set(dependencies)),
             "dependencies": sorted(set(dependencies)),
             "total_neighbors": len(set(importers) | set(dependencies)),
-        }
+        },
     )
     return 0
 
@@ -825,7 +812,7 @@ def cmd_ownership(symbol_or_file: str, repo_root: Path) -> int:
             "allowed_importers": allowed_importers,
             "allowed_imports": allowed_imports,
             "in_adg_index": in_index,
-        }
+        },
     )
     return 0
 
@@ -865,7 +852,7 @@ def cmd_config_consumers(symbol_name: str, repo_root: Path) -> int:
                 if not consumers
                 else ""
             ),
-        }
+        },
     )
     return 0
 
@@ -936,7 +923,7 @@ def cmd_test_coverage(symbol_name: str, repo_root: Path) -> int:
                 "covering_tests": tests,
                 "test_count": len(tests),
                 "note": "" if tests else "No ADG test coverage found",
-            }
+            },
         )
         return 0
 
@@ -957,7 +944,7 @@ def cmd_test_coverage(symbol_name: str, repo_root: Path) -> int:
                 "covering_tests": tests,
                 "test_count": len(tests),
                 "resolution_confidence": "HIGH",
-            }
+            },
         )
         return 0
 
@@ -968,7 +955,7 @@ def cmd_test_coverage(symbol_name: str, repo_root: Path) -> int:
             "note": "Try a repo-relative path like 'agentic_core/adg/schema.py'",
             "covering_tests": [],
             "test_count": 0,
-        }
+        },
     )
     return 1
 
@@ -996,7 +983,7 @@ def cmd_missing_tests(symbol_name: str, repo_root: Path) -> int:
                 "has_coverage": len(tests) > 0,
                 "covering_tests": tests,
                 "verdict": "COVERED" if tests else "MISSING",
-            }
+            },
         )
         return 0 if tests else 1
 
@@ -1010,7 +997,7 @@ def cmd_missing_tests(symbol_name: str, repo_root: Path) -> int:
             "total_uncovered": report["uncovered_count"],
             "coverage_pct": report["coverage_pct"],
             "note": "Use exact module path or symbol for precise query",
-        }
+        },
     )
     return 0
 
@@ -1090,7 +1077,7 @@ def cmd_guardian_scope(
                 "risk_score": impact.risk_score,
                 "priority_guardians": [s.to_dict() for s in prio_result.ordered()[:5]],
                 "adg_signals_digest": prio_result.adg_signals_digest,
-            }
+            },
         )
         return 0
 
@@ -1111,7 +1098,7 @@ def cmd_guardian_scope(
                 "priority_guardians": boundary_guardians,
                 "sample_violations": violations[:10],
                 "adg_signals_digest": prio_result.adg_signals_digest,
-            }
+            },
         )
         return 0
 
@@ -1155,7 +1142,7 @@ def cmd_guardian_scope(
                 "cross_boundary_violations": relevant_violations[:10],
                 "priority_order": [s.to_dict() for s in prio_result.ordered()],
                 "adg_signals_digest": prio_result.adg_signals_digest,
-            }
+            },
         )
         return 0
 
@@ -1176,7 +1163,7 @@ def cmd_guardian_scope(
                 "signal_summary": {
                     k: len(v) if isinstance(v, list) else v for k, v in prioritizer.get_signals().items()
                 },
-            }
+            },
         )
         return 0
 
@@ -1248,7 +1235,7 @@ def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
                 "error": f"Could not resolve '{symbol_name}' to a known module",
                 "safe_healing_scope": [],
                 "confidence": "NONE",
-            }
+            },
         )
         return 1
 
@@ -1281,7 +1268,7 @@ def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
             "confidence": "HIGH" if parent_path in set(result.modules) else "MEDIUM",
             "scope_widening_events": impact.scope_widening_events,
             "impact_digest": impact.impact_digest,
-        }
+        },
     )
     return 0 if impact.route_mode == "NORMAL" else 1
 
@@ -1313,7 +1300,7 @@ def cmd_healing_radius(symbol_name: str, repo_root: Path) -> int:
                 "symbol": symbol_name,
                 "error": "Could not resolve to a known module",
                 "healing_radius": [],
-            }
+            },
         )
         return 1
 
@@ -1339,7 +1326,7 @@ def cmd_healing_radius(symbol_name: str, repo_root: Path) -> int:
             "impacted_tests": impact.impacted_tests,
             "scope_widening_events": impact.scope_widening_events,
             "impact_digest": impact.impact_digest,
-        }
+        },
     )
     return 0
 
@@ -1420,7 +1407,7 @@ def main(argv: list[str] | None = None) -> int:
     # -- diff
     p_diff = sub.add_parser("diff", help="Diff current ADG against a baseline")
     p_diff.add_argument(
-        "--baseline", required=True, metavar="ARTIFACT_OR_PATH", help="Baseline artifact path"
+        "--baseline", required=True, metavar="ARTIFACT_OR_PATH", help="Baseline artifact path",
     )
 
     # -- impact
@@ -1448,7 +1435,7 @@ def main(argv: list[str] | None = None) -> int:
     # -- scoped-tests
     p_st = sub.add_parser("scoped-tests", help="Map changed files to impacted tests")
     p_st.add_argument(
-        "--changed-files", required=True, metavar="FILE1,FILE2,...", help="Comma-separated changed files"
+        "--changed-files", required=True, metavar="FILE1,FILE2,...", help="Comma-separated changed files",
     )
 
     # -- test-coverage

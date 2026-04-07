@@ -1,9 +1,9 @@
 """
 Banking Package Types - Domain contracts for banking relationship data.
 """
-from typing import Literal, Optional, List
-from pydantic import BaseModel, Field
+from typing import List, Literal, Optional
 
+from pydantic import BaseModel, Field
 
 DepositTrend = Literal["up", "flat", "down", "unknown"]
 
@@ -29,6 +29,6 @@ class BankingPackage(BaseModel):
                 "overdraft_days_12m": 8,
                 "cash_volatility_score": 0.23,
                 "deposit_trend": "up",
-                "bank_statement_flags": []
-            }
+                "bank_statement_flags": [],
+            },
         }

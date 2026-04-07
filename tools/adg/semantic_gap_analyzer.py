@@ -77,21 +77,14 @@ _emit_records_execution_trace("p0", "evidence", "semantic_gap_analyzer")
 _emit_applies_guardrail("p0", "semantic_gap_analyzer", "p0_governance")
 _emit_snapshots_state("p0", "semantic_gap_analyzer", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -99,17 +92,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -878,7 +865,7 @@ def _contains_symbol_reference(analysis: FileAnalysis, symbol_hint: str) -> bool
 
 
 def _analysis_mentions_cache(
-    analysis: FileAnalysis, module_hint: str, symbol_hint: str | None = None
+    analysis: FileAnalysis, module_hint: str, symbol_hint: str | None = None,
 ) -> bool:
     if _contains_module_reference(analysis, module_hint):
         return True
@@ -1004,7 +991,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[_stable_relpath(discovery_py)],
                         recommended_fix="Import AgentDiscoveryCache and wrap get_all_agents() with cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         # Check reasoning_policy_engine for policy registry cache usage
@@ -1032,7 +1019,7 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[_stable_relpath(policy_engine)],
                         recommended_fix="Wrap policy_config retrieval with PolicyRegistryCache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1067,7 +1054,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[_stable_relpath(cognitive_engine)],
                         recommended_fix="Import ToolEmbeddingCache and wrap embedding generation with cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         # Check for prompt artifact cache usage
@@ -1095,7 +1082,7 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[_stable_relpath(prompt_file)],
                         recommended_fix="Wrap prompt loading with prompt_artifact_cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1138,7 +1125,7 @@ class SemanticGapAnalyzer:
                     "slot_status": slot_status,
                     "manifest_hash": bool(analysis.manifest_hash_mentions),
                     "boundary_snapshot": bool(analysis.boundary_snapshot_mentions),
-                }
+                },
             )
 
             if missing_slots:
@@ -1166,7 +1153,7 @@ class SemanticGapAnalyzer:
                             "Add explicit slot assembly or manifest fields for the missing taxonomy slots: "
                             + ", ".join(missing_slots)
                         ),
-                    )
+                    ),
                 )
 
             if not analysis.manifest_hash_mentions:
@@ -1181,7 +1168,7 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[rel],
                         recommended_fix="Emit and persist a manifest hash for the final governed prompt package.",
-                    )
+                    ),
                 )
 
             if not analysis.boundary_snapshot_mentions:
@@ -1196,7 +1183,7 @@ class SemanticGapAnalyzer:
                         priority="LOW",
                         evidence_files=[rel],
                         recommended_fix="Wire validator output to emit boundary_snapshot.json for prompt-package inspection.",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1232,7 +1219,7 @@ class SemanticGapAnalyzer:
                         priority=rule["priority"],
                         evidence_files=[rel],
                         recommended_fix=rule["recommended_fix"],
-                    )
+                    ),
                 )
                 continue
 
@@ -1266,7 +1253,7 @@ class SemanticGapAnalyzer:
                         priority=rule["priority"],
                         evidence_files=[rel],
                         recommended_fix=rule["recommended_fix"],
-                    )
+                    ),
                 )
 
         return gaps
@@ -1304,7 +1291,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[_stable_relpath(validator_file)],
                         recommended_fix="Wrap validator compilation with schema_validator_cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1347,7 +1334,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[rel],
                         recommended_fix="Replace upward imports with protocol seams, signed contracts, or read-only data contracts.",
-                    )
+                    ),
                 )
 
             if analysis.direct_provider_imports and "SovereignLLMGateway.py" not in rel:
@@ -1362,7 +1349,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[rel],
                         recommended_fix="Route all provider interactions through SovereignLLMGateway and remove direct SDK imports.",
-                    )
+                    ),
                 )
 
             if source_layer in {"L0", "L3", "L5"} and analysis.write_paths:
@@ -1377,7 +1364,7 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[rel],
                         recommended_fix="Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.",
-                    )
+                    ),
                 )
 
             if "Path D" in rel or "hitl" in rel.lower() or analysis.path_d_mentions:
@@ -1393,7 +1380,7 @@ class SemanticGapAnalyzer:
                             priority="HIGH",
                             evidence_files=[rel],
                             recommended_fix="Require original_plan_hash and structured_patch_schema markers on all Path D decision artifacts.",
-                        )
+                        ),
                     )
 
         return gaps
@@ -1428,7 +1415,7 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[_stable_relpath(orchestrator)],
                         recommended_fix="Wrap plan construction with orchestration_plan_cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1470,7 +1457,7 @@ class SemanticGapAnalyzer:
                                 priority="MEDIUM",
                                 evidence_files=[rel],
                                 recommended_fix="Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration markers on airlock paths.",
-                            )
+                            ),
                         )
 
                 if layer in {"L5", "L2"} and not analysis.governance_mentions:
@@ -1489,7 +1476,7 @@ class SemanticGapAnalyzer:
                                 priority="HIGH",
                                 evidence_files=[rel],
                                 recommended_fix="Expose or validate Compliance Hash, InstructionPacket, SandboxEnvelope, and CapabilityToken markers.",
-                            )
+                            ),
                         )
 
         return gaps
@@ -1523,7 +1510,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[rel],
                         recommended_fix="Move embedding creation and FAISS handling behind singleton factory or RAG provider seams only.",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1558,7 +1545,7 @@ class SemanticGapAnalyzer:
                     priority="HIGH",
                     evidence_files=[rel],
                     recommended_fix="Emit or preserve explicit stage markers for all immutable pipeline stages.",
-                )
+                ),
             )
 
         text_blob = " ".join(analysis.string_literals) + " " + " ".join(analysis.used_names)
@@ -1575,7 +1562,7 @@ class SemanticGapAnalyzer:
                     priority="HIGH",
                     evidence_files=[rel],
                     recommended_fix="Require explicit version_store and approval_gate dependencies before any activation path is considered valid.",
-                )
+                ),
             )
 
         if "proposal_only" not in text_blob.lower():
@@ -1590,7 +1577,7 @@ class SemanticGapAnalyzer:
                     priority="MEDIUM",
                     evidence_files=[rel],
                     recommended_fix="Expose proposal_only default behavior as an explicit contract in pipeline configuration and reporting.",
-                )
+                ),
             )
 
         return gaps
@@ -1620,7 +1607,7 @@ class SemanticGapAnalyzer:
                         priority="HIGH",
                         evidence_files=[_stable_relpath(blob_storage)],
                         recommended_fix="Add read-through cache layer for frequently accessed blobs",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1661,7 +1648,7 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[_stable_relpath(enf_file)],
                         recommended_fix="Wrap policy retrieval with policy_registry_cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1673,7 +1660,7 @@ class SemanticGapAnalyzer:
 
         # Check telemetry engine for config caching
         telemetry_files = self.ast_analyzer.find_hot_paths(
-            AGENTIC_CORE / "L6_observability", "*telemetry*.py"
+            AGENTIC_CORE / "L6_observability", "*telemetry*.py",
         )
         for telem_file in telemetry_files:
             analysis = self.ast_analyzer.analyze_file(telem_file)
@@ -1698,7 +1685,7 @@ class SemanticGapAnalyzer:
                         priority="LOW",
                         evidence_files=[_stable_relpath(telem_file)],
                         recommended_fix="Wrap config loading with config_file_cache.get_or_fetch()",
-                    )
+                    ),
                 )
 
         return gaps
@@ -1714,7 +1701,7 @@ class SemanticGapAnalyzer:
             )
             existing = deduped.get(key)
             if existing is None or PRIORITY_RANK.get(gap.priority, 99) < PRIORITY_RANK.get(
-                existing.priority, 99
+                existing.priority, 99,
             ):
                 deduped[key] = gap
         return sorted(deduped.values(), key=_priority_sort_key)
@@ -1803,7 +1790,7 @@ class SemanticGapAnalyzer:
         h("4. Check for manifest-hash and boundary-snapshot evidence on prompt execution paths")
         h("5. Verify architecture SSOT components exist and expose expected contract markers")
         h(
-            "6. Scan layer connection integrity for upward imports, gateway bypasses, and non-L2 mutation risks"
+            "6. Scan layer connection integrity for upward imports, gateway bypasses, and non-L2 mutation risks",
         )
         h("7. Audit Elevator Shaft, governance stamp, and airlock contract markers")
         h("8. Check embedding sovereignty and meta-learning pipeline contracts")
@@ -1820,7 +1807,7 @@ class SemanticGapAnalyzer:
             for finding in sorted(self.architecture_component_findings, key=lambda item: item["file"]):
                 exists_text = "yes" if finding["exists"] else "no"
                 h(
-                    f"| {finding['component']} | `{finding['file']}` | {exists_text} | {finding['signals_present']} |"
+                    f"| {finding['component']} | `{finding['file']}` | {exists_text} | {finding['signals_present']} |",
                 )
             blank()
 
@@ -1839,16 +1826,16 @@ class SemanticGapAnalyzer:
             h("## Layer Connection Integrity")
             blank()
             h(
-                "| File | Layer | Upward Imports | Direct Provider Imports | Embedding Mentions | Governance Mentions |"
+                "| File | Layer | Upward Imports | Direct Provider Imports | Embedding Mentions | Governance Mentions |",
             )
             h(
-                "|------|-------|----------------|-------------------------|--------------------|---------------------|"
+                "|------|-------|----------------|-------------------------|--------------------|---------------------|",
             )
             for finding in sorted(self.layer_connection_findings, key=lambda item: item["file"]):
                 upward = finding["upward_imports"] or "-"
                 direct = finding["direct_provider_imports"] or "-"
                 h(
-                    f"| `{finding['file']}` | {finding['layer']} | {upward} | {direct} | {finding['embedding_mentions']} | {finding['governance_mentions']} |"
+                    f"| `{finding['file']}` | {finding['layer']} | {upward} | {direct} | {finding['embedding_mentions']} | {finding['governance_mentions']} |",
                 )
             blank()
 
@@ -1925,7 +1912,7 @@ class SemanticGapAnalyzer:
         h("- Governed prompt assembly emits a manifest hash")
         h("- Validator paths emit boundary_snapshot.json for prompt-package inspection")
         h(
-            "- Classification kernel, SovereignLLMGateway, AGENT_REGISTRY, meta_learning_pipeline, and write_gateway are all present and contract-visible"
+            "- Classification kernel, SovereignLLMGateway, AGENT_REGISTRY, meta_learning_pipeline, and write_gateway are all present and contract-visible",
         )
         h("- No upward import edges violate the L0-L6 sovereignty matrix")
         h("- No direct provider SDK imports exist outside SovereignLLMGateway")

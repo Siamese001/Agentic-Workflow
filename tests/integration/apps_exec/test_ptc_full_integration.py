@@ -16,6 +16,12 @@ import pytest
 
 # Check if PTC modules are available
 try:
+    from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
+        ToolCall,
+        ToolContractViolation,
+        ToolResult,
+    )
+    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
     from agentic_core.L2_execution.utils.ptc_contract import (
         PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
@@ -24,12 +30,6 @@ try:
         PTCUnsignedEnvelopeError,
         redact_output,
     )
-    from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
-        ToolCall,
-        ToolContractViolation,
-        ToolResult,
-    )
-    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
     from agentic_core.L3_orchestration.reasoning.ptc.builtin_tools import expr_eval_handler, repo_rg_handler
     from agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration import (
         PTCHITLIntegration,
@@ -424,7 +424,7 @@ print(json.dumps({"done": True}))
 
         ctx, output = ptc_sandbox.execute_in_sandbox(
             code,
-            {"query_database": mock_query}
+            {"query_database": mock_query},
         )
 
         # Raw results should be trapped
@@ -465,7 +465,7 @@ print(json.dumps({"done": True}))
         # If gates pass, execute
         if ptc_safety_manager.check_all_passed(results):
             result = ptc_orchestrator.execute_batch(plan, {
-                "safe_query": lambda _: {"status": "ok"}
+                "safe_query": lambda _: {"status": "ok"},
             })
             assert result.success
 
@@ -603,7 +603,7 @@ class TestPTCContractEnforcementIntegration:
         assert "hello world" in safe_output
 
     def test_ptc_enforcer_byte_cap_fail_closed(
-        self, ptc_enforcer: PTCContractEnforcer
+        self, ptc_enforcer: PTCContractEnforcer,
     ) -> None:
         """Test PTC enforcer byte cap fail-closed."""
         envelope = SandboxEnvelope(

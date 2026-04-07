@@ -113,7 +113,7 @@ class ResearchValidator:
 
         # Calculate quality score
         quality_score = self._calculate_quality_score(
-            violations, source_metrics, claim_metrics
+            violations, source_metrics, claim_metrics,
         )
 
         # Calculate source coverage
@@ -152,7 +152,7 @@ class ResearchValidator:
                     severity=ViolationSeverity.BLOCKING,
                     message="Source register is empty",
                     suggestion="Add at least one source with proper claim typing",
-                )
+                ),
             )
             return violations
 
@@ -169,7 +169,7 @@ class ResearchValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Source {idx} missing fields: {', '.join(missing_fields)}",
                         suggestion=f"Add missing fields: {', '.join(missing_fields)}",
-                    )
+                    ),
                 )
 
         return violations
@@ -195,7 +195,7 @@ class ResearchValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Required section '{section}' not found",
                         suggestion=f"Add section header: ## {section.replace('_', ' ').title()}",
-                    )
+                    ),
                 )
 
         return violations
@@ -220,7 +220,7 @@ class ResearchValidator:
                     severity=ViolationSeverity.BLOCKING,
                     message="No claim type labels found in content",
                     suggestion="Add claim type labels: [DIRECT_EVIDENCE], [INTERPRETATION], [ANALYST_INFERENCE], [ASSUMPTION]",
-                )
+                ),
             )
 
         return violations
@@ -245,7 +245,7 @@ class ResearchValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Section '{section_title}' has empty body",
                         suggestion="Add substantive content to this section",
-                    )
+                    ),
                 )
 
         return violations
@@ -369,7 +369,7 @@ class SourceGate:
         if total_sources < self.min_sources:
             gates_passed = False
             violations.append(
-                f"Source count {total_sources} below threshold {self.min_sources}"
+                f"Source count {total_sources} below threshold {self.min_sources}",
             )
 
         # Confidence gate
@@ -377,7 +377,7 @@ class SourceGate:
         if avg_confidence < self.min_confidence:
             gates_passed = False
             violations.append(
-                f"Avg confidence {avg_confidence:.0%} below threshold {self.min_confidence:.0%}"
+                f"Avg confidence {avg_confidence:.0%} below threshold {self.min_confidence:.0%}",
             )
 
         # Direct evidence gate
@@ -391,7 +391,7 @@ class SourceGate:
         if validation_result.quality_score < 0.70:
             gates_passed = False
             violations.append(
-                f"Quality score {validation_result.quality_score:.0%} below threshold 70%"
+                f"Quality score {validation_result.quality_score:.0%} below threshold 70%",
             )
 
         return {
@@ -424,7 +424,7 @@ class ResearchValidationAgent:
 
         # Run validation
         validation = self.validator.validate(
-            research_content, source_register, required_sections
+            research_content, source_register, required_sections,
         )
 
         # Run gates

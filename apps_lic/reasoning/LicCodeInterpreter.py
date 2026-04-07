@@ -333,7 +333,7 @@ STOP_WORDS = frozenset(
         "there",
         "any",
         "about",
-    ]
+    ],
 )
 
 
@@ -376,7 +376,7 @@ class LICCodeInterpreter:
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LicCodeInterpreter.execute:{function_name}")
         if function_name not in self.functions:
             raise ValueError(
-                f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}"
+                f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}",
             )
         func = self.functions[function_name]
         return func(**kwargs)
@@ -402,7 +402,7 @@ class LICCodeInterpreter:
         return SimilarityResult(score=score, method=method, text1_length=len(text1), text2_length=len(text2))
 
     def run_scoring_competition(
-        self, candidates: list[str], strategic_brief: str, criteria: ScoringCriteria | None = None
+        self, candidates: list[str], strategic_brief: str, criteria: ScoringCriteria | None = None,
     ) -> list[ScoredCandidate]:
         """
         Score N candidate messages against strategic brief.
@@ -440,8 +440,8 @@ class LICCodeInterpreter:
             )
             scored.append(
                 ScoredCandidate(
-                    candidate_index=i, candidate_text=candidate, scores=scores, total_score=total_score
-                )
+                    candidate_index=i, candidate_text=candidate, scores=scores, total_score=total_score,
+                ),
             )
         scored.sort(key=lambda x: x.total_score, reverse=True)
         return scored
@@ -507,7 +507,7 @@ class LICCodeInterpreter:
         }
 
     def rank_by_metric(
-        self, items: list[dict[str, object]], metric_key: str, descending: bool = True
+        self, items: list[dict[str, object]], metric_key: str, descending: bool = True,
     ) -> list[dict[str, object]]:
         """
         Rank items by a specific Metric.
@@ -540,13 +540,13 @@ class LICCodeInterpreter:
             if word_count < requirements["min_words"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Word count {word_count} below minimum {requirements['min_words']}"
+                    f"Word count {word_count} below minimum {requirements['min_words']}",
                 )
         if "max_words" in requirements:
             if word_count > requirements["max_words"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Word count {word_count} above maximum {requirements['max_words']}"
+                    f"Word count {word_count} above maximum {requirements['max_words']}",
                 )
         char_count = len(text)
         result["metrics"]["char_count"] = char_count
@@ -554,7 +554,7 @@ class LICCodeInterpreter:
             if char_count > requirements["max_chars"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Character count {char_count} above maximum {requirements['max_chars']}"
+                    f"Character count {char_count} above maximum {requirements['max_chars']}",
                 )
         sentences = re.split("[.!?]+", text)
         sentence_count = len([s for s in sentences if s.strip()])
@@ -563,7 +563,7 @@ class LICCodeInterpreter:
             if sentence_count < requirements["min_sentences"]:
                 result["is_valid"] = False
                 result["violations"].append(
-                    f"Sentence count {sentence_count} below minimum {requirements['min_sentences']}"
+                    f"Sentence count {sentence_count} below minimum {requirements['min_sentences']}",
                 )
         return result
 

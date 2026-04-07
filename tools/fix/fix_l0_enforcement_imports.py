@@ -4,8 +4,9 @@ Fix imports for L0 routing enforcement module.
 Adds missing exports to __init__.py files so tests can import them.
 """
 
-import pathlib
 import ast
+import pathlib
+
 
 def get_exports_from_file(filepath):
     """Extract class and function names from a Python file."""

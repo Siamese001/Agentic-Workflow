@@ -28,7 +28,7 @@ class MigrationStatusChecker:
             "unmigrated_files": {},
             "learning_components_status": {},
             "system_learning_files": {},
-            "recommendations": []
+            "recommendations": [],
         }
 
     def run_comprehensive_check(self):
@@ -98,37 +98,37 @@ class MigrationStatusChecker:
                 "system_learning/snapshots/*.ckpt",
                 "system_learning/snapshots/*.model",
                 "**/checkpoints/*.pkl",
-                "**/models/*.ckpt"
+                "**/models/*.ckpt",
             ],
             "config_files": [
                 "system_learning/config/*.json",
                 "system_learning/stores/*.json",
                 "**/config/*.json",
-                "**/settings/*.json"
+                "**/settings/*.json",
             ],
             "embedding_files": [
                 "system_learning/embeddings/*.pkl",
                 "system_learning/embeddings/*.npy",
                 "**/embeddings/*.pkl",
-                "**/vectors/*.pkl"
+                "**/vectors/*.pkl",
             ],
             "training_data": [
                 "system_learning/training/*.json",
                 "system_learning/training/*.pkl",
                 "**/training/*.json",
-                "**/datasets/*.json"
+                "**/datasets/*.json",
             ],
             "state_files": [
                 "system_learning/state/*.json",
                 "system_learning/state/*.pkl",
                 "**/state/*.json",
-                "**/cache/*.json"
+                "**/cache/*.json",
             ],
             "log_files": [
                 "system_learning/logs/*.json",
                 "**/logs/*.json",
-                "**/telemetry/*.json"
-            ]
+                "**/telemetry/*.json",
+            ],
         }
 
         total_files = 0
@@ -234,7 +234,7 @@ class MigrationStatusChecker:
             "stores": ["activator.py", "config_provider.py", "telemetry_store.py", "version_store.py"],
             "adapters": ["l1_meta_adapter.py", "l4_meta_prior_provider.py", "system_learning_memory_bridge.py"],
             "engines": ["embedding_engine.py", "arbitration_engine.py", "confidence_engine.py"],
-            "pipelines": ["meta_learning_pipeline.py", "live_run_pipeline.py"]
+            "pipelines": ["meta_learning_pipeline.py", "live_run_pipeline.py"],
         }
 
         for component_type, files in components.items():
@@ -297,7 +297,7 @@ class MigrationStatusChecker:
                 "knowledge_graphs",
                 "application_state",
                 "learning_experiences",
-                "performance_metrics"
+                "performance_metrics",
             ]
 
             for table in tables:
@@ -347,7 +347,7 @@ class MigrationStatusChecker:
                         "category": "File Migration",
                         "description": f"Migrate {len(files)} {category} files to persistent memory",
                         "files": files[:5],  # Show first 5
-                        "action": "Use continuous learning pipeline to migrate these files"
+                        "action": "Use continuous learning pipeline to migrate these files",
                     })
 
         # Check component integration
@@ -359,7 +359,7 @@ class MigrationStatusChecker:
                 "category": "Component Integration",
                 "description": f"Integrate {len(non_integrated)} system_learning components",
                 "files": non_integrated[:3],
-                "action": "Add pipeline integration to these components"
+                "action": "Add pipeline integration to these components",
             })
 
         # Check database status
@@ -368,7 +368,7 @@ class MigrationStatusChecker:
                 "priority": "CRITICAL",
                 "category": "Database Setup",
                 "description": "Create and initialize unified memory database",
-                "action": "Run: python tools/implement_unified_memory.py"
+                "action": "Run: python tools/implement_unified_memory.py",
             })
 
         # General recommendations
@@ -377,20 +377,20 @@ class MigrationStatusChecker:
                 "priority": "MEDIUM",
                 "category": "Pipeline Deployment",
                 "description": "Deploy continuous learning pipeline in production",
-                "action": "Add pipeline startup to main application"
+                "action": "Add pipeline startup to main application",
             },
             {
                 "priority": "MEDIUM",
                 "category": "Monitoring",
                 "description": "Set up monitoring for learning pipeline health",
-                "action": "Implement health checks and alerts"
+                "action": "Implement health checks and alerts",
             },
             {
                 "priority": "LOW",
                 "category": "Documentation",
                 "description": "Update documentation with migration status",
-                "action": "Document current state and next steps"
-            }
+                "action": "Document current state and next steps",
+            },
         ])
 
         self.results["recommendations"] = recommendations

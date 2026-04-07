@@ -51,14 +51,14 @@ class DramaticPlanRevisor:
                         {
                             "step_name": "huge_auth_design",
                             "description": "Design massive authentication system",
-                            "inputs": self._create_massive_auth_inputs()
+                            "inputs": self._create_massive_auth_inputs(),
                         },
                         {
                             "step_name": "monolithic_auth_impl",
                             "description": "Implement monolithic authentication",
-                            "inputs": self._create_massive_auth_inputs()
-                        }
-                    ]
+                            "inputs": self._create_massive_auth_inputs(),
+                        },
+                    ],
                 },
                 {
                     "phase_name": "massive_product_catalog",
@@ -66,14 +66,14 @@ class DramaticPlanRevisor:
                         {
                             "step_name": "huge_product_design",
                             "description": "Design massive product catalog",
-                            "inputs": self._create_massive_product_inputs()
+                            "inputs": self._create_massive_product_inputs(),
                         },
                         {
                             "step_name": "monolithic_product_impl",
                             "description": "Implement monolithic product system",
-                            "inputs": self._create_massive_product_inputs()
-                        }
-                    ]
+                            "inputs": self._create_massive_product_inputs(),
+                        },
+                    ],
                 },
                 {
                     "phase_name": "massive_order_system",
@@ -81,16 +81,16 @@ class DramaticPlanRevisor:
                         {
                             "step_name": "huge_order_design",
                             "description": "Design massive order system",
-                            "inputs": self._create_massive_order_inputs()
+                            "inputs": self._create_massive_order_inputs(),
                         },
                         {
                             "step_name": "monolithic_order_impl",
                             "description": "Implement monolithic order system",
-                            "inputs": self._create_massive_order_inputs()
-                        }
-                    ]
-                }
-            ]
+                            "inputs": self._create_massive_order_inputs(),
+                        },
+                    ],
+                },
+            ],
         }
 
         self._analyze_plan(problematic_plan, "PROBLEMATIC")
@@ -109,7 +109,7 @@ class DramaticPlanRevisor:
             "step_results": [],
             "issues": [],
             "total_tokens": 0,
-            "critical_failures": 0
+            "critical_failures": 0,
         }
 
         for phase in plan["phases"]:
@@ -122,7 +122,7 @@ class DramaticPlanRevisor:
                     # Use preflight hook to estimate tokens
                     estimate = self.hook.preflight_check(
                         plan_step=f"{phase['phase_name']}/{step['step_name']}",
-                        **step["inputs"]
+                        **step["inputs"],
                     )
 
                     step_result = {
@@ -130,7 +130,7 @@ class DramaticPlanRevisor:
                         "tokens": estimate.total_projected_tokens,
                         "status": estimate.status,
                         "action": estimate.action,
-                        "compression_applied": len(estimate.compression_applied) > 0
+                        "compression_applied": len(estimate.compression_applied) > 0,
                     }
 
                     results["step_results"].append(step_result)
@@ -144,7 +144,7 @@ class DramaticPlanRevisor:
                             "step": step["step_name"],
                             "issue": "BUDGET_EXCEEDED",
                             "tokens": estimate.total_projected_tokens,
-                            "severity": "CRITICAL"
+                            "severity": "CRITICAL",
                         })
                         results["critical_failures"] += 1
                         print(f"      ❌ CRITICAL: Budget exceeded! ({estimate.total_projected_tokens:,} > 200,000)")
@@ -154,7 +154,7 @@ class DramaticPlanRevisor:
                             "step": step["step_name"],
                             "issue": "COMPRESSION_NEEDED",
                             "tokens": estimate.total_projected_tokens,
-                            "severity": "WARNING"
+                            "severity": "WARNING",
                         })
                         print(f"      ⚠️  WARNING: Compression needed ({estimate.total_projected_tokens:,} tokens)")
 
@@ -166,7 +166,7 @@ class DramaticPlanRevisor:
                         "step": step["step_name"],
                         "issue": "BUDGET_EXCEEDED",
                         "error": str(e),
-                        "severity": "CRITICAL"
+                        "severity": "CRITICAL",
                     })
                     results["critical_failures"] += 1
                     print(f"      ❌ CRITICAL EXECUTION BLOCKED: {str(e)[:60]}...")
@@ -176,7 +176,7 @@ class DramaticPlanRevisor:
                         "step": step["step_name"],
                         "issue": "ERROR",
                         "error": str(e),
-                        "severity": "ERROR"
+                        "severity": "ERROR",
                     })
                     print(f"      ❌ ERROR: {e}")
 
@@ -227,11 +227,11 @@ class DramaticPlanRevisor:
                         "focus": "core_functionality_only",
                         "remove_examples": True,
                         "minimize_context": True,
-                        "use_structured_format": True
+                        "use_structured_format": True,
                     }
                     optimized_plan["optimization_strategy"].append(f"Split {step['step_name']} into 3 substeps")
                     optimized_plan["optimization_notes"].append(
-                        f"Applied aggressive splitting to {step['step_name']} due to budget exceed"
+                        f"Applied aggressive splitting to {step['step_name']} due to budget exceed",
                     )
 
                 elif step["step_name"] in warning_steps:
@@ -242,18 +242,18 @@ class DramaticPlanRevisor:
                         "minimize_examples": True,
                         "use_structured_format": True,
                         "apply_smart_truncation": True,
-                        "enable_progressive_disclosure": True
+                        "enable_progressive_disclosure": True,
                     }
                     optimized_plan["optimization_strategy"].append(f"Optimize {step['step_name']} content")
                     optimized_plan["optimization_notes"].append(
-                        f"Applied content optimization to {step['step_name']} for compression"
+                        f"Applied content optimization to {step['step_name']} for compression",
                     )
                 else:
                     # Apply light optimizations for good steps
                     step["optimization"] = {
                         "strategy": "LIGHT_OPTIMIZATION",
                         "ensure_efficiency": True,
-                        "monitor_token_usage": True
+                        "monitor_token_usage": True,
                     }
 
         # Add phase-level optimizations
@@ -283,7 +283,7 @@ class DramaticPlanRevisor:
             "issues": [],
             "total_tokens": 0,
             "critical_failures": 0,
-            "optimizations_applied": len(optimized_plan.get("optimization_strategy", []))
+            "optimizations_applied": len(optimized_plan.get("optimization_strategy", [])),
         }
 
         for phase in optimized_plan["phases"]:
@@ -299,7 +299,7 @@ class DramaticPlanRevisor:
                     # Use preflight hook to estimate tokens
                     estimate = self.hook.preflight_check(
                         plan_step=f"{phase['phase_name']}/{step['step_name']}_optimized",
-                        **optimized_inputs
+                        **optimized_inputs,
                     )
 
                     step_result = {
@@ -308,7 +308,7 @@ class DramaticPlanRevisor:
                         "status": estimate.status,
                         "action": estimate.action,
                         "compression_applied": len(estimate.compression_applied) > 0,
-                        "optimization": step.get("optimization", {}).get("strategy", "NONE")
+                        "optimization": step.get("optimization", {}).get("strategy", "NONE"),
                     }
 
                     results["step_results"].append(step_result)
@@ -323,7 +323,7 @@ class DramaticPlanRevisor:
                             "step": step["step_name"],
                             "issue": "STILL_BUDGET_EXCEEDED",
                             "tokens": estimate.total_projected_tokens,
-                            "severity": "CRITICAL"
+                            "severity": "CRITICAL",
                         })
                         print("      ❌ STILL CRITICAL: Budget exceeded!")
 
@@ -332,7 +332,7 @@ class DramaticPlanRevisor:
                             "step": step["step_name"],
                             "issue": "STILL_COMPRESSION_NEEDED",
                             "tokens": estimate.total_projected_tokens,
-                            "severity": "WARNING"
+                            "severity": "WARNING",
                         })
                         print("      ⚠️  STILL WARNING: Compression needed")
 
@@ -344,7 +344,7 @@ class DramaticPlanRevisor:
                         "step": step["step_name"],
                         "issue": "STILL_BUDGET_EXCEEDED",
                         "error": str(e),
-                        "severity": "CRITICAL"
+                        "severity": "CRITICAL",
                     })
                     print(f"      ❌ STILL CRITICAL: {str(e)[:60]}...")
 
@@ -353,7 +353,7 @@ class DramaticPlanRevisor:
                         "step": step["step_name"],
                         "issue": "ERROR",
                         "error": str(e),
-                        "severity": "ERROR"
+                        "severity": "ERROR",
                     })
                     print(f"      ❌ ERROR: {e}")
 
@@ -384,7 +384,7 @@ class DramaticPlanRevisor:
             "optimized_critical": len([i for i in optimized_results["issues"] if i.get("severity") == "CRITICAL"]),
             "problematic_steps_succeeded": prob_steps_succeeded,
             "optimized_steps_succeeded": opt_steps_succeeded,
-            "total_steps_attempted": prob_steps_attempted
+            "total_steps_attempted": prob_steps_attempted,
         }
 
         issue_reduction = comparison["problematic_issues"] - comparison["optimized_issues"]
@@ -510,28 +510,28 @@ class DramaticPlanRevisor:
             "files": [
                 {
                     "path": f"auth_file_{i}.py",
-                    "content": massive_content * 20  # Many large files
+                    "content": massive_content * 20,  # Many large files
                 } for i in range(10)
             ],
             "diffs": [
                 {
                     "path": f"auth_diff_{i}.py",
-                    "content": massive_content * 15   # Many large diffs
+                    "content": massive_content * 15,   # Many large diffs
                 } for i in range(5)
             ],
             "logs": [
                 {
                     "source": f"auth_log_{i}.log",
-                    "content": massive_content * 10   # Many large logs
+                    "content": massive_content * 10,   # Many large logs
                 } for i in range(20)
             ],
             "retrieved_context": [
                 {
                     "content": massive_content * 8,   # Many large context items
-                    "source": f"doc_{i}"
+                    "source": f"doc_{i}",
                 } for i in range(15)
             ],
-            "prior_steps": [massive_content * 5] * 25  # Many prior steps
+            "prior_steps": [massive_content * 5] * 25,  # Many prior steps
         }
 
     def _create_massive_product_inputs(self) -> dict[str, Any]:
@@ -543,28 +543,28 @@ class DramaticPlanRevisor:
             "files": [
                 {
                     "path": f"product_file_{i}.py",
-                    "content": massive_content * 18
+                    "content": massive_content * 18,
                 } for i in range(8)
             ],
             "diffs": [
                 {
                     "path": f"product_diff_{i}.py",
-                    "content": massive_content * 12
+                    "content": massive_content * 12,
                 } for i in range(4)
             ],
             "logs": [
                 {
                     "source": f"product_log_{i}.log",
-                    "content": massive_content * 8
+                    "content": massive_content * 8,
                 } for i in range(15)
             ],
             "retrieved_context": [
                 {
                     "content": massive_content * 6,
-                    "source": f"product_doc_{i}"
+                    "source": f"product_doc_{i}",
                 } for i in range(12)
             ],
-            "prior_steps": [massive_content * 4] * 20
+            "prior_steps": [massive_content * 4] * 20,
         }
 
     def _create_massive_order_inputs(self) -> dict[str, Any]:
@@ -576,28 +576,28 @@ class DramaticPlanRevisor:
             "files": [
                 {
                     "path": f"order_file_{i}.py",
-                    "content": massive_content * 15
+                    "content": massive_content * 15,
                 } for i in range(6)
             ],
             "diffs": [
                 {
                     "path": f"order_diff_{i}.py",
-                    "content": massive_content * 10
+                    "content": massive_content * 10,
                 } for i in range(3)
             ],
             "logs": [
                 {
                     "source": f"order_log_{i}.log",
-                    "content": massive_content * 6
+                    "content": massive_content * 6,
                 } for i in range(10)
             ],
             "retrieved_context": [
                 {
                     "content": massive_content * 5,
-                    "source": f"order_doc_{i}"
+                    "source": f"order_doc_{i}",
                 } for i in range(8)
             ],
-            "prior_steps": [massive_content * 3] * 15
+            "prior_steps": [massive_content * 3] * 15,
         }
 
 

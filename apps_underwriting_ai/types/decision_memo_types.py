@@ -1,7 +1,8 @@
 """
 Decision Memo Types - Domain contracts for underwriting decision outputs.
 """
-from typing import Literal, Optional, List
+from typing import List, Literal, Optional
+
 from pydantic import BaseModel, Field
 
 from .underwriting_request_types import DecisionState
@@ -45,15 +46,15 @@ class DecisionMemo(BaseModel):
                 "recommended_term_months": 60,
                 "conditions_precedent": [
                     "Monthly borrowing base certificates required",
-                    "First lien UCC filing on AR"
+                    "First lien UCC filing on AR",
                 ],
                 "key_strengths": [
                     "Strong DSCR at 3.57x vs policy minimum 1.25x",
-                    "Positive deposit trend with 2-year relationship"
+                    "Positive deposit trend with 2-year relationship",
                 ],
                 "key_risks": [
-                    "AR concentration at 32% - monitoring required"
+                    "AR concentration at 32% - monitoring required",
                 ],
-                "confidence_score": 0.82
-            }
+                "confidence_score": 0.82,
+            },
         }

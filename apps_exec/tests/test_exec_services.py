@@ -1,15 +1,14 @@
 """Tests for apps_exec service components."""
 
-import pytest
 
-from apps_exec.services.style_validator_service import (
-    StyleValidatorService,
-)
 from apps_exec.services.artifact_exporter_service import (
     ArtifactExporterService,
 )
 from apps_exec.services.content_synthesizer_service import (
     ContentSynthesizerService,
+)
+from apps_exec.services.style_validator_service import (
+    StyleValidatorService,
 )
 
 

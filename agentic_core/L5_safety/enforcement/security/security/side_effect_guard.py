@@ -110,7 +110,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -220,15 +219,15 @@ class SideEffectGuard:
             from .signature_verifier import VerificationContext
 
             return VerificationContext(
-                is_verified=True, signature_hash="disabled", signer_id="disabled", packet_hash="disabled"
+                is_verified=True, signature_hash="disabled", signer_id="disabled", packet_hash="disabled",
             )
         if self._active_context is None:
             raise UnverifiedSideEffectError(
-                f"UNVERIFIED_OPERATION_DENIED: {operation} attempted without verified context"
+                f"UNVERIFIED_OPERATION_DENIED: {operation} attempted without verified context",
             )
         if not self._active_context.is_verified:
             raise UnverifiedSideEffectError(
-                f"UNVERIFIED_CONTEXT_DENIED: {operation} attempted with unverified context"
+                f"UNVERIFIED_CONTEXT_DENIED: {operation} attempted with unverified context",
             )
         logger.debug(f"SideEffectGuard: Allowed {operation} for signer {self._active_context.signer_id}")
         return self._active_context

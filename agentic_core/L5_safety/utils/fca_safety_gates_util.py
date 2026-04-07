@@ -134,7 +134,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -216,7 +215,7 @@ class SafetyGateResult:
 
 
 def check_rename_collisions(
-    rename_map: dict[str, str], existing_files: set[str], case_sensitive: bool = False
+    rename_map: dict[str, str], existing_files: set[str], case_sensitive: bool = False,
 ) -> list[dict[str, Any]]:
     """
     Detect rename collisions in a proposed rename map.
@@ -265,7 +264,7 @@ def check_rename_collisions(
                     "src": srcs,
                     "dst": srcs[0] and rename_map[srcs[0]],
                     "message": f"{len(srcs)} files map to same destination '{rename_map[srcs[0]]}': {srcs}",
-                }
+                },
             )
     existing_norm = {_norm(f): f for f in existing_files}
     for src, dst in rename_map.items():
@@ -278,7 +277,7 @@ def check_rename_collisions(
                     "src": [src],
                     "dst": dst,
                     "message": f"Destination '{dst}' already exists (existing: '{existing_norm[dst_n]}')",
-                }
+                },
             )
     if not case_sensitive:
         for src, dst in rename_map.items():
@@ -293,7 +292,7 @@ def check_rename_collisions(
                             "src": [src],
                             "dst": dst,
                             "message": f"Case-insensitive conflict: '{dst}' clashes with existing '{actual_existing}'",
-                        }
+                        },
                     )
     return collisions
 
@@ -408,7 +407,7 @@ def check_import_impact(
                     "total_impact": total_impact,
                     "threshold": max_import_impact,
                     "message": f"'{src}' has impact score {total_impact} (imports={base_impact}, init_reexport={init_bonus}) exceeding threshold {max_import_impact}",
-                }
+                },
             )
     return blocked
 
@@ -507,7 +506,7 @@ def _extract_base_names(class_node: ast.ClassDef) -> list[str]:
 
 
 OBSERVABILITY_IMPORT_PREFIXES = frozenset(
-    {"prometheus_client", "opentelemetry", "grafana_client", "datadog", "agentic_core.L6_observability"}
+    {"prometheus_client", "opentelemetry", "grafana_client", "datadog", "agentic_core.L6_observability"},
 )
 L0_DASHBOARD_ALLOWLIST_FOLDERS = frozenset({"scripts", "dashboards"})
 
@@ -552,7 +551,7 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None = No
                 obs_imports_found.append(mod)
     if obs_imports_found:
         current_layer = next(
-            (p for p in parts if p.startswith("L") and "_" in p and (len(p) > 1) and p[1].isdigit()), None
+            (p for p in parts if p.startswith("L") and "_" in p and (len(p) > 1) and p[1].isdigit()), None,
         )
         if current_layer:
             return {
@@ -582,7 +581,7 @@ class NestedLCDPolicy:
 
 
 def check_nested_lcd_with_policy(
-    parts: tuple[str, ...], validate_fn, policy: NestedLCDPolicy | None = None
+    parts: tuple[str, ...], validate_fn, policy: NestedLCDPolicy | None = None,
 ) -> dict[str, Any] | None:
     """
     Wrapper around validate_no_nested_lcd that applies policy.
@@ -704,7 +703,7 @@ def run_all_safety_gates(
     if import_counts is None:
         import_counts = build_import_graph(python_files, project_root)
     high_impact = check_import_impact(
-        rename_map, import_counts, python_files, project_root, max_import_impact
+        rename_map, import_counts, python_files, project_root, max_import_impact,
     )
     result.high_impact_count = len(high_impact)
     mass_block = check_mass_action(len(rename_map), max_actions, force, wave_id)

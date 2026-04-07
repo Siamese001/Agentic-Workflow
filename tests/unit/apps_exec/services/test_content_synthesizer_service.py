@@ -44,7 +44,7 @@ class TestContentSynthesizerService:
         service = ContentSynthesizerService()
         documents = [
             {"title": "Doc1", "content": "Content 1"},
-            {"title": "Doc2", "content": "Content 2"}
+            {"title": "Doc2", "content": "Content 2"},
         ]
         result = service.synthesize_content(documents)
 

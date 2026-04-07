@@ -40,7 +40,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
-from agentic_core.adg.artifact.SplitArtifact import split_artifact
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -114,21 +113,14 @@ if TYPE_CHECKING:
     from agentic_core.adg.artifact.builder_types import ADGArtifact
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -136,17 +128,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -413,7 +399,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     node.get("to", 0),
                     node.get("ts", ""),
                     node.get("es", ""),
-                )
+                ),
             )
         conn.executemany(
             "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path,"
@@ -446,7 +432,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     e.get("tsl", 0),
                     e.get("tsc", 0),
                     e.get("dr", ""),
-                )
+                ),
             )
         conn.executemany(
             "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol,"
@@ -496,7 +482,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.close()
         if write_failed and temp_db_path.exists():
             temp_db_path.unlink()
-        
+
         # Force garbage collection to release file handles on Windows
         import gc
         gc.collect()

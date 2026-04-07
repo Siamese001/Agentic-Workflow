@@ -94,19 +94,14 @@ _emit_validates_agent_capability("p1", "app_remediation_dispatcher", "apps")
 _emit_checks_agent_registry("p1", "app_remediation_dispatcher", "apps")
 _emit_snapshots_state("p0", "app_remediation_dispatcher", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -114,15 +109,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -216,13 +207,13 @@ def _check_dead_imports(spec: AppGuardianSpec) -> AppHealResult:
     result = subprocess.run(
         [sys.executable, "-m", "ruff", "check", "--select", "F401",
          "apps_rg/", "apps_lic/", "apps_shared/", "--output-format=json"],
-        capture_output=True, text=True
+        capture_output=True, text=True,
     )
     violations = json.loads(result.stdout) if result.stdout.strip().startswith("[") else []
     if not violations:
         return AppHealResult(
             check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 F401 violations"
+            status=AppHealStatus.HEALED, detail="0 F401 violations",
         )
     files = list({v["filename"] for v in violations})
     return AppHealResult(
@@ -241,13 +232,13 @@ def _check_layer_violations(spec: AppGuardianSpec) -> AppHealResult:
         if report.layer_violation_count == 0:
             return AppHealResult(
                 check_id=spec.check_id, app=spec.app,
-                status=AppHealStatus.HEALED, detail="0 layer violations"
+                status=AppHealStatus.HEALED, detail="0 layer violations",
             )
         return AppHealResult(
             check_id=spec.check_id, app=spec.app,
             status=AppHealStatus.FAILED,
             detail="%d layer violation(s): %s" % (
-                report.layer_violation_count, report.scope_widening_events
+                report.layer_violation_count, report.scope_widening_events,
             ),
         )
     # guardian: allow-silent-swallow
@@ -265,7 +256,7 @@ def _check_misplaced_tests(spec: AppGuardianSpec) -> AppHealResult:
     if not misplaced:
         return AppHealResult(
             check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 misplaced test files"
+            status=AppHealStatus.HEALED, detail="0 misplaced test files",
         )
     return AppHealResult(
         check_id=spec.check_id, app=spec.app,
@@ -290,7 +281,7 @@ def _check_inline_constants(spec: AppGuardianSpec) -> AppHealResult:
     if not offenders:
         return AppHealResult(
             check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 inline MAX_RETRIES definitions"
+            status=AppHealStatus.HEALED, detail="0 inline MAX_RETRIES definitions",
         )
     return AppHealResult(
         check_id=spec.check_id, app=spec.app,
@@ -306,7 +297,7 @@ def _check_content_strategy_shim(spec: AppGuardianSpec) -> AppHealResult:
     if not shim.exists():
         return AppHealResult(
             check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="ContentStrategyAgent shim absent"
+            status=AppHealStatus.HEALED, detail="ContentStrategyAgent shim absent",
         )
     return AppHealResult(
         check_id=spec.check_id, app=spec.app,
@@ -332,7 +323,7 @@ def _check_duplicate_stubs(spec: AppGuardianSpec) -> AppHealResult:
     if not offenders:
         return AppHealResult(
             check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 duplicate stub classes"
+            status=AppHealStatus.HEALED, detail="0 duplicate stub classes",
         )
     return AppHealResult(
         check_id=spec.check_id, app=spec.app,

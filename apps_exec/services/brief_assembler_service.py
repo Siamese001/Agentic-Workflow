@@ -55,7 +55,7 @@ class BriefAssemblerService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "BriefAssemblerService.assemble_brief"
+            _trace_id, LayerSegment.L2_EXECUTION, "BriefAssemblerService.assemble_brief",
         )
         _emit_routes_to_capability("p2", "brief_assembler", "content_synthesis")
         _emit_writes_via_uwg("p2", "brief_assembler", "brief_output")

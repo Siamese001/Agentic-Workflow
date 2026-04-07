@@ -1,9 +1,9 @@
 """
 XLSX Mapper - Maps XLSX templates to UnderwritingRequest domain model.
 """
-from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 from ..types import UnderwritingRequest
 from .json_mapper import JSONMapper
@@ -27,7 +27,7 @@ class XLSXMapper:
         self,
         file_path: Path,
         template_type: str = "standard",
-        request_id: Optional[str] = None
+        request_id: Optional[str] = None,
     ) -> XLSXMappingResult:
         """
         Map XLSX template to UnderwritingRequest.
@@ -63,7 +63,7 @@ class XLSXMapper:
             # Map to request using JSON mapper
             json_result = self.json_mapper.map_to_request(
                 data,
-                request_id=request_id
+                request_id=request_id,
             )
 
             result.request = json_result.request
@@ -86,7 +86,7 @@ class XLSXMapper:
             'Collateral': 'collateral',
             'Credit': 'credit',
             'Banking': 'banking',
-            'Request': 'request_info'
+            'Request': 'request_info',
         }
 
         for sheet_name, data_key in sheet_mapping.items():

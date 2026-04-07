@@ -129,7 +129,7 @@ class ADGRedisValidator:
             'file_ratio': file_ratio,
             'function_ratio': function_ratio,
             'class_ratio': class_ratio,
-            'within_tolerance': within_tolerance
+            'within_tolerance': within_tolerance,
         }
 
     def _validate_edge_precision_redis(self) -> float:
@@ -143,7 +143,7 @@ class ADGRedisValidator:
         # Count signal vs noise from sampled edges
         high_signal_types = {
             'imports', 'calls', 'flows_to', 'controls_flow',
-            'reads_from', 'writes_through', 'implements', 'records_execution_trace'
+            'reads_from', 'writes_through', 'implements', 'records_execution_trace',
         }
 
         # From Redis scan sample of 500 edges:

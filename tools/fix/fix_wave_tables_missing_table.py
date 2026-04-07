@@ -4,9 +4,9 @@ Fix Wave Tables Missing Table
 Add wave tables to plans that have ## Wave Structure section but no table.
 """
 
+import re
 import sys
 from pathlib import Path
-import re
 
 
 def has_wave_table(content: str) -> bool:

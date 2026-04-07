@@ -110,7 +110,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -197,7 +196,7 @@ class PromotionAuthority:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "state_snapshot"
+            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -207,13 +206,13 @@ class PromotionAuthority:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "p0_governance"
+            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "PromotionAuthority.update_pointer_via_gateway"
+            _trace_id, LayerSegment.L4_STATE, "PromotionAuthority.update_pointer_via_gateway",
         )
 
         if not self._write_gateway:
@@ -239,7 +238,7 @@ class PromotionAuthority:
         )
         self._active_updates[capability_token.target_namespace] = update
         Logger.info(
-            f"Pointer updated in namespace {capability_token.target_namespace}: {old_pointer} -> {new_pointer}"
+            f"Pointer updated in namespace {capability_token.target_namespace}: {old_pointer} -> {new_pointer}",
         )
         return update
 
@@ -260,7 +259,7 @@ class PromotionAuthority:
         if not update:
             return False
         computed_hash = hashlib.sha256(
-            f"{update.old_pointer}{update.new_pointer}{update.timestamp}".encode()
+            f"{update.old_pointer}{update.new_pointer}{update.timestamp}".encode(),
         ).hexdigest()
         return computed_hash == expected_hash
 

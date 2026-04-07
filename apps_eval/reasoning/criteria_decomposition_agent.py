@@ -192,7 +192,7 @@ class CriteriaDecomposer:
                         dimension=dimension,
                         weight=weight,
                         coverage_gaps=["decomposition_failed"],
-                    )
+                    ),
                 )
 
         return results
@@ -286,7 +286,7 @@ class CriteriaDecomposer:
                     test_method=test_method,
                     coverage_target=0.8 if complexity == TestComplexity.UNIT else 0.9,
                     success_criteria=self._generate_success_criteria(sub_crit, criteria_type),
-                )
+                ),
             )
 
         return components

@@ -361,7 +361,7 @@ def evaluate_and_attach(
     if not effective_trace_id:
         raise OrphanEvaluationError(
             f"evaluate_and_attach: no trace_id available for evaluator='{evaluator_id}' "
-            f"stage={evaluated_stage.value} — orphan evaluations are prohibited (P1/L6 spec §4)"
+            f"stage={evaluated_stage.value} — orphan evaluations are prohibited (P1/L6 spec §4)",
         )
 
     effective_run_id = run_id or _resolve_run_id() or "unknown"

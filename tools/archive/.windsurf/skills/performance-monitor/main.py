@@ -251,18 +251,18 @@ class PerformanceMonitor:
                 recent_summary["duration_stats"]["p95"] > self.timeout_threshold * 0.8
             ):  # 95th percentile approaching threshold
                 alerts.append(
-                    f"⚠️ Slow operations: 95th percentile at {recent_summary['duration_stats']['p95']:.2f}s"
+                    f"⚠️ Slow operations: 95th percentile at {recent_summary['duration_stats']['p95']:.2f}s",
                 )
 
             # High resource usage
             if recent_summary["resource_stats"]["avg_cpu_percent"] > 80:
                 alerts.append(
-                    f"⚠️ High CPU usage: {recent_summary['resource_stats']['avg_cpu_percent']:.1f}% average"
+                    f"⚠️ High CPU usage: {recent_summary['resource_stats']['avg_cpu_percent']:.1f}% average",
                 )
 
             if recent_summary["resource_stats"]["avg_memory_mb"] > 1000:  # More than 1GB
                 alerts.append(
-                    f"⚠️ High memory usage: {recent_summary['resource_stats']['avg_memory_mb']:.1f}MB average"
+                    f"⚠️ High memory usage: {recent_summary['resource_stats']['avg_memory_mb']:.1f}MB average",
                 )
 
         return alerts

@@ -196,7 +196,7 @@ class RequirementDecomposer:
                         category=category,
                         priority=priority,
                         risk_flags=["decomposition_failed"],
-                    )
+                    ),
                 )
 
         return results
@@ -284,7 +284,7 @@ class RequirementDecomposer:
                     estimated_hours=hours,
                     acceptance_criteria=acceptance,
                     technical_notes=self._generate_technical_notes(sub_req, req_type),
-                )
+                ),
             )
 
         return components

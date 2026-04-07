@@ -30,57 +30,57 @@ def analyze_template_quality():
             'type': 'adg_analysis',
             'config': {'complexity': 'high', 'files': ['adg.sqlite']},
             'expected_data': ['10,432', '681,161', '5,301', 'L0: 7,220'],
-            'expected_context': ['node_count', 'edge_count', 'layer_info', 'violation_count']
+            'expected_context': ['node_count', 'edge_count', 'layer_info', 'violation_count'],
         },
         {
             'name': 'Violation Remediation',
             'type': 'violation_remediation',
             'config': {'complexity': 'high', 'files': ['violations.json']},
             'expected_data': ['5,301', '1,200', '2,800', '1,301'],
-            'expected_context': ['violation_count', 'high_severity_count', 'medium_severity_count', 'low_severity_count']
+            'expected_context': ['violation_count', 'high_severity_count', 'medium_severity_count', 'low_severity_count'],
         },
         {
             'name': 'Architectural Review',
             'type': 'architecture',
             'config': {'complexity': 'high', 'files': ['design.md']},
             'expected_data': ['156', 'Layered Architecture', 'Dependency Injection', 'Event-Driven'],
-            'expected_context': ['component_count', 'patterns_used', 'integration_points', 'quality_attributes']
+            'expected_context': ['component_count', 'patterns_used', 'integration_points', 'quality_attributes'],
         },
         {
             'name': 'Dependency Graph Analysis',
             'type': 'implementation',
             'config': {'complexity': 'high', 'files': ['f1.py', 'f2.py', 'f3.py', 'f4.py', 'f5.py', 'f6.py']},
             'expected_data': ['681,161', '0', '15', '42'],
-            'expected_context': ['dependency_count', 'circular_deps', 'longest_chain', 'hub_nodes']
+            'expected_context': ['dependency_count', 'circular_deps', 'longest_chain', 'hub_nodes'],
         },
         {
             'name': 'Layer Boundary Audit',
             'type': 'layer_boundary_audit',
             'config': {'complexity': 'high', 'files': ['layers.py']},
             'expected_data': ['7', '69.2%', '41.8%', '17'],
-            'expected_context': ['layer_count', 'layer_distribution', 'boundary_violations', 'gravity_violations']
+            'expected_context': ['layer_count', 'layer_distribution', 'boundary_violations', 'gravity_violations'],
         },
         {
             'name': 'Anti-pattern Detection',
             'type': 'anti_pattern_detection',
             'config': {'complexity': 'medium', 'files': ['patterns.py']},
             'expected_data': ['5,301', '1,200', 'Exception Handling', '234'],
-            'expected_context': ['antipattern_count', 'high_impact_count', 'common_categories', 'affected_files']
+            'expected_context': ['antipattern_count', 'high_impact_count', 'common_categories', 'affected_files'],
         },
         {
             'name': 'System Restructuring',
             'type': 'system_restructuring',
             'config': {'complexity': 'critical', 'files': ['legacy.py']},
             'expected_data': ['Large-scale enterprise', 'Cyclomatic Complexity', 'Layer violations', 'technical debt'],
-            'expected_context': ['system_size', 'complexity_metrics', 'identified_issues', 'restructuring_goals']
+            'expected_context': ['system_size', 'complexity_metrics', 'identified_issues', 'restructuring_goals'],
         },
         {
             'name': 'Graph Traversal Optimization',
             'type': 'graph_traversal_optimization',
             'config': {'complexity': 'high', 'files': ['graph.py']},
             'expected_data': ['2.3s', '681,161 edges', '100+ queries', 'Layer boundary'],
-            'expected_context': ['current_traversal_time', 'graph_size', 'traversal_frequency', 'bottlenecks']
-        }
+            'expected_context': ['current_traversal_time', 'graph_size', 'traversal_frequency', 'bottlenecks'],
+        },
     ]
 
     results = []
@@ -94,7 +94,7 @@ def analyze_template_quality():
             step_config = {
                 'name': template_test['name'],
                 'type': template_test['type'],
-                **template_test['config']
+                **template_test['config'],
             }
 
             template_content = workflow._get_seq_thinking_template(template_test['type'], step_config)
@@ -107,7 +107,7 @@ def analyze_template_quality():
                 'data_missing': [],
                 'context_found': [],
                 'context_missing': [],
-                'quality_issues': []
+                'quality_issues': [],
             }
 
             # Check all 6 thoughts
@@ -162,7 +162,7 @@ def analyze_template_quality():
                     'current_traversal_time': '2.3s',
                     'graph_size': '681,161 edges',
                     'traversal_frequency': '100+',
-                    'bottlenecks': 'Layer boundary'
+                    'bottlenecks': 'Layer boundary',
                 }
 
                 expected_value = context_to_value_map.get(context, context)
@@ -188,7 +188,7 @@ def analyze_template_quality():
                 'total_checks': total_checks,
                 'passed_checks': passed_checks,
                 'issues': analysis['quality_issues'],
-                'success': True
+                'success': True,
             }
 
             results.append(result)
@@ -213,7 +213,7 @@ def analyze_template_quality():
             results.append({
                 'template': template_test['name'],
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     # Summary

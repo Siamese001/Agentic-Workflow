@@ -111,13 +111,13 @@ class CostGovernor:
 
         Logger.info(
             f"CostGovernor: ${self.current_spend:.4f} / ${self.budget_limit:.2f} "
-            f"({model}: ${total_cost:.4f})"
+            f"({model}: ${total_cost:.4f})",
         )
 
         # Check budget
         if self.current_spend > self.budget_limit:
             raise BudgetExceededError(
-                f"BUDGET EXCEEDED: ${self.current_spend:.2f} exceeds limit of ${self.budget_limit:.2f}"
+                f"BUDGET EXCEEDED: ${self.current_spend:.2f} exceeds limit of ${self.budget_limit:.2f}",
             )
 
         return total_cost

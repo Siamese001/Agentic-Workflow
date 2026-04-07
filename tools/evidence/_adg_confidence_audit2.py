@@ -21,7 +21,7 @@ cur.execute(
     "  OR n_src.resolved_path LIKE '%heal_policy%' OR n_src.resolved_path LIKE '%tiered_batch%') "
     "AND n_src.resolved_path NOT LIKE '%archive%' "
     "AND n_src.resolved_path NOT LIKE '%backup%' "
-    "LIMIT 80"
+    "LIMIT 80",
 )
 rows = cur.fetchall()
 if not rows:
@@ -29,14 +29,14 @@ if not rows:
 for r in rows:
     print(
         "  [%s] sym=%s  src=%s -> dst=%s  file=%s"
-        % (r["edge_kind"], r["symbol"], r["resolved_path"], r[4], r["source_file"])
+        % (r["edge_kind"], r["symbol"], r["resolved_path"], r[4], r["source_file"]),
     )
 
 # --- Q12: All antipattern edges by symbol (top patterns) ---
 print("\n=== Q12: TOP ANTIPATTERN SYMBOLS ===")
 cur.execute(
     "SELECT e.symbol, COUNT(*) cnt FROM edges e WHERE e.edge_kind='antipattern' "
-    "GROUP BY e.symbol ORDER BY cnt DESC LIMIT 30"
+    "GROUP BY e.symbol ORDER BY cnt DESC LIMIT 30",
 )
 for r in cur.fetchall():
     print("  %-50s: %d" % (str(r[0])[:50], r[1]))
@@ -46,7 +46,7 @@ print("\n=== Q13: qwen_meta_learning NODES ===")
 cur.execute(
     "SELECT id, adg_name, entity_type, layer, resolved_path FROM nodes "
     "WHERE resolved_path LIKE '%qwen_meta_learning%' "
-    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'"
+    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'",
 )
 qml_nodes = {r["id"]: dict(r) for r in cur.fetchall()}
 for nid, r in qml_nodes.items():
@@ -58,7 +58,7 @@ cur.execute(
     "SELECT id, adg_name, entity_type, resolved_path FROM nodes "
     "WHERE resolved_path LIKE '%execute_ssot%' AND entity_type='module' "
     "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%' "
-    "AND resolved_path NOT LIKE '%test%'"
+    "AND resolved_path NOT LIKE '%test%'",
 )
 exssot_nodes = {r["id"]: dict(r) for r in cur.fetchall()}
 for nid, r in exssot_nodes.items():
@@ -78,7 +78,7 @@ for nid, r in exssot_nodes.items():
 print("\n=== Q15: IMPORTERS OF _ssot_types ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%_ssot_types%' AND entity_type='module' "
-    "AND resolved_path NOT LIKE '%archive%'"
+    "AND resolved_path NOT LIKE '%archive%'",
 )
 ssot_type_ids = [r[0] for r in cur.fetchall()]
 if ssot_type_ids:
@@ -99,7 +99,7 @@ if ssot_type_ids:
 print("\n=== Q16: IMPORTERS OF heal_policy_types ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%heal_policy_types%' AND entity_type='module' "
-    "AND resolved_path NOT LIKE '%archive%'"
+    "AND resolved_path NOT LIKE '%archive%'",
 )
 hpt_ids = [r[0] for r in cur.fetchall()]
 if hpt_ids:
@@ -120,7 +120,7 @@ if hpt_ids:
 print("\n=== Q17: IMPORTERS OF tiered_batch_util ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%tiered_batch_util%' AND entity_type='module' "
-    "AND resolved_path NOT LIKE '%archive%'"
+    "AND resolved_path NOT LIKE '%archive%'",
 )
 tbu_ids = [r[0] for r in cur.fetchall()]
 if tbu_ids:
@@ -146,7 +146,7 @@ cur.execute(
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "WHERE e.edge_kind='accesses_credential' "
     "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%backup%' "
-    "ORDER BY n_src.resolved_path LIMIT 10"
+    "ORDER BY n_src.resolved_path LIMIT 10",
 )
 for r in cur.fetchall():
     print("  sym=%s  file=%s" % (r["symbol"], r["resolved_path"]))
@@ -176,7 +176,7 @@ cur.execute(
     "SELECT adg_name, entity_type, resolved_path FROM nodes "
     "WHERE adg_name LIKE '%HEALING_CONFIDENCE_X%' "
     "AND entity_type != 'module' "
-    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'"
+    "AND resolved_path NOT LIKE '%archive%' AND resolved_path NOT LIKE '%backup%'",
 )
 for r in cur.fetchall():
     print("  [%s] %s  path=%s" % (r["entity_type"], r["adg_name"], r["resolved_path"]))

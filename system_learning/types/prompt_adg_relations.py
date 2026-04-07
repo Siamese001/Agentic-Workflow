@@ -131,7 +131,7 @@ PROVENANCE_RELATIONS: frozenset[str] = frozenset(
         PROVENANCE_USES_I0_INSTRUCTION,
         PROVENANCE_USES_C0_CONTEXT,
         PROVENANCE_CONTAINS_U0_INPUT,
-    }
+    },
 )
 
 SAFETY_RELATIONS: frozenset[str] = frozenset(
@@ -141,7 +141,7 @@ SAFETY_RELATIONS: frozenset[str] = frozenset(
         SAFETY_BUDGET_CHECKED,
         SAFETY_ALLOWED,
         SAFETY_BLOCKED,
-    }
+    },
 )
 
 EXECUTION_RELATIONS: frozenset[str] = frozenset(
@@ -149,7 +149,7 @@ EXECUTION_RELATIONS: frozenset[str] = frozenset(
         EXECUTION_ROUTES_TO,
         EXECUTION_EXECUTED_BY_MODEL,
         EXECUTION_GENERATES_TRACE,
-    }
+    },
 )
 
 OUTCOME_RELATIONS: frozenset[str] = frozenset(
@@ -160,7 +160,7 @@ OUTCOME_RELATIONS: frozenset[str] = frozenset(
         OUTCOME_ESCALATED_HITL,
         OUTCOME_PASSED_REPLAY,
         OUTCOME_FAILED_REPLAY,
-    }
+    },
 )
 
 RETRIEVAL_RELATIONS: frozenset[str] = frozenset(
@@ -169,7 +169,7 @@ RETRIEVAL_RELATIONS: frozenset[str] = frozenset(
         RETRIEVAL_USES_CHUNK,
         RETRIEVAL_USES_CITATION_SET,
         RETRIEVAL_SCORES_GROUNDEDNESS,
-    }
+    },
 )
 
 DRIFT_RELATIONS: frozenset[str] = frozenset(
@@ -178,11 +178,11 @@ DRIFT_RELATIONS: frozenset[str] = frozenset(
         DRIFT_TEMPLATE_SUPERSEDED,
         DRIFT_REGRESSION_DETECTED,
         DRIFT_IMPROVEMENT_DETECTED,
-    }
+    },
 )
 
 OPTIMIZATION_RELATIONS: frozenset[str] = frozenset(
-    {OPTIMIZATION_PROPOSAL_COMMITS}
+    {OPTIMIZATION_PROPOSAL_COMMITS},
 )
 
 BUDGET_RELATIONS: frozenset[str] = frozenset(
@@ -190,7 +190,7 @@ BUDGET_RELATIONS: frozenset[str] = frozenset(
         BUDGET_TOKEN_PROFILE,
         BUDGET_TRUNCATED,
         BUDGET_EXCEEDED,
-    }
+    },
 )
 
 HITL_RELATIONS: frozenset[str] = frozenset(
@@ -199,7 +199,7 @@ HITL_RELATIONS: frozenset[str] = frozenset(
         HITL_PATCH_APPLIED,
         HITL_PREFERENCE_RECORD_CREATED,
         HITL_USED_FOR_DPO,
-    }
+    },
 )
 
 ALL_PROMPT_RELATIONS: frozenset[str] = (

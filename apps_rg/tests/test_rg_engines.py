@@ -1,6 +1,5 @@
 """Tests for apps_rg engine components."""
 
-import pytest
 
 from apps_rg.engines.content_optimizer_engine import (
     ContentOptimizerEngine,

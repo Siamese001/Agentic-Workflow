@@ -62,7 +62,7 @@ class ADGImportValidator:
             'tempfile', 'glob', 'fnmatch', 'urllib', 'http', 'email', 'xml',
             'csv', 'sqlite3', 'pickle', 'base64', 'hashlib', 'hmac', 'uuid',
             'inspect', 'importlib', 'pkgutil', 'warnings', 'traceback',
-            'unittest', 'pytest', 'mock', 'io', 'contextlib', 'weakref'
+            'unittest', 'pytest', 'mock', 'io', 'contextlib', 'weakref',
         }
 
     def validate_file(self, file_path: str) -> list[ImportViolation]:
@@ -90,7 +90,7 @@ class ADGImportValidator:
                 import_module="",
                 violation_type="validation_error",
                 message=f"Failed to validate imports: {e}",
-                severity="error"
+                severity="error",
             ))
 
         return violations
@@ -138,7 +138,7 @@ class ADGImportValidator:
                             "type": "import",
                             "module": alias.name,
                             "alias": alias.asname,
-                            "line": node.lineno
+                            "line": node.lineno,
                         })
                 elif isinstance(node, ast.ImportFrom):
                     module = node.module or ""
@@ -148,7 +148,7 @@ class ADGImportValidator:
                             "module": module,
                             "name": alias.name,
                             "alias": alias.asname,
-                            "line": node.lineno
+                            "line": node.lineno,
                         })
 
             return imports
@@ -176,7 +176,7 @@ class ADGImportValidator:
                         import_module=module_name,
                         violation_type="module_not_found",
                         message=f"Module '{module_name}' not found in ADG index or stdlib",
-                        severity="warning"
+                        severity="warning",
                     ))
 
         except Exception as e:
@@ -235,7 +235,7 @@ class ADGImportValidator:
                         import_module=module_name,
                         violation_type="module_not_found",
                         message=f"Module '{module_name}' not found (ADG unavailable for validation)",
-                        severity="warning"
+                        severity="warning",
                     ))
 
         except Exception as e:
@@ -245,7 +245,7 @@ class ADGImportValidator:
                 import_module="",
                 violation_type="validation_error",
                 message=f"Failed to validate imports: {e}",
-                severity="error"
+                severity="error",
             ))
 
         return violations
@@ -282,7 +282,7 @@ class ADGImportValidator:
                     import_module=module_name,
                     violation_type="unused_module",
                     message=f"Module '{module_name}' is not imported by any files",
-                    severity="info"
+                    severity="info",
                 ))
 
             # Check each importer for potential issues
@@ -296,7 +296,7 @@ class ADGImportValidator:
                 import_module=module_name,
                 violation_type="validation_error",
                 message=f"Failed to validate module dependencies: {e}",
-                severity="error"
+                severity="error",
             ))
 
         return violations
@@ -313,7 +313,7 @@ class ADGImportValidator:
                 "total_imports": 0,
                 "top_imported_modules": [],
                 "files_with_most_imports": [],
-                "orphaned_modules": []
+                "orphaned_modules": [],
             }
 
             # This is a simplified implementation
@@ -361,7 +361,7 @@ def main():
                 "import_module": v.import_module,
                 "violation_type": v.violation_type,
                 "message": v.message,
-                "severity": v.severity
+                "severity": v.severity,
             }
             for v in violations
         ]

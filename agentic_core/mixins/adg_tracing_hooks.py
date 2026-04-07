@@ -29,12 +29,12 @@ import logging
 import time
 from typing import Any, Callable
 
+from agentic_core.mixins.integrated_tracing_mixin import (
+    IntegratedTracingMixin,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
-)
-from agentic_core.mixins.integrated_tracing_mixin import (
-    IntegratedTracingMixin,
 )
 
 emit_determinism_digest("adg_tracing_hooks", "adg_tracing_hooks_digest")

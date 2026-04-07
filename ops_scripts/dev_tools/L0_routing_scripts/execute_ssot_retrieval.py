@@ -83,7 +83,7 @@ def _store_in_retrieval_cache(
     query: str,
     context: dict[str, Any],
     timestamp: int,
-    cache_type: str = "L1"
+    cache_type: str = "L1",
 ) -> None:
     """Store a context in the retrieval cache.
 

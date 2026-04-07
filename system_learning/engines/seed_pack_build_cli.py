@@ -100,21 +100,14 @@ except ImportError:
     pass
 from agentic_core.embeddings.embedding_factory import create_embedding_client
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -122,17 +115,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -233,7 +220,7 @@ def load_canonical_corpus(namespace: str, corpus_path: Path | None = None) -> li
     corpus_path = corpus_path or _find_default_corpus_path(namespace)
     if not corpus_path.exists():
         raise FileNotFoundError(
-            f"Corpus file not found: {corpus_path}. Pass --corpus-path explicitly or place corpus under data/."
+            f"Corpus file not found: {corpus_path}. Pass --corpus-path explicitly or place corpus under data/.",
         )
     corpus_rows: list[dict[str, Any]] = []
     with open(corpus_path, encoding="utf-8") as f:
@@ -251,7 +238,7 @@ def load_canonical_corpus(namespace: str, corpus_path: Path | None = None) -> li
                     raise ValueError(f"Missing required field '{field}' in line {line_num}")
             if str(row.get("namespace")) != namespace:
                 raise ValueError(
-                    f"Namespace mismatch in line {line_num}: expected '{namespace}', got '{row.get('namespace')}'"
+                    f"Namespace mismatch in line {line_num}: expected '{namespace}', got '{row.get('namespace')}'",
                 )
             corpus_rows.append(row)
     if not corpus_rows:
@@ -274,7 +261,7 @@ def main() -> None:
         help="OpenAI model to use (default: text-embedding-3-large)",
     )
     parser.add_argument(
-        "--provider", default="openai", choices=["openai"], help="Embedding provider to use (default: openai)"
+        "--provider", default="openai", choices=["openai"], help="Embedding provider to use (default: openai)",
     )
     parser.add_argument(
         "--dimensions",
@@ -289,7 +276,7 @@ def main() -> None:
         help="Bootstrap mode (default: minimal_seed)",
     )
     parser.add_argument(
-        "--minimal-seed-count", type=int, default=None, help="Minimal seed count for minimal_seed mode"
+        "--minimal-seed-count", type=int, default=None, help="Minimal seed count for minimal_seed mode",
     )
     parser.add_argument(
         "--corpus-path",
@@ -316,11 +303,11 @@ def main() -> None:
             embedder = DeterministicHashEmbedder(dimensions=args.dimensions)
         else:
             embedder = create_embedding_client(
-                provider=args.provider, model=args.model, dimensions=args.dimensions
+                provider=args.provider, model=args.model, dimensions=args.dimensions,
             )
         print(f"Model dimensions: {args.dimensions}")
         model_checksum = hashlib.sha256(
-            f"{args.provider}_{args.model}_{args.dimensions}".encode()
+            f"{args.provider}_{args.model}_{args.dimensions}".encode(),
         ).hexdigest()
         config = SeedEmbeddingPackConfig(
             namespace=args.namespace,

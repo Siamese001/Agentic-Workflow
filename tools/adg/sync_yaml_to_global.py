@@ -15,7 +15,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import re
 import shutil
 import sys
@@ -93,14 +92,26 @@ def yaml_to_windsurf_json(yaml_config: Any, env_vars: dict[str, str]) -> dict[st
         if not server.enabled:
             continue
 
+        # Windows: bare 'npx' is not executable — must use 'npx.cmd'
+        command = substitute_env_vars(server.command or "", env_vars)
+        if command == "npx" and sys.platform == "win32":
+            command = "npx.cmd"
+
+        # Substitute ${VAR} in args list
+        resolved_args = [substitute_env_vars(str(a), env_vars) for a in (server.args or [])]
+
         server_config: dict[str, Any] = {
-            "command": server.command,
-            "args": server.args,
+            "command": command,
+            "args": resolved_args,
         }
 
-        # Add optional fields
-        if server.cwd:
-            server_config["cwd"] = server.cwd
+        # Add optional fields — substitute ${REPO_ROOT} in cwd
+        resolved_cwd = substitute_env_vars(server.cwd or "", env_vars) if server.cwd else None
+        # npx.cmd servers without an explicit cwd default to REPO_ROOT so Windows can locate the command
+        if resolved_cwd:
+            server_config["cwd"] = resolved_cwd
+        elif command in ("npx.cmd", "npx"):
+            server_config["cwd"] = str(REPO_ROOT)
 
         if server.env:
             # Substitute ${VAR} patterns and filter unresolved
@@ -221,6 +232,9 @@ def main() -> int:
     env_vars = load_dotenv(ENV_PATH)
     if env_vars:
         logger.debug(f"Loaded {len(env_vars)} env vars from {ENV_PATH}")
+
+    # Always inject REPO_ROOT so ${REPO_ROOT} in cwd/args/command resolves correctly
+    env_vars.setdefault("REPO_ROOT", str(REPO_ROOT))
 
     # Convert to Windsurf format
     new_global_config = yaml_to_windsurf_json(yaml_config, env_vars)

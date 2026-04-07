@@ -1,8 +1,8 @@
 """
-DEPRECATED: Moved to agentic_core.runtime.eval_spine (L_RUNTIME).
+DEPRECATED: Moved to agentic_core.runtime.engine.eval_spine (L_RUNTIME).
 
 This module now provides a backward-compatible shim. Please update imports to:
-    from agentic_core.runtime.eval_spine import EvalSpine, EvalSpineReport
+    from agentic_core.runtime.engine.eval_spine import EvalSpine, EvalSpineReport
 
 Reason for move: L_SHARED (evaluation) importing L_TOOLS (adg runtime) creates
 layer boundary violation. Eval spine is runtime infrastructure and belongs in L_RUNTIME.
@@ -15,7 +15,7 @@ from __future__ import annotations
 import warnings
 
 # Backward-compatible re-exports
-from agentic_core.runtime.eval_spine import (  # noqa: F401
+from agentic_core.runtime.engine.eval_spine import (  # noqa: F401
     DPOBatch,
     DriftAlert,
     EvalMetricResult,
@@ -28,8 +28,7 @@ from agentic_core.runtime.eval_spine import (  # noqa: F401
 
 warnings.warn(
     "agentic_core.adg.runtime.eval_spine is deprecated. "
-    "Import from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_tracing, "
-    "instead.",
+    "Import from agentic_core.runtime.engine.eval_spine instead.",
     DeprecationWarning,
     stacklevel=2,
 )

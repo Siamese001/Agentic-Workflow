@@ -61,7 +61,7 @@ class ConcurrencyManager:
         """
         trace_id = f"concurrency_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ConcurrencyManager.acquire"
+            trace_id, LayerSegment.L1_REASONING, "ConcurrencyManager.acquire",
         )
 
         return self._semaphore.acquire(timeout=timeout)
@@ -104,7 +104,7 @@ class ConcurrencyManager:
 
         self._tokens = min(
             self._tokens + tokens_to_add,
-            self.config.token_bucket_size
+            self.config.token_bucket_size,
         )
 
         self._last_update = now

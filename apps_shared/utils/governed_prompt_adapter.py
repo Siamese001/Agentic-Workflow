@@ -98,7 +98,7 @@ class GovernedPromptAdapter:
 
         trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "GovernedPromptAdapter.execute_prompt"
+            trace_id, LayerSegment.L2_EXECUTION, "GovernedPromptAdapter.execute_prompt",
         )
 
         try:
@@ -329,7 +329,7 @@ class GovernedPromptAdapter:
                 secret_key=self.secret_key,
                 temperature=temperature,
                 max_tokens=max_tokens,
-            )
+            ),
         )
 
         return {

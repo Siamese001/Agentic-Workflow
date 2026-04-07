@@ -137,7 +137,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -212,7 +211,7 @@ HITL_PROTECTED_PATHS: frozenset[str] = frozenset(
         "apps_shared",
         "tests",
         "system_learning",
-    }
+    },
 )
 
 _BORDER = "=" * 64
@@ -324,7 +323,7 @@ class HitlGate:
                 f"approve or deny the operation."
             )
             Logger.error(
-                "[HitlGate] No TTY — raising HitlRequiredError for %s / %s", req.agent, req.operation
+                "[HitlGate] No TTY — raising HitlRequiredError for %s / %s", req.agent, req.operation,
             )
             raise HitlRequiredError(msg)
 

@@ -278,7 +278,7 @@ def _canonical_bytes(snapshot: RuntimeADGSnapshot) -> bytes:
                 str(round(n.duration_ms, 3)).encode(),
                 n.status.encode(),
                 n.attributes_json.encode(),
-            ]
+            ],
         )
         for n in sorted_nodes
     ]
@@ -291,7 +291,7 @@ def _canonical_bytes(snapshot: RuntimeADGSnapshot) -> bytes:
             snapshot.mission.encode(),
             str(snapshot.started_at_utc).encode(),
             str(snapshot.ended_at_utc).encode(),
-        ]
+        ],
     )
     return header + b"\x1f" + b"\x1f".join(node_parts + edge_parts)
 

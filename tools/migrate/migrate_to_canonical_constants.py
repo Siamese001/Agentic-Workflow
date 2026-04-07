@@ -171,7 +171,7 @@ def main():
     print(f"Total constants found: {total_constants}")
 
     if changed_files:
-        print(f"\nChanged files:")
+        print("\nChanged files:")
         for r in changed_files[:20]:  # Show first 20
             print(f"  - {r['file']}: {r['constants']}")
         if len(changed_files) > 20:

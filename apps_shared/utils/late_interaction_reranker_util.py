@@ -55,39 +55,25 @@ _emit_applies_guardrail("p0", "late_interaction_reranker_util", "p0_governance")
 _emit_reads_policy_state("p0", "late_interaction_reranker_util", "policy_binding")
 _emit_snapshots_state("p0", "late_interaction_reranker_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -246,7 +232,7 @@ class LateInteractionReranker:
             return False
 
     def rerank(
-        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32
+        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32,
     ) -> list[str]:
         """Rerank documents based on query relevance.
 
@@ -300,7 +286,7 @@ class LateInteractionReranker:
             return documents[:top_k]
 
     def rerank_with_scores(
-        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32
+        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32,
     ) -> list[tuple[str, float]]:
         """Rerank documents and return with scores.
 
@@ -353,10 +339,10 @@ class LateInteractionReranker:
                     info.update(
                         {
                             "max_seq_length": getattr(
-                                self._model.config, "max_position_embeddings", "unknown"
+                                self._model.config, "max_position_embeddings", "unknown",
                             ),
                             "num_labels": getattr(self._model.config, "num_labels", "unknown"),
-                        }
+                        },
                     )
             # guardian: allow-silent-swallow
             except Exception:
@@ -365,7 +351,7 @@ class LateInteractionReranker:
 
 
 def rerank_documents(
-    query: str, documents: list[str], model_name: str = "BAAI/bge-reranker-v2-m3", top_k: int = 5
+    query: str, documents: list[str], model_name: str = "BAAI/bge-reranker-v2-m3", top_k: int = 5,
 ) -> list[str]:
     """Rerank documents using default settings.
 
@@ -394,7 +380,7 @@ class PassThroughReranker:
         return documents[:top_k] if top_k else documents
 
     def rerank_with_scores(
-        self, query: str, documents: list[str], top_k: int | None = None
+        self, query: str, documents: list[str], top_k: int | None = None,
     ) -> list[tuple[str, float]]:
         """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]

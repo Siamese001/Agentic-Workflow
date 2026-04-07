@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check ADG SQLite for infrastructure modules."""
-import sqlite3
 import glob
 import os
+import sqlite3
 
 # Find latest ADG
 adg_dir = 'artifacts/adg'

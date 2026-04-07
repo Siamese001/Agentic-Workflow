@@ -28,7 +28,7 @@ class TestADGIntegrationLayer1:
             relation_type="reads_from",
             semantic_type="cache_lookup",
             source_file="agentic_core/L0_routing/cache/exact_cache.py",
-            line_no=45
+            line_no=45,
         )
 
         assert edge.relation_type == "reads_from"
@@ -42,7 +42,7 @@ class TestADGIntegrationLayer1:
             relation_type="emits_determinism_digest",
             semantic_type="validation",
             source_file="agentic_core/L0_routing/cache/exact_cache.py",
-            line_no=67
+            line_no=67,
         )
 
         assert edge.relation_type == "emits_determinism_digest"
@@ -55,7 +55,7 @@ class TestADGIntegrationLayer1:
             relation_type="emits_replay_key",
             semantic_type="telemetry",
             source_file="agentic_core/L0_routing/cache/exact_cache.py",
-            line_no=89
+            line_no=89,
         )
 
         assert edge.relation_type == "emits_replay_key"
@@ -72,7 +72,7 @@ class TestADGIntegrationLayer2:
             relation_type="invokes_evaluation",
             semantic_type="embedding_generation",
             source_file="agentic_core/L1_cognition/embedding/bge_client.py",
-            line_no=34
+            line_no=34,
         )
 
         assert edge.relation_type == "invokes_evaluation"
@@ -86,7 +86,7 @@ class TestADGIntegrationLayer2:
             relation_type="stores_embedding",
             semantic_type="vector_storage",
             source_file="agentic_core/L1_cognition/embedding/bge_client.py",
-            line_no=56
+            line_no=56,
         )
 
         assert edge.relation_type == "stores_embedding"
@@ -99,7 +99,7 @@ class TestADGIntegrationLayer2:
             relation_type="reads_from",
             semantic_type="semantic_cache_lookup",
             source_file="agentic_core/L1_cognition/cache/semantic_cache.py",
-            line_no=78
+            line_no=78,
         )
 
         assert edge.semantic_type == "semantic_cache_lookup"
@@ -116,7 +116,7 @@ class TestADGIntegrationLayer3:
             relation_type="reads_from",
             semantic_type="vector_search",
             source_file="agentic_core/L2_execution/retrieval/faiss_store.py",
-            line_no=112
+            line_no=112,
         )
 
         assert edge.dst == "faiss:index"
@@ -130,7 +130,7 @@ class TestADGIntegrationLayer3:
             relation_type="reads_from",
             semantic_type="graph_traversal",
             source_file="agentic_core/L2_execution/retrieval/adg_expander.py",
-            line_no=45
+            line_no=45,
         )
 
         assert edge.relation_type == "reads_from"
@@ -144,7 +144,7 @@ class TestADGIntegrationLayer3:
             relation_type="routes_through",
             semantic_type="chunk_expansion",
             source_file="agentic_core/L2_execution/retrieval/adg_expander.py",
-            line_no=67
+            line_no=67,
         )
 
         assert edge.relation_type == "routes_through"
@@ -157,7 +157,7 @@ class TestADGIntegrationLayer3:
             relation_type="captures_evaluation_metric",
             semantic_type="quality_scoring",
             source_file="agentic_core/L2_execution/retrieval/reranker.py",
-            line_no=89
+            line_no=89,
         )
 
         assert edge.relation_type == "captures_evaluation_metric"
@@ -170,7 +170,7 @@ class TestADGIntegrationLayer3:
             relation_type="pulls_context",
             semantic_type="context_hydration",
             source_file="agentic_core/L2_execution/retrieval/context_builder.py",
-            line_no=34
+            line_no=34,
         )
 
         assert edge.relation_type == "pulls_context"
@@ -187,7 +187,7 @@ class TestADGIntegrationLayer4:
             relation_type="records_tool_invocation",
             semantic_type="tool_audit",
             source_file="agentic_core/L3_orchestration/tools/executor.py",
-            line_no=56
+            line_no=56,
         )
 
         assert edge.relation_type == "records_tool_invocation"
@@ -200,7 +200,7 @@ class TestADGIntegrationLayer4:
             relation_type="orchestrates_workflow",
             semantic_type="plan_execution",
             source_file="agentic_core/L3_orchestration/langgraph/engine.py",
-            line_no=123
+            line_no=123,
         )
 
         assert edge.relation_type == "orchestrates_workflow"
@@ -213,7 +213,7 @@ class TestADGIntegrationLayer4:
             relation_type="dispatches_agent",
             semantic_type="agent_execution",
             source_file="agentic_core/L3_orchestration/agent/dispatcher.py",
-            line_no=78
+            line_no=78,
         )
 
         assert edge.relation_type == "dispatches_agent"
@@ -226,7 +226,7 @@ class TestADGIntegrationLayer4:
             relation_type="records_workflow_lineage",
             semantic_type="provenance",
             source_file="agentic_core/L3_orchestration/langgraph/engine.py",
-            line_no=156
+            line_no=156,
         )
 
         assert edge.relation_type == "records_workflow_lineage"
@@ -239,7 +239,7 @@ class TestADGIntegrationLayer4:
             relation_type="captures_execution_output",
             semantic_type="output_capture",
             source_file="agentic_core/L3_orchestration/tools/executor.py",
-            line_no=89
+            line_no=89,
         )
 
         assert edge.relation_type == "captures_execution_output"
@@ -256,7 +256,7 @@ class TestADGIntegrationLayer5:
             relation_type="invokes_evaluation",
             semantic_type="llm_generation",
             source_file="agentic_core/L4_state/llm/client.py",
-            line_no=45
+            line_no=45,
         )
 
         assert edge.relation_type == "invokes_evaluation"
@@ -270,7 +270,7 @@ class TestADGIntegrationLayer5:
             relation_type="updates_meta_learning_state",
             semantic_type="pattern_learning",
             source_file="agentic_core/L4_state/llm/client.py",
-            line_no=78
+            line_no=78,
         )
 
         assert edge.relation_type == "updates_meta_learning_state"
@@ -303,7 +303,7 @@ class TestADGIntegrationTelemetry:
                 relation_type="emits_metric_event",
                 semantic_type="latency_metric",
                 source_file=f"agentic_core/{layer}/telemetry.py",
-                line_no=23
+                line_no=23,
             )
             assert edge.relation_type == "emits_metric_event"
 

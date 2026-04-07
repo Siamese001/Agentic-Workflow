@@ -49,7 +49,7 @@ class AdvancedC0Reranker(BaseMLModel):
         4: "Context_Optimized",
         5: "Temporal_Relevant",
         6: "Quality_Enhanced",
-        7: "Standard_Rerank"
+        7: "Standard_Rerank",
     }
 
     # Reverse mapping
@@ -64,7 +64,7 @@ class AdvancedC0Reranker(BaseMLModel):
             model_version="1.0",
             model_type="transformer_inspired",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -82,7 +82,7 @@ class AdvancedC0Reranker(BaseMLModel):
             "hidden_dim": 512,
             "layers": 6,
             "dropout": 0.1,
-            "learning_rate": 0.001
+            "learning_rate": 0.001,
         }
 
         # Default thresholds
@@ -90,7 +90,7 @@ class AdvancedC0Reranker(BaseMLModel):
             "relevance_threshold": 0.7,
             "authority_threshold": 0.6,
             "engagement_threshold": 0.5,
-            "reranking_threshold": 0.8
+            "reranking_threshold": 0.8,
         }
 
         if model_file_path and model_file_path.exists():
@@ -131,8 +131,8 @@ class AdvancedC0Reranker(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -144,7 +144,7 @@ class AdvancedC0Reranker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict advanced reranking decision.
@@ -177,7 +177,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -212,8 +212,8 @@ class AdvancedC0Reranker(BaseMLModel):
                     prediction=predicted_reranking,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -226,7 +226,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -238,7 +238,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'reranking_strategy': predicted_reranking,
-                'transformer_config': self.transformer_config
+                'transformer_config': self.transformer_config,
             })
 
             # Log prediction
@@ -254,7 +254,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def rerank_intelligently(
@@ -262,7 +262,7 @@ class AdvancedC0Reranker(BaseMLModel):
         reranking_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get intelligent reranking recommendation.
@@ -281,7 +281,7 @@ class AdvancedC0Reranker(BaseMLModel):
             context=reranking_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -289,7 +289,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 'reranking_strategy': 'Standard_Rerank',
                 'confidence': 0.0,
                 'reason': 'Feature extraction failed',
-                'recommendations': ['Check reranking data availability']
+                'recommendations': ['Check reranking data availability'],
             }
 
         # Validate input
@@ -301,27 +301,27 @@ class AdvancedC0Reranker(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate detailed reranking recommendations
         recommendations = self._generate_reranking_recommendations(
             strategy=prediction.prediction,
             context=reranking_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Analyze reranking factors
         reranking_analysis = self._analyze_reranking_factors(
             context=reranking_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Calculate expected relevance improvement
         relevance_prediction = self._predict_relevance_improvement(
             strategy=prediction.prediction,
             context=reranking_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         return {
@@ -333,7 +333,7 @@ class AdvancedC0Reranker(BaseMLModel):
             'reranking_analysis': reranking_analysis,
             'relevance_prediction': relevance_prediction,
             'alternative_strategies': self._get_alternative_strategies(prediction.probability_distribution),
-            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence)
+            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
         }
 
     def analyze_semantic_relevance(
@@ -341,7 +341,7 @@ class AdvancedC0Reranker(BaseMLModel):
         semantic_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Analyze semantic relevance for intelligent reranking.
@@ -359,7 +359,7 @@ class AdvancedC0Reranker(BaseMLModel):
         semantic_features = {
             'embedding_similarity': semantic_context.get('embedding_similarity', 0.5),
             'attention_score': semantic_context.get('attention_score', 0.5),
-            'semantic_density': semantic_context.get('semantic_density', 0.5)
+            'semantic_density': semantic_context.get('semantic_density', 0.5),
         }
 
         # Analyze semantic patterns
@@ -367,7 +367,7 @@ class AdvancedC0Reranker(BaseMLModel):
             'query_document_alignment': self._assess_query_document_alignment(semantic_context),
             'semantic_coherence': self._evaluate_semantic_coherence(semantic_context),
             'topic_relevance': self._determine_topic_relevance(semantic_context),
-            'concept_coverage': self._calculate_concept_coverage(semantic_context)
+            'concept_coverage': self._calculate_concept_coverage(semantic_context),
         }
 
         # Generate semantic-based reranking suggestions
@@ -392,7 +392,7 @@ class AdvancedC0Reranker(BaseMLModel):
             'semantic_features': semantic_features,
             'reranking_suggestions': reranking_suggestions,
             'confidence_score': semantic_context.get('semantic_confidence', 0.5),
-            'recommended_strategy': self._recommend_semantic_strategy(semantic_analysis)
+            'recommended_strategy': self._recommend_semantic_strategy(semantic_analysis),
         }
 
     def apply_attention_mechanism(
@@ -400,7 +400,7 @@ class AdvancedC0Reranker(BaseMLModel):
         attention_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Apply attention mechanism for relevance scoring.
@@ -418,7 +418,7 @@ class AdvancedC0Reranker(BaseMLModel):
         attention_features = {
             'attention_score': attention_context.get('attention_score', 0.5),
             'attention_weights': attention_context.get('attention_weights', []),
-            'attention_patterns': attention_context.get('attention_patterns', {})
+            'attention_patterns': attention_context.get('attention_patterns', {}),
         }
 
         # Analyze attention patterns
@@ -426,7 +426,7 @@ class AdvancedC0Reranker(BaseMLModel):
             'attention_distribution': self._analyze_attention_distribution(attention_context),
             'key_terms_attention': self._identify_key_terms_attention(attention_context),
             'attention_consistency': self._evaluate_attention_consistency(attention_context),
-            'attention_relevance': self._assess_attention_relevance(attention_context)
+            'attention_relevance': self._assess_attention_relevance(attention_context),
         }
 
         # Generate attention-based reranking suggestions
@@ -451,7 +451,7 @@ class AdvancedC0Reranker(BaseMLModel):
             'attention_features': attention_features,
             'reranking_suggestions': reranking_suggestions,
             'attention_confidence': attention_context.get('attention_confidence', 0.5),
-            'recommended_strategy': self._recommend_attention_strategy(attention_analysis)
+            'recommended_strategy': self._recommend_attention_strategy(attention_analysis),
         }
 
     def evaluate_document_quality(
@@ -459,7 +459,7 @@ class AdvancedC0Reranker(BaseMLModel):
         quality_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Evaluate document quality for intelligent reranking.
@@ -477,7 +477,7 @@ class AdvancedC0Reranker(BaseMLModel):
         quality_features = {
             'document_authority': quality_context.get('document_authority', 0.5),
             'relevance_confidence': quality_context.get('relevance_confidence', 0.5),
-            'retrieval_precision': quality_context.get('retrieval_precision', 0.5)
+            'retrieval_precision': quality_context.get('retrieval_precision', 0.5),
         }
 
         # Analyze quality factors
@@ -485,7 +485,7 @@ class AdvancedC0Reranker(BaseMLModel):
             'source_credibility': self._assess_source_credibility(quality_context),
             'content_quality': self._evaluate_content_quality(quality_context),
             'information_completeness': self._check_information_completeness(quality_context),
-            'freshness_relevance': self._evaluate_freshness_relevance(quality_context)
+            'freshness_relevance': self._evaluate_freshness_relevance(quality_context),
         }
 
         # Generate quality-based reranking suggestions
@@ -510,14 +510,14 @@ class AdvancedC0Reranker(BaseMLModel):
             'quality_features': quality_features,
             'reranking_suggestions': reranking_suggestions,
             'quality_confidence': quality_context.get('quality_confidence', 0.5),
-            'recommended_strategy': self._recommend_quality_strategy(quality_analysis)
+            'recommended_strategy': self._recommend_quality_strategy(quality_analysis),
         }
 
     def _generate_reranking_recommendations(
         self,
         strategy: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> list[str]:
         """Generate strategy-specific reranking recommendations."""
         recommendations = []
@@ -527,56 +527,56 @@ class AdvancedC0Reranker(BaseMLModel):
                 "Use transformer-based reranking for optimal relevance",
                 "Leverage attention mechanisms for precise scoring",
                 "Apply cross-encoder architecture for query-document matching",
-                "Monitor transformer performance and adapt"
+                "Monitor transformer performance and adapt",
             ])
         elif strategy == "Semantic_Prime":
             recommendations.extend([
                 "Prioritize semantic similarity in reranking",
                 "Use embedding-based relevance scoring",
                 "Consider semantic density and coherence",
-                "Monitor semantic accuracy and adjust"
+                "Monitor semantic accuracy and adjust",
             ])
         elif strategy == "Authority_Boost":
             recommendations.extend([
                 "Boost authoritative sources in reranking",
                 "Consider document credibility and quality",
                 "Weight source reliability heavily",
-                "Monitor authority signals and update"
+                "Monitor authority signals and update",
             ])
         elif strategy == "Engagement_Prioritized":
             recommendations.extend([
                 "Prioritize documents with high user engagement",
                 "Consider historical user interaction patterns",
                 "Weight engagement metrics appropriately",
-                "Monitor engagement trends and adapt"
+                "Monitor engagement trends and adapt",
             ])
         elif strategy == "Context_Optimized":
             recommendations.extend([
                 "Optimize reranking based on current context",
                 "Consider session and user context factors",
                 "Adapt to environmental conditions",
-                "Monitor context relevance and update"
+                "Monitor context relevance and update",
             ])
         elif strategy == "Temporal_Relevant":
             recommendations.extend([
                 "Prioritize temporally relevant documents",
                 "Consider recency and temporal patterns",
                 "Weight temporal factors appropriately",
-                "Monitor temporal trends and adjust"
+                "Monitor temporal trends and adjust",
             ])
         elif strategy == "Quality_Enhanced":
             recommendations.extend([
                 "Enhance reranking with quality factors",
                 "Consider content quality and completeness",
                 "Weight information quality heavily",
-                "Monitor quality signals and update"
+                "Monitor quality signals and update",
             ])
         else:  # Standard_Rerank
             recommendations.extend([
                 "Use standard reranking for basic relevance",
                 "Monitor standard reranking performance",
                 "Consider upgrading to advanced reranking if needed",
-                "Maintain standard reranking reliability"
+                "Maintain standard reranking reliability",
             ])
 
         # Add context-specific recommendations
@@ -593,13 +593,13 @@ class AdvancedC0Reranker(BaseMLModel):
     def _analyze_reranking_factors(
         self,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Analyze reranking factors and their impact."""
         factor_analysis = {
             'primary_factors': [],
             'secondary_factors': [],
-            'constraint_factors': []
+            'constraint_factors': [],
         }
 
         # Analyze semantic factors
@@ -609,14 +609,14 @@ class AdvancedC0Reranker(BaseMLModel):
                 'factor': 'embedding_similarity',
                 'score': embedding_similarity,
                 'impact': 'high',
-                'description': 'Strong embedding similarity drives reranking'
+                'description': 'Strong embedding similarity drives reranking',
             })
         elif embedding_similarity > 0.4:
             factor_analysis['secondary_factors'].append({
                 'factor': 'embedding_similarity',
                 'score': embedding_similarity,
                 'impact': 'medium',
-                'description': 'Moderate embedding similarity affects reranking'
+                'description': 'Moderate embedding similarity affects reranking',
             })
 
         # Analyze attention factors
@@ -626,7 +626,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 'factor': 'attention_score',
                 'score': attention_score,
                 'impact': 'high',
-                'description': 'High attention score indicates strong relevance'
+                'description': 'High attention score indicates strong relevance',
             })
 
         # Analyze authority factors
@@ -636,7 +636,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 'factor': 'document_authority',
                 'score': document_authority,
                 'impact': 'high',
-                'description': 'High document authority boosts reranking'
+                'description': 'High document authority boosts reranking',
             })
 
         # Analyze engagement factors
@@ -646,7 +646,7 @@ class AdvancedC0Reranker(BaseMLModel):
                 'factor': 'user_engagement',
                 'score': user_engagement,
                 'impact': 'constraint',
-                'description': 'Low user engagement limits reranking boost'
+                'description': 'Low user engagement limits reranking boost',
             })
 
         return factor_analysis
@@ -655,7 +655,7 @@ class AdvancedC0Reranker(BaseMLModel):
         self,
         strategy: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Predict relevance improvement for the chosen strategy."""
         # Base improvement estimates by strategy
@@ -664,50 +664,50 @@ class AdvancedC0Reranker(BaseMLModel):
                 "relevance_score": 0.9,
                 "precision": 0.85,
                 "recall": 0.8,
-                "user_satisfaction": 0.85
+                "user_satisfaction": 0.85,
             },
             "Semantic_Prime": {
                 "relevance_score": 0.85,
                 "precision": 0.8,
                 "recall": 0.85,
-                "user_satisfaction": 0.8
+                "user_satisfaction": 0.8,
             },
             "Authority_Boost": {
                 "relevance_score": 0.8,
                 "precision": 0.85,
                 "recall": 0.75,
-                "user_satisfaction": 0.75
+                "user_satisfaction": 0.75,
             },
             "Engagement_Prioritized": {
                 "relevance_score": 0.8,
                 "precision": 0.75,
                 "recall": 0.8,
-                "user_satisfaction": 0.85
+                "user_satisfaction": 0.85,
             },
             "Context_Optimized": {
                 "relevance_score": 0.75,
                 "precision": 0.8,
                 "recall": 0.7,
-                "user_satisfaction": 0.75
+                "user_satisfaction": 0.75,
             },
             "Temporal_Relevant": {
                 "relevance_score": 0.75,
                 "precision": 0.7,
                 "recall": 0.8,
-                "user_satisfaction": 0.7
+                "user_satisfaction": 0.7,
             },
             "Quality_Enhanced": {
                 "relevance_score": 0.8,
                 "precision": 0.85,
                 "recall": 0.75,
-                "user_satisfaction": 0.8
+                "user_satisfaction": 0.8,
             },
             "Standard_Rerank": {
                 "relevance_score": 0.6,
                 "precision": 0.6,
                 "recall": 0.6,
-                "user_satisfaction": 0.6
-            }
+                "user_satisfaction": 0.6,
+            },
         }
 
         base_improvement = improvement_estimates.get(strategy, improvement_estimates["Standard_Rerank"])
@@ -739,7 +739,7 @@ class AdvancedC0Reranker(BaseMLModel):
         sorted_strategies = sorted(
             probability_distribution.items(),
             key=lambda x: x[1],
-            reverse=True
+            reverse=True,
         )[1:4]  # Skip the primary strategy
 
         for strategy, probability in sorted_strategies:
@@ -748,7 +748,7 @@ class AdvancedC0Reranker(BaseMLModel):
                     'strategy': strategy,
                     'probability': probability,
                     'confidence': probability,
-                    'recommendation': f"Consider {strategy} as alternative"
+                    'recommendation': f"Consider {strategy} as alternative",
                 })
 
         return alternatives
@@ -896,7 +896,7 @@ class AdvancedC0Reranker(BaseMLModel):
                     'importance_score': float(importance),
                     'feature_value': model_input.features.get(name),
                     'rank': i + 1,
-                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0
+                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0,
                 })
 
             # Sort by importance
@@ -953,7 +953,7 @@ class AdvancedC0Reranker(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the Transformer-inspired model.
@@ -997,8 +997,8 @@ class AdvancedC0Reranker(BaseMLModel):
                 max_depth=6,
                 min_samples_split=5,
                 min_samples_leaf=2,
-                random_state=42
-            ))
+                random_state=42,
+            )),
         ])
 
         # Train model

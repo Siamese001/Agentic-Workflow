@@ -83,7 +83,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             ok,
             f"L4 MemoryAuthority sources={ma_sources} (>=1), "
             f"L4 writes_through sources={wt_l4} (>=1), total writes_through={wt_total}",
-        )
+        ),
     )
     return ok
 
@@ -97,7 +97,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%MemoryNamespace%' "
-        "AND source_file LIKE '%memory_authority%'"
+        "AND source_file LIKE '%memory_authority%'",
     )
     ns_in_authority = c.fetchone()[0]
 
@@ -110,7 +110,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             ok,
             f"MemoryNamespace in memory_authority={ns_in_authority} (>=1), "
             f"total MemoryNamespace sources={ns_total}",
-        )
+        ),
     )
     return ok
 
@@ -125,7 +125,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%MemoryWriteRecord%' "
-        "AND source_file LIKE '%memory_authority%'"
+        "AND source_file LIKE '%memory_authority%'",
     )
     mwr_in_authority = c.fetchone()[0]
 
@@ -139,7 +139,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             ok,
             f"MemoryWriteRecord in memory_authority={mwr_in_authority} (>=1), "
             f"total MemoryWriteRecord sources={mwr_total}",
-        )
+        ),
     )
     return ok
 
@@ -169,7 +169,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             ok,
             f"writes_through total={wt_total} (>=5), "
             f"L4 ratio={ratio:.3f} writes_through={wt_l4}/writes_to={wr_l4} (>=0.04)",
-        )
+        ),
     )
     return ok
 
@@ -189,7 +189,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%NamespacePolicy%' "
-        "AND source_file LIKE '%memory_authority%'"
+        "AND source_file LIKE '%memory_authority%'",
     )
     np_in_authority = c.fetchone()[0]
 
@@ -197,7 +197,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%MemoryNamespace%' "
-        "AND source_file LIKE '%memory_authority%'"
+        "AND source_file LIKE '%memory_authority%'",
     )
     ns_enum_in_authority = c.fetchone()[0]
 
@@ -205,7 +205,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%DirectMemoryWriteError%' "
-        "AND source_file LIKE '%memory_authority%'"
+        "AND source_file LIKE '%memory_authority%'",
     )
     dme_in_authority = c.fetchone()[0]
 
@@ -217,7 +217,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"NamespacePolicy in memory_authority={np_in_authority} (>=1), "
             f"MemoryNamespace enum in authority={ns_enum_in_authority} (>=1, covers cache_backed_mutation), "
             f"DirectMemoryWriteError in authority={dme_in_authority} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -262,7 +262,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     # Show top writes_through sources
     c.execute(
         f"SELECT DISTINCT source_file, symbol FROM edges "
-        f"WHERE relation_type='writes_through' {NON_TEST} LIMIT 20"
+        f"WHERE relation_type='writes_through' {NON_TEST} LIMIT 20",
     )
     print("\n  writes_through sources (non-test, up to 20):")
     for row in c.fetchall():

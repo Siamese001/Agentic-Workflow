@@ -134,7 +134,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -350,7 +349,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "DuplicateCodeDetectorAgent.execute"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "DuplicateCodeDetectorAgent.execute",
         )
         file_types = file_types or self.SUPPORTED_EXTENSIONS
         Logger.info(f"[DUPE SCAN] Scanning for duplicates in {len(file_types)} file types...")
@@ -457,7 +456,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                     "size": dup.size,
                     "file_type": dup.file_type,
                     "hash": dup.hash[:16],
-                }
+                },
             )
         return recommendations
 
@@ -507,14 +506,14 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                     archive_target = archive_dir / relative_path
                     if dry_run:
                         Logger.info(
-                            f"[DRY RUN] Would archive: {delete_path_str} -> archives/duplicates_{timestamp}/{delete_path_str}"
+                            f"[DRY RUN] Would archive: {delete_path_str} -> archives/duplicates_{timestamp}/{delete_path_str}",
                         )
                         archived.append(delete_path_str)
                     else:
                         _wg.ensure_dir(archive_target.parent)
                         _wg.move_path(str(full_path), str(archive_target))
                         Logger.info(
-                            f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}"
+                            f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}",
                         )
                         archived.append(delete_path_str)
                 # guardian: allow-silent-swallow

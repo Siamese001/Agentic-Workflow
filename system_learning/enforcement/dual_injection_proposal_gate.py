@@ -21,7 +21,7 @@ class MetaLearningActivationDecision:
 
 
 def decide_activation_mode(
-    requested_proposal_only: bool, version_store: VersionStore | None, approval_gate: ApprovalGate | None
+    requested_proposal_only: bool, version_store: VersionStore | None, approval_gate: ApprovalGate | None,
 ) -> MetaLearningActivationDecision:
     """
     Enforces the dual-injection requirement for meta-learning activation.
@@ -41,12 +41,12 @@ def decide_activation_mode(
     """
     if not version_store or not approval_gate:
         return MetaLearningActivationDecision(
-            is_active=False, proposal_only=True, reason_code="FALLBACK_PROPOSAL_ONLY_MISSING_DEPENDENCY"
+            is_active=False, proposal_only=True, reason_code="FALLBACK_PROPOSAL_ONLY_MISSING_DEPENDENCY",
         )
     if requested_proposal_only:
         return MetaLearningActivationDecision(
-            is_active=False, proposal_only=True, reason_code="PROPOSAL_ONLY_BY_EXPLICIT_REQUEST"
+            is_active=False, proposal_only=True, reason_code="PROPOSAL_ONLY_BY_EXPLICIT_REQUEST",
         )
     return MetaLearningActivationDecision(
-        is_active=True, proposal_only=False, reason_code="ACTIVATION_GRANTED_MANDATORY_APPLICATION"
+        is_active=True, proposal_only=False, reason_code="ACTIVATION_GRANTED_MANDATORY_APPLICATION",
     )

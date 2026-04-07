@@ -74,7 +74,7 @@ class EnsembleFeatures:
             self.agent_diversity,
             self.mean_uncertainty,
             self.std_uncertainty,
-            self.uncertainty_correlation
+            self.uncertainty_correlation,
         ])
 
 @dataclass
@@ -136,7 +136,7 @@ class IntentEmbeddingModel(BaseRoutingModel):
                     uncertainty=uncertainty,
                     reasoning=f"Embedding similarity: {confidence:.3f}",
                     features_used={"embedding_confidence": confidence},
-                    model_metadata={"model_type": "embedding"}
+                    model_metadata={"model_type": "embedding"},
                 )
             else:
                 # Fallback prediction
@@ -146,7 +146,7 @@ class IntentEmbeddingModel(BaseRoutingModel):
                     uncertainty=0.7,
                     reasoning="No embedding match found",
                     features_used={"fallback": True},
-                    model_metadata={"model_type": "embedding_fallback"}
+                    model_metadata={"model_type": "embedding_fallback"},
                 )
         except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- embedding prediction error returns fallback
             logger.error(f"IntentEmbeddingModel prediction error: {e}")
@@ -156,7 +156,7 @@ class IntentEmbeddingModel(BaseRoutingModel):
                 uncertainty=0.9,
                 reasoning=f"Prediction error: {str(e)}",
                 features_used={"error": True},
-                model_metadata={"model_type": "embedding_error"}
+                model_metadata={"model_type": "embedding_error"},
             )
 
     def update_reliability(self, prediction: RoutingPrediction, success: bool):
@@ -202,7 +202,7 @@ class RuleBasedModel(BaseRoutingModel):
                 uncertainty=uncertainty,
                 reasoning=f"Rule-based match: {list(agent_scores.keys())}",
                 features_used=dict(agent_scores),
-                model_metadata={"model_type": "rule_based"}
+                model_metadata={"model_type": "rule_based"},
             )
         else:
             return RoutingPrediction(
@@ -211,7 +211,7 @@ class RuleBasedModel(BaseRoutingModel):
                 uncertainty=0.6,
                 reasoning="No rule match found",
                 features_used={"fallback": True},
-                model_metadata={"model_type": "rule_fallback"}
+                model_metadata={"model_type": "rule_fallback"},
             )
 
     def update_reliability(self, prediction: RoutingPrediction, success: bool):
@@ -239,7 +239,7 @@ class MetaLearner:
 
         _emit_stores_learning_state("meta_learner", "initialization", {
             "input_dim": input_dim,
-            "hidden_dim": hidden_dim
+            "hidden_dim": hidden_dim,
         })
 
     def forward(self, features: EnsembleFeatures) -> float:
@@ -286,7 +286,7 @@ class MetaLearner:
             "training_count": self.training_count,
             "error": float(error),
             "output": float(output),
-            "target": target
+            "target": target,
         })
 
 class EnsembleRouter:
@@ -301,7 +301,7 @@ class EnsembleRouter:
         self,
         base_models: list[BaseRoutingModel] | None = None,
         meta_learner: MetaLearner | None = None,
-        ensemble_strategy: str = "weighted_voting"
+        ensemble_strategy: str = "weighted_voting",
     ):
         """
         Initialize ensemble router.
@@ -326,7 +326,7 @@ class EnsembleRouter:
 
         _emit_stores_learning_state("ensemble_router", "initialization", {
             "base_models": len(self.base_models),
-            "ensemble_strategy": ensemble_strategy
+            "ensemble_strategy": ensemble_strategy,
         })
 
     def add_model(self, model: BaseRoutingModel):
@@ -337,7 +337,7 @@ class EnsembleRouter:
         _emit_records_learning_event("ensemble_router", "model_added", {
             "model_name": model.model_name,
             "weight": model.weight,
-            "total_models": len(self.base_models)
+            "total_models": len(self.base_models),
         })
 
     def _update_model_weights(self):
@@ -415,7 +415,7 @@ class EnsembleRouter:
             std_uncertainty=std_uncertainty,
             uncertainty_correlation=uncertainty_correlation,
             model_weights=self.model_weights.copy(),
-            model_reliability={m.model_name: m.get_reliability() for m in self.base_models}
+            model_reliability={m.model_name: m.get_reliability() for m in self.base_models},
         )
 
     def route(self, query: str, context: dict[str, Any]) -> EnsembleDecision:
@@ -445,7 +445,7 @@ class EnsembleRouter:
                     confidence=0.1,
                     uncertainty=0.9,
                     reasoning=f"Model error: {str(e)}",
-                    model_metadata={"model_type": "error"}
+                    model_metadata={"model_type": "error"},
                 ))
 
         # Extract ensemble features
@@ -471,7 +471,7 @@ class EnsembleRouter:
             f"Strategy: {self.ensemble_strategy}",
             f"Models used: {len(base_predictions)}",
             f"Agent agreement: {ensemble_features.agent_agreement_score:.2f}",
-            f"Mean confidence: {ensemble_features.mean_confidence:.2f}"
+            f"Mean confidence: {ensemble_features.mean_confidence:.2f}",
         ]
         reasoning = "; ".join(reasoning_parts)
 
@@ -483,7 +483,7 @@ class EnsembleRouter:
             base_predictions=base_predictions,
             meta_confidence=meta_confidence,
             reasoning=reasoning,
-            decision_time=time.time() - start_time
+            decision_time=time.time() - start_time,
         )
 
         # Record decision
@@ -495,13 +495,13 @@ class EnsembleRouter:
             "selected_agent": selected_agent,
             "confidence": confidence,
             "strategy": self.ensemble_strategy,
-            "models_used": len(base_predictions)
+            "models_used": len(base_predictions),
         })
 
         _emit_dispatches_agent("ensemble_router", selected_agent, {
             "confidence": confidence,
             "uncertainty": ensemble_uncertainty,
-            "decision_time": decision.decision_time
+            "decision_time": decision.decision_time,
         })
 
         return decision
@@ -513,7 +513,7 @@ class EnsembleRouter:
         for pred in predictions:
             model_weight = self.model_weights.get(
                 pred.model_metadata.get("model_type", "unknown"),
-                1.0
+                1.0,
             )
             agent_scores[pred.agent_name] += pred.confidence * model_weight
 
@@ -533,7 +533,7 @@ class EnsembleRouter:
         for pred in predictions:
             model_weight = self.model_weights.get(
                 pred.model_metadata.get("model_type", "unknown"),
-                1.0
+                1.0,
             )
             agent_scores[pred.agent_name] += pred.confidence * model_weight
 
@@ -582,13 +582,13 @@ class EnsembleRouter:
             "success": success,
             "selected_agent": decision.selected_agent,
             "confidence": decision.confidence,
-            "success_rate": self.get_success_rate()
+            "success_rate": self.get_success_rate(),
         })
 
         _emit_feeds_meta_learning("ensemble_router", "feedback", {
             "decision_features": decision.ensemble_features.to_vector().tolist()[:5],
             "success": success,
-            "target": target
+            "target": target,
         })
 
     def get_success_rate(self) -> float:
@@ -605,7 +605,7 @@ class EnsembleRouter:
                 "reliability": model.get_reliability(),
                 "predictions": model.prediction_count,
                 "successes": model.success_count,
-                "weight": model.weight
+                "weight": model.weight,
             }
         return performance
 
@@ -622,14 +622,14 @@ class EnsembleRouter:
                     "weight": model.weight,
                     "reliability": model.get_reliability(),
                     "predictions": model.prediction_count,
-                    "successes": model.success_count
+                    "successes": model.success_count,
                 }
                 for model in self.base_models
             ],
             "meta_learner": {
                 "training_count": self.meta_learner.training_count,
-                "learning_rate": self.meta_learner.learning_rate
-            }
+                "learning_rate": self.meta_learner.learning_rate,
+            },
         }
 
         with open(filepath, 'w') as f:
@@ -637,7 +637,7 @@ class EnsembleRouter:
 
         _emit_stores_learning_state("ensemble_router", "state_saved", {
             "filepath": filepath,
-            "success_rate": self.get_success_rate()
+            "success_rate": self.get_success_rate(),
         })
 
 # Utility functions
@@ -653,15 +653,15 @@ def create_default_ensemble(embedding_classifier) -> EnsembleRouter:
             "code_reviewer": ["code", "review", "python", "javascript"],
             "resume_writer": ["resume", "cv", "career", "job"],
             "data_analyst": ["data", "analysis", "chart", "graph"],
-            "writer": ["write", "article", "blog", "content"]
-        }
+            "writer": ["write", "article", "blog", "content"],
+        },
     }
     rule_model = RuleBasedModel(rules, weight=0.8)
 
     # Create ensemble
     ensemble = EnsembleRouter(
         base_models=[embedding_model, rule_model],
-        ensemble_strategy="weighted_voting"
+        ensemble_strategy="weighted_voting",
     )
 
     return ensemble
@@ -675,5 +675,5 @@ __all__ = [
     "RoutingPrediction",
     "EnsembleFeatures",
     "EnsembleDecision",
-    "create_default_ensemble"
+    "create_default_ensemble",
 ]

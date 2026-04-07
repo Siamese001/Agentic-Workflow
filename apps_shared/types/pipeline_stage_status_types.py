@@ -64,39 +64,25 @@ _emit_applies_guardrail("p0", "pipeline_stage_status_types", "p0_governance")
 _emit_reads_policy_state("p0", "pipeline_stage_status_types", "policy_binding")
 _emit_snapshots_state("p0", "pipeline_stage_status_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -422,7 +408,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             logger.debug(f"Stage {stage_name} already completed for envelope {self.id}")
             return
         result = StageResult(
-            stage_name=stage_name, status=PipelineStageStatus.PENDING, duration_ms=0.0, output_hash=""
+            stage_name=stage_name, status=PipelineStageStatus.PENDING, duration_ms=0.0, output_hash="",
         )
         self.history.append(result)
         self._touch()
@@ -462,12 +448,12 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     output_hash=output_hash
                     or hashlib.sha256(f"{stage_name}:{duration_ms}".encode()).hexdigest()[:16],
                     metadata=metadata or {},
-                )
+                ),
             )
         self._touch()
 
     def mark_stage_failed(
-        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0
+        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0,
     ) -> None:
         """Mark a stage as failed.
 
@@ -500,7 +486,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     output_hash="",
                     error_message=error_message,
                     retry_count=retry_count,
-                )
+                ),
             )
         self.has_errors = True
         self.error_count += 1
@@ -531,7 +517,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
                     duration_ms=0.0,
                     output_hash="",
                     metadata={"reason": reason} if reason else {},
-                )
+                ),
             )
         self._touch()
 
@@ -650,7 +636,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
     @classmethod
     def from_legacy_dict(
-        cls, data: dict[str, Any], metadata: dict[str, str] | None = None
+        cls, data: dict[str, Any], metadata: dict[str, str] | None = None,
     ) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 

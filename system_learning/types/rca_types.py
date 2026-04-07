@@ -117,7 +117,7 @@ def compute_report_hash(report: RCAReport) -> str:
 
 
 def create_rca_report(
-    snapshot_id: str, window_start_utc: int, window_end_utc: int, findings: tuple[RCAFinding, ...]
+    snapshot_id: str, window_start_utc: int, window_end_utc: int, findings: tuple[RCAFinding, ...],
 ) -> RCAReport:
     """Create an RCA report with content-addressed ID.
 

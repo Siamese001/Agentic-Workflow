@@ -56,7 +56,7 @@ def main():
         'current_traversal_time': '2.3s average',
         'graph_size': '681,161 edges',
         'traversal_frequency': '100+ queries/hour',
-        'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal'
+        'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal',
     }
 
     print('📊 ADG System Overview:')
@@ -72,50 +72,50 @@ def main():
         (SequentialThinkingTemplate.SWE_ADG_ANALYSIS, 'ADG Graph Analysis', {
             'analysis_title': 'Current System ADG Health Analysis',
             'context': 'Comprehensive analysis of system architecture and dependency graph health',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION, 'Violation Remediation', {
             'remediation_title': 'Critical Violation Remediation Strategy',
             'context': 'System has 5,301 violations requiring systematic remediation approach',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT, 'Layer Boundary Audit', {
             'audit_title': 'Layer Boundary Compliance Audit',
             'context': 'Audit of layer boundary violations and gravity rule compliance',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS, 'Dependency Graph Analysis', {
             'analysis_title': 'Dependency Graph Structure Analysis',
             'context': 'Analysis of system dependency patterns and optimization opportunities',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW, 'Architectural Review', {
             'review_title': 'System Architecture Review',
             'context': 'Comprehensive review of current system architecture and design patterns',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION, 'Anti-pattern Detection', {
             'detection_title': 'Anti-pattern Detection and Analysis',
             'context': 'Detection and categorization of system anti-patterns and technical debt',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING, 'System Restructuring', {
             'restructuring_title': 'System Restructuring Plan',
             'context': 'Comprehensive restructuring plan for architectural improvements',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION, 'Graph Traversal Optimization', {
             'optimization_title': 'Graph Traversal Performance Optimization',
             'context': 'Optimization of ADG graph traversal for better query performance',
-            **adg_context
-        })
+            **adg_context,
+        }),
     ]
 
     print('🔧 ADG-Based Template Demonstrations:')

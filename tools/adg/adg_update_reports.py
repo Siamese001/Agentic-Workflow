@@ -55,8 +55,8 @@ def update_reports():
             "coverage_metrics": {
                 "known_modules": total_nodes - len(unknown_modules),
                 "unknown_modules": len(unknown_modules),
-                "coverage_percentage": (total_nodes - len(unknown_modules)) / total_nodes * 100 if total_nodes > 0 else 0
-            }
+                "coverage_percentage": (total_nodes - len(unknown_modules)) / total_nodes * 100 if total_nodes > 0 else 0,
+            },
         }
 
         # 2. Edge Density Report
@@ -73,7 +73,7 @@ def update_reports():
             'policy_verification',
             'dispatches_execution_plan',
             'mutation_signature',
-            'parent_snapshot_hash'
+            'parent_snapshot_hash',
         ]
 
         critical_coverage = {edge: edge_distribution.get(edge, 0) for edge in critical_edges}
@@ -87,8 +87,8 @@ def update_reports():
             "density_metrics": {
                 "critical_edges_found": sum(1 for count in critical_coverage.values() if count > 0),
                 "critical_edge_percentage": sum(1 for count in critical_coverage.values() if count > 0) / len(critical_edges) * 100,
-                "top_edge_type": max(edge_distribution.items(), key=lambda x: x[1])[0] if edge_distribution else None
-            }
+                "top_edge_type": max(edge_distribution.items(), key=lambda x: x[1])[0] if edge_distribution else None,
+            },
         }
 
         # 3. Provenance Report
@@ -111,7 +111,7 @@ def update_reports():
                 "has_commit_sha": bool(meta_data.get('commit_sha')),
                 "has_repo_state_hash": bool(meta_data.get('repo_state_hash')),
                 "has_scanner_digest": bool(meta_data.get('scanner_digest')),
-                "has_artifact_digest": bool(meta_data.get('artifact_digest'))
+                "has_artifact_digest": bool(meta_data.get('artifact_digest')),
             },
             "reconciliation": {
                 "report_nodes": total_nodes,
@@ -119,14 +119,14 @@ def update_reports():
                 "report_edges": total_edges,
                 "db_edges": total_edges,
                 "nodes_match": True,
-                "edges_match": True
+                "edges_match": True,
             },
             "generation_metrics": {
                 "scan_duration_seconds": None,
                 "modules_scanned": cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0],
                 "symbols_scanned": total_nodes - cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0],
-                "total_entities": total_nodes
-            }
+                "total_entities": total_nodes,
+            },
         }
 
         # 4. Replay Determinism Report
@@ -140,18 +140,18 @@ def update_reports():
                 "replay_key_edges": edge_distribution.get('emits_replay_key', 0),
                 "snapshot_state_edges": edge_distribution.get('snapshots_state', 0),
                 "mutation_signature": edge_distribution.get('mutation_signature', 0),
-                "parent_snapshot_hash": edge_distribution.get('parent_snapshot_hash', 0)
+                "parent_snapshot_hash": edge_distribution.get('parent_snapshot_hash', 0),
             },
             "determinism_coverage": {
                 "modules_with_determinism_digest": edge_distribution.get('emits_determinism_digest', 0),
                 "modules_with_replay_keys": edge_distribution.get('emits_replay_key', 0),
-                "determinism_score": 1.0 if edge_distribution.get('emits_determinism_digest', 0) > 0 else 0.0
+                "determinism_score": 1.0 if edge_distribution.get('emits_determinism_digest', 0) > 0 else 0.0,
             },
             "validation": {
                 "has_determinism_edges": edge_distribution.get('emits_determinism_digest', 0) > 0,
                 "has_seed_edges": edge_distribution.get('determinism_seed', 0) > 0,
-                "determinism_status": "complete" if edge_distribution.get('emits_determinism_digest', 0) > 0 else "missing"
-            }
+                "determinism_status": "complete" if edge_distribution.get('emits_determinism_digest', 0) > 0 else "missing",
+            },
         }
 
         # 5. Boundary Report
@@ -176,14 +176,14 @@ def update_reports():
             "unresolved_imports": {
                 "agentic_core/L0_": 0,
                 "agentic_core/L2_": 0,
-                "agentic_core/L5_": 0
+                "agentic_core/L5_": 0,
             },
             "core_path_analysis": {},
             "boundary_metrics": {
                 "total_unresolved": critical_path_unresolved,
                 "critical_path_unresolved": critical_path_unresolved,
-                "boundary_completeness": "complete" if critical_path_unresolved == 0 else "incomplete"
-            }
+                "boundary_completeness": "complete" if critical_path_unresolved == 0 else "incomplete",
+            },
         }
 
         # 6. Mutation Integrity Report
@@ -195,18 +195,18 @@ def update_reports():
                 "mutation_signature": edge_distribution.get('mutation_signature', 0),
                 "parent_snapshot_hash": edge_distribution.get('parent_snapshot_hash', 0),
                 "replay_key": edge_distribution.get('emits_replay_key', 0),
-                "policy_hash": edge_distribution.get('references_policy_hash', 0)
+                "policy_hash": edge_distribution.get('references_policy_hash', 0),
             },
             "replay_guarantees": {
                 "determinism_status": "complete" if edge_distribution.get('mutation_signature', 0) > 0 else "missing",
                 "replay_completeness": "complete",
-                "signature_coverage": "complete"
+                "signature_coverage": "complete",
             },
             "signature_coverage": {
                 "modules_with_signatures": edge_distribution.get('mutation_signature', 0),
                 "total_modules": cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0],
-                "coverage_percentage": (edge_distribution.get('mutation_signature', 0) / cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0] * 100) if cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0] > 0 else 0
-            }
+                "coverage_percentage": (edge_distribution.get('mutation_signature', 0) / cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0] * 100) if cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0] > 0 else 0,
+            },
         }
 
         # 7. Test Surface Coverage Report
@@ -220,7 +220,7 @@ def update_reports():
         test_edge_types = [
             'defines_test_case', 'defines_test_suite', 'defines_invariant',
             'emits_test_result', 'records_validation_outcome', 'links_to_execution_trace',
-            'gates_promotion', 'detects_regression'
+            'gates_promotion', 'detects_regression',
         ]
         test_edge_counts = {edge_type: edge_distribution.get(edge_type, 0) for edge_type in test_edge_types}
 
@@ -259,7 +259,7 @@ def update_reports():
                 "total_test_edges": sum(test_edge_counts.values()),
                 "test_edge_types_found": sum(1 for count in test_edge_counts.values() if count > 0),
                 "test_edge_types_total": len(test_edge_types),
-                "test_edge_coverage_percentage": (sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100) if test_edge_types else 0
+                "test_edge_coverage_percentage": (sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100) if test_edge_types else 0,
             },
             "test_coverage_by_layer": test_coverage_by_layer,
             "critical_path_linkage": {
@@ -267,13 +267,13 @@ def update_reports():
                 "test_cases_with_validation": test_edge_counts.get('records_validation_outcome', 0),
                 "test_cases_with_regression_detection": test_edge_counts.get('detects_regression', 0),
                 "test_cases_with_promotion_gates": test_edge_counts.get('gates_promotion', 0),
-                "critical_path_completeness": "complete" if test_edge_counts.get('links_to_execution_trace', 0) > 0 else "missing"
+                "critical_path_completeness": "complete" if test_edge_counts.get('links_to_execution_trace', 0) > 0 else "missing",
             },
             "binding_metrics": {
                 "total_critical_modules": total_critical_modules,
                 "modules_with_test_linkage": modules_with_test_linkage,
-                "test_coverage_percentage": modules_with_test_linkage / total_critical_modules if total_critical_modules > 0 else 0
-            }
+                "test_coverage_percentage": modules_with_test_linkage / total_critical_modules if total_critical_modules > 0 else 0,
+            },
         }
 
         # Write all reports
@@ -284,7 +284,7 @@ def update_reports():
             (f"replay_determinism_report_{ts}.json", determinism_report),
             (f"boundary_report_{ts}.json", boundary_report),
             (f"mutation_integrity_report_{ts}.json", mutation_report),
-            (f"test_surface_coverage_{ts}.json", test_surface_report)
+            (f"test_surface_coverage_{ts}.json", test_surface_report),
         ]
 
         for filename, report_data in reports:

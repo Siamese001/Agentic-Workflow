@@ -16,13 +16,13 @@ class _P4StateTelemetryVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P4 state, telemetry & learning edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             P4_LEARNING_SYMBOLS,
             P4_STATE_SYMBOLS,
             P4_TELEMETRY_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -38,7 +38,7 @@ class _P4StateTelemetryVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in P4_TELEMETRY_SYMBOLS or base in P4_TELEMETRY_SYMBOLS:
             self.edges.append(
@@ -50,7 +50,7 @@ class _P4StateTelemetryVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in P4_LEARNING_SYMBOLS or base in P4_LEARNING_SYMBOLS:
             self.edges.append(
@@ -62,7 +62,7 @@ class _P4StateTelemetryVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -80,7 +80,6 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P4 observability & governance edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
             EMITS_METRIC_EVENT_SYMBOLS,
@@ -91,6 +90,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
             WRITES_OBSERVABILITY_LOG_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -106,7 +106,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in RECORDS_INCIDENT_EVENT_SYMBOLS or base in RECORDS_INCIDENT_EVENT_SYMBOLS:
             self.edges.append(
@@ -118,7 +118,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in CAPTURES_RUNTIME_ANOMALY_SYMBOLS or base in CAPTURES_RUNTIME_ANOMALY_SYMBOLS:
             self.edges.append(
@@ -130,7 +130,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in WRITES_OBSERVABILITY_LOG_SYMBOLS or base in WRITES_OBSERVABILITY_LOG_SYMBOLS:
             self.edges.append(
@@ -142,7 +142,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in UPDATES_MONITORING_STATE_SYMBOLS or base in UPDATES_MONITORING_STATE_SYMBOLS:
             self.edges.append(
@@ -154,7 +154,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in TRIGGERS_ALERT_SYMBOLS or base in TRIGGERS_ALERT_SYMBOLS:
             self.edges.append(
@@ -166,7 +166,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in LINKS_INCIDENT_TRACE_SYMBOLS or base in LINKS_INCIDENT_TRACE_SYMBOLS:
             self.edges.append(
@@ -178,7 +178,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -196,7 +196,6 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract retrieval wiring edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             L1_RETRIEVAL_SYMBOLS,
             L2_RETRIEVAL_SYMBOLS,
@@ -206,6 +205,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
             RETRIEVAL_WIRING_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -221,7 +221,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in L1_RETRIEVAL_SYMBOLS or base in L1_RETRIEVAL_SYMBOLS:
             self.edges.append(
@@ -233,7 +233,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in L2_RETRIEVAL_SYMBOLS or base in L2_RETRIEVAL_SYMBOLS:
             self.edges.append(
@@ -245,7 +245,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in L3_RETRIEVAL_SYMBOLS or base in L3_RETRIEVAL_SYMBOLS:
             self.edges.append(
@@ -257,7 +257,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in L4_RETRIEVAL_SYMBOLS or base in L4_RETRIEVAL_SYMBOLS:
             self.edges.append(
@@ -269,7 +269,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in L5_RETRIEVAL_SYMBOLS or base in L5_RETRIEVAL_SYMBOLS:
             self.edges.append(
@@ -281,7 +281,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 

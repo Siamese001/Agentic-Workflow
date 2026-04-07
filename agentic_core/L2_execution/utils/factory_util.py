@@ -111,7 +111,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -259,7 +258,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     except Exception as exc:
         if spec.optional:
             logger.warning(
-                f"Optional MCP client '{spec.name}' module '{module_name}' not available, using stub: {exc}"
+                f"Optional MCP client '{spec.name}' module '{module_name}' not available, using stub: {exc}",
             )
             return MCPClientStub(spec.name, {"error": f"Module not available: {exc}"})
         raise MCPClientInitializationError(
@@ -272,7 +271,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     except AttributeError as exc:
         if spec.optional:
             logger.warning(
-                f"Optional MCP client '{spec.name}' class '{class_name}' not found in '{module_name}', using stub"
+                f"Optional MCP client '{spec.name}' class '{class_name}' not found in '{module_name}', using stub",
             )
             return MCPClientStub(spec.name, {"error": f"Class not found: {class_name}"})
         raise MCPClientInitializationError(

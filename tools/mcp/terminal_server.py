@@ -38,13 +38,13 @@ ALLOWED_COMMANDS = {
     "python", "pytest", "git", "ls", "cat", "pwd", "cd", "echo",
     "find", "grep", "head", "tail", "wc", "sort", "uniq", "cut",
     "mkdir", "touch", "cp", "mv", "rm", "chmod", "chown",
-    "pip", "uv", "node", "npm"
+    "pip", "uv", "node", "npm",
 }
 
 DANGEROUS_PATTERNS = {
     "rm -rf /", "rm -rf /*", "sudo rm", "format", "fdisk",
     "mkfs", "dd if=", "shutdown", "reboot", "halt", "poweroff",
-    ">:>", ">>/dev/", ">/dev/null", "curl | sh", "wget | sh"
+    ">:>", ">>/dev/", ">/dev/null", "curl | sh", "wget | sh",
 }
 
 # Repo root restriction
@@ -71,22 +71,22 @@ class TerminalMCPServer:
                             "properties": {
                                 "command": {
                                     "type": "string",
-                                    "description": "Command to execute"
+                                    "description": "Command to execute",
                                 },
                                 "cwd": {
                                     "type": "string",
                                     "description": "Working directory (must be within repo)",
-                                    "default": str(REPO_ROOT)
+                                    "default": str(REPO_ROOT),
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds (max 30)",
                                     "default": 10,
-                                    "maximum": 30
-                                }
+                                    "maximum": 30,
+                                },
                             },
-                            "required": ["command"]
-                        }
+                            "required": ["command"],
+                        },
                     ),
                     Tool(
                         name="check_command_safety",
@@ -96,21 +96,21 @@ class TerminalMCPServer:
                             "properties": {
                                 "command": {
                                     "type": "string",
-                                    "description": "Command to check"
-                                }
+                                    "description": "Command to check",
+                                },
                             },
-                            "required": ["command"]
-                        }
+                            "required": ["command"],
+                        },
                     ),
                     Tool(
                         name="list_allowed_commands",
                         description="List all allowed commands",
                         inputSchema={
                             "type": "object",
-                            "properties": {}
-                        }
-                    )
-                ]
+                            "properties": {},
+                        },
+                    ),
+                ],
             )
 
         @self.server.call_tool()
@@ -129,7 +129,7 @@ class TerminalMCPServer:
                 logger.error(f"Error in tool {name}: {e}")
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error: {str(e)}")],
-                    isError=True
+                    isError=True,
                 )
 
     async def _execute_command(self, args: dict[str, Any]) -> CallToolResult:
@@ -150,9 +150,9 @@ class TerminalMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"ERROR: Working directory {cwd} is outside repository root {REPO_ROOT}"
+                    text=f"ERROR: Working directory {cwd} is outside repository root {REPO_ROOT}",
                 )],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -164,7 +164,7 @@ class TerminalMCPServer:
                 timeout=timeout,
                 capture_output=True,
                 text=True,
-                check=False
+                check=False,
             )
 
             output = result.stdout
@@ -178,22 +178,22 @@ class TerminalMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Exit Code: {result.returncode}\n\nOutput:\n{output}"
-                )]
+                    text=f"Exit Code: {result.returncode}\n\nOutput:\n{output}",
+                )],
             )
 
         except subprocess.TimeoutExpired:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Command timed out after {timeout} seconds"
+                    text=f"Command timed out after {timeout} seconds",
                 )],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Execution error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _check_command_safety(self, args: dict[str, Any]) -> CallToolResult:
@@ -206,9 +206,9 @@ class TerminalMCPServer:
                 return CallToolResult(
                     content=[TextContent(
                         type="text",
-                        text=f"UNSAFE: Command contains dangerous pattern: {pattern}"
+                        text=f"UNSAFE: Command contains dangerous pattern: {pattern}",
                     )],
-                    isError=True
+                    isError=True,
                 )
 
         # Check if command starts with allowed command
@@ -217,9 +217,9 @@ class TerminalMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"UNSAFE: Command '{first_word}' not in allowed commands"
+                    text=f"UNSAFE: Command '{first_word}' not in allowed commands",
                 )],
-                isError=True
+                isError=True,
             )
 
         # Check for path traversal attempts
@@ -227,13 +227,13 @@ class TerminalMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text="UNSAFE: Path traversal detected"
+                    text="UNSAFE: Path traversal detected",
                 )],
-                isError=True
+                isError=True,
             )
 
         return CallToolResult(
-            content=[TextContent(type="text", text="SAFE: Command passed safety checks")]
+            content=[TextContent(type="text", text="SAFE: Command passed safety checks")],
         )
 
     async def _list_allowed_commands(self, args: dict[str, Any]) -> CallToolResult:
@@ -242,8 +242,8 @@ class TerminalMCPServer:
         return CallToolResult(
             content=[TextContent(
                 type="text",
-                text="Allowed commands:\n" + "\n".join(f"- {cmd}" for cmd in commands)
-            )]
+                text="Allowed commands:\n" + "\n".join(f"- {cmd}" for cmd in commands),
+            )],
         )
 
 async def main():

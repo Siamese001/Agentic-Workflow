@@ -58,7 +58,7 @@ class ValidationReportRenderer:
                     "",
                     f"```json\n{json.dumps(result.qa_result, indent=2, default=str)}\n```",
                     "",
-                ]
+                ],
             )
 
         return "\n".join(lines)

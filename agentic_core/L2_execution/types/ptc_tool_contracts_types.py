@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -212,11 +211,11 @@ class ToolResult:
     def __post_init__(self) -> None:
         if self.exit_code not in (0, 1):
             raise ToolContractViolation(
-                f"ToolResult.exit_code must be 0 or 1, got {self.exit_code}. Spec: Contract [3] L2 [STDOUT RULE]."
+                f"ToolResult.exit_code must be 0 or 1, got {self.exit_code}. Spec: Contract [3] L2 [STDOUT RULE].",
             )
         if self.stdout_bytes_cap > 0 and len(self.stdout) > self.stdout_bytes_cap:
             raise ToolContractViolation(
-                f"ToolResult.stdout exceeds cap: len={len(self.stdout)}, cap={self.stdout_bytes_cap}. Spec: Contract [3] Guarantee #24."
+                f"ToolResult.stdout exceeds cap: len={len(self.stdout)}, cap={self.stdout_bytes_cap}. Spec: Contract [3] Guarantee #24.",
             )
 
     @classmethod

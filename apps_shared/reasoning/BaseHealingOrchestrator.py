@@ -68,39 +68,25 @@ _emit_applies_guardrail("p0", "BaseHealingOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "BaseHealingOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "BaseHealingOrchestrator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -269,12 +255,12 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
             strategy = None
             if similar_patterns:
                 best_pattern = max(
-                    similar_patterns, key=lambda p: getattr(p, "success_count", 0), default=None
+                    similar_patterns, key=lambda p: getattr(p, "success_count", 0), default=None,
                 )
                 if best_pattern:
                     strategy = getattr(best_pattern, "healing_strategy", None)
                     Logger.info(
-                        f"[{self.__class__.__name__}] Using learned strategy from pattern with {getattr(best_pattern, 'success_count', 0)} successes"
+                        f"[{self.__class__.__name__}] Using learned strategy from pattern with {getattr(best_pattern, 'success_count', 0)} successes",
                     )
             result = self._apply_healing_strategy(violation, strategy) if strategy else self.heal(violation)
             if result.get("status") == "fixed":
@@ -322,7 +308,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 "success_rate": results["fixed"] / results["total"],
             }
             self.cache_pattern_with_metadata(
-                self._cycle_results_key(), f"cycle_{len(self.cycle_results)}", cycle_pattern
+                self._cycle_results_key(), f"cycle_{len(self.cycle_results)}", cycle_pattern,
             )
             self.cycle_results.append(results)
         self._persist_healing_cycle(results)
@@ -344,7 +330,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
             bridge.add_observation(entity_name=self.__class__.__name__, observation=obs)
             if fixed > 0:
                 bridge.create_relation(
-                    from_entity=self.__class__.__name__, to_entity="HealingCycle", relation_type="HEALED"
+                    from_entity=self.__class__.__name__, to_entity="HealingCycle", relation_type="HEALED",
                 )
 
             # Wave C-1: Emit cross-domain healing events for pattern sharing
@@ -401,7 +387,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 Logger.info(f"[{self.__class__.__name__}] Dashboard verification passed after healing")
             else:
                 Logger.warning(
-                    f"[{self.__class__.__name__}] Dashboard verification flagged issues: {verification.get('errors', [])}"
+                    f"[{self.__class__.__name__}] Dashboard verification flagged issues: {verification.get('errors', [])}",
                 )
         # guardian: allow-silent-swallow
         except Exception as e:

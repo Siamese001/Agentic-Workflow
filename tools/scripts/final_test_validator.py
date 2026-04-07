@@ -18,7 +18,7 @@ def run_final_validation():
     try:
         result = subprocess.run([
             'python', '-c',
-            'import ast; from pathlib import Path; test_dir = Path("tests"); errors = 0; [ast.parse(open(f).read()) for f in test_dir.rglob("test_*.py") if not (ast.parse(open(f).read()) if True else None)]; print("Syntax validation passed")'
+            'import ast; from pathlib import Path; test_dir = Path("tests"); errors = 0; [ast.parse(open(f).read()) for f in test_dir.rglob("test_*.py") if not (ast.parse(open(f).read()) if True else None)]; print("Syntax validation passed")',
         ], capture_output=True, text=True, timeout=300)
 
         syntax_ok = result.returncode == 0
@@ -31,7 +31,7 @@ def run_final_validation():
     print("2. Running test collection...")
     try:
         result = subprocess.run([
-            'pytest', '--collect-only', '--quiet', '--tb=no'
+            'pytest', '--collect-only', '--quiet', '--tb=no',
         ], capture_output=True, text=True, timeout=300)
 
         collection_ok = result.returncode == 0 and 'collected' in result.stdout.lower()
@@ -44,7 +44,7 @@ def run_final_validation():
     print("3. Running smoke tests...")
     try:
         result = subprocess.run([
-            'pytest', 'tests/smoke/', '-v', '--tb=short', '--maxfail=3'
+            'pytest', 'tests/smoke/', '-v', '--tb=short', '--maxfail=3',
         ], capture_output=True, text=True, timeout=600)
 
         smoke_ok = result.returncode == 0

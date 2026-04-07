@@ -26,7 +26,7 @@ class AuthorityViolation(Exception):
 
 _FORBIDDEN_MODES: frozenset[str] = frozenset({"EXECUTE", "ACTIVATE"})
 _AUDIT_WRITE_OPERATIONS: frozenset[str] = frozenset(
-    {"write_audit", "append_audit", "delete_audit", "mutate_audit", "overwrite_audit", "patch_audit"}
+    {"write_audit", "append_audit", "delete_audit", "mutate_audit", "overwrite_audit", "patch_audit"},
 )
 _SIDE_CHANNEL_OPERATIONS: frozenset[str] = frozenset(
     {
@@ -36,7 +36,7 @@ _SIDE_CHANNEL_OPERATIONS: frozenset[str] = frozenset(
         "flip_pointer",
         "swap_active",
         "direct_activate",
-    }
+    },
 )
 
 
@@ -80,7 +80,7 @@ def assert_zero_execution_authority(ctx: AuthorityContext) -> None:
     """
     if ctx.mode in _FORBIDDEN_MODES:
         raise AuthorityViolation(
-            f"AUTHORITY_VIOLATION:ZERO_EXECUTION_AUTHORITY|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|forbidden_modes={sorted(_FORBIDDEN_MODES)}"
+            f"AUTHORITY_VIOLATION:ZERO_EXECUTION_AUTHORITY|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|forbidden_modes={sorted(_FORBIDDEN_MODES)}",
         )
 
 
@@ -103,11 +103,11 @@ def assert_read_only_audit_access(ctx: AuthorityContext) -> None:
     """
     if ctx.operation in _AUDIT_WRITE_OPERATIONS:
         raise AuthorityViolation(
-            f"AUTHORITY_VIOLATION:AUDIT_WRITE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}"
+            f"AUTHORITY_VIOLATION:AUDIT_WRITE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}",
         )
     if "audit" in ctx.target.lower() and ctx.mode != "READ":
         raise AuthorityViolation(
-            f"AUTHORITY_VIOLATION:AUDIT_SURFACE_NON_READ|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_mode=READ"
+            f"AUTHORITY_VIOLATION:AUDIT_SURFACE_NON_READ|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_mode=READ",
         )
 
 
@@ -130,9 +130,9 @@ def assert_no_side_channel_activation(ctx: AuthorityContext) -> None:
     """
     if ctx.operation in _SIDE_CHANNEL_OPERATIONS:
         raise AuthorityViolation(
-            f"AUTHORITY_VIOLATION:SIDE_CHANNEL_ACTIVATION_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_path=governance_flow"
+            f"AUTHORITY_VIOLATION:SIDE_CHANNEL_ACTIVATION_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}|required_path=governance_flow",
         )
     if ctx.mode == "ACTIVATE":
         raise AuthorityViolation(
-            f"AUTHORITY_VIOLATION:DIRECT_ACTIVATE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}"
+            f"AUTHORITY_VIOLATION:DIRECT_ACTIVATE_FORBIDDEN|caller={ctx.caller_layer}|operation={ctx.operation}|target={ctx.target}|mode={ctx.mode}",
         )

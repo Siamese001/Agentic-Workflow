@@ -82,7 +82,7 @@ def main() -> int:
             violations.append(
                 f"POLICY DRIFT MISCLASSIFICATION: commit {commit_hash[:8]} "
                 f"touches governance module with repair_class: {PRODUCTION_BUG_CLASS} "
-                f"but no evidence file contains ## POLICY_DRIFT section (§18.5)"
+                f"but no evidence file contains ## POLICY_DRIFT section (§18.5)",
             )
 
     if violations:

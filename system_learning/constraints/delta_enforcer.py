@@ -155,11 +155,11 @@ def validate_surface_change(
     if isinstance(constraint, FloatConstraint):
         if not isinstance(old_value, (float, int)):
             raise TypeViolation(
-                f"TYPE_VIOLATION: {surface_name!r} old_value must be float, got {type(old_value).__name__}"
+                f"TYPE_VIOLATION: {surface_name!r} old_value must be float, got {type(old_value).__name__}",
             )
         if not isinstance(new_value, (float, int)):
             raise TypeViolation(
-                f"TYPE_VIOLATION: {surface_name!r} new_value must be float, got {type(new_value).__name__}"
+                f"TYPE_VIOLATION: {surface_name!r} new_value must be float, got {type(new_value).__name__}",
             )
 
         old_float = float(old_value)
@@ -169,7 +169,7 @@ def validate_surface_change(
         if not (constraint.min_value <= new_float <= constraint.max_value):
             raise BoundsViolation(
                 f"BOUNDS_VIOLATION: {surface_name!r} new_value {new_float} "
-                f"outside bounds [{constraint.min_value}, {constraint.max_value}]"
+                f"outside bounds [{constraint.min_value}, {constraint.max_value}]",
             )
 
         # Delta check
@@ -177,25 +177,25 @@ def validate_surface_change(
         if delta > constraint.max_delta_per_cycle:
             raise DeltaViolation(
                 f"DELTA_VIOLATION: {surface_name!r} delta {delta:.4f} "
-                f"exceeds max_delta_per_cycle {constraint.max_delta_per_cycle}"
+                f"exceeds max_delta_per_cycle {constraint.max_delta_per_cycle}",
             )
 
     # Int constraint validation
     elif isinstance(constraint, IntConstraint):
         if not isinstance(old_value, int):
             raise TypeViolation(
-                f"TYPE_VIOLATION: {surface_name!r} old_value must be int, got {type(old_value).__name__}"
+                f"TYPE_VIOLATION: {surface_name!r} old_value must be int, got {type(old_value).__name__}",
             )
         if not isinstance(new_value, int):
             raise TypeViolation(
-                f"TYPE_VIOLATION: {surface_name!r} new_value must be int, got {type(new_value).__name__}"
+                f"TYPE_VIOLATION: {surface_name!r} new_value must be int, got {type(new_value).__name__}",
             )
 
         # Bounds check
         if not (constraint.min_value <= new_value <= constraint.max_value):
             raise BoundsViolation(
                 f"BOUNDS_VIOLATION: {surface_name!r} new_value {new_value} "
-                f"outside bounds [{constraint.min_value}, {constraint.max_value}]"
+                f"outside bounds [{constraint.min_value}, {constraint.max_value}]",
             )
 
         # Delta check
@@ -203,21 +203,21 @@ def validate_surface_change(
         if delta > constraint.max_delta_per_cycle:
             raise DeltaViolation(
                 f"DELTA_VIOLATION: {surface_name!r} delta {delta} "
-                f"exceeds max_delta_per_cycle {constraint.max_delta_per_cycle}"
+                f"exceeds max_delta_per_cycle {constraint.max_delta_per_cycle}",
             )
 
     # Pointer constraint validation
     elif isinstance(constraint, PointerConstraint):
         if not isinstance(new_value, str):
             raise TypeViolation(
-                f"TYPE_VIOLATION: {surface_name!r} new_value must be str, got {type(new_value).__name__}"
+                f"TYPE_VIOLATION: {surface_name!r} new_value must be str, got {type(new_value).__name__}",
             )
 
         # Allowlist check
         if new_value not in constraint.allowlist:
             raise PointerViolation(
                 f"POINTER_VIOLATION: {surface_name!r} new_value {new_value!r} "
-                f"not in allowlist {sorted(constraint.allowlist)}"
+                f"not in allowlist {sorted(constraint.allowlist)}",
             )
 
     else:

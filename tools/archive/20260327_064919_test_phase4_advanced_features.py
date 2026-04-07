@@ -47,7 +47,7 @@ def test_advanced_analytics():
                 layer="L1",
                 kind="cognitive",
                 duration_ms=500,
-                status="OK"
+                status="OK",
             ),
             RuntimeADGNode(
                 node_id="node2",
@@ -55,7 +55,7 @@ def test_advanced_analytics():
                 layer="L2",
                 kind="tool",
                 duration_ms=1500,  # Slow operation
-                status="OK"
+                status="OK",
             ),
             RuntimeADGNode(
                 node_id="node3",
@@ -63,7 +63,7 @@ def test_advanced_analytics():
                 layer="L3",
                 kind="orchestrator",
                 duration_ms=50,  # Fast operation
-                status="error"  # Error operation
+                status="error",  # Error operation
             ),
         ]
 
@@ -73,13 +73,13 @@ def test_advanced_analytics():
                 edge_id="edge1",
                 src_id="node1",
                 dst_id="node2",
-                relation_type="calls"
+                relation_type="calls",
             ),
             RuntimeADGEdge(
                 edge_id="edge2",
                 src_id="node2",
                 dst_id="node3",
-                relation_type="invokes"
+                relation_type="invokes",
             ),
         ]
 
@@ -89,7 +89,7 @@ def test_advanced_analytics():
             nodes=nodes,
             edges=edges,
             started_at_utc=time.time(),
-            completed_at_utc=time.time() + 2.0
+            completed_at_utc=time.time() + 2.0,
         )
 
         # Analyze snapshot
@@ -207,7 +207,7 @@ def test_advanced_analytics():
         'analytics_init', 'pattern_analysis', 'performance_metrics', 'pattern_metrics',
         'recommendations', 'perf_metrics_available', 'bottleneck_detection',
         'slow_operations', 'fast_operations', 'recommendations_available',
-        'recommendation_types', 'high_priority_recs', 'trend_analysis', 'trend_data_available'
+        'recommendation_types', 'high_priority_recs', 'trend_analysis', 'trend_data_available',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -288,8 +288,8 @@ def test_performance_optimization():
                             "span_id": "span_1",
                             "operation_name": "test_operation",
                             "duration_ms": 100,
-                            "status": "OK"
-                        }
+                            "status": "OK",
+                        },
                     ]
 
             mock_agent = MockAgent()
@@ -327,8 +327,8 @@ def test_performance_optimization():
                     "operation_name": "test_operation_2",
                     "duration_ms": 200,
                     "status": "OK",
-                    "attributes": {"test": "value"}
-                }
+                    "attributes": {"test": "value"},
+                },
             ]
 
             collector.collect_spans_from_agent("test-agent-1", test_spans)
@@ -400,7 +400,7 @@ def test_performance_optimization():
         'perf_collector_init', 'config_available', 'batch_size_configured',
         'compression_enabled', 'adaptive_scheduling', 'agent_registration',
         'registered_agents', 'span_collection', 'spans_processed',
-        'optimization_recs', 'rec_types', 'span_optimization', 'optimized_span_count'
+        'optimization_recs', 'rec_types', 'span_optimization', 'optimized_span_count',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -581,7 +581,7 @@ def test_enhanced_monitoring():
         'observability_init', 'health_checks', 'health_status_available',
         'health_score_available', 'health_checks_available', 'alert_system',
         'alerts_available', 'alert_history', 'metrics_collection',
-        'metrics_available', 'metrics_history', 'dashboard_data', 'dashboard_sections'
+        'metrics_available', 'metrics_history', 'dashboard_data', 'dashboard_sections',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -693,7 +693,7 @@ def test_distributed_tracing():
                 service_id="target-123",
                 host="localhost",
                 port=8080,
-                capabilities={"test_capability"}
+                capabilities={"test_capability"},
             )
 
             coordinator.register_service(mock_service)
@@ -761,7 +761,7 @@ def test_distributed_tracing():
         'coordinator_init', 'coordination_startup', 'service_registered',
         'trace_context_creation', 'trace_id_available', 'span_id_available',
         'service_name_set', 'trace_propagation', 'propagation_attempted',
-        'coordination_stats', 'stats_sections', 'traces_created'
+        'coordination_stats', 'stats_sections', 'traces_created',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -807,7 +807,7 @@ def test_analytics_dashboard():
             results['default_widgets'] = isinstance(widgets, dict)
             results['widget_count'] = len(widgets) > 0
             results['required_widgets'] = all(widget_id in widgets for widget_id in [
-                'system_health', 'active_traces', 'performance_metrics', 'alerts', 'service_health', 'optimization'
+                'system_health', 'active_traces', 'performance_metrics', 'alerts', 'service_health', 'optimization',
             ])
 
             print("✅ Default widgets:")
@@ -944,7 +944,7 @@ def test_analytics_dashboard():
     test_keys = [
         'dashboard_init', 'default_widgets', 'widget_count', 'required_widgets',
         'dashboard_startup', 'widget_management', 'add_widget', 'remove_widget',
-        'dashboard_data_export', 'data_sections', 'config_export', 'dashboard_summary'
+        'dashboard_data_export', 'data_sections', 'config_export', 'dashboard_summary',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)

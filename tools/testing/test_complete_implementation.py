@@ -30,7 +30,7 @@ def test_continuous_learning_pipeline():
         pipeline.configure(
             enable_file_monitoring=True,
             enable_component_integration=True,
-            collection_interval_seconds=5
+            collection_interval_seconds=5,
         )
 
         print("✅ Pipeline created successfully")
@@ -44,7 +44,7 @@ def test_continuous_learning_pipeline():
             event_type="test_event",
             source="test_component",
             data={"test": True, "timestamp": datetime.now().isoformat()},
-            priority="MEDIUM"
+            priority="MEDIUM",
         )
         print("✅ Learning event emitted successfully")
 
@@ -53,7 +53,7 @@ def test_continuous_learning_pipeline():
             signal_type="test_signal",
             source="test_component",
             payload={"test_signal": True},
-            expires_in_seconds=30
+            expires_in_seconds=30,
         )
         print("✅ Learning signal emitted successfully")
 
@@ -95,7 +95,7 @@ def test_unified_memory():
             weights={"layer1": [0.1, 0.2, 0.3]},
             metadata={"test": True},
             performance_metrics={"accuracy": 0.95},
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
 
         model_id = memory_manager.store_model_checkpoint(checkpoint)
@@ -118,7 +118,7 @@ def test_unified_memory():
             lesson_learned="Test lesson learned",
             confidence_score=0.9,
             created_at=datetime.now(),
-            metadata={"test": True}
+            metadata={"test": True},
         )
 
         experience_id = memory_manager.store_learning_experience(experience)
@@ -134,7 +134,7 @@ def test_unified_memory():
             value=0.85,
             unit="%",
             context={"test": True},
-            component="test_component"
+            component="test_component",
         )
         print("✅ Performance metric stored")
 
@@ -232,7 +232,7 @@ def test_system_learning_availability():
         "stores/telemetry_store.py",
         "adapters/l1_meta_adapter.py",
         "adapters/l4_meta_prior_provider.py",
-        "adapters/system_learning_memory_bridge.py"
+        "adapters/system_learning_memory_bridge.py",
     ]
 
     available_files = 0
@@ -256,7 +256,7 @@ def main():
         ("Continuous Learning Pipeline", test_continuous_learning_pipeline),
         ("Unified Memory Database", test_unified_memory),
         ("Migration Status", test_migration_status),
-        ("System Learning Availability", test_system_learning_availability)
+        ("System Learning Availability", test_system_learning_availability),
     ]
 
     results = {}

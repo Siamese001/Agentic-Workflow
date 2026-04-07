@@ -266,8 +266,9 @@ class TestP1DefectsCheck:
 
     def test_in_cycle_blocks_generation(self, tmp_path):
         """Test that in_cycle edges block ADG generation (Tier 1A)."""
-        from tools.generate.generate_full_adg import _check_p1_defects
         import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {"by_severity": {"critical": 0}}
         sqlite_path = tmp_path / "test.sqlite"
@@ -285,8 +286,9 @@ class TestP1DefectsCheck:
 
     def test_dynamic_exec_blocks_generation(self, tmp_path):
         """Test that dynamic_exec edges block ADG generation (Tier 1B)."""
-        from tools.generate.generate_full_adg import _check_p1_defects
         import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {"by_severity": {"critical": 0}}
         sqlite_path = tmp_path / "test.sqlite"
@@ -305,8 +307,9 @@ class TestP1DefectsCheck:
 
     def test_any_violation_blocks(self, tmp_path):
         """Test that any layer violation blocks ADG generation (no exemption bypass)."""
-        from tools.generate.generate_full_adg import _check_p1_defects
         import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {"by_severity": {"critical": 0}}
         sqlite_path = tmp_path / "test.sqlite"
@@ -315,7 +318,7 @@ class TestP1DefectsCheck:
         conn = sqlite3.connect(str(sqlite_path))
         conn.execute("CREATE TABLE edges (relation_type TEXT, source_file TEXT)")
         conn.execute(
-            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'some/file.py')"
+            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'some/file.py')",
         )
         conn.commit()
         conn.close()
@@ -327,8 +330,9 @@ class TestP1DefectsCheck:
 
     def test_no_graph_corruption_passes(self, tmp_path):
         """Test that clean graph (no in_cycle/dynamic_exec) passes P1 checks."""
-        from tools.generate.generate_full_adg import _check_p1_defects
         import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {"by_severity": {"critical": 0}}
         sqlite_path = tmp_path / "test.sqlite"
@@ -349,8 +353,9 @@ class TestP2AntipatternsCheck:
 
     def test_exception_swallow_hard_fails(self, tmp_path, capsys):
         """Test that HIGH antipatterns hard-fail ADG generation."""
-        from tools.generate.generate_full_adg import _check_p2_antipatterns
         import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p2_antipatterns
 
         sqlite_path = tmp_path / "test.sqlite"
 
@@ -358,7 +363,7 @@ class TestP2AntipatternsCheck:
         conn = sqlite3.connect(str(sqlite_path))
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
         conn.execute(
-            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'some/file.py')"
+            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'some/file.py')",
         )
         conn.commit()
         conn.close()
@@ -374,8 +379,9 @@ class TestP2AntipatternsCheck:
 
     def test_no_antipatterns_passes(self, tmp_path):
         """Test that clean codebase (no HIGH antipatterns) passes P2 checks."""
-        from tools.generate.generate_full_adg import _check_p2_antipatterns
         import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p2_antipatterns
 
         sqlite_path = tmp_path / "test.sqlite"
 
@@ -395,9 +401,10 @@ class TestP3RatchetCheck:
 
     def test_ratchet_initialization(self, tmp_path, capsys):
         """Test that ratchet initializes with current count as ceiling."""
-        from tools.generate.generate_full_adg import _check_p3_ratchet
-        import sqlite3
         import json
+        import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p3_ratchet
 
         sqlite_path = tmp_path / "test.sqlite"
         ratchet_file = tmp_path / "ratchet.json"
@@ -407,7 +414,7 @@ class TestP3RatchetCheck:
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
         for i in range(5):
             conn.execute(
-                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')",
             )
         conn.commit()
         conn.close()
@@ -425,9 +432,10 @@ class TestP3RatchetCheck:
 
     def test_ratchet_blocks_regression(self, tmp_path, capsys):
         """Test that ratchet blocks if count exceeds ceiling."""
-        from tools.generate.generate_full_adg import _check_p3_ratchet
-        import sqlite3
         import json
+        import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p3_ratchet
 
         sqlite_path = tmp_path / "test.sqlite"
         ratchet_file = tmp_path / "ratchet.json"
@@ -441,7 +449,7 @@ class TestP3RatchetCheck:
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
         for i in range(5):
             conn.execute(
-                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')",
             )
         conn.commit()
         conn.close()
@@ -457,9 +465,10 @@ class TestP3RatchetCheck:
 
     def test_ratchet_allows_equal(self, tmp_path, capsys):
         """Test that ratchet allows if count equals ceiling."""
-        from tools.generate.generate_full_adg import _check_p3_ratchet
-        import sqlite3
         import json
+        import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p3_ratchet
 
         sqlite_path = tmp_path / "test.sqlite"
         ratchet_file = tmp_path / "ratchet.json"
@@ -473,7 +482,7 @@ class TestP3RatchetCheck:
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
         for i in range(5):
             conn.execute(
-                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')",
             )
         conn.commit()
         conn.close()
@@ -486,9 +495,10 @@ class TestP3RatchetCheck:
 
     def test_ratchet_updates_downward(self, tmp_path, capsys):
         """Test that ratchet updates ceiling downward if count decreases."""
-        from tools.generate.generate_full_adg import _check_p3_ratchet
-        import sqlite3
         import json
+        import sqlite3
+
+        from tools.generate.generate_full_adg import _check_p3_ratchet
 
         sqlite_path = tmp_path / "test.sqlite"
         ratchet_file = tmp_path / "ratchet.json"
@@ -502,7 +512,7 @@ class TestP3RatchetCheck:
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
         for i in range(3):
             conn.execute(
-                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')"
+                "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'system_learning/test.py')",
             )
         conn.commit()
         conn.close()

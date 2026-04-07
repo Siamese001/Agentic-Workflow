@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -240,7 +239,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
                         "type": "Breadth Violation",
                         "count": len(dirs),
                         "msg": f"Found {len(dirs)} subfolders. Violates 'Magic 7' rule.",
-                    }
+                    },
                 )
             if 0 < len(py_files) < self.MIN_FILES and (not dirs) and (p != self.root):
                 self.report["flattening_candidates"].append(
@@ -249,7 +248,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
                         "files": py_files,
                         "file_count": len(py_files),
                         "reason": "Low Signal Density (Fragmented)",
-                    }
+                    },
                 )
         return self.report
 

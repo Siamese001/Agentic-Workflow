@@ -109,7 +109,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -191,7 +190,7 @@ class ConvergenceEngine:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConvergenceEngine.get_file_hash"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConvergenceEngine.get_file_hash",
         )
 
         hasher = hashlib.sha256()
@@ -215,12 +214,12 @@ class ConvergenceEngine:
         while len(current_violations) > 0 and round_num <= self.max_rounds:
             print(f"🌀 Convergence Round {round_num}: {len(current_violations)} remaining")
             prioritized_violations = sorted(
-                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True
+                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True,
             )
             for violation in prioritized_violations:
                 if violation.get("audit_fail_count", 0) > 3:
                     print(
-                        f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor..."
+                        f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor...",
                     )
                 file_path = Path(violation.get("path", ""))
                 pre_hash = None
@@ -233,7 +232,7 @@ class ConvergenceEngine:
                     post_hash = self.get_file_hash(file_path)
                     if self.detect_fission(pre_hash, post_hash, file_size):
                         print(
-                            f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size // 1024}KB) - Terminating mission for this file."
+                            f"⚛️ FISSION DETECTED: {violation.get('path')} unchanged after healing (>{file_size // 1024}KB) - Terminating mission for this file.",
                         )
             current_violations = await validator.validate()
             self.round_history.append(len(current_violations))

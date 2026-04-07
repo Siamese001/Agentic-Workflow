@@ -16,7 +16,7 @@ rows = conn.execute(
        FROM violations v JOIN edges e ON v.edge_id=e.id
        WHERE e.edge_kind='broad_exception_catch'
        AND e.source_file LIKE '%extracted_training_pipeline.py'
-       ORDER BY e.line_no"""
+       ORDER BY e.line_no""",
 ).fetchall()
 
 for row in rows:
@@ -28,7 +28,7 @@ rows2 = conn.execute(
        FROM violations v JOIN edges e ON v.edge_id=e.id
        WHERE e.edge_kind='return_none_swallow'
        AND e.source_file LIKE '%extracted_training_pipeline.py'
-       ORDER BY e.line_no"""
+       ORDER BY e.line_no""",
 ).fetchall()
 
 for row in rows:

@@ -44,78 +44,78 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Complexity score of DAG branch",
                 provenance="dag.branch.complexity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="execution_probability",
                 feature_type=FeatureType.NUMERIC,
                 description="Probability of successful execution",
                 provenance="branch.execution.probability",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_requirement_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Resource requirements (CPU, memory, time)",
                 provenance="branch.resources.requirement_score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="conflict_indicator",
                 feature_type=FeatureType.NUMERIC,
                 description="Potential conflicts with other branches",
                 provenance="branch.conflicts.indicator",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="escalation_priority",
                 feature_type=FeatureType.NUMERIC,
                 description="Priority for escalation if needed",
                 provenance="branch.escalation.priority",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="workflow_depth",
                 feature_type=FeatureType.NUMERIC,
                 description="Depth of branch in workflow hierarchy",
                 provenance="workflow.branch.depth",
-                validation_rules={"min_value": 1, "max_value": 10}
+                validation_rules={"min_value": 1, "max_value": 10},
             ),
             FeatureDefinition(
                 name="dependency_count",
                 feature_type=FeatureType.NUMERIC,
                 description="Number of dependencies for this branch",
                 provenance="branch.dependencies.count",
-                validation_rules={"min_value": 0, "max_value": 50}
+                validation_rules={"min_value": 0, "max_value": 50},
             ),
             FeatureDefinition(
                 name="historical_success_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical success rate for similar branches",
                 provenance="history.branch.success_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="timing_criticality",
                 feature_type=FeatureType.NUMERIC,
                 description="Timing criticality of branch execution",
                 provenance="branch.timing.criticality",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="parallel_execution_potential",
                 feature_type=FeatureType.NUMERIC,
                 description="Potential for parallel execution",
                 provenance="branch.parallel.potential",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="l3_branch_ranker",
             schema_version="1.0",
             description="Features for L3 DAG branch ranking model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -146,7 +146,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
             "edge_count": 0.2,
             "conditional_logic": 0.25,
             "nested_depth": 0.15,
-            "data_flow_complexity": 0.1
+            "data_flow_complexity": 0.1,
         }
 
         score = 0.0
@@ -246,7 +246,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
             "memory": 0.25,
             "storage": 0.2,
             "network": 0.15,
-            "gpu": 0.1
+            "gpu": 0.1,
         }
 
         total_requirement = 0.0
@@ -305,7 +305,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
                             "type": "resource",
                             "resource": resource,
                             "overlap": overlap_ratio,
-                            "branch": other_branch.get("id", "unknown")
+                            "branch": other_branch.get("id", "unknown"),
                         })
 
         # Data dependency conflicts
@@ -322,7 +322,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
                             conflicts.append({
                                 "type": "data_dependency",
                                 "data_id": dep.get("data_id"),
-                                "branch": other_branch.get("id", "unknown")
+                                "branch": other_branch.get("id", "unknown"),
                             })
 
         # Calculate conflict score
@@ -332,7 +332,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         # Weight conflicts by type and severity
         conflict_weights = {
             "resource": 0.4,
-            "data_dependency": 0.6
+            "data_dependency": 0.6,
         }
 
         total_conflict_score = 0.0
@@ -365,7 +365,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
             "business_criticality": 0.4,
             "deadline_urgency": 0.3,
             "error_handling": 0.2,
-            "stakeholder_level": 0.1
+            "stakeholder_level": 0.1,
         }
 
         score = 0.0

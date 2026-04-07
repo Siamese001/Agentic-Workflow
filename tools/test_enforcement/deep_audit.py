@@ -155,7 +155,7 @@ def _nameerror_traps(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                             issues.append({
                                 "file": rel, "audit": "nameerror_trap",
                                 "severity": "error", "line": node.lineno,
-                                "detail": f"skipif references undefined name '{name_node.id}'"
+                                "detail": f"skipif references undefined name '{name_node.id}'",
                             })
 
         # Check pytestmark = pytest.mark.skipif(not X, ...)
@@ -168,7 +168,7 @@ def _nameerror_traps(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                                 issues.append({
                                     "file": rel, "audit": "nameerror_trap",
                                     "severity": "error", "line": node.lineno,
-                                    "detail": f"pytestmark references undefined '{sub.id}'"
+                                    "detail": f"pytestmark references undefined '{sub.id}'",
                                 })
 
     return issues
@@ -185,7 +185,7 @@ def _dead_markers(fp: pathlib.Path, source: str) -> list[dict]:
         if m not in REGISTERED_MARKERS:
             issues.append({
                 "file": rel, "audit": "dead_marker", "severity": "warning",
-                "detail": f"Unregistered marker '@pytest.mark.{m}'"
+                "detail": f"Unregistered marker '@pytest.mark.{m}'",
             })
     return issues
 
@@ -215,7 +215,7 @@ def _orphan_skipif(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                         issues.append({
                             "file": rel, "audit": "orphan_skipif",
                             "severity": "error", "line": dec.lineno,
-                            "detail": f"@skipif references undefined '{name_node.id}'"
+                            "detail": f"@skipif references undefined '{name_node.id}'",
                         })
     return issues
 
@@ -242,7 +242,7 @@ def _vacuous_tests(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
             issues.append({
                 "file": rel, "audit": "vacuous_test", "severity": "info",
                 "line": node.lineno,
-                "detail": f"'{node.name}' has only a docstring (no assertions)"
+                "detail": f"'{node.name}' has only a docstring (no assertions)",
             })
             continue
         if len(real_stmts) == 1:
@@ -251,14 +251,14 @@ def _vacuous_tests(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                 issues.append({
                     "file": rel, "audit": "vacuous_test", "severity": "info",
                     "line": node.lineno,
-                    "detail": f"'{node.name}' body is only 'pass'"
+                    "detail": f"'{node.name}' body is only 'pass'",
                 })
             elif (isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant)
                   and stmt.value.value is True):
                 issues.append({
                     "file": rel, "audit": "vacuous_test", "severity": "info",
                     "line": node.lineno,
-                    "detail": f"'{node.name}' body is only 'True'"
+                    "detail": f"'{node.name}' body is only 'True'",
                 })
     return issues
 
@@ -281,7 +281,7 @@ def _duplicate_test_names(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                 issues.append({
                     "file": rel, "audit": "duplicate_test_name",
                     "severity": "error",
-                    "detail": f"'{name}' defined {count}x in {scope_name} — pytest shadows earlier definitions"
+                    "detail": f"'{name}' defined {count}x in {scope_name} — pytest shadows earlier definitions",
                 })
 
     # Module-level functions
@@ -332,7 +332,7 @@ def _import_side_effects(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
         issues.append({
             "file": rel, "audit": "import_side_effect", "severity": "info",
             "line": node.lineno,
-            "detail": f"Module-level call: {name}()"
+            "detail": f"Module-level call: {name}()",
         })
 
     return issues
@@ -354,7 +354,7 @@ def _marker_category_consistency(fp: pathlib.Path, source: str, classification: 
         issues.append({
             "file": rel, "audit": "marker_category_mismatch",
             "severity": "warning",
-            "detail": "Classified as 'core' but has @pytest.mark.optional"
+            "detail": "Classified as 'core' but has @pytest.mark.optional",
         })
 
     # optional file should have @pytest.mark.optional
@@ -362,7 +362,7 @@ def _marker_category_consistency(fp: pathlib.Path, source: str, classification: 
         issues.append({
             "file": rel, "audit": "marker_category_mismatch",
             "severity": "info",
-            "detail": "Classified as 'optional' but missing @pytest.mark.optional marker"
+            "detail": "Classified as 'optional' but missing @pytest.mark.optional marker",
         })
 
     return issues

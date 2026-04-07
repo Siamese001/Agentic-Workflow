@@ -1,6 +1,5 @@
 """Tests for Enhanced Observability System."""
 
-import pytest
 
 from agentic_core.L6_observability.utils.enhanced_observability import (
     Alert,
@@ -8,7 +7,6 @@ from agentic_core.L6_observability.utils.enhanced_observability import (
     EnhancedObservability,
     HealthCheck,
     HealthStatus,
-    SystemHealth,
     SystemMetric,
 )
 

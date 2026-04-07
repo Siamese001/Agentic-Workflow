@@ -72,7 +72,7 @@ class EvidenceContractBuilder:
         """
         trace_id = f"evidence_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "EvidenceContractBuilder.build_contract"
+            trace_id, LayerSegment.L1_REASONING, "EvidenceContractBuilder.build_contract",
         )
 
         # Build citations
@@ -105,7 +105,7 @@ class EvidenceContractBuilder:
 
         _emit_records_telemetry_event(
             "evidence_contract",
-            f"query_{query_id}_citations_{len(citations)}"
+            f"query_{query_id}_citations_{len(citations)}",
         )
 
         log.debug(f"Built evidence contract: {len(citations)} citations, score={support_score:.2f}")
@@ -143,7 +143,7 @@ class EvidenceContractBuilder:
         for i, citation in enumerate(citations, 1):
             packet_parts.append(
                 f"[{i}] Source: {citation.source} (ID: {citation.doc_id})\n"
-                f"Content: {citation.content_snippet}\n"
+                f"Content: {citation.content_snippet}\n",
             )
 
         return "\n".join(packet_parts)

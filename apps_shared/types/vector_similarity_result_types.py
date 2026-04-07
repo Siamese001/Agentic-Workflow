@@ -62,7 +62,7 @@ class EnhancedSemanticCache:
 
     # guardian: allow-magic-config
     def get(
-        self, query: str, query_embedding: list[float] | None = None, top_k: int = 5
+        self, query: str, query_embedding: list[float] | None = None, top_k: int = 5,
     ) -> list[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
@@ -180,7 +180,7 @@ class EnhancedSemanticCache:
 
     # guardian: allow-magic-config
     def generate_fingerprint(
-        self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None
+        self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None,
     ) -> str:
         """Generate fingerprint for cache lookup.
 
@@ -286,4 +286,7 @@ class EnhancedSemanticCache:
 
 import math
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)

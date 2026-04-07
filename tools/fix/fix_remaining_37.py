@@ -76,7 +76,7 @@ if "class RGFlowRouter" not in c and "from __future__ import annotations" not in
     # Add a stub class before it's used
     c = c.replace(
         "class EnhancedRGFlowRouter(RGFlowRouter):",
-        "class RGFlowRouter:\n    \"\"\"Stub base class.\"\"\"\n    def __init__(self, config=None): self.config = config or {}\n\n\nclass EnhancedRGFlowRouter(RGFlowRouter):"
+        "class RGFlowRouter:\n    \"\"\"Stub base class.\"\"\"\n    def __init__(self, config=None): self.config = config or {}\n\n\nclass EnhancedRGFlowRouter(RGFlowRouter):",
     )
     write(rel, c)
     fixed += 1
@@ -115,7 +115,7 @@ if "Provider" in c and "class Provider" not in c and "import Provider" not in c:
     if "class RoutingTier" in c:
         c = c.replace(
             "class RoutingTier",
-            "class Provider(Enum):\n    \"\"\"LLM provider.\"\"\"\n    OPENAI = \"openai\"\n    ANTHROPIC = \"anthropic\"\n    GOOGLE = \"google\"\n    LOCAL = \"local\"\n\n\nclass RoutingTier"
+            "class Provider(Enum):\n    \"\"\"LLM provider.\"\"\"\n    OPENAI = \"openai\"\n    ANTHROPIC = \"anthropic\"\n    GOOGLE = \"google\"\n    LOCAL = \"local\"\n\n\nclass RoutingTier",
         )
         write(rel, c)
         fixed += 1
@@ -155,7 +155,7 @@ if "RateLimitMixin" in c and "class RateLimitMixin" not in c and "import RateLim
     # Need stub for base class
     c = c.replace(
         "class PilotOrchestrator(",
-        "class RateLimitMixin:\n    \"\"\"Rate limiting mixin stub.\"\"\"\n    pass\n\nclass StateValidationMixin:\n    \"\"\"State validation mixin stub.\"\"\"\n    pass\n\nclass event_emission_mixin:\n    \"\"\"Event emission mixin stub.\"\"\"\n    pass\n\nclass ContextPropagationMixin:\n    \"\"\"Context propagation mixin stub.\"\"\"\n    pass\n\nclass PilotOrchestrator("
+        "class RateLimitMixin:\n    \"\"\"Rate limiting mixin stub.\"\"\"\n    pass\n\nclass StateValidationMixin:\n    \"\"\"State validation mixin stub.\"\"\"\n    pass\n\nclass event_emission_mixin:\n    \"\"\"Event emission mixin stub.\"\"\"\n    pass\n\nclass ContextPropagationMixin:\n    \"\"\"Context propagation mixin stub.\"\"\"\n    pass\n\nclass PilotOrchestrator(",
     )
     write(rel, c)
     fixed += 1

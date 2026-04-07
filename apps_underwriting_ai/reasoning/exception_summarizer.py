@@ -1,10 +1,10 @@
 """
 Exception Summarizer - Summarizes policy exceptions and escalations.
 """
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
-from ..types import RiskFeatures, UnderwritingRequest, DecisionState
+from ..types import DecisionState, RiskFeatures, UnderwritingRequest
 
 
 @dataclass
@@ -33,7 +33,7 @@ class ExceptionSummarizer:
         features: RiskFeatures,
         request: UnderwritingRequest,
         decision: DecisionState,
-        validator_results: Optional[Dict[str, Any]] = None
+        validator_results: Optional[Dict[str, Any]] = None,
     ) -> ExceptionSummary:
         """
         Generate exception and escalation summary.
@@ -70,7 +70,7 @@ class ExceptionSummarizer:
     def _build_exception_details(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[Dict[str, Any]]:
         """Build detailed exception list."""
         details = []
@@ -83,7 +83,7 @@ class ExceptionSummarizer:
                 "type": "dscr_below_minimum",
                 "description": f"DSCR of {metrics.dscr_ttm:.2f}x below policy minimum of {policy.min_dscr:.2f}x",
                 "severity": "moderate" if metrics.dscr_ttm >= 1.0 else "high",
-                "mitigants": ["strong_collateral", "guarantor_strength"] if features.collateral.collateral_quality_score >= 0.6 else []
+                "mitigants": ["strong_collateral", "guarantor_strength"] if features.collateral.collateral_quality_score >= 0.6 else [],
             })
 
         # Check leverage exception
@@ -92,7 +92,7 @@ class ExceptionSummarizer:
                 "type": "leverage_above_maximum",
                 "description": f"Debt/EBITDA of {metrics.debt_to_ebitda_ttm:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x",
                 "severity": "moderate" if metrics.debt_to_ebitda_ttm < 4.0 else "high",
-                "mitigants": []
+                "mitigants": [],
             })
 
         # Check FICO exception
@@ -101,7 +101,7 @@ class ExceptionSummarizer:
                 "type": "fico_below_minimum",
                 "description": f"FICO of {features.credit.personal_fico_min} below policy minimum of {policy.min_fico}",
                 "severity": "moderate",
-                "mitigants": ["strong_business_cash_flow"] if features.capacity.dscr_ttm and features.capacity.dscr_ttm >= 2.0 else []
+                "mitigants": ["strong_business_cash_flow"] if features.capacity.dscr_ttm and features.capacity.dscr_ttm >= 2.0 else [],
             })
 
         # Check industry restriction
@@ -112,7 +112,7 @@ class ExceptionSummarizer:
                         "type": "restricted_industry",
                         "description": f"Industry code {request.borrower.industry_code} matches restricted category {restricted}",
                         "severity": "high",
-                        "mitigants": []
+                        "mitigants": [],
                     })
 
         return details
@@ -121,7 +121,7 @@ class ExceptionSummarizer:
         self,
         features: RiskFeatures,
         request: UnderwritingRequest,
-        decision: DecisionState
+        decision: DecisionState,
     ) -> List[str]:
         """Identify reasons for human escalation."""
         reasons = []
@@ -161,7 +161,7 @@ class ExceptionSummarizer:
         self,
         features: RiskFeatures,
         request: UnderwritingRequest,
-        decision: DecisionState
+        decision: DecisionState,
     ) -> Optional[str]:
         """Recommend approval authority level."""
         # Determine based on amount and risk

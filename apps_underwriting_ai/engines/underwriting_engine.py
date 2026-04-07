@@ -1,34 +1,34 @@
 """
 Underwriting Engine - Main orchestrator for the underwriting workflow.
 """
-from typing import Optional, List, Dict, Any
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from ..types import (
-    UnderwritingRequest,
-    RiskFeatures,
-    DecisionMemo,
-    DecisionPacket,
-    AuditTrace,
-    DecisionState,
-)
+from ..engines.decision_packet_assembler import AssemblerInput, DecisionPacketAssembler
 from ..engines.document_reconciliation_engine import DocumentReconciliationEngine, ReconciliationResult
+from ..engines.evidence_register_engine import EvidenceRegister, EvidenceRegisterEngine
 from ..engines.feature_derivation_engine import FeatureDerivationEngine
-from ..engines.evidence_register_engine import EvidenceRegisterEngine, EvidenceRegister
-from ..engines.decision_packet_assembler import DecisionPacketAssembler, AssemblerInput
-from ..reasoning.risk_hypothesis_builder import RiskHypothesisBuilder, RiskHypothesis
-from ..reasoning.feature_interpreter import FeatureInterpreter
 from ..reasoning.condition_recommender import ConditionRecommender
+from ..reasoning.counter_offer_recommender import CounterOfferRecommender
 from ..reasoning.covenant_recommender import CovenantRecommender
 from ..reasoning.exception_summarizer import ExceptionSummarizer
-from ..reasoning.counter_offer_recommender import CounterOfferRecommender
+from ..reasoning.feature_interpreter import FeatureInterpreter
 from ..reasoning.human_escalation_selector import HumanEscalationSelector
-from ..validators.compliance_validator import ComplianceValidator
-from ..validators.forbidden_feature_checker import ForbiddenFeatureChecker
-from ..validators.document_completeness_validator import DocumentCompletenessValidator
+from ..reasoning.risk_hypothesis_builder import RiskHypothesis, RiskHypothesisBuilder
+from ..types import (
+    AuditTrace,
+    DecisionMemo,
+    DecisionPacket,
+    DecisionState,
+    RiskFeatures,
+    UnderwritingRequest,
+)
 from ..validators.authority_limit_validator import AuthorityLimitValidator
+from ..validators.compliance_validator import ComplianceValidator
 from ..validators.contradiction_validator import ContradictionValidator
+from ..validators.document_completeness_validator import DocumentCompletenessValidator
+from ..validators.forbidden_feature_checker import ForbiddenFeatureChecker
 from ..validators.stale_data_validator import StaleDataValidator
 
 
@@ -129,24 +129,24 @@ class UnderwritingEngine:
 
             # Step 8: Determine if escalation needed
             should_escalate, escalation_reasons = self.escalation_selector.should_escalate(
-                features, request, validator_results
+                features, request, validator_results,
             )
 
             # Step 9: Determine recommendation
             decision, confidence, conditions, covenants, missing_info = self._determine_decision(
-                request, features, hypothesis, validator_results, should_escalate, escalation_reasons
+                request, features, hypothesis, validator_results, should_escalate, escalation_reasons,
             )
 
             # Step 10: Build exception summary
             exception_summary = self.exception_summarizer.summarize(
-                features, request, decision, validator_results
+                features, request, decision, validator_results,
             )
 
             # Step 11: Check for counter-offer
             counter_offer = None
             if decision == "COUNTER_OFFER":
                 counter_offer = self.counter_offer_recommender.recommend_counter_offer(
-                    features, request
+                    features, request,
                 )
 
             # Step 12: Assemble decision outputs
@@ -162,7 +162,7 @@ class UnderwritingEngine:
                 missing_info=missing_info,
                 evidence_register=evidence_register,
                 human_review_reason="; ".join(escalation_reasons) if should_escalate else None,
-                confidence_score=confidence
+                confidence_score=confidence,
             )
 
             memo, packet, trace = self.packet_assembler.assemble(assembler_input)
@@ -199,7 +199,7 @@ class UnderwritingEngine:
         self,
         register: EvidenceRegister,
         request: UnderwritingRequest,
-        features: RiskFeatures
+        features: RiskFeatures,
     ) -> None:
         """Collect evidence from all sources."""
         self.evidence_engine.collect_financial_evidence(register, request)
@@ -207,14 +207,14 @@ class UnderwritingEngine:
         self.evidence_engine.collect_collateral_evidence(register, request)
         self.evidence_engine.collect_relationship_evidence(register, request)
         self.evidence_engine.collect_policy_evidence(
-            register, request, features.policy.policy_exception_count
+            register, request, features.policy.policy_exception_count,
         )
 
     def _run_validators(
         self,
         request: UnderwritingRequest,
         features: RiskFeatures,
-        reconciliation: ReconciliationResult
+        reconciliation: ReconciliationResult,
     ) -> Dict[str, Any]:
         """Run all validators and return results."""
         results = {}
@@ -246,7 +246,7 @@ class UnderwritingEngine:
         hypothesis: RiskHypothesis,
         validator_results: Dict[str, Any],
         should_escalate: bool,
-        escalation_reasons: List[str]
+        escalation_reasons: List[str],
     ):
         """Determine final decision and associated terms."""
 

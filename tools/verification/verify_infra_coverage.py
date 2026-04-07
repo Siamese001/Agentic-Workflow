@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Verify infrastructure coverage in new ADG."""
-import sqlite3
 import glob
 import os
+import sqlite3
 
 # Find latest ADG
 adg_dir = 'artifacts/adg'
@@ -47,14 +47,14 @@ cursor.execute("""
 """)
 modules = cursor.fetchall()
 
-print(f"\n=== Infrastructure Coverage ===")
+print("\n=== Infrastructure Coverage ===")
 print(f"Modules: {module_count}")
 print(f"Symbols: {symbol_count}")
-print(f"\nLayer assignment:")
+print("\nLayer assignment:")
 for layer, count in layer_info:
     print(f"  {layer}: {count}")
 
-print(f"\nModules found:")
+print("\nModules found:")
 for m in modules:
     print(f"  - {m[0]}")
 

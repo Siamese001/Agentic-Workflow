@@ -106,7 +106,7 @@ class PlanTokenValidator:
                 # Compare estimated vs actual
                 if abs(actual_tokens - total_tokens) > actual_tokens * 0.2:  # 20% tolerance
                     result["warnings"].append(
-                        f"Token estimate mismatch: declared {total_tokens:,} vs actual {actual_tokens:,}"
+                        f"Token estimate mismatch: declared {total_tokens:,} vs actual {actual_tokens:,}",
                     )
 
         result["valid"] = len(result["issues"]) == 0
@@ -181,7 +181,7 @@ class PlanTokenValidator:
                     source_type="plan_document",
                     content=content,
                     metadata={"type": "markdown"},
-                )
+                ),
             ]
 
             # Use estimator's internal methods to count tokens

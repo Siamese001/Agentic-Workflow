@@ -156,7 +156,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -280,7 +279,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             from apps_shared.utils.TitaniumRAGPipeline import TitaniumRAGPipeline
 
             self.titanium_pipeline = TitaniumRAGPipeline(
-                enable_compression=True, enable_decomposition=True, enable_reranking=True, enable_caching=True
+                enable_compression=True, enable_decomposition=True, enable_reranking=True, enable_caching=True,
             )
             print("   [OK] Titanium RAG Pipeline integrated")
         # guardian: allow-silent-swallow - optional dependency
@@ -321,7 +320,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                     "faithfulness_threshold": self.faithfulness_threshold,
                     "max_hops": self.max_hops,
                     "base_top_k": self.base_top_k,
-                }
+                },
             ),
         )
 
@@ -340,7 +339,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignRAGOrchestrator.red_team_critique"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignRAGOrchestrator.red_team_critique",
         )
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 
@@ -376,7 +375,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                 return (vector_results, sparse_results)
 
             result = await self.titanium_pipeline.query(
-                query.query, retrieval_function=retrieval_func, top_k_final=query.top_k
+                query.query, retrieval_function=retrieval_func, top_k_final=query.top_k,
             )
             documents = [
                 RagDocument(
@@ -398,7 +397,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             )
         else:
             legacy_result = await self.sovereign_retrieve(
-                query.query, top_k=query.top_k, filters=query.filters, mission_context=query.mission_context
+                query.query, top_k=query.top_k, filters=query.filters, mission_context=query.mission_context,
             )
             documents = [
                 RagDocument(
@@ -504,13 +503,13 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         avg_faithfulness: Any = sum(faithfulness_scores) / len(faithfulness_scores)
         if avg_faithfulness > 0.94:
             self.faithfulness_threshold = min(
-                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate
+                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Raising threshold to {self.faithfulness_threshold:.3f}")
         elif avg_faithfulness < 0.85:
             self.faithfulness_threshold = max(
-                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate
+                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Lowering threshold to {self.faithfulness_threshold:.3f}")
@@ -684,7 +683,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         if _call_path is None:
             _call_path = set()
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
         )
         agent_name = "SovereignRagOrchestrator"
         if agent_name in _call_path:

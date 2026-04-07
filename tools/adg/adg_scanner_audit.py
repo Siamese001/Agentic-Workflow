@@ -57,10 +57,10 @@ def audit_synthetic_edges(conn):
         # Count edges with line_no=1 AND symbol matching (P1608 signature)
         cnt_synthetic = cur.execute(
             "SELECT COUNT(*) FROM edges WHERE relation_type=? AND line_no=1 AND symbol=?",
-            (rt, rt)
+            (rt, rt),
         ).fetchone()[0]
         cnt_all = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type=?", (rt,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type=?", (rt,),
         ).fetchone()[0]
         p1608_counts[rt] = (cnt_synthetic, cnt_all)
         p1608_total += cnt_synthetic
@@ -140,7 +140,7 @@ def audit_determinism_digest(conn):
         cnt_total = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
         for field in present:
             cnt_populated = cur.execute(
-                f"SELECT COUNT(*) FROM edges WHERE {field} IS NOT NULL AND CAST({field} AS TEXT) != '' AND CAST({field} AS TEXT) != '0'"
+                f"SELECT COUNT(*) FROM edges WHERE {field} IS NOT NULL AND CAST({field} AS TEXT) != '' AND CAST({field} AS TEXT) != '0'",
             ).fetchone()[0]
             print(f"  {field}: {cnt_populated:,} / {cnt_total:,} populated ({cnt_populated/cnt_total*100:.1f}%)")
 
@@ -158,7 +158,7 @@ def audit_determinism_digest(conn):
     # Compute two digests: structural-only vs full
     # Sample 1000 edges
     sample = cur.execute(
-        "SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges LIMIT 1000"
+        "SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges LIMIT 1000",
     ).fetchall()
 
     structural_hash = hashlib.sha256()
@@ -270,7 +270,7 @@ def audit_symbol_consistency(conn):
     fragmented = cur.fetchall()
 
     total_locations = cur.execute(
-        "SELECT COUNT(DISTINCT source_file || ':' || line_no) FROM edges WHERE line_no > 1"
+        "SELECT COUNT(DISTINCT source_file || ':' || line_no) FROM edges WHERE line_no > 1",
     ).fetchone()[0]
     fragmented_count = len(fragmented)
 
@@ -450,7 +450,7 @@ def audit_self_instrumentation(conn):
 
     for sf in scanner_files:
         total_from_scanner = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE source_file=?", (sf,)
+            "SELECT COUNT(*) FROM edges WHERE source_file=?", (sf,),
         ).fetchone()[0]
 
         print(f"\n  Edges from {sf}: {total_from_scanner:,}")
@@ -489,7 +489,7 @@ def audit_self_instrumentation(conn):
     # Check lifecycle_trace_contract too — it bootstraps itself
     ltc_file = 'agentic_core/runtime/lifecycle_trace_contract.py'
     ltc_edges = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE source_file=?", (ltc_file,)
+        "SELECT COUNT(*) FROM edges WHERE source_file=?", (ltc_file,),
     ).fetchone()[0]
     print(f"\n  Edges from {ltc_file}: {ltc_edges:,}")
 
@@ -513,7 +513,7 @@ def audit_self_instrumentation(conn):
         'self_generated_edge_ratio': self_ratio,
         'total_self_emit_edges': total_self,
         'scanner_total_edges': cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE source_file='agentic_core/adg/extraction/static_scanner.py'"
+            "SELECT COUNT(*) FROM edges WHERE source_file='agentic_core/adg/extraction/static_scanner.py'",
         ).fetchone()[0],
     }
 
@@ -601,7 +601,7 @@ def audit_semantic_classification(conn):
 
         # Check: what % have real line numbers?
         real = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type=? AND line_no > 1", (st,)
+            "SELECT COUNT(*) FROM edges WHERE relation_type=? AND line_no > 1", (st,),
         ).fetchone()[0]
         total = max(cnt, 1)
         print(f"    Real line locations: {real}/{cnt} ({real/total*100:.1f}%)")

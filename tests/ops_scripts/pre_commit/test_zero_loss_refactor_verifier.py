@@ -201,7 +201,7 @@ def test_generate_cleanup_commands():
     """Test generation of cleanup commands."""
     neutered_files = [
         Path("test/file1.py"),
-        Path("test/file2.py")
+        Path("test/file2.py"),
     ]
 
     commands = generate_cleanup_commands(neutered_files)

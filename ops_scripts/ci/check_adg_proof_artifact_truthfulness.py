@@ -41,7 +41,7 @@ def check_artifact(path: Path) -> list[str]:
             if flags[raw_flag] != expected:
                 violations.append(
                     f"{path}: flags.{raw_flag}={flags[raw_flag]} "
-                    f"but raw_counts.{key}={count} (expected {expected})"
+                    f"but raw_counts.{key}={count} (expected {expected})",
                 )
 
     # Rule 2 & 3: *_derived flags that are true need deriving_command + output_lines > 0
@@ -53,12 +53,12 @@ def check_artifact(path: Path) -> list[str]:
         deriving_cmd = derived_facts.get("deriving_command", "")
         if not deriving_cmd:
             violations.append(
-                f"{path}: flags.{flag_key}=true but derived_facts.deriving_command is absent or empty"
+                f"{path}: flags.{flag_key}=true but derived_facts.deriving_command is absent or empty",
             )
         output_lines = derived_facts.get("deriving_command_output_lines", 0)
         if not isinstance(output_lines, int) or output_lines <= 0:
             violations.append(
-                f"{path}: flags.{flag_key}=true but derived_facts.deriving_command_output_lines={output_lines!r} (must be > 0)"
+                f"{path}: flags.{flag_key}=true but derived_facts.deriving_command_output_lines={output_lines!r} (must be > 0)",
             )
 
     return violations

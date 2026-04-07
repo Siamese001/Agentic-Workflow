@@ -1,18 +1,18 @@
 """
 Intake Router - Routes incoming underwriting requests to appropriate ingestion pipeline.
 """
-from typing import Dict, Any, Optional, Union
-from dataclasses import dataclass, field
-from pathlib import Path
-import json
 import hashlib
+import json
+from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 
 from ..types import UnderwritingRequest
-from .json_mapper import JSONMapper
 from .csv_mapper import CSVMapper
-from .xlsx_mapper import XLSXMapper
 from .document_ingestion import DocumentIngestion
+from .json_mapper import JSONMapper
+from .xlsx_mapper import XLSXMapper
 
 
 @dataclass
@@ -46,7 +46,7 @@ class IntakeRouter:
         self,
         data: Union[str, Dict[str, Any], Path],
         request_id: Optional[str] = None,
-        strict_mode: bool = False
+        strict_mode: bool = False,
     ) -> IngestionResult:
         """
         Ingest from JSON string, dict, or file path.
@@ -79,7 +79,7 @@ class IntakeRouter:
                 # Dict
                 raw_data = data
                 provenance["source_hash"] = hashlib.sha256(
-                    json.dumps(data, sort_keys=True).encode()
+                    json.dumps(data, sort_keys=True).encode(),
                 ).hexdigest()[:16]
 
             # Generate request_id if not provided
@@ -90,7 +90,7 @@ class IntakeRouter:
             result = self.json_mapper.map_to_request(
                 raw_data,
                 request_id=request_id,
-                strict_mode=strict_mode
+                strict_mode=strict_mode,
             )
 
             if result.errors:
@@ -98,34 +98,34 @@ class IntakeRouter:
                     success=False,
                     warnings=result.warnings,
                     errors=result.errors,
-                    provenance=provenance
+                    provenance=provenance,
                 )
 
             return IngestionResult(
                 success=True,
                 request=result.request,
                 warnings=result.warnings,
-                provenance=provenance
+                provenance=provenance,
             )
 
         except json.JSONDecodeError as e:
             return IngestionResult(
                 success=False,
                 errors=[f"JSON parse error: {str(e)}"],
-                provenance=provenance
+                provenance=provenance,
             )
         except Exception as e:
             return IngestionResult(
                 success=False,
                 errors=[f"Ingestion error: {str(e)}"],
-                provenance=provenance
+                provenance=provenance,
             )
 
     def ingest_csv(
         self,
         data: Union[str, Path],
         mapping_config: Optional[Dict[str, str]] = None,
-        request_id: Optional[str] = None
+        request_id: Optional[str] = None,
     ) -> IngestionResult:
         """
         Ingest from CSV file or string.
@@ -144,35 +144,35 @@ class IntakeRouter:
             result = self.csv_mapper.map_to_request(
                 data,
                 mapping_config=mapping_config,
-                request_id=request_id
+                request_id=request_id,
             )
 
             if result.errors:
                 return IngestionResult(
                     success=False,
                     errors=result.errors,
-                    provenance=provenance
+                    provenance=provenance,
                 )
 
             return IngestionResult(
                 success=True,
                 request=result.request,
                 warnings=result.warnings,
-                provenance=provenance
+                provenance=provenance,
             )
 
         except Exception as e:
             return IngestionResult(
                 success=False,
                 errors=[f"CSV ingestion error: {str(e)}"],
-                provenance=provenance
+                provenance=provenance,
             )
 
     def ingest_xlsx(
         self,
         file_path: Path,
         template_type: str = "standard",
-        request_id: Optional[str] = None
+        request_id: Optional[str] = None,
     ) -> IngestionResult:
         """
         Ingest from XLSX underwriting template.
@@ -191,34 +191,34 @@ class IntakeRouter:
             result = self.xlsx_mapper.map_to_request(
                 file_path,
                 template_type=template_type,
-                request_id=request_id
+                request_id=request_id,
             )
 
             if result.errors:
                 return IngestionResult(
                     success=False,
                     errors=result.errors,
-                    provenance=provenance
+                    provenance=provenance,
                 )
 
             return IngestionResult(
                 success=True,
                 request=result.request,
                 warnings=result.warnings,
-                provenance=provenance
+                provenance=provenance,
             )
 
         except Exception as e:
             return IngestionResult(
                 success=False,
                 errors=[f"XLSX ingestion error: {str(e)}"],
-                provenance=provenance
+                provenance=provenance,
             )
 
     def ingest_documents(
         self,
         doc_paths: list[Path],
-        doc_type_map: Optional[Dict[str, str]] = None
+        doc_type_map: Optional[Dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """
         Ingest a batch of supporting documents.

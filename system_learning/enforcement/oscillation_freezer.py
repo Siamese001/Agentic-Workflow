@@ -72,7 +72,7 @@ class OscillationDetector:
                 freeze_until = cycle + self._freeze_cycles
                 self._frozen_until[parameter] = freeze_until
                 raise ParameterFrozenError(
-                    f"OscillationDetector: parameter {parameter!r} oscillated twice within cooldown_window={self._cooldown_window}; frozen until cycle {freeze_until}"
+                    f"OscillationDetector: parameter {parameter!r} oscillated twice within cooldown_window={self._cooldown_window}; frozen until cycle {freeze_until}",
                 )
 
     def is_frozen(self, parameter: str, cycle: int) -> bool:
@@ -95,7 +95,7 @@ class OscillationDetector:
         freeze_until = self._frozen_until.get(parameter, -1)
         if cycle <= freeze_until:
             raise ParameterFrozenError(
-                f"OscillationDetector: parameter {parameter!r} is frozen until cycle {freeze_until} (current cycle={cycle})"
+                f"OscillationDetector: parameter {parameter!r} is frozen until cycle {freeze_until} (current cycle={cycle})",
             )
 
     def _append_event(self, parameter: str, value: Any, cycle: int) -> None:

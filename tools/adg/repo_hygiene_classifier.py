@@ -39,7 +39,7 @@ class RepoHygieneClassifier:
             "archive_candidate": "Dead-end scripts that should be archived",
             "legitimate": "Properly located and named scripts",
             "config": "Configuration files",
-            "documentation": "Documentation files"
+            "documentation": "Documentation files",
         }
 
     def classify_file(self, file_path: Path) -> dict[str, Any]:
@@ -97,7 +97,7 @@ class RepoHygieneClassifier:
             "reasoning": reasoning,
             "size_bytes": file_size,
             "modified_time": modified_time,
-            "category_description": self.categories.get(classification, "Unknown category")
+            "category_description": self.categories.get(classification, "Unknown category"),
         }
 
     def scan_repository(self) -> list[dict[str, Any]]:
@@ -148,7 +148,7 @@ class RepoHygieneClassifier:
             "repository_root": str(self.repo_root),
             "summary_stats": self.generate_summary_stats(),
             "categories": self.categories,
-            "files": self.manifest
+            "files": self.manifest,
         }
 
         with open(output_file, 'w', encoding='utf-8') as f:

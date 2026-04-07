@@ -2,49 +2,7 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    # noqa: E402,
-    # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
     _emit_signs_execution_trace,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,
-    # noqa: E402
-    emit_replay_key,
 )
 
 '\nArchivalGatekeeper - Centralized Service for Destructive File Operations\n\nThis module provides a singleton service that handles ALL destructive file operations\n(move, delete, archive) across the entire codebase. This prevents "God Object" creation\nby centralizing file operation logic while keeping agents focused on their domain.\n\nDESIGN PRINCIPLES:\n1. Singleton/Static Service - Single point of control for all file operations\n2. Safe Deletion - \'delete\' actually moves to timestamped archive (soft delete)\n3. Audit Logging - Every operation is logged with full context\n4. No Hard Deletes - Hard delete is banned; all removals go to archive\n\nUSAGE:\n\n    gatekeeper = ArchivalGatekeeper.get_instance(project_root)\n    result = gatekeeper.safe_move(src, dst, "MyAgent", "Relocating to correct territory")\n    result = gatekeeper.safe_archive(src, "MyAgent", "File violates depth rules")\n    result = gatekeeper.safe_delete(src, "MyAgent", "Duplicate file removal")\n\nTerritory: agentic_core/L5_safety/enforcement/\n'
@@ -67,43 +25,9 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
     _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -263,7 +187,7 @@ class ArchivalGatekeeper:
                 Logger.error(f"[ArchivalGatekeeper] Failed to write audit log: {e}")
             status = "SUCCESS" if result.success else "FAILED"
             Logger.info(
-                f"[ArchivalGatekeeper] [{status}] {result.operation.value}: {result.source_path} -> {result.destination_path} (requester: {result.requester_agent}, reason: {result.reason})"
+                f"[ArchivalGatekeeper] [{status}] {result.operation.value}: {result.source_path} -> {result.destination_path} (requester: {result.requester_agent}, reason: {result.reason})",
             )
 
     def _validate_path(self, path: Path, operation: str, allow_archive: bool = False) -> str | None:
@@ -323,13 +247,13 @@ class ArchivalGatekeeper:
         if os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, "").strip() == "1":
             result.approval_status = f"BATCH_APPROVED:{ARCHIVE_BATCH_ACCEPT_ENV}"
             Logger.info(
-                f"[ArchivalGatekeeper] BATCH_APPROVED via {ARCHIVE_BATCH_ACCEPT_ENV}: {result.operation.value} {result.source_path}"
+                f"[ArchivalGatekeeper] BATCH_APPROVED via {ARCHIVE_BATCH_ACCEPT_ENV}: {result.operation.value} {result.source_path}",
             )
             return True
         if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
             result.approval_status = "BATCH_APPROVED:SOVEREIGN_AUTO_APPROVE"
             Logger.info(
-                f"[ArchivalGatekeeper] BATCH_APPROVED via SOVEREIGN_AUTO_APPROVE: {result.operation.value} {result.source_path}"
+                f"[ArchivalGatekeeper] BATCH_APPROVED via SOVEREIGN_AUTO_APPROVE: {result.operation.value} {result.source_path}",
             )
             return True
         if not self._require_approval:
@@ -351,18 +275,18 @@ class ArchivalGatekeeper:
             if approved:
                 result.approval_status = "APPROVED"
                 Logger.info(
-                    f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}"
+                    f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}",
                 )    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             else:
                 result.approval_status = "DENIED"
                 Logger.info(
-                    f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}"
+                    f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}",
                 )
             return approved
         except (EOFError, KeyboardInterrupt):    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             result.approval_status = "DENIED"
             Logger.warning(
-                f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}"
+                f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}",
             )
             return False
 
@@ -530,7 +454,7 @@ class ArchivalGatekeeper:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ArchivalGatekeeper.safe_archive:{Path(source).name}"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ArchivalGatekeeper.safe_archive:{Path(source).name}",
         )
         source = Path(source).resolve()
         error = self._validate_path(source, "archive")
@@ -701,7 +625,7 @@ class ArchivalGatekeeper:
         return self._operation_count
 
     def restore_from_archive(
-        self, archived_path: str | Path, requester_agent: str, reason: str
+        self, archived_path: str | Path, requester_agent: str, reason: str,
     ) -> ArchivalResult:
         """
         Restore a file from the archive to its original location.

@@ -3,7 +3,7 @@
 import sys
 
 sys.path.insert(
-    0, "tools"
+    0, "tools",
 )  # guardian: allow-global-mutation -- debug script requires tools/ on path before importing p0_microwave_wirer
 from p0_microwave_wirer import _find_import_end
 

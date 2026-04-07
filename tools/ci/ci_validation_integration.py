@@ -13,7 +13,7 @@ def run_validation():
     try:
         # Run validation runner
         result = subprocess.run([
-            sys.executable, "tools/validation_runner.py"
+            sys.executable, "tools/validation_runner.py",
         ], capture_output=True, text=True, cwd=Path.cwd())
 
         # Output results in CI-friendly format

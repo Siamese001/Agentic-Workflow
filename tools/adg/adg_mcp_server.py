@@ -299,7 +299,7 @@ def adg_meta() -> dict[str, Any]:
                 **meta,
                 "node_count": int(meta.get("node_count", 0)),
                 "edge_count": int(meta.get("edge_count", 0)),
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -372,7 +372,7 @@ def adg_nodes_by_layer(layer: str, offset: int = 0, limit: int = 100) -> dict[st
                 "returned": len(page),
                 "has_more": (offset + limit) < total,
                 "node_ids": page,
-            }
+            },
         )
     except _redis_lib.ResponseError as exc:
         return _err(_wrongtype_hint(f"adg:nodes:by_layer:{layer}", "?") + f" ({exc})")
@@ -448,7 +448,7 @@ def adg_edge_fanout(
                     "target_count": len(targets),
                     "targets": sorted(targets),
                     "edges": edges,
-                }
+                },
             )
         return _ok(
             {
@@ -457,7 +457,7 @@ def adg_edge_fanout(
                 "total_edge_count": total,
                 "returned": len(page),
                 "edge_ids": page,
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -511,7 +511,7 @@ def adg_edge_fanin(
                     "source_count": len(sources),
                     "sources": sorted(sources),
                     "edges": edges,
-                }
+                },
             )
         return _ok(
             {
@@ -520,7 +520,7 @@ def adg_edge_fanin(
                 "total_edge_count": total,
                 "returned": len(page),
                 "edge_ids": page,
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -598,7 +598,7 @@ def adg_violations(
                 "limit": limit,
                 "count": len(violations),
                 "violations": violations,
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -661,7 +661,7 @@ def adg_module_context(module_id: str) -> dict[str, Any]:
                 "edge_counts": context.get("edge_counts", {}),
                 "neighbors": context.get("neighbors", {}),
                 "context_digest": context_digest or "",
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -768,7 +768,7 @@ def adg_assert_fresh() -> dict[str, Any]:
                     if is_fresh
                     else "STALE — run: python tools/adg/adg_redis_ingest.py --force"
                 ),
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(
@@ -855,7 +855,7 @@ def redis_smembers(key: str, limit: int = 100) -> dict[str, Any]:
                 "returned": len(members),
                 "truncated": total > len(members),
                 "members": members,
-            }
+            },
         )
     except _redis_lib.ResponseError as exc:
         return _err(f"SET read failed on '{key}': {exc}")
@@ -883,7 +883,7 @@ def redis_lrange(key: str, start: int = 0, stop: int = -1) -> dict[str, Any]:
                 "stop": stop,
                 "returned": len(items),
                 "items": items,
-            }
+            },
         )
     except _redis_lib.ResponseError as exc:
         key_type = _redis().type(key)
@@ -913,7 +913,7 @@ def redis_type(key: str) -> dict[str, Any]:
                 "key": key,
                 "type": key_type,
                 "read_with": tool_map.get(key_type, f"unsupported: {key_type}"),
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -935,7 +935,7 @@ def redis_ttl(key: str) -> dict[str, Any]:
                 "expires": ttl > 0,
                 "persistent": ttl == -1,
                 "exists": ttl != -2,
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
@@ -982,7 +982,7 @@ def redis_scan(
                 "truncated": truncated,
                 "prefix_summary": dict(sorted(prefix_counts.items(), key=lambda x: -x[1])[:20]),
                 "keys": keys,
-            }
+            },
         )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")

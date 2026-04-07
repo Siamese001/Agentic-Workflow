@@ -19,8 +19,8 @@ rows = list(
         "WHERE n1.resolved_path LIKE 'tests/%' "
         "AND n2.resolved_path LIKE 'agentic_core/%' "
         "GROUP BY e.relation_type, e.edge_kind "
-        "ORDER BY cnt DESC"
-    )
+        "ORDER BY cnt DESC",
+    ),
 )
 print("Edge types from tests/ -> agentic_core/:")
 for r in rows:

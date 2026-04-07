@@ -18,7 +18,7 @@ def node_name(nid):
 
 # 1. ALL violates edges with full detail
 rows = conn.execute(
-    "SELECT src_id, dst_id, source_file, symbol, line_no FROM edges WHERE relation_type='violates'"
+    "SELECT src_id, dst_id, source_file, symbol, line_no FROM edges WHERE relation_type='violates'",
 ).fetchall()
 print(f"\n=== ALL VIOLATIONS count={len(rows)} ===")
 for r in rows:
@@ -33,7 +33,7 @@ for r in rows:
 
 # 2. execute_ssot dead imports
 execute_ssot_node = conn.execute(
-    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/execute_ssot.py'"
+    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/execute_ssot.py'",
 ).fetchone()
 if execute_ssot_node:
     eid = execute_ssot_node["id"]
@@ -56,7 +56,7 @@ if execute_ssot_node:
 
 # 4. _ssot_pipeline dead imports
 pipe_node = conn.execute(
-    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/_ssot_pipeline.py'"
+    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/_ssot_pipeline.py'",
 ).fetchone()
 if pipe_node:
     pid = pipe_node["id"]
@@ -70,7 +70,7 @@ if pipe_node:
 
 # 5. _ssot_validation_artifacts dead imports
 va_node = conn.execute(
-    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/_ssot_validation_artifacts.py'"
+    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/_ssot_validation_artifacts.py'",
 ).fetchone()
 if va_node:
     vid = va_node["id"]

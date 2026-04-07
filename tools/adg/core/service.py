@@ -60,7 +60,7 @@ class ADGService:
         self,
         redis_query: Callable[[], Any | None],
         sqlite_query: Callable[[], Any],
-        cache_set: Callable[[Any], None]
+        cache_set: Callable[[Any], None],
     ) -> tuple[Any, str]:
         """Generic read-through pattern."""
         # Try Redis first
@@ -145,11 +145,11 @@ class ADGService:
         """Fetch outgoing edges with read-through."""
         edges, backend = self._query_with_fallback(
             redis_query=lambda: self._redis.get_edge_fanout(
-                src_id, relation_type, self._adg_snapshot_id
+                src_id, relation_type, self._adg_snapshot_id,
             ),
             sqlite_query=lambda: self._sqlite.get_edge_fanout(src_id, relation_type, limit),
             cache_set=lambda e: self._redis.set_edge_fanout(
-                src_id, relation_type, e, self._adg_snapshot_id
+                src_id, relation_type, e, self._adg_snapshot_id,
             ),
         )
 
@@ -195,7 +195,7 @@ class ADGService:
                 "timestamp": status["timestamp"],
                 "node_count": status["node_count"],
                 "edge_count": status["edge_count"],
-            }
+            },
         )
 
     def get_violations(self, limit: int = 100) -> ADGResponse:

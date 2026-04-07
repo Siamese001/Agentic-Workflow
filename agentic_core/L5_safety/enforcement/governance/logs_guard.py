@@ -271,7 +271,7 @@ def scan_logs_and_outputs(root_path: Path) -> dict[str, Any]:
                     "file": str(relative_path),
                     "type": "disallowed_log_location",
                     "detail": f"Log/output file not in allowed location: {relative_path}",
-                }
+                },
             )
         sensitive_violations = scan_sensitive_content(item_path)
         for violation in sensitive_violations:

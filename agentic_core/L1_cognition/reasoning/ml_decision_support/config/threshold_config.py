@@ -96,7 +96,7 @@ class ThresholdConfig:
                     'max_value': t.max_value,
                     'rollout_percentage': t.rollout_percentage,
                     'is_active': t.is_active,
-                    'version': t.version
+                    'version': t.version,
                 }
                 for t in self.thresholds
             ],
@@ -106,10 +106,10 @@ class ThresholdConfig:
                     'threshold_value': rc.threshold_value,
                     'comparison_operator': rc.comparison_operator,
                     'grace_period_minutes': rc.grace_period_minutes,
-                    'is_active': rc.is_active
+                    'is_active': rc.is_active,
                 }
                 for rc in self.rollback_conditions
-            ]
+            ],
         }
 
         config_str = json.dumps(config_dict, sort_keys=True)
@@ -126,7 +126,7 @@ class ThresholdConfig:
         self,
         name: str,
         new_value: float,
-        rollout_percentage: float | None = None
+        rollout_percentage: float | None = None,
     ) -> bool:
         """Update threshold value and rollout."""
         threshold = self.get_threshold(name)
@@ -208,7 +208,7 @@ class ThresholdConfig:
                             is_active=t_data.get('is_active', False),
                             created_at=datetime.fromisoformat(t_data['created_at']),
                             created_by=t_data.get('created_by', ''),
-                            version=t_data.get('version', '1.0')
+                            version=t_data.get('version', '1.0'),
                         )
                         thresholds.append(threshold)
 
@@ -220,7 +220,7 @@ class ThresholdConfig:
                             threshold_value=rc_data['threshold_value'],
                             comparison_operator=rc_data['comparison_operator'],
                             grace_period_minutes=rc_data.get('grace_period_minutes', 5),
-                            is_active=rc_data.get('is_active', True)
+                            is_active=rc_data.get('is_active', True),
                         )
                         rollback_conditions.append(condition)
 
@@ -233,7 +233,7 @@ class ThresholdConfig:
                         thresholds=thresholds,
                         rollback_conditions=rollback_conditions,
                         created_at=datetime.fromisoformat(config_data['created_at']),
-                        created_by=config_data.get('created_by', '')
+                        created_by=config_data.get('created_by', ''),
                     )
 
                     self._configs[config_key] = config
@@ -264,7 +264,7 @@ class ThresholdConfig:
                         'created_at': t.created_at.isoformat(),
                         'created_by': t.created_by,
                         'version': t.version,
-                        'validation_rules': t.validation_rules
+                        'validation_rules': t.validation_rules,
                     }
                     for t in config.thresholds
                 ],
@@ -274,13 +274,13 @@ class ThresholdConfig:
                         'threshold_value': rc.threshold_value,
                         'comparison_operator': rc.comparison_operator,
                         'grace_period_minutes': rc.grace_period_minutes,
-                        'is_active': rc.is_active
+                        'is_active': rc.is_active,
                     }
                     for rc in config.rollback_conditions
                 ],
                 'created_at': config.created_at.isoformat(),
                 'created_by': config.created_by,
-                'config_digest': config.config_digest
+                'config_digest': config.config_digest,
             }
 
         with open(self.configs_file, 'w', encoding='utf-8') as f:
@@ -297,7 +297,7 @@ class ThresholdConfig:
         description: str,
         thresholds: list[ThresholdDefinition],
         rollback_conditions: list[RollbackCondition] | None = None,
-        created_by: str = ""
+        created_by: str = "",
     ) -> str:
         """
         Create a new threshold configuration.
@@ -333,7 +333,7 @@ class ThresholdConfig:
             description=description,
             thresholds=thresholds,
             rollback_conditions=rollback_conditions or [],
-            created_by=created_by
+            created_by=created_by,
         )
 
         self._configs[config_key] = config
@@ -344,7 +344,7 @@ class ThresholdConfig:
             'model_name': model_name,
             'model_version': model_version,
             'config_version': config_version,
-            'threshold_count': len(thresholds)
+            'threshold_count': len(thresholds),
         })
 
         return config_key
@@ -353,7 +353,7 @@ class ThresholdConfig:
         self,
         model_name: str,
         model_version: str,
-        config_version: str = "latest"
+        config_version: str = "latest",
     ) -> ThresholdConfig | None:
         """Get threshold configuration."""
         if config_version == "latest":
@@ -379,7 +379,7 @@ class ThresholdConfig:
         model_version: str,
         threshold_name: str,
         rollout_percentage: float,
-        updated_by: str = ""
+        updated_by: str = "",
     ) -> bool:
         """Update threshold rollout percentage."""
         config = self.get_config(model_name, model_version)
@@ -395,7 +395,7 @@ class ThresholdConfig:
                 f"{model_name}:{model_version}", {
                     'threshold_name': threshold_name,
                     'rollout_percentage': rollout_percentage,
-                    'updated_by': updated_by
+                    'updated_by': updated_by,
                 })
 
         return success
@@ -404,7 +404,7 @@ class ThresholdConfig:
         self,
         model_name: str,
         model_version: str,
-        metrics: dict[str, float]
+        metrics: dict[str, float],
     ) -> list[RollbackTrigger]:
         """
         Check if any rollback conditions are triggered.
@@ -436,7 +436,7 @@ class ThresholdConfig:
             triggered = self._evaluate_condition(
                 metric_value,
                 condition.threshold_value,
-                condition.comparison_operator
+                condition.comparison_operator,
             )
 
             if triggered:
@@ -448,7 +448,7 @@ class ThresholdConfig:
         self,
         actual_value: float,
         threshold_value: float,
-        operator: str
+        operator: str,
     ) -> bool:
         """Evaluate rollback condition."""
         if operator == ">":
@@ -471,7 +471,7 @@ class ThresholdConfig:
                 'event_type': event_type,
                 'config_key': config_key,
                 'timestamp': datetime.now().isoformat(),
-                'data': data
+                'data': data,
             }
 
             # Store in L4 canonical state
@@ -492,7 +492,7 @@ class ThresholdConfig:
                     description="Minimum confidence for prediction",
                     current_value=0.7,
                     min_value=0.0,
-                    max_value=1.0
+                    max_value=1.0,
                 ),
                 ThresholdDefinition(
                     name="escalation_threshold",
@@ -500,8 +500,8 @@ class ThresholdConfig:
                     description="Probability threshold for escalation",
                     current_value=0.9,
                     min_value=0.0,
-                    max_value=1.0
-                )
+                    max_value=1.0,
+                ),
             ],
             "lightgbm": [
                 ThresholdDefinition(
@@ -510,8 +510,8 @@ class ThresholdConfig:
                     description="Minimum score for positive prediction",
                     current_value=0.5,
                     min_value=0.0,
-                    max_value=1.0
-                )
+                    max_value=1.0,
+                ),
             ],
             "isolation_forest": [
                 ThresholdDefinition(
@@ -520,9 +520,9 @@ class ThresholdConfig:
                     description="Threshold for anomaly detection",
                     current_value=0.1,
                     min_value=0.0,
-                    max_value=1.0
-                )
-            ]
+                    max_value=1.0,
+                ),
+            ],
         }
 
         return defaults.get(model_type, [])

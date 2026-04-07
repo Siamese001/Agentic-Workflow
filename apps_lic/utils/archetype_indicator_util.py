@@ -33,7 +33,7 @@ class ProfileAnalysisConfig(BaseModel):
     default_confidence: float
     manual_override_threshold: float
     cxo_precedence_tokens: list[str] = Field(
-        default_factory=lambda: ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"]
+        default_factory=lambda: ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"],
     )
 
 
@@ -129,13 +129,13 @@ class AgentSpecs(BaseModel):
         indicators_data = pa_data.get("archetype_indicators", {})
         indicators = {
             key: ArchetypeIndicator(
-                keywords=value.get("keywords", []), confidence=value.get("confidence", 0.0)
+                keywords=value.get("keywords", []), confidence=value.get("confidence", 0.0),
             )
             for key, value in indicators_data.items()
         }
         pa_config = ProfileAnalysisConfig(
             cxo_precedence_tokens=pa_data.get(
-                "cxo_precedence_tokens", ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"]
+                "cxo_precedence_tokens", ["CEO", "CFO", "COO", "CTO", "CMO", "CIO", "CISO", "CPO", "CRO"],
             ),
             manual_override_threshold=pa_data.get("manual_override_threshold", 0.8),
             default_archetype=pa_data.get("default_archetype", "UNKNOWN"),

@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -291,7 +290,7 @@ def analyze_ast(file_path: str) -> dict[str, Any]:
                         "lineno": node.lineno,
                         "args": [arg.arg for arg in node.args.args],
                         "is_async": isinstance(node, ast.AsyncFunctionDef),
-                    }
+                    },
                 )
             elif isinstance(node, ast.ClassDef):
                 analysis["classes"].append(
@@ -299,13 +298,13 @@ def analyze_ast(file_path: str) -> dict[str, Any]:
                         "name": node.name,
                         "lineno": node.lineno,
                         "bases": [ast.unparse(base) for base in node.bases],
-                    }
+                    },
                 )
             elif isinstance(node, ast.Import | ast.ImportFrom):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         analysis["imports"].append(
-                            {"module": alias.name, "alias": alias.asname, "lineno": node.lineno}
+                            {"module": alias.name, "alias": alias.asname, "lineno": node.lineno},
                         )
                 else:
                     for alias in node.names:
@@ -314,7 +313,7 @@ def analyze_ast(file_path: str) -> dict[str, Any]:
                                 "module": f"{node.module}.{alias.name}" if node.module else alias.name,
                                 "alias": alias.asname,
                                 "lineno": node.lineno,
-                            }
+                            },
                         )
             elif isinstance(node, ast.Assign):
                 for target in node.targets:
@@ -376,7 +375,7 @@ def detect_security_issues(file_path: str) -> list[dict[str, Any]]:
                             "lineno": node.lineno,
                             "Severity": "high",
                             "message": "Use of eval() is dangerous and should be avoided",
-                        }
+                        },
                     )
                 elif isinstance(node.func, ast.Name) and node.func.id == "exec":
                     issues.append(
@@ -386,7 +385,7 @@ def detect_security_issues(file_path: str) -> list[dict[str, Any]]:
                             "lineno": node.lineno,
                             "Severity": "high",
                             "message": "Use of exec() is dangerous and should be avoided",
-                        }
+                        },
                     )
                 elif isinstance(node.func, ast.Attribute):
                     if node.func.attr in ["run", "call", "Popen"]:
@@ -400,7 +399,7 @@ def detect_security_issues(file_path: str) -> list[dict[str, Any]]:
                                             "lineno": node.lineno,
                                             "Severity": "high",
                                             "message": "subprocess with shell=True is vulnerable to injection",
-                                        }
+                                        },
                                     )
         return issues
     # guardian: allow-silent-swallow

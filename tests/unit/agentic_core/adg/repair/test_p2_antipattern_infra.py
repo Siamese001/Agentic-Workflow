@@ -16,7 +16,6 @@ from tools.adg.repair.rules.fix_p2_antipatterns import FixP2AntipatternsRule
 from tools.adg.repair.sqlite_analyzer import SQLiteAnalyzer
 from tools.adg.repair.types import Deficiency, FixCategory
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -51,7 +50,7 @@ def _make_test_db(rows: list[tuple]) -> Path:
             src_id INTEGER,
             dst_id INTEGER
         )
-        """
+        """,
     )
     conn.execute(
         """
@@ -63,7 +62,7 @@ def _make_test_db(rows: list[tuple]) -> Path:
             resolved_path TEXT,
             metadata TEXT
         )
-        """
+        """,
     )
     conn.execute(
         """
@@ -74,7 +73,7 @@ def _make_test_db(rows: list[tuple]) -> Path:
             symbol TEXT,
             line_no INTEGER
         )
-        """
+        """,
     )
     conn.execute(
         """
@@ -82,7 +81,7 @@ def _make_test_db(rows: list[tuple]) -> Path:
             key TEXT PRIMARY KEY,
             value TEXT
         )
-        """
+        """,
     )
     conn.executemany(
         "INSERT INTO edges (id, relation_type, edge_kind, source_file, line_no, symbol) VALUES (?, ?, ?, ?, ?, ?)",

@@ -76,7 +76,7 @@ class FailureHandler:
         """
         trace_id = f"retry_{hash(str(fn)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "FailureHandler.execute_with_retry"
+            trace_id, LayerSegment.L1_REASONING, "FailureHandler.execute_with_retry",
         )
 
         last_exception = None
@@ -118,7 +118,7 @@ class FailureHandler:
         # All retries exhausted
         _emit_records_telemetry_event(
             "retry_exhausted",
-            f"max_retries_{self.config.max_retries}"
+            f"max_retries_{self.config.max_retries}",
         )
 
         raise last_exception

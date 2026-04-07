@@ -210,7 +210,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             lines: Any = f.readlines()
         if ConfigurationService().line_num > len(lines):
             ConfigurationService().Logger.warning(
-                f"Line {ConfigurationService().line_num} not found in {ConfigurationService().filepath}"
+                f"Line {ConfigurationService().line_num} not found in {ConfigurationService().filepath}",
             )
             return False
         line: Any = lines[ConfigurationService().line_num - 1].rstrip()
@@ -300,7 +300,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         return True
     except Exception as e:
         ConfigurationService().Logger.error(
-            f"Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}"
+            f"Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}",
         )
         return False
 

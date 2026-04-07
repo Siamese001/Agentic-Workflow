@@ -1,10 +1,10 @@
 """
 Forbidden Feature Checker - Ensures prohibited attributes are not used.
 """
-from typing import List, Dict, Any, Set
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Set
 
-from ..types import UnderwritingRequest, RiskFeatures
+from ..types import RiskFeatures, UnderwritingRequest
 
 
 @dataclass
@@ -63,7 +63,7 @@ class ForbiddenFeatureChecker:
 
     def check_request(
         self,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> ForbiddenCheckResult:
         """
         Check request for forbidden features.
@@ -89,7 +89,7 @@ class ForbiddenFeatureChecker:
     def _check_borrower_profile(
         self,
         request: UnderwritingRequest,
-        result: ForbiddenCheckResult
+        result: ForbiddenCheckResult,
     ) -> None:
         """Check borrower profile for forbidden fields."""
         borrower = request.borrower
@@ -103,14 +103,14 @@ class ForbiddenFeatureChecker:
                     "type": "forbidden_field_present",
                     "field": f"borrower.{forbidden}",
                     "severity": "blocking",
-                    "message": f"Forbidden field '{forbidden}' present in borrower profile"
+                    "message": f"Forbidden field '{forbidden}' present in borrower profile",
                 })
                 result.blocked_fields.append(forbidden)
 
     def _check_proxy_indicators(
         self,
         request: UnderwritingRequest,
-        result: ForbiddenCheckResult
+        result: ForbiddenCheckResult,
     ) -> None:
         """Check for proxy indicators in text fields."""
         # Check industry description
@@ -124,13 +124,13 @@ class ForbiddenFeatureChecker:
                     "field": "borrower.industry_description",
                     "indicator": proxy,
                     "severity": "warning",
-                    "message": f"Potential demographic proxy '{proxy}' detected in industry description"
+                    "message": f"Potential demographic proxy '{proxy}' detected in industry description",
                 })
 
     def validate_feature_derivation(
         self,
         features: RiskFeatures,
-        rationale: str
+        rationale: str,
     ) -> ForbiddenCheckResult:
         """
         Validate that feature derivation rationale doesn't use forbidden logic.
@@ -156,7 +156,7 @@ class ForbiddenFeatureChecker:
                     "type": "forbidden_term_in_rationale",
                     "term": forbidden,
                     "severity": "blocking",
-                    "message": f"Forbidden term '{forbidden}' detected in rationale"
+                    "message": f"Forbidden term '{forbidden}' detected in rationale",
                 })
 
         result.passed = len(result.violations) == 0

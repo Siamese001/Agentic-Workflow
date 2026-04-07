@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -131,7 +130,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
 )
 
 _emit_emits_metric_event("write_set_enforcer", "p4obs", "metric_1")
@@ -215,7 +213,7 @@ class WriteSetEnforcer:
         if key not in self.declared_write_set:
             self._aborted = True
             raise WriteSetViolation(
-                f"Undeclared write to '{key}'. Declared set: {sorted(self.declared_write_set)}"
+                f"Undeclared write to '{key}'. Declared set: {sorted(self.declared_write_set)}",
             )
         self._actual_writes.add(key)
 

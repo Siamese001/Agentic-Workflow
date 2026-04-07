@@ -34,7 +34,7 @@ class PreExecutionValidator:
             return {
                 'should_execute': True,
                 'reason': 'forced_execution',
-                'details': 'Execution forced by user request'
+                'details': 'Execution forced by user request',
             }
 
         # Check if wave was already completed
@@ -42,7 +42,7 @@ class PreExecutionValidator:
             return {
                 'should_execute': False,
                 'reason': 'already_completed',
-                'details': f'Wave {wave_name} was already completed'
+                'details': f'Wave {wave_name} was already completed',
             }
 
         # Check wave dependencies
@@ -51,7 +51,7 @@ class PreExecutionValidator:
             return {
                 'should_execute': False,
                 'reason': 'dependencies_not_met',
-                'details': dependency_result['missing_dependencies']
+                'details': dependency_result['missing_dependencies'],
             }
 
         # Check if target files have changed
@@ -60,7 +60,7 @@ class PreExecutionValidator:
             return {
                 'should_execute': False,
                 'reason': 'no_changes_detected',
-                'details': 'No target files have changed since last execution'
+                'details': 'No target files have changed since last execution',
             }
 
         # Check if enough time has passed (for periodic waves)
@@ -69,13 +69,13 @@ class PreExecutionValidator:
             return {
                 'should_execute': False,
                 'reason': 'too_soon',
-                'details': time_result['details']
+                'details': time_result['details'],
             }
 
         return {
             'should_execute': True,
             'reason': 'conditions_met',
-            'details': 'All execution conditions satisfied'
+            'details': 'All execution conditions satisfied',
         }
 
     def _check_dependencies(self, wave_name: str) -> dict[str, Any]:
@@ -96,7 +96,7 @@ class PreExecutionValidator:
             'wave6a_validation_enforcement': ['wave5c_core_path_semantics'],
             'wave6b_validation_testing': ['wave6a_validation_enforcement'],
             'wave7a_github_actions': ['wave6b_validation_testing'],
-            'wave7b_multi_environment': ['wave7a_github_actions']
+            'wave7b_multi_environment': ['wave7a_github_actions'],
         }
 
         wave_deps = dependencies.get(wave_name, [])
@@ -109,7 +109,7 @@ class PreExecutionValidator:
         return {
             'satisfied': len(missing_deps) == 0,
             'dependencies': wave_deps,
-            'missing_dependencies': missing_deps
+            'missing_dependencies': missing_deps,
         }
 
     def _check_target_files_changed(self, wave_name: str) -> dict[str, Any]:
@@ -130,7 +130,7 @@ class PreExecutionValidator:
             'wave6a_validation_enforcement': ['tools/**/*.py'],
             'wave6b_validation_testing': ['tools/**/*.py'],
             'wave7a_github_actions': ['.github/workflows/*.yml'],
-            'wave7b_multi_environment': ['.github/workflows/*.yml']
+            'wave7b_multi_environment': ['.github/workflows/*.yml'],
         }
 
         patterns = target_patterns.get(wave_name, [])
@@ -153,7 +153,7 @@ class PreExecutionValidator:
         return {
             'changed': len(changed_files) > 0,
             'changed_files': changed_files,
-            'details': f'{len(changed_files)} files changed since last execution'
+            'details': f'{len(changed_files)} files changed since last execution',
         }
 
     def _check_execution_frequency(self, wave_name: str, min_hours: int = 1) -> dict[str, Any]:
@@ -170,12 +170,12 @@ class PreExecutionValidator:
             if time_since < timedelta(hours=min_hours):
                 return {
                     'should_execute': False,
-                    'details': f'Last execution {time_since.total_seconds()/3600:.1f} hours ago (minimum: {min_hours} hours)'
+                    'details': f'Last execution {time_since.total_seconds()/3600:.1f} hours ago (minimum: {min_hours} hours)',
                 }
 
             return {
                 'should_execute': True,
-                'details': f'Last execution {time_since.total_seconds()/3600:.1f} hours ago'
+                'details': f'Last execution {time_since.total_seconds()/3600:.1f} hours ago',
             }
 
         except Exception as e:
@@ -186,14 +186,14 @@ class PreExecutionValidator:
         validations = {
             'dependencies': self._check_dependencies(wave_name),
             'file_changes': self._check_target_files_changed(wave_name),
-            'execution_frequency': self._check_execution_frequency(wave_name)
+            'execution_frequency': self._check_execution_frequency(wave_name),
         }
 
         # Overall validation result
         all_satisfied = all([
             validations['dependencies']['satisfied'],
             validations['file_changes']['changed'],
-            validations['execution_frequency']['should_execute']
+            validations['execution_frequency']['should_execute'],
         ])
 
         return {
@@ -203,8 +203,8 @@ class PreExecutionValidator:
             'summary': {
                 'dependencies_satisfied': validations['dependencies']['satisfied'],
                 'files_changed': validations['file_changes']['changed'],
-                'time_elapsed_sufficient': validations['execution_frequency']['should_execute']
-            }
+                'time_elapsed_sufficient': validations['execution_frequency']['should_execute'],
+            },
         }
 
     def generate_execution_plan(self, wave_names: list[str], force: bool = False) -> dict[str, Any]:
@@ -214,7 +214,7 @@ class PreExecutionValidator:
             'force_execution': force,
             'waves': {},
             'execution_order': [],
-            'skipped_waves': []
+            'skipped_waves': [],
         }
 
         for wave_name in wave_names:
@@ -228,7 +228,7 @@ class PreExecutionValidator:
                 plan['skipped_waves'].append({
                     'wave': wave_name,
                     'reason': validation['reason'],
-                    'details': validation['details']
+                    'details': validation['details'],
                 })
 
         return plan

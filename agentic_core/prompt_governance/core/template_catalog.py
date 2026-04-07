@@ -482,7 +482,7 @@ _ADVERSARIAL_ENTRIES: list[TemplateCatalogEntry] = [
 # ---------------------------------------------------------------------------
 
 TEMPLATE_CATALOG: tuple[TemplateCatalogEntry, ...] = tuple(
-    _INSTRUCTIONAL_ENTRIES + _META_PROMPT_ENTRIES + _ADVERSARIAL_ENTRIES
+    _INSTRUCTIONAL_ENTRIES + _META_PROMPT_ENTRIES + _ADVERSARIAL_ENTRIES,
 )
 
 TEMPLATE_BY_NAME: dict[str, TemplateCatalogEntry] = {entry.template_name: entry for entry in TEMPLATE_CATALOG}

@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -269,12 +268,12 @@ class ConstitutionalGovernanceGuardrail:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ConstitutionalGovernanceGuardrail.review"
+            _trace_id, LayerSegment.L5_POLICY, "ConstitutionalGovernanceGuardrail.review",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:ConstitutionalGovernanceGuardrail.review".encode()
+            f"{_trace_id}:ConstitutionalGovernanceGuardrail.review".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -308,7 +307,7 @@ class ConstitutionalGovernanceGuardrail:
                             severity="moderate",
                             description=f"Potential violation of {principle.value}: contains '{pattern}'",
                             suggested_revision=f"Consider removing or rephrasing content containing '{pattern}'",
-                        )
+                        ),
                     )
                     self.revisions_suggested += 1
                     break
@@ -323,7 +322,7 @@ class ConstitutionalGovernanceGuardrail:
                     principle=ConstitutionalPrinciple.TRANSPARENCY,
                     severity="minor",
                     description="Content exceeds governance length limit",
-                )
+                ),
             )
         return violations
 
@@ -341,7 +340,7 @@ class ConstitutionalGovernanceGuardrail:
                     {"principle": v.principle.value, "severity": v.severity, "description": v.description}
                     for v in violations
                 ],
-            }
+            },
         )
         return audit_id
 

@@ -9,7 +9,7 @@ conn = sqlite3.connect(DB)
 rows = conn.execute(
     "SELECT e.source_file, e.symbol, e.line_no FROM edges e "
     "WHERE e.relation_type='violates' AND e.source_file LIKE '%L0_routing%' "
-    "ORDER BY e.source_file, e.line_no"
+    "ORDER BY e.source_file, e.line_no",
 ).fetchall()
 
 REPO = pathlib.Path(".")

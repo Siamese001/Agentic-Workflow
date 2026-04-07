@@ -46,7 +46,7 @@ class ADG1653LayerFix:
             'L3': 'L3_RUNTIME',
             'L4': 'L4_STATE',
             'L5': 'L5_POLICY',
-            'L6': 'L6_EXECUTION'
+            'L6': 'L6_EXECUTION',
         }
 
         for short_name, full_name in layer_mapping.items():
@@ -109,7 +109,7 @@ class ADG1653LayerFix:
 
         lineage_relations = [
             'mutation_signature_link',
-            'parent_snapshot_link'
+            'parent_snapshot_link',
         ]
 
         for relation in lineage_relations:

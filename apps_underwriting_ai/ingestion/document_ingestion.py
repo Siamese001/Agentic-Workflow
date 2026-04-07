@@ -1,13 +1,13 @@
 """
 Document Ingestion - Registers and hashes underwriting documents.
 """
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, field
-from pathlib import Path
 import hashlib
+from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from ..types import DocumentRef, DocumentPackage
+from ..types import DocumentPackage, DocumentRef
 
 
 @dataclass
@@ -37,7 +37,7 @@ class DocumentIngestion:
         self,
         file_path: Path,
         doc_type: str,
-        extract_text: bool = False
+        extract_text: bool = False,
     ) -> DocumentRef:
         """
         Ingest a single document.
@@ -76,13 +76,13 @@ class DocumentIngestion:
             hash=content_hash,
             extracted_text_available=extracted_text_available,
             parsed_structured_fields=parsed_fields,
-            document_flags=[]
+            document_flags=[],
         )
 
     def ingest_batch(
         self,
         doc_paths: List[Path],
-        doc_type_map: Optional[Dict[str, str]] = None
+        doc_type_map: Optional[Dict[str, str]] = None,
     ) -> DocumentManifest:
         """
         Ingest a batch of documents.
@@ -116,7 +116,7 @@ class DocumentIngestion:
 
     def build_document_package(
         self,
-        manifest: DocumentManifest
+        manifest: DocumentManifest,
     ) -> DocumentPackage:
         """Build DocumentPackage from manifest."""
         package = DocumentPackage()
@@ -191,7 +191,7 @@ class DocumentIngestion:
     def _extract_document_fields(
         self,
         path: Path,
-        doc_type: str
+        doc_type: str,
     ) -> Dict[str, Any]:
         """Extract structured fields from document."""
         # This is a placeholder for actual document parsing

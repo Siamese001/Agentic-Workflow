@@ -112,7 +112,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -199,7 +198,7 @@ def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
 
 
 def _write_pre_validation_json(
-    violations: list[dict], trace_id: str, territory: str, validators_used: list[str], output_dir: Path
+    violations: list[dict], trace_id: str, territory: str, validators_used: list[str], output_dir: Path,
 ) -> None:
     """Write pre_validation.json before any healing occurs.
 
@@ -234,7 +233,7 @@ def _write_pre_validation_json(
                 "severity": severity,
                 "rule": violation.get("type", "UNKNOWN"),
                 "description": violation.get("message", ""),
-            }
+            },
         )
     pre_validation = {
         "trace_id": trace_id,
@@ -258,7 +257,7 @@ def _write_pre_validation_json(
 
 
 def _write_post_validation_json(
-    pre_validation_path: Path, phase3_result: dict, trace_id: str, territory: str, output_dir: Path
+    pre_validation_path: Path, phase3_result: dict, trace_id: str, territory: str, output_dir: Path,
 ) -> None:
     """Write post_validation.json after Phase 3 revalidation.
 
@@ -284,7 +283,7 @@ def _write_post_validation_json(
                 "validator": validator,
                 "path": str(violation.get("file", violation.get("path", ""))),
                 "rule": violation.get("type", "UNKNOWN"),
-            }
+            },
         )
     remaining_ids = {f["id"] for f in remaining_findings}
     resolved_ids = list(pre_finding_ids - remaining_ids)
@@ -306,12 +305,12 @@ def _write_post_validation_json(
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(post_validation, f, indent=2, ensure_ascii=True)
     logger.info(
-        f"[POST-VALIDATION] Resolved: {len(resolved_ids)}, Residual: {len(remaining_ids)}, Regressions: {len(regression_ids)}"
+        f"[POST-VALIDATION] Resolved: {len(resolved_ids)}, Residual: {len(remaining_ids)}, Regressions: {len(regression_ids)}",
     )
 
 
 def _write_run_manifest_json(
-    trace_id: str, execution_mode: str, territories: list[str], agents_executed: list[str], output_dir: Path
+    trace_id: str, execution_mode: str, territories: list[str], agents_executed: list[str], output_dir: Path,
 ) -> None:
     """E6: Write run_manifest.json with run metadata and execution summary.
 
@@ -333,7 +332,7 @@ def _write_run_manifest_json(
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=True)
     logger.info(
-        f"[RUN-MANIFEST] Wrote run_manifest.json with {len(agents_executed)} agents, {len(territories)} territories"
+        f"[RUN-MANIFEST] Wrote run_manifest.json with {len(agents_executed)} agents, {len(territories)} territories",
     )
 
 

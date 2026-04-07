@@ -21,7 +21,7 @@ def test_collections():
                 query_embedding = [[0.0] * 1024]  # BGE uses 1024 dims
                 results = collection.query(
                     query_embeddings=query_embedding,
-                    n_results=2
+                    n_results=2,
                 )
 
                 print(f'✅ {col_name}: {count:,} items, query successful')

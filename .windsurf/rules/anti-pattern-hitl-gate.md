@@ -1,3 +1,7 @@
+---
+trigger:
+  - file_change
+---
 # Anti-Pattern HITL Gate
 
 ## Constitutional Rule

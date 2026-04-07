@@ -49,7 +49,7 @@ class MCPPerformanceTester:
             "tests": {},
             "start_time": time.time(),
             "success": True,
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -98,7 +98,7 @@ class MCPPerformanceTester:
                     [sys.executable, "-c", f"import sys; sys.path.insert(0, '{REPO_ROOT}'); import importlib.util; spec = importlib.util.spec_from_file_location('server', '{full_path}'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)"],
                     capture_output=True,
                     text=True,
-                    timeout=10
+                    timeout=10,
                 )
 
                 end_time = time.time()
@@ -123,7 +123,7 @@ class MCPPerformanceTester:
                 f"Mean: {result['mean']:.3f}s",
                 f"Min: {result['min']:.3f}s",
                 f"Max: {result['max']:.3f}s",
-                f"Std: {result['std']:.3f}s"
+                f"Std: {result['std']:.3f}s",
             ]
         else:
             result["success"] = False
@@ -146,7 +146,7 @@ class MCPPerformanceTester:
                 process = psutil.Popen(
                     [sys.executable, "-c", f"import time; time.sleep(2); import sys; sys.path.insert(0, '{REPO_ROOT}'); exec(open('{full_path}').read())"],
                     stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL
+                    stderr=subprocess.DEVNULL,
                 )
 
                 # Wait a bit for startup
@@ -174,7 +174,7 @@ class MCPPerformanceTester:
                 result["details"] = [
                     f"Mean: {result['mean']:.1f}MB",
                     f"Min: {result['min']:.1f}MB",
-                    f"Max: {result['max']:.1f}MB"
+                    f"Max: {result['max']:.1f}MB",
                 ]
             else:
                 result["success"] = False
@@ -205,7 +205,7 @@ class MCPPerformanceTester:
                     [sys.executable, "-c", f"import sys; sys.path.insert(0, '{REPO_ROOT}'); import importlib.util; spec = importlib.util.spec_from_file_location('server', '{full_path}'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)"],
                     capture_output=True,
                     text=True,
-                    timeout=5
+                    timeout=5,
                 )
 
                 end_time = time.time()
@@ -224,7 +224,7 @@ class MCPPerformanceTester:
             result["details"] = [
                 f"Mean: {result['mean']:.3f}s",
                 f"Min: {result['min']:.3f}s",
-                f"Max: {result['max']:.3f}s"
+                f"Max: {result['max']:.3f}s",
             ]
         else:
             result["success"] = False
@@ -240,7 +240,7 @@ class MCPPerformanceTester:
             ["echo", "test"],
             ["ls", "-la"],
             ["pwd"],
-            ["python", "--version"]
+            ["python", "--version"],
         ]
 
         for cmd in commands:
@@ -251,7 +251,7 @@ class MCPPerformanceTester:
                     cmd,
                     capture_output=True,
                     text=True,
-                    timeout=5
+                    timeout=5,
                 )
 
                 end_time = time.time()
@@ -290,7 +290,7 @@ class MCPPerformanceTester:
                 [sys.executable, "-m", "pytest", "--collect-only", "-q", str(tests_dir)],
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=30,
             )
 
             end_time = time.time()
@@ -325,7 +325,7 @@ class MCPPerformanceTester:
             urls = [
                 "https://httpbin.org/get",
                 "https://jsonplaceholder.typicode.com/posts/1",
-                "https://api.github.com/users/octocat"
+                "https://api.github.com/users/octocat",
             ]
 
             # Synchronous requests
@@ -392,13 +392,13 @@ class MCPPerformanceTester:
                 collection.add(
                     documents=texts,
                     embeddings=embeddings.tolist(),
-                    ids=[f"doc_{i}" for i in range(len(texts))]
+                    ids=[f"doc_{i}" for i in range(len(texts))],
                 )
 
                 # Query
                 collection.query(
                     query_embeddings=embeddings[:1].tolist(),
-                    n_results=5
+                    n_results=5,
                 )
 
                 end_time = time.time()
@@ -481,7 +481,7 @@ class MCPPerformanceTester:
             "timestamp": time.time(),
             "duration": time.time() - self.start_time,
             "repository": str(REPO_ROOT),
-            "results": self.results
+            "results": self.results,
         }
 
         try:

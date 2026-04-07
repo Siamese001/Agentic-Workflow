@@ -76,19 +76,19 @@ def apply_fixes():
                     "file": rel_path,
                     "status": "fixed",
                     "changes": changes,
-                    "backup": str(backup_path)
+                    "backup": str(backup_path),
                 })
             else:
                 results.append({
                     "file": rel_path,
                     "status": "no_changes_needed",
-                    "changes": changes
+                    "changes": changes,
                 })
         except Exception as e:
             results.append({
                 "file": rel_path,
                 "status": "error",
-                "error": str(e)
+                "error": str(e),
             })
 
     return results

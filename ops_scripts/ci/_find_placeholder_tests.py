@@ -60,7 +60,7 @@ _ENFORCE_DIRS: frozenset[str] = frozenset(
         "governance",
         "contracts",
         "infrastructure",
-    }
+    },
 )
 
 # Trivial call expressions that count as placeholder bodies
@@ -72,7 +72,7 @@ _TRIVIAL_CALL_UNPARSED: frozenset[str] = frozenset(
         "self.assertEqual(1, 1)",
         "self.assertIsNone(None)",
         "self.assertIsNotNone(self)",
-    }
+    },
 )
 
 
@@ -208,7 +208,7 @@ def check_enforce(results: dict[str, list[str]]) -> int:
                 print(f"    - {fn}()")
         print(
             f"\nFix these by replacing placeholder bodies with real assertions.\n"
-            f"Enforced dirs: {sorted(_ENFORCE_DIRS)}"
+            f"Enforced dirs: {sorted(_ENFORCE_DIRS)}",
         )
         return 1
     return 0
@@ -221,7 +221,7 @@ def check_enforce(results: dict[str, list[str]]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Find placeholder/stub test files via AST analysis."
+        description="Find placeholder/stub test files via AST analysis.",
     )
     parser.add_argument(
         "--enforce",

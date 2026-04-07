@@ -15,7 +15,7 @@ import json
 import os
 import sys
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -211,8 +211,9 @@ def main(full_scan: bool = False) -> None:
 
     # ── P8: Full scan (optional) ─────────────────────────────────────────────
     if full_scan:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
         import subprocess
+
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         try:
             commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(ROOT), text=True).strip()
@@ -272,8 +273,8 @@ def main(full_scan: bool = False) -> None:
     # If scanner is serial Python, it occupies ~1 thread
     single_thread_cpu_pct = 100.0 / total_cores
     print(f"  - 1 serial Python thread on {total_cores}-thread machine = ~{single_thread_cpu_pct:.1f}% total CPU")
-    print(f"  - Observed 30-35% suggests 9-11 threads active simultaneously")
-    print(f"  - Likely: cache deserialization + orjson + file I/O + parent/child overlap")
+    print("  - Observed 30-35% suggests 9-11 threads active simultaneously")
+    print("  - Likely: cache deserialization + orjson + file I/O + parent/child overlap")
 
     # Save evidence
     out = ROOT / "artifacts" / "adg_phase_profile.json"

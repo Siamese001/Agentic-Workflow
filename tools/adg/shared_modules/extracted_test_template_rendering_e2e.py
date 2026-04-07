@@ -412,7 +412,7 @@ class TestCatalogRendererIntegration:
             except Exception as e:
                 failures.append(f"{entry.template_name}: {e}")
         assert not failures, f"{len(failures)} INSTRUCTIONAL templates failed to render:\n" + "\n".join(
-            failures
+            failures,
         )
 
     def test_agent_lookup_templates_render(self, renderer: SovereignPromptRenderer):
@@ -881,7 +881,7 @@ class TestRendererPathCorrectness:
             except Exception as e:
                 failures.append(f"{entry.template_name}: {e}")
         assert not failures, f"{len(failures)} INSTRUCTIONAL templates failed to render:\n" + "\n".join(
-            failures
+            failures,
         )
 
     def test_agent_lookup_templates_render(self, renderer: SovereignPromptRenderer):

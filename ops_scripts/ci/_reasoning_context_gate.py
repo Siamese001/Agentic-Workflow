@@ -68,7 +68,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%build_reasoning_context%' "
-        "AND source_file LIKE '%L1%' " + NON_TEST
+        "AND source_file LIKE '%L1%' " + NON_TEST,
     )
     n = c.fetchone()[0]
     ok = n >= 3
@@ -77,7 +77,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             "A",
             ok,
             f"L1 engines using build_reasoning_context={n} (required>=3)",
-        )
+        ),
     )
     return ok
 
@@ -94,7 +94,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"L1 records_execution_trace sources={n} (required>=1)",
-        )
+        ),
     )
     return ok
 
@@ -109,7 +109,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE (symbol LIKE '%build_reasoning_context%' OR symbol LIKE '%ReasoningContext%') "
-        "AND source_file LIKE '%L1%' " + NON_TEST
+        "AND source_file LIKE '%L1%' " + NON_TEST,
     )
     n = c.fetchone()[0]
     ok = n >= 1
@@ -118,7 +118,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             "C",
             ok,
             f"L1 sources with evidence_hash binding (build_reasoning_context|ReasoningContext)={n} (required>=1)",
-        )
+        ),
     )
     return ok
 
@@ -136,7 +136,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%reasoning_context_builder%' "
-        "AND source_file LIKE '%L1%' " + NON_TEST
+        "AND source_file LIKE '%L1%' " + NON_TEST,
     )
     n = c.fetchone()[0]
     ok = n >= 1
@@ -145,7 +145,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             "D",
             ok,
             f"L1 sources importing reasoning_context_builder (memory+state binding)={n} (required>=1)",
-        )
+        ),
     )
     return ok
 
@@ -165,7 +165,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%build_reasoning_context%' "
-        "AND source_file LIKE '%L1_cognition/engines%' " + NON_TEST
+        "AND source_file LIKE '%L1_cognition/engines%' " + NON_TEST,
     )
     builder_engines = c.fetchone()[0]
 
@@ -173,7 +173,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE relation_type='reads_from' "
-        "AND source_file LIKE '%L1_cognition/engines%' " + NON_TEST
+        "AND source_file LIKE '%L1_cognition/engines%' " + NON_TEST,
     )
     raw_reads = c.fetchone()[0]
 
@@ -185,7 +185,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             "E",
             ok,
             f"L1 engines using builder={builder_engines} (required>=3), raw_reads_from={raw_reads}",
-        )
+        ),
     )
     return ok
 

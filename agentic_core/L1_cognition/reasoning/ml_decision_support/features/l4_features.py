@@ -44,78 +44,78 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Trend in response times over time window",
                 provenance="performance.response_time.trend",
-                validation_rules={"min_value": -1.0, "max_value": 1.0}
+                validation_rules={"min_value": -1.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="throughput_variance",
                 feature_type=FeatureType.NUMERIC,
                 description="Variance in throughput metrics",
                 provenance="performance.throughput.variance",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="cpu_utilization_avg",
                 feature_type=FeatureType.NUMERIC,
                 description="Average CPU utilization percentage",
                 provenance="resource.cpu.utilization_avg",
-                validation_rules={"min_value": 0.0, "max_value": 100.0}
+                validation_rules={"min_value": 0.0, "max_value": 100.0},
             ),
             FeatureDefinition(
                 name="memory_utilization_avg",
                 feature_type=FeatureType.NUMERIC,
                 description="Average memory utilization percentage",
                 provenance="resource.memory.utilization_avg",
-                validation_rules={"min_value": 0.0, "max_value": 100.0}
+                validation_rules={"min_value": 0.0, "max_value": 100.0},
             ),
             FeatureDefinition(
                 name="bottleneck_severity",
                 feature_type=FeatureType.NUMERIC,
                 description="Severity of identified bottlenecks",
                 provenance="performance.bottleneck.severity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="optimization_potential",
                 feature_type=FeatureType.NUMERIC,
                 description="Potential for performance optimization",
                 provenance="performance.optimization.potential",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="sla_compliance_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Service level agreement compliance rate",
                 provenance="performance.sla.compliance_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="error_rate_trend",
                 feature_type=FeatureType.NUMERIC,
                 description="Trend in error rates over time",
                 provenance="performance.error_rate.trend",
-                validation_rules={"min_value": -1.0, "max_value": 1.0}
+                validation_rules={"min_value": -1.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="cost_efficiency_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Cost efficiency of current performance",
                 provenance="performance.cost.efficiency_score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_waste_ratio",
                 feature_type=FeatureType.NUMERIC,
                 description="Ratio of wasted resources to total resources",
                 provenance="resource.waste.ratio",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="l4_performance_optimizer",
             schema_version="1.0",
             description="Features for L4 performance optimization model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -248,7 +248,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
             "memory": 0.25,
             "io": 0.2,
             "network": 0.15,
-            "database": 0.1
+            "database": 0.1,
         }
 
         total_severity = 0.0
@@ -279,7 +279,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
             "low_throughput": 0.25,
             "resource_underutilization": 0.2,
             "frequent_errors": 0.15,
-            "sla_violations": 0.1
+            "sla_violations": 0.1,
         }
 
         potential_score = 0.0

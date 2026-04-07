@@ -46,7 +46,7 @@ class L3BranchRanker(BaseMLModel):
             model_version="1.0",
             model_type="lambdamart",
             prediction_type=PredictionType.RANKING,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -62,7 +62,7 @@ class L3BranchRanker(BaseMLModel):
         self.threshold_config = {
             "ranking_threshold": 0.5,
             "top_k_branches": 10,
-            "min_score": 0.1
+            "min_score": 0.1,
         }
 
         if model_file_path and model_file_path.exists():
@@ -109,8 +109,8 @@ class L3BranchRanker(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'feature_schema_digest': self.feature_schema.schema_digest,
                 'saved_at': datetime.now().isoformat(),
-                'lightgbm_params': getattr(self.model, 'params', {})
-            }
+                'lightgbm_params': getattr(self.model, 'params', {}),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -122,7 +122,7 @@ class L3BranchRanker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict ranking score for a DAG branch.
@@ -155,7 +155,7 @@ class L3BranchRanker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -182,8 +182,8 @@ class L3BranchRanker(BaseMLModel):
                 self.create_prediction(
                     prediction=ranking_score,
                     confidence=confidence,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Determine final decision mode
@@ -200,7 +200,7 @@ class L3BranchRanker(BaseMLModel):
                 decision_mode=final_decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -210,7 +210,7 @@ class L3BranchRanker(BaseMLModel):
                 'preprocessing_steps': preprocessing_steps,
                 'ranking_score': ranking_score,
                 'is_above_threshold': passes_threshold,
-                'ranking_position': None  # Will be set during batch ranking
+                'ranking_position': None,  # Will be set during batch ranking
             })
 
             # Log prediction
@@ -226,7 +226,7 @@ class L3BranchRanker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def rank_branches(
@@ -236,7 +236,7 @@ class L3BranchRanker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        top_k: int | None = None
+        top_k: int | None = None,
     ) -> list[dict[str, Any]]:
         """
         Rank a list of DAG branches based on execution priority.
@@ -268,7 +268,7 @@ class L3BranchRanker(BaseMLModel):
                 "other_branches": [b for j, b in enumerate(branches) if j != i],
                 "resources": dag_context.get("resources", {}),
                 "history": dag_context.get("history", {}),
-                "trace_id": f"{trace_id}_branch_{i}"
+                "trace_id": f"{trace_id}_branch_{i}",
             }
 
             # Extract features
@@ -276,7 +276,7 @@ class L3BranchRanker(BaseMLModel):
                 context=context,
                 trace_id=f"{trace_id}_branch_{i}",
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             if extraction_result.success:
@@ -289,7 +289,7 @@ class L3BranchRanker(BaseMLModel):
                     model_input=model_input,
                     trace_id=f"{trace_id}_branch_{i}",
                     replay_key=replay_key,
-                    policy_hash=policy_hash
+                    policy_hash=policy_hash,
                 )
 
                 branch_scores.append({
@@ -299,7 +299,7 @@ class L3BranchRanker(BaseMLModel):
                     'confidence': prediction.confidence,
                     'top_features': prediction.top_features,
                     'decision_mode': prediction.decision_mode,
-                    'prediction_metadata': prediction.model_metadata
+                    'prediction_metadata': prediction.model_metadata,
                 })
             else:
                 # Feature extraction failed - give low score
@@ -310,7 +310,7 @@ class L3BranchRanker(BaseMLModel):
                     'confidence': 0.0,
                     'top_features': [],
                     'decision_mode': DecisionMode.BLOCKED,
-                    'prediction_metadata': {'error': 'Feature extraction failed'}
+                    'prediction_metadata': {'error': 'Feature extraction failed'},
                 })
 
         # Sort by ranking score (descending)
@@ -330,7 +330,7 @@ class L3BranchRanker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        respect_dependencies: bool = True
+        respect_dependencies: bool = True,
     ) -> list[dict[str, Any]]:
         """
         Get optimal execution order for branches considering dependencies.
@@ -352,7 +352,7 @@ class L3BranchRanker(BaseMLModel):
             dag_context=dag_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not respect_dependencies:
@@ -412,7 +412,7 @@ class L3BranchRanker(BaseMLModel):
                     'importance_score': float(importance),
                     'feature_value': model_input.features.get(name),
                     'rank': i + 1,
-                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0
+                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0,
                 })
 
             # Sort by importance
@@ -506,7 +506,7 @@ class L3BranchRanker(BaseMLModel):
         training_data: list[dict[str, Any]],
         feature_names: list[str],
         training_data_digest: str = "",
-        lgb_params: dict[str, Any] | None = None
+        lgb_params: dict[str, Any] | None = None,
     ) -> None:
         """
         Train the LambdaMART model.
@@ -563,7 +563,7 @@ class L3BranchRanker(BaseMLModel):
             'bagging_freq': 5,
             'verbose': -1,
             'random_state': 42,
-            'label_gain': [0, 1, 3, 7, 15, 31, 63, 127]  # LambdaMART label gains
+            'label_gain': [0, 1, 3, 7, 15, 31, 63, 127],  # LambdaMART label gains
         }
 
         # Merge with provided parameters
@@ -578,7 +578,7 @@ class L3BranchRanker(BaseMLModel):
             train_data,
             num_boost_round=100,
             valid_sets=[train_data],
-            callbacks=[lgb.log_evaluation(10)]
+            callbacks=[lgb.log_evaluation(10)],
         )
 
         # Store feature names and importance
@@ -597,7 +597,7 @@ class L3BranchRanker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict ranking score from context (convenience method).
@@ -620,7 +620,7 @@ class L3BranchRanker(BaseMLModel):
             "other_branches": dag_context.get("other_branches", []),
             "resources": dag_context.get("resources", {}),
             "history": dag_context.get("history", {}),
-            "trace_id": trace_id
+            "trace_id": trace_id,
         }
 
         # Extract features
@@ -628,7 +628,7 @@ class L3BranchRanker(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -639,7 +639,7 @@ class L3BranchRanker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         # Validate input
@@ -652,5 +652,5 @@ class L3BranchRanker(BaseMLModel):
             trace_id=trace_id,
             replay_key=replay_key,
             policy_hash=policy_hash,
-            decision_mode=decision_mode
+            decision_mode=decision_mode,
         )

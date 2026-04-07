@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Any
 
-from apps_rfp.types import RfpResult, RfpRunSummary, RiskItem
+from apps_rfp.types import RfpResult, RfpRunSummary
 
 _log = logging.getLogger(__name__)
 

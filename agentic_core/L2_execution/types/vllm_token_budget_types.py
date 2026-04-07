@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -227,7 +226,7 @@ def get_output_cap(task_class: str) -> int | None:
         return None
     if cap > VLLM_MAX_TOKENS_ABSOLUTE:
         raise ValueError(
-            f"Task class {task_class!r} cap {cap} exceeds VLLM_MAX_TOKENS_ABSOLUTE={VLLM_MAX_TOKENS_ABSOLUTE}. Route to Gemini-2.5-Pro."
+            f"Task class {task_class!r} cap {cap} exceeds VLLM_MAX_TOKENS_ABSOLUTE={VLLM_MAX_TOKENS_ABSOLUTE}. Route to Gemini-2.5-Pro.",
         )
     return cap
 
@@ -277,7 +276,7 @@ class VLLMOutputCapExceeded(Exception):
         self.cap = cap
         self.reason = reason
         super().__init__(
-            f"VLLMOutputCapExceeded: task_class={task_class!r}, requested={requested}, cap={cap}, reason={reason}"
+            f"VLLMOutputCapExceeded: task_class={task_class!r}, requested={requested}, cap={cap}, reason={reason}",
         )
 
 
@@ -329,7 +328,7 @@ class VLLMPreflightResult:
     def __post_init__(self) -> None:
         if self.token_budget_ok and self.route_to_gemini:
             raise ValueError(
-                "VLLMPreflightResult: token_budget_ok=True and route_to_gemini=True is contradictory — budget OK should not force Gemini escalation."
+                "VLLMPreflightResult: token_budget_ok=True and route_to_gemini=True is contradictory — budget OK should not force Gemini escalation.",
             )
         if not self.token_budget_ok and self.failure_type is None:
             raise ValueError("VLLMPreflightResult: token_budget_ok=False requires failure_type.")

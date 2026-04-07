@@ -102,7 +102,7 @@ class PrecisionStateSnapshot:
             "timestamp": self.timestamp.isoformat(),
             "version": self.version,
             "data": self.data,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }, sort_keys=True, default=str)
         checksum = hashlib.sha256(content.encode()).hexdigest()
         object.__setattr__(self, 'checksum', checksum)
@@ -117,7 +117,7 @@ class PrecisionStateSnapshot:
             "timestamp": self.timestamp.isoformat(),
             "version": self.version,
             "data": self.data,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }, sort_keys=True, default=str)
         expected = hashlib.sha256(content.encode()).hexdigest()
         return self.checksum == expected
@@ -185,7 +185,7 @@ class PrecisionRaftConsensus(PrecisionConsensusAlgorithm):
             "elections_lost": 0,
             "proposals_accepted": 0,
             "proposals_rejected": 0,
-            "total_log_entries": 0
+            "total_log_entries": 0,
         }
 
     async def achieve_consensus(self, proposal: dict[str, Any], participants: list[str]) -> bool:
@@ -199,7 +199,7 @@ class PrecisionRaftConsensus(PrecisionConsensusAlgorithm):
             "index": len(self.log) + 1,
             "proposal_id": proposal_id,
             "proposal": proposal,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
         self.log.append(log_entry)
@@ -249,7 +249,7 @@ class PrecisionRaftConsensus(PrecisionConsensusAlgorithm):
             "current_term": self.current_term,
             "commit_index": self.commit_index,
             "log_length": len(self.log),
-            "metrics": self.consensus_metrics
+            "metrics": self.consensus_metrics,
         }
 
 
@@ -347,7 +347,7 @@ class PrecisionInMemoryStorage(PrecisionDistributedStorage):
             "hits": 0,
             "misses": 0,
             "bytes_stored": 0,
-            "keys_count": 0
+            "keys_count": 0,
         }
 
     async def store(self, key: str, value: Any, metadata: dict[str, Any] = None) -> bool:
@@ -361,7 +361,7 @@ class PrecisionInMemoryStorage(PrecisionDistributedStorage):
                 "timestamp": datetime.now().isoformat(),
                 "vector_clock": self.vector_clock.to_dict(),
                 "size_bytes": len(json.dumps(value, default=str)),
-                **(metadata or {})
+                **(metadata or {}),
             }
 
             # Update metrics
@@ -420,7 +420,7 @@ class PrecisionInMemoryStorage(PrecisionDistributedStorage):
             "metrics": self.metrics,
             "hit_rate": hit_rate,
             "average_key_size": self.metrics["bytes_stored"] / max(1, self.metrics["keys_count"]),
-            "vector_clock": self.vector_clock.to_dict()
+            "vector_clock": self.vector_clock.to_dict(),
         }
 
 
@@ -448,7 +448,7 @@ class PrecisionMultiRegionReplicator:
             "successful_replications": 0,
             "failed_replications": 0,
             "average_latency_ms": 0.0,
-            "total_bytes_transferred": 0
+            "total_bytes_transferred": 0,
         }
 
     async def store_snapshot(self, snapshot: PrecisionStateSnapshot) -> bool:
@@ -504,7 +504,7 @@ class PrecisionMultiRegionReplicator:
                     end_time=end_time,
                     bytes_transferred=bytes_transferred,
                     latency_ms=latency,
-                    error_message="" if success else "Storage failed"
+                    error_message="" if success else "Storage failed",
                 )
 
                 if success:
@@ -525,7 +525,7 @@ class PrecisionMultiRegionReplicator:
                     end_time=end_time,
                     bytes_transferred=0,
                     latency_ms=latency,
-                    error_message=str(e)
+                    error_message=str(e),
                 )
 
                 self.replication_metrics["failed_replications"] += 1
@@ -624,10 +624,10 @@ class PrecisionMultiRegionReplicator:
                     "target_region": r.target_region.name,
                     "status": r.status.name,
                     "latency_ms": r.latency_ms,
-                    "bytes_transferred": r.bytes_transferred
+                    "bytes_transferred": r.bytes_transferred,
                 }
                 for r in results
-            ]
+            ],
         }
 
     def get_replication_metrics(self) -> dict[str, Any]:
@@ -638,7 +638,7 @@ class PrecisionMultiRegionReplicator:
             "metrics": self.replication_metrics,
             "active_replications": len(self.replication_tasks),
             "total_snapshots": len(set(r.snapshot_id for r in self.replication_history)),
-            "consensus_metrics": self.consensus.get_consensus_metrics()
+            "consensus_metrics": self.consensus.get_consensus_metrics(),
         }
 
 
@@ -662,7 +662,7 @@ class PrecisionDistributedStateManager:
             "successful_recoveries": 0,
             "failed_recoveries": 0,
             "disaster_events": 0,
-            "uptime_seconds": 0.0
+            "uptime_seconds": 0.0,
         }
 
         # Start time tracking
@@ -695,8 +695,8 @@ class PrecisionDistributedStateManager:
             data=state_data,
             metadata={
                 "created_by": "distributed_state_manager",
-                "node_id": f"{self.primary_region.value}_manager"
-            }
+                "node_id": f"{self.primary_region.value}_manager",
+            },
         )
 
         # Store with replication
@@ -729,7 +729,7 @@ class PrecisionDistributedStateManager:
             },
             "replication_metrics": self.replicator.get_replication_metrics(),
             "health_status": self.health_checker.get_health_summary(),
-            "management_metrics": self.management_metrics
+            "management_metrics": self.management_metrics,
         }
 
         return await self.store_layer_state("system_backup", backup_data, PrecisionStateType.BACKUP_DATA)
@@ -749,7 +749,7 @@ class PrecisionDistributedStateManager:
                     await self.store_layer_state(
                         f"restored_{snapshot_id}",
                         snapshot_data,
-                        PrecisionStateType.RECOVERY_POINT
+                        PrecisionStateType.RECOVERY_POINT,
                     )
                     restored_snapshots += 1
                 except Exception as e:
@@ -778,7 +778,7 @@ class PrecisionDistributedStateManager:
             "replication_metrics": self.replicator.get_replication_metrics(),
             "health_status": self.health_checker.get_health_summary(),
             "management_metrics": self.management_metrics,
-            "uptime_seconds": uptime
+            "uptime_seconds": uptime,
         }
 
 
@@ -792,7 +792,7 @@ class PrecisionHealthChecker:
             "total_checks": 0,
             "passed_checks": 0,
             "failed_checks": 0,
-            "average_response_time_ms": 0.0
+            "average_response_time_ms": 0.0,
         }
         self._check_task: asyncio.Task | None = None
         self._running = False
@@ -805,7 +805,7 @@ class PrecisionHealthChecker:
             "endpoint": endpoint,
             "registered_at": datetime.now(),
             "last_check": None,
-            "status": "unknown"
+            "status": "unknown",
         }
 
     async def start_health_checks(self) -> None:
@@ -863,7 +863,7 @@ class PrecisionHealthChecker:
                 "last_check": datetime.now().isoformat(),
                 "response_time_ms": response_time,
                 "region": config["region"].name,
-                "layer_type": config["layer_type"]
+                "layer_type": config["layer_type"],
             }
 
             # Update metrics
@@ -884,7 +884,7 @@ class PrecisionHealthChecker:
                 "last_check": datetime.now().isoformat(),
                 "error": str(e),
                 "region": config["region"].name,
-                "layer_type": config["layer_type"]
+                "layer_type": config["layer_type"],
             }
 
     def get_health_summary(self) -> dict[str, Any]:
@@ -903,7 +903,7 @@ class PrecisionHealthChecker:
             "status_counts": dict(status_counts),
             "region_status": {k: dict(v) for k, v in region_status.items()},
             "layer_status": {k: dict(v) for k, v in layer_status.items()},
-            "metrics": self.health_metrics
+            "metrics": self.health_metrics,
         }
 
 
@@ -955,7 +955,7 @@ class PrecisionDisasterRecoveryManager:
                 "affected_region": affected_region.name,
                 "detected_at": datetime.now().isoformat(),
                 "severity": random.choice(["low", "medium", "high", "critical"]),
-                "status": "detected"
+                "status": "detected",
             }
 
             self.disaster_events.append(disaster_event)
@@ -972,7 +972,7 @@ class PrecisionDisasterRecoveryManager:
         recovery_procedure = {
             "disaster_id": disaster_event["id"],
             "started_at": datetime.now().isoformat(),
-            "steps": []
+            "steps": [],
         }
 
         if disaster_type == "region_outage":
@@ -982,7 +982,7 @@ class PrecisionDisasterRecoveryManager:
                     recovery_procedure["steps"].append({
                         "action": "promote_to_primary",
                         "region": region.name,
-                        "status": "completed"
+                        "status": "completed",
                     })
 
         elif disaster_type == "network_partition":
@@ -990,7 +990,7 @@ class PrecisionDisasterRecoveryManager:
             recovery_procedure["steps"].append({
                 "action": "isolate_region",
                 "region": affected_region,
-                "status": "completed"
+                "status": "completed",
             })
 
         elif disaster_type == "storage_corruption":
@@ -998,7 +998,7 @@ class PrecisionDisasterRecoveryManager:
             recovery_procedure["steps"].append({
                 "action": "restore_from_backup",
                 "region": affected_region,
-                "status": "completed"
+                "status": "completed",
             })
 
         # Mark disaster as resolved
@@ -1019,7 +1019,7 @@ class PrecisionDisasterRecoveryManager:
             "active_disasters": total_disasters - resolved_disasters,
             "disaster_types": list(set(d["type"] for d in self.disaster_events)),
             "affected_regions": list(set(d["affected_region"] for d in self.disaster_events)),
-            "recovery_procedures": len(self.recovery_procedures)
+            "recovery_procedures": len(self.recovery_procedures),
         }
 
 
@@ -1038,5 +1038,5 @@ __all__ = [
     "PrecisionMultiRegionReplicator",
     "PrecisionDistributedStateManager",
     "PrecisionHealthChecker",
-    "PrecisionDisasterRecoveryManager"
+    "PrecisionDisasterRecoveryManager",
 ]

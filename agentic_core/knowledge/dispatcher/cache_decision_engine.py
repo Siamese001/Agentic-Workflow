@@ -124,7 +124,7 @@ class CacheDecisionEngine:
         """
         trace_id = f"cache_dec_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "CacheDecisionEngine.decide"
+            trace_id, LayerSegment.L1_REASONING, "CacheDecisionEngine.decide",
         )
 
         # Find matching policy
@@ -155,7 +155,7 @@ class CacheDecisionEngine:
 
         _emit_records_telemetry_event(
             "cache_decision",
-            f"{decision.cache_strategy.value}_{decision.retrieval_strategy.value}"
+            f"{decision.cache_strategy.value}_{decision.retrieval_strategy.value}",
         )
 
         log.debug(f"Cache decision for {query_id}: {decision.cache_strategy.value}")

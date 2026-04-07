@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -226,7 +225,7 @@ class DetectionSignalStore:
 
         if self._entries and commit_tick <= self._entries[-1].commit_tick:
             raise ValueError(
-                f"commit_tick {commit_tick} must be strictly greater than last stored tick {self._entries[-1].commit_tick}"
+                f"commit_tick {commit_tick} must be strictly greater than last stored tick {self._entries[-1].commit_tick}",
             )
         self._entries.append(_StoredEntry(signal=signal, commit_tick=commit_tick))
         return signal.signal_hash

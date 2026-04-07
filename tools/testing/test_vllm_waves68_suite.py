@@ -79,7 +79,7 @@ class VLLMWaves68TestSuite:
             ]
 
             result = await orchestrator.synthesize_research_with_qwen(
-                research_topic=research_topic, sources=sources, synthesis_type="comprehensive"
+                research_topic=research_topic, sources=sources, synthesis_type="comprehensive",
             )
 
             success = result.get("success", False)
@@ -96,7 +96,7 @@ class VLLMWaves68TestSuite:
                         "confidence": result.get("confidence"),
                         "latency_ms": result.get("latency_ms"),
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -106,7 +106,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Research integration test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave6_rfp_integration(self) -> None:
@@ -140,7 +140,7 @@ class VLLMWaves68TestSuite:
             }
 
             result = await orchestrator.generate_proposal_with_qwen(
-                rfp_details=rfp_details, proposal_type="technical"
+                rfp_details=rfp_details, proposal_type="technical",
             )
 
             success = result.get("success", False)
@@ -157,7 +157,7 @@ class VLLMWaves68TestSuite:
                         "confidence": result.get("confidence"),
                         "latency_ms": result.get("latency_ms"),
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -167,7 +167,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"RFP integration test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave6_exec_integration(self) -> None:
@@ -198,7 +198,7 @@ class VLLMWaves68TestSuite:
             }
 
             result = await orchestrator.plan_execution_with_qwen(
-                objectives=objectives, constraints=constraints, planning_type="strategic"
+                objectives=objectives, constraints=constraints, planning_type="strategic",
             )
 
             success = result.get("success", False)
@@ -215,7 +215,7 @@ class VLLMWaves68TestSuite:
                         "confidence": result.get("confidence"),
                         "latency_ms": result.get("latency_ms"),
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -225,7 +225,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Exec integration test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave7_shared_utilities(self) -> None:
@@ -247,7 +247,7 @@ class VLLMWaves68TestSuite:
             if manager.is_available():
                 # Test generation
                 result = await manager.generate_response(
-                    prompt="Analyze the benefits of AI in healthcare", metadata={"test_type": "wave7_shared"}
+                    prompt="Analyze the benefits of AI in healthcare", metadata={"test_type": "wave7_shared"},
                 )
 
                 # Test validation
@@ -269,7 +269,7 @@ class VLLMWaves68TestSuite:
                             "metadata_keys": list(metadata.keys()),
                             "confidence": result.get("confidence"),
                         },
-                    }
+                    },
                 )
             else:
                 self.test_results.append(
@@ -278,7 +278,7 @@ class VLLMWaves68TestSuite:
                         "success": False,
                         "message": "Shared utilities test failed: vLLM not available",
                         "details": None,
-                    }
+                    },
                 )
 
         except Exception as e:
@@ -288,7 +288,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Shared utilities test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave7_prompt_templates(self) -> None:
@@ -304,7 +304,7 @@ class VLLMWaves68TestSuite:
 
             # Test industry templates
             healthcare_prompt = IndustryPromptTemplates.healthcare_analysis(
-                content="Patient shows symptoms of AI-assisted diagnosis", analysis_type="clinical"
+                content="Patient shows symptoms of AI-assisted diagnosis", analysis_type="clinical",
             )
 
             finance_prompt = IndustryPromptTemplates.finance_proposal(
@@ -330,7 +330,7 @@ class VLLMWaves68TestSuite:
                     "HEALTHCARE ANALYSIS" in healthcare_prompt,
                     "FINANCIAL SERVICES" in finance_prompt,
                     "RISK ASSESSMENT" in risk_prompt,
-                ]
+                ],
             )
 
             self.test_results.append(
@@ -346,7 +346,7 @@ class VLLMWaves68TestSuite:
                         "risk_template_length": len(risk_prompt),
                         "templates_generated": 3,
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -356,7 +356,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Prompt templates test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave8_batch_processing(self) -> None:
@@ -412,7 +412,7 @@ class VLLMWaves68TestSuite:
                         "average_latency_ms": batch_result.average_latency_ms,
                         "processing_time_seconds": batch_result.processing_time_seconds,
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -422,7 +422,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Batch processing test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave8_analytics(self) -> None:
@@ -484,7 +484,7 @@ class VLLMWaves68TestSuite:
                         "model_usage_keys": list(summary["model_usage"].keys()),
                         "app_usage_keys": list(summary["app_usage"].keys()),
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -494,7 +494,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Analytics test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     async def test_wave8_multimodel(self) -> None:
@@ -516,7 +516,7 @@ class VLLMWaves68TestSuite:
             for model_name in ["qwen-7b", "qwen-7b-creative"]:
                 if model_name in models:
                     result = await manager.generate_with_model(
-                        model_name=model_name, prompt="Briefly explain artificial intelligence"
+                        model_name=model_name, prompt="Briefly explain artificial intelligence",
                     )
                     test_results.append(result)
 
@@ -542,7 +542,7 @@ class VLLMWaves68TestSuite:
                             k: v.get("description", "No description") for k, v in models.items()
                         },
                     },
-                }
+                },
             )
 
         except Exception as e:
@@ -552,7 +552,7 @@ class VLLMWaves68TestSuite:
                     "success": False,
                     "message": f"Multi-model test failed: {str(e)}",
                     "details": None,
-                }
+                },
             )
 
     def generate_comprehensive_summary(self) -> dict[str, Any]:

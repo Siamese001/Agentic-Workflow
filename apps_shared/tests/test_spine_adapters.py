@@ -1,6 +1,5 @@
 """Tests for apps_shared spine adapter components."""
 
-import pytest
 
 from apps_shared.spine.base_spine_adapter import (
     BaseSpineAdapter,

@@ -46,7 +46,7 @@ class EvacuationDiscipline:
     def __post_init__(self):
         if self.completion_tick < self.trigger_tick:
             raise ValueError(
-                f"completion_tick ({self.completion_tick}) must be >= trigger_tick ({self.trigger_tick})"
+                f"completion_tick ({self.completion_tick}) must be >= trigger_tick ({self.trigger_tick})",
             )
 
     @property

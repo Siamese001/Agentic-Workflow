@@ -400,20 +400,20 @@ class VerdictStore:
             by_outcome = {
                 r[0]: r[1]
                 for r in conn.execute(
-                    "SELECT outcome, COUNT(*) FROM verdicts GROUP BY outcome"
+                    "SELECT outcome, COUNT(*) FROM verdicts GROUP BY outcome",
                 ).fetchall()
             }
             by_dimension = {
                 r[0]: r[1]
                 for r in conn.execute(
-                    "SELECT dimension, COUNT(*) FROM verdicts GROUP BY dimension"
+                    "SELECT dimension, COUNT(*) FROM verdicts GROUP BY dimension",
                 ).fetchall()
             }
             distinct_targets = conn.execute(
-                "SELECT COUNT(DISTINCT target) FROM verdicts"
+                "SELECT COUNT(DISTINCT target) FROM verdicts",
             ).fetchone()[0]
             distinct_digests = conn.execute(
-                "SELECT COUNT(DISTINCT adg_digest) FROM verdicts"
+                "SELECT COUNT(DISTINCT adg_digest) FROM verdicts",
             ).fetchone()[0]
 
             return {

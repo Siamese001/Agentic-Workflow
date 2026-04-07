@@ -80,7 +80,7 @@ class SQLiteAnalyzer:
         """
         conn = self._get_connection()
         cursor = conn.execute(
-            "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type"
+            "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type",
         )
         return {row[0]: row[1] for row in cursor.fetchall()}
 
@@ -102,7 +102,7 @@ class SQLiteAnalyzer:
                 SELECT DISTINCT src_id FROM edges WHERE relation_type = 'applies_guardrail'
             )
             LIMIT 100
-            """
+            """,
         )
 
         modules = []
@@ -133,7 +133,7 @@ class SQLiteAnalyzer:
             WHERE e.relation_type = 'imports'
             AND e.dst_id NOT IN (SELECT id FROM nodes WHERE entity_type = 'module')
             LIMIT 100
-            """
+            """,
         )
 
         imports = []
@@ -163,7 +163,7 @@ class SQLiteAnalyzer:
                 COUNT(*) as total,
                 SUM(CASE WHEN json_extract(metadata, '$.precision') IS NOT NULL THEN 1 ELSE 0 END) as with_precision
             FROM nodes
-            """
+            """,
         )
 
         row = cursor.fetchone()
@@ -202,7 +202,7 @@ class SQLiteAnalyzer:
             JOIN nodes dst ON e.dst_id = dst.id
             WHERE e.relation_type = 'violates'
             LIMIT 100
-            """
+            """,
         )
 
         violations = []
@@ -248,7 +248,7 @@ class SQLiteAnalyzer:
                 'return_none_swallow'
             )
             ORDER BY e.edge_kind, e.source_file, e.line_no
-            """
+            """,
         )
 
         antipatterns = []

@@ -96,7 +96,7 @@ def generate_cleanup_commands() -> None:
     print(f"\nREVIEW NEEDED ({len(categories['review_needed'])} branches):")
     for branch in categories["review_needed"]:
         print(
-            f"  - {branch['name']} (last: {branch['last_commit']}, {branch['days_old']} days old, {branch['unique_commits']} unique commits)"
+            f"  - {branch['name']} (last: {branch['last_commit']}, {branch['days_old']} days old, {branch['unique_commits']} unique commits)",
         )
 
     print(f"\nKEEP ({len(categories['keep'])} branches):")

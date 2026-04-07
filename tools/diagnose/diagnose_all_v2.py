@@ -15,7 +15,7 @@ source_files = {}
 for d in dirs_with_errors:
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60
+        capture_output=True, text=True, cwd=ROOT, timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
@@ -68,7 +68,7 @@ for sd in sorted(os.listdir(unit_dir)):
         continue
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/unit/{sd}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60
+        capture_output=True, text=True, cwd=ROOT, timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")

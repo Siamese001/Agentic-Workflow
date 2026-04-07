@@ -1,6 +1,5 @@
 """Tests for apps_lic reasoning components."""
 
-import pytest
 
 from apps_lic.reasoning.LICValidationExecutor import (
     LICValidationExecutor,

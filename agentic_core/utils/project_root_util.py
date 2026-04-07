@@ -32,7 +32,7 @@ def get_project_root(start_path: Path | None = None) -> Path:
         if (env_root / ".git").exists():
             return env_root
     raise RuntimeError(
-        f"Could not find project root starting from {start_path}. Ensure you're in a git repository."
+        f"Could not find project root starting from {start_path}. Ensure you're in a git repository.",
     )
 
 

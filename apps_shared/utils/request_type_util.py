@@ -62,39 +62,25 @@ _emit_applies_guardrail("p0", "request_type_util", "p0_governance")
 _emit_reads_policy_state("p0", "request_type_util", "policy_binding")
 _emit_snapshots_state("p0", "request_type_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -499,7 +485,7 @@ class ObservabilityLoadPlanner:
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityPlanner.plan_load")
         self.logger.info(
-            f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}"
+            f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}",
         )
         try:
             self._validate_request(load_request)
@@ -509,7 +495,7 @@ class ObservabilityLoadPlanner:
             log_queries = self._parse_log_queries(load_request) if self.config.enable_logs else []
             trace_queries = self._parse_trace_queries(load_request) if self.config.enable_traces else []
             load_plan = self._create_load_plan(
-                load_request, request_type, data_source, metrics, log_queries, trace_queries
+                load_request, request_type, data_source, metrics, log_queries, trace_queries,
             )
             estimated_data_points = self._estimate_data_points(load_plan)
             query_count = len(metrics) + len(log_queries) + len(trace_queries)
@@ -531,7 +517,7 @@ class ObservabilityLoadPlanner:
                 },
             )
             self.logger.info(
-                f"Successfully planned observability load: {query_count} queries, ~{estimated_data_points} data points"
+                f"Successfully planned observability load: {query_count} queries, ~{estimated_data_points} data points",
             )
             return result
         except Exception as e:
@@ -604,7 +590,7 @@ class ObservabilityLoadPlanner:
                 metrics.append(metric)
         if len(metrics) > self.config.max_queries_per_plan:
             raise ValueError(
-                f"Number of metrics ({len(metrics)}) exceeds maximum ({self.config.max_queries_per_plan})"
+                f"Number of metrics ({len(metrics)}) exceeds maximum ({self.config.max_queries_per_plan})",
             )
         return metrics
 
@@ -626,7 +612,7 @@ class ObservabilityLoadPlanner:
                 queries.append(query)
         if len(queries) > self.config.max_queries_per_plan:
             raise ValueError(
-                f"Number of log queries ({len(queries)}) exceeds maximum ({self.config.max_queries_per_plan})"
+                f"Number of log queries ({len(queries)}) exceeds maximum ({self.config.max_queries_per_plan})",
             )
         return queries
 
@@ -647,7 +633,7 @@ class ObservabilityLoadPlanner:
                 queries.append(query)
         if len(queries) > self.config.max_queries_per_plan:
             raise ValueError(
-                f"Number of trace queries ({len(queries)}) exceeds maximum ({self.config.max_queries_per_plan})"
+                f"Number of trace queries ({len(queries)}) exceeds maximum ({self.config.max_queries_per_plan})",
             )
         return queries
 
@@ -724,11 +710,11 @@ class ObservabilityLoadPlanner:
 
 
 def create_observability_load_planner(
-    enable_metrics: bool = True, enable_logs: bool = True, enable_traces: bool = True, **kwargs: object
+    enable_metrics: bool = True, enable_logs: bool = True, enable_traces: bool = True, **kwargs: object,
 ) -> ObservabilityLoadPlanner:
     """Create a configured observability load planner."""
     config = ObservabilityLoadConfig(
-        enable_metrics=enable_metrics, enable_logs=enable_logs, enable_traces=enable_traces, **kwargs
+        enable_metrics=enable_metrics, enable_logs=enable_logs, enable_traces=enable_traces, **kwargs,
     )
     return ObservabilityLoadPlanner(config)
 

@@ -3,8 +3,8 @@ Test Document Completeness Validator.
 """
 import unittest
 
-from apps_underwriting_ai.validators.document_completeness_validator import DocumentCompletenessValidator
 from apps_underwriting_ai.types import DocumentPackage, DocumentRef
+from apps_underwriting_ai.validators.document_completeness_validator import DocumentCompletenessValidator
 
 
 class TestDocumentCompleteness(unittest.TestCase):
@@ -21,17 +21,17 @@ class TestDocumentCompleteness(unittest.TestCase):
                     doc_id="DOC-001",
                     doc_type="financial_statement",
                     source_uri="test.pdf",
-                    hash="abc123"
-                )
+                    hash="abc123",
+                ),
             ],
             tax_returns=[
                 DocumentRef(
                     doc_id="DOC-002",
                     doc_type="tax_return",
                     source_uri="test.pdf",
-                    hash="def456"
-                )
-            ]
+                    hash="def456",
+                ),
+            ],
         )
 
         # Simplified - would need full request

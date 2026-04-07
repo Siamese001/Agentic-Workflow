@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -228,7 +227,7 @@ class GravityValidatorAgent:
 
         def _in_sovereign_scope(v: object) -> bool:
             fp = str(getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")).replace(
-                "\\", "/"
+                "\\", "/",
             )
             # guardian: allow-path-string
             rel = fp.replace(root_str + "/", "", 1)
@@ -244,7 +243,7 @@ class GravityValidatorAgent:
 
         def _not_excluded(v: object) -> bool:
             fp = str(getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")).replace(
-                "\\", "/"
+                "\\", "/",
             )
             return not any(ex in fp for ex in _EXCLUDED_PATHS)
 

@@ -139,7 +139,7 @@ def _compute_sqlite_digest(conn: sqlite3.Connection) -> str:
     cur = conn.cursor()
     cur.execute(
         "SELECT id, src_id, dst_id, relation_type, edge_kind, "
-        "source_file, line_no, symbol FROM edges ORDER BY id"
+        "source_file, line_no, symbol FROM edges ORDER BY id",
     )
     for row in cur:
         h.update("|".join(str(f) for f in row).encode("utf-8"))
@@ -359,7 +359,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
             tgt = str(d.get("dst_id") or d.get("target") or d.get("to_id") or "")
             rel = str(
                 d.get("relation_type") or d.get("relation")
-                or d.get("edge_type") or "unknown"
+                or d.get("edge_type") or "unknown",
             )
 
             # Per-edge metadata HASH (zero-loss: all SQLite fields preserved)
@@ -504,7 +504,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
                 "sqlite_digest": sqlite_digest[:16],
                 "redis_digest": redis_digest[:16],
                 "projection_coherent": projection_coherent,
-            }
+            },
         ),
     )
     print(f"[redis] adg:status sentinel written (timestamp={ts_from_file})")
@@ -513,7 +513,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
     if not projection_coherent:
         print(
             f"[FAIL] DIGEST MISMATCH: SQLite={sqlite_digest[:16]}... "
-            f"Redis={redis_digest[:16]}..."
+            f"Redis={redis_digest[:16]}...",
         )
         conn.close()
         sys.exit(1)

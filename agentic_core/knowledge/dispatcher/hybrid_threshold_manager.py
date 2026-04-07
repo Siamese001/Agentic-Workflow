@@ -73,7 +73,7 @@ class HybridThresholdManager:
         """
         trace_id = f"thresholds_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "HybridThresholdManager.get_thresholds"
+            trace_id, LayerSegment.L1_REASONING, "HybridThresholdManager.get_thresholds",
         )
 
         # Start with base config
@@ -174,14 +174,14 @@ class HybridThresholdManager:
         if avg_precision < 0.6:
             self._config.vector_threshold = min(
                 0.9,
-                self._config.vector_threshold * (1 + self.adjustment_rate)
+                self._config.vector_threshold * (1 + self.adjustment_rate),
             )
 
         # If recall is low, decrease thresholds
         if avg_recall < 0.6:
             self._config.vector_threshold = max(
                 0.5,
-                self._config.vector_threshold * (1 - self.adjustment_rate)
+                self._config.vector_threshold * (1 - self.adjustment_rate),
             )
 
 

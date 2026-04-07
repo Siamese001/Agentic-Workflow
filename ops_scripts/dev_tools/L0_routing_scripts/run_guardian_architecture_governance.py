@@ -41,7 +41,6 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     normalize_repo_path,
     write_guardian_result,
 )
-from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -85,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 
 emit_replay_key("p0", "run_guardian_architecture_governance")
 emit_determinism_digest("p0", "run_guardian_architecture_governance")
@@ -143,7 +143,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,

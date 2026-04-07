@@ -29,9 +29,7 @@ if str(ROOT) not in sys.path:
 
 # Import workload-aware optimizer
 from agentic_core.L2_execution.utils.cpu_optimizer import (
-    CPUConfig,
     OperatingProfile,
-    WorkloadClass,
     get_cpu_optimizer,
     get_recommended_defaults,
 )
@@ -123,7 +121,7 @@ def run_benchmarks() -> dict:
     }
     print(
         f"[B2] Serial AST parse: {len(files)} files in {_fmt(serial_ast)} "
-        f"({len(files) / serial_ast:.0f} files/s)"
+        f"({len(files) / serial_ast:.0f} files/s)",
     )
 
     # ── B3: Parallel AST parse (ProcessPool) — worker sweep ────────────────
@@ -152,7 +150,7 @@ def run_benchmarks() -> dict:
     results["serial_full_visitor"] = {"wall_s": serial_visit_time}
     print(
         f"\n[B4] Serial full visitor (parse+walk): {_fmt(serial_visit_time)} "
-        f"({len(files) / serial_visit_time:.0f} files/s)"
+        f"({len(files) / serial_visit_time:.0f} files/s)",
     )
 
     # ── B5: Parallel full visitor sweep ─────────────────────────────────────
@@ -175,7 +173,7 @@ def run_benchmarks() -> dict:
     results["serial_hash"] = {"wall_s": serial_hash}
     print(
         f"\n[B6] Serial SHA-256 hash: {len(files)} files in {_fmt(serial_hash)} "
-        f"({len(files) / serial_hash:.0f} files/s)"
+        f"({len(files) / serial_hash:.0f} files/s)",
     )
 
     # Thread pool for I/O-bound hashing
@@ -241,7 +239,7 @@ def run_benchmarks() -> dict:
         print(
             f"\n[B8] ADG full scan: {len(res.modules)} modules, "
             f"{len(res.edges)} edges in {_fmt(full_scan)} "
-            f"(cache={cache_rate:.1%})"
+            f"(cache={cache_rate:.1%})",
         )
     else:
         print("\n[B8] ADG full scan: cache not found, skipping")
@@ -310,12 +308,12 @@ def run_benchmarks() -> dict:
         )
         print(
             f"  AST parse (SCANNER): CPU-BOUND  serial={results['serial_ast_parse']['wall_s']:.3f}s  "
-            f"best_parallel={best_w[1]['wall_s']:.3f}s ({best_w[1]['speedup']:.2f}x)  -> {best_w[0]}"
+            f"best_parallel={best_w[1]['wall_s']:.3f}s ({best_w[1]['speedup']:.2f}x)  -> {best_w[0]}",
         )
     if "serial_hash" in results:
         print(
             f"  SHA-256 hashing:     I/O-BOUND   serial={results['serial_hash']['wall_s']:.3f}s  "
-            f"thread8={results.get('thread_hash_w8', {}).get('wall_s', '?')}"
+            f"thread8={results.get('thread_hash_w8', {}).get('wall_s', '?')}",
         )
     if "adg_full_scan" in results:
         r = results["adg_full_scan"]
@@ -337,7 +335,7 @@ def run_worker_matrix_benchmark(files: list[str]) -> dict[str, Any]:
     print("WORKER MATRIX BENCHMARK — AMD 9950X3D")
     print("=" * 70)
     print("Testing worker counts with temperature guardrails")
-    print(f"Threshold: stop if sustained temp >= 90°C (AMD max: 95°C)")
+    print("Threshold: stop if sustained temp >= 90°C (AMD max: 95°C)")
     print()
 
     optimizer = get_cpu_optimizer()
@@ -403,7 +401,7 @@ def run_worker_matrix_benchmark(files: list[str]) -> dict[str, Any]:
                 f"  w={workers:2d}: {wall:.3f}s  "
                 f"{throughput:.0f} files/s  "
                 f"CPU={cpu_pct:.0f}%  "
-                f"Temp={temp_c:.1f}°C  [{status}]"
+                f"Temp={temp_c:.1f}°C  [{status}]",
             )
 
     # Find optimal configurations

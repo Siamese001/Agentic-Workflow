@@ -46,7 +46,7 @@ class ExternalSignals(BaseModel):
     """External market and reputation signals."""
 
     industry_outlook: Literal["positive", "stable", "negative", "unknown"] = Field(
-        "unknown", description="Industry outlook from external sources"
+        "unknown", description="Industry outlook from external sources",
     )
     macro_flags: list[str] = Field(default_factory=list, description="Macroeconomic flags")
     fraud_or_identity_signals: list[str] = Field(default_factory=list, description="Fraud detection flags")
@@ -76,11 +76,11 @@ class UnderwritingRequest(BaseModel):
     documents: DocumentPackage = Field(..., description="Document references and metadata")
     policy_context: PolicyContext = Field(..., description="Applicable policy parameters")
     external_signals: ExternalSignals = Field(
-        default_factory=ExternalSignals, description="External market signals"
+        default_factory=ExternalSignals, description="External market signals",
     )
     relationship_context: RelationshipContext = Field(..., description="Existing relationship context")
     decision_constraints: DecisionConstraints = Field(
-        ..., description="Decision authority and timing constraints"
+        ..., description="Decision authority and timing constraints",
     )
 
     @validator("submission_ts")
@@ -114,5 +114,5 @@ class UnderwritingRequest(BaseModel):
                     "collateral_required": True,
                     "guarantor_required": True,
                 },
-            }
+            },
         }

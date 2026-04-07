@@ -110,7 +110,7 @@ class RuleEngine:
                             rule_priority=rule.rule_priority,
                             can_apply=can_apply,
                             confidence_adjusted=deficiency.confidence,
-                        )
+                        ),
                     )
             except Exception as e:
                 print(f"[RuleEngine] Warning: Rule {rule_id} match failed: {e}")
@@ -175,7 +175,7 @@ class RuleEngine:
                             deficiency.id,
                             rule_id,
                             f"Rule {rule_id} conflicts with {existing[0][0]} for file {file_path}",
-                        )
+                        ),
                     )
 
                 file_rules[file_path].append((rule_id, deficiency.id))

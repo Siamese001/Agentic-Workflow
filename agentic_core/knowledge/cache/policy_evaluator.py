@@ -82,7 +82,7 @@ class PolicyEvaluator:
         """
         trace_id = f"policy_{hash(str(cache_entry)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "PolicyEvaluator.evaluate"
+            trace_id, LayerSegment.L1_REASONING, "PolicyEvaluator.evaluate",
         )
 
         reasons = []

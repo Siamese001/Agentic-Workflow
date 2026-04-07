@@ -112,7 +112,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -197,11 +196,11 @@ class VLLMServingProfile:
     def __post_init__(self) -> None:
         if self.max_model_len <= 0:
             raise VLLMServingProfileInvalid(
-                profile=self.profile_name, reason=f"max_model_len={self.max_model_len} must be > 0"
+                profile=self.profile_name, reason=f"max_model_len={self.max_model_len} must be > 0",
             )
         if self.max_num_seqs <= 0:
             raise VLLMServingProfileInvalid(
-                profile=self.profile_name, reason=f"max_num_seqs={self.max_num_seqs} must be > 0"
+                profile=self.profile_name, reason=f"max_num_seqs={self.max_num_seqs} must be > 0",
             )
         if not 0.0 < self.gpu_memory_utilization <= 1.0:
             raise VLLMServingProfileInvalid(
@@ -237,7 +236,7 @@ class VLLMServingProfileInvalid(Exception):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMServingProfileInvalid.__init__"
+            _trace_id, LayerSegment.L2_EXECUTION, "VLLMServingProfileInvalid.__init__",
         )
         self.profile = profile
         self.reason = reason
@@ -315,7 +314,7 @@ class VLLMCoChangeViolation(Exception):
         self.old_max_num_seqs = old_max_num_seqs
         self.new_max_num_seqs = new_max_num_seqs
         super().__init__(
-            f"VLLMCoChangeViolation: profile={profile!r} — max_model_len {old_max_model_len}->{new_max_model_len} AND max_num_seqs {old_max_num_seqs}->{new_max_num_seqs} both increased simultaneously. Only one may increase per commit."
+            f"VLLMCoChangeViolation: profile={profile!r} — max_model_len {old_max_model_len}->{new_max_model_len} AND max_num_seqs {old_max_num_seqs}->{new_max_num_seqs} both increased simultaneously. Only one may increase per commit.",
         )
 
 

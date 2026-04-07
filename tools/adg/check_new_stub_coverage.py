@@ -27,7 +27,7 @@ for stub in sample_stubs:
     if row:
         # Check if it has imports edges
         edges = conn.execute(
-            "SELECT COUNT(*) as cnt FROM edges e WHERE e.src_id=? AND e.relation_type='imports'", (row["id"],)
+            "SELECT COUNT(*) as cnt FROM edges e WHERE e.src_id=? AND e.relation_type='imports'", (row["id"],),
         ).fetchone()
         print(f"  FOUND: {stub} -> {edges['cnt']} imports edges")
     else:
@@ -39,7 +39,7 @@ total_stubs = conn.execute(
     "FROM edges e JOIN nodes n1 ON e.src_id=n1.id "
     "WHERE e.relation_type='imports' "
     "AND n1.resolved_path LIKE 'tests/%' "
-    "AND n1.resolved_path LIKE '%_adg.py'"
+    "AND n1.resolved_path LIKE '%_adg.py'",
 ).fetchone()
 print(f"\nTotal _adg files with imports edges in ADG: {total_stubs['cnt']}")
 
@@ -48,7 +48,7 @@ src_mods = conn.execute(
     "SELECT COUNT(*) as cnt FROM nodes "
     "WHERE entity_type='module' "
     "AND resolved_path LIKE 'agentic_core/%' "
-    "AND resolved_path NOT LIKE '%__pycache__%'"
+    "AND resolved_path NOT LIKE '%__pycache__%'",
 ).fetchone()
 covered = conn.execute(
     "SELECT COUNT(DISTINCT n2.resolved_path) as cnt "
@@ -58,7 +58,7 @@ covered = conn.execute(
     "WHERE e.relation_type='imports' "
     "AND n1.resolved_path LIKE 'tests/%' "
     "AND n2.resolved_path LIKE 'agentic_core/%' "
-    "AND n2.resolved_path NOT LIKE '%__pycache__%'"
+    "AND n2.resolved_path NOT LIKE '%__pycache__%'",
 ).fetchone()
 total = src_mods["cnt"]
 cov = covered["cnt"]

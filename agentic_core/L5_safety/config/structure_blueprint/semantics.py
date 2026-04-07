@@ -294,7 +294,7 @@ APP_RG_AST_TERMS: Final[frozenset[str]] = frozenset(
         "summary",
         "achievement",
         "certification",
-    }
+    },
 )
 APP_LIC_AST_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -311,7 +311,7 @@ APP_LIC_AST_TERMS: Final[frozenset[str]] = frozenset(
         "scrap",
         "navigate",
         "browser",
-    }
+    },
 )
 APP_RG_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -330,7 +330,7 @@ APP_RG_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
         "candidate",
         "position",
         "role",
-    }
+    },
 )
 APP_LIC_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
     {
@@ -346,13 +346,13 @@ APP_LIC_VARIABLE_TERMS: Final[frozenset[str]] = frozenset(
         "contact",
         "person",
         "url",
-    }
+    },
 )
 APP_RG_STRING_TERMS: Final[frozenset[str]] = frozenset(
-    {"resume", "cv", "skill", "experience", "education", "job posting", "outreach", "candidate", "applicant"}
+    {"resume", "cv", "skill", "experience", "education", "job posting", "outreach", "candidate", "applicant"},
 )
 APP_LIC_STRING_TERMS: Final[frozenset[str]] = frozenset(
-    {"linkedin", "profile", "connection", "invite", "campaign", "cadence"}
+    {"linkedin", "profile", "connection", "invite", "campaign", "cadence"},
 )
 VARIABLE_HIT_WEIGHT: Final[float] = 0.5
 STRING_HIT_WEIGHT: Final[float] = 0.25
@@ -372,27 +372,27 @@ POLYGLOT_DOMAIN_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
 }
 CORE_TERRITORY_KEYWORDS: Final[Mapping[str, Mapping[str, frozenset[str]]]] = {
     "L1_cognition/thought_engine": {
-        "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"})
+        "primary": frozenset({"think", "reason", "plan", "decompose", "critique", "reflect"}),
     },
     "L2_execution/engine": {"primary": frozenset({"tool", "execute", "call", "registry", "runner"})},
     "L2_execution/mcp": {"primary": frozenset({"mcp", "client", "fetch", "protocol"})},
     "L3_orchestration/engine": {
-        "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"})
+        "primary": frozenset({"orchestrate", "workflow", "route", "dispatch", "coordinate", "flow"}),
     },
     "L4_state/memory": {"primary": frozenset({"state", "context", "checkpoint", "persist"})},
     "L4_state/ledger": {"primary": frozenset({"ledger", "history", "record", "transaction"})},
     "L5_safety/validators": {
-        "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"})
+        "primary": frozenset({"validate", "enforce", "check", "guard", "policy", "heal"}),
     },
     "L5_safety/guardrails": {"primary": frozenset({"guardrail", "safety", "membrane", "airlock", "pii"})},
     "L5_safety/gravity": {"primary": frozenset({"gravity", "import", "dependency", "layer"})},
     "config/core": {
-        "primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"})
+        "primary": frozenset({"blueprint", "registry", "sovereign", "canon", "config", "settings"}),
     },
     "schemas/models": {"primary": frozenset({"schema", "model", "type", "message"})},
     "prompt_governance/L3_core": {"primary": frozenset({"render", "registry", "assemble", "govern"})},
     "prompt_governance/L3_templates": {
-        "primary": frozenset({"template", "prompt", "persona", "instructional"})
+        "primary": frozenset({"template", "prompt", "persona", "instructional"}),
     },
     "prompt_governance/L3_security": {"primary": frozenset({"security", "injection", "pii", "compliance"})},
     "prompt_governance/L3_integrity": {"primary": frozenset({"validate", "optimize", "test", "quality"})},
@@ -470,7 +470,7 @@ LEGACY_AST_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
         "class_patterns": [".*Legacy.*", ".*Old$", ".*V1$"],
         "function_calls": ["warnings.warn"],
         "variable_markers": ["DEPRECATION_WARNING"],
-    }
+    },
 }
 AST_PLACEMENT_SIGNALS: Final[Mapping[str, Mapping[str, Any]]] = {
     "agentic_core/interfaces": {
@@ -772,7 +772,7 @@ AGENT_REGISTRY: Final[Mapping[str, Sequence[Mapping[str, str | int]]]] = {
             "file": "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
             "methods": 6,
             "fingerprint": "fcfd5e27416abb4c",
-        }
+        },
     ],
     "L1": [
         {

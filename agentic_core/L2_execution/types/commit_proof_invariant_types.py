@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -199,7 +198,7 @@ class CommitProofInvariant:
             raise DeterminismProofFailure("CommitProofInvariant.phase_id must be non-empty")
         if len(self.digest) != 64 or not all(c in "0123456789abcdef" for c in self.digest):
             raise DeterminismProofFailure(
-                f"CommitProofInvariant.digest must be a 64-char lowercase hex string, got '{self.digest[:16]}...' (len={len(self.digest)})"
+                f"CommitProofInvariant.digest must be a 64-char lowercase hex string, got '{self.digest[:16]}...' (len={len(self.digest)})",
             )
 
     def verify_stable(self, recompute_fn: Callable[[], str]) -> None:
@@ -211,7 +210,7 @@ class CommitProofInvariant:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "CommitProofInvariant.verify_stable"
+            _trace_id, LayerSegment.L2_EXECUTION, "CommitProofInvariant.verify_stable",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -223,7 +222,7 @@ class CommitProofInvariant:
         actual = recompute_fn()
         if actual != self.digest:
             raise DeterminismProofFailure(
-                f"[Phase {self.phase_id}] Determinism proof FAILED: expected={self.digest[:16]}..., actual={actual[:16]}... Inputs changed without updating the committed proof."
+                f"[Phase {self.phase_id}] Determinism proof FAILED: expected={self.digest[:16]}..., actual={actual[:16]}... Inputs changed without updating the committed proof.",
             )
 
     def verify_unstable(self, recompute_fn: Callable[[], str]) -> None:
@@ -235,7 +234,7 @@ class CommitProofInvariant:
         actual = recompute_fn()
         if actual == self.digest:
             raise DeterminismProofFailure(
-                f"[Phase {self.phase_id}] Negative control FAILED: tampered inputs produced the same digest={self.digest[:16]}... The determinism function is insensitive to this mutation."
+                f"[Phase {self.phase_id}] Negative control FAILED: tampered inputs produced the same digest={self.digest[:16]}... The determinism function is insensitive to this mutation.",
             )
 
 

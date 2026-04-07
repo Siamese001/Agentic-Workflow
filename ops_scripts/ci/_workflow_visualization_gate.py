@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"workflow_visualization_emitted exported={emitter_function} (>=1), "
             f"agent_executes_agent sources={handoff_edges} (>=1), "
             f"stage_transition_recorded exported={stage_emitter} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -147,7 +147,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"ACTIVE exported={active_status} (>=1), "
             f"workflow_visualization_emitted exported={emitter_function} (>=1), "
             f"observes_runtime_state sources={state_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -179,7 +179,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"owner_transition_recorded exported={owner_emitter} (>=1), "
             f"update_workflow_visualization exported={update_function} (>=1), "
             f"agent_executes_agent sources={handoff_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -211,7 +211,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"COMPLETED exported={completed_status} (>=1), "
             f"FAILED exported={failed_status} (>=1), "
             f"workflow_completed_recorded exported={completion_emitter} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -243,7 +243,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"StageTransitionReason exported={transition_reason} (>=1), "
             f"BLOCK_DETECTED exported={block_detected} (>=1), "
             f"WorkflowVisualizationRecord exported={viz_record} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -307,7 +307,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L3_orchestration/visualization%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

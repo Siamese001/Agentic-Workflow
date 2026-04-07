@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -272,7 +271,7 @@ _BREAKERS: dict[str, CircuitBreaker] = {}
 
 # guardian: allow-magic-config
 def get_breaker(
-    name: str, failure_threshold: int = 5, reset_after_s: int = 30, half_open_max_calls: int = 3
+    name: str, failure_threshold: int = 5, reset_after_s: int = 30, half_open_max_calls: int = 3,
 ) -> CircuitBreaker:
     """Get or create a circuit breaker by name.
 

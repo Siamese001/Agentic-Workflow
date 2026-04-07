@@ -106,7 +106,7 @@ class InvalidStubFixer:
         if func_line_idx > 0:
             prev_line = lines[func_line_idx - 1]
             if "# guardian: allow-invalid-stub" in prev_line:
-                print(f"    ⊘ Already whitelisted")
+                print("    ⊘ Already whitelisted")
                 return False
 
         # Find the function body (indentation level)
@@ -125,7 +125,7 @@ class InvalidStubFixer:
                     return_indices.append(i)
 
         if not return_indices:
-            print(f"    ⊘ No return statements found")
+            print("    ⊘ No return statements found")
             return False
 
         # Insert error simulation before the first return
@@ -138,7 +138,7 @@ class InvalidStubFixer:
         # Insert the fix before the first return
         lines.insert(first_return_idx, fix_lines)
 
-        print(f"    ✓ Added error simulation")
+        print("    ✓ Added error simulation")
         return True
 
     def _generate_fix_lines(self, function_name: str, indent: str) -> str:

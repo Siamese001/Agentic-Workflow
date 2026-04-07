@@ -72,7 +72,7 @@ def assert_cooldown_ok(last_update_utc: int, now_utc: int, cooldown_policy: Cool
     if elapsed_seconds < cooldown_policy.min_seconds_between_updates:
         remaining = cooldown_policy.min_seconds_between_updates - elapsed_seconds
         raise CooldownViolation(
-            f"COOLDOWN_VIOLATION: {remaining} seconds remaining (min={cooldown_policy.min_seconds_between_updates}, elapsed={elapsed_seconds})"
+            f"COOLDOWN_VIOLATION: {remaining} seconds remaining (min={cooldown_policy.min_seconds_between_updates}, elapsed={elapsed_seconds})",
         )
 
 
@@ -94,5 +94,5 @@ def assert_min_sample_size(n_observations: int, sample_policy: SampleSizePolicy)
     if n_observations < sample_policy.min_observations:
         shortfall = sample_policy.min_observations - n_observations
         raise SampleSizeViolation(
-            f"SAMPLE_SIZE_VIOLATION: {shortfall} observations short (min={sample_policy.min_observations}, actual={n_observations})"
+            f"SAMPLE_SIZE_VIOLATION: {shortfall} observations short (min={sample_policy.min_observations}, actual={n_observations})",
         )

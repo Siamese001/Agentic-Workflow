@@ -37,7 +37,6 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from textwrap import indent
 
 ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = ROOT / "artifacts" / "adg"
@@ -262,7 +261,7 @@ WHERE e.dst_id = :node_id
 
 
 def find_zero_prod_fanin_modules(
-    conn: sqlite3.Connection, limit: int = 200
+    conn: sqlite3.Connection, limit: int = 200,
 ) -> list[dict]:
     """Return production modules with zero production importers."""
     cur = conn.execute(_ALL_MODULES_SQL)
@@ -272,11 +271,11 @@ def find_zero_prod_fanin_modules(
     for row in modules:
         node_id, path, layer = row["id"], row["resolved_path"], row["layer"]
         prod_count = conn.execute(
-            _PROD_FANIN_COUNT_SQL, {"node_id": node_id}
+            _PROD_FANIN_COUNT_SQL, {"node_id": node_id},
         ).fetchone()[0]
         if prod_count == 0:
             dead.append(
-                {"resolved_path": path, "layer": layer, "prod_fan_in": 0}
+                {"resolved_path": path, "layer": layer, "prod_fan_in": 0},
             )
         if len(dead) >= limit:
             break
@@ -312,7 +311,7 @@ def sweep_dead_code(conn: sqlite3.Connection, top_n: int = 50) -> int:
 
     print(
         "NOTE: Entrypoints (main.py, __main__.py, CLI scripts) are expected to have\n"
-        "zero importers — filter them before acting on this list."
+        "zero importers — filter them before acting on this list.",
     )
     return len(dead)
 

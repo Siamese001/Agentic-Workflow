@@ -100,7 +100,7 @@ try:
     print(f"Difference: {len(content1) - len(content2)} lines")
     print()
     diff = list(
-        difflib.unified_diff(content2, content1, fromfile=str(file2), tofile=str(file1), lineterm="", n=3)
+        difflib.unified_diff(content2, content1, fromfile=str(file2), tofile=str(file1), lineterm="", n=3),
     )
     if diff:
         print(f"Found {len(diff)} diff lines")

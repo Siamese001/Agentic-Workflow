@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -275,7 +274,7 @@ class ReasoningMemory:
                         "type": evicted.thought_type,
                         "context": evicted.context,
                         "confidence": evicted.confidence,
-                    }
+                    },
                 )
         if self.persist:
             self._persist_thought(thought_obj)
@@ -407,7 +406,7 @@ class ReasoningMemory:
                             confidence=thought_dict.get("confidence", 0.8),
                             timestamp=thought_dict.get("timestamp", time.time()),
                             metadata=thought_dict.get("metadata", {}),
-                        )
+                        ),
                     )
         # guardian: allow-silent-swallow
         except (ImportError, Exception):

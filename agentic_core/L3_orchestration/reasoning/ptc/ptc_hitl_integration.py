@@ -629,7 +629,7 @@ class PTCHITLIntegration:
 
         # Create example ID with hashes
         original_code_hash = hashlib.sha256(
-            f"{assessment.script_id}:{assessment.detected_patterns}".encode()
+            f"{assessment.script_id}:{assessment.detected_patterns}".encode(),
         ).hexdigest()[:16]
 
         control_hash = hashlib.sha256(b"safe_alternative").hexdigest()[:16]

@@ -136,7 +136,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -222,12 +221,12 @@ class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "TerritoryChangeHandlerAgent.on_modified"
+            _trace_id, LayerSegment.L5_POLICY, "TerritoryChangeHandlerAgent.on_modified",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:TerritoryChangeHandlerAgent.on_modified".encode()
+            f"{_trace_id}:TerritoryChangeHandlerAgent.on_modified".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -239,7 +238,7 @@ class TerritoryChangeHandlerAgent(SovereignBaseAgent, FileSystemEventHandler):
                 self.last_trigger = current_time
                 if self.daemon and hasattr(self.daemon, "loop"):
                     self.daemon.loop.call_soon_threadsafe(
-                        lambda: asyncio.create_task(self.daemon.trigger_reindex())
+                        lambda: asyncio.create_task(self.daemon.trigger_reindex()),
                     )
 
     @timeout(300)
@@ -308,7 +307,7 @@ class AutonomousRagDaemon:
                         "query": query,
                         "faithfulness": faithfulness,
                         "timestamp": time.time(),
-                    }
+                    },
                 )
                 if faithfulness < 0.75:
                     Logger.warning(f"[TERRITORY] Faithfulness low ({faithfulness}). Triggering reindex.")

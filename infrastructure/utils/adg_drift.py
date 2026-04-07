@@ -119,7 +119,7 @@ def load_snapshot(adg_path: Path) -> Snapshot:
         """SELECT e.id, n.resolved_path, e.symbol, e.line_no
            FROM edges e
            JOIN nodes n ON e.src_id = n.id
-           WHERE e.relation_type = 'violates'"""
+           WHERE e.relation_type = 'violates'""",
     )
     for row in cursor.fetchall():
         snapshot.violations.append(
@@ -128,7 +128,7 @@ def load_snapshot(adg_path: Path) -> Snapshot:
                 "source": row[1],
                 "symbol": row[2],
                 "line": row[3],
-            }
+            },
         )
 
     conn.close()
@@ -398,7 +398,7 @@ Examples:
 
             if args.max_deleted is not None and len(report.deleted_modules) > args.max_deleted:
                 logger.error(
-                    f"CI FAIL: {len(report.deleted_modules)} modules deleted (max: {args.max_deleted})"
+                    f"CI FAIL: {len(report.deleted_modules)} modules deleted (max: {args.max_deleted})",
                 )
                 drift_detected = True
 

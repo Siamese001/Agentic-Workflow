@@ -130,7 +130,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -241,7 +240,7 @@ class TestRigorEnforcer:
         self.requirements.append(requirement)
         print(
             f"[TEST-RIGOR] Requirement added: {requirement.surface_name} "
-            f"({requirement.minimum_test_count} tests minimum)"
+            f"({requirement.minimum_test_count} tests minimum)",
         )
 
     def validate_pre_code_generation(self) -> ValidationResult:
@@ -253,20 +252,20 @@ class TestRigorEnforcer:
             ValidationResult with compliant=True if requirements declared, False otherwise
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "TestRigorEnforcer.validate_pre_code_generation", "L5_POLICY"
+            str(uuid.uuid4()), "TestRigorEnforcer.validate_pre_code_generation", "L5_POLICY",
         )
         violations = []
 
         if not self.requirements:
             violations.append(
                 "§1.2 VIOLATION: No test requirements declared. "
-                "Must declare test coverage before code generation."
+                "Must declare test coverage before code generation.",
             )
 
         total_required = sum(req.minimum_test_count for req in self.requirements)
         if total_required == 0:
             violations.append(
-                "§1.1 VIOLATION: Zero tests required. Every line of changed logic MUST have tests."
+                "§1.1 VIOLATION: Zero tests required. Every line of changed logic MUST have tests.",
             )
 
         return ValidationResult(
@@ -332,7 +331,7 @@ class TestRigorEnforcer:
                 f"§1.12 VIOLATION: Test count mismatch. "
                 f"Collected {collected} but executed {executed_total}. "
                 f"Deselected: {collected - executed_total} tests. "
-                f"Zero-tolerance for test skipping."
+                f"Zero-tolerance for test skipping.",
             )
 
         # Step 4: Verify no skipped tests (§1.12)
@@ -345,7 +344,7 @@ class TestRigorEnforcer:
             violations.append(
                 f"§1.1 VIOLATION: Insufficient test coverage. "
                 f"Required {total_required} tests minimum, executed {executed_total}. "
-                f"Coverage gap: {total_required - executed_total} tests."
+                f"Coverage gap: {total_required - executed_total} tests.",
             )
 
         # Step 6: Check for test failures
@@ -474,7 +473,7 @@ class TestRigorEnforcer:
                 "",
                 f"  Coverage Match: {coverage_status} (§1.1)",
                 "",
-            ]
+            ],
         )
 
         # Violations
@@ -498,7 +497,7 @@ class TestRigorEnforcer:
                 "=" * 60,
                 f"VALIDATION STATUS: {status}",
                 "=" * 60,
-            ]
+            ],
         )
 
         return "\n".join(report_lines)

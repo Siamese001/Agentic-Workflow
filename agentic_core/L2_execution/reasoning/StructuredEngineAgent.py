@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -199,7 +198,7 @@ class StructuredEngineAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "StructuredEngineAgent.generate_plan"
+            _trace_id, LayerSegment.L2_EXECUTION, "StructuredEngineAgent.generate_plan",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -212,7 +211,7 @@ class StructuredEngineAgent(SovereignBaseAgent):
         prompt = f"TASK: {task}\nCONTEXT: {context}\nGenerate execution plan JSON."
         try:
             await self.llm_generate(
-                prompt, provider="google", model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+                prompt, provider="google", model=os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
             )
             return AgentPlan(
                 reasoning=f"Planned via {os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview')}",

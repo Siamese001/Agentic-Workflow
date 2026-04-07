@@ -101,32 +101,32 @@ def evaluate_shadow(production: ShadowMetrics, shadow: ShadowMetrics, thresholds
         )
         if latency_regression_pct > thresholds.max_p95_latency_regression_pct:
             violations.append(
-                f"P95_LATENCY_REGRESSION: {latency_regression_pct:.2f}% (threshold: {thresholds.max_p95_latency_regression_pct:.2f}%)"
+                f"P95_LATENCY_REGRESSION: {latency_regression_pct:.2f}% (threshold: {thresholds.max_p95_latency_regression_pct:.2f}%)",
             )
     error_rate_regression = shadow.error_rate - production.error_rate
     if error_rate_regression > thresholds.max_error_rate_regression_abs:
         violations.append(
-            f"ERROR_RATE_REGRESSION: +{error_rate_regression:.4f} (threshold: {thresholds.max_error_rate_regression_abs:.4f})"
+            f"ERROR_RATE_REGRESSION: +{error_rate_regression:.4f} (threshold: {thresholds.max_error_rate_regression_abs:.4f})",
         )
     if thresholds.forbid_any_safety_violation_increase:
         if shadow.safety_violation_count > production.safety_violation_count:
             violations.append(
-                f"SAFETY_VIOLATION_INCREASE: {shadow.safety_violation_count} > {production.safety_violation_count} (any increase forbidden)"
+                f"SAFETY_VIOLATION_INCREASE: {shadow.safety_violation_count} > {production.safety_violation_count} (any increase forbidden)",
             )
     if production.cpu_pct > 0:
         cpu_regression_pct = (shadow.cpu_pct - production.cpu_pct) / production.cpu_pct * 100.0
         if cpu_regression_pct > thresholds.max_cpu_regression_pct:
             violations.append(
-                f"CPU_REGRESSION: {cpu_regression_pct:.2f}% (threshold: {thresholds.max_cpu_regression_pct:.2f}%)"
+                f"CPU_REGRESSION: {cpu_regression_pct:.2f}% (threshold: {thresholds.max_cpu_regression_pct:.2f}%)",
             )
     if production.mem_mb > 0:
         mem_regression_pct = (shadow.mem_mb - production.mem_mb) / production.mem_mb * 100.0
         if mem_regression_pct > thresholds.max_mem_regression_pct:
             violations.append(
-                f"MEM_REGRESSION: {mem_regression_pct:.2f}% (threshold: {thresholds.max_mem_regression_pct:.2f}%)"
+                f"MEM_REGRESSION: {mem_regression_pct:.2f}% (threshold: {thresholds.max_mem_regression_pct:.2f}%)",
             )
     if violations:
         raise ShadowRegression(
             f"SHADOW_REGRESSION: {len(violations)} threshold(s) violated:\n"
-            + "\n".join(f"  - {v}" for v in violations)
+            + "\n".join(f"  - {v}" for v in violations),
         )

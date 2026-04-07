@@ -75,7 +75,7 @@ class ProgressTracker:
 
 
 def analyze_files_fast(
-    tests_dir: pathlib.Path, max_files: int = 1000, pattern: str = "test_*.py"
+    tests_dir: pathlib.Path, max_files: int = 1000, pattern: str = "test_*.py",
 ) -> tuple[int, int, dict[str, int]]:
     """
     Fast bounded analysis of test files with progress display.
@@ -169,15 +169,15 @@ Examples:
     )
 
     parser.add_argument(
-        "--directory", "-d", type=str, default="tests", help="Directory to analyze (default: tests)"
+        "--directory", "-d", type=str, default="tests", help="Directory to analyze (default: tests)",
     )
 
     parser.add_argument(
-        "--max-files", "-m", type=int, default=1000, help="Maximum files to process (default: 1000)"
+        "--max-files", "-m", type=int, default=1000, help="Maximum files to process (default: 1000)",
     )
 
     parser.add_argument(
-        "--pattern", "-p", type=str, default="test_*.py", help="File pattern to match (default: test_*.py)"
+        "--pattern", "-p", type=str, default="test_*.py", help="File pattern to match (default: test_*.py)",
     )
 
     args = parser.parse_args()

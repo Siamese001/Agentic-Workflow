@@ -214,7 +214,7 @@ def main():
             print(f"  ERROR: {detail}  [{rel}]")
 
     print(
-        f"\nSummary: {stats.get('WIRED', 0)} wired, {stats.get('SKIP', 0)} skipped, {stats.get('ERROR', 0)} errors"
+        f"\nSummary: {stats.get('WIRED', 0)} wired, {stats.get('SKIP', 0)} skipped, {stats.get('ERROR', 0)} errors",
     )
 
 

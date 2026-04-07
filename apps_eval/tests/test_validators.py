@@ -23,7 +23,7 @@ class TestComplianceValidator(unittest.TestCase):
     def test_validate_pass(self):
         """Test validation passes."""
         request = EvalRequest(
-            config=EvalConfig(min_pass_rate=0.7, require_deterministic=True)
+            config=EvalConfig(min_pass_rate=0.7, require_deterministic=True),
         )
         result = EvalResult(
             overall_score=0.85,
@@ -60,9 +60,9 @@ class TestComplianceValidator(unittest.TestCase):
                             outcome="PASS",
                             score=0.9,
                             deterministic=False,
-                        )
+                        ),
                     ],
-                )
+                ),
             ],
         )
 
@@ -76,7 +76,7 @@ class TestQualityGateValidator(unittest.TestCase):
 
     def setUp(self):
         self.validator = QualityGateValidator(
-            config={"min_scenarios": 2, "max_latency_ms": 1000}
+            config={"min_scenarios": 2, "max_latency_ms": 1000},
         )
 
     def test_validate_pass(self):
@@ -102,7 +102,7 @@ class TestQualityGateValidator(unittest.TestCase):
                         ),
                     ],
                     mean_latency_ms=500,
-                )
+                ),
             ],
         )
 
@@ -143,7 +143,7 @@ class TestQualityGateValidator(unittest.TestCase):
                         ),
                     ],
                     mean_latency_ms=2000,
-                )
+                ),
             ],
         )
 
@@ -163,7 +163,7 @@ class TestQualityGateValidator(unittest.TestCase):
                     baseline_score=0.90,
                     delta=-0.15,
                     verdict="REGRESSION",
-                )
+                ),
             ],
         )
 

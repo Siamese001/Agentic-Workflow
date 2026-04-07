@@ -96,7 +96,7 @@ class AppsTracingMixin:
             # Get or create tracer for this agent
             self._apps_tracer = trace.get_tracer(
                 instrumenting_module_name=f"apps.{self._service_name}",
-                instrumenting_library_version="1.0.0"
+                instrumenting_library_version="1.0.0",
             )
             self._apps_tracing_enabled = True
             logger.info(f"[{self._service_name}] AppsTracingMixin initialized")
@@ -108,7 +108,7 @@ class AppsTracingMixin:
         self,
         operation: str,
         attributes: dict[str, Any] | None = None,
-        span_kind: str = "AGENT_EXECUTE"
+        span_kind: str = "AGENT_EXECUTE",
     ) -> Generator[SpanContext | dict, None, None]:
         """Start an agent operation span with OTel instrumentation.
 
@@ -133,7 +133,7 @@ class AppsTracingMixin:
                 _emit_records_execution_trace(
                     self._service_name,
                     "L_APP",
-                    span_name
+                    span_name,
                 )
             except Exception:
                 pass  # Silent degradation
@@ -155,7 +155,7 @@ class AppsTracingMixin:
                 # Start OTel span
                 otel_span = self._apps_tracer.start_span(
                     name=span_name,
-                    attributes=span_attrs
+                    attributes=span_attrs,
                 )
 
                 # Set span status to OK initially
@@ -172,7 +172,7 @@ class AppsTracingMixin:
                 span_id=self._generate_span_id(),
                 service_name=self._service_name,
                 operation_name=operation,
-                attributes=attributes or {}
+                attributes=attributes or {},
             )
         else:
             ctx = {
@@ -180,7 +180,7 @@ class AppsTracingMixin:
                 "span_id": self._generate_span_id(),
                 "service_name": self._service_name,
                 "operation_name": operation,
-                "attributes": attributes or {}
+                "attributes": attributes or {},
             }
 
         try:
@@ -210,7 +210,7 @@ class AppsTracingMixin:
                     _emit_records_telemetry_event(
                         self._service_name,
                         span_name,
-                        f"span_completed_duration_ms={duration_ms:.2f}"
+                        f"span_completed_duration_ms={duration_ms:.2f}",
                     )
                 except Exception:
                     pass
@@ -220,7 +220,7 @@ class AppsTracingMixin:
     def start_reasoning_span(
         self,
         reasoning_type: str,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ) -> Generator[SpanContext | dict, None, None]:
         """Start a reasoning-specific span.
 
@@ -240,7 +240,7 @@ class AppsTracingMixin:
     def start_tool_span(
         self,
         tool_name: str,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ) -> Generator[SpanContext | dict, None, None]:
         """Start a tool invocation span.
 
@@ -260,7 +260,7 @@ class AppsTracingMixin:
     def start_validation_span(
         self,
         validation_type: str,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ) -> Generator[SpanContext | dict, None, None]:
         """Start a validation span.
 

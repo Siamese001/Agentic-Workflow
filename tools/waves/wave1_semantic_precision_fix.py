@@ -6,9 +6,9 @@ The fix modifies _stamp_semantic_types() to better classify execution edges into
 types rather than generic "ordered_execution".
 """
 
-import re
 import sys
 from pathlib import Path
+
 
 def patch_static_scanner():
     """Apply Wave 1 semantic precision fix to static_scanner.py"""

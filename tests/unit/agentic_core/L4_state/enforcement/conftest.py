@@ -8,6 +8,15 @@ from pathlib import Path
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def isolated_memory_db(tmp_path, monkeypatch):
+    """Redirect MEMORY_DB to a per-test temp SQLite so tests never touch
+    the production artifacts/memory/knowledge_graph.sqlite."""
+    test_db = tmp_path / "test_knowledge_graph.sqlite"
+    monkeypatch.setenv("MEMORY_DB", str(test_db))
+    yield test_db
+
+
 @pytest.fixture
 def temp_directory():
     """Provide a temporary directory that gets cleaned up automatically."""
@@ -36,7 +45,7 @@ def clean_env():
     # Keep essential variables but remove test additions
     essential_vars = [
         "PATH", "HOME", "USER", "TEMP", "TMP", "USERNAME",
-        "COMPUTERNAME", "SYSTEMROOT", "WINDIR"
+        "COMPUTERNAME", "SYSTEMROOT", "WINDIR",
     ]
 
     clean_env = {k: v for k, v in original_env.items() if k in essential_vars}

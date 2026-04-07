@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -100,7 +100,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"safety_audit_emitted exported={emitter_function} (>=1), "
             f"applies_guardrail sources={guardrail_edges} (>=1), "
             f"validated_by_safety_plane sources={safety_plane_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -128,7 +128,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"SafetyAuditRecord exported={audit_record} (>=1), "
             f"policy_hash field present={policy_hash_field} (>=1), "
             f"references_policy_hash sources={policy_hash_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -152,7 +152,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             ok,
             f"SafetyAuditRecord exported={audit_record} (>=1), "
             f"applies_guardrail sources={guardrail_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -180,7 +180,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"HumanReviewAuditError exported={review_error} (>=1), "
             f"HumanReviewAuditRecord exported={review_record} (>=1), "
             f"requires_human_review sources={human_review_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -212,7 +212,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"query_safety_audits exported={query_function} (>=1), "
             f"SafetyAuditRecord exported={audit_record} (>=1), "
             f"AuditQueryError exported={query_error} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -257,7 +257,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L5_safety/audit%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -217,7 +216,7 @@ def _diff_hash(diff: dict[str, Any]) -> str:
 
 
 def verify_mutation_replay_integrity(
-    snapshot_pre: dict[str, Any], snapshot_post: dict[str, Any], uwg_state_diff: dict[str, Any]
+    snapshot_pre: dict[str, Any], snapshot_post: dict[str, Any], uwg_state_diff: dict[str, Any],
 ) -> None:
     """Verify that the observed boundary diff matches the UWG-recorded state_diff.
 
@@ -235,7 +234,7 @@ def verify_mutation_replay_integrity(
             uwg_h[:16],
         )
         raise MutationReplayIntegrityViolation(
-            f"Boundary diff hash mismatch: computed={computed_h[:16]}... uwg={uwg_h[:16]}... Execution transcript does not match recorded mutations."
+            f"Boundary diff hash mismatch: computed={computed_h[:16]}... uwg={uwg_h[:16]}... Execution transcript does not match recorded mutations.",
         )
     logger.debug("Mutation replay integrity OK: diff_hash=%s", computed_h[:16])
 

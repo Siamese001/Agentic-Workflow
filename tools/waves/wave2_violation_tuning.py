@@ -6,9 +6,9 @@ tuples (e.g., `except (ImportError, AttributeError):`) instead of mislabeling
 them as "bare" excepts.
 """
 
-import re
 import sys
 from pathlib import Path
+
 
 def patch_violation_detection():
     """Apply Wave 2 violation categorization fix"""

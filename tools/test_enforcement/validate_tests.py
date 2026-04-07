@@ -36,7 +36,7 @@ class TestValidator:
             'OPTIONAL': ['@pytest.mark.optional', '@pytest.mark.aws', '@pytest.mark.gpu', '@pytest.mark.db'],
             'PLATFORM-SPECIFIC': ['@pytest.mark.platform', '@pytest.mark.windows', '@pytest.mark.linux'],
             'EXTERNAL': ['@pytest.mark.external'],
-            'EXPERIMENTAL': ['@pytest.mark.experimental']
+            'EXPERIMENTAL': ['@pytest.mark.experimental'],
         }
 
     def validate_test_file(self, file_path: Path) -> list[dict[str, Any]]:
@@ -60,7 +60,7 @@ class TestValidator:
                 'violation_type': 'syntax_error',
                 'severity': SeverityLevel.HIGH.value,
                 'description': f'Syntax error: {e}',
-                'suggested_fix': 'Fix syntax error before validation'
+                'suggested_fix': 'Fix syntax error before validation',
             })
         except Exception as e:
             violations.append({
@@ -69,7 +69,7 @@ class TestValidator:
                 'violation_type': 'parse_error',
                 'severity': SeverityLevel.HIGH.value,
                 'description': f'Parse error: {e}',
-                'suggested_fix': 'Fix file parsing issue'
+                'suggested_fix': 'Fix file parsing issue',
             })
 
         return violations
@@ -93,10 +93,10 @@ class TestValidator:
                 "validation_timestamp": "2026-03-24T18:31:00Z",
                 "total_files_validated": len(test_files),
                 "total_violations": len(all_violations),
-                "validator_version": "1.0"
+                "validator_version": "1.0",
             },
             "summary": self._build_summary(all_violations),
-            "violations": all_violations
+            "violations": all_violations,
         }
 
         return report
@@ -119,7 +119,7 @@ class TestValidator:
 
         return {
             "by_type": by_type,
-            "by_severity": by_severity
+            "by_severity": by_severity,
         }
 
 
@@ -213,7 +213,7 @@ class ValidationVisitor(ast.NodeVisitor):
                 'violation_type': 'missing_category_marker',
                 'severity': 'MEDIUM',
                 'description': f'Test {self.current_function} lacks category marker',
-                'suggested_fix': 'Add @pytest.mark.core/optional/platform/external/experimental'
+                'suggested_fix': 'Add @pytest.mark.core/optional/platform/external/experimental',
             })
 
     def visit_Call(self, node: ast.Call):
@@ -234,7 +234,7 @@ class ValidationVisitor(ast.NodeVisitor):
                     'violation_type': 'unmarked_skip',
                     'severity': 'HIGH',
                     'description': f'Test {self.current_function} uses pytest.skip without marker',
-                    'suggested_fix': 'Add @pytest.mark.optional/external marker or remove skip'
+                    'suggested_fix': 'Add @pytest.mark.optional/external marker or remove skip',
                 })
 
         # Check pytest.importorskip calls
@@ -252,7 +252,7 @@ class ValidationVisitor(ast.NodeVisitor):
                     'violation_type': 'unmarked_importorskip',
                     'severity': 'HIGH',
                     'description': f'Test {self.current_function} uses importorskip without proper marker',
-                    'suggested_fix': 'Add @pytest.mark.optional/external/platform marker'
+                    'suggested_fix': 'Add @pytest.mark.optional/external/platform marker',
                 })
 
         self.generic_visit(node)
@@ -275,7 +275,7 @@ class ValidationVisitor(ast.NodeVisitor):
                         'violation_type': 'core_import_error_skip',
                         'severity': 'HIGH',
                         'description': f'Core test {self.current_function} uses ImportError skip',
-                        'suggested_fix': 'Remove ImportError handling or reclassify as optional'
+                        'suggested_fix': 'Remove ImportError handling or reclassify as optional',
                     })
                 else:
                     # Rule: ImportError skips should use importorskip
@@ -285,7 +285,7 @@ class ValidationVisitor(ast.NodeVisitor):
                         'violation_type': 'import_error_pattern',
                         'severity': 'MEDIUM',
                         'description': f'Test {self.current_function} uses try/except ImportError pattern',
-                        'suggested_fix': 'Use pytest.importorskip with proper marker'
+                        'suggested_fix': 'Use pytest.importorskip with proper marker',
                     })
 
         self.generic_visit(node)

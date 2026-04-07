@@ -83,7 +83,7 @@ class DetectorConfig:
     enable_memory_leak: bool = True
     baseline_path: Path | None = None
     ignore_patterns: list[str] = field(
-        default_factory=lambda: ["test_", "_test.py", "conftest.py"]
+        default_factory=lambda: ["test_", "_test.py", "conftest.py"],
     )
     project_root: Path | None = None
 
@@ -218,7 +218,7 @@ class CodeDetector:
                         line_number=lineno,
                         severity=Severity.WARNING.name,
                         message=f"Potentially unused definition: {name}",
-                    )
+                    ),
                 )
         except SyntaxError:
             pass
@@ -257,7 +257,7 @@ class CodeDetector:
                             severity=Severity.ERROR.name,
                             message="Potential nested lock acquisition (Deadlock Risk)",
                             details={"nested_lines": [l1, l2]},
-                        )
+                        ),
                     )
 
         return detections
@@ -286,7 +286,7 @@ class CodeDetector:
                             severity=Severity.WARNING.name,
                             message="Potential memory leak pattern",
                             details={"pattern": pattern},
-                        )
+                        ),
                     )
 
         return detections

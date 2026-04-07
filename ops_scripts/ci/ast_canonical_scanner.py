@@ -93,7 +93,7 @@ def scan_file(file_path: Path) -> list[str]:
         ):
             violations.append(
                 f"VIOLATION {file_path}:{node.lineno}: "
-                f"direct json.dumps — use CanonicalJSON.serialize_bytes() instead"
+                f"direct json.dumps — use CanonicalJSON.serialize_bytes() instead",
             )
 
     return violations

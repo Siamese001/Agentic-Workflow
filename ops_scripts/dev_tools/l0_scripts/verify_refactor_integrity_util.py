@@ -12,7 +12,6 @@ import re
 import sys
 from pathlib import Path
 
-
 ROOT_DIR = Path(__file__).resolve().parent.parent
 RENAMES = {'Config': 'app_config', 'Exceptions': 'canon_exceptions', 'Factory': 'router_factory', 'Prompts': 'resume_prompts'}
 SEARCH_PATHS = [AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, 'scripts']

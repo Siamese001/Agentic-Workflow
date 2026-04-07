@@ -47,7 +47,7 @@ class TestLayerHealthSmoke:
             name="Redis SHA-256 Cache",
             healthy=redis_healthy,
             latency_ms=elapsed,
-            error=error_msg
+            error=error_msg,
         )
 
         # Test validates connection attempt occurred
@@ -75,7 +75,7 @@ class TestLayerHealthSmoke:
             name="Redis SHA-256 Cache",
             healthy=redis_healthy,
             latency_ms=1000.0,
-            error=f"Connection failed with code {result}"
+            error=f"Connection failed with code {result}",
         )
 
         assert status.healthy is False
@@ -103,7 +103,7 @@ class TestLayerHealthSmoke:
             layer=2,
             name="BGE-M3 Embedding",
             healthy=embedding_healthy,
-            latency_ms=elapsed
+            latency_ms=elapsed,
         )
 
         assert status.healthy is True
@@ -136,7 +136,7 @@ class TestLayerHealthSmoke:
             layer=3,
             name="FAISS Vector Store",
             healthy=faiss_healthy,
-            latency_ms=elapsed
+            latency_ms=elapsed,
         )
 
         assert status.healthy is True
@@ -147,7 +147,7 @@ class TestLayerHealthSmoke:
             layer=3,
             name="BM25 Keyword Index",
             healthy=True,
-            latency_ms=5.0
+            latency_ms=5.0,
         )
 
         assert status.healthy is True
@@ -165,7 +165,7 @@ class TestLayerHealthSmoke:
             layer=3,
             name="ADG Graph Database",
             healthy=adg_healthy,
-            latency_ms=elapsed
+            latency_ms=elapsed,
         )
 
         assert status.healthy is True
@@ -183,7 +183,7 @@ class TestLayerHealthSmoke:
             layer=4,
             name="LangGraph Orchestrator",
             healthy=langgraph_healthy,
-            latency_ms=elapsed
+            latency_ms=elapsed,
         )
 
         assert status.healthy is True
@@ -208,7 +208,7 @@ class TestLayerHealthSmoke:
             layer=5,
             name="LLM Fallback API",
             healthy=llm_healthy,
-            latency_ms=elapsed
+            latency_ms=elapsed,
         )
 
         assert status.healthy is True
@@ -269,7 +269,7 @@ class TestCriticalPathSmoke:
             "query_hash": "abc123",
             "timestamp": time.time(),
             "latency_ms": 150.0,
-            "cache_hit": True
+            "cache_hit": True,
         }
 
         assert "layer" in telemetry
@@ -307,7 +307,7 @@ class TestFailureModesSmoke:
             2: False,
             3: True,
             4: True,
-            5: True
+            5: True,
         }
 
         # Should still be able to serve requests

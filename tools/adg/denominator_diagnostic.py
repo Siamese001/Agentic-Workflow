@@ -15,10 +15,10 @@ conn = sqlite3.connect(db_path)
 print("\n=== CALLS EDGES: synthetic _emit_* vs real ===")
 total_calls = conn.execute("SELECT COUNT(*) FROM edges WHERE relation_type='calls'").fetchone()[0]
 emit_calls = conn.execute(
-    "SELECT COUNT(*) FROM edges WHERE relation_type='calls' AND symbol LIKE '%._emit_%'"
+    "SELECT COUNT(*) FROM edges WHERE relation_type='calls' AND symbol LIKE '%._emit_%'",
 ).fetchone()[0]
 emit_calls2 = conn.execute(
-    "SELECT COUNT(*) FROM edges WHERE relation_type='calls' AND symbol LIKE '%.emit_%'"
+    "SELECT COUNT(*) FROM edges WHERE relation_type='calls' AND symbol LIKE '%.emit_%'",
 ).fetchone()[0]
 print(f"  Total calls edges: {total_calls}")
 print(f"  _emit_* calls (synthetic): {emit_calls}")
@@ -28,7 +28,7 @@ print(f"  Real calls (total - _emit_*): {total_calls - emit_calls}")
 # Top 20 calls symbols
 print("\n  Top 30 calls target symbols:")
 rows = conn.execute(
-    "SELECT symbol, COUNT(*) as cnt FROM edges WHERE relation_type='calls' GROUP BY symbol ORDER BY cnt DESC LIMIT 30"
+    "SELECT symbol, COUNT(*) as cnt FROM edges WHERE relation_type='calls' GROUP BY symbol ORDER BY cnt DESC LIMIT 30",
 ).fetchall()
 for sym, cnt in rows:
     marker = " *** SYNTHETIC" if "_emit_" in sym or sym.startswith("emit_") else ""
@@ -38,7 +38,7 @@ for sym, cnt in rows:
 print("\n=== RECORDS_EXECUTION_TRACE EDGES: synthetic vs real ===")
 total_ret = conn.execute("SELECT COUNT(*) FROM edges WHERE relation_type='records_execution_trace'").fetchone()[0]
 emit_ret = conn.execute(
-    "SELECT COUNT(*) FROM edges WHERE relation_type='records_execution_trace' AND symbol LIKE '%_emit_%'"
+    "SELECT COUNT(*) FROM edges WHERE relation_type='records_execution_trace' AND symbol LIKE '%_emit_%'",
 ).fetchone()[0]
 print(f"  Total records_execution_trace: {total_ret}")
 print(f"  _emit_* sourced (synthetic): {emit_ret}")
@@ -46,7 +46,7 @@ print(f"  Real: {total_ret - emit_ret}")
 
 print("\n  All records_execution_trace symbols:")
 rows = conn.execute(
-    "SELECT symbol, COUNT(*) as cnt FROM edges WHERE relation_type='records_execution_trace' GROUP BY symbol ORDER BY cnt DESC"
+    "SELECT symbol, COUNT(*) as cnt FROM edges WHERE relation_type='records_execution_trace' GROUP BY symbol ORDER BY cnt DESC",
 ).fetchall()
 for sym, cnt in rows:
     marker = " *** SYNTHETIC" if "_emit_" in sym else ""
@@ -56,7 +56,7 @@ for sym, cnt in rows:
 print("\n=== WRITES_TO EDGES: synthetic vs real ===")
 total_wt = conn.execute("SELECT COUNT(*) FROM edges WHERE relation_type='writes_to'").fetchone()[0]
 emit_wt = conn.execute(
-    "SELECT COUNT(*) FROM edges WHERE relation_type='writes_to' AND symbol LIKE '%_emit_%'"
+    "SELECT COUNT(*) FROM edges WHERE relation_type='writes_to' AND symbol LIKE '%_emit_%'",
 ).fetchone()[0]
 print(f"  Total writes_to: {total_wt}")
 print(f"  _emit_* sourced (synthetic): {emit_wt}")
@@ -64,7 +64,7 @@ print(f"  Real: {total_wt - emit_wt}")
 
 print("\n  Top 20 writes_to symbols:")
 rows = conn.execute(
-    "SELECT symbol, COUNT(*) as cnt FROM edges WHERE relation_type='writes_to' GROUP BY symbol ORDER BY cnt DESC LIMIT 20"
+    "SELECT symbol, COUNT(*) as cnt FROM edges WHERE relation_type='writes_to' GROUP BY symbol ORDER BY cnt DESC LIMIT 20",
 ).fetchall()
 for sym, cnt in rows:
     marker = " *** SYNTHETIC" if "_emit_" in sym else ""
@@ -73,7 +73,7 @@ for sym, cnt in rows:
 # 4. reads_from: check for synthetic sources
 print("\n=== READS_FROM EDGES: by edge_kind ===")
 rows = conn.execute(
-    "SELECT edge_kind, COUNT(*) as cnt FROM edges WHERE relation_type='reads_from' GROUP BY edge_kind ORDER BY cnt DESC"
+    "SELECT edge_kind, COUNT(*) as cnt FROM edges WHERE relation_type='reads_from' GROUP BY edge_kind ORDER BY cnt DESC",
 ).fetchall()
 for ek, cnt in rows:
     print(f"  {ek}: {cnt}")

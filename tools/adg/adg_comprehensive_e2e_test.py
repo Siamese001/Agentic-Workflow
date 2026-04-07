@@ -34,7 +34,7 @@ class ADGComprehensiveE2ETest:
             "test_start": datetime.now().isoformat(),
             "timestamp": self.timestamp,
             "checks": {},
-            "overall_success": True
+            "overall_success": True,
         }
 
     def run_all_tests(self) -> dict[str, Any]:
@@ -108,7 +108,7 @@ class ADGComprehensiveE2ETest:
                 "cache_exists": True,
                 "cache_size_mb": self.cache_file.stat().st_size / (1024 * 1024),
                 "cached_modules": module_count,
-                "cache_timestamp": cache_data.get("metadata", {}).get("generated_at", "unknown")
+                "cache_timestamp": cache_data.get("metadata", {}).get("generated_at", "unknown"),
             }
 
             print("  Cache exists: ✅")
@@ -139,7 +139,7 @@ class ADGComprehensiveE2ETest:
                 cwd=str(ROOT),
                 capture_output=True,
                 text=True,
-                timeout=600  # 10 minute timeout
+                timeout=600,  # 10 minute timeout
             )
 
             gen_duration = time.time() - gen_start
@@ -150,7 +150,7 @@ class ADGComprehensiveE2ETest:
                     "error": "ADG generation script failed",
                     "return_code": process.returncode,
                     "stderr": process.stderr[-500:] if process.stderr else "",
-                    "stdout": process.stdout[-500:] if process.stdout else ""
+                    "stdout": process.stdout[-500:] if process.stdout else "",
                 }
                 return result
 
@@ -158,7 +158,7 @@ class ADGComprehensiveE2ETest:
                 "generation_duration": gen_duration,
                 "generation_timestamp": self.timestamp,
                 "cache_used": self.cache_file.exists(),
-                "script_output": process.stdout[-200:] if process.stdout else ""
+                "script_output": process.stdout[-200:] if process.stdout else "",
             }
 
             print(f"  ADG generation completed in {gen_duration:.1f}s")
@@ -194,7 +194,7 @@ class ADGComprehensiveE2ETest:
             f"mutation_integrity_report_{self.timestamp}.json",
             f"provenance_report_{self.timestamp}.json",
             f"replay_determinism_report_{self.timestamp}.json",
-            f"test_surface_coverage_{self.timestamp}.json"
+            f"test_surface_coverage_{self.timestamp}.json",
         ]
 
         missing_artifacts = []
@@ -214,7 +214,7 @@ class ADGComprehensiveE2ETest:
             "found_artifacts": len(found_artifacts),
             "missing_artifacts": missing_artifacts,
             "total_size_mb": total_size / (1024 * 1024),
-            "artifacts_list": found_artifacts
+            "artifacts_list": found_artifacts,
         }
 
         if missing_artifacts:
@@ -280,7 +280,7 @@ class ADGComprehensiveE2ETest:
                 "null_layers": null_layers,
                 "null_identities": null_identities,
                 "top_relations": top_relations,
-                "integrity_score": 100 - (null_layers + null_identities) * 100 // node_count if node_count > 0 else 0
+                "integrity_score": 100 - (null_layers + null_identities) * 100 // node_count if node_count > 0 else 0,
             }
 
             print("  Database structure: ✅")
@@ -307,7 +307,7 @@ class ADGComprehensiveE2ETest:
         reports_to_test = [
             f"adg_snapshot_{self.timestamp}.json",
             f"layer_coverage_report_{self.timestamp}.json",
-            f"edge_density_report_{self.timestamp}.json"
+            f"edge_density_report_{self.timestamp}.json",
         ]
 
         report_results = {}
@@ -331,12 +331,12 @@ class ADGComprehensiveE2ETest:
                         "status": "valid" if not missing_keys else "invalid",
                         "missing_keys": missing_keys,
                         "nodes": report_data.get("nodes", 0),
-                        "edges": report_data.get("edges", 0)
+                        "edges": report_data.get("edges", 0),
                     }
                 else:
                     report_results[report_name] = {
                         "status": "valid",
-                        "keys": list(report_data.keys())
+                        "keys": list(report_data.keys()),
                     }
 
             except (ValueError, TypeError, RuntimeError) as e:
@@ -383,7 +383,7 @@ class ADGComprehensiveE2ETest:
                 "analyzed_modules": analyzed_modules,
                 "error_modules": error_modules,
                 "cache_hit_rate": cache_hit_rate,
-                "cache_effectiveness": "high" if cache_hit_rate > 90 else "medium" if cache_hit_rate > 70 else "low"
+                "cache_effectiveness": "high" if cache_hit_rate > 90 else "medium" if cache_hit_rate > 70 else "low",
             }
 
             print("  Cache performance: ✅")
@@ -435,7 +435,7 @@ class ADGComprehensiveE2ETest:
                 "precision_duration": precision_duration,
                 "precision_results": precision_results,
                 "precision_success": precision_results.get("overall_success", False),
-                "database_used": str(db_path.name)
+                "database_used": str(db_path.name),
             }
 
             print("  Precision pass: ✅" if result["details"]["precision_success"] else "❌")

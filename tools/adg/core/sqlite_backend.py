@@ -32,6 +32,14 @@ class SQLiteBackend:
         if use_graph_store:
             self._init_graph_store()
 
+    def _init_graph_store(self) -> None:
+        """Initialize optional SQLiteGraphStore for graph-native operations.
+
+        Currently a no-op stub — SQLiteGraphStore integration is deferred.
+        Graph-native methods fall back to SQL-based implementations.
+        """
+        self._graph_store = None  # No graph store implementation at this time
+
     def _connect(self) -> None:
         """Establish connection to latest SQLite file."""
         adg_dir = get_adg_dir()
@@ -54,37 +62,60 @@ class SQLiteBackend:
         current_mtime = self._sqlite_path.stat().st_mtime
         is_fresh = current_mtime == self._last_mtime
 
+        # Check if current snapshot is stale (newer file exists)
+        adg_dir = get_adg_dir()
+        files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
+        is_stale = bool(files) and files[-1] != self._sqlite_path
+
         return "healthy", {
             "path": str(self._sqlite_path),
             "mtime": current_mtime,
             "is_fresh": is_fresh,
+            "is_stale": is_stale,
+            "latest_path": str(files[-1]) if files else None,
         }
+
+    @staticmethod
+    def _row_to_edge(row) -> ADGEdge:
+        """Convert a SQLite row to ADGEdge, coercing ids to str."""
+        data = dict(row)
+        for key in ("id", "src_id", "dst_id"):
+            if key in data and data[key] is not None:
+                data[key] = str(data[key])
+        return ADGEdge(**data)
+
+    @staticmethod
+    def _row_to_node(row) -> ADGNode:
+        """Convert a SQLite row to ADGNode, coercing id to str."""
+        data = dict(row)
+        data["id"] = str(data["id"])
+        return ADGNode(**data)
 
     def get_node(self, node_id: str) -> ADGNode | None:
         """Fetch node by ID from SQLite."""
         cur = self._conn.execute(
-            "SELECT * FROM nodes WHERE id = ?", (node_id,)
+            "SELECT * FROM nodes WHERE id = ?", (node_id,),
         )
         row = cur.fetchone()
         if row:
-            return ADGNode(**dict(row))
+            return self._row_to_node(row)
         return None
 
     def get_nodes_by_layer(self, layer: str, limit: int = 100) -> list[ADGNode]:
         """Fetch nodes by layer."""
         cur = self._conn.execute(
             "SELECT * FROM nodes WHERE layer = ? LIMIT ?",
-            (layer, limit)
+            (layer, limit),
         )
-        return [ADGNode(**dict(row)) for row in cur.fetchall()]
+        return [self._row_to_node(row) for row in cur.fetchall()]
 
     def get_nodes_by_file(self, file_path: str, limit: int = 100) -> list[ADGNode]:
         """Fetch nodes by file path."""
         cur = self._conn.execute(
             "SELECT * FROM nodes WHERE resolved_path LIKE ? LIMIT ?",
-            (f"%{file_path}%", limit)
+            (f"%{file_path}%", limit),
         )
-        return [ADGNode(**dict(row)) for row in cur.fetchall()]
+        return [self._row_to_node(row) for row in cur.fetchall()]
 
     def get_edge_fanout(self, src_id: str, relation_type: str, limit: int = 30) -> list[ADGEdge]:
         """Fetch outgoing edges."""
@@ -92,9 +123,9 @@ class SQLiteBackend:
             """SELECT id, src_id, dst_id, relation_type, edge_kind,
                       source_file, line_no, symbol
                FROM edges WHERE src_id = ? AND relation_type = ? LIMIT ?""",
-            (src_id, relation_type, limit)
+            (src_id, relation_type, limit),
         )
-        return [ADGEdge(**dict(row)) for row in cur.fetchall()]
+        return [self._row_to_edge(row) for row in cur.fetchall()]
 
     def get_edge_fanin(self, tgt_id: str, relation_type: str, limit: int = 30) -> list[ADGEdge]:
         """Fetch incoming edges."""
@@ -102,9 +133,9 @@ class SQLiteBackend:
             """SELECT id, src_id, dst_id, relation_type, edge_kind,
                       source_file, line_no, symbol
                FROM edges WHERE dst_id = ? AND relation_type = ? LIMIT ?""",
-            (tgt_id, relation_type, limit)
+            (tgt_id, relation_type, limit),
         )
-        return [ADGEdge(**dict(row)) for row in cur.fetchall()]
+        return [self._row_to_edge(row) for row in cur.fetchall()]
 
     def get_status(self) -> dict[str, Any]:
         """Get ADG snapshot status."""
@@ -124,7 +155,7 @@ class SQLiteBackend:
             cur = self._conn.execute(
                 """SELECT id, source_file, relation_type, symbol, line_no
                    FROM edges WHERE relation_type = 'violates' LIMIT ?""",
-                (limit,)
+                (limit,),
             )
             return [dict(row) for row in cur.fetchall()]
         except sqlite3.Error as e:
@@ -163,7 +194,7 @@ class SQLiteBackend:
         # Fallback: degree centrality from direct edge count
         cur = self._conn.execute(
             "SELECT COUNT(*) FROM edges WHERE src_id = ? OR dst_id = ?",
-            (node_id, node_id)
+            (node_id, node_id),
         )
         return float(cur.fetchone()[0])
 

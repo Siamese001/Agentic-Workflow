@@ -1,7 +1,8 @@
 """Tests for ADG integration in HybridSearchEngine."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import HybridSearchEngine
 
@@ -39,14 +40,14 @@ def mock_adg_db_path(tmp_path: Path) -> str:
         "INSERT INTO nodes (id, adg_name, resolved_path, entity_type, layer, territory) VALUES "
         "(1, 'test_func', 'test.py', 'function', 'L2', 'L2_EXECUTION'),"
         "(2, 'test_class', 'test.py', 'class', 'L2', 'L2_EXECUTION'),"
-        "(3, 'caller_func', 'caller.py', 'function', 'L3', 'L3_ORCHESTRATION')"
+        "(3, 'caller_func', 'caller.py', 'function', 'L3', 'L3_ORCHESTRATION')",
     )
 
     # Insert test edges
     conn.execute(
         "INSERT INTO edges (src_id, dst_id, relation_type) VALUES "
         "(3, 1, 'calls'),"
-        "(3, 2, 'imports')"
+        "(3, 2, 'imports')",
     )
 
     conn.commit()
@@ -185,7 +186,7 @@ def test_governance_filters_multiple():
     ]
 
     filtered = engine._apply_governance_filters(
-        results, {"layers": ["L2"], "entity_types": ["function"]}
+        results, {"layers": ["L2"], "entity_types": ["function"]},
     )
     assert len(filtered) == 1
     assert filtered[0].chunk_id == "1"

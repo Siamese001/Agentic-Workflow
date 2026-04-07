@@ -13,7 +13,7 @@ rows = conn.execute(
     "SELECT e.source_file, n.resolved_path, e.symbol FROM edges e "
     "JOIN nodes n ON n.id = e.dst_id "
     "WHERE e.relation_type='imports' AND n.resolved_path LIKE '%L0_routing/scripts/%' "
-    "ORDER BY n.resolved_path, e.source_file"
+    "ORDER BY n.resolved_path, e.source_file",
 ).fetchall()
 
 by_target = defaultdict(list)
@@ -32,7 +32,7 @@ print(f"\nTotal script files imported by other modules: {len(by_target)}")
 print("\n=== L0_routing/scripts/ violators with ZERO importers (safe to move) ===")
 violating = conn.execute(
     "SELECT DISTINCT e.source_file FROM edges e "
-    "WHERE e.relation_type='violates' AND e.source_file LIKE '%L0_routing/scripts/%'"
+    "WHERE e.relation_type='violates' AND e.source_file LIKE '%L0_routing/scripts/%'",
 ).fetchall()
 violating_set = {r[0] for r in violating}
 imported_targets = set(by_target.keys())

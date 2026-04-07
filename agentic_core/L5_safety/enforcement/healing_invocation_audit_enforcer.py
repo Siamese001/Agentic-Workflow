@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -203,12 +202,12 @@ class HealingInvocationAudit:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HealingInvocationAudit.audit_all_methods"
+            _trace_id, LayerSegment.L5_POLICY, "HealingInvocationAudit.audit_all_methods",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:HealingInvocationAudit.audit_all_methods".encode()
+            f"{_trace_id}:HealingInvocationAudit.audit_all_methods".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -232,7 +231,7 @@ class HealingInvocationAudit:
                             "agent": agent_name,
                             "status": "confirmed",
                             "notes": "super() present and chain active",
-                        }
+                        },
                     )
                 else:
                     self.results["without_super"].append(file_path)
@@ -242,7 +241,7 @@ class HealingInvocationAudit:
                             "agent": agent_name,
                             "reason": "Missing super().heal_repository() call",
                             "priority": "HIGH",
-                        }
+                        },
                     )
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
@@ -268,7 +267,7 @@ class HealingInvocationAudit:
             with open(file_path) as f:
                 content = f.read()
                 method_match = re.search(
-                    "def heal_repository\\(.*?\\).*?:.*?(?=\\n    def |\\nclass |\\Z)", content, re.DOTALL
+                    "def heal_repository\\(.*?\\).*?:.*?(?=\\n    def |\\nclass |\\Z)", content, re.DOTALL,
                 )
                 if method_match:
                     method_body = method_match.group(0)

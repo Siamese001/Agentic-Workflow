@@ -41,7 +41,7 @@ class MultiLayerCoordinator(BaseMLModel):
         4: "Defer_Decision",
         5: "Manual_Review",
         6: "Optimize_First",
-        7: "Monitor_Only"
+        7: "Monitor_Only",
     }
 
     # Reverse mapping
@@ -53,7 +53,7 @@ class MultiLayerCoordinator(BaseMLModel):
             model_version="1.0",
             model_type="ensemble",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Create feature schema for coordinator
@@ -75,7 +75,7 @@ class MultiLayerCoordinator(BaseMLModel):
             "L3": 0.15,  # DAG branch ranking
             "L4": 0.15,  # Performance optimization
             "L5": 0.15,  # Risk calibration
-            "L6": 0.10   # Anomaly detection
+            "L6": 0.10,   # Anomaly detection
         }
 
         # Default thresholds
@@ -83,7 +83,7 @@ class MultiLayerCoordinator(BaseMLModel):
             "confidence_threshold": 0.7,
             "consensus_threshold": 0.6,
             "conflict_threshold": 0.3,
-            "risk_threshold": 0.5
+            "risk_threshold": 0.5,
         }
 
         if model_file_path and model_file_path.exists():
@@ -99,78 +99,78 @@ class MultiLayerCoordinator(BaseMLModel):
                 feature_type=FeatureType.NUMERIC,
                 description="L0 model confidence score",
                 provenance="layer.l0.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="l1_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="L1 model confidence score",
                 provenance="layer.l1.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="l2_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="L2 model confidence score",
                 provenance="layer.l2.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="l3_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="L3 model confidence score",
                 provenance="layer.l3.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="l4_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="L4 model confidence score",
                 provenance="layer.l4.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="l5_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="L5 model confidence score",
                 provenance="layer.l5.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="l6_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="L6 model confidence score",
                 provenance="layer.l6.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="consensus_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Consensus score across layers",
                 provenance="ensemble.consensus",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="conflict_level",
                 feature_type=FeatureType.NUMERIC,
                 description="Level of conflict between layer recommendations",
                 provenance="ensemble.conflict",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="overall_risk",
                 feature_type=FeatureType.NUMERIC,
                 description="Overall risk assessment",
                 provenance="ensemble.risk",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="multi_layer_coordinator",
             schema_version="1.0",
             description="Features for multi-layer ensemble coordination model",
-            features=features
+            features=features,
         )
 
     def load_model(self) -> None:
@@ -208,8 +208,8 @@ class MultiLayerCoordinator(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -221,7 +221,7 @@ class MultiLayerCoordinator(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict coordinated decision across all layers.
@@ -254,7 +254,7 @@ class MultiLayerCoordinator(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -289,8 +289,8 @@ class MultiLayerCoordinator(BaseMLModel):
                     prediction=predicted_decision,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -303,7 +303,7 @@ class MultiLayerCoordinator(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -315,7 +315,7 @@ class MultiLayerCoordinator(BaseMLModel):
                 'class_probabilities': [float(p) for p in class_probabilities],
                 'thresholds_passed': passes_threshold,
                 'coordinated_decision': predicted_decision,
-                'requires_coordination': predicted_decision != "Monitor_Only"
+                'requires_coordination': predicted_decision != "Monitor_Only",
             })
 
             # Log prediction
@@ -331,7 +331,7 @@ class MultiLayerCoordinator(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def coordinate_layers(
@@ -339,7 +339,7 @@ class MultiLayerCoordinator(BaseMLModel):
         layer_predictions: dict[str, dict[str, Any]],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Coordinate decisions across all ML layers.
@@ -364,7 +364,7 @@ class MultiLayerCoordinator(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Analyze conflicts
@@ -374,7 +374,7 @@ class MultiLayerCoordinator(BaseMLModel):
         recommendations = self._generate_coordinated_recommendations(
             decision=prediction.prediction,
             layer_predictions=layer_predictions,
-            conflicts=conflict_analysis
+            conflicts=conflict_analysis,
         )
 
         # Calculate overall risk
@@ -384,7 +384,7 @@ class MultiLayerCoordinator(BaseMLModel):
         execution_plan = self._create_execution_plan(
             decision=prediction.prediction,
             layer_predictions=layer_predictions,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
         return {
@@ -398,7 +398,7 @@ class MultiLayerCoordinator(BaseMLModel):
             'risk_assessment': risk_assessment,
             'execution_plan': execution_plan,
             'consensus_score': coordinator_features.get('consensus_score', 0),
-            'conflict_level': coordinator_features.get('conflict_level', 0)
+            'conflict_level': coordinator_features.get('conflict_level', 0),
         }
 
     def resolve_conflicts(
@@ -407,7 +407,7 @@ class MultiLayerCoordinator(BaseMLModel):
         layer_predictions: dict[str, dict[str, Any]],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Resolve conflicts between layer recommendations.
@@ -436,21 +436,21 @@ class MultiLayerCoordinator(BaseMLModel):
                     'layer': layer,
                     'resolution': 'accept_recommendation',
                     'reason': f'High confidence ({confidence:.2f}) and priority ({layer_priority:.2f})',
-                    'action': prediction.get('prediction', 'unknown')
+                    'action': prediction.get('prediction', 'unknown'),
                 }
             elif confidence < 0.5:
                 strategy = {
                     'layer': layer,
                     'resolution': 'override_with_default',
                     'reason': f'Low confidence ({confidence:.2f})',
-                    'action': 'monitor_only'
+                    'action': 'monitor_only',
                 }
             else:
                 strategy = {
                     'layer': layer,
                     'resolution': 'escalate_for_review',
                     'reason': f'Moderate confidence ({confidence:.2f}) requires review',
-                    'action': 'manual_review'
+                    'action': 'manual_review',
                 }
 
             resolution_strategies.append(strategy)
@@ -469,7 +469,7 @@ class MultiLayerCoordinator(BaseMLModel):
             'resolution_strategies': resolution_strategies,
             'overall_resolution': overall_resolution,
             'conflicting_layers': conflicting_layers,
-            'recommended_actions': [s['action'] for s in resolution_strategies]
+            'recommended_actions': [s['action'] for s in resolution_strategies],
         }
 
     def _extract_coordinator_features(self, layer_predictions: dict[str, dict[str, Any]]) -> dict[str, float]:
@@ -526,7 +526,7 @@ class MultiLayerCoordinator(BaseMLModel):
             4: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2],   # Defer_Decision
             5: [-0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, 0.0, 0.2, 0.3], # Manual_Review
             6: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.0, -0.1],  # Optimize_First
-            7: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]    # Monitor_Only
+            7: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],    # Monitor_Only
         }
 
         for class_idx, influences in feature_influence.items():
@@ -560,7 +560,7 @@ class MultiLayerCoordinator(BaseMLModel):
                         'conflict_type': 'action_disagreement',
                         'conflicting_layers': layers,
                         'minority_action': action,
-                        'majority_action': max(action_groups.items(), key=lambda x: len(x[1]))[0] if action_groups else 'unknown'
+                        'majority_action': max(action_groups.items(), key=lambda x: len(x[1]))[0] if action_groups else 'unknown',
                     })
 
         # Analyze confidence conflicts
@@ -573,21 +573,21 @@ class MultiLayerCoordinator(BaseMLModel):
             conflicts.append({
                 'conflict_type': 'confidence_variance',
                 'low_confidence_layers': low_confidence_layers,
-                'average_confidence': avg_confidence
+                'average_confidence': avg_confidence,
             })
 
         return {
             'conflicts': conflicts,
             'total_conflicts': len(conflicts),
             'has_conflicts': len(conflicts) > 0,
-            'conflict_severity': 'high' if len(conflicts) > 2 else 'medium' if len(conflicts) > 0 else 'low'
+            'conflict_severity': 'high' if len(conflicts) > 2 else 'medium' if len(conflicts) > 0 else 'low',
         }
 
     def _generate_coordinated_recommendations(
         self,
         decision: str,
         layer_predictions: dict[str, dict[str, Any]],
-        conflicts: dict[str, Any]
+        conflicts: dict[str, Any],
     ) -> list[str]:
         """Generate coordinated recommendations based on decision."""
         recommendations = []
@@ -596,49 +596,49 @@ class MultiLayerCoordinator(BaseMLModel):
             recommendations.extend([
                 "All layer recommendations can be executed safely",
                 "Monitor execution for consistency",
-                "Implement all suggested optimizations"
+                "Implement all suggested optimizations",
             ])
         elif decision == "Execute_Partial":
             recommendations.extend([
                 "Execute high-confidence recommendations only",
                 "Monitor partial execution impact",
-                "Review low-confidence recommendations"
+                "Review low-confidence recommendations",
             ])
         elif decision == "Escalate":
             recommendations.extend([
                 "Escalate to higher authority for review",
                 "Document conflicting recommendations",
-                "Seek human oversight for resolution"
+                "Seek human oversight for resolution",
             ])
         elif decision == "Block_All":
             recommendations.extend([
                 "Block all ML recommendations due to conflicts",
                 "Manual review required before execution",
-                "Investigate underlying issues"
+                "Investigate underlying issues",
             ])
         elif decision == "Defer_Decision":
             recommendations.extend([
                 "Defer execution pending further analysis",
                 "Gather additional context",
-                "Re-evaluate with updated information"
+                "Re-evaluate with updated information",
             ])
         elif decision == "Manual_Review":
             recommendations.extend([
                 "Manual review recommended for all actions",
                 "Human oversight required for execution",
-                "Document review findings"
+                "Document review findings",
             ])
         elif decision == "Optimize_First":
             recommendations.extend([
                 "Prioritize optimization recommendations",
                 "Address performance issues first",
-                "Execute optimization before other actions"
+                "Execute optimization before other actions",
             ])
         else:  # Monitor_Only
             recommendations.extend([
                 "Monitor current system state",
                 "No immediate action required",
-                "Continue observation for changes"
+                "Continue observation for changes",
             ])
 
         # Add conflict-specific recommendations
@@ -650,13 +650,13 @@ class MultiLayerCoordinator(BaseMLModel):
     def _assess_overall_risk(
         self,
         layer_predictions: dict[str, dict[str, Any]],
-        conflicts: dict[str, Any]
+        conflicts: dict[str, Any],
     ) -> dict[str, Any]:
         """Assess overall risk of coordinated decision."""
         risk_factors = {
             'confidence_risk': 0.0,
             'conflict_risk': 0.0,
-            'layer_risk': 0.0
+            'layer_risk': 0.0,
         }
 
         # Confidence risk (inverse of average confidence)
@@ -691,14 +691,14 @@ class MultiLayerCoordinator(BaseMLModel):
         return {
             'overall_risk': overall_risk,
             'risk_factors': risk_factors,
-            'risk_level': 'high' if overall_risk > 0.7 else 'medium' if overall_risk > 0.4 else 'low'
+            'risk_level': 'high' if overall_risk > 0.7 else 'medium' if overall_risk > 0.4 else 'low',
         }
 
     def _create_execution_plan(
         self,
         decision: str,
         layer_predictions: dict[str, dict[str, Any]],
-        recommendations: list[str]
+        recommendations: list[str],
     ) -> dict[str, Any]:
         """Create execution plan based on coordinated decision."""
         execution_steps = []
@@ -712,7 +712,7 @@ class MultiLayerCoordinator(BaseMLModel):
                         'action': prediction.get('prediction', 'unknown'),
                         'confidence': prediction.get('confidence', 0.0),
                         'priority': 'high' if prediction.get('confidence', 0.0) > 0.8 else 'medium',
-                        'estimated_effort': self._estimate_layer_effort(layer, prediction.get('prediction'))
+                        'estimated_effort': self._estimate_layer_effort(layer, prediction.get('prediction')),
                     }
                     execution_steps.append(step)
 
@@ -727,7 +727,7 @@ class MultiLayerCoordinator(BaseMLModel):
                         'action': prediction.get('prediction', 'unknown'),
                         'confidence': prediction.get('confidence', 0.0),
                         'priority': 'high',
-                        'estimated_effort': self._estimate_layer_effort(layer, prediction.get('prediction'))
+                        'estimated_effort': self._estimate_layer_effort(layer, prediction.get('prediction')),
                     }
                     execution_steps.append(step)
 
@@ -736,7 +736,7 @@ class MultiLayerCoordinator(BaseMLModel):
             'total_steps': len(execution_steps),
             'estimated_total_effort': sum(step.get('estimated_effort', 1) for step in execution_steps),
             'requires_monitoring': decision in ["Execute_Partial", "Monitor_Only"],
-            'requires_approval': decision in ["Escalate", "Manual_Review", "Block_All"]
+            'requires_approval': decision in ["Escalate", "Manual_Review", "Block_All"],
         }
 
     def _estimate_layer_effort(self, layer: str, action: str | None) -> int:
@@ -748,7 +748,7 @@ class MultiLayerCoordinator(BaseMLModel):
             "L3": 3,  # Branch ranking
             "L4": 4,  # Performance optimization
             "L5": 5,  # Risk calibration
-            "L6": 3   # Anomaly detection
+            "L6": 3,   # Anomaly detection
         }
 
         base_effort = effort_map.get(layer, 2)
@@ -777,7 +777,7 @@ class MultiLayerCoordinator(BaseMLModel):
             'l3_confidence': 0.05,  # Orchestration layer
             'l2_confidence': 0.03,  # Healing layer
             'l1_confidence': 0.02,  # Capacity layer
-            'l0_confidence': 0.02   # Routing layer
+            'l0_confidence': 0.02,   # Routing layer
         }
 
         feature_importance = []
@@ -787,7 +787,7 @@ class MultiLayerCoordinator(BaseMLModel):
                 'feature_name': feature_name,
                 'importance_score': importance,
                 'feature_value': model_input.features.get(feature_name),
-                'rank': i + 1
+                'rank': i + 1,
             })
 
         # Sort by importance
@@ -839,7 +839,7 @@ class MultiLayerCoordinator(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the ensemble model.

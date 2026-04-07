@@ -120,6 +120,7 @@ from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_
 from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
 from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 from agentic_core.adg.artifact.builder_types import build_artifact
+from agentic_core.adg.contracts.schema_util import canonical_name
 from agentic_core.adg.extraction.static_scanner import (
     ADGStaticScanner,
     _BlockDecompositionVisitor,
@@ -129,23 +130,15 @@ from agentic_core.adg.extraction.static_scanner import (
     _TestExecutionLinkageVisitor,
     _TypeSurfaceCollector,
 )
-from agentic_core.adg.contracts.schema_util import canonical_name
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -153,17 +146,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -268,7 +255,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # Capture repo state hash (tree hash)
     try:
         repo_state_hash = _subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True
+            ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True,
         ).strip()
         print(f"[ADG] Captured repo state hash: {repo_state_hash}")
     except Exception as e:
@@ -287,7 +274,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     print(f"[ADG] Modules: {len(result.modules)}")
     print(f"[ADG] Edges: {len(result.edges)}")
     print(
-        f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}"
+        f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}",
     )
 
     # --- Build canonical artifact (schema v3) ---
@@ -377,10 +364,10 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     print("[ADG] Enhancement 5-10 analysis:")
     print(
         f"      E5 impact: {imp_summary['impacted_module_count']} impacted  "
-        f"{imp_summary['covering_test_count']} tests  risk={imp_summary['risk_label']} ({imp_summary['risk_score']:.4f})"
+        f"{imp_summary['covering_test_count']} tests  risk={imp_summary['risk_label']} ({imp_summary['risk_score']:.4f})",
     )
     print(
-        f"      E6 graph_hash={snapshot.graph_hash[:16]}...  nodes={snapshot.node_count}  edges={snapshot.edge_count}"
+        f"      E6 graph_hash={snapshot.graph_hash[:16]}...  nodes={snapshot.node_count}  edges={snapshot.edge_count}",
     )
     if graph_diff is not None:
         print(f"      E7 drift: {graph_diff.summary}")
@@ -395,10 +382,10 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     print(f"      E8 ownership: {len(result.modules)} modules  high_criticality={owned_high}")
     print(
         f"      E9 confidence: avg={conf_summary['average_confidence']}  "
-        f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
+        f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}",
     )
     print(
-        f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
+        f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}",
     )
 
     # --- Memory MCP persistence ---
@@ -587,7 +574,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
 
         if skipped_ignored_count:
             print(
-                f"[ADG] Git: skipped {skipped_ignored_count} ignored artifacts; staged {staged_count} trackable artifacts"
+                f"[ADG] Git: skipped {skipped_ignored_count} ignored artifacts; staged {staged_count} trackable artifacts",
             )
 
         # If nothing is staged, skip commit cleanly
@@ -654,7 +641,7 @@ def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summa
     total_violations = len(violation_edges)
     critical_count = routing_summary.get("by_severity", {}).get("critical", 0)
     print(
-        f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})"
+        f"[ADG] Memory MCP: persisted snapshot + layers + hotspots + {min(total_violations, 50)}/{total_violations} violations (critical={critical_count})",
     )
 
 
@@ -798,7 +785,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             # Archive only the zip file (most efficient)
             print(f"[ADG] Archive: Processing run {ts} with {len(zip_files)} zip file(s)")
             zip_archived, zip_bytes_original, zip_bytes_archived = _archive_zip_files(
-                zip_files, archive_month_dir
+                zip_files, archive_month_dir,
             )
             archived_count += zip_archived
             bytes_original += zip_bytes_original
@@ -921,36 +908,36 @@ def _semantic_precision_stats(conn: sqlite3.Connection) -> dict[str, int | float
     semantic_edges = cur.execute("SELECT COUNT(*) FROM edges WHERE semantic_type != ''").fetchone()[0]
     execution_total = cur.execute("SELECT COUNT(*) FROM edges WHERE edge_kind='execution'").fetchone()[0]
     ordered_execution = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' AND dynamic_resolution LIKE 'seq=%'"
+        "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' AND dynamic_resolution LIKE 'seq=%'",
     ).fetchone()[0]
     controls_flow_total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow'",
     ).fetchone()[0]
     flows_to_total = cur.execute("SELECT COUNT(*) FROM edges WHERE relation_type='flows_to'").fetchone()[0]
     side_effect_total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect'",
     ).fetchone()[0]
     callsite_total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite'",
     ).fetchone()[0]
     controls_flow_specific = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow' "
-        "AND semantic_type IN ('branch','loop','exception_handler')"
+        "AND semantic_type IN ('branch','loop','exception_handler')",
     ).fetchone()[0]
     flows_to_specific = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='flows_to' AND semantic_type='data_lineage'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='flows_to' AND semantic_type='data_lineage'",
     ).fetchone()[0]
     side_effect_specific = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect' "
-        "AND semantic_type IN ('io','mutation')"
+        "AND semantic_type IN ('io','mutation')",
     ).fetchone()[0]
     callsite_specific = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite' "
-        "AND semantic_type='attribute_dispatch'"
+        "AND semantic_type='attribute_dispatch'",
     ).fetchone()[0]
     execution_generic = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' "
-        "AND semantic_type IN ('execution','call','read','write','controls_flow','flows_to','emits_side_effect','resolves_callsite')"
+        "AND semantic_type IN ('execution','call','read','write','controls_flow','flows_to','emits_side_effect','resolves_callsite')",
     ).fetchone()[0]
     return {
         "total_edges": total_edges,
@@ -982,19 +969,19 @@ def _violation_surface_stats(conn: sqlite3.Connection) -> dict[str, int | bool]:
     if "violations" in tables:
         violation_table_count = cur.execute("SELECT COUNT(*) FROM violations").fetchone()[0]
     layer_violation_edges = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'",
     ).fetchone()[0]
     layer_violation_sources = cur.execute(
-        "SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type='violates'"
+        "SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type='violates'",
     ).fetchone()[0]
     antipattern_edges = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='antipattern'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='antipattern'",
     ).fetchone()[0]
     surfaces_reconciled = bool(
         "violations" in tables
         and violation_table_count >= antipattern_edges
         and violation_table_count >= layer_violation_edges
-        and layer_violation_edges >= layer_violation_sources
+        and layer_violation_edges >= layer_violation_sources,
     )
     return {
         "violations_table_exists": "violations" in tables,
@@ -1013,7 +1000,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         "FROM edges e "
         "JOIN nodes src ON src.id = e.src_id "
         "JOIN nodes dst ON dst.id = e.dst_id "
-        "WHERE e.relation_type IN ('imports','violates')"
+        "WHERE e.relation_type IN ('imports','violates')",
     ).fetchall()
 
     def _symbol_to_module_key(adg_name: str) -> str:
@@ -1065,12 +1052,12 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             eligible_edge_count += len(frontier)
 
     actual_edge_count = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='violation_propagates_through'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violation_propagates_through'",
     ).fetchone()[0]
     actual_depth_counts = dict(
         cur.execute(
-            "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol"
-        ).fetchall()
+            "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol",
+        ).fetchall(),
     )
     return {
         "eligible_edge_count": eligible_edge_count,
@@ -1127,7 +1114,7 @@ def _artifact_determinism_probe(
             "artifact_digest_match": artifact.artifact_digest == probe_artifact.artifact_digest,
             "node_row_digest_match": current_node_row_digest == probe_node_row_digest,
             "edge_row_digest_match": current_edge_row_digest == probe_edge_row_digest,
-        }
+        },
     )
     proof["determinism_status"] = (
         "closed"
@@ -1409,7 +1396,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
     zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
     report_count = len([p for p in artifact_paths if p.name.endswith("_report.json")])
     print(
-        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports)"
+        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports)",
     )
 
     return zip_path
@@ -1456,7 +1443,7 @@ def _generate_standardized_reports(
                         "adg_name": entity.adg_name,
                         "resolved_path": entity.resolved_path,
                         "identity_kind": entity.identity_kind,
-                    }
+                    },
                 )
     layer_report["layer_distribution"] = dict(layer_counts)
     layer_report["unknown_modules"] = unknown_modules[:50]
@@ -1474,7 +1461,7 @@ def _generate_standardized_reports(
     cur = conn.cursor()
     total_edges = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
     sqlite_edge_counts = dict(
-        cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type").fetchall()
+        cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type").fetchall(),
     )
     stored_edge_counts = sqlite_edge_counts.copy()
 
@@ -1519,7 +1506,7 @@ def _generate_standardized_reports(
     total_modules = cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0]
     node_names = {row[0] for row in cur.execute("SELECT adg_name FROM nodes").fetchall()}
     type_surface_count = cur.execute(
-        "SELECT COUNT(*) FROM nodes WHERE type_surface IS NOT NULL AND type_surface != ''"
+        "SELECT COUNT(*) FROM nodes WHERE type_surface IS NOT NULL AND type_surface != ''",
     ).fetchone()[0]
     test_node_types = ["test_suite", "test_case", "invariant_family"]
     test_node_counts = {
@@ -1542,8 +1529,8 @@ def _generate_standardized_reports(
             "SELECT n.layer, COUNT(*) as count "
             "FROM nodes n "
             "WHERE n.entity_type IN ('test_suite', 'test_case', 'invariant_family') "
-            "GROUP BY n.layer"
-        ).fetchall()
+            "GROUP BY n.layer",
+        ).fetchall(),
     )
 
     provenance_report = {
@@ -1594,10 +1581,10 @@ def _generate_standardized_reports(
         },
         "determinism_coverage": {
             "modules_with_determinism_digest": cur.execute(
-                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_determinism_digest'"
+                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_determinism_digest'",
             ).fetchone()[0],
             "modules_with_replay_keys": cur.execute(
-                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_replay_key'"
+                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_replay_key'",
             ).fetchone()[0],
             "determinism_score": _ratio(
                 sum(
@@ -1724,7 +1711,7 @@ def _generate_standardized_reports(
                 "semantic_fallback_count": result.manifest.semantic_fallback_count,
                 "semantic_raw_edge_kind_count": result.manifest.semantic_raw_edge_kind_count,
                 "execution_generic_semantic_count": result.manifest.execution_generic_semantic_count,
-            }
+            },
         )
         violation_stats = _violation_surface_stats(conn)
         propagation_stats = {
@@ -1738,8 +1725,8 @@ def _generate_standardized_reports(
             "depth_counts": dict(
                 cur.execute(
                     "SELECT symbol, COUNT(*) FROM edges "
-                    "WHERE relation_type='violation_propagates_through' GROUP BY symbol"
-                ).fetchall()
+                    "WHERE relation_type='violation_propagates_through' GROUP BY symbol",
+                ).fetchall(),
             ),
         }
         closure_rows = [
@@ -1824,7 +1811,7 @@ def _generate_standardized_reports(
                     and semantic_stats["controls_flow_specific_ratio"] >= 0.95
                     and semantic_stats["flows_to_specific_ratio"] >= 0.95
                     and semantic_stats["side_effect_specific_ratio"] >= 0.95
-                    and semantic_stats["callsite_specific_ratio"] >= 0.95
+                    and semantic_stats["callsite_specific_ratio"] >= 0.95,
                 ),
                 "evidence": semantic_stats,
             },

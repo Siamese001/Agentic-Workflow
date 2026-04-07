@@ -88,39 +88,25 @@ _emit_stores_embedding("p4", "optimization_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "optimization_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "optimization_types", "exec_snapshot_link")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -199,11 +185,11 @@ _VALID_CHANGE_TYPES: frozenset[str] = frozenset(
         "HEALER_ROUTING_IMPROVEMENT",
         "PROMPT_TUNING",
         "DPO_DATASET_GENERATION",
-    }
+    },
 )
 
 _VALID_RISK_CLASSES: frozenset[str] = frozenset(
-    {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+    {"LOW", "MEDIUM", "HIGH", "CRITICAL"},
 )
 
 _VALID_VALIDATION_GATES: frozenset[str] = frozenset(
@@ -213,7 +199,7 @@ _VALID_VALIDATION_GATES: frozenset[str] = frozenset(
         "GUARDRAIL_VALIDATION",
         "DETERMINISM_VERIFICATION",
         "REGRESSION_TESTING",
-    }
+    },
 )
 
 
@@ -278,16 +264,16 @@ class OptimizationProposal:
         if self.proposed_change_type not in _VALID_CHANGE_TYPES:
             raise ValueError(
                 f"proposed_change_type must be one of "
-                f"{sorted(_VALID_CHANGE_TYPES)}, got {self.proposed_change_type!r}"
+                f"{sorted(_VALID_CHANGE_TYPES)}, got {self.proposed_change_type!r}",
             )
         if self.risk_class not in _VALID_RISK_CLASSES:
             raise ValueError(
                 f"risk_class must be one of {sorted(_VALID_RISK_CLASSES)}, "
-                f"got {self.risk_class!r}"
+                f"got {self.risk_class!r}",
             )
         if self.reward_score is not None and not 0.0 <= self.reward_score <= 1.0:
             raise ValueError(
-                f"reward_score must be in [0.0, 1.0] or None, got {self.reward_score}"
+                f"reward_score must be in [0.0, 1.0] or None, got {self.reward_score}",
             )
 
     def _canonical_dict(self) -> dict:
@@ -309,7 +295,7 @@ class OptimizationProposal:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
+            deterministic_json(self._canonical_dict()).encode("utf-8"),
         ).hexdigest()
 
     def to_dict(self) -> dict:
@@ -386,16 +372,16 @@ class ValidationResult:
             raise ValueError(
                 f"regression_risk must be one of "
                 f"{sorted(self._VALID_REGRESSION_RISKS)}, "
-                f"got {self.regression_risk!r}"
+                f"got {self.regression_risk!r}",
             )
         # Consistency check: validation_pass must match gate results
         if self.validation_pass and self.denial_reasons:
             raise ValueError(
-                "validation_pass=True but denial_reasons is non-empty"
+                "validation_pass=True but denial_reasons is non-empty",
             )
         if not self.validation_pass and not self.denial_reasons:
             raise ValueError(
-                "validation_pass=False but denial_reasons is empty"
+                "validation_pass=False but denial_reasons is empty",
             )
 
     def _canonical_dict(self) -> dict:
@@ -416,7 +402,7 @@ class ValidationResult:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
+            deterministic_json(self._canonical_dict()).encode("utf-8"),
         ).hexdigest()
 
     def to_dict(self) -> dict:
@@ -487,17 +473,17 @@ class OptimizationCommit:
         if self.adg_relation != "proposal_commits_optimization":
             raise ValueError(
                 f"adg_relation must be 'proposal_commits_optimization', "
-                f"got {self.adg_relation!r}"
+                f"got {self.adg_relation!r}",
             )
         if self.change_type not in _VALID_CHANGE_TYPES:
             raise ValueError(
                 f"change_type must be one of {sorted(_VALID_CHANGE_TYPES)}, "
-                f"got {self.change_type!r}"
+                f"got {self.change_type!r}",
             )
         if self.risk_class not in _VALID_RISK_CLASSES:
             raise ValueError(
                 f"risk_class must be one of {sorted(_VALID_RISK_CLASSES)}, "
-                f"got {self.risk_class!r}"
+                f"got {self.risk_class!r}",
             )
 
     def _canonical_dict(self) -> dict:
@@ -518,7 +504,7 @@ class OptimizationCommit:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
+            deterministic_json(self._canonical_dict()).encode("utf-8"),
         ).hexdigest()
 
     def to_dict(self) -> dict:
@@ -582,7 +568,7 @@ class GovernanceRewardSignal:
             val = getattr(self, attr)
             if not 0.0 <= val <= 1.0:
                 raise ValueError(
-                    f"{attr} must be in [0.0, 1.0], got {val}"
+                    f"{attr} must be in [0.0, 1.0], got {val}",
                 )
 
     def _canonical_dict(self) -> dict:
@@ -600,7 +586,7 @@ class GovernanceRewardSignal:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
+            deterministic_json(self._canonical_dict()).encode("utf-8"),
         ).hexdigest()
 
     def to_dict(self) -> dict:
@@ -686,12 +672,12 @@ class GovernanceRewardScore:
             "aggregate_score": round(self.aggregate_score, 6),
             "groundedness_contrib": round(self.groundedness_contrib, 6),
             "guardrail_cleanliness_contrib": round(
-                self.guardrail_cleanliness_contrib, 6
+                self.guardrail_cleanliness_contrib, 6,
             ),
             "human_approval_rate": round(self.human_approval_rate, 6),
             "invariant_preserved": self.invariant_preserved,
             "mutation_correctness_contrib": round(
-                self.mutation_correctness_contrib, 6
+                self.mutation_correctness_contrib, 6,
             ),
             "policy_compliance_contrib": round(self.policy_compliance_contrib, 6),
             "proposal_id": self.proposal_id,
@@ -703,7 +689,7 @@ class GovernanceRewardScore:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self._canonical_dict()).encode("utf-8")
+            deterministic_json(self._canonical_dict()).encode("utf-8"),
         ).hexdigest()
 
     def to_dict(self) -> dict:

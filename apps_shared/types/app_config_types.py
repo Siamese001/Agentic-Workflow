@@ -54,39 +54,25 @@ _emit_applies_guardrail("p0", "app_config_types", "p0_governance")
 _emit_reads_policy_state("p0", "app_config_types", "policy_binding")
 _emit_snapshots_state("p0", "app_config_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -351,7 +337,7 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
     # guardian: allow-config-with-logic
     if required:
         logging.error(
-            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting."
+            f"CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.",
         )
         raise FileNotFoundError(f"{description} file not found: {path_to_check}")
     logging.warning(f"Optional config file '{filename}' not found, returning empty dict")
@@ -468,7 +454,7 @@ class WebRagConfig:
             "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
             "Software/SaaS": ["Salesforce", "Oracle", "SAP", "Adobe", "Workday"],
             "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"],
-        }
+        },
     )
 
 
@@ -488,7 +474,7 @@ class EnricherConfig:
             "established": ["established", "establish", "establishing"],
             "managed": ["managed", "manage", "managing"],
             "developed": ["developed", "develop", "developing"],
-        }
+        },
     )
 
 
@@ -524,7 +510,7 @@ class RAGConfig:
             "SOURCE_PEER_JD": 0.8,
             "SOURCE_GENERIC_PROFILE": 0.5,
             "LOCAL_NLP": 0.2,
-        }
+        },
     )
 
     def __post_init__(self) -> None:
@@ -645,7 +631,7 @@ class PromptAddendumConfig:
             ),
             (4, "• Explore {cot} different reasoning paths; compare and synthesize insights.\n"),
             (0, "• Consider multiple reasoning approaches before concluding.\n"),
-        ]
+        ],
     )
     TOT_B_DIRECTIVES: list[tuple[int, str]] = field(
         default_factory=lambda: [
@@ -655,7 +641,7 @@ class PromptAddendumConfig:
             ),
             (4, "• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n"),
             (0, "• Consider multiple decision branches at key steps.\n"),
-        ]
+        ],
     )
     TOT_D_DIRECTIVES: list[tuple[int, str]] = field(
         default_factory=lambda: [
@@ -669,7 +655,7 @@ class PromptAddendumConfig:
             ),
             (3, "• Provide {tot_d}-level reasoning with clear progression of thinking.\n"),
             (0, "• Structure reasoning with clear logical progression.\n"),
-        ]
+        ],
     )
     REFLEXION_DIRECTIVES: list[tuple[int, str]] = field(
         default_factory=lambda: [
@@ -679,7 +665,7 @@ class PromptAddendumConfig:
             ),
             (2, "• Review your answer {max_loops} times; improve if refinements are identified.\n"),
             (1, "• Review and refine your answer at least once.\n"),
-        ]
+        ],
     )
 
 
@@ -702,7 +688,7 @@ class AppConfig:
 ReasoningConfig.DEFAULT = ReasoningConfig(self_consistency=3)
 # guardian: allow-magic-config
 ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=True
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
@@ -715,38 +701,38 @@ ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
 )
 # guardian: allow-magic-config
 ReasoningConfig.K2_UNIFY_BULLETS_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=2, self_consistency=3, reflexion=True
+    cot_min_paths=3, tot_branches=3, min_tot_depth=2, self_consistency=3, reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K2_UNIFY_OVERVIEW_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=3, self_consistency=3, reflexion=True
+    cot_min_paths=3, tot_branches=3, min_tot_depth=3, self_consistency=3, reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K3_IBM_BULLETS_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=2, self_consistency=3, reflexion=True
+    cot_min_paths=3, tot_branches=3, min_tot_depth=2, self_consistency=3, reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=3, self_consistency=3, reflexion=True
+    cot_min_paths=3, tot_branches=3, min_tot_depth=3, self_consistency=3, reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=2, min_tot_depth=3, self_consistency=3, reflexion=True
+    cot_min_paths=3, tot_branches=2, min_tot_depth=3, self_consistency=3, reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False
+    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=True
+    cot_min_paths=3, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=True,
 )
 ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
-    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False
+    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K11_COVER_LETTER_CONFIG = ReasoningConfig(

@@ -93,8 +93,8 @@ def extract_healing_context_records(source: list[dict]) -> list[CorpusRecord]:
             trace_id = content_hash[:16]
         records.append(
             CorpusRecord(
-                text=text, trace_id=trace_id, content_hash=content_hash, namespace="healing_contexts"
-            )
+                text=text, trace_id=trace_id, content_hash=content_hash, namespace="healing_contexts",
+            ),
         )
     return records
 
@@ -126,8 +126,8 @@ def extract_telemetry_event_records(source: list[dict]) -> list[CorpusRecord]:
             trace_id = content_hash[:16]
         records.append(
             CorpusRecord(
-                text=text, trace_id=trace_id, content_hash=content_hash, namespace="telemetry_events"
-            )
+                text=text, trace_id=trace_id, content_hash=content_hash, namespace="telemetry_events",
+            ),
         )
     return records
 
@@ -160,7 +160,7 @@ def extract_dpo_pair_records(source: list[dict]) -> list[CorpusRecord]:
         else:
             trace_id = content_hash[:16]
         records.append(
-            CorpusRecord(text=text, trace_id=trace_id, content_hash=content_hash, namespace="dpo_pairs")
+            CorpusRecord(text=text, trace_id=trace_id, content_hash=content_hash, namespace="dpo_pairs"),
         )
     return records
 

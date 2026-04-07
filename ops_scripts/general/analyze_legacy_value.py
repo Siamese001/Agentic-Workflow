@@ -5,7 +5,6 @@ import ast
 import re
 from pathlib import Path
 
-
 LEGACY_ROOT = Path('apps_shared/legacy')
 
 def extract_strings(node) -> list[str]:

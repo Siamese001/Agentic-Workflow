@@ -141,7 +141,7 @@ class EventDrivenInvalidationBus:
             logger.error(f"Error notifying subscriber: {e}")
 
     def get_event_history(
-        self, layer_type: LayerType | None = None, since: datetime | None = None
+        self, layer_type: LayerType | None = None, since: datetime | None = None,
     ) -> list[InvalidationMessage]:
         """Get event history."""
         events = list(self.event_history)
@@ -345,7 +345,7 @@ class ConsistencyMonitor:
                 await self._resolve_inconsistency(key, entries, inconsistencies, coherence_manager)
 
     async def _resolve_inconsistency(
-        self, key: str, entries: dict[LayerType, CacheEntry], inconsistencies: list[str], coherence_manager
+        self, key: str, entries: dict[LayerType, CacheEntry], inconsistencies: list[str], coherence_manager,
     ):
         """Resolve consistency inconsistency."""
         resolution = {
@@ -485,7 +485,7 @@ class CrossLayerCoherenceManager:
             await self.lock_manager.release_lock(key, f"add_{layer_type.value}")
 
     async def update_cache_entry(
-        self, layer_type: LayerType, key: str, value: Any, version: str, ttl_seconds: int = 3600
+        self, layer_type: LayerType, key: str, value: Any, version: str, ttl_seconds: int = 3600,
     ) -> bool:
         """Update cache entry."""
         try:

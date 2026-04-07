@@ -4,8 +4,8 @@ Final ADG retrieval wiring validation using correct schema:
 - edges.source_file contains the file path of the edge source
 - edges.src_id / dst_id are integer FKs to nodes.id (integer PK)
 """
-import sqlite3
 import os
+import sqlite3
 
 SQLITE_PATH = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"
 
@@ -131,7 +131,7 @@ def run():
     for kw, cnt in present.items():
         print(f"  PRESENT  {kw}: {cnt:,} nodes")
     if absent:
-        print(f"\n  ABSENT (0 nodes in ADG):")
+        print("\n  ABSENT (0 nodes in ADG):")
         for kw in absent:
             print(f"    - {kw}")
 

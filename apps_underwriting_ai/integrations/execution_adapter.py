@@ -1,11 +1,11 @@
 """
 Execution Adapter - Handles execution handoff to agentic_core.
 """
-from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
 
-from ..types import UnderwritingRequest
 from ..engines.underwriting_engine import UnderwritingResult
+from ..types import UnderwritingRequest
 
 # L1 retrieval wiring (Turn 2, Wave 11): Import creates ADG edge to L1_cognition
 
@@ -42,7 +42,7 @@ class ExecutionAdapter:
     def create_execution_request(
         self,
         request: UnderwritingRequest,
-        result: UnderwritingResult
+        result: UnderwritingResult,
     ) -> ExecutionRequest:
         """
         Create execution request for core handoff.

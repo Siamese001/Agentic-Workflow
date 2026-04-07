@@ -44,78 +44,78 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Embedding similarity between query and document",
                 provenance="reranking.embedding.similarity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="attention_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Attention-based relevance score",
                 provenance="reranking.attention.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="document_authority",
                 feature_type=FeatureType.NUMERIC,
                 description="Authority score of the document source",
                 provenance="reranking.document.authority",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="relevance_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="Confidence in document relevance",
                 provenance="reranking.relevance.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="user_engagement",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical user engagement with similar documents",
                 provenance="reranking.user.engagement",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="temporal_relevance",
                 feature_type=FeatureType.NUMERIC,
                 description="Temporal relevance of the document",
                 provenance="reranking.temporal.relevance",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="semantic_density",
                 feature_type=FeatureType.NUMERIC,
                 description="Semantic density of the document content",
                 provenance="reranking.semantic.density",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="retrieval_precision",
                 feature_type=FeatureType.NUMERIC,
                 description="Precision of retrieval for this document type",
                 provenance="reranking.retrieval.precision",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="context_alignment",
                 feature_type=FeatureType.NUMERIC,
                 description="Alignment with current context",
                 provenance="reranking.context.alignment",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="reranking_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="Overall confidence in reranking decision",
                 provenance="reranking.overall.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="advanced_c0_reranker",
             schema_version="1.0",
             description="Enhanced features for C0 transformer reranking model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -202,7 +202,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "citation_count": 0.25,
             "peer_reviewed": 0.2,
             "publication_quality": 0.15,
-            "author_reputation": 0.1
+            "author_reputation": 0.1,
         }
 
         authority_score = 0.0
@@ -250,7 +250,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "semantic_match": 0.25,
             "topic_relevance": 0.2,
             "query_coverage": 0.15,
-            "answer_completeness": 0.1
+            "answer_completeness": 0.1,
         }
 
         confidence_score = 0.0
@@ -296,7 +296,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "dwell_time": 0.25,
             "user_ratings": 0.2,
             "share_frequency": 0.15,
-            "bookmark_rate": 0.1
+            "bookmark_rate": 0.1,
         }
 
         engagement_score = 0.0
@@ -343,7 +343,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "recency": 0.4,
             "seasonality": 0.3,
             "trend_alignment": 0.2,
-            "time_sensitivity": 0.1
+            "time_sensitivity": 0.1,
         }
 
         temporal_score = 0.0
@@ -395,7 +395,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "concept_coverage": 0.25,
             "semantic_coherence": 0.2,
             "topic_depth": 0.15,
-            "answer_specificity": 0.1
+            "answer_specificity": 0.1,
         }
 
         density_score = 0.0
@@ -445,7 +445,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
         # Precision factors
         precision_factors = {
             "historical": 0.6,
-            "current": 0.4
+            "current": 0.4,
         }
 
         precision_score = (
@@ -474,7 +474,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "user_preferences": 0.25,
             "domain_relevance": 0.2,
             "task_alignment": 0.15,
-            "environmental_fit": 0.1
+            "environmental_fit": 0.1,
         }
 
         alignment_score = 0.0
@@ -519,7 +519,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
             "temporal_relevance": 0.1,
             "semantic_density": 0.05,
             "retrieval_precision": 0.05,
-            "context_alignment": 0.05
+            "context_alignment": 0.05,
         }
 
         # Extract individual confidences

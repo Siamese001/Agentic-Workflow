@@ -49,7 +49,7 @@ class ADGProvenanceVerifier:
         "extractor_build_id",
         "schema_version",
         "generation_mode",
-        "source_snapshot_digest"
+        "source_snapshot_digest",
     }
 
     def __init__(self, adg_dir: Path):
@@ -75,7 +75,7 @@ class ADGProvenanceVerifier:
                 cwd=self.repo_root,
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             return result.stdout.strip()
         except subprocess.CalledProcessError as e:
@@ -89,11 +89,11 @@ class ADGProvenanceVerifier:
                 cwd=self.repo_root,
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             return {
                 "is_dirty": bool(result.stdout.strip()),
-                "changed_files": result.stdout.strip().split("\n") if result.stdout.strip() else []
+                "changed_files": result.stdout.strip().split("\n") if result.stdout.strip() else [],
             }
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git status: {e}")
@@ -105,7 +105,7 @@ class ADGProvenanceVerifier:
 
         inventory_data = {
             "files": sorted_paths,
-            "count": len(sorted_paths)
+            "count": len(sorted_paths),
         }
 
         inventory_json = json.dumps(inventory_data, sort_keys=True, separators=(',', ':'))
@@ -150,7 +150,7 @@ class ADGProvenanceVerifier:
         missing = self.REQUIRED_FIELDS - set(metadata.keys())
         if missing:
             raise ProvenanceVerificationError(
-                f"{artifact_name} missing required fields: {sorted(missing)}"
+                f"{artifact_name} missing required fields: {sorted(missing)}",
             )
 
     def _verify_non_null_fields(self, artifact_name: str, metadata: dict[str, Any]) -> None:
@@ -161,7 +161,7 @@ class ADGProvenanceVerifier:
             value = metadata.get(field)
             if value is None or (isinstance(value, str) and not value.strip()):
                 raise ProvenanceVerificationError(
-                    f"{artifact_name} has null/empty critical field: {field}"
+                    f"{artifact_name} has null/empty critical field: {field}",
                 )
 
     def _verify_timestamp_format(self, artifact_name: str, timestamp: str) -> None:
@@ -170,16 +170,16 @@ class ADGProvenanceVerifier:
             dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
             if dt.tzinfo is None:
                 raise ProvenanceVerificationError(
-                    f"{artifact_name} timestamp missing timezone: {timestamp}"
+                    f"{artifact_name} timestamp missing timezone: {timestamp}",
                 )
             # Ensure UTC
             if dt.tzinfo != timezone.utc:
                 raise ProvenanceVerificationError(
-                    f"{artifact_name} timestamp not UTC: {timestamp}"
+                    f"{artifact_name} timestamp not UTC: {timestamp}",
                 )
         except ValueError as e:
             raise ProvenanceVerificationError(
-                f"{artifact_name} invalid timestamp format: {timestamp} - {e}"
+                f"{artifact_name} invalid timestamp format: {timestamp} - {e}",
             )
 
     def _verify_git_commit_consistency(self, artifact_name: str, commit_sha: str) -> None:
@@ -187,7 +187,7 @@ class ADGProvenanceVerifier:
         actual_commit = self._get_git_commit_sha()
         if commit_sha != actual_commit:
             raise ProvenanceVerificationError(
-                f"{artifact_name} commit_sha ({commit_sha}) does not match git HEAD ({actual_commit})"
+                f"{artifact_name} commit_sha ({commit_sha}) does not match git HEAD ({actual_commit})",
             )
 
     def _verify_repo_root_consistency(self, artifact_name: str, repo_root: str) -> None:
@@ -195,7 +195,7 @@ class ADGProvenanceVerifier:
         actual_root = str(self.repo_root)
         if Path(repo_root).resolve() != self.repo_root:
             raise ProvenanceVerificationError(
-                f"{artifact_name} repo_root ({repo_root}) does not match actual root ({actual_root})"
+                f"{artifact_name} repo_root ({repo_root}) does not match actual root ({actual_root})",
             )
 
     def _collect_adg_artifacts(self) -> dict[str, Path]:
@@ -235,7 +235,7 @@ class ADGProvenanceVerifier:
             "ruleset_version",
             "schema_version",
             "scan_timestamp_utc",
-            "repo_root"
+            "repo_root",
         }
 
         for field in consistent_fields:
@@ -247,7 +247,7 @@ class ADGProvenanceVerifier:
             # Check if all values are the same
             if len(set(str(v) for v in values.values())) > 1:
                 raise ProvenanceVerificationError(
-                    f"Field {field} inconsistent across artifacts: {values}"
+                    f"Field {field} inconsistent across artifacts: {values}",
                 )
 
     def verify(self) -> dict[str, Any]:
@@ -260,7 +260,7 @@ class ADGProvenanceVerifier:
         git_status = self._get_git_status()
         if git_status["is_dirty"]:
             self.warnings.append(
-                f"Working directory is dirty with {len(git_status['changed_files'])} changed files"
+                f"Working directory is dirty with {len(git_status['changed_files'])} changed files",
             )
             print("⚠️  Warning: Working directory is dirty")
 
@@ -317,7 +317,7 @@ class ADGProvenanceVerifier:
                     if field in metadata
                 }
                 for artifact_name, metadata in all_metadata.items()
-            }
+            },
         }
 
         if self.errors:
@@ -343,12 +343,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

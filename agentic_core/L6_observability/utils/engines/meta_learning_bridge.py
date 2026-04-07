@@ -198,7 +198,7 @@ class L6MetaLearningBridge:
 
         # Emit learning event
         _emit_records_learning_event(
-            snapshot_id, "L6_OBSERVABILITY", "snapshot_stored_for_meta_learning"
+            snapshot_id, "L6_OBSERVABILITY", "snapshot_stored_for_meta_learning",
         )
 
         # Persist to disk if enabled
@@ -234,7 +234,7 @@ class L6MetaLearningBridge:
                 json.dump(record.to_dict(), f, indent=2)
 
             _emit_stores_learning_state(
-                "L6_OBSERVABILITY", "l6_meta_learning_bridge", record.snapshot_id
+                "L6_OBSERVABILITY", "l6_meta_learning_bridge", record.snapshot_id,
             )
 
             return True
@@ -300,12 +300,12 @@ class L6MetaLearningBridge:
 
         # Emit meta-learning feed event
         _emit_feeds_meta_learning(
-            snapshot_id, "L6_OBSERVABILITY", downstream_consumer or "meta_learning_pipeline"
+            snapshot_id, "L6_OBSERVABILITY", downstream_consumer or "meta_learning_pipeline",
         )
 
         # Update meta-learning state
         _emit_updates_meta_learning_state(
-            snapshot_id, "L6_OBSERVABILITY", f"fed_to_{downstream_consumer or 'pipeline'}"
+            snapshot_id, "L6_OBSERVABILITY", f"fed_to_{downstream_consumer or 'pipeline'}",
         )
 
         logger.info(

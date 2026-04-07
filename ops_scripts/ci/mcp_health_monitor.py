@@ -43,6 +43,30 @@ HEALTH_PROBES = {
         "args": {},
         "timeout": 5,
     },
+    "sequential_thinking": {
+        "method": "tool_call",
+        "tool": "sequentialthinking",
+        "args": {"thought": "Health check", "nextThoughtNeeded": False, "thoughtNumber": 1, "totalThoughts": 1},
+        "timeout": 10,
+    },
+    "redis_mcp": {
+        "method": "tool_call",
+        "tool": "redis_health",
+        "args": {},
+        "timeout": 5,
+    },
+    "pytest_mcp": {
+        "method": "tool_call",
+        "tool": "discover_tests",
+        "args": {"path": "tests"},
+        "timeout": 15,
+    },
+    "otel_mcp": {
+        "method": "tool_call",
+        "tool": "otel_status",
+        "args": {},
+        "timeout": 10,
+    },
 }
 
 
@@ -70,7 +94,7 @@ class MCPHealthResult:
         }
 
 
-def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResult:
+def probe_mcp_stdio(name: str, config: dict) -> MCPHealthResult:
     """
     Probe an MCP server via stdio protocol.
 
@@ -85,18 +109,29 @@ def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResu
     cwd = config.get("cwd", str(Path.home()))
     env = {**dict(__import__('os').environ), **config.get("env", {})}
 
-    # Only probe local Python MCPs for now
+    # Windows pre-flight: bare 'npx' is not executable, catches misconfiguration early
+    if sys.platform == "win32" and command == "npx":
+        result.startup_ok = False
+        result.error = "MISCONFIGURED: command='npx' on Windows — must be 'npx.cmd'. Run: python tools/adg/sync_yaml_to_global.py"
+        return result
+
+    # Classify MCP type for appropriate probe strategy
     is_local_python = (
-        command == "python" and
+        command in ("python", "py") and
         args and
-        str(args[0]).endswith(".py") and
         str(args[0]).startswith(str(REPO_ROOT))
     )
+    is_local_python_inline = (
+        command in ("python", "py") and
+        args and
+        args[0] == "-c"
+    )
+    is_npx = command in ("npx", "npx.cmd")
 
-    if not is_local_python:
+    if not is_local_python and not is_local_python_inline and not is_npx:
         result.startup_ok = True
         result.health_ok = True
-        result.error = "SKIPPED: Not a local Python MCP"
+        result.error = "SKIPPED: Unknown MCP type"
         return result
 
     # Check cwd requirement
@@ -106,6 +141,9 @@ def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResu
         return result
 
     cmd = [command] + args
+
+    # npx MCPs (e.g. sequential_thinking) get a strict timeout — they hang silently if broken
+    probe_timeout = 5 if is_npx else 0.5
 
     start_time = time.time()
 
@@ -121,17 +159,18 @@ def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResu
             text=True,
         )
 
-        # Give it time to initialize
-        time.sleep(0.5)
-
-        # Check if process is still running
-        if proc.poll() is not None:
-            # Process exited - capture stderr
+        # Wait for startup — npx gets a longer window but with hard deadline
+        try:
+            proc.wait(timeout=probe_timeout)
+            # Process exited before timeout — startup failed
             stderr = proc.stderr.read() if proc.stderr else ""
             result.stderr = stderr
-            result.error = f"STARTUP_FAILED: Exit code {proc.poll()}"
+            result.error = f"STARTUP_FAILED: Exit code {proc.returncode}"
             result.startup_ok = False
             return result
+        except subprocess.TimeoutExpired:
+            # Still running after timeout — this is the expected healthy state
+            pass
 
         result.startup_ok = True
         result.latency_ms = (time.time() - start_time) * 1000
@@ -139,8 +178,8 @@ def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResu
         # Cleanup
         proc.terminate()
         try:
-            proc.wait(timeout=2)
-        except:
+            proc.wait(timeout=3)
+        except subprocess.TimeoutExpired:
             proc.kill()
 
         result.health_ok = True
@@ -148,8 +187,8 @@ def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResu
     except FileNotFoundError as e:
         result.error = f"COMMAND_NOT_FOUND: {e}"
         result.startup_ok = False
-    except Exception as e:
-        result.error = f"EXCEPTION: {e}"
+    except OSError as e:
+        result.error = f"OS_ERROR: {e}"
         result.startup_ok = False
 
     return result
@@ -157,7 +196,7 @@ def probe_mcp_stdio(name: str, config: dict, timeout: int = 10) -> MCPHealthResu
 
 def run_health_probe(config_path: Path) -> list[MCPHealthResult]:
     """Run health probes against all MCPs in config."""
-    results = []
+    results: list[MCPHealthResult] = []
 
     if not config_path.exists():
         print(f"[ERROR] Config not found: {config_path}")
@@ -197,9 +236,10 @@ def print_summary(results: list[MCPHealthResult]) -> int:
     print("HEALTH CHECK SUMMARY")
     print("=" * 70)
 
-    local_python = [r for r in results if not r.error or "Not a local Python" not in r.error]
-    failed = [r for r in local_python if r.error or not r.startup_ok]
-    passed = [r for r in local_python if not r.error and r.startup_ok]
+    skipped = [r for r in results if r.error and r.error.startswith("SKIPPED:")]
+    active = [r for r in results if r not in skipped]
+    failed = [r for r in active if r.error or not r.startup_ok]
+    passed = [r for r in active if not r.error and r.startup_ok]
 
     for r in passed:
         print(f"✅ {r.name:20} cwd={r.cwd}")

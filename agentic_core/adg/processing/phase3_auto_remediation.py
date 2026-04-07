@@ -127,7 +127,7 @@ class ExceptionTypeInference:
                         confidence=confidence,
                         evidence="; ".join(evidence),
                         source="code_analysis",
-                    )
+                    ),
                 )
 
         # Merge import-based candidates
@@ -153,7 +153,7 @@ class ExceptionTypeInference:
                         confidence=0.7,
                         evidence="JSON library imported",
                         source="import_analysis",
-                    )
+                    ),
                 )
             elif "requests" in import_name:
                 candidates.append(
@@ -162,7 +162,7 @@ class ExceptionTypeInference:
                         confidence=0.6,
                         evidence="Requests library imported",
                         source="import_analysis",
-                    )
+                    ),
                 )
             elif "sqlite3" in import_name:
                 candidates.append(
@@ -171,7 +171,7 @@ class ExceptionTypeInference:
                         confidence=0.5,
                         evidence="SQLite library imported",
                         source="import_analysis",
-                    )
+                    ),
                 )
 
         return candidates
@@ -289,7 +289,7 @@ class AutoRemediationEngine:
                             class_name=class_name,
                             imports=imports,
                             surrounding_code=surrounding_code,
-                        )
+                        ),
                     )
 
             except Exception as e:  # guardian: allow-silent-swallow -- fail-closed: file analysis unavailable
@@ -387,7 +387,7 @@ class AutoRemediationEngine:
         )
 
     def _determine_strategy(
-        self, violation: ViolationContext, candidates: list[ExceptionType]
+        self, violation: ViolationContext, candidates: list[ExceptionType],
     ) -> RemediationStrategy:
         """Determine the best remediation strategy."""
 
@@ -404,7 +404,7 @@ class AutoRemediationEngine:
         return RemediationStrategy.ADD_LOGGING
 
     def _generate_remediated_line(
-        self, original: str, strategy: RemediationStrategy, candidates: list[ExceptionType]
+        self, original: str, strategy: RemediationStrategy, candidates: list[ExceptionType],
     ) -> str:
         """Generate the remediated line based on strategy."""
 

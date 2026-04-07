@@ -71,7 +71,7 @@ class CanonicalStore:
         """
         trace_id = f"store_{unit.identifier.unit_id}_{unit.identifier.version}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "CanonicalStore.store_unit"
+            trace_id, LayerSegment.L4_STATE, "CanonicalStore.store_unit",
         )
 
         try:

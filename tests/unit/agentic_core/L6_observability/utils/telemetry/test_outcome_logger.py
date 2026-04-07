@@ -38,7 +38,7 @@ class TestOutcomeLogger:
         logger.log_outcome(
             event_type="test_event",
             outcome="success",
-            metadata={"test": "value"}
+            metadata={"test": "value"},
         )
 
         # Retrieve outcomes

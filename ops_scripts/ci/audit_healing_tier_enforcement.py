@@ -250,7 +250,7 @@ HEALING_TIER_SYSTEM_FILES: frozenset[str] = frozenset(
         "agentic_core/L2_execution/healers/healing_tier_types.py",
         "agentic_core/L2_execution/healers/healing_tier_config.py",
         "agentic_core/L2_execution/healers/tiering_allowlist.py",
-    }
+    },
 )
 
 # HealingTier enum member names -- direct use outside system files = bypass
@@ -463,7 +463,7 @@ def wave1_enumerate_tiered_agents(
                 "allowlisted": is_allowlisted,
                 "imports_router": imports_router,
                 "calls_route_healing_tier": calls_router,
-            }
+            },
         )
 
     col_w = [35, 60, 12, 15, 24]
@@ -479,7 +479,7 @@ def wave1_enumerate_tiered_agents(
             f"{row['agent']:<{col_w[0]}} {row['path']:<{col_w[1]}} "
             f"{'Y' if row['allowlisted'] else 'N':<{col_w[2]}} "
             f"{'Y' if row['imports_router'] else 'N':<{col_w[3]}} "
-            f"{'Y' if row['calls_route_healing_tier'] else 'N':<{col_w[4]}}"
+            f"{'Y' if row['calls_route_healing_tier'] else 'N':<{col_w[4]}}",
         )
 
     found_paths = {row["path"] for row in rows}
@@ -590,7 +590,7 @@ def wave3_threshold_validation(constants: dict) -> None:
                     # Flag if the literal equals X or Y (would be a magic number bypass)
                     if val == float(x) or val == float(y):
                         magic_number_violations.append(
-                            f"    Magic literal {val} in Compare at line {node.lineno}"
+                            f"    Magic literal {val} in Compare at line {node.lineno}",
                         )
 
     if magic_number_violations:

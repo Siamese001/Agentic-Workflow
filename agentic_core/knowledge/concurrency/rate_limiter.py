@@ -46,7 +46,7 @@ class RateLimiter:
             lambda: {
                 "tokens": self.config.burst_size,
                 "last_update": time.time(),
-            }
+            },
         )
 
         log.info(f"RateLimiter initialized (rps={self.config.requests_per_second})")
@@ -63,7 +63,7 @@ class RateLimiter:
         """
         trace_id = f"rate_{client_id}_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "RateLimiter.is_allowed"
+            trace_id, LayerSegment.L1_REASONING, "RateLimiter.is_allowed",
         )
 
         bucket = self._buckets[client_id]
@@ -75,7 +75,7 @@ class RateLimiter:
 
         bucket["tokens"] = min(
             bucket["tokens"] + tokens_to_add,
-            self.config.burst_size
+            self.config.burst_size,
         )
         bucket["last_update"] = now
 
@@ -87,7 +87,7 @@ class RateLimiter:
         _emit_records_telemetry_event(
             trace_id,
             "RateLimiter",
-            f"blocked_{client_id}"
+            f"blocked_{client_id}",
         )
 
         return False
@@ -111,7 +111,7 @@ class RateLimiter:
 
         bucket["tokens"] = min(
             bucket["tokens"] + tokens_to_add,
-            self.config.burst_size
+            self.config.burst_size,
         )
         bucket["last_update"] = now
 

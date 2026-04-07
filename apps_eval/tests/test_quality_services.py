@@ -1,15 +1,14 @@
 """Tests for apps_eval service components."""
 
-import pytest
 
+from apps_eval.services.benchmark_runner_service import (
+    BenchmarkRunnerService,
+)
 from apps_eval.services.quality_assessor_service import (
     QualityAssessorService,
 )
 from apps_eval.services.regression_detector_service import (
     RegressionDetectorService,
-)
-from apps_eval.services.benchmark_runner_service import (
-    BenchmarkRunnerService,
 )
 
 

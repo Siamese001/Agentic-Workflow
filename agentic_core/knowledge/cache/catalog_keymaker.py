@@ -60,7 +60,7 @@ class CatalogKeymaker:
         trace_id = f"key_{self._key_counter}"
         self._key_counter += 1
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "CatalogKeymaker.make_key"
+            trace_id, LayerSegment.L1_REASONING, "CatalogKeymaker.make_key",
         )
 
         # Build factor components

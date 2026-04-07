@@ -4,6 +4,7 @@ import ast
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -49,7 +50,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     # noqa: E402
     emit_replay_key,
 )
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "DocstringComplianceAgent")
 emit_determinism_digest("p0", "DocstringComplianceAgent")
@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -244,12 +243,12 @@ class DocstringComplianceAgent(PromptRenderingMixin, SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "DocstringComplianceAgent.heal_violation"
+            _trace_id, LayerSegment.L5_POLICY, "DocstringComplianceAgent.heal_violation",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:DocstringComplianceAgent.heal_violation".encode()
+            f"{_trace_id}:DocstringComplianceAgent.heal_violation".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -339,7 +338,7 @@ class DocstringComplianceAgent(PromptRenderingMixin, SovereignBaseAgent):
         _call_path.add(self.__class__.__name__)
         try:
             print(
-                f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only"
+                f"[DocstringCompliance HEAL @ depth {depth}] Requires ctx parameter - operational mode only",
             )
             return {"skipped": 1, "requires_ctx": True}
         finally:

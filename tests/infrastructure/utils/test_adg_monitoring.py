@@ -87,7 +87,7 @@ class TestAdgHealth:
                     resolved_path TEXT,
                     entity_type TEXT,
                     layer TEXT
-                )"""
+                )""",
             )
             cursor.execute(
                 """CREATE TABLE edges (
@@ -95,7 +95,7 @@ class TestAdgHealth:
                     src_id INTEGER,
                     relation_type TEXT,
                     symbol TEXT
-                )"""
+                )""",
             )
 
             # Insert test data
@@ -240,7 +240,7 @@ class TestAdgViolations:
                     resolved_path TEXT,
                     entity_type TEXT,
                     layer TEXT
-                )"""
+                )""",
             )
             cursor.execute(
                 """CREATE TABLE edges (
@@ -249,7 +249,7 @@ class TestAdgViolations:
                     relation_type TEXT,
                     symbol TEXT,
                     line_no INTEGER
-                )"""
+                )""",
             )
 
             # Insert test data
@@ -409,7 +409,7 @@ class TestAdgDrift:
                     resolved_path TEXT,
                     entity_type TEXT,
                     layer TEXT
-                )"""
+                )""",
             )
             cursor.execute(
                 """CREATE TABLE edges (
@@ -418,7 +418,7 @@ class TestAdgDrift:
                     relation_type TEXT,
                     symbol TEXT,
                     line_no INTEGER
-                )"""
+                )""",
             )
 
             # Insert test data

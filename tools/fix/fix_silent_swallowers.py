@@ -12,7 +12,7 @@ According to docs/technical/Error & Exception Handling.md:
 import ast
 import re
 from pathlib import Path
-from typing import List, Dict, Tuple, Any
+from typing import Any, Dict, List
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -134,7 +134,7 @@ class SilentSwallowerFixer:
                 'handler_body': handler_body,
                 'has_guardian': has_guardian,
                 'severity': severity,
-                'code_snippet': lines[line_no] if line_no < len(lines) else ""
+                'code_snippet': lines[line_no] if line_no < len(lines) else "",
             }
 
         return None
@@ -163,7 +163,7 @@ class SilentSwallowerFixer:
             'TypeError': "# TypeError indicates programming error - fix the type usage",
             'ValueError': "# ValueError indicates invalid input - validate before use",
             'KeyError': "# KeyError indicates missing key - check key existence or use dict.get()",
-            'IndexError': "# IndexError indicates out-of-bounds - check array length first"
+            'IndexError': "# IndexError indicates out-of-bounds - check array length first",
         }
 
         return fixes.get(exception_type, f"# {exception_type} should be handled properly, not swallowed")
@@ -224,7 +224,7 @@ def main():
     for violation in violations:
         by_severity[violation['severity']].append(violation)
 
-    print(f"\nBy severity:")
+    print("\nBy severity:")
     for severity, vlist in by_severity.items():
         print(f"  {severity}: {len(vlist)}")
 
@@ -234,7 +234,7 @@ def main():
     # Show high severity violations (must fix)
     high_severity = by_severity['HIGH']
     if high_severity:
-        print(f"\n🚨 HIGH SEVERITY VIOLATIONS (must fix):")
+        print("\n🚨 HIGH SEVERITY VIOLATIONS (must fix):")
         for violation in high_severity[:10]:
             print(f"  {violation['file_path']}:{violation['line_number']}")
             print(f"    {violation['exception_type']} -> {violation['recommended_fix']}")
@@ -245,7 +245,7 @@ def main():
     # Show medium severity violations
     medium_severity = by_severity['MEDIUM']
     if medium_severity:
-        print(f"\n⚠️  MEDIUM SEVERITY VIOLATIONS (should fix):")
+        print("\n⚠️  MEDIUM SEVERITY VIOLATIONS (should fix):")
         for violation in medium_severity[:5]:
             print(f"  {violation['file_path']}:{violation['line_number']}")
             print(f"    {violation['exception_type']} -> {violation['recommended_fix']}")
@@ -258,7 +258,7 @@ def main():
         'scan_timestamp': '2026-03-24T18:31:00Z',
         'total_violations': len(violations),
         'by_severity': {k: len(v) for k, v in by_severity.items()},
-        'violations': violations
+        'violations': violations,
     }
 
     output_file = PROJECT_ROOT / "silent_swallower_report.json"

@@ -335,7 +335,7 @@ class CapabilityToken:
         registry_version: int,
     ) -> CapabilityToken:
         token = _sha256(
-            f"{capability_name}:{resolved_agent_id}:{caller_agent_id}:{run_id}:{uuid.uuid4().hex[:8]}"
+            f"{capability_name}:{resolved_agent_id}:{caller_agent_id}:{run_id}:{uuid.uuid4().hex[:8]}",
         )
         return cls(
             capability_name=capability_name,
@@ -427,7 +427,7 @@ class CapabilityRegistry:
                         raise ExclusiveCapabilityConflictError(
                             f"CapabilityRegistry: capability '{cap}' already has exclusive "
                             f"owners {existing_non_self}. Set shared_policy_hash or use "
-                            f"CapabilityOwnership.SHARED to allow multiple agents."
+                            f"CapabilityOwnership.SHARED to allow multiple agents.",
                         )
             self._entries[entry.agent_id] = entry
             self._registry_version += 1
@@ -445,7 +445,7 @@ class CapabilityRegistry:
         with self._lock:
             if agent_id not in self._entries:
                 raise UnregisteredAgentError(
-                    f"CapabilityRegistry.deactivate: agent '{agent_id}' not registered."
+                    f"CapabilityRegistry.deactivate: agent '{agent_id}' not registered.",
                 )
             entry = self._entries[agent_id]
             # Re-register with active_status=False
@@ -595,7 +595,7 @@ def resolve_agent_for_capability(
         raise CapabilityNotFoundError(
             f"resolve_agent_for_capability: no active registered agent declares "
             f"capability '{capability_name}'. Register an agent with this capability "
-            f"before dispatching (spec §4: only registered agents may execute)."
+            f"before dispatching (spec §4: only registered agents may execute).",
         )
 
     # --- Step 2: Validate caller permission ---
@@ -606,7 +606,7 @@ def resolve_agent_for_capability(
         raise CapabilityPermissionError(
             f"resolve_agent_for_capability: caller '{caller_agent_id}' is not in "
             f"allowed_callers for capability '{capability_name}'. "
-            f"Candidates: {agent_ids}. Add caller to allowed_callers or use '*'."
+            f"Candidates: {agent_ids}. Add caller to allowed_callers or use '*'.",
         )
 
     # --- Step 3: Return eligible target agents ---
@@ -618,7 +618,7 @@ def resolve_agent_for_capability(
             raise UnregisteredAgentError(
                 f"resolve_agent_for_capability: preferred_agent_id '{preferred_agent_id}' "
                 f"is not registered in CapabilityRegistry. "
-                f"Unregistered agents must not do production work (spec §12.3)."
+                f"Unregistered agents must not do production work (spec §12.3).",
             )
         selected = preferred_agent_id if preferred_agent_id in eligible_agent_ids else eligible_agent_ids[0]
     else:

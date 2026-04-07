@@ -24,7 +24,7 @@ def find_functions_in_file(file_path: Path) -> list[dict]:
                     'name': node.name,
                     'line': node.lineno,
                     'file': str(file_path),
-                    'type': type(node).__name__
+                    'type': type(node).__name__,
                 })
     return funcs
 
@@ -92,7 +92,7 @@ def main():
     output = {
         'adg_database': str(adg_db),
         'directory': 'tools',
-        'unused_functions': unused
+        'unused_functions': unused,
     }
 
     output_path = Path('wave2_tools_unused_funcs.json')

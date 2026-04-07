@@ -21,41 +21,9 @@ from agentic_core.L1_cognition.types.guardrail_types import (
     GuardrailSeverity,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    _emit_records_telemetry_event,  # noqa: E402
 )
+
 
 class ContentFilterEngine:
     """Engine for filtering sensitive content."""
@@ -79,7 +47,7 @@ class ContentFilterEngine:
         self._filter_stats: dict[str, list[float]] = {
             "filter_time": [],
             "filter_matches": {},
-            "content_type_matches": {}
+            "content_type_matches": {},
         }
 
     def _initialize_default_filters(self) -> None:
@@ -96,7 +64,7 @@ class ContentFilterEngine:
             action=GuardrailAction.BLOCK,
             severity=GuardrailSeverity.HIGH,
             confidence_threshold=0.7,
-            category="privacy"
+            category="privacy",
         )
         self.filters[pii_filter.filter_id] = pii_filter
 
@@ -110,7 +78,7 @@ class ContentFilterEngine:
             action=GuardrailAction.MODIFY,
             severity=GuardrailSeverity.MEDIUM,
             confidence_threshold=0.8,
-            category="contact"
+            category="contact",
         )
         self.filters[email_filter.filter_id] = email_filter
 
@@ -124,7 +92,7 @@ class ContentFilterEngine:
             action=GuardrailAction.MODIFY,
             severity=GuardrailSeverity.MEDIUM,
             confidence_threshold=0.7,
-            category="contact"
+            category="contact",
         )
         self.filters[phone_filter.filter_id] = phone_filter
 
@@ -138,7 +106,7 @@ class ContentFilterEngine:
             action=GuardrailAction.WARN,
             severity=GuardrailSeverity.LOW,
             confidence_threshold=0.8,
-            category="web"
+            category="web",
         )
         self.filters[url_filter.filter_id] = url_filter
 
@@ -152,7 +120,7 @@ class ContentFilterEngine:
             action=GuardrailAction.BLOCK,
             severity=GuardrailSeverity.HIGH,
             confidence_threshold=0.6,
-            category="safety"
+            category="safety",
         )
         self.filters[toxicity_filter.filter_id] = toxicity_filter
 
@@ -166,7 +134,7 @@ class ContentFilterEngine:
             action=GuardrailAction.BLOCK,
             severity=GuardrailSeverity.CRITICAL,
             confidence_threshold=0.7,
-            category="safety"
+            category="safety",
         )
         self.filters[violence_filter.filter_id] = violence_filter
 
@@ -180,7 +148,7 @@ class ContentFilterEngine:
             action=GuardrailAction.BLOCK,
             severity=GuardrailSeverity.CRITICAL,
             confidence_threshold=0.7,
-            category="safety"
+            category="safety",
         )
         self.filters[hate_speech_filter.filter_id] = hate_speech_filter
 
@@ -194,7 +162,7 @@ class ContentFilterEngine:
             action=GuardrailAction.ESCALATE,
             severity=GuardrailSeverity.CRITICAL,
             confidence_threshold=0.6,
-            category="safety"
+            category="safety",
         )
         self.filters[self_harm_filter.filter_id] = self_harm_filter
 
@@ -208,7 +176,7 @@ class ContentFilterEngine:
             action=GuardrailAction.BLOCK,
             severity=GuardrailSeverity.HIGH,
             confidence_threshold=0.7,
-            category="legal"
+            category="legal",
         )
         self.filters[illegal_filter.filter_id] = illegal_filter
 
@@ -218,7 +186,7 @@ class ContentFilterEngine:
 
         _emit_records_telemetry_event(
             "content_filter",
-            f"filter_added_{filter.filter_id}"
+            f"filter_added_{filter.filter_id}",
         )
 
     def remove_filter(self, filter_id: str) -> bool:
@@ -228,7 +196,7 @@ class ContentFilterEngine:
 
             _emit_records_telemetry_event(
                 "content_filter",
-                f"filter_removed_{filter_id}"
+                f"filter_removed_{filter_id}",
             )
             return True
         return False
@@ -238,7 +206,7 @@ class ContentFilterEngine:
         content: str,
         content_id: str,
         content_type: str,
-        context: str | None = None
+        context: str | None = None,
     ) -> GuardrailReport:
         """Filter content for policy violations.
 
@@ -276,7 +244,7 @@ class ContentFilterEngine:
 
             # Create report
             report = self._create_report(
-                content_id, content_type, checks, start_time
+                content_id, content_type, checks, start_time,
             )
 
             # Update statistics
@@ -286,7 +254,7 @@ class ContentFilterEngine:
             _emit_records_telemetry_event(
                 "content_filter",
                 f"filtering_completed_{len(checks)}_checks_{report.passed}",
-                "filtering_completed"
+                "filtering_completed",
             )
 
             return report
@@ -309,14 +277,14 @@ class ContentFilterEngine:
                 content_modified=False,
                 escalation_required=True,
                 check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def _apply_filter(
         self,
         filter: ContentFilter,
         content: str,
-        content_id: str
+        content_id: str,
     ) -> GuardrailCheck:
         """Apply a single content filter."""
         check_id = f"filter_{filter.filter_id}_{content_id}"
@@ -339,8 +307,8 @@ class ContentFilterEngine:
                 check_type="content_filter",
                 metadata={
                     "filter_name": filter.name,
-                    "filter_category": filter.category
-                }
+                    "filter_category": filter.category,
+                },
             )
 
         # Content violates filter
@@ -363,8 +331,8 @@ class ContentFilterEngine:
             check_type="content_filter",
             metadata={
                 "filter_name": filter.name,
-                "filter_category": filter.category
-            }
+                "filter_category": filter.category,
+            },
         )
 
     def _modify_content(self, content: str, filter: ContentFilter) -> str:
@@ -374,21 +342,21 @@ class ContentFilterEngine:
             return re.sub(
                 r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
                 '[EMAIL_REDACTED]',
-                content
+                content,
             )
         elif filter.content_type == ContentType.PHONE:
             # Replace phone numbers with [PHONE_REDACTED]
             return re.sub(
                 r'\b(?:\+?1[-.]?)?\(?([0-9]{3})\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\b',
                 '[PHONE_REDACTED]',
-                content
+                content,
             )
         elif filter.content_type == ContentType.PII:
             # Replace PII patterns with [PII_REDACTED]
             return re.sub(
                 r'\b(?:\d{3}[-.]?\d{3}[-.]?\d{4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)',
                 '[PII_REDACTED]',
-                content
+                content,
             )
         else:
             # For other content types, return original (or could block entirely)
@@ -439,7 +407,7 @@ class ContentFilterEngine:
         content_id: str,
         content_type: str,
         checks: list[GuardrailCheck],
-        start_time: datetime
+        start_time: datetime,
     ) -> GuardrailReport:
         """Create a comprehensive guardrail report."""
         # Calculate overall statistics
@@ -491,7 +459,7 @@ class ContentFilterEngine:
             actions_taken=actions_taken,
             content_modified=content_modified,
             escalation_required=escalation_required,
-            check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000
+            check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
         )
 
         return report
@@ -537,7 +505,7 @@ class ContentFilterEngine:
         for filter_id, filter in self.filters.items():
             stats["filter_matches"][filter_id] = {
                 "match_count": filter.match_count,
-                "last_matched": filter.last_matched.isoformat() if filter.last_matched else None
+                "last_matched": filter.last_matched.isoformat() if filter.last_matched else None,
             }
 
         return stats
@@ -545,7 +513,7 @@ class ContentFilterEngine:
 
 # Factory function
 def create_content_filter_engine(
-    config: GuardrailConfig | None = None
+    config: GuardrailConfig | None = None,
 ) -> ContentFilterEngine:
     """Create a content filter engine."""
     return ContentFilterEngine(config)

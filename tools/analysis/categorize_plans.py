@@ -113,7 +113,7 @@ def categorize_all_plans(repo_root: Path) -> dict:
 
             if confidence < 0.2:  # Low confidence
                 categories["uncategorized"].append(
-                    {"path": rel_path, "detected_type": plan_type, "confidence": confidence}
+                    {"path": rel_path, "detected_type": plan_type, "confidence": confidence},
                 )
             else:
                 categories[plan_type].append({"path": rel_path, "confidence": confidence})

@@ -62,7 +62,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -114,7 +114,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"records_execution_trace sources={trace_edges} (>=1), "
             f"routes_through sources={routing_edges} (>=1), "
             f"escalates_to_human sources={escalation_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -161,7 +161,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"execution_success_rate exported={success_rate} (>=1), "
             f"metrics_collected exported={metrics_emitter} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -208,7 +208,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"CRITICAL exported={critical_status} (>=1), "
             f"health_computed exported={health_emitter} (>=1), "
             f"degraded_component_flags exported={degraded_flags} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -255,7 +255,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"query_dashboard_snapshots exported={query_function} (>=1), "
             f"snapshot_persisted exported={snapshot_emitter} (>=1), "
             f"query_exposed exported={query_emitter} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -302,7 +302,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"aggregate_runtime_observability exported={aggregate_function} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1), "
             f"dashboard_aggregated exported={dashboard_emitter} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -363,7 +363,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L6_observability/dashboard%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

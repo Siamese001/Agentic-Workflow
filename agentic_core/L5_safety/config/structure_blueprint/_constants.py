@@ -36,12 +36,6 @@ from types import MappingProxyType
 from typing import Any, Final, TypedDict
 
 # Import YAML loader for data extraction
-from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
-    load_territories,
-    load_layer_overrides,
-    get_territory,
-    match_wildcard_territory,
-)
 
 # ============================================================================
 # TYPE DEFINITIONS
@@ -623,7 +617,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "purpose": "Architecture Dependency Graph (ADG) — commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
             "subfolders": {
                 "applications": {
-                    "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."
+                    "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG).",
                 },
                 "ci": {"purpose": "CI integration and invariant checks."},
                 "client": {"purpose": "MCP client for ADG graph operations."},
@@ -635,7 +629,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "notes": "Contains agent_registry.py (AGENT_REGISTRY, get_profile, registry_digest) and types/ subfolder.",
             "subfolders": {
                 "types": {
-                    "purpose": "Agent execution profile type definitions (AgentExecutionProfile, ExecutionMode, etc.)."
+                    "purpose": "Agent execution profile type definitions (AgentExecutionProfile, ExecutionMode, etc.).",
                 },
             },
         },
@@ -698,7 +692,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 ],
                 "subfolders": {
                     "contracts": {
-                        "purpose": "Prompt governance contract definitions and interface agreements."
+                        "purpose": "Prompt governance contract definitions and interface agreements.",
                     },
                     "core": {"purpose": "Core prompt governance logic and shared primitives."},
                     "meta_prompts": {"purpose": "Meta-prompt definitions and persona templates."},
@@ -999,7 +993,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "agents": {"purpose": "Shared base agent implementations (optional, migrate to core)"},
             "core_components": {"purpose": "Shared base nodes, engines, flows (optional)"},
             "enforcement": {
-                "purpose": "Shared constraint execution, guardrails, and strategy gates (optional)"
+                "purpose": "Shared constraint execution, guardrails, and strategy gates (optional)",
             },
             "tools": {"purpose": "Shared tool implementations and wrappers (optional)"},
             "mixins": {"purpose": "Shared capability mixins (optional)"},
@@ -1034,7 +1028,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "apps_eval/engines": {
                 "keyword_signals": ["eval", "scenario", "regression", "benchmark"],
                 "weight": 90,
-            }
+            },
         },
     }
 
@@ -1047,7 +1041,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "apps_exec/engines": {
                 "keyword_signals": ["exec", "brief", "assembly", "delivery"],
                 "weight": 90,
-            }
+            },
         },
     }
 
@@ -1060,7 +1054,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "apps_research/engines": {
                 "keyword_signals": ["research", "synthesis", "source", "assembly"],
                 "weight": 90,
-            }
+            },
         },
     }
 
@@ -1073,7 +1067,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "apps_rfp/engines": {
                 "keyword_signals": ["rfp", "proposal", "bid", "assembly"],
                 "weight": 90,
-            }
+            },
         },
     }
 
@@ -1500,7 +1494,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "purpose": "SDK and MCP integration data",
                 "subfolders": {
                     "client_wrappers": {
-                        "purpose": "Production-ready client builder functions for AI SDKs (OpenAI, Anthropic, Vertex)."
+                        "purpose": "Production-ready client builder functions for AI SDKs (OpenAI, Anthropic, Vertex).",
                     },
                 },
             },

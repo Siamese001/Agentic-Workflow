@@ -129,7 +129,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -216,7 +215,7 @@ class ReasoningBudgetExceeded(Exception):
             f"HARD STOP: ReasoningBudgetExceeded at stage {violation.stage_id}. "
             f"kind={violation.violation_kind} "
             f"limit={violation.limit_value} observed={violation.observed_value} "
-            f"profile={violation.profile_hash[:16]}..."
+            f"profile={violation.profile_hash[:16]}...",
         )
 
 
@@ -230,7 +229,7 @@ class ReasoningModeViolation(Exception):
         super().__init__(
             f"HARD STOP: ReasoningModeViolation at stage {stage_id}. "
             f"requested_mode='{requested_mode}' not in allowed_modes. "
-            f"profile={profile_hash[:16]}..."
+            f"profile={profile_hash[:16]}...",
         )
 
 
@@ -308,7 +307,7 @@ class ReasoningIntensityEnforcer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningIntensityEnforcer.validate_envelope"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningIntensityEnforcer.validate_envelope",
         )
 
         from agentic_core.L0_routing.types.reasoning_intensity_types import (
@@ -330,7 +329,7 @@ class ReasoningIntensityEnforcer:
             raise InvalidEnvelopeError(
                 f"profile_hash integrity failure: "
                 f"expected {expected_profile_hash[:16]}... "
-                f"got {self._profile.profile_hash[:16]}..."
+                f"got {self._profile.profile_hash[:16]}...",
             )
 
         expected_envelope_hash = build_envelope_hash(
@@ -342,7 +341,7 @@ class ReasoningIntensityEnforcer:
             raise InvalidEnvelopeError(
                 f"envelope_hash integrity failure: "
                 f"expected {expected_envelope_hash[:16]}... "
-                f"got {self._envelope.envelope_hash[:16]}..."
+                f"got {self._envelope.envelope_hash[:16]}...",
             )
 
         self._validated = True
@@ -537,7 +536,7 @@ class ReasoningIntensityEnforcer:
                 reflection_triggered=metrics.reflection_triggered,
                 early_stop_triggered=False,
                 compliant=compliant,
-            )
+            ),
         )
 
 

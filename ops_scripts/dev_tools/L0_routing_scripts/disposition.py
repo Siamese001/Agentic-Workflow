@@ -328,7 +328,7 @@ class CoreSynthesisAnalyzer:
         """Verify CanonBaseAgentInterface contract compliance."""
         # Check for required methods and attributes
         _emit_verifies_policy(
-            str(uuid.uuid4()), "CoreSynthesisAnalyzer._verify_contract_compliance", "L0_ROUTING"
+            str(uuid.uuid4()), "CoreSynthesisAnalyzer._verify_contract_compliance", "L0_ROUTING",
         )
         required_methods = ["smart_fix"]
         required_attrs = ["ctx", "name", "python_files"]

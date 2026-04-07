@@ -84,7 +84,7 @@ class QueryVectorizer:
         """
         trace_id = f"vec_{hashlib.sha256(query.encode()).hexdigest()[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryVectorizer.vectorize"
+            trace_id, LayerSegment.L1_REASONING, "QueryVectorizer.vectorize",
         )
 
         # Check cache
@@ -116,7 +116,7 @@ class QueryVectorizer:
 
         _emit_records_telemetry_event(
             "embedding",
-            f"generated_{self.model_name}"
+            f"generated_{self.model_name}",
         )
 
         log.debug(f"Generated vector for query: {query[:30]}... ({len(vector)} dims)")
@@ -138,7 +138,7 @@ class QueryVectorizer:
         """
         trace_id = f"batch_vec_{len(queries)}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryVectorizer.vectorize_batch"
+            trace_id, LayerSegment.L1_REASONING, "QueryVectorizer.vectorize_batch",
         )
 
         results = []
@@ -151,7 +151,7 @@ class QueryVectorizer:
 
         _emit_records_telemetry_event(
             "embedding_batch",
-            f"batch_{len(queries)}"
+            f"batch_{len(queries)}",
         )
 
         log.info(f"Vectorized {len(queries)} queries in {len(results)} results")

@@ -176,7 +176,7 @@ def route_violations(edges: list[Edge]) -> list[RepairRoute]:
                     "line_no": edge.line_no,
                     "edge_kind": edge.edge_kind,
                 },
-            )
+            ),
         )
 
     return sorted(routes, key=lambda r: (severity_order[r.severity], r.source_file, r.from_name))
@@ -201,7 +201,7 @@ def route_diff_violations(diff: GraphDiff) -> list[RepairRoute]:
                 from_name=from_name,
                 to_name=to_name,
                 evidence={"commit_after": diff.commit_after, "drift": True},
-            )
+            ),
         )
 
     if diff.risk_delta > 0:
@@ -218,7 +218,7 @@ def route_diff_violations(diff: GraphDiff) -> list[RepairRoute]:
                     "commit_before": diff.commit_before,
                     "commit_after": diff.commit_after,
                 },
-            )
+            ),
         )
 
     if not diff.new_coverage and diff.new_calls:
@@ -233,7 +233,7 @@ def route_diff_violations(diff: GraphDiff) -> list[RepairRoute]:
                     "new_calls": len(diff.new_calls),
                     "new_coverage": len(diff.new_coverage),
                 },
-            )
+            ),
         )
 
     severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}

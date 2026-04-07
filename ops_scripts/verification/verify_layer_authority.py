@@ -65,12 +65,12 @@ class ADGLayerAuthorityVerifier:
         "L_PG": 15,
         "L_SHARED": 16,
         "L_TEST": 17,
-        "UNKNOWN": 99
+        "UNKNOWN": 99,
     }
 
     # Disallowed direct edges to runtime
     DISALLOWED_DIRECT_TO_RUNTIME = {
-        "L0", "L1", "L2", "L3", "L_TOOLS", "L_SL"
+        "L0", "L1", "L2", "L3", "L_TOOLS", "L_SL",
     }
 
     # Disallowed upward control flow
@@ -83,7 +83,7 @@ class ADGLayerAuthorityVerifier:
     # Write-related edge types that require UWG termination
     WRITE_EDGE_TYPES = {
         "writes_to", "writes_through", "invokes_provider", "invokes_dynamic",
-        "executes_action", "invokes_tool"
+        "executes_action", "invokes_tool",
     }
 
     def __init__(self, adg_dir: Path):
@@ -170,7 +170,7 @@ class ADGLayerAuthorityVerifier:
                      src_name, src_layer, dst_name, dst_layer) = edge
 
                     violation = self._check_layer_violation_edge(
-                        src_layer, dst_layer, relation_type
+                        src_layer, dst_layer, relation_type,
                     )
 
                     if violation:
@@ -182,7 +182,7 @@ class ADGLayerAuthorityVerifier:
                             "dst_layer": dst_layer,
                             "relation_type": relation_type,
                             "symbol": symbol,
-                            "violation": violation
+                            "violation": violation,
                         })
 
                 # Summary by violation type
@@ -199,7 +199,7 @@ class ADGLayerAuthorityVerifier:
                     "total_cross_layer_edges": len(cross_layer_edges),
                     "violations": violations,
                     "violation_summary": violation_summary,
-                    "violation_count": len(violations)
+                    "violation_count": len(violations),
                 }
 
         except Exception as e:
@@ -230,7 +230,7 @@ class ADGLayerAuthorityVerifier:
                         "module_id": row[0],
                         "module_name": row[1],
                         "layer": row[2],
-                        "write_type": row[3]
+                        "write_type": row[3],
                     })
 
                 print(f"   📊 Found {len(write_modules)} modules with write operations")
@@ -250,7 +250,7 @@ class ADGLayerAuthorityVerifier:
                             "module_name": module["module_name"],
                             "layer": module["layer"],
                             "write_type": module["write_type"],
-                            "violation": "Write operation without UWG termination"
+                            "violation": "Write operation without UWG termination",
                         })
 
                 print(f"   📊 UWG violations: {len(uwg_violations)}")
@@ -259,7 +259,7 @@ class ADGLayerAuthorityVerifier:
                     "write_modules": len(write_modules),
                     "uwg_compliant": len(write_modules) - len(uwg_violations),
                     "uwg_violations": uwg_violations,
-                    "uwg_compliance_rate": (len(write_modules) - len(uwg_violations)) / max(1, len(write_modules))
+                    "uwg_compliance_rate": (len(write_modules) - len(uwg_violations)) / max(1, len(write_modules)),
                 }
 
         except Exception as e:
@@ -288,7 +288,7 @@ class ADGLayerAuthorityVerifier:
                         "layer": row[2],
                         "identity_kind": row[3],
                         "confidence": row[4],
-                        "resolved_path": row[5]
+                        "resolved_path": row[5],
                     })
 
                 print(f"   📊 Found {len(l4_modules)} L4 modules")
@@ -313,7 +313,7 @@ class ADGLayerAuthorityVerifier:
                     if issues:
                         identity_issues.append({
                             "module_name": module["name"],
-                            "issues": issues
+                            "issues": issues,
                         })
 
                 print(f"   📊 L4 identity issues: {len(identity_issues)}")
@@ -322,7 +322,7 @@ class ADGLayerAuthorityVerifier:
                     "total_l4_modules": len(l4_modules),
                     "identity_issues": len(identity_issues),
                     "identity_compliance_rate": (len(l4_modules) - len(identity_issues)) / max(1, len(l4_modules)),
-                    "issue_details": identity_issues
+                    "issue_details": identity_issues,
                 }
 
         except Exception as e:
@@ -363,7 +363,7 @@ class ADGLayerAuthorityVerifier:
                     potential_unauthorized.append({
                         "module_name": row[1],
                         "layer": row[2],
-                        "write_type": row[3]
+                        "write_type": row[3],
                     })
 
                 print(f"   📊 Existing write violations: {existing_violations}")
@@ -372,7 +372,7 @@ class ADGLayerAuthorityVerifier:
                 return {
                     "existing_violations": existing_violations,
                     "potential_unauthorized": len(potential_unauthorized),
-                    "unauthorized_details": potential_unauthorized
+                    "unauthorized_details": potential_unauthorized,
                 }
 
         except Exception as e:
@@ -418,8 +418,8 @@ class ADGLayerAuthorityVerifier:
                 "l4_identity_issues": l4_identity["identity_issues"],
                 "unauthorized_writes": unauthorized_writes["potential_unauthorized"],
                 "uwg_compliance_rate": uwg_compliance["uwg_compliance_rate"],
-                "l4_identity_compliance_rate": l4_identity["identity_compliance_rate"]
-            }
+                "l4_identity_compliance_rate": l4_identity["identity_compliance_rate"],
+            },
         }
 
         # Print results
@@ -454,12 +454,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -234,7 +233,7 @@ class MetaLearningGuardrails:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "MetaLearningGuardrails.validate_cache_key", "state_snapshot"
+            str(_uuid.uuid4()), "MetaLearningGuardrails.validate_cache_key", "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -244,11 +243,11 @@ class MetaLearningGuardrails:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "MetaLearningGuardrails.validate_cache_key", "p0_governance"
+            str(_uuid.uuid4()), "MetaLearningGuardrails.validate_cache_key", "p0_governance",
         )
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardrailsUtil.validate_cache_key:{key[:32]}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardrailsUtil.validate_cache_key:{key[:32]}",
         )
         if not key or not isinstance(key, str):
             return False
@@ -433,7 +432,7 @@ class MetaLearningGuardrails:
         depth = agent_tracker[violation_id]["depth"]
         if depth >= self.guardrails.max_healing_depth:
             self.logger.warning(
-                f"Healing depth limit reached for {agent_name}:{violation_id} (depth={depth}, max={self.guardrails.max_healing_depth})"
+                f"Healing depth limit reached for {agent_name}:{violation_id} (depth={depth}, max={self.guardrails.max_healing_depth})",
             )
             return False
         return True
@@ -482,7 +481,7 @@ class MetaLearningGuardrails:
         """
         if "domain" in pattern and pattern["domain"] != domain:
             self.logger.warning(
-                f"Cross-domain pattern rejected: pattern_domain={pattern['domain']}, target_domain={domain}"
+                f"Cross-domain pattern rejected: pattern_domain={pattern['domain']}, target_domain={domain}",
             )
             return False
         required_fields = ["violation_type", "healing_strategy"]

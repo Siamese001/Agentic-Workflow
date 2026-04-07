@@ -36,7 +36,7 @@ class TokenAwarePlanningWorkflow:
         """
         self.preflight_hook = PlanningPreflightHook(
             estimator=ContextWindowEstimator(budget=custom_budget),
-            budget_file=budget_file
+            budget_file=budget_file,
         )
 
         # Workflow state
@@ -63,7 +63,7 @@ class TokenAwarePlanningWorkflow:
             'waves': [],
             'total_tokens': 0,
             'budget_violations': 0,
-            'compression_events': 0
+            'compression_events': 0,
         }
 
         for wave_config in waves:
@@ -88,7 +88,7 @@ class TokenAwarePlanningWorkflow:
                     'wave': wave_name,
                     'status': 'failed',
                     'error': str(e),
-                    'total_tokens': 0
+                    'total_tokens': 0,
                 }
                 phase_results['waves'].append(wave_result)
                 break  # Stop phase on budget failure
@@ -116,7 +116,7 @@ class TokenAwarePlanningWorkflow:
             'steps': [],
             'total_tokens': 0,
             'budget_status': 'green',
-            'compression_applied': False
+            'compression_applied': False,
         }
 
         for step_config in wave_config['steps']:
@@ -146,7 +146,7 @@ class TokenAwarePlanningWorkflow:
                     'step': step_name,
                     'status': 'failed',
                     'error': str(e),
-                    'estimated_tokens': 0
+                    'estimated_tokens': 0,
                 }
                 wave_results['steps'].append(step_result)
                 break  # Stop wave on budget failure
@@ -180,7 +180,7 @@ class TokenAwarePlanningWorkflow:
             'estimated_tokens': estimate.total_projected_tokens,
             'compression_applied': len(estimate.compression_applied) > 0,
             'top_contributors': estimate.top_contributors,
-            'recommendations': estimate.recommended_reductions
+            'recommendations': estimate.recommended_reductions,
         }
 
         # Execute the actual step logic
@@ -198,7 +198,7 @@ class TokenAwarePlanningWorkflow:
         else:  # 'block'
             # This should be caught by the preflight hook, but add safety
             raise TokenBudgetExceededError(
-                f"Step {step_name} blocked: {estimate.total_projected_tokens:,} tokens"
+                f"Step {step_name} blocked: {estimate.total_projected_tokens:,} tokens",
             )
 
         self.step_results.append(step_result)
@@ -218,7 +218,7 @@ class TokenAwarePlanningWorkflow:
             'diffs': self._get_diff_contents(step_config.get('diffs', [])),
             'logs': self._get_log_contents(step_config.get('logs', [])),
             'retrieved_context': self._get_retrieved_context(step_config.get('context', [])),
-            'prior_steps': self._get_prior_step_contents()
+            'prior_steps': self._get_prior_step_contents(),
         }
 
         return base_context
@@ -230,7 +230,7 @@ class TokenAwarePlanningWorkflow:
             'implementation': "You are a senior software engineer. Implement the requested feature.",
             'testing': "You are a QA engineer. Write comprehensive tests for the provided code.",
             'refactoring': "You are a code refactoring specialist. Improve the code structure.",
-            'documentation': "You are a technical writer. Create clear documentation."
+            'documentation': "You are a technical writer. Create clear documentation.",
         }
         return prompts.get(step_type, "You are a helpful assistant.")
 
@@ -244,13 +244,13 @@ class TokenAwarePlanningWorkflow:
                     content = f.read()
                 files.append({
                     'path': file_path,
-                    'content': content
+                    'content': content,
                 })
             else:
                 # Simulate file content for demonstration
                 files.append({
                     'path': file_path,
-                    'content': f"# Simulated content for {file_path}\n" + "def example_function():\n    pass\n" * 100
+                    'content': f"# Simulated content for {file_path}\n" + "def example_function():\n    pass\n" * 100,
                 })
         return files
 
@@ -269,7 +269,7 @@ class TokenAwarePlanningWorkflow:
 +    pass"""
             diffs.append({
                 'path': diff_path,
-                'content': diff_content
+                'content': diff_content,
             })
         return diffs
 
@@ -288,7 +288,7 @@ FileNotFoundError: Config file not found
 2023-01-01 12:00:03 INFO Process completed"""
             logs.append({
                 'source': source,
-                'content': log_content
+                'content': log_content,
             })
         return logs
 
@@ -305,7 +305,7 @@ It contains important information about coding standards and patterns.
             context.append({
                 'source': source,
                 'content': context_content,
-                'chunk_id': f"chunk_{i+1}"
+                'chunk_id': f"chunk_{i+1}",
             })
         return context
 
@@ -327,7 +327,7 @@ It contains important information about coding standards and patterns.
             'execution_time': execution_time,
             'output_tokens': 5000,  # Simulated output
             'success': True,
-            'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"]
+            'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"],
         }
 
     def _log_phase_summary(self, phase_results: dict[str, Any]) -> None:
@@ -352,10 +352,10 @@ It contains important information about coding standards and patterns.
             'workflow_summary': {
                 'phases_completed': 1,  # Single phase in this example
                 'total_steps': len(self.step_results),
-                'total_tokens': sum(r['estimated_tokens'] for r in self.step_results)
+                'total_tokens': sum(r['estimated_tokens'] for r in self.step_results),
             },
             'budget_summary': budget_summary,
-            'step_results': self.step_results
+            'step_results': self.step_results,
         }
 
 
@@ -366,12 +366,12 @@ def example_workflow():
     # Initialize workflow with custom budget
     custom_budget = TokenBudget(
         WARNING_THRESHOLD=120000,  # Earlier warning for demo
-        SAFE_OPERATING_CAP=150000   # Lower safe cap for demo
+        SAFE_OPERATING_CAP=150000,   # Lower safe cap for demo
     )
 
     workflow = TokenAwarePlanningWorkflow(
         budget_file=Path("docs/reports/plans/example_workflow_budget.json"),
-        custom_budget=custom_budget
+        custom_budget=custom_budget,
     )
 
     # Define phase configuration
@@ -384,16 +384,16 @@ def example_workflow():
                     'type': 'analysis',
                     'prompt': 'Analyze the existing codebase for the new feature',
                     'files': ['src/main.py', 'src/utils.py', 'src/config.py'],
-                    'context': ['documentation.md', 'requirements.txt']
+                    'context': ['documentation.md', 'requirements.txt'],
                 },
                 {
                     'name': 'dependency_analysis',
                     'type': 'analysis',
                     'prompt': 'Analyze dependencies and potential conflicts',
                     'files': ['requirements.txt', 'setup.py'],
-                    'logs': ['pip_install.log']
-                }
-            ]
+                    'logs': ['pip_install.log'],
+                },
+            ],
         },
         {
             'name': 'implementation_wave',
@@ -404,16 +404,16 @@ def example_workflow():
                     'prompt': 'Implement the new feature following best practices',
                     'files': ['src/main.py', 'src/utils.py'],
                     'diffs': ['src/main.py'],
-                    'context': ['documentation.md', 'api_reference.md']
+                    'context': ['documentation.md', 'api_reference.md'],
                 },
                 {
                     'name': 'unit_tests',
                     'type': 'testing',
                     'prompt': 'Write comprehensive unit tests',
                     'files': ['tests/test_main.py', 'tests/test_utils.py'],
-                    'diffs': ['tests/test_main.py']
-                }
-            ]
+                    'diffs': ['tests/test_main.py'],
+                },
+            ],
         },
         {
             'name': 'documentation_wave',
@@ -423,10 +423,10 @@ def example_workflow():
                     'type': 'documentation',
                     'prompt': 'Update documentation for the new feature',
                     'files': ['README.md', 'docs/api.md'],
-                    'diffs': ['README.md']
-                }
-            ]
-        }
+                    'diffs': ['README.md'],
+                },
+            ],
+        },
     ]
 
     # Execute the phase

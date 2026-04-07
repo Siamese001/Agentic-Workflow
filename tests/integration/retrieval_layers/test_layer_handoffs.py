@@ -27,7 +27,7 @@ class TestLayer1To2Handoff:
         query = "unseen query"
         context = LayerContext(
             query=query,
-            query_hash=hashlib.sha256(query.encode()).hexdigest()
+            query_hash=hashlib.sha256(query.encode()).hexdigest(),
         )
 
         # Simulate L1 miss
@@ -46,7 +46,7 @@ class TestLayer1To2Handoff:
         query = "cached query"
         context = LayerContext(
             query=query,
-            query_hash=hashlib.sha256(query.encode()).hexdigest()
+            query_hash=hashlib.sha256(query.encode()).hexdigest(),
         )
 
         # Simulate L1 hit
@@ -67,7 +67,7 @@ class TestLayer1To2Handoff:
 
         context = LayerContext(
             query=query,
-            query_hash=expected_hash
+            query_hash=expected_hash,
         )
 
         # Handoff to L2
@@ -85,7 +85,7 @@ class TestLayer2To3Handoff:
         context = LayerContext(
             query="complex query",
             query_hash="abc123",
-            intent_vector=[0.1, 0.2, 0.3]
+            intent_vector=[0.1, 0.2, 0.3],
         )
 
         # Simulate L2 miss (no similar cached intent)
@@ -94,7 +94,7 @@ class TestLayer2To3Handoff:
         if not l2_hit:
             # Trigger L3: FAISS + BM25 + ADG
             context.embeddings = [
-                {"chunk_id": "chunk_1", "score": 0.89}
+                {"chunk_id": "chunk_1", "score": 0.89},
             ]
 
         assert len(context.embeddings) > 0
@@ -105,7 +105,7 @@ class TestLayer2To3Handoff:
         context = LayerContext(
             query="test",
             query_hash="hash",
-            intent_vector=intent_vec
+            intent_vector=intent_vec,
         )
 
         # L3 uses intent vector for FAISS search
@@ -127,7 +127,7 @@ class TestLayer2To3Handoff:
         context = LayerContext(
             query="semantically cached",
             query_hash="hash",
-            intent_vector=[0.1, 0.2, 0.3]
+            intent_vector=[0.1, 0.2, 0.3],
         )
 
         # Simulate L2 hit
@@ -151,7 +151,7 @@ class TestLayer3To4Handoff:
             query_hash="hash",
             intent_vector=[0.1, 0.2],
             embeddings=[{"chunk_id": "c1", "score": 0.3}],  # Low score
-            retrieved_chunks=[]
+            retrieved_chunks=[],
         )
 
         # Evaluate L3 results
@@ -162,7 +162,7 @@ class TestLayer3To4Handoff:
             # Trigger L4
             context.execution_plan = {
                 "tools": ["search_web", "query_api"],
-                "steps": 2
+                "steps": 2,
             }
 
         assert "tools" in context.execution_plan
@@ -174,8 +174,8 @@ class TestLayer3To4Handoff:
             query_hash="hash",
             retrieved_chunks=[
                 {"chunk_id": "c1", "score": 0.95},
-                {"chunk_id": "c2", "score": 0.92}
-            ]
+                {"chunk_id": "c2", "score": 0.92},
+            ],
         )
 
         # High confidence in RAG results
@@ -190,12 +190,12 @@ class TestLayer3To4Handoff:
         """RAG chunks passed to L4 for context enrichment."""
         chunks = [
             {"chunk_id": "c1", "text": "chunk 1 content", "score": 0.9},
-            {"chunk_id": "c2", "text": "chunk 2 content", "score": 0.85}
+            {"chunk_id": "c2", "text": "chunk 2 content", "score": 0.85},
         ]
         context = LayerContext(
             query="test",
             query_hash="hash",
-            retrieved_chunks=chunks
+            retrieved_chunks=chunks,
         )
 
         # L4 can use chunks for context
@@ -211,7 +211,7 @@ class TestLayer4To5Handoff:
         context = LayerContext(
             query="fallback needed",
             query_hash="hash",
-            execution_plan={"tools": ["broken_tool"]}
+            execution_plan={"tools": ["broken_tool"]},
         )
 
         # Simulate L4 tool failure
@@ -229,7 +229,7 @@ class TestLayer4To5Handoff:
             query="action success",
             query_hash="hash",
             execution_plan={"tools": ["search"]},
-            telemetry={"tool_results": {"search": ["result1"]}}
+            telemetry={"tool_results": {"search": ["result1"]}},
         )
 
         l4_success = True
@@ -247,7 +247,7 @@ class TestLayer4To5Handoff:
             query_hash="hash",
             intent_vector=[0.1, 0.2],
             retrieved_chunks=[{"text": "context"}],
-            telemetry={"tools_tried": ["t1", "t2"]}
+            telemetry={"tools_tried": ["t1", "t2"]},
         )
 
         # L5 receives full context
@@ -276,7 +276,7 @@ class TestCrossLayerTelemetry:
             "chunks_retrieved": 3,
             "faiss_time_ms": 50.0,
             "bm25_time_ms": 30.0,
-            "adg_expand_time_ms": 70.0
+            "adg_expand_time_ms": 70.0,
         }
 
         # Verify accumulated telemetry
@@ -290,7 +290,7 @@ class TestCrossLayerTelemetry:
         layer_latencies = {
             "l1": 0.5,
             "l2": 15.0,
-            "l3": 150.0
+            "l3": 150.0,
         }
 
         total = sum(layer_latencies.values())
@@ -343,7 +343,7 @@ class TestErrorHandlingIntegration:
             "l2": {"success": False},
             "l3": {"success": False},
             "l4": {"success": False},
-            "l5": {"success": False}
+            "l5": {"success": False},
         }
 
         all_failed = all(not r["success"] for r in layer_results.values())

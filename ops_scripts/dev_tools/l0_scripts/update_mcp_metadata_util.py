@@ -5,7 +5,6 @@ This scans all agent files and updates the mcp_hardened flag based on actual cod
 import json
 from pathlib import Path
 
-
 data = json.load(open('agent_discovery_full.json'))
 print('Updating MCP hardening metadata...')
 print()

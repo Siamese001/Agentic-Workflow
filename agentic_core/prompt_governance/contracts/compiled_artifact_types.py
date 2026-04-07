@@ -130,7 +130,7 @@ class CompiledPromptArtifact:
             "final_system_string": self.final_system_string,
             "final_user_string": self.final_user_string,
             "allowed_tools_schema": tuple(sorted(
-                self.allowed_tools_schema, key=lambda x: str(x)
+                self.allowed_tools_schema, key=lambda x: str(x),
             )),
             "token_estimate": self.token_estimate,
         })
@@ -147,7 +147,7 @@ class CompiledPromptArtifact:
         expected = hmac.new(
             secret_key,
             self._canonical_content().encode("utf-8"),
-            hashlib.sha256
+            hashlib.sha256,
         ).hexdigest()
         return hmac.compare_digest(expected, self.signature)
 

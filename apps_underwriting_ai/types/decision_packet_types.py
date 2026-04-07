@@ -1,11 +1,12 @@
 """
 Decision Packet Types - Domain contracts for decision output packages.
 """
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
-from .underwriting_request_types import DecisionState
 from .risk_feature_types import RiskFeatures
+from .underwriting_request_types import DecisionState
 
 
 class DecisionPacket(BaseModel):
@@ -46,6 +47,6 @@ class AuditTrace(BaseModel):
                 "trace_id": "trace-abc-123",
                 "policy_hash": "sha256:xyz789",
                 "decision_proposal": "APPROVE_WITH_CONDITIONS",
-                "human_review_triggered": False
-            }
+                "human_review_triggered": False,
+            },
         }

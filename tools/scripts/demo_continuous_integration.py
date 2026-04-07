@@ -40,7 +40,7 @@ class MockActivator:
         result = {
             "success": True,
             "time_taken": 0.5,
-            "previous_version": self.active_version
+            "previous_version": self.active_version,
         }
 
         # Emit learning event
@@ -52,9 +52,9 @@ class MockActivator:
                     "version": version,
                     "success": result["success"],
                     "activation_time": result["time_taken"],
-                    "previous_version": result["previous_version"]
+                    "previous_version": result["previous_version"],
                 },
-                priority="HIGH"
+                priority="HIGH",
             )
 
         # Update state
@@ -62,7 +62,7 @@ class MockActivator:
         self.activation_history.append({
             "version": version,
             "timestamp": datetime.now(),
-            "success": result["success"]
+            "success": result["success"],
         })
 
         print(f"✅ Version {version} activated successfully")
@@ -81,7 +81,7 @@ class MockActivator:
                 signal_type="checkpoint_available",
                 source="activator",
                 payload=checkpoint_data,
-                expires_in_seconds=300  # 5 minutes
+                expires_in_seconds=300,  # 5 minutes
             )
 
         print("✅ Checkpoint stored")
@@ -95,7 +95,7 @@ class MockConfigProvider:
             "learning_rate": 0.001,
             "batch_size": 32,
             "model_version": "1.0.0",
-            "optimization_level": "medium"
+            "optimization_level": "medium",
         }
 
     def update_config(self, config_key: str, config_value: Any):
@@ -123,9 +123,9 @@ class MockConfigProvider:
                     "old_value": old_value,
                     "new_value": config_value,
                     "change_timestamp": datetime.now().isoformat(),
-                    "impact_assessment": impact
+                    "impact_assessment": impact,
                 },
-                priority="MEDIUM"
+                priority="MEDIUM",
             )
 
         print(f"✅ Config updated: {config_key} = {config_value} (impact: {impact['level']})")
@@ -161,7 +161,7 @@ class MockMetaAdapter:
             "quality_score": 0.85 + (self.processing_count % 10) * 0.01,
             "adaptations": ["parameter_tuning", "learning_rate_adjustment"],
             "insights": ["pattern_detected", "efficiency_improved"],
-            "confidence": 0.8 + (self.processing_count % 5) * 0.02
+            "confidence": 0.8 + (self.processing_count % 5) * 0.02,
         }
 
         # Emit learning event
@@ -174,9 +174,9 @@ class MockMetaAdapter:
                     "processing_time": processing_time,
                     "result_quality": result["quality_score"],
                     "adaptations_made": result["adaptations"],
-                    "learning_insights": result["insights"]
+                    "learning_insights": result["insights"],
                 },
-                priority="HIGH"
+                priority="HIGH",
             )
 
         # Store learning experience
@@ -191,8 +191,8 @@ class MockMetaAdapter:
                 created_at=datetime.now(),
                 metadata={
                     "adapter": "l1_meta_adapter",
-                    "processing_time": processing_time
-                }
+                    "processing_time": processing_time,
+                },
             )
             self.pipeline.memory_manager.store_learning_experience(experience)
 
@@ -233,9 +233,9 @@ class MockModelTrainer:
                         "epoch": epoch,
                         "batch": batch_idx,
                         "loss": loss,
-                        "learning_rate": 0.001
+                        "learning_rate": 0.001,
                     },
-                    expires_in_seconds=60
+                    expires_in_seconds=60,
                 )
 
         epoch_time = time.time() - start_time
@@ -254,10 +254,10 @@ class MockModelTrainer:
                     "epoch_time": epoch_time,
                     "model_performance": {
                         "accuracy": max(0.5, 0.9 - avg_loss),
-                        "validation_score": max(0.4, 0.85 - avg_loss)
-                    }
+                        "validation_score": max(0.4, 0.85 - avg_loss),
+                    },
                 },
-                priority="HIGH"
+                priority="HIGH",
             )
 
         # Store checkpoint if performance improved
@@ -283,19 +283,19 @@ class MockModelTrainer:
             weights={
                 "layer1": [0.1, 0.2, 0.3],
                 "layer2": [0.4, 0.5, 0.6],
-                "output": [0.7, 0.8, 0.9]
+                "output": [0.7, 0.8, 0.9],
             },
             metadata={
                 "epoch": epoch,
                 "training_session": self.training_session_id,
-                "optimizer_state": {"learning_rate": 0.001, "momentum": 0.9}
+                "optimizer_state": {"learning_rate": 0.001, "momentum": 0.9},
             },
             performance_metrics={
                 "loss": loss,
                 "accuracy": max(0.5, 0.9 - loss),
-                "validation_score": max(0.4, 0.85 - loss)
+                "validation_score": max(0.4, 0.85 - loss),
             },
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
 
         model_id = self.pipeline.memory_manager.store_model_checkpoint(checkpoint)
@@ -322,7 +322,7 @@ class MockUserInteractionLearner:
             "response_time_ms": 150 + (self.interaction_count % 10) * 10,
             "intent": "help_request" if "help" in user_input.lower() else "general_query",
             "entities": ["user", "system"] + user_input.split()[:3],
-            "confidence": 0.8 + (self.interaction_count % 3) * 0.05
+            "confidence": 0.8 + (self.interaction_count % 3) * 0.05,
         }
 
         # Emit learning event
@@ -338,9 +338,9 @@ class MockUserInteractionLearner:
                     "user_satisfaction": user_feedback.get("satisfaction") if user_feedback else None,
                     "response_time_ms": interaction_data["response_time_ms"],
                     "intent_detected": interaction_data["intent"],
-                    "entities_extracted": interaction_data["entities"]
+                    "entities_extracted": interaction_data["entities"],
                 },
-                priority="MEDIUM"
+                priority="MEDIUM",
             )
 
         # Store learning experience
@@ -352,15 +352,15 @@ class MockUserInteractionLearner:
                 outcome_result={
                     "system_response": system_response,
                     "interaction_analysis": interaction_data,
-                    "user_feedback": user_feedback
+                    "user_feedback": user_feedback,
                 },
                 lesson_learned=f"User interaction with intent: {interaction_data['intent']}",
                 confidence_score=interaction_data["confidence"],
                 created_at=datetime.now(),
                 metadata={
                     "session_id": self.session_id,
-                    "interaction_quality": interaction_data["quality_score"]
-                }
+                    "interaction_quality": interaction_data["quality_score"],
+                },
             )
             self.pipeline.memory_manager.store_learning_experience(experience)
 
@@ -379,7 +379,7 @@ def demonstrate_component_integration():
     pipeline.configure(
         enable_file_monitoring=True,
         enable_component_integration=True,
-        collection_interval_seconds=5  # Faster for demo
+        collection_interval_seconds=5,  # Faster for demo
     )
 
     # Set as global pipeline
@@ -438,12 +438,12 @@ def demonstrate_component_integration():
     interaction_learner.process_user_interaction(
         "Help me debug this issue",
         "I'll help you debug the issue. Let me analyze the problem...",
-        {"satisfaction": 4, "helpful": True}
+        {"satisfaction": 4, "helpful": True},
     )
     interaction_learner.process_user_interaction(
         "How do I optimize performance?",
         "To optimize performance, you should consider several factors...",
-        {"satisfaction": 5, "resolved": True}
+        {"satisfaction": 5, "resolved": True},
     )
 
     # Let pipeline process events

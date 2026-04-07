@@ -3,7 +3,7 @@ Condition Recommender - Generates conditions for APPROVE_WITH_CONDITIONS decisio
 """
 from typing import List
 
-from ..types import RiskFeatures, UnderwritingRequest, DecisionState
+from ..types import DecisionState, RiskFeatures, UnderwritingRequest
 
 
 class ConditionRecommender:
@@ -17,7 +17,7 @@ class ConditionRecommender:
         self,
         features: RiskFeatures,
         request: UnderwritingRequest,
-        proposed_decision: DecisionState
+        proposed_decision: DecisionState,
     ) -> List[str]:
         """
         Recommend conditions based on risk assessment.
@@ -52,7 +52,7 @@ class ConditionRecommender:
     def _document_conditions(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Recommend document-related conditions."""
         conditions = []
@@ -79,7 +79,7 @@ class ConditionRecommender:
     def _collateral_conditions(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Recommend collateral-related conditions."""
         conditions = []
@@ -111,7 +111,7 @@ class ConditionRecommender:
     def _structural_conditions(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Recommend structural conditions."""
         conditions = []
@@ -133,7 +133,7 @@ class ConditionRecommender:
     def _reporting_conditions(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Recommend reporting conditions."""
         conditions = []

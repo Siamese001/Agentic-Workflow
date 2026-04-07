@@ -198,7 +198,7 @@ async def test_single_persona_brief():
     print("\n🛡️ Validation:")
     print(f"   Validations Run: {len(result.validation_results)}")
     print(
-        f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}"
+        f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}",
     )
     print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
 

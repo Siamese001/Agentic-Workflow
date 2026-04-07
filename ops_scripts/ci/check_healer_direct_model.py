@@ -5,7 +5,6 @@ import ast
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEALER_PATTERNS = ['*healer*', '*Healer*', '*healing*', '*Healing*']
 BLOCKED_CALLS = {'route_generation', 'generate_content', 'create_openai_client', 'create_anthropic_client', 'create_vertex_client'}

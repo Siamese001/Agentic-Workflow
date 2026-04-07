@@ -25,7 +25,9 @@ class TestTerritoryHealingBasics:
 
     def test_coordinator_creation(self):
         """Test that coordinator can be created with all agents."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
         assert coordinator is not None
@@ -34,7 +36,9 @@ class TestTerritoryHealingBasics:
 
     def test_agent_can_handle_territories(self):
         """Test that all agents report can_handle for standard territories."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
         territories = ["tests", "agentic_core", "apps_eval", "ops_scripts"]
@@ -51,7 +55,9 @@ class TestTerritoryScanning:
 
     def test_scan_tests_territory(self):
         """Scan tests territory - should detect root files as violations."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
         report = coordinator.validate_territory("tests")
@@ -65,7 +71,9 @@ class TestTerritoryScanning:
 
     def test_scan_agentic_core_territory(self):
         """Scan agentic_core territory."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
         report = coordinator.validate_territory("agentic_core")
@@ -76,7 +84,9 @@ class TestTerritoryScanning:
 
     def test_scan_all_territories(self):
         """Scan all auto-detected territories."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
         territories = coordinator._auto_detect_territories()
@@ -96,7 +106,9 @@ class TestTerritoryHealing:
     @pytest.mark.healing
     def test_heal_tests_territory(self):
         """Test healing on tests territory - with dry-run first."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
 
@@ -111,7 +123,7 @@ class TestTerritoryHealing:
         dry_run_context = HealingContext(
             heal=False,  # Dry run
             project_root=REPO_ROOT,
-            verbose=True
+            verbose=True,
         )
 
         # Check each agent individually
@@ -134,7 +146,9 @@ class TestTerritoryHealing:
     @pytest.mark.slow
     def test_full_heal_tests_territory(self):
         """Full healing test on tests territory - slow and comprehensive."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
 
@@ -149,7 +163,7 @@ class TestTerritoryHealing:
             f"  Violations found: {report.total_violations_found}\n"
             f"  Violations fixed: {report.total_violations_fixed}\n"
             f"  Agents executed: {len(report.agents_executed)}\n"
-            f"  Errors: {len(report.errors)}"
+            f"  Errors: {len(report.errors)}",
         )
 
         # Should not have errors that indicate agent failures
@@ -163,7 +177,9 @@ class TestAgentSpecificHealing:
 
     def test_hierarchy_healer_adapter(self):
         """Test HierarchyHealerAdapter specifically."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import HierarchyHealerAdapter
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            HierarchyHealerAdapter,
+        )
 
         adapter = HierarchyHealerAdapter(REPO_ROOT)
 
@@ -186,7 +202,9 @@ class TestAgentSpecificHealing:
 
     def test_location_healer_adapter(self):
         """Test LocationHealerAdapter specifically."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import LocationHealerAdapter
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            LocationHealerAdapter,
+        )
 
         adapter = LocationHealerAdapter(REPO_ROOT)
 
@@ -200,7 +218,9 @@ class TestAgentSpecificHealing:
 
     def test_gravity_healer_adapter(self):
         """Test GravityHealerAdapter specifically."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import GravityHealerAdapter
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            GravityHealerAdapter,
+        )
 
         adapter = GravityHealerAdapter(REPO_ROOT)
 
@@ -235,7 +255,9 @@ class TestStressScenarios:
     @pytest.mark.stress
     def test_multiple_territory_scans(self):
         """Scan multiple territories in sequence - no state pollution."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
         territories = ["tests", "agentic_core"]
@@ -251,7 +273,9 @@ class TestStressScenarios:
     @pytest.mark.stress
     def test_concurrent_agent_execution(self):
         """Test that agents don't interfere with each other."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
 
@@ -262,7 +286,7 @@ class TestStressScenarios:
                 scan_result = agent.scan_territory("tests")
                 reports.append({
                     "agent": agent.agent_name,
-                    "violations": scan_result.violations_found
+                    "violations": scan_result.violations_found,
                 })
 
         # All should have succeeded
@@ -273,7 +297,9 @@ class TestStressScenarios:
     @pytest.mark.slow
     def test_heal_all_territories(self):
         """Test healing all detected territories."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
 
@@ -289,7 +315,7 @@ class TestStressScenarios:
             logger.info(
                 f"{territory}: {report.total_violations_found} found, "
                 f"{report.total_violations_fixed} fixed, "
-                f"{len(report.errors)} errors"
+                f"{len(report.errors)} errors",
             )
             # Should not have crashed
             assert report is not None
@@ -300,7 +326,9 @@ class TestNoExceptions:
 
     def test_no_exceptions_on_scan(self):
         """Ensure scanning never raises exceptions."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
 
@@ -320,7 +348,9 @@ class TestNoExceptions:
 
     def test_no_exceptions_on_heal(self):
         """Ensure healing never raises unhandled exceptions."""
-        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import create_adapter_coordinator
+        from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
+            create_adapter_coordinator,
+        )
 
         coordinator = create_adapter_coordinator(REPO_ROOT)
 

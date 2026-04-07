@@ -47,7 +47,7 @@ class InsightExtractionAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "InsightExtractionAgent.extract_insights"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InsightExtractionAgent.extract_insights",
         )
         _emit_orchestrates_workflow("p3", "insight_extraction_agent", "extraction_workflow")
         _emit_dispatches_agent("p3", "insight_extraction_agent", "extraction_dispatch")
@@ -67,7 +67,7 @@ class InsightExtractionAgent:
 
         _log.info("Extracted %d insights from %d sources", len(insights), len(sources))
         _emit_records_telemetry_event(
-            "p4", "insight_extraction_agent", f"extraction_complete:{len(insights)}"
+            "p4", "insight_extraction_agent", f"extraction_complete:{len(insights)}",
         )
 
         return {

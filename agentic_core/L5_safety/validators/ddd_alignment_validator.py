@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -199,7 +198,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
     issues: Any = []
     file_str: Any = str(filepath).replace("\\", "/")
     current_context: Any = next(
-        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), None
+        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), None,
     )
     if not current_context:
         return []
@@ -243,7 +242,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
                     if target_path.replace("/", ".") in node.module:
                         if "contracts" not in node.module and "interfaces" not in node.module:
                             issues.append(
-                                f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}"
+                                f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}",
                             )
     except (OSError, UnicodeDecodeError, SyntaxError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
         pass

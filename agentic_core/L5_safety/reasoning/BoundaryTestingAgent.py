@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -248,10 +247,10 @@ class BoundaryTestingAgent(SovereignBaseAgent):
                             "violation": test_result.get("violation", ""),
                             "severity": test_result.get("severity", "medium"),
                             "input_example": test_result.get("input_example", ""),
-                        }
+                        },
                     )
                     results["recommendations"].append(
-                        f"Fix {test}: {test_result.get('recommendation', 'Add boundary validation')}"
+                        f"Fix {test}: {test_result.get('recommendation', 'Add boundary validation')}",
                     )
             self.tests_executed = results["tests_executed"]
             self.edge_cases_found = results["edge_cases_found"]

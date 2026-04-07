@@ -156,5 +156,5 @@ class CampaignRunSummary(BaseModel):
                 "drafts_generated": 5,
                 "drafts_validated": 5,
                 "overall_score": 8.5,
-            }
+            },
         }

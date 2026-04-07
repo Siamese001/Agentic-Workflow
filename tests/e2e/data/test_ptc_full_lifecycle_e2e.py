@@ -57,18 +57,18 @@ try:
         create_approval_artifact,
         create_human_review_draft,
     )
-    from agentic_core.L5_safety.enforcement.hitl_gate import (
-        HitlChoice,
-        HitlDecision,
-        HitlRequest,
-        get_hitl_gate,
-    )
     from agentic_core.L5_safety.enforcement.hitl.hitl_escalation_activator import (
         EscalationPriority,
         EscalationRequest,
         HITLEscalationActivator,
         get_hitl_escalation_activator,
         reset_hitl_escalation_activator,
+    )
+    from agentic_core.L5_safety.enforcement.hitl_gate import (
+        HitlChoice,
+        HitlDecision,
+        HitlRequest,
+        get_hitl_gate,
     )
     from agentic_core.runtime.contracts.lifecycle_trace_contract import (
         LayerSegment,
@@ -402,7 +402,7 @@ class TestPTCInferenceBatching:
     """Tests for PTC inference batching - core value proposition."""
 
     def test_ptc_single_inference_multiple_tools(
-        self, ptc_registry, ptc_invoker
+        self, ptc_registry, ptc_invoker,
     ) -> None:
         """Test PTC executes multiple tools in single inference pass."""
         # Register test tools
@@ -606,7 +606,7 @@ class TestPTCSafetyGates:
         assert escalation.resolution == "APPROVE"
 
     def test_ptc_safety_gate_human_review_approve(
-        self, escalation_activator, hitl_gate
+        self, escalation_activator, hitl_gate,
     ) -> None:
         """Test human review approval flow for PTC script."""
         trace_id = f"ptc-hr-{uuid.uuid4().hex[:8]}"
@@ -633,7 +633,7 @@ class TestPTCSafetyGates:
         assert artifact.reviewer_id == "human:senior_reviewer"
 
     def test_ptc_safety_gate_human_review_reject(
-        self, escalation_activator
+        self, escalation_activator,
     ) -> None:
         """Test human review rejection flow for PTC script."""
         trace_id = f"ptc-reject-{uuid.uuid4().hex[:8]}"
@@ -1162,7 +1162,7 @@ class TestPTCConcurrentExecution:
     """Tests for PTC thread-safe concurrent execution."""
 
     def test_ptc_concurrent_tool_invocation(
-        self, ptc_registry, ptc_invoker
+        self, ptc_registry, ptc_invoker,
     ) -> None:
         """Test thread-safe concurrent tool invocation."""
         # Register test tool

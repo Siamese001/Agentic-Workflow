@@ -37,7 +37,7 @@ class TestFilesystemDisabled:
     def test_disabled_true_reported(self, tmp_path: Path) -> None:
         cfg = dict(_COMPLIANT_CONFIG)
         cfg["mcpServers"] = {
-            "filesystem": {**_COMPLIANT_CONFIG["mcpServers"]["filesystem"], "disabled": True}
+            "filesystem": {**_COMPLIANT_CONFIG["mcpServers"]["filesystem"], "disabled": True},
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -57,8 +57,8 @@ class TestFilesystemOutOfRepoArg:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "/repo/projects"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -77,8 +77,8 @@ class TestFilesystemComment:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -92,8 +92,8 @@ class TestFilesystemComment:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -109,8 +109,8 @@ class TestFilesystemComment:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -126,8 +126,8 @@ class TestFilesystemComment:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -147,8 +147,8 @@ class TestForbiddenPathFragments:
                         ".windsurf\\plans",
                     ],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -161,8 +161,8 @@ class TestForbiddenPathFragments:
                     "command": "python",
                     "args": ["tool.py"],
                     "cwd": "/repo/projects",
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -220,8 +220,8 @@ class TestEdgeCases:
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -237,8 +237,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\USERS\\user\\projects"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -253,8 +253,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/user/projects"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -274,8 +274,8 @@ class TestAdversarialBypass:
                         ".windsurf/plans",
                     ],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -291,8 +291,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", root_with_slash],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -308,8 +308,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -325,8 +325,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", subpath],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -341,8 +341,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "D:\\SomeOtherProject"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -357,8 +357,8 @@ class TestAdversarialBypass:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": "true",
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -379,7 +379,7 @@ class TestAdversarialBypass:
                     "args": ["tool.py"],
                     "cwd": "C:/Users/user/.windsurf/plans",
                 },
-            }
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -439,7 +439,7 @@ class TestIdempotency:
     def test_disabled_true_reported(self, tmp_path: Path) -> None:
         cfg = dict(_COMPLIANT_CONFIG)
         cfg["mcpServers"] = {
-            "filesystem": {**_COMPLIANT_CONFIG["mcpServers"]["filesystem"], "disabled": True}
+            "filesystem": {**_COMPLIANT_CONFIG["mcpServers"]["filesystem"], "disabled": True},
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -458,8 +458,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "/repo/projects"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -477,8 +477,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -492,8 +492,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -508,8 +508,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -524,8 +524,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -544,8 +544,8 @@ class TestIdempotency:
                         ".windsurf\\plans",
                     ],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -558,8 +558,8 @@ class TestIdempotency:
                     "command": "python",
                     "args": ["tool.py"],
                     "cwd": "/repo/projects",
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -616,8 +616,8 @@ class TestIdempotency:
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -632,8 +632,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\USERS\\user\\projects"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -648,8 +648,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/user/projects"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -669,8 +669,8 @@ class TestIdempotency:
                         ".windsurf/plans",
                     ],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -686,8 +686,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", root_with_slash],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -703,8 +703,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -720,8 +720,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", subpath],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -736,8 +736,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", "D:\\SomeOtherProject"],
                     "disabled": False,
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -752,8 +752,8 @@ class TestIdempotency:
                     "command": "npx",
                     "args": ["-y", "@modelcontextprotocol/server-filesystem", REPO_ROOT_STR],
                     "disabled": "true",
-                }
-            }
+                },
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
@@ -774,7 +774,7 @@ class TestIdempotency:
                     "args": ["tool.py"],
                     "cwd": "C:/Users/user/.windsurf/plans",
                 },
-            }
+            },
         }
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)

@@ -300,7 +300,7 @@ class UnifiedQueryRouter:
         self._routing_rules = []
         self._lock = asyncio.Lock()
         self.contract_guard = FourLayerContractGuard(
-            l4_rate_limit_per_minute=l4_rate_limit_per_minute
+            l4_rate_limit_per_minute=l4_rate_limit_per_minute,
         )
 
     def add_layer_instances(self, layer_type: LayerType, instances: list[tuple[str, str, int]]):
@@ -346,7 +346,7 @@ class UnifiedQueryRouter:
                     layer_type=fail_layer,
                     status=QueryStatus.FAILED,
                     error_message=f"Contract violation: {e}",
-                )
+                ),
             ]
 
         for layer_type in target_layers:
@@ -369,7 +369,7 @@ class UnifiedQueryRouter:
                 logger.error(f"Error routing query to {layer_type}: {e}")
 
                 error_response = LayerResponse(
-                    layer_type=layer_type, status=QueryStatus.FAILED, error_message=str(e)
+                    layer_type=layer_type, status=QueryStatus.FAILED, error_message=str(e),
                 )
                 responses.append(error_response)
                 break
@@ -411,7 +411,7 @@ class UnifiedQueryRouter:
                 return LayerResponse(layer_type=layer_type, status=QueryStatus.FAILED, error_message=str(e))
 
     async def _simulate_layer_execution(
-        self, request: QueryRequest, layer_type: LayerType, instance: LayerInstance
+        self, request: QueryRequest, layer_type: LayerType, instance: LayerInstance,
     ) -> LayerResponse:
         """Simulate layer execution (placeholder for actual implementation)."""
         start_time = time.time()

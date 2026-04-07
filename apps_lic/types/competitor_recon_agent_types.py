@@ -61,39 +61,25 @@ _emit_applies_guardrail("p0", "competitor_recon_agent_types", "p0_governance")
 _emit_reads_policy_state("p0", "competitor_recon_agent_types", "policy_binding")
 _emit_snapshots_state("p0", "competitor_recon_agent_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -276,7 +262,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Claude 3 with improved reasoning",
                     source_url="https://anthropic.com",
                     date="3 months ago",
-                )
+                ),
             ],
             "Google": [
                 CompetitorMove(
@@ -284,7 +270,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Gemini Pro with multimodal capabilities",
                     source_url="https://deepmind.google",
                     date="2 months ago",
-                )
+                ),
             ],
             "Meta": [
                 CompetitorMove(
@@ -292,7 +278,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Llama 3 open source model",
                     source_url="https://ai.meta.com",
                     date="1 month ago",
-                )
+                ),
             ],
             "Microsoft": [
                 CompetitorMove(
@@ -300,7 +286,7 @@ class MockIntelProvider(IntelProvider):
                     recent_launch="Copilot Studio for custom AI agents",
                     source_url="https://microsoft.com/ai",
                     date="3 months ago",
-                )
+                ),
             ],
         }
 
@@ -312,7 +298,7 @@ class MockIntelProvider(IntelProvider):
 
         industry_lower = industry.lower()
         return self.mock_competitors.get(
-            industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"]
+            industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"],
         )[:3]
 
     def get_recent_moves(self, competitor: str, months: int = 6) -> list[CompetitorMove]:
@@ -343,7 +329,7 @@ class CompetitorReconAgent:
         logger.info("Initialized CompetitorReconAgent")
 
     def generate_fomo_hook(
-        self, target_company: str, industry: str, candidate_skills: list[str]
+        self, target_company: str, industry: str, candidate_skills: list[str],
     ) -> StrategicHook | None:
         """Generate FOMO hook based on competitive intelligence.
 
@@ -458,7 +444,7 @@ class CompetitorReconAgent:
                     skill_lower = skill.lower()
                     if skill_lower in move_text:
                         matches.append(
-                            {"move": move, "skill": skill, "relevance": 0.9, "match_type": "direct"}
+                            {"move": move, "skill": skill, "relevance": 0.9, "match_type": "direct"},
                         )
                         continue
                     if skill_lower in self.skill_feature_map:
@@ -466,7 +452,7 @@ class CompetitorReconAgent:
                         for feature in features:
                             if feature in move_text:
                                 matches.append(
-                                    {"move": move, "skill": skill, "relevance": 0.7, "match_type": "feature"}
+                                    {"move": move, "skill": skill, "relevance": 0.7, "match_type": "feature"},
                                 )
                                 break
             logger.debug(f"Found {len(matches)} skill-feature matches")
@@ -498,7 +484,7 @@ class CompetitorReconAgent:
             raise
 
     def _create_speed_hook(
-        self, move: CompetitorMove, target_company: str, skills: list[str]
+        self, move: CompetitorMove, target_company: str, skills: list[str],
     ) -> StrategicHook:
         """Create speed-focused hook when no direct feature match.
 

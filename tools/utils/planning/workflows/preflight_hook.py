@@ -91,7 +91,7 @@ class PlanningPreflightHook:
             logs=logs,
             retrieved_context=retrieved_context,
             prior_steps=prior_steps,
-            **kwargs
+            **kwargs,
         )
 
         # Print report
@@ -101,7 +101,7 @@ class PlanningPreflightHook:
         if estimate.total_projected_tokens > self.estimator.budget.HARD_MAX_CONTEXT:
             raise TokenBudgetExceededError(
                 f"Token budget exceeded for step '{plan_step}': "
-                f"{estimate.total_projected_tokens:,} > {self.estimator.budget.HARD_MAX_CONTEXT:,}"
+                f"{estimate.total_projected_tokens:,} > {self.estimator.budget.HARD_MAX_CONTEXT:,}",
             )
 
         # Save to history
@@ -131,7 +131,7 @@ class PlanningPreflightHook:
             "average_tokens_per_step": avg_tokens,
             "status_distribution": status_counts,
             "max_tokens": max(step['total_projected_tokens'] for step in self.budget_history),
-            "min_tokens": min(step['total_projected_tokens'] for step in self.budget_history)
+            "min_tokens": min(step['total_projected_tokens'] for step in self.budget_history),
         }
 
     def clear_history(self) -> None:
@@ -175,14 +175,14 @@ def require_token_budget(preflight_hook: PlanningPreflightHook):
                 diffs=diffs,
                 logs=logs,
                 retrieved_context=retrieved_context,
-                prior_steps=prior_steps
+                prior_steps=prior_steps,
             )
 
             # If action is 'block', raise error
             if estimate.action == 'block':
                 raise TokenBudgetExceededError(
                     f"Plan step '{plan_step}' blocked due to token budget: "
-                    f"{estimate.total_projected_tokens:,} tokens"
+                    f"{estimate.total_projected_tokens:,} tokens",
                 )
 
             # If compression was applied, update kwargs with compressed content

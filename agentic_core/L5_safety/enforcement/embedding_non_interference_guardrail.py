@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -186,7 +185,7 @@ class C0InterferenceViolation(RuntimeError):
 
 
 _C0_FORBIDDEN_FIELDS: frozenset[str] = frozenset(
-    {"route_mode", "execution_tier", "safety_threshold", "policy_hash"}
+    {"route_mode", "execution_tier", "safety_threshold", "policy_hash"},
 )
 _C0_MARKER_KEYS: frozenset[str] = frozenset(
     {
@@ -203,7 +202,7 @@ _C0_MARKER_KEYS: frozenset[str] = frozenset(
         "rag_results",
         "retrieval_context",
         "retrieval_results",
-    }
+    },
 )
 _C0_VALUE_FRAGMENTS: tuple[str, ...] = (
     "c0_context",
@@ -250,7 +249,7 @@ def assert_c0_context_clean(c0_context: dict[str, Any]) -> None:
     if violations:
         raise C0InterferenceViolation(
             "EmbeddingNonInterferenceGuard: C0 context carries routing-influencing fields that violate the informational boundary:\n"
-            + "\n".join(f"  - {v}" for v in violations)
+            + "\n".join(f"  - {v}" for v in violations),
         )
 
 
@@ -282,12 +281,12 @@ def assert_no_c0_influence(routing_inputs: dict[str, Any], c0_context: dict[str,
             if c0_key in routing_inputs:
                 # guardian: allow-direct-prompt-compilation
                 violations.append(
-                    f"C0 context key {c0_key!r} also present in routing_inputs (verbatim key collision)"
+                    f"C0 context key {c0_key!r} also present in routing_inputs (verbatim key collision)",
                 )
     if violations:
         raise C0InterferenceViolation(
             "EmbeddingNonInterferenceGuard: C0 influence detected in routing inputs:\n"
-            + "\n".join(f"  - {v}" for v in violations)
+            + "\n".join(f"  - {v}" for v in violations),
         )
 
 
@@ -312,7 +311,7 @@ def assert_routing_decision_clean(decision: dict[str, Any]) -> None:
     """Raise C0InterferenceViolation if *decision* carries C0 markers."""
     if not verify_routing_decision_clean(decision):
         raise C0InterferenceViolation(
-            "EmbeddingNonInterferenceGuard: C0 provenance markers detected in routing decision. C0 is informational only and must not reach routing outputs."
+            "EmbeddingNonInterferenceGuard: C0 provenance markers detected in routing decision. C0 is informational only and must not reach routing outputs.",
         )
 
 

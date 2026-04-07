@@ -276,7 +276,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 and (" and " in CONTENT)
             ):
                 ConfigurationService().result = _break_at_boolean_operator(
-                    CONTENT, ConfigurationService().indent, "and"
+                    CONTENT, ConfigurationService().indent, "and",
                 )
             if (
                 not ConfigurationService().result
@@ -284,7 +284,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 and (" or " in CONTENT)
             ):
                 ConfigurationService().result = _break_at_boolean_operator(
-                    CONTENT, ConfigurationService().indent, "or"
+                    CONTENT, ConfigurationService().indent, "or",
                 )
             if (
                 not ConfigurationService().result

@@ -26,7 +26,7 @@ from agentic_core.L3_orchestration.inference.qwen_vllm.tools import get_gpu_moni
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ class BenchmarkRunner:
         # Setup signal handlers for graceful shutdown
         for sig in (signal.SIGINT, signal.SIGTERM):
             asyncio.get_event_loop().add_signal_handler(
-                sig, lambda: self._stop_event.set()
+                sig, lambda: self._stop_event.set(),
             )
 
         # Start GPU monitoring
@@ -108,7 +108,7 @@ class BenchmarkRunner:
             for level in self.config.concurrent_levels:
                 await self._run_phase(
                     f"concurrent_{level}",
-                    lambda: self._phase_concurrent(level)
+                    lambda: self._phase_concurrent(level),
                 )
 
             # Phase 4: Stress test
@@ -339,7 +339,7 @@ class BenchmarkRunner:
             # Wait for duration
             await asyncio.wait_for(
                 self._stop_event.wait(),
-                timeout=self.config.stress_duration_sec
+                timeout=self.config.stress_duration_sec,
             )
 
         except asyncio.TimeoutError:
@@ -459,7 +459,7 @@ class BenchmarkRunner:
             f"Req: {requests_completed} | "
             f"RPS: {current_rps:.1f} | "
             f"P50: {metric.latency_p50_ms:.0f}ms | "
-            f"GPU: {metric.gpu_utilization_percent:.0f}%"
+            f"GPU: {metric.gpu_utilization_percent:.0f}%",
         )
 
     def _calculate_p50(self, values: list[float]) -> float:

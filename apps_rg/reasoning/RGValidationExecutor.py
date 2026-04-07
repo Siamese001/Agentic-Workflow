@@ -80,39 +80,25 @@ _emit_applies_guardrail("p0", "RGValidationExecutor", "p0_governance")
 _emit_reads_policy_state("p0", "RGValidationExecutor", "policy_binding")
 _emit_snapshots_state("p0", "RGValidationExecutor", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -191,11 +177,11 @@ def _ats_collect_issues(self, resume_data: dict, job_data: dict | None = None) -
     issues = []
     if not resume_data.get("skills"):
         issues.append(
-            {"type": "ats_missing_skills", "severity": "high", "message": "No skills section found"}
+            {"type": "ats_missing_skills", "severity": "high", "message": "No skills section found"},
         )
     if not resume_data.get("experience"):
         issues.append(
-            {"type": "ats_missing_experience", "severity": "high", "message": "No experience section"}
+            {"type": "ats_missing_experience", "severity": "high", "message": "No experience section"},
         )
     keywords = resume_data.get("keywords", [])
     if job_data:
@@ -204,7 +190,7 @@ def _ats_collect_issues(self, resume_data: dict, job_data: dict | None = None) -
         missing = required - found
         for kw in missing:
             issues.append(
-                {"type": "ats_missing_keyword", "severity": "medium", "message": f"Missing keyword: {kw}"}
+                {"type": "ats_missing_keyword", "severity": "medium", "message": f"Missing keyword: {kw}"},
             )
     return issues
 
@@ -216,7 +202,7 @@ def _brand_collect_issues(self, resume_data: dict, job_data: dict | None = None)
     tone = resume_data.get("tone", "")
     if tone and tone.lower() not in ("professional", "confident", "balanced"):
         issues.append(
-            {"type": "brand_tone_mismatch", "severity": "medium", "message": f"Tone '{tone}' not aligned"}
+            {"type": "brand_tone_mismatch", "severity": "medium", "message": f"Tone '{tone}' not aligned"},
         )
     if resume_data.get("contains_superlatives", False):
         issues.append({"type": "brand_superlatives", "severity": "low", "message": "Contains superlatives"})
@@ -235,7 +221,7 @@ def _fact_collect_issues(self, resume_data: dict, job_data: dict | None = None) 
                     "type": "fact_unsourced_claim",
                     "severity": "high",
                     "message": f"Unsourced: {claim.get('text', '')}",
-                }
+                },
             )
         if claim.get("value") and (not claim.get("context")):
             issues.append(
@@ -243,14 +229,14 @@ def _fact_collect_issues(self, resume_data: dict, job_data: dict | None = None) 
                     "type": "fact_no_context",
                     "severity": "medium",
                     "message": f"No context for metric: {claim.get('text', '')}",
-                }
+                },
             )
     dates = resume_data.get("dates", [])
     for i in range(len(dates) - 1):
         if dates[i].get("end") and dates[i + 1].get("start"):
             if dates[i]["end"] > dates[i + 1]["start"]:
                 issues.append(
-                    {"type": "fact_date_overlap", "severity": "high", "message": "Overlapping date ranges"}
+                    {"type": "fact_date_overlap", "severity": "high", "message": "Overlapping date ranges"},
                 )
     return issues
 
@@ -269,7 +255,7 @@ def _section_collect_issues(self, resume_data: dict, job_data: dict | None = Non
                     "type": "section_oversized",
                     "severity": "medium",
                     "message": f"Section '{name}' is {ratio:.0%} of total",
-                }
+                },
             )
         if ratio < 0.05 and name not in ("objective", "summary"):
             issues.append(
@@ -277,7 +263,7 @@ def _section_collect_issues(self, resume_data: dict, job_data: dict | None = Non
                     "type": "section_undersized",
                     "severity": "low",
                     "message": f"Section '{name}' is only {ratio:.0%} of total",
-                }
+                },
             )
     return issues
 
@@ -318,6 +304,6 @@ class RGValidationExecutor(ParameterizedValidator):
                     "type": "unknown_rule_set",
                     "severity": "high",
                     "message": f"No handler for rule_set={self.rule_set}",
-                }
+                },
             ]
         return handler(self, resume_data, job_data)

@@ -2,13 +2,13 @@
 
 import pytest
 
-from agentic_core.L3_orchestration.reasoning.engines.query_intent_detector import (
-    QueryIntent,
-    QueryIntentDetector,
-)
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchEngine,
     HybridSearchResult,
+)
+from agentic_core.L3_orchestration.reasoning.engines.query_intent_detector import (
+    QueryIntent,
+    QueryIntentDetector,
 )
 
 
@@ -114,7 +114,7 @@ def test_governance_filters_multiple():
     ]
 
     filtered = engine._apply_governance_filters(
-        results, {"layers": ["L2"], "entity_types": ["function"]}
+        results, {"layers": ["L2"], "entity_types": ["function"]},
     )
     assert len(filtered) == 1
     assert filtered[0].chunk_id == "1"

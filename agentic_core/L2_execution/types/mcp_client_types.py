@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -262,11 +261,11 @@ class MCPClientSpec:
         if self.provider != "stub":
             if not self.resolved_module():
                 raise ValueError(
-                    f"MCPClientSpec '{self.name}': no module specified and no default for provider '{self.provider}'"
+                    f"MCPClientSpec '{self.name}': no module specified and no default for provider '{self.provider}'",
                 )
             if not self.resolved_class():
                 raise ValueError(
-                    f"MCPClientSpec '{self.name}': no class_name specified and no default for provider '{self.provider}'"
+                    f"MCPClientSpec '{self.name}': no class_name specified and no default for provider '{self.provider}'",
                 )
 
 

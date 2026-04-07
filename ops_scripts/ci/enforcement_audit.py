@@ -17,7 +17,6 @@ import re
 import sys
 from pathlib import Path
 
-
 REPORTS_DIR = "reports"
 CORPUS_PATH = (
     Path(__file__).resolve().parents[2] / "docs" / REPORTS_DIR / "plans" / "Agentic Master Requirements.md"
@@ -26,7 +25,7 @@ REPORT_PATH = (
     Path(__file__).resolve().parents[2] / "docs" / REPORTS_DIR / "plans" / "EnforcementAuditReport.json"
 )
 TAGGED_HEADER_RE = re.compile(
-    "\\|\\s*Req ID\\s*\\|\\s*Domain\\s*\\|\\s*Requirement\\s*\\|\\s*Enforcement\\s*\\|\\s*Severity\\s*\\|\\s*ENFORCEMENT_LAYERS\\s*\\|\\s*ENFORCEMENT_CLASS\\s*\\|"
+    "\\|\\s*Req ID\\s*\\|\\s*Domain\\s*\\|\\s*Requirement\\s*\\|\\s*Enforcement\\s*\\|\\s*Severity\\s*\\|\\s*ENFORCEMENT_LAYERS\\s*\\|\\s*ENFORCEMENT_CLASS\\s*\\|",
 )
 
 
@@ -56,7 +55,7 @@ def parse_tagged_corpus(text: str) -> list[dict[str, str]]:
                         "severity": parts[4],
                         "enforcement_layers": layers,
                         "enforcement_class": parts[6],
-                    }
+                    },
                 )
         elif in_table and (not stripped.startswith("|")):
             in_table = False
@@ -85,11 +84,11 @@ def audit(requirements: list[dict[str, str]]) -> dict:
         if eclass == "EXECUTION_PATH":
             if not has_2:
                 failures.append(
-                    {"req_id": req["req_id"], "reason": f"EXECUTION_PATH with <2 layers: {layers}"}
+                    {"req_id": req["req_id"], "reason": f"EXECUTION_PATH with <2 layers: {layers}"},
                 )
             if not has_runtime:
                 failures.append(
-                    {"req_id": req["req_id"], "reason": f"EXECUTION_PATH without Runtime: {layers}"}
+                    {"req_id": req["req_id"], "reason": f"EXECUTION_PATH without Runtime: {layers}"},
                 )
         elif eclass == "STRUCTURAL":
             if not has_ast_ci:
@@ -122,7 +121,7 @@ def main() -> int:
     print(f"Parsed {len(requirements)} tagged requirements")
     report = audit(requirements)
     REPORT_PATH.write_text(
-        json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8", newline="\n"
+        json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8", newline="\n",
     )
     print("\n--- EnforcementAuditReport (REQ-416) ---")
     print(f"Total CRITICAL: {report['total_critical']}")

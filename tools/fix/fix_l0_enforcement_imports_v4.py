@@ -5,7 +5,7 @@ Only export classes that can be successfully imported.
 """
 
 import pathlib
-import sys
+
 
 def test_import(module_name, class_name):
     """Test if a specific import works."""
@@ -107,7 +107,7 @@ def fix_init_file_minimal(init_path):
             "    emit_determinism_digest,  # noqa: E402",
             "    emit_replay_key,  # noqa: E402",
             ")",
-            ""
+            "",
         ]
 
         # Add only working imports

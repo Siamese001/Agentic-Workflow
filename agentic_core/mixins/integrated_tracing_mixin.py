@@ -26,11 +26,11 @@ import time
 from contextlib import contextmanager
 from typing import Any
 
+from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
-from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
 
 
 # Lazy imports to avoid L_SHARED->L_SL/L_APP gravity violations
@@ -98,16 +98,16 @@ class IntegratedTracingMixin(TracingMixin):
 
             if self._otel_enabled:
                 Logger.info(
-                    f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry + Runtime ADG enabled"
+                    f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry + Runtime ADG enabled",
                 )
             else:
                 Logger.warning(
-                    f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry disabled, Runtime ADG only"
+                    f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry disabled, Runtime ADG only",
                 )
 
         except Exception as e:
             Logger.error(
-                f"[INTEGRATED_TRACING] {self._otel_service_name} - Failed to initialize OpenTelemetry: {e}"
+                f"[INTEGRATED_TRACING] {self._otel_service_name} - Failed to initialize OpenTelemetry: {e}",
             )
             self._otel_enabled = False
             self._runtime_adg_enabled = False
@@ -182,7 +182,7 @@ class IntegratedTracingMixin(TracingMixin):
 
         Logger.info(
             f"[INTEGRATED_TRACING] {self._otel_service_name} - Flushed {len(tm_traces)} TracingMixin traces",
-            extra={"otel_status": otel_status}
+            extra={"otel_status": otel_status},
         )
 
         return tm_traces
@@ -234,7 +234,7 @@ class IntegratedTracingMixin(TracingMixin):
             result = self._otel_tracer.force_persist_current_spans(mission)
             Logger.info(
                 f"[INTEGRATED_TRACING] {self._otel_service_name} - Forced Runtime ADG persistence",
-                extra={"result": result}
+                extra={"result": result},
             )
             return result
         else:

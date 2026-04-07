@@ -97,10 +97,10 @@ def cmd_gap(args: argparse.Namespace) -> int:
                 "module": row[0],
                 "layer": row[1],
                 "fan_in": row[2],
-                "called_by": row[3].split(",")[:5] if row[3] else []
+                "called_by": row[3].split(",")[:5] if row[3] else [],
             }
             for row in rows
-        ]
+        ],
     }
 
     if args.json:
@@ -123,7 +123,7 @@ def cmd_scope(args: argparse.Namespace) -> int:
         # Get changed files from git diff
         result = subprocess.run(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
-            capture_output=True, text=True, cwd=REPO_ROOT
+            capture_output=True, text=True, cwd=REPO_ROOT,
         )
         changed_files = [f.strip() for f in result.stdout.split("\n") if f.strip().endswith(".py")]
 
@@ -161,7 +161,7 @@ def cmd_scope(args: argparse.Namespace) -> int:
         "command": "scope",
         "changed_files": changed_files,
         "related_tests": sorted(related_tests),
-        "test_count": len(related_tests)
+        "test_count": len(related_tests),
     }
 
     if args.json:
@@ -182,7 +182,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         scope_args = argparse.Namespace(
             changed=args.changed,
             from_diff=args.from_diff,
-            json=None
+            json=None,
         )
         # Build test list from scope
         # (Simplified - actual implementation would parse scope output)
@@ -212,7 +212,7 @@ def cmd_check(args: argparse.Namespace) -> int:
     # Run pytest collection-only
     result = subprocess.run(
         [sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q"],
-        capture_output=True, text=True, cwd=REPO_ROOT
+        capture_output=True, text=True, cwd=REPO_ROOT,
     )
 
     collection_ok = result.returncode == 0
@@ -220,7 +220,7 @@ def cmd_check(args: argparse.Namespace) -> int:
     # Also run eager import lint
     lint_result = subprocess.run(
         [sys.executable, "tools/lint_eager_imports.py", "tests", "--config", "config/eager_import_risk.yml"],
-        capture_output=True, text=True, cwd=REPO_ROOT
+        capture_output=True, text=True, cwd=REPO_ROOT,
     )
 
     lint_ok = lint_result.returncode == 0
@@ -231,7 +231,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         "lint_ok": lint_ok,
         "overall_ok": collection_ok and lint_ok,
         "pytest_output": result.stdout[-500:] if len(result.stdout) > 500 else result.stdout,
-        "lint_output": lint_result.stdout[-500:] if len(lint_result.stdout) > 500 else lint_result.stdout
+        "lint_output": lint_result.stdout[-500:] if len(lint_result.stdout) > 500 else lint_result.stdout,
     }
 
     if args.json:
@@ -267,7 +267,7 @@ def cmd_preflight(args: argparse.Namespace) -> int:
         scope_args = argparse.Namespace(
             changed=args.changed,
             from_diff=args.from_diff,
-            json=None
+            json=None,
         )
         cmd_scope(scope_args)
 
@@ -278,7 +278,7 @@ def cmd_preflight(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(
         prog="adg_test",
-        description="ADG Unified Testing Accelerator"
+        description="ADG Unified Testing Accelerator",
     )
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
 

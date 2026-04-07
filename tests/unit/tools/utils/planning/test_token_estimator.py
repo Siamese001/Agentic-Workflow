@@ -100,16 +100,16 @@ class TestContextWindowEstimator:
         user_prompt = "Please implement this feature."
         files = [
             {"path": "test.py", "content": "def test():\n    pass\n"},
-            {"path": "config.json", "content": '{"debug": true}'}
+            {"path": "config.json", "content": '{"debug": true}'},
         ]
         diffs = [
-            {"path": "test.py", "content": "+def new_function():\n+    pass"}
+            {"path": "test.py", "content": "+def new_function():\n+    pass"},
         ]
         logs = [
-            {"source": "test", "content": "Running tests...\nERROR: Test failed"}
+            {"source": "test", "content": "Running tests...\nERROR: Test failed"},
         ]
         retrieved_context = [
-            {"source": "docs", "content": "This is documentation content."}
+            {"source": "docs", "content": "This is documentation content."},
         ]
         prior_steps = ["Previous step content"]
 
@@ -122,7 +122,7 @@ class TestContextWindowEstimator:
             diffs=diffs,
             logs=logs,
             retrieved_context=retrieved_context,
-            prior_steps=prior_steps
+            prior_steps=prior_steps,
         )
 
         # Verify estimate structure
@@ -146,7 +146,7 @@ class TestContextWindowEstimator:
         duplicate_sources = [
             ContextSource('file', 'same content', 100),
             ContextSource('file', 'same content', 100),
-            ContextSource('file', 'different content', 50)
+            ContextSource('file', 'different content', 50),
         ]
         filtered_sources, applied = self.estimator._remove_duplicates(duplicate_sources)
         assert applied == True  # Duplicates should be removed
@@ -155,7 +155,7 @@ class TestContextWindowEstimator:
         # Test large file summarization
         large_file_content = '\n'.join(f'line_{i}' for i in range(1500))  # 1500 lines
         large_file_sources = [
-            ContextSource('file', large_file_content, 5000, metadata={'path': 'large.py', 'lines': 1500})
+            ContextSource('file', large_file_content, 5000, metadata={'path': 'large.py', 'lines': 1500}),
         ]
         filtered_sources, applied = self.estimator._summarize_large_files(large_file_sources)
         assert applied == True  # Large file should be summarized
@@ -175,7 +175,7 @@ ERROR: Another error
 INFO: Process completed
         '''.strip()
         log_sources = [
-            ContextSource('log', log_content, 200, metadata={'source': 'app.log'})
+            ContextSource('log', log_content, 200, metadata={'source': 'app.log'}),
         ]
         filtered_sources, applied = self.estimator._trim_logs_to_errors(log_sources)
         assert applied == True  # Logs should be trimmed
@@ -194,7 +194,7 @@ INFO: Process completed
         # Test diff vs file preference
         overlap_sources = [
             ContextSource('file', 'file content', 1000, metadata={'path': 'test.py'}),
-            ContextSource('diff', 'diff content', 500, metadata={'path': 'test.py'})
+            ContextSource('diff', 'diff content', 500, metadata={'path': 'test.py'}),
         ]
         filtered_sources, applied = self.estimator._prefer_diff_over_file(overlap_sources)
         assert applied == True  # Should prefer diff over file
@@ -205,7 +205,7 @@ INFO: Process completed
         low_relevance_sources = [
             ContextSource('file', 'important code', 1000, metadata={'path': 'src/main.py'}),
             ContextSource('file', 'lock file content', 500, metadata={'path': 'package-lock.json'}),
-            ContextSource('file', 'cache content', 300, metadata={'path': '.cache/data'})
+            ContextSource('file', 'cache content', 300, metadata={'path': '.cache/data'}),
         ]
         filtered_sources, applied = self.estimator._drop_low_relevance_files(low_relevance_sources)
         assert applied == True  # Low relevance files should be dropped
@@ -220,7 +220,7 @@ INFO: Process completed
         sources = [
             ContextSource('file', 'same content', 100),
             ContextSource('file', 'same content', 100),
-            ContextSource('file', 'different content', 50)
+            ContextSource('file', 'different content', 50),
         ]
 
         filtered_sources, applied = self.estimator._remove_duplicates(sources)
@@ -233,7 +233,7 @@ INFO: Process completed
         from tools.utils.planning.token_estimator import ContextSource
         large_content = '\n'.join(f'line_{i}' for i in range(1500))  # 1500 lines
         sources = [
-            ContextSource('file', large_content, 5000, metadata={'path': 'large.py', 'lines': 1500})
+            ContextSource('file', large_content, 5000, metadata={'path': 'large.py', 'lines': 1500}),
         ]
 
         filtered_sources, applied = self.estimator._summarize_large_files(sources)
@@ -255,7 +255,7 @@ INFO: Process finished
         '''.strip()
 
     sources = [
-        ContextSource('log', log_content, 200, metadata={'source': 'app.log'})
+        ContextSource('log', log_content, 200, metadata={'source': 'app.log'}),
     ]
 
     filtered_sources, applied = estimator._trim_logs_to_errors(sources)
@@ -292,7 +292,7 @@ def test_to_dict_serialization():
         action="proceed",
         top_contributors=[{"type": "files", "tokens": 30000}],
         recommended_reductions=[],
-        compression_applied=[]
+        compression_applied=[],
     )
 
     # Convert to dict
@@ -313,9 +313,10 @@ class TestPlanningPreflightHook:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
+
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         # Use unique temp directory per test to avoid parallel execution conflicts
         self.temp_dir = Path(tempfile.gettempdir()) / f"test_token_budget_{uuid.uuid4().hex[:8]}"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -345,7 +346,7 @@ class TestPlanningPreflightHook:
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
 
         assert isinstance(estimate, TokenEstimate)
@@ -372,7 +373,7 @@ class TestPlanningPreflightHook:
                 diffs=[{"path": "large.py", "content": very_large_content}],
                 logs=[{"source": "large.log", "content": very_large_content}],
                 retrieved_context=[{"content": very_large_content}] * 20,  # Many chunks
-                prior_steps=[very_large_content] * 10  # Many prior steps
+                prior_steps=[very_large_content] * 10,  # Many prior steps
             )
 
     def test_budget_summary(self):
@@ -382,18 +383,18 @@ class TestPlanningPreflightHook:
             {
                 'plan_step': 'step1',
                 'total_projected_tokens': 50000,
-                'status': 'green'
+                'status': 'green',
             },
             {
                 'plan_step': 'step2',
                 'total_projected_tokens': 160000,
-                'status': 'yellow'
+                'status': 'yellow',
             },
             {
                 'plan_step': 'step3',
                 'total_projected_tokens': 180000,
-                'status': 'red'
-            }
+                'status': 'red',
+            },
         ]
 
         summary = self.hook.get_budget_summary()
@@ -416,7 +417,7 @@ class TestPlanningPreflightHook:
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
 
         # Create new hook instance with same file
@@ -447,9 +448,10 @@ class TestTokenBudgetDecorator:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
+
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         # Use unique temp directory per test to avoid parallel execution conflicts
         self.temp_dir = Path(tempfile.gettempdir()) / f"test_decorator_{uuid.uuid4().hex[:8]}"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -484,7 +486,7 @@ class TestTokenBudgetDecorator:
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
 
         assert result == "success"
@@ -510,7 +512,7 @@ class TestTokenBudgetDecorator:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
 if __name__ == "__main__":

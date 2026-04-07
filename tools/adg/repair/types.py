@@ -2,31 +2,73 @@
 
 Defines deficiency categorization, fix categories, and data structures
 for the repair system.
+
+SEVERITY ↔ FIX-CATEGORY BRIDGE
+--------------------------------
+FixCategory maps onto SeverityLevel as follows:
+
+    ADG:CRITICAL  (SeverityLevel.CRITICAL)  → BLOCK_FIX    (human engineering required)
+    ADG:HIGH      (SeverityLevel.HIGH)       → SUGGEST_FIX  (HITL approval before applying)
+    ADG:MEDIUM    (SeverityLevel.MEDIUM)     → AUTO_FIX     (safe deterministic fix)
+    ADG:LOW       (SeverityLevel.LOW)        → AUTO_FIX     (auto-fix or skip)
+
+Use FixCategory.from_severity() to translate at runtime.
 """
 
 from __future__ import annotations
 
 import enum
+import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
+
+_ROOT = Path(__file__).resolve().parents[3]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 
 class FixCategory(enum.Enum):
     """Categorization of deficiencies by fixability.
 
     AUTO_FIX: Safe to apply automatically without human review.
-        Examples: Missing __all__, wrong guardian format, missing constants
+        Corresponds to: ADG:MEDIUM, ADG:LOW  (SeverityLevel.MEDIUM / LOW)
+        Examples: Missing __all__, wrong guardian format, import order, unused imports
 
     SUGGEST_FIX: Needs human-in-the-loop approval before applying.
+        Corresponds to: ADG:HIGH  (SeverityLevel.HIGH)
         Examples: Layer reassignment, import reordering, docstring additions
 
-    BLOCK_FIX: Requires human engineering - cannot be auto-fixed.
+    BLOCK_FIX: Requires human engineering — cannot be auto-fixed.
+        Corresponds to: ADG:CRITICAL  (SeverityLevel.CRITICAL)
         Examples: Architecture violations, missing critical edges, design flaws
     """
 
     AUTO_FIX = "auto_fix"
     SUGGEST_FIX = "suggest_fix"
     BLOCK_FIX = "block_fix"
+
+    @classmethod
+    def from_severity(cls, severity: object) -> "FixCategory":
+        """Translate a SeverityLevel into the corresponding FixCategory.
+
+        Args:
+            severity: A SeverityLevel instance from
+                      agentic_core.L5_safety.config.severity.
+
+        Returns:
+            FixCategory matching the severity's repair disposition.
+        """
+        from agentic_core.L5_safety.config.severity import SeverityLevel
+
+        mapping = {
+            SeverityLevel.CRITICAL: cls.BLOCK_FIX,
+            SeverityLevel.HIGH: cls.SUGGEST_FIX,
+            SeverityLevel.MEDIUM: cls.AUTO_FIX,
+            SeverityLevel.LOW: cls.AUTO_FIX,
+            SeverityLevel.INFO: cls.AUTO_FIX,
+        }
+        return mapping.get(severity, cls.BLOCK_FIX)
 
 
 @dataclass

@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -237,7 +236,7 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     if attempt < max_attempts:
                         print(
-                            f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s..."
+                            f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s...",
                         )
                         await asyncio.sleep(delay_seconds)
                     else:
@@ -423,12 +422,12 @@ class ValidationContext:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}",
         )
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
-                self._client.models.generate_content, model=self.model_id, contents=[prompt]
+                self._client.models.generate_content, model=self.model_id, contents=[prompt],
             )
             await self.budget.track(prompt, response.text)
             return _clean_llm_code(response.text)

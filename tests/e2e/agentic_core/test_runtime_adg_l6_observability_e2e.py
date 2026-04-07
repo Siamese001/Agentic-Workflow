@@ -354,7 +354,7 @@ class TestL6ObservabilityAlerts:
                     "span_id": f"persist-{i:03d}",
                     "trace_id": f"persist-trace-{i:03d}",
                     "ts_utc": int(time.time() * 1000) + i * 1000,
-                }
+                },
             ]
             snapshot = materializer.materialize(spans, mission=f"persist-test-{i}")
             l6_bridge.store_snapshot_for_meta_learning(snapshot)
@@ -509,7 +509,7 @@ class TestL6ObservabilityEdgeCases:
                 "duration_ms": 100.0,
                 "status": "ok",
                 "attributes": {},
-            }
+            },
         ]
 
         snapshot = materializer.materialize(single_layer_spans, mission="single-layer-test")

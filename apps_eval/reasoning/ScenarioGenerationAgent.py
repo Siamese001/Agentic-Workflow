@@ -60,7 +60,7 @@ class ScenarioGenerationAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ScenarioGenerationAgent.generate_scenarios"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ScenarioGenerationAgent.generate_scenarios",
         )
         _emit_orchestrates_workflow("p3", "scenario_gen_agent", "generation_workflow")
         _emit_dispatches_agent("p3", "scenario_gen_agent", "generation_dispatch")
@@ -82,7 +82,7 @@ class ScenarioGenerationAgent:
 
         _log.info("Generated %d scenarios", len(scenarios))
         _emit_records_telemetry_event(
-            "p4", "scenario_gen_agent", f"generation_complete:{len(scenarios)}"
+            "p4", "scenario_gen_agent", f"generation_complete:{len(scenarios)}",
         )
 
         return {

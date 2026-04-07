@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -331,7 +330,7 @@ class executive_title_composer:
         self.CONFIG = config or TitleComposerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.CONFIG.TEMPERATURE
+            initial_temperature=self.CONFIG.TEMPERATURE,
         )
 
     def generate_headline(self, context: dict[str, Any]) -> TitleComposerResult:
@@ -348,12 +347,12 @@ class executive_title_composer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "executive_title_composer.generate_headline"
+            _trace_id, LayerSegment.L5_POLICY, "executive_title_composer.generate_headline",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:executive_title_composer.generate_headline".encode()
+            f"{_trace_id}:executive_title_composer.generate_headline".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -361,7 +360,7 @@ class executive_title_composer:
         validation_results = []
         for attempt in range(1, self.CONFIG.max_attempts + 1):
             headline = self._generate_content(
-                context=context, temperature=self.recovery_loop.current_temperature, attempt=attempt
+                context=context, temperature=self.recovery_loop.current_temperature, attempt=attempt,
             )
             hygiene_result = self.gate_executor.execute_hygiene_scan(headline)
             validation_results.append(hygiene_result)
@@ -389,7 +388,7 @@ class executive_title_composer:
                     break
                 continue
             industry_result = self.gate_executor.execute_industry_first_gate(
-                headline=headline, valid_industries=self.GICS_SECTORS, gate_id="VG_INDUSTRY_FIRST_COMPLIANCE"
+                headline=headline, valid_industries=self.GICS_SECTORS, gate_id="VG_INDUSTRY_FIRST_COMPLIANCE",
             )
             validation_results.append(industry_result)
             if not industry_result.passed:

@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -252,13 +251,13 @@ def validate_artifact(artifact: Any) -> SemanticClockValidationResult:
     )
     if not result.valid:
         raise SemanticClockHashMismatch(
-            f"SemanticClockValidator: artifact_hash mismatch for advancement_id={artifact.advancement_id!r}. stored={stored!r}, computed={computed!r}"
+            f"SemanticClockValidator: artifact_hash mismatch for advancement_id={artifact.advancement_id!r}. stored={stored!r}, computed={computed!r}",
         )
     return result
 
 
 _WALL_CLOCK_ATTRS: frozenset[str] = frozenset(
-    {"time", "now", "utcnow", "monotonic", "perf_counter", "gmtime", "localtime"}
+    {"time", "now", "utcnow", "monotonic", "perf_counter", "gmtime", "localtime"},
 )
 
 

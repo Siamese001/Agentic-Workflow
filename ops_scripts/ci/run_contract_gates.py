@@ -33,7 +33,7 @@ def validate_pre_write_hooks():
                         ["python", str(main_script), "--health-check"],
                         capture_output=True,
                         text=True,
-                        timeout=10
+                        timeout=10,
                     )
                     if result.returncode != 0:
                         failed_skills.append(skill_dir.name)
@@ -48,9 +48,45 @@ def validate_pre_write_hooks():
     return True
 
 
+# MCP HEALTH CHECKS
+def validate_mcp_health():
+    """Validate MCP server health and hung process detection."""
+    print("\n[MCP HEALTH CHECK]")
+
+    # Check MCP PyTest coverage
+    returncode, stdout, stderr = run_cmd(
+        ["python", "ops_scripts/ci/check_mcp_pytest_coverage.py"],
+        cwd=ROOT,
+    )
+
+    if returncode != 0:
+        print("❌ MCP PyTest coverage validation failed")
+        print(stdout)
+        return False
+
+    print("✅ MCP PyTest coverage validated")
+
+    # Check for hung MCP processes
+    returncode, stdout, stderr = run_cmd(
+        ["python", "ops_scripts/ci/mcp_hung_process_detector.py", "--check"],
+        cwd=ROOT,
+    )
+
+    if returncode != 0:
+        print("❌ MCP hung process detection failed")
+        print(stdout)
+        return False
+
+    print("✅ MCP hung process check passed")
+    return True
+
+
 def main():
     """Run all contract gates in deterministic order."""
-    repo_root = Path(__file__).parent.parent.parent
+
+    # Validate MCP health (critical for Redis/ADG)
+    if not validate_mcp_health():
+        sys.exit(1)
 
     # Validate pre-write hooks
     if not validate_pre_write_hooks():

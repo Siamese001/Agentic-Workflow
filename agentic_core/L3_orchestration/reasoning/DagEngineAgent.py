@@ -223,10 +223,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -406,7 +404,7 @@ class DagEngineAgent(SovereignBaseAgent):
         return sorted_order
 
     async def execute(
-        self, executor: Callable[[Task], Awaitable[Any]], context: dict[str, Any] | None = None
+        self, executor: Callable[[Task], Awaitable[Any]], context: dict[str, Any] | None = None,
     ) -> DAGExecutionResult:
         """Execute the DAG.
 
@@ -437,16 +435,16 @@ class DagEngineAgent(SovereignBaseAgent):
         for task_id in execution_order:
             Task: Any = self.tasks[task_id]
             if not self._should_execute_task(
-                Task, task_id, completed_tasks, context, task_results, skipped_tasks
+                Task, task_id, completed_tasks, context, task_results, skipped_tasks,
             ):
                 continue
             success: Any = await self._execute_single_task(
-                Task, task_id, executor, completed_tasks, failed_tasks, task_results
+                Task, task_id, executor, completed_tasks, failed_tasks, task_results,
             )
             if not success:
                 break
         return self._create_dag_result(
-            completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order
+            completed_tasks, failed_tasks, skipped_tasks, task_results, execution_order,
         )
 
     def _log_dag_start(self, execution_order: list[str]) -> None:
@@ -478,7 +476,7 @@ class DagEngineAgent(SovereignBaseAgent):
                 skipped_tasks.append(task_id)
                 if self.enable_logging:
                     Logger.debug(
-                        "task_skipped_condition", extra={"task_id": task_id, "condition": Task.condition}
+                        "task_skipped_condition", extra={"task_id": task_id, "condition": Task.condition},
                     )
                 return False
         return True
@@ -548,7 +546,7 @@ class DagEngineAgent(SovereignBaseAgent):
         return result
 
     def _evaluate_condition(
-        self, condition: str, context: dict[str, Any], task_results: dict[str, Any]
+        self, condition: str, context: dict[str, Any], task_results: dict[str, Any],
     ) -> bool:
         """Evaluate a Task condition.
 

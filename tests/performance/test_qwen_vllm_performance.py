@@ -16,8 +16,8 @@ from typing import Any
 from agentic_core.L3_orchestration.inference.qwen_vllm.engines import (
     CircuitBreakerConfig,
     HardenedVLLMClient,
-    RetryConfig,
     OptimizedVLLMClient,
+    RetryConfig,
     VLLMRequest,
 )
 
@@ -459,7 +459,7 @@ async def main():
     try:
         await suite.run_all_tests()
         report = suite.generate_report(
-            output_path="qwen_vllm_performance_report.json"
+            output_path="qwen_vllm_performance_report.json",
         )
         print("\n" + "=" * 60)
         print("FULL JSON REPORT")

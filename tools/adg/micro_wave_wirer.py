@@ -266,7 +266,7 @@ def wire_file(filepath: str, edge_type: str, dry_run: bool) -> tuple[bool, str]:
 
     # Build emit call
     call = template["call_template"].format(
-        method_name=method_name, layer=layer, class_name=class_name
+        method_name=method_name, layer=layer, class_name=class_name,
     )
 
     # Build insertions (bottom-up to preserve line numbers)

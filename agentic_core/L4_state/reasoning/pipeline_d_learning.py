@@ -374,7 +374,7 @@ class CompletenessRAGProposer:
                 self._proposal_count += 1
 
                 _emit_updates_meta_learning_state(
-                    _trace_id, "CompletenessRAGProposer", proposal.proposal_type
+                    _trace_id, "CompletenessRAGProposer", proposal.proposal_type,
                 )
 
                 return proposal
@@ -481,7 +481,7 @@ class PipelineDEvaluationRunner:
         """
         _trace_id = f"pipeline_d_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "PipelineDEvaluationRunner.evaluate_retrieval"
+            _trace_id, LayerSegment.L4_STATE, "PipelineDEvaluationRunner.evaluate_retrieval",
         )
 
         # Run all 5 evaluations
@@ -489,19 +489,19 @@ class PipelineDEvaluationRunner:
 
         # 1. Completeness
         completeness_signal = self.completeness_eval.evaluate(
-            query, retrieved_contexts, generated_answer
+            query, retrieved_contexts, generated_answer,
         )
         signals.append(completeness_signal)
 
         # 2. Fragmentation
         fragmentation_signal = self.fragmentation_eval.evaluate(
-            retrieved_contexts, chunk_metadata
+            retrieved_contexts, chunk_metadata,
         )
         signals.append(fragmentation_signal)
 
         # 3. Groundedness
         groundedness_signal = self.groundedness_eval.evaluate(
-            generated_answer, retrieved_contexts
+            generated_answer, retrieved_contexts,
         )
         signals.append(groundedness_signal)
 
@@ -519,7 +519,7 @@ class PipelineDEvaluationRunner:
         # Capture metrics
         for signal in signals:
             _emit_captures_evaluation_metric(
-                _trace_id, "pipeline_d", signal.signal_type, signal.score
+                _trace_id, "pipeline_d", signal.signal_type, signal.score,
             )
 
         self._run_count += 1

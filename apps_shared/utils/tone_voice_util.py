@@ -61,39 +61,25 @@ _emit_applies_guardrail("p0", "tone_voice_util", "p0_governance")
 _emit_reads_policy_state("p0", "tone_voice_util", "policy_binding")
 _emit_snapshots_state("p0", "tone_voice_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -460,7 +446,7 @@ class ToneEnforcer:
                         message=f"Sentence too long: {word_count} words (max: {settings.max_sentence_length})",
                         location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
                         suggestion="Consider breaking into shorter sentences",
-                    )
+                    ),
                 )
             elif word_count < settings.min_sentence_length:
                 violations.append(
@@ -470,7 +456,7 @@ class ToneEnforcer:
                         message=f"Sentence too short: {word_count} words (min: {settings.min_sentence_length})",
                         location=sentence,
                         suggestion="Consider expanding with more detail",
-                    )
+                    ),
                 )
         return violations
 
@@ -497,7 +483,7 @@ class ToneEnforcer:
                         message=f"Banned word detected: '{word}'",
                         location=match.group() if match else word,
                         suggestion="Replace with stronger alternative",
-                    )
+                    ),
                 )
         return violations
 
@@ -524,7 +510,7 @@ class ToneEnforcer:
                     severity="warning",
                     message=f"Missing required keywords: {', '.join(missing_keywords)}",
                     suggestion="Consider incorporating these keywords",
-                )
+                ),
             )
         return violations
 
@@ -556,7 +542,7 @@ class ToneEnforcer:
                         severity="warning",
                         message=f"Voice inconsistency: '{avoid_word}' doesn't match {voice.value} tone",
                         suggestion=f"Use {voice.value} voice alternatives: {', '.join(patterns['verbs'][:3])}",
-                    )
+                    ),
                 )
         if preferred_found == 0 and len(patterns["patterns"]) > 0:
             violations.append(
@@ -565,7 +551,7 @@ class ToneEnforcer:
                     severity="info",
                     message=f"Weak {voice.value} voice: no preferred patterns detected",
                     suggestion=f"Consider using: {', '.join(patterns['verbs'][:3])}",
-                )
+                ),
             )
         return violations
 
@@ -598,7 +584,7 @@ class ToneEnforcer:
                     severity="warning",
                     message=f"Too much passive voice: {passive_percent:.1f}% (max: {settings.max_passive_voice_percent}%)",
                     suggestion="Use more active voice construction",
-                )
+                ),
             )
         return violations
 
@@ -623,7 +609,7 @@ class ToneEnforcer:
                             severity="warning",
                             message="Informal language detected in formal tone",
                             suggestion="Use formal language",
-                        )
+                        ),
                     )
         elif settings.formality_level == "professional":
             casual_patterns = ["\\by'all\\b", "\\bain't\\b", "\\bcuz\\b"]
@@ -635,7 +621,7 @@ class ToneEnforcer:
                             severity="error",
                             message="Overly casual language detected",
                             suggestion="Use professional language",
-                        )
+                        ),
                     )
         return violations
 

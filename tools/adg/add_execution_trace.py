@@ -65,7 +65,7 @@ class ExecutionTraceInstrumenter(ast.NodeTransformer):
                         keywords=[],
                     ),
                     optional_vars=ast.Name(id="trace", ctx=ast.Store()),
-                )
+                ),
             ],
             body=method.body,
         )
@@ -89,7 +89,7 @@ class ExecutionTraceInstrumenter(ast.NodeTransformer):
                     ),
                 ],
                 keywords=[],
-            )
+            ),
         )
 
         # Wrap existing method body in try/finally for completion record
@@ -113,8 +113,8 @@ class ExecutionTraceInstrumenter(ast.NodeTransformer):
                         ),
                     ],
                     keywords=[],
-                )
-            )
+                ),
+            ),
         ]
 
         wrapped_body = [
@@ -145,7 +145,7 @@ class ExecutionTraceInstrumenter(ast.NodeTransformer):
                         "class": node.name,
                         "method": execute_method.name,
                         "line": execute_method.lineno,
-                    }
+                    },
                 )
                 self.trace_imported = True
 

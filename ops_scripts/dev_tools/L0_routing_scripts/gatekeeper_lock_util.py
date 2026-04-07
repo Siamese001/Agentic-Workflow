@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -205,7 +204,7 @@ def get_staged_files() -> list[str]:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_staged_files")
     try:
         result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True
+            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True,
         )
         return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
     except subprocess.CalledProcessError:

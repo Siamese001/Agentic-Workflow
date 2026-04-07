@@ -220,7 +220,7 @@ def validate_mcp_sovereignty(config_path: Path) -> list[str]:
     if "filesystem" not in servers:
         violations.append(
             "MISSING_FILESYSTEM: 'filesystem' key absent from mcpServers. "
-            "Add entry with allowedDirectories locked to repo root."
+            "Add entry with allowedDirectories locked to repo root.",
         )
 
     # --- Rule 2: filesystem must not be disabled ---
@@ -229,7 +229,7 @@ def validate_mcp_sovereignty(config_path: Path) -> list[str]:
         if fs_entry.get("disabled", False) is True:
             violations.append(
                 "FILESYSTEM_DISABLED: filesystem MCP server is marked disabled=true. "
-                "Must be enabled with allowedDirectories=repo root only."
+                "Must be enabled with allowedDirectories=repo root only.",
             )
 
         # --- Rule 3: filesystem args must contain ONLY the repo root ---
@@ -241,7 +241,7 @@ def validate_mcp_sovereignty(config_path: Path) -> list[str]:
             if arg_norm != repo_root_norm and not arg_norm.startswith(repo_root_norm):
                 violations.append(
                     f"FILESYSTEM_OUT_OF_REPO_ARG: filesystem args contains path outside "
-                    f"repo root: '{arg}'. Only '{REPO_ROOT}' is allowed."
+                    f"repo root: '{arg}'. Only '{REPO_ROOT}' is allowed.",
                 )
 
         # --- Rule 4: comment must document sovereign write territories ---
@@ -249,24 +249,24 @@ def validate_mcp_sovereignty(config_path: Path) -> list[str]:
         if not comment:
             violations.append(
                 "FILESYSTEM_MISSING_COMMENT: filesystem entry must have a _comment "
-                "documenting sovereign write territories and Constitutional Rule #0."
+                "documenting sovereign write territories and Constitutional Rule #0.",
             )
         else:
             if "constitutional rule #0" not in comment.lower() and "rule #0" not in comment.lower():
                 violations.append(
-                    "FILESYSTEM_COMMENT_MISSING_RULE0: _comment must reference Constitutional Rule #0."
+                    "FILESYSTEM_COMMENT_MISSING_RULE0: _comment must reference Constitutional Rule #0.",
                 )
             for territory in SOVEREIGN_WRITE_TERRITORIES:
                 if territory not in comment:
                     violations.append(
                         f"FILESYSTEM_COMMENT_MISSING_TERRITORY: _comment must document "
-                        f"sovereign write territory '{territory}'."
+                        f"sovereign write territory '{territory}'.",
                     )
             for sensitive in DENOMINATOR_SENSITIVE_FILES:
                 if sensitive not in comment:
                     violations.append(
                         f"FILESYSTEM_COMMENT_MISSING_SENSITIVE: _comment must list "
-                        f"read-sensitive path '{sensitive}'."
+                        f"read-sensitive path '{sensitive}'.",
                     )
 
     # --- Rule 5: no server references forbidden out-of-repo paths in args/cwd ---
@@ -284,7 +284,7 @@ def validate_mcp_sovereignty(config_path: Path) -> list[str]:
                     violations.append(
                         f"FORBIDDEN_PATH in server '{server_name}': "
                         f"path '{path_val}' contains forbidden fragment '{forbidden}'. "
-                        f"Constitutional Rule #0 violation."
+                        f"Constitutional Rule #0 violation.",
                     )
 
     return violations
@@ -299,7 +299,7 @@ def main() -> int:
         print(
             "\nFix: ensure mcp_config.json has a 'filesystem' entry with args locked "
             "to repo root only. Constitutional Rule #0: NEVER reference "
-            r"C:\Users\... or .windsurf\plans\ paths."
+            r"C:\Users\... or .windsurf\plans\ paths.",
         )
         return 1
     print("[OK] MCP Config Sovereignty gate passed — filesystem entry conforms to sovereignty rules.")

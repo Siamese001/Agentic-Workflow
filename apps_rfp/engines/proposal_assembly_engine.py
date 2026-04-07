@@ -90,39 +90,25 @@ _emit_applies_guardrail("p0", "proposal_assembly_engine", "p0_governance")
 _emit_reads_policy_state("p0", "proposal_assembly_engine", "policy_binding")
 _emit_snapshots_state("p0", "proposal_assembly_engine", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -314,12 +300,12 @@ class ProposalAssemblyEngine:
                     statement=f"Delivery timeline of {request.delivery_timeline_weeks} weeks is feasible with dedicated resourcing.",
                     basis="client-provided",
                     section_id="implementation_roadmap",
-                )
+                ),
             )
         return assumptions
 
     def _build_sections(
-        self, request: RfpRequest, assumptions: list[AssumptionItem]
+        self, request: RfpRequest, assumptions: list[AssumptionItem],
     ) -> list[ProposalSection]:
         """Build all proposal sections."""
         industry_display = request.industry.replace("_", " ").title()
@@ -348,7 +334,7 @@ class ProposalAssemblyEngine:
                 is_deterministic=True,
                 evidence=("agentic_core governance layer", "L0 routing enforcement"),
                 word_count=80,
-            )
+            ),
         )
 
         sections.append(
@@ -367,7 +353,7 @@ class ProposalAssemblyEngine:
                 is_deterministic=True,
                 assumptions=tuple(a for a in assumptions if a.section_id == "current_state"),
                 word_count=90,
-            )
+            ),
         )
 
         sections.append(
@@ -390,7 +376,7 @@ class ProposalAssemblyEngine:
                 evidence=("L0-L6 layer architecture", "InstructionPacket contract"),
                 assumptions=tuple(a for a in assumptions if a.section_id == "future_state"),
                 word_count=120,
-            )
+            ),
         )
 
         sections.append(
@@ -411,7 +397,7 @@ class ProposalAssemblyEngine:
                 is_deterministic=True,
                 assumptions=tuple(a for a in assumptions if a.section_id == "implementation_roadmap"),
                 word_count=110,
-            )
+            ),
         )
 
         sections.append(
@@ -431,7 +417,7 @@ class ProposalAssemblyEngine:
                 is_deterministic=True,
                 evidence=("L0 policy enforcement", "drift_detection_healer.py"),
                 word_count=100,
-            )
+            ),
         )
 
         sections.append(
@@ -451,7 +437,7 @@ class ProposalAssemblyEngine:
                 is_deterministic=True,
                 evidence=("platform capability extraction", "governance layer enforcement"),
                 word_count=100,
-            )
+            ),
         )
 
         return sections
@@ -469,7 +455,7 @@ class ProposalAssemblyEngine:
                     deliverables=tmpl["deliverables"],
                     governance_milestone=tmpl["governance_milestone"],
                     measurement_milestone=tmpl["measurement_milestone"],
-                )
+                ),
             )
         return phases
 
@@ -484,6 +470,6 @@ class ProposalAssemblyEngine:
                     description=tmpl["description"],
                     severity=tmpl["severity"],
                     mitigation=tmpl["mitigation"],
-                )
+                ),
             )
         return risks

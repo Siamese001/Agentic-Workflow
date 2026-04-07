@@ -12,8 +12,6 @@ Execution model per §2.1:
 from __future__ import annotations
 
 import re
-import subprocess
-import sys
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

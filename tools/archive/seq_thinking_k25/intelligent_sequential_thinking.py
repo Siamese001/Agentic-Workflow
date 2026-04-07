@@ -129,7 +129,7 @@ class TaskComplexityAnalyzer:
                 confidence=0.9,
                 reasoning_required=False,
                 suggested_thoughts=0,
-                factors=["Trivial task - no structured reasoning needed"]
+                factors=["Trivial task - no structured reasoning needed"],
             )
 
         # Check if always requires reasoning
@@ -139,7 +139,7 @@ class TaskComplexityAnalyzer:
                 confidence=0.95,
                 reasoning_required=True,
                 suggested_thoughts=25,
-                factors=["Task type requires structured reasoning"]
+                factors=["Task type requires structured reasoning"],
             )
 
         # Calculate complexity score
@@ -175,7 +175,7 @@ class TaskComplexityAnalyzer:
             confidence=confidence,
             reasoning_required=reasoning_required,
             suggested_thoughts=suggested_thoughts,
-            factors=factors
+            factors=factors,
         )
 
     def _is_trivial(self, prompt: str) -> bool:
@@ -280,7 +280,7 @@ class IntelligentSequentialThinker:
         result = {
             'invoke_sequential_thinking': should_invoke,
             'analysis': asdict(analysis),
-            'reasoning': self._explain_decision(analysis, should_invoke)
+            'reasoning': self._explain_decision(analysis, should_invoke),
         }
 
         if should_invoke:
@@ -306,7 +306,7 @@ class IntelligentSequentialThinker:
             'simple': ComplexityLevel.SIMPLE,
             'moderate': ComplexityLevel.MODERATE,
             'complex': ComplexityLevel.COMPLEX,
-            'critical': ComplexityLevel.CRITICAL
+            'critical': ComplexityLevel.CRITICAL,
         }
 
         threshold_level = threshold_map.get(self.threshold, ComplexityLevel.MODERATE)
@@ -316,7 +316,7 @@ class IntelligentSequentialThinker:
             ComplexityLevel.SIMPLE,
             ComplexityLevel.MODERATE,
             ComplexityLevel.COMPLEX,
-            ComplexityLevel.CRITICAL
+            ComplexityLevel.CRITICAL,
         ]
 
         # Invoke if task complexity >= threshold
@@ -359,7 +359,7 @@ Factors:
             'revisesThought': None,
             'branchFromThought': None,
             'branchId': None,
-            'needsMoreThoughts': True
+            'needsMoreThoughts': True,
         }
 
     def wrap_prompt_if_needed(self, prompt: str) -> tuple[str, bool]:

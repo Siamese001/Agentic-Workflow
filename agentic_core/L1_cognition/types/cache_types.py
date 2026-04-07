@@ -202,6 +202,6 @@ class DomainConfig:
         """Validate configuration values."""
         self.ttl_seconds = max(MIN_TTL_SECONDS, min(MAX_TTL_SECONDS, self.ttl_seconds))
         self.similarity_threshold = max(
-            MIN_SIMILARITY_THRESHOLD, min(MAX_SIMILARITY_THRESHOLD, self.similarity_threshold)
+            MIN_SIMILARITY_THRESHOLD, min(MAX_SIMILARITY_THRESHOLD, self.similarity_threshold),
         )
         self.max_healing_depth = max(1, min(10, self.max_healing_depth))

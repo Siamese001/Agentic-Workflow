@@ -90,7 +90,7 @@ def create_runtime_telemetry_event(record: Mapping[str, Any]) -> TelemetryEvent:
         "trace_id": str(record.get("trace_id", "")),
     }
     payload_hash = hashlib.sha256(
-        json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8"),
     ).hexdigest()
     return TelemetryEvent(
         ts_utc=int(record.get("ts_utc", 0)),
@@ -119,7 +119,7 @@ def create_telemetry_slice_from_runtime_records(
                 event.trace_id,
                 event.span_id,
             ),
-        )
+        ),
     )
     if not sorted_events:
         return create_telemetry_slice(0, 0, ())
@@ -186,7 +186,7 @@ def compute_slice_hash(slice_obj: TelemetrySlice) -> str:
 
 
 def create_telemetry_slice(
-    window_start_utc: int, window_end_utc: int, events: tuple[TelemetryEvent, ...]
+    window_start_utc: int, window_end_utc: int, events: tuple[TelemetryEvent, ...],
 ) -> TelemetrySlice:
     """Create a telemetry slice with content-addressed ID.
 

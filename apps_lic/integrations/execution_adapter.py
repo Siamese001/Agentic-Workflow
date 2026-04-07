@@ -83,7 +83,7 @@ class ExecutionAdapter:
         return receipt
 
     def submit_draft(
-        self, draft_package: DraftPackage, validation: ValidationResult
+        self, draft_package: DraftPackage, validation: ValidationResult,
     ) -> dict[str, Any]:
         """
         Submit draft for execution tracking.

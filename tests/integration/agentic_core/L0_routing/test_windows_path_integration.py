@@ -4,10 +4,8 @@ Wave 3: Tests for RCA path normalization bug fix.
 Ensures agent discovery handles Windows paths correctly without mangling.
 """
 
-import json
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch
 
 import pytest
 
@@ -137,10 +135,10 @@ class TestAgentDiscoveryPathHandling:
 
     def test_perform_deep_integrity_scan_handles_paths(self, tmp_path):
         """Test perform_deep_integrity_scan handles agent paths correctly."""
+        from agentic_core.L0_routing.utils.path_util import get_validated_project_root
         from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
             perform_deep_integrity_scan,
         )
-        from agentic_core.L0_routing.utils.path_util import get_validated_project_root
 
         # Create mock agents with various path formats
         mock_agents = [

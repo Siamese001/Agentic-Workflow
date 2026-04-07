@@ -6,11 +6,8 @@ to detect ChromaDB <-> SQLite fact_vec drift.
 """
 import hashlib
 import json
-import sqlite3
 import tempfile
 from pathlib import Path
-
-import pytest
 
 from agentic_core.L4_state.utils.memory.chunk_manifest_registry import (
     ChunkManifestRegistry,
@@ -26,7 +23,7 @@ class TestChunkManifestRegistryDriftDetection:
         # Create a test manifest with a fact_vec
         fact_vec = [0.1, 0.2, 0.3, 0.4, 0.5]
         fact_vec_hash = hashlib.sha256(
-            json.dumps(fact_vec, sort_keys=True).encode()
+            json.dumps(fact_vec, sort_keys=True).encode(),
         ).hexdigest()[:16]
 
         manifest = EnrichedChunkManifest(

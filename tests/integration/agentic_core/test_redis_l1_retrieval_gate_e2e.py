@@ -230,7 +230,7 @@ class TestL4AgenticActions(unittest.TestCase):
         """Test L4 validates correct action parameters."""
         result = self.actions.validate_action(
             "search_docs",
-            {"query": "test query", "n_results": 5}
+            {"query": "test query", "n_results": 5},
         )
 
         self.assertTrue(result)
@@ -239,7 +239,7 @@ class TestL4AgenticActions(unittest.TestCase):
         """Test L4 rejects action with missing required parameter."""
         result = self.actions.validate_action(
             "search_docs",
-            {"n_results": 5}  # missing required 'query'
+            {"n_results": 5},  # missing required 'query'
         )
 
         self.assertFalse(result)
@@ -248,7 +248,7 @@ class TestL4AgenticActions(unittest.TestCase):
         """Test L4 rejects unknown action."""
         result = self.actions.validate_action(
             "unknown_action",
-            {"param": "value"}
+            {"param": "value"},
         )
 
         self.assertFalse(result)
@@ -453,7 +453,7 @@ class TestRedisL1RetrievalGateE2E(unittest.TestCase):
         note_content = json.dumps({
             "step_completed": 2,
             "anomaly_found": True,
-            "next_action": "escalate"
+            "next_action": "escalate",
         })
 
         cache = get_hot_cache()

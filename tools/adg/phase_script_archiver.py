@@ -80,7 +80,7 @@ class PhaseScriptArchiver:
                 "archive_path": str(archive_path.relative_to(self.repo_root)),
                 "classification": file_info["classification"],
                 "reasoning": file_info["reasoning"],
-                "status": "archived"
+                "status": "archived",
             }
             self.archive_log.append(log_entry)
 
@@ -103,7 +103,7 @@ class PhaseScriptArchiver:
                 results["failed"] += 1
             results["files"].append({
                 "path": file_info["path"],
-                "status": "success" if success else "failed"
+                "status": "success" if success else "failed",
             })
 
         return results
@@ -116,7 +116,7 @@ class PhaseScriptArchiver:
             "generated_time": datetime.now().isoformat(),
             "archive_directory": str(self.archive_dir.relative_to(self.repo_root)),
             "total_operations": len(self.archive_log),
-            "operations": self.archive_log
+            "operations": self.archive_log,
         }
 
         with open(log_file, 'w', encoding='utf-8') as f:

@@ -190,7 +190,7 @@ def search_nodes(query: str) -> str:
             "skills": ["Python", "JavaScript", "Machine Learning"],
             "projects": ["E-commerce Platform", "ML Pipeline"],
             "experience": "5 years",
-        }
+        },
     )
 
 

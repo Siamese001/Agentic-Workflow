@@ -149,7 +149,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -466,7 +465,7 @@ def evaluate_reasoning_step(
     if not reasoning_eval_context.reasoning_trace_id:
         raise OrphanReasoningEvaluationError(
             "evaluate_reasoning_step: reasoning_trace_id is required. "
-            "No reasoning evaluation may exist without explicit trace linkage."
+            "No reasoning evaluation may exist without explicit trace linkage.",
         )
 
     _TRACE_LOG.debug(

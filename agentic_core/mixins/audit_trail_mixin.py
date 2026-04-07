@@ -82,21 +82,14 @@ from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -104,17 +97,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -268,7 +255,7 @@ class AuditTrailMixin:
         self._audit_enabled = True
         self._session_id = datetime.now().strftime("%Y%m%d-%H%M%S")
         Logger.debug(
-            f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}..."
+            f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}...",
         )
 
     def log_sovereign_event(self, action: str, details: dict[str, Any], level: str = "INFO") -> None:
@@ -344,7 +331,7 @@ class AuditTrailMixin:
             details: Additional validation context
         """
         self.log_sovereign_event(
-            "VALIDATE", {"validator": validator_name, "result": "PASS" if result else "FAIL", **details}
+            "VALIDATE", {"validator": validator_name, "result": "PASS" if result else "FAIL", **details},
         )
 
     def disable_audit(self) -> None:
@@ -404,7 +391,7 @@ class AuditTrailMixin:
         return proof
 
     async def emit_auditable_action(
-        self, action_type: str, payload: dict[str, Any], severity: str = "INFO"
+        self, action_type: str, payload: dict[str, Any], severity: str = "INFO",
     ) -> AuditProof:
         """
         Generate proof and emit via event_emission_mixin.
@@ -423,7 +410,7 @@ class AuditTrailMixin:
         proof = self._generate_audit_proof(action_type, payload)
         if not hasattr(self, "emit_event"):
             raise NotImplementedError(
-                "AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins."
+                "AuditTrailMixin requires event_emission_mixin. Ensure your class inherits from both mixins.",
             )
         event_payload = {
             "data": payload,
@@ -436,7 +423,7 @@ class AuditTrailMixin:
         }
         await self.emit_event(event_type=f"AUDIT_{action_type}", payload=event_payload, severity=severity)
         Logger.debug(
-            f"[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)"
+            f"[{self.__class__.__name__}] Audited action: {action_type} (hash={proof.curr_hash[:16]}...)",
         )
         return proof
 
@@ -456,7 +443,7 @@ class AuditTrailMixin:
         """
         proof = self._generate_audit_proof(action_type, payload)
         Logger.debug(
-            f"[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)"
+            f"[{self.__class__.__name__}] Sync audit proof: {action_type} (hash={proof.curr_hash[:16]}...)",
         )
         return proof
 

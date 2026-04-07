@@ -431,7 +431,7 @@ class EnterpriseEvalOrchestrator:
             lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
             lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
             lines.append(
-                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
             )
             lines.append("")
 

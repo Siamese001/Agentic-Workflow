@@ -114,7 +114,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -251,11 +250,11 @@ class DomainPlannerAgent(L3OrchestrationBase):
     """
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str
+        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
     ) -> PlannerAssessment:
         _gw = get_routing_gateway(workflow_id)
         _emit_records_execution_trace(
-            workflow_id, LayerSegment.L3_ORCHESTRATION, "DomainPlannerAgent.run_async"
+            workflow_id, LayerSegment.L3_ORCHESTRATION, "DomainPlannerAgent.run_async",
         )
         emit_agent_executes_agent(
             parent_agent_id="DomainPlannerAgent",
@@ -277,7 +276,7 @@ class DomainPlannerAgent(L3OrchestrationBase):
         recommended_actions: list[str] = []
         if not focus_matches:
             recommended_actions.append(
-                "Introduce a focus area that explicitly references the job title or company priorities."
+                "Introduce a focus area that explicitly references the job title or company priorities.",
             )
         rationale = (
             "Focus areas reference role/company context."
@@ -377,7 +376,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
     """Assesses risk and potential failure modes in the strategy."""
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str
+        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
     ) -> PlannerAssessment:
         focus_count = len(plan.focus_areas)
         duplicate_focus = len({focus.lower() for focus in plan.focus_areas}) != focus_count
@@ -486,7 +485,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
     """Evaluates whether the plan is grounded in achievable achievements."""
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str
+        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
     ) -> PlannerAssessment:
         achievements = plan.key_achievements_to_highlight
         quantified_achievements = [a for a in achievements if any(ch.isdigit() for ch in a)]
@@ -596,7 +595,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
     """Runs lightweight scenario stress tests on a strategy plan."""
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str
+        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
     ) -> list[ScenarioSimulationResult]:
         focus_lower = [focus.lower() for focus in plan.focus_areas]
         technical_focus = any("tech" in focus for focus in focus_lower)
@@ -619,7 +618,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                 if quantified
                 else "Lack of metrics may slow stakeholder buy-in.",
                 mitigation_actions=adoption_mitigations,
-            )
+            ),
         )
         technical_risk = "low" if technical_focus else "medium"
         technical_impact = 0.4 if technical_focus else 0.7
@@ -635,7 +634,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                 if technical_focus
                 else "Potential technical grilling may expose gaps in focus areas.",
                 mitigation_actions=technical_mitigations,
-            )
+            ),
         )
         cross_functional_risk = "low" if leadership_focus else "medium"
         cross_functional_impact = 0.3 if leadership_focus else 0.6
@@ -651,7 +650,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                 if leadership_focus
                 else "Missing leadership signal may reduce collaboration confidence.",
                 mitigation_actions=cross_functional_mitigations,
-            )
+            ),
         )
         self.log_feedback(
             workflow_id,
@@ -770,7 +769,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             weighted_votes += vote_value * assessment.confidence
             total_confidence += assessment.confidence
             rationale_parts.append(
-                f"{assessment.planner_name}: {assessment.vote} ({_truncate(assessment.rationale, 80)})"
+                f"{assessment.planner_name}: {assessment.vote} ({_truncate(assessment.rationale, 80)})",
             )
         aggregated_decision = "undecided"
         aggregated_confidence = 0.0
@@ -814,7 +813,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
                         if keyword not in plan.focus_areas:
                             plan.focus_areas.append(keyword)
                     signals.append(
-                        "Augmented focus areas with QA missing keywords: " + ", ".join(missing_keywords[:5])
+                        "Augmented focus areas with QA missing keywords: " + ", ".join(missing_keywords[:5]),
                     )
         hil_feedback = downstream_feedback.get("hil") if isinstance(downstream_feedback, dict) else None
         if isinstance(hil_feedback, dict):

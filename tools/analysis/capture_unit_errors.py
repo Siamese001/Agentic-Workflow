@@ -18,7 +18,7 @@ for sd in sorted(os.listdir(unit_dir)):
 
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/unit/{sd}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60
+        capture_output=True, text=True, cwd=ROOT, timeout=60,
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 

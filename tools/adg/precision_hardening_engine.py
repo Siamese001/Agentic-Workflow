@@ -65,7 +65,7 @@ class PrecisionHardeningOrchestrator:
 
     def validate_hardening(
         self,
-        precision_graphs: dict[str, Any]
+        precision_graphs: dict[str, Any],
     ) -> Any:
         """Validate precision hardening results"""
 
@@ -77,7 +77,7 @@ class PrecisionHardeningOrchestrator:
             precision_graphs=precision_graphs,
             original_node_count=self.adg_state["node_count"],
             original_edge_count=self.adg_state["edge_count"],
-            original_violation_count=self.adg_state["violation_count"]
+            original_violation_count=self.adg_state["violation_count"],
         )
 
         elapsed = time.time() - start_time
@@ -88,7 +88,7 @@ class PrecisionHardeningOrchestrator:
     def generate_artifacts(
         self,
         precision_graphs: dict[str, Any],
-        report: Any
+        report: Any,
     ) -> None:
         """Generate precision hardening artifacts (Section 13)"""
 
@@ -142,7 +142,7 @@ class PrecisionHardeningOrchestrator:
                     "timestamp": time.time(),
                 },
                 "graphs": {path: {"nodes": len(graph.nodes), "edges": len(graph.edges)}
-                        for path, graph in precision_graphs.items()}
+                        for path, graph in precision_graphs.items()},
             }, f, indent=2)
         print(f"  🧱 Block-level graph: {block_path}")
 
@@ -269,25 +269,25 @@ Examples:
   python tools/adg/precision_hardening_engine.py
   python tools/adg/precision_hardening_engine.py --target-dir ./src
   python tools/adg/precision_hardening_engine.py --validate-only
-        """
+        """,
     )
 
     parser.add_argument(
         "--target-dir",
         default=".",
-        help="Target directory to apply precision hardening (default: current directory)"
+        help="Target directory to apply precision hardening (default: current directory)",
     )
 
     parser.add_argument(
         "--output-dir",
         default="artifacts/adg/precision_final",
-        help="Output directory for precision artifacts (default: artifacts/adg/precision_final)"
+        help="Output directory for precision artifacts (default: artifacts/adg/precision_final)",
     )
 
     parser.add_argument(
         "--validate-only",
         action="store_true",
-        help="Only run validation, don't apply hardening"
+        help="Only run validation, don't apply hardening",
     )
 
     args = parser.parse_args()

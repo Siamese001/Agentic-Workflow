@@ -60,7 +60,7 @@ def check_fact_classification(violations: list[str]) -> None:
             continue  # not an evidence file requiring this section
         # Check for non-empty Unresolved
         unresolved_match = re.search(
-            r"### Unresolved\s*\n(.*?)(?:\n###|\n##|\Z)", content, re.DOTALL
+            r"### Unresolved\s*\n(.*?)(?:\n###|\n##|\Z)", content, re.DOTALL,
         )
         if unresolved_match:
             body = unresolved_match.group(1).strip()
@@ -68,7 +68,7 @@ def check_fact_classification(violations: list[str]) -> None:
             if re.search(r"^\s*-\s+\S", body, re.MULTILINE):
                 violations.append(
                     f"CONDITION 2: {path.relative_to(REPO_ROOT)} has non-empty "
-                    f"FACT_CLASSIFICATION.Unresolved — phase cannot be declared complete (§2.1.1)"
+                    f"FACT_CLASSIFICATION.Unresolved — phase cannot be declared complete (§2.1.1)",
                 )
 
 
@@ -89,7 +89,7 @@ def check_test_strictness(violations: list[str]) -> None:
             if stripped in ("assert True", "assert True  # noqa", "assert True # noqa"):
                 violations.append(
                     f"CONDITION 8: {path.relative_to(REPO_ROOT)}:{lineno}: "
-                    f"'assert True' detected — zero-assertion test (§11, §22.1 cond. 8)"
+                    f"'assert True' detected — zero-assertion test (§11, §22.1 cond. 8)",
                 )
 
 
@@ -119,7 +119,7 @@ def check_broken_test_fix_semantic_equivalence(violations: list[str]) -> None:
                         f"pytest.raises(Exception/BaseException) detected — broadened error type "
                         f"violates broken_test_fix semantic equivalence requirement "
                         f"(decision tree Check 4, §1.2, §5.4 gate #8). "
-                        f"Use specific exception type or add '# guardian: allow-broad-raises' with justification."
+                        f"Use specific exception type or add '# guardian: allow-broad-raises' with justification.",
                     )
 
 
@@ -150,7 +150,7 @@ def check_repair_class_in_commits(violations: list[str]) -> None:
                 if any(kw in message.lower() for kw in ("fix", "repair", "patch", "resolve")):
                     violations.append(
                         f"CONDITION 9: commit {commit_hash[:8]} touches production code "
-                        f"({changed_file}) but message has no 'repair_class:' footer (§22.1 cond. 9)"
+                        f"({changed_file}) but message has no 'repair_class:' footer (§22.1 cond. 9)",
                     )
                     break
 
@@ -170,7 +170,7 @@ def check_contract_conflicts(violations: list[str]) -> None:
             if "winning contract" not in body.lower() and "resolution layer" not in body.lower():
                 violations.append(
                     f"CONDITION 11: {path.relative_to(REPO_ROOT)}: CONTRACT_CONFLICT section "
-                    f"present but no 'winning contract' or 'resolution layer' declared (§19, §22.1 cond. 11)"
+                    f"present but no 'winning contract' or 'resolution layer' declared (§19, §22.1 cond. 11)",
                 )
 
 
@@ -192,7 +192,7 @@ def check_repair_complete_claim(violations: list[str]) -> None:
                 if not has_full_suite or has_failures:
                     violations.append(
                         f"CONDITION 13: {path.relative_to(REPO_ROOT)}: claims '{phrase}' "
-                        f"but no post-repair full-suite green result found in same artifact (§7.3, §22.1 cond. 13)"
+                        f"but no post-repair full-suite green result found in same artifact (§7.3, §22.1 cond. 13)",
                     )
                 break
 

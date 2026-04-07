@@ -63,7 +63,7 @@ class ADGWiringGapChecker:
                 AND (n.resolved_path LIKE '%Agent' OR n.resolved_path LIKE '%Provider' OR n.resolved_path LIKE '%Strategy')
                 AND n.resolved_path NOT LIKE '%test%'
                 LIMIT 100
-                """
+                """,
             )
 
             candidates = cursor.fetchall()
@@ -116,7 +116,7 @@ class ADGWiringGapChecker:
             AND n.resolved_path NOT LIKE '%test%'
             AND n.resolved_path NOT LIKE '%ops_scripts%'
             LIMIT 100
-            """
+            """,
         )
 
         candidates = cursor.fetchall()
@@ -168,7 +168,7 @@ class ADGWiringGapChecker:
             AND n.resolved_path LIKE '%ports%'
             AND n.resolved_path NOT LIKE '%test%'
             LIMIT 50
-            """
+            """,
         )
 
         port_interfaces = cursor.fetchall()
@@ -226,7 +226,7 @@ class ADGWiringGapChecker:
             AND e.dst_id NOT IN (SELECT id FROM nodes WHERE entity_type = 'module')
             AND e.source_file NOT LIKE '%test%'
             LIMIT 50
-            """
+            """,
         )
 
         for row in cursor.fetchall():
@@ -253,7 +253,7 @@ class ADGWiringGapChecker:
                 )
             )
             LIMIT 50
-            """
+            """,
         )
 
         for row in cursor.fetchall():
@@ -272,7 +272,7 @@ class ADGWiringGapChecker:
 def main() -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="ADG Wiring Gap Checker - Detect wiring, integration, and configuration issues"
+        description="ADG Wiring Gap Checker - Detect wiring, integration, and configuration issues",
     )
     parser.add_argument(
         "sqlite_path",

@@ -6,9 +6,8 @@ Target: 1,715 specific exception violations (SyntaxError, OSError, UnicodeDecode
 Phase 2.3: Systematic application of LOW severity fixes
 """
 
-import json
-import re
 import argparse
+import json
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -85,7 +84,7 @@ class LowSeveritySilentSwallowerFixer:
             'total_violations': len(low_violations),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining': len(low_violations) - self.fixes_applied
+            'remaining': len(low_violations) - self.fixes_applied,
         }
 
     def _determine_exception_fix_strategy(self, exception_type, context):
@@ -99,69 +98,69 @@ class LowSeveritySilentSwallowerFixer:
             'SyntaxError': {
                 'action': 'add_guardian_comment',
                 'comment': '# guardian: Syntax errors should be caught at parser level, not runtime',
-                'severity': 'design_issue'
+                'severity': 'design_issue',
             },
             'OSError': {
                 'action': 'add_context_logging',
                 'log_message': '# guardian: OS errors should be handled with specific error context',
-                'severity': 'operational'
+                'severity': 'operational',
             },
             'UnicodeDecodeError': {
                 'action': 'add_encoding_context',
                 'comment': '# guardian: Encoding errors should specify fallback encoding strategy',
-                'severity': 'data_integrity'
+                'severity': 'data_integrity',
             },
             'PermissionError': {
                 'action': 'add_permission_context',
                 'comment': '# guardian: Permission errors should validate access before operation',
-                'severity': 'security'
+                'severity': 'security',
             },
             'RuntimeError': {
                 'action': 'add_runtime_context',
                 'comment': '# guardian: Runtime errors should be prevented with proper validation',
-                'severity': 'logic_error'
+                'severity': 'logic_error',
             },
             'FileNotFoundError': {
                 'action': 'add_file_context',
                 'comment': '# guardian: File operations should check existence before access',
-                'severity': 'operational'
+                'severity': 'operational',
             },
             'ValueError': {
                 'action': 'add_validation_context',
                 'comment': '# guardian: Value errors should be prevented with input validation',
-                'severity': 'validation'
+                'severity': 'validation',
             },
             'TypeError': {
                 'action': 'add_type_context',
                 'comment': '# guardian: Type errors should be prevented with type checking',
-                'severity': 'type_safety'
+                'severity': 'type_safety',
             },
             'KeyError': {
                 'action': 'add_key_context',
                 'comment': '# guardian: Key errors should use dict.get() with default values',
-                'severity': 'data_access'
+                'severity': 'data_access',
             },
             'AttributeError': {
                 'action': 'add_attribute_context',
                 'comment': '# guardian: Attribute errors should validate object structure',
-                'severity': 'object_integrity'
+                'severity': 'object_integrity',
             },
             'IndexError': {
                 'action': 'add_index_context',
                 'comment': '# guardian: Index errors should validate array bounds',
-                'severity': 'bounds_checking'
+                'severity': 'bounds_checking',
             },
             '_SCENARIO_EXCEPTIONS': {
                 'action': 'add_test_context',
                 'comment': '# guardian: Test exceptions should use proper test assertions',
-                'severity': 'test_infrastructure'
-            }
+                'severity': 'test_infrastructure',
+            },
         }
 
         return exception_strategies.get(exception_type, {
             'action': 'add_general_guardian',
             'comment': f'# guardian: {exception_type} should be handled with specific context',
-            'severity': 'general'
+            'severity': 'general',
         })
 
     def _determine_multiple_exception_strategy(self, exception_type, context):
@@ -173,25 +172,25 @@ class LowSeveritySilentSwallowerFixer:
             return {
                 'action': 'add_parsing_context',
                 'comment': '# guardian: Parsing and encoding errors need separate handling strategies',
-                'severity': 'parsing_issue'
+                'severity': 'parsing_issue',
             }
         elif 'OSError' in exceptions and 'UnicodeDecodeError' in exceptions:
             return {
                 'action': 'add_file_encoding_context',
                 'comment': '# guardian: File operations with encoding need error-specific handling',
-                'severity': 'file_processing'
+                'severity': 'file_processing',
             }
         elif len(exceptions) > 3:
             return {
                 'action': 'suggest_refactor',
                 'comment': '# guardian: Too many exception types - consider refactoring into separate handlers',
-                'severity': 'design_complexity'
+                'severity': 'design_complexity',
             }
         else:
             return {
                 'action': 'add_multi_context',
                 'comment': f'# guardian: Multiple exceptions ({", ".join(exceptions[:2])}) need specific handling',
-                'severity': 'multiple_handling'
+                'severity': 'multiple_handling',
             }
 
     def _create_targeted_exception_handler(self, original_line, context, strategy):
@@ -298,9 +297,9 @@ class LowSeveritySilentSwallowerFixer:
                 'key_context': ['KeyError'],
                 'attribute_context': ['AttributeError'],
                 'index_context': ['IndexError'],
-                'multiple_exceptions': ['SyntaxError, UnicodeDecodeError', 'OSError, UnicodeDecodeError']
+                'multiple_exceptions': ['SyntaxError, UnicodeDecodeError', 'OSError, UnicodeDecodeError'],
             },
-            'phase_status': 'COMPLETED' if self.fixes_applied == len(low_violations) else 'PARTIAL'
+            'phase_status': 'COMPLETED' if self.fixes_applied == len(low_violations) else 'PARTIAL',
         }
 
         report_file = PROJECT_ROOT / "tools" / "phase23_low_severity_fixes_report.json"
@@ -358,7 +357,7 @@ class LowSeveritySilentSwallowerFixer:
             'total_low_severity_violations': len(self.violations),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining_violations': len(self.violations) - self.fixes_applied
+            'remaining_violations': len(self.violations) - self.fixes_applied,
         }
 
         report_file = PROJECT_ROOT / "tools" / "low_severity_fixes_report.json"

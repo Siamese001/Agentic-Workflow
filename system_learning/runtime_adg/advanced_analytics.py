@@ -592,7 +592,7 @@ class AdvancedADGAnalytics:
         sorted_recommendations = sorted(
             insights.recommendations,
             key=lambda r: priority_order.get(r.get("priority", "low"), 1),
-            reverse=True
+            reverse=True,
         )
 
         return sorted_recommendations

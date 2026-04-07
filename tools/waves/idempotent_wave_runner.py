@@ -48,7 +48,7 @@ class IdempotentWaveRunner:
                 'wave_name': wave_name,
                 'executed': False,
                 'reason': 'pre_execution_validation_failed',
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
             }
 
         if dry_run:
@@ -57,7 +57,7 @@ class IdempotentWaveRunner:
                 'executed': False,
                 'reason': 'dry_run_mode',
                 'timestamp': datetime.now().isoformat(),
-                'would_execute': True
+                'would_execute': True,
             }
 
         # Execute the wave
@@ -68,7 +68,7 @@ class IdempotentWaveRunner:
                     'wave_name': wave_name,
                     'executed': False,
                     'reason': 'unknown_wave',
-                    'timestamp': datetime.now().isoformat()
+                    'timestamp': datetime.now().isoformat(),
                 }
 
             result = wave_instance.execute()
@@ -77,7 +77,7 @@ class IdempotentWaveRunner:
                 'wave_name': wave_name,
                 'executed': True,
                 'result': result,
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
             }
 
         except Exception as e:
@@ -86,7 +86,7 @@ class IdempotentWaveRunner:
                 'executed': False,
                 'reason': 'execution_error',
                 'error': str(e),
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
             }
 
     def run_wave_sequence(self, wave_names: list[str], force: bool = False, dry_run: bool = False) -> dict[str, Any]:
@@ -134,14 +134,14 @@ class IdempotentWaveRunner:
                 'executed': False,
                 'reason': skip['reason'],
                 'details': skip['details'],
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
             }
 
         return {
             'sequence': wave_names,
             'execution_plan': plan,
             'results': results,
-            'summary': self._generate_execution_summary(results)
+            'summary': self._generate_execution_summary(results),
         }
 
     def _create_wave_instance(self, wave_name: str) -> IdempotentWave | None:
@@ -183,7 +183,7 @@ class IdempotentWaveRunner:
             'total_waves': len(results),
             'executed': executed,
             'skipped': skipped,
-            'success_rate': (executed / len(results)) * 100 if results else 0
+            'success_rate': (executed / len(results)) * 100 if results else 0,
         }
 
     def reset_wave_state(self, wave_name: str):
@@ -199,7 +199,7 @@ class IdempotentWaveRunner:
             return {
                 'wave_name': wave_name,
                 'status': 'never_executed',
-                'details': 'No execution record found'
+                'details': 'No execution record found',
             }
 
         return {
@@ -209,7 +209,7 @@ class IdempotentWaveRunner:
             'timestamp': state.timestamp,
             'files_modified': len(state.files_modified),
             'patterns_applied': sum(len(patterns) for patterns in state.patterns_applied.values()),
-            'metrics': state.metrics
+            'metrics': state.metrics,
         }
 
     def get_all_wave_status(self) -> dict[str, Any]:
@@ -220,7 +220,7 @@ class IdempotentWaveRunner:
             'timestamp': datetime.now().isoformat(),
             'total_waves': summary['total_waves'],
             'completed_waves': summary['completed_waves'],
-            'waves': summary['waves']
+            'waves': summary['waves'],
         }
 
 

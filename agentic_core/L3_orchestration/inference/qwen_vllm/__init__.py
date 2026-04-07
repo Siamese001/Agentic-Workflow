@@ -21,40 +21,54 @@ Example usage:
 """
 
 # Configuration
+# Backward compatibility re-exports (for gradual migration)
 from .config import (
+    AppsQwenConfig,
+    AppsQwenMetric,
+    AppsQwenModelConfig,
+    AppsQwenPromptConfig,
+    AppsQwenSessionMetrics,
+    AppsQwenTelemetry,
     QwenInferenceConfig,
+    QwenInferenceMetric,
+    QwenInferenceTelemetry,
     QwenModelConfig,
     QwenPromptConfig,
-    QwenInferenceTelemetry,
-    QwenInferenceMetric,
     QwenSessionMetrics,
+    apps_qwen_telemetry,
     qwen_inference_telemetry,
 )
 
 # Engines
 from .engines import (
-    OptimizedVLLMClient,
-    VLLMRequest,
-    VLLMResponse,
-    HardenedVLLMClient,
+    AppsQwenInferenceWorker,
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitBreakerOpenError,
     CircuitState,
-    RetryConfig,
+    HardenedVLLMClient,
     HardeningMetrics,
+    OptimizedVLLMClient,
     QwenInferenceWorker,
-    get_vllm_client,
+    RetryConfig,
+    VLLMRequest,
+    VLLMResponse,
     close_vllm_client,
+    get_vllm_client,
 )
 
 # Reasoning/Gateway
 from .reasoning import (
+    AppsQwenGateway,
+    AppsQwenRequest,
+    AppsQwenResponse,
     QwenInferenceGateway,
     QwenInferenceRequest,
     QwenInferenceResponse,
-    get_qwen_inference_gateway,
+    close_apps_qwen_gateway,
     close_qwen_inference_gateway,
+    get_apps_qwen_gateway,
+    get_qwen_inference_gateway,
 )
 
 # Tools
@@ -64,25 +78,6 @@ from .tools import (
     GPURecommendation,
     get_gpu_monitor,
     stop_gpu_monitor,
-)
-
-# Backward compatibility re-exports (for gradual migration)
-from .config import (
-    AppsQwenConfig,
-    AppsQwenModelConfig,
-    AppsQwenPromptConfig,
-    AppsQwenTelemetry,
-    AppsQwenMetric,
-    AppsQwenSessionMetrics,
-    apps_qwen_telemetry,
-)
-from .engines import AppsQwenInferenceWorker
-from .reasoning import (
-    AppsQwenGateway,
-    AppsQwenRequest,
-    AppsQwenResponse,
-    get_apps_qwen_gateway,
-    close_apps_qwen_gateway,
 )
 
 __all__ = [

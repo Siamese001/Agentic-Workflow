@@ -62,39 +62,25 @@ _emit_applies_guardrail("p0", "metric_type_util", "p0_governance")
 _emit_reads_policy_state("p0", "metric_type_util", "policy_binding")
 _emit_snapshots_state("p0", "metric_type_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -432,7 +418,7 @@ class ObservabilityPlanningOrchestrator:
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityOrchestrator.execute")
         self.logger.info(
-            f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}"
+            f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}",
         )
         try:
             self._validate_request(observability_request)
@@ -449,7 +435,7 @@ class ObservabilityPlanningOrchestrator:
             if self.config.enable_alerts:
                 alert_rules = self._plan_alerts(observability_request)
             resource_estimates = self._estimate_resources(
-                metric_definitions, log_configuration, trace_configuration
+                metric_definitions, log_configuration, trace_configuration,
             )
             result = ObservabilityPlanningResult(
                 success=True,
@@ -499,7 +485,7 @@ class ObservabilityPlanningOrchestrator:
                 metric_type=MetricType.COUNTER,
                 description="Total number of requests",
                 labels={"service": service_name, "method": "*"},
-            )
+            ),
         )
         metrics.append(
             MetricDefinition(
@@ -508,7 +494,7 @@ class ObservabilityPlanningOrchestrator:
                 description="Request duration in seconds",
                 labels={"service": service_name},
                 aggregation="percentile",
-            )
+            ),
         )
         if service_type == "api":
             metrics.append(
@@ -517,7 +503,7 @@ class ObservabilityPlanningOrchestrator:
                     metric_type=MetricType.COUNTER,
                     description="Total API errors",
                     labels={"service": service_name, "error_code": "*"},
-                )
+                ),
             )
         elif service_type == "worker":
             metrics.append(
@@ -526,7 +512,7 @@ class ObservabilityPlanningOrchestrator:
                     metric_type=MetricType.COUNTER,
                     description="Total jobs processed",
                     labels={"service": service_name, "status": "*"},
-                )
+                ),
             )
             metrics.append(
                 MetricDefinition(
@@ -534,7 +520,7 @@ class ObservabilityPlanningOrchestrator:
                     metric_type=MetricType.GAUGE,
                     description="Current queue size",
                     labels={"service": service_name},
-                )
+                ),
             )
         return metrics
 
@@ -585,7 +571,7 @@ class ObservabilityPlanningOrchestrator:
                 threshold=THRESHOLD,
                 duration=300,
                 notification_channels=["slack", "email"],
-            )
+            ),
         )
         alerts.append(
             AlertRule(
@@ -595,7 +581,7 @@ class ObservabilityPlanningOrchestrator:
                 threshold=THRESHOLD,
                 duration=600,
                 notification_channels=["slack"],
-            )
+            ),
         )
         if service_type == "api":
             alerts.append(
@@ -606,7 +592,7 @@ class ObservabilityPlanningOrchestrator:
                     threshold=THRESHOLD,
                     duration=60,
                     notification_channels=["pagerduty", "slack", "email"],
-                )
+                ),
             )
         elif service_type == "worker":
             alerts.append(
@@ -617,7 +603,7 @@ class ObservabilityPlanningOrchestrator:
                     threshold=THRESHOLD,
                     duration=300,
                     notification_channels=["slack", "email"],
-                )
+                ),
             )
         return alerts
 
@@ -652,17 +638,17 @@ class ObservabilityPlanningOrchestrator:
 
 
 def create_observability_planning_orchestrator(
-    enable_metrics: bool = True, enable_logging: bool = True, enable_tracing: bool = True, **kwargs: object
+    enable_metrics: bool = True, enable_logging: bool = True, enable_tracing: bool = True, **kwargs: object,
 ) -> ObservabilityPlanningOrchestrator:
     """Create a configured observability planning orchestrator."""
     config = ObservabilityPlanningConfig(
-        enable_metrics=enable_metrics, enable_logging=enable_logging, enable_tracing=enable_tracing, **kwargs
+        enable_metrics=enable_metrics, enable_logging=enable_logging, enable_tracing=enable_tracing, **kwargs,
     )
     return ObservabilityPlanningOrchestrator(config)
 
 
 def plan_observability(
-    service_name: str, service_type: str, config: dict[str, Any] | None = None
+    service_name: str, service_type: str, config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan observability setup from simple parameters.
 

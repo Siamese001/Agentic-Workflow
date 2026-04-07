@@ -222,7 +222,7 @@ class CaseCompilationEngine:
                     "input_id": compilation_input.input_id,
                     "stages": [s.to_dict() for s in stages],
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             input_id=compilation_input.input_id,
             stages=stages,
@@ -238,7 +238,7 @@ class CaseCompilationEngine:
                     "payload_id": payload.payload_id,
                     "success": True,
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             payload=payload,
             success=True,
@@ -283,14 +283,14 @@ class CaseCompilationEngine:
                     "input_id": compilation_input.input_id,
                     "stage": "CAPTURE",
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             input_ref=compilation_input.input_id,
             output_artifact_hash=stable_sha256_json(
                 {
                     "outputs_count": len(compilation_input.sealed_outputs),
                     "logs_count": len(compilation_input.context_logs),
-                }
+                },
             ),
             rules_applied=rules_applied,
             limits_enforced=limits_enforced,
@@ -333,14 +333,14 @@ class CaseCompilationEngine:
                     "stage": "FREEZE",
                     "capture_stage_id": capture_stage.stage_id,
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             input_ref=compilation_input.input_id,
             output_artifact_hash=stable_sha256_json(
                 {
                     "validated": True,
                     "output_count": output_count,
-                }
+                },
             ),
             rules_applied=rules_applied,
             limits_enforced=limits_enforced,
@@ -385,14 +385,14 @@ class CaseCompilationEngine:
                     {
                         "trace_id": sealed_ref.trace_id,
                         "timestamp_utc": timestamp_utc,
-                    }
+                    },
                 ),
                 policy_hash_ref=compilation_input.policy_hash_ref,
                 replay_key=stable_sha256_json(
                     {
                         "trace_id": sealed_ref.trace_id,
                         "output_hash": sealed_ref.output_hash,
-                    }
+                    },
                 ),
                 request_family="system_learning_compilation",
                 route_path=sealed_ref.adg_node.entity_name,  # Use entity_name as route proxy
@@ -437,13 +437,13 @@ class CaseCompilationEngine:
                     "stage": "SEAL",
                     "case_count": len(case_records),
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             input_ref=compilation_input.input_id,
             output_artifact_hash=stable_sha256_json(
                 {
                     "case_records": [r.trace_id for r in case_records],
-                }
+                },
             ),
             rules_applied=rules_applied,
             limits_enforced=limits_enforced,
@@ -470,7 +470,7 @@ class CaseCompilationEngine:
                     "success": False,
                     "error": error_reason,
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             payload=None,
             success=False,

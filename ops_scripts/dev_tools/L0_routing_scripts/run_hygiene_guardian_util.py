@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -365,7 +364,7 @@ def main():
     print("SUMMARY REPORT")
     print("=" * 70)
     print(
-        f"\nBEFORE FIXES:\n  - Temporary artifacts: {len(artifacts)}\n  - Empty folders: {len(empty_folders)}\n  - __init__.py only folders: {len(init_only)}\n\nFIXES APPLIED:\n  - Artifacts removed: {artifacts_removed}\n  - Empty folders removed: {folders_removed}\n\nAFTER FIXES:\n  - Remaining artifacts: {len(remaining_artifacts)}\n  - Remaining empty folders: {len(remaining_empty)}\n  - Remaining __init__.py only: {len(remaining_init_only)}\n\nSTATUS: {('✅ CLEAN' if len(remaining_artifacts) == 0 and len(remaining_empty) == 0 else '⚠️ ISSUES REMAIN')}\n"
+        f"\nBEFORE FIXES:\n  - Temporary artifacts: {len(artifacts)}\n  - Empty folders: {len(empty_folders)}\n  - __init__.py only folders: {len(init_only)}\n\nFIXES APPLIED:\n  - Artifacts removed: {artifacts_removed}\n  - Empty folders removed: {folders_removed}\n\nAFTER FIXES:\n  - Remaining artifacts: {len(remaining_artifacts)}\n  - Remaining empty folders: {len(remaining_empty)}\n  - Remaining __init__.py only: {len(remaining_init_only)}\n\nSTATUS: {('✅ CLEAN' if len(remaining_artifacts) == 0 and len(remaining_empty) == 0 else '⚠️ ISSUES REMAIN')}\n",
     )
     return {
         "before": {

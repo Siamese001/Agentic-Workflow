@@ -57,7 +57,7 @@ See `.windsurf/rules/_variables.yaml` for full list. Common ones:
 | `${EVIDENCE_DIR}` | `docs/reports/plans` | Evidence/reports location |
 | `${CONSTITUTIONAL_RULES}` | `.windsurf/rules/.windsurfrules` | Main rules file |
 | `${EXECUTION_PLAN_TEMPLATE}` | `.windsurf/templates/execution-plan-template.md` | Plan template |
-| `${TOKEN_ESTIMATOR}` | `agentic_core/planning/token_estimator.py` | Token tool |
+| `${TOKEN_ESTIMATOR}` | `tools/utils/planning/token_estimator.py` | Token tool |
 | `${ADG_TEST_ACCELERATOR}` | `tools/adg/adg_test_accelerator.py` | Test accelerator |
 | `${CONTRACT_GATES}` | `ops_scripts/ci/run_contract_gates.py` | CI gates |
 

@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -347,12 +346,12 @@ class VLLMReplayArtifact:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayArtifact.canonical_payload_hash"
+            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayArtifact.canonical_payload_hash",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:VLLMReplayArtifact.canonical_payload_hash".encode()
+            f"{_trace_id}:VLLMReplayArtifact.canonical_payload_hash".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -369,7 +368,7 @@ class VLLMReplayArtifact:
             True if all hashes match (artifact is untampered), False otherwise.
         """
         current_replay_hash = compute_replay_hash(
-            prompt=self.prompt, request=self.local_request, fingerprint=self.fingerprint, result=self.result
+            prompt=self.prompt, request=self.local_request, fingerprint=self.fingerprint, result=self.result,
         )
         return current_replay_hash == self.replay_hash
 
@@ -404,12 +403,12 @@ class VLLMReplayValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayValidator.validate_and_report"
+            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayValidator.validate_and_report",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:VLLMReplayValidator.validate_and_report".encode()
+            f"{_trace_id}:VLLMReplayValidator.validate_and_report".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

@@ -127,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -196,12 +195,12 @@ emit_determinism_digest("trace__verify", "_verify_guardrail_check")
 emit_determinism_digest("trace__verify", "_verify_policy_verify")
 
 ALLOWED_MODULES: frozenset[str] = frozenset(
-    {"__future__", "typing", "types", "collections", "functools", "itertools", "dataclasses"}
+    {"__future__", "typing", "types", "collections", "functools", "itertools", "dataclasses"},
 )
 # SCAN_ROOTS: built from CODE_TERRITORIES (dynamic apps_* discovery) plus artifact roots.
 # Adding a new apps_* folder at repo root is sufficient — no manual edits needed here.
 SCAN_ROOTS: tuple[str, ...] = tuple(
-    sorted(_CODE_TERRITORIES | {"artifacts"})
+    sorted(_CODE_TERRITORIES | {"artifacts"}),
 )
 SCAN_EXTENSIONS: tuple[str, ...] = (".py",)
 SCAN_EXCLUDES: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS | frozenset({"dist", "build"})
@@ -480,9 +479,9 @@ def main() -> int:
     print("\n3. DEEP IMMUTABILITY + IDENTITY")
     print("-" * 40)
     # Wave 3: ROOT_WHITELIST moved to ssot.py, SOVEREIGN_TERRITORIES accessed via package fallback
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import ROOT_WHITELIST as s_rw
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import PROJECT_ROOT_WHITELIST as prw
     from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES as pkg_st
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import PROJECT_ROOT_WHITELIST as prw
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import ROOT_WHITELIST as s_rw
     from agentic_core.L5_safety.config.structure_blueprint.territories import get_all_territories
 
     territories = get_all_territories()
@@ -590,7 +589,7 @@ def main() -> int:
             if node.module in ("structure_blueprint", "structure_blueprint_config"):
                 for a in node.names or []:
                     policy_errors.append(
-                        f"{os.path.relpath(fpath, root)}:{node.lineno}:{a.name} (short-path: {node.module})"
+                        f"{os.path.relpath(fpath, root)}:{node.lineno}:{a.name} (short-path: {node.module})",
                     )
                 continue
             names = [a.name for a in node.names] if node.names else []
@@ -643,12 +642,12 @@ def main() -> int:
             bad_paths = [e[0] for e in saved_baseline if not _is_repo_relative_normalized(e[0])]
             if bad_paths:
                 raise ValueError(
-                    f"{len(bad_paths)} baseline path(s) not repo-relative-normalized (no backslashes, no absolute, no ..); first: {bad_paths[0]}"
+                    f"{len(bad_paths)} baseline path(s) not repo-relative-normalized (no backslashes, no absolute, no ..); first: {bad_paths[0]}",
                 )
             out_of_scope = [e[0] for e in saved_baseline if not _path_under_scan_roots(e[0])]
             if out_of_scope:
                 raise ValueError(
-                    f"{len(out_of_scope)} baseline path(s) not under SCAN_ROOTS; first: {out_of_scope[0]}. Valid roots: {SCAN_ROOTS}"
+                    f"{len(out_of_scope)} baseline path(s) not under SCAN_ROOTS; first: {out_of_scope[0]}. Valid roots: {SCAN_ROOTS}",
                 )
             saved_set = {tuple(x) for x in saved_baseline}
         except (json.JSONDecodeError, ValueError, TypeError, OSError) as exc:
@@ -701,10 +700,10 @@ def main() -> int:
                 for f, n in current_only:
                     print(f"    + {f}:{n}")
             print(
-                "  Remediation (local only): run with --update-phantom-baseline after fixing phantom imports."
+                "  Remediation (local only): run with --update-phantom-baseline after fixing phantom imports.",
             )
             print(
-                "  CI policy: maintenance flags are forbidden in CI; run locally and commit lockfile updates."
+                "  CI policy: maintenance flags are forbidden in CI; run locally and commit lockfile updates.",
             )
             if not current_only and update_flag:
                 _wg.write_json(baseline_path, current_baseline, indent=2)
@@ -803,7 +802,7 @@ def main() -> int:
                 top = alias.name.split(".")[0]
                 if top not in ALLOWED_MODULES:
                     allowlist_violations.append(
-                        f"line {node.lineno}: 'import {alias.name}' ('{top}' not in allowlist)"
+                        f"line {node.lineno}: 'import {alias.name}' ('{top}' not in allowlist)",
                     )
         elif isinstance(node, ast.ImportFrom):
             if node.level and node.level > 0:
@@ -812,7 +811,7 @@ def main() -> int:
                 top = node.module.split(".")[0]
                 if top not in ALLOWED_MODULES:
                     allowlist_violations.append(
-                        f"line {node.lineno}: 'from {node.module} import ...' ('{top}' not in allowlist)"
+                        f"line {node.lineno}: 'from {node.module} import ...' ('{top}' not in allowlist)",
                     )
     for node in ast.walk(constants_tree):
         if isinstance(node, ast.Call):
@@ -946,7 +945,7 @@ def main() -> int:
     print("  Building import graph...")
     import_graph = ImportGraph(enforcement_root, SCAN_ROOTS)
     print(
-        f"  Import graph: {import_graph.files_parsed} files parsed, {len(import_graph.parse_errors)} errors"
+        f"  Import graph: {import_graph.files_parsed} files parsed, {len(import_graph.parse_errors)} errors",
     )
     if import_graph.parse_errors:
         for pe in import_graph.parse_errors[:5]:
@@ -969,13 +968,13 @@ def main() -> int:
     enforcement_results.append(td_result)
     td_stats = td_result["stats"]
     print(
-        f"  territory_diff: {len(td_result['violations'])} violation(s)  [{td_stats['territories_checked']} territories checked]"
+        f"  territory_diff: {len(td_result['violations'])} violation(s)  [{td_stats['territories_checked']} territories checked]",
     )
     ln_result = leaf_node.check(enforcement_root, c_st)
     enforcement_results.append(ln_result)
     ln_stats = ln_result["stats"]
     print(
-        f"  leaf_node: {len(ln_result['violations'])} violation(s)  [{ln_stats['territories_checked']} dirs with allow_root_py=False]"
+        f"  leaf_node: {len(ln_result['violations'])} violation(s)  [{ln_stats['territories_checked']} dirs with allow_root_py=False]",
     )
     vr_result = volatile_rules.check(enforcement_root, c_st, import_graph)
     enforcement_results.append(vr_result)
@@ -994,7 +993,7 @@ def main() -> int:
     print(f"  cross_layer: {len(cl_result['violations'])} violation(s)")
     cl_stats = cl_result["stats"]
     print(
-        f"    edges: {cl_stats.get('total_edges', 0)} total, {cl_stats.get('internal_edges', 0)} internal, {cl_stats.get('cross_layer_edges_analyzed', 0)} cross-layer analyzed"
+        f"    edges: {cl_stats.get('total_edges', 0)} total, {cl_stats.get('internal_edges', 0)} internal, {cl_stats.get('cross_layer_edges_analyzed', 0)} cross-layer analyzed",
     )
     if enforcement_results:
         report = make_report(enforcement_results)

@@ -57,39 +57,25 @@ _emit_applies_guardrail("p0", "skill_extractor_node_types", "p0_governance")
 _emit_reads_policy_state("p0", "skill_extractor_node_types", "policy_binding")
 _emit_snapshots_state("p0", "skill_extractor_node_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -452,11 +438,11 @@ class SkillExtractorNode:
         logger.info("Analyzing skills from job description and candidate profile")
         jd_skills = self._extract_skills_from_text(job_description)
         logger.info(
-            f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description"
+            f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description",
         )
         candidate_skills = self._extract_skills_from_profile(candidate_profile)
         logger.info(
-            f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile"
+            f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile",
         )
         gap_result = self._analyze_skill_gaps(jd_skills, candidate_skills)
         logger.info(f"Skill gap analysis: {gap_result.gap_severity} severity ({gap_result.gap_score:.2f})")
@@ -544,7 +530,7 @@ class SkillExtractorNode:
         return self._extract_skills_from_text(profile_text)
 
     def _analyze_skill_gaps(
-        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult
+        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult,
     ) -> SkillGapResult:
         """Analyze skill gaps between job requirements and candidate profile.
 
@@ -559,13 +545,13 @@ class SkillExtractorNode:
             jd_skills.technical_skills
             + jd_skills.soft_skills
             + jd_skills.domain_skills
-            + jd_skills.tool_skills
+            + jd_skills.tool_skills,
         )
         candidate_all_skills = set(
             candidate_skills.technical_skills
             + candidate_skills.soft_skills
             + candidate_skills.domain_skills
-            + candidate_skills.tool_skills
+            + candidate_skills.tool_skills,
         )
         missing_skills = list(jd_all_skills - candidate_all_skills)
         existing_skills = list(candidate_all_skills & jd_all_skills)
@@ -590,7 +576,7 @@ class SkillExtractorNode:
         )
 
     def _match_skills(
-        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult
+        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult,
     ) -> SkillMatchResult:
         """Perform detailed skill matching between JD and candidate.
 
@@ -638,7 +624,7 @@ class SkillExtractorNode:
         )
 
     def _generate_recommendations(
-        self, gap_result: SkillGapResult, match_result: SkillMatchResult
+        self, gap_result: SkillGapResult, match_result: SkillMatchResult,
     ) -> list[str]:
         """Generate recommendations based on skill analysis.
 
@@ -699,7 +685,7 @@ class SkillExtractorNode:
             extraction_result.technical_skills
             + extraction_result.soft_skills
             + extraction_result.domain_skills
-            + extraction_result.tool_skills
+            + extraction_result.tool_skills,
         )
         expected_skills_set = {skill.lower() for skill in expected_skills}
         true_positives = len(extracted_skills & expected_skills_set)

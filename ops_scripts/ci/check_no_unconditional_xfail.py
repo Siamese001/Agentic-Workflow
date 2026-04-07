@@ -18,7 +18,6 @@ import ast
 import sys
 from pathlib import Path
 
-
 _DEFAULT_SCAN_DIRS = ['tests/governance', 'tests/guardian', 'tests/architecture']
 _ENV_GATE_KEYWORDS = ('environ', 'getenv', 'os.environ', 'os.getenv', 'env', 'CI', 'PYTEST_')
 

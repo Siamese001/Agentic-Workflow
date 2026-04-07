@@ -148,7 +148,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "dead_imports_by_domain": dead_imports_by_domain,
                     "dead_imports_by_confidence": dead_imports_by_confidence,
                     "dead_import_hotspots": dead_import_hotspots,
-                    "l4_dead_imports": l4_dead_imports
+                    "l4_dead_imports": l4_dead_imports,
                 }
 
         except Exception as e:
@@ -218,7 +218,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "total_dead_code_candidates": total_dead_code_candidates,
                     "dead_code_by_layer": dead_code_by_layer,
                     "dead_code_by_entity_type": dead_code_by_entity_type,
-                    "dead_code_by_confidence": dead_code_by_confidence
+                    "dead_code_by_confidence": dead_code_by_confidence,
                 }
 
         except Exception as e:
@@ -295,7 +295,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "unresolved_by_layer": unresolved_by_layer,
                     "unresolved_by_confidence": unresolved_by_confidence,
                     "unresolved_hotspots": unresolved_hotspots,
-                    "l4_unresolved": l4_unresolved
+                    "l4_unresolved": l4_unresolved,
                 }
 
         except Exception as e:
@@ -404,7 +404,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "low_conf_by_identity_kind": low_conf_by_identity_kind,
                     "first_party_low_confidence_ratio": first_party_low_conf_ratio,
                     "governance_low_confidence_ratio": governance_low_conf_ratio,
-                    "low_conf_hotspots": low_conf_hotspots
+                    "low_conf_hotspots": low_conf_hotspots,
                 }
 
         except Exception as e:
@@ -469,7 +469,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "total_symbols": total_symbols,
                     "inferred_symbol_ratio": inferred_ratio,
                     "inferred_by_layer": inferred_by_layer,
-                    "inferred_by_confidence": inferred_by_confidence
+                    "inferred_by_confidence": inferred_by_confidence,
                 }
 
         except Exception as e:
@@ -489,7 +489,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "dead_code_count": "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_code_candidate'",
                     "unresolved_import_count": "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'unresolved_import'",
                     "low_confidence_count": "SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW'",
-                    "inferred_symbol_ratio": "calculated"  # Special case
+                    "inferred_symbol_ratio": "calculated",  # Special case
                 }
 
                 # Calculate all metrics
@@ -557,7 +557,7 @@ class ADGDeadCodeZoneControlVerifier:
                     "executive_metrics": calculated_metrics,
                     "first_party_metrics": first_party_metrics,
                     "readiness_issues": readiness_issues,
-                    "executive_ready": len(readiness_issues) == 0
+                    "executive_ready": len(readiness_issues) == 0,
                 }
 
         except Exception as e:
@@ -612,8 +612,8 @@ class ADGDeadCodeZoneControlVerifier:
                 "l4_unresolved_imports": unresolved.get("l4_unresolved", 0),
                 "first_party_low_confidence_ratio": low_confidence.get("first_party_low_confidence_ratio", 0),
                 "inferred_symbol_ratio": inferred.get("inferred_symbol_ratio", 0),
-                "executive_ready": executive.get("executive_ready", False)
-            }
+                "executive_ready": executive.get("executive_ready", False),
+            },
         }
 
         # Print results
@@ -648,12 +648,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

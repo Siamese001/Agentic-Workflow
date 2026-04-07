@@ -24,7 +24,7 @@ class CreativeStrategy:
             **context,
             "creative_applied": True,
             "strategy": self.strategy_type,
-            "solution": "Creative approach applied"
+            "solution": "Creative approach applied",
         }
 
     def get_suggestions(self) -> list[str]:
@@ -32,7 +32,7 @@ class CreativeStrategy:
         return [
             "Consider alternative perspective",
             "Combine existing patterns",
-            "Explore edge cases"
+            "Explore edge cases",
         ]
 
 

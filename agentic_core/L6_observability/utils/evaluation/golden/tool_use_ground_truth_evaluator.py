@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -253,7 +252,7 @@ def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> 
                     "scenario": scenario,
                     "tool_count": len(expected_calls),
                     "tools": [call.get("name") for call in expected_calls],
-                }
+                },
             )
     avg_tools = total_tools / len(samples) if samples else 0.0
     hash_data = {
@@ -264,7 +263,7 @@ def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> 
         "average_tools_per_query": avg_tools,
     }
     cert_hash = hashlib.sha256(
-        json.dumps(hash_data, sort_keys=True, separators=(",", ":")).encode()
+        json.dumps(hash_data, sort_keys=True, separators=(",", ":")).encode(),
     ).hexdigest()
     return ToolUseResult(
         total_samples=len(samples),

@@ -146,7 +146,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -290,7 +289,7 @@ class ToolRegistry:
         if entry is None:
             raise UnregisteredToolError(
                 f"ToolRegistry: tool '{tool_name}' is not registered — "
-                f"unregistered tools cannot execute (P1/L5 spec §5)"
+                f"unregistered tools cannot execute (P1/L5 spec §5)",
             )
         return entry
 
@@ -484,7 +483,7 @@ def invoke_tool_safely(
             )
             _emit_denial(denial)
             raise ToolPolicyError(
-                f"invoke_tool_safely: policy requirements {missing} not satisfied for tool '{tool_name}'"
+                f"invoke_tool_safely: policy requirements {missing} not satisfied for tool '{tool_name}'",
             )
 
     # --- Step 4: Guardrail decision ---
@@ -502,7 +501,7 @@ def invoke_tool_safely(
         )
         _emit_denial(denial)
         raise ToolGuardrailDeniedError(
-            f"invoke_tool_safely: guardrail denied tool '{tool_name}' (action={action_class.value})"
+            f"invoke_tool_safely: guardrail denied tool '{tool_name}' (action={action_class.value})",
         )
 
     # --- Steps 5 & 6: Attach policy hash + trace id ---

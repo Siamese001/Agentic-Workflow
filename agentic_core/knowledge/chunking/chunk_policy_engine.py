@@ -156,7 +156,7 @@ class ChunkPolicyEngine:
         """
         trace_id = f"chunk_{doc_id}_{int(time.time())}" if doc_id else f"chunk_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "ChunkPolicyEngine.chunk_document"
+            trace_id, LayerSegment.L2_EXECUTION, "ChunkPolicyEngine.chunk_document",
         )
 
         # Determine policy if not provided
@@ -164,7 +164,7 @@ class ChunkPolicyEngine:
             classification = self.classifier.classify(content, file_path)
             policy = self._policies.get(
                 classification.corpus_type,
-                self._policies[CorpusType.GENERAL]
+                self._policies[CorpusType.GENERAL],
             )
             corpus_type = classification.corpus_type
         else:
@@ -187,7 +187,7 @@ class ChunkPolicyEngine:
 
         _emit_records_telemetry_event(
             "chunking",
-            f"completed_{corpus_type.value}_{len(chunks)}_chunks"
+            f"completed_{corpus_type.value}_{len(chunks)}_chunks",
         )
 
         return ChunkResult(

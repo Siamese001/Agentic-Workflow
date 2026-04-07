@@ -30,7 +30,7 @@ class DeterminismViolation(RuntimeError):
 
 
 def replay_validate(
-    snapshot: Any, engine_fn: Callable[[Any], Any], *, canonicalize_fn: Callable[[Any], bytes]
+    snapshot: Any, engine_fn: Callable[[Any], Any], *, canonicalize_fn: Callable[[Any], bytes],
 ) -> str:
     """Validate that an engine produces identical outputs across two runs.
 
@@ -73,6 +73,6 @@ def replay_validate(
     hash2 = hashlib.sha256(canonical2).hexdigest()
     if hash1 != hash2:
         raise DeterminismViolation(
-            f"DETERMINISM_VIOLATION: Engine produced different outputs across runs.\nRun 1 hash: {hash1}\nRun 2 hash: {hash2}"
+            f"DETERMINISM_VIOLATION: Engine produced different outputs across runs.\nRun 1 hash: {hash1}\nRun 2 hash: {hash2}",
         )
     return hash1

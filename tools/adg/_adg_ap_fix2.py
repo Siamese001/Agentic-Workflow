@@ -12,9 +12,6 @@ flagged default-arg violation, then insert the token before that line.
 """
 from __future__ import annotations
 
-import ast
-import subprocess
-import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent

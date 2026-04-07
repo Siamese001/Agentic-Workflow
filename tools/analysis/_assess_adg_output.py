@@ -46,7 +46,7 @@ print("=" * 60)
 print("RELATION TYPE DISTRIBUTION (all)")
 print("=" * 60)
 for row in cur.execute(
-    "SELECT relation_type, COUNT(*) as n FROM edges GROUP BY relation_type ORDER BY n DESC"
+    "SELECT relation_type, COUNT(*) as n FROM edges GROUP BY relation_type ORDER BY n DESC",
 ):
     print(f"  {row[0]:<30} {row[1]:>8}")
 
@@ -165,7 +165,7 @@ chk("G8  gateway entities", "SELECT COUNT(*) FROM entities WHERE entity_type='ga
 
 # G9 – seam entity_type nodes
 chk(
-    "G9  seam entities", "SELECT COUNT(*) FROM entities WHERE entity_type='seam'", ">=", 0
+    "G9  seam entities", "SELECT COUNT(*) FROM entities WHERE entity_type='seam'", ">=", 0,
 )  # may be 0 if no seam modules scanned
 
 # G10 – provider entity_type nodes
@@ -195,7 +195,7 @@ CHECKS.append(("G16 violates edges total", violates_total, violates_total >= 0))
 
 # Check observations table for rule_id
 has_obs_table = cur.execute(
-    "SELECT name FROM sqlite_master WHERE type='table' AND name='observations'"
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='observations'",
 ).fetchone()
 if has_obs_table:
     cur.execute("SELECT COUNT(*) FROM observations WHERE content LIKE 'rule_id:%'")
@@ -257,7 +257,7 @@ print("SAMPLE ENTITIES (new types)")
 print("=" * 60)
 for etype in ("layer", "gateway", "seam", "provider", "prompt_slot", "prompt_template"):
     rows = cur.execute(
-        "SELECT adg_name, entity_type, layer FROM entities WHERE entity_type=? LIMIT 3", (etype,)
+        "SELECT adg_name, entity_type, layer FROM entities WHERE entity_type=? LIMIT 3", (etype,),
     ).fetchall()
     if rows:
         print(f"\n  [{etype}]")

@@ -114,7 +114,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -216,7 +215,7 @@ class TelemetryEvent:
 
     @classmethod
     def create(
-        cls, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any]
+        cls, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any],
     ) -> "TelemetryEvent":
         """
         Create a new TelemetryEvent with deterministic event_hash.
@@ -267,7 +266,7 @@ class TelemetryEmitter:
         record_fn(event)
 
     def build_event(
-        self, *, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any]
+        self, *, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any],
     ) -> TelemetryEvent:
         """
         Convenience constructor for TelemetryEvent.

@@ -81,39 +81,25 @@ _emit_applies_guardrail("p0", "kx_execution_context_types", "p0_governance")
 _emit_reads_policy_state("p0", "kx_execution_context_types", "policy_binding")
 _emit_snapshots_state("p0", "kx_execution_context_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -277,7 +263,7 @@ class KXNodeExecutor:
         self.registry = get_kx_registry()
 
     def execute_node(
-        self, node_key: str, context: KXExecutionContext, system_prompt: str | None = None
+        self, node_key: str, context: KXExecutionContext, system_prompt: str | None = None,
     ) -> KXExecutionResult:
         """Execute a K.X node.
 
@@ -337,10 +323,10 @@ class KXNodeExecutor:
         query_embedding = [0.1] * 1536
         try:
             collection = create_chroma_collection(
-                context.vector_store, context.metadata.get("collection_name", "knowledge_base")
+                context.vector_store, context.metadata.get("collection_name", "knowledge_base"),
             )
             results = search_vectors_chroma(
-                collection, query_embeddings=[query_embedding], n_results=config.rag_config.max_retrievers
+                collection, query_embeddings=[query_embedding], n_results=config.rag_config.max_retrievers,
             )
             sources = []
             if results and "documents" in results:
@@ -354,7 +340,7 @@ class KXNodeExecutor:
                             "distance": results.get("distances", [[0]])[0][i],
                             "weight": weight,
                             "weighted_score": weight / (1 + results.get("distances", [[0]])[0][i]),
-                        }
+                        },
                     )
             sources.sort(key=lambda x: x["weighted_score"], reverse=True)
             logger.info(f"Retrieved {len(sources)} sources for K.X node {config.node_id}")
@@ -365,7 +351,7 @@ class KXNodeExecutor:
             return []
 
     def _build_messages(
-        self, config: KNodeConfig, context: KXExecutionContext, rag_sources: list[dict[str, Any]]
+        self, config: KNodeConfig, context: KXExecutionContext, rag_sources: list[dict[str, Any]],
     ) -> list[AgentMessage]:
         """Build messages for agent execution.
 
@@ -383,10 +369,10 @@ class KXNodeExecutor:
                 [
                     f"Source {i + 1} ({src['metadata'].get('source_type', 'unknown')}):\n{src['document']}"
                     for i, src in enumerate(rag_sources[:3])
-                ]
+                ],
             )
             messages.append(
-                AgentMessage(role="user", content=f"Context from knowledge base:\n\n{rag_context}")
+                AgentMessage(role="user", content=f"Context from knowledge base:\n\n{rag_context}"),
             )
         prompt = self._build_generation_prompt(config, context)
         messages.append(AgentMessage(role="user", content=prompt))
@@ -414,7 +400,7 @@ class KXNodeExecutor:
             prompt_parts.append(f"\nConstraints: {', '.join(constraints)}")
         if context.source_data:
             source_info = "\n".join(
-                [f"{key}: {value}" for key, value in context.source_data.items() if key != "query"]
+                [f"{key}: {value}" for key, value in context.source_data.items() if key != "query"],
             )
             if source_info:
                 prompt_parts.append(f"\nSource Data:\n{source_info}")
@@ -424,7 +410,7 @@ class KXNodeExecutor:
             prompt_parts.append(f"\nExplore {config.tot_branches} different approaches and select the best.")
         elif config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT:
             prompt_parts.append(
-                "\nUse step-by-step reasoning with multiple branches to find the optimal solution."
+                "\nUse step-by-step reasoning with multiple branches to find the optimal solution.",
             )
         return "\n".join(prompt_parts)
 
@@ -458,7 +444,7 @@ class KXNodeExecutor:
         return None
 
     def _validate_output(
-        self, config: KNodeConfig, content: str, context: KXExecutionContext
+        self, config: KNodeConfig, content: str, context: KXExecutionContext,
     ) -> list[dict[str, Any]]:
         """Validate generated output against rules.
 
@@ -477,7 +463,7 @@ class KXNodeExecutor:
         return results
 
     def _apply_validation_rule(
-        self, rule: str, content: str, config: KNodeConfig, context: KXExecutionContext
+        self, rule: str, content: str, config: KNodeConfig, context: KXExecutionContext,
     ) -> dict[str, Any]:
         """Apply a single validation rule.
 

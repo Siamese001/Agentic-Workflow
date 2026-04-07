@@ -96,7 +96,7 @@ def main() -> int:
                     "artifacts": result.artifact_paths,
                 },
                 indent=2,
-            )
+            ),
         )
 
     return 0 if result.status.value in ("complete", "dry_run") else 1

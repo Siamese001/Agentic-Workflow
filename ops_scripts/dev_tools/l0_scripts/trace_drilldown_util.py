@@ -2,7 +2,6 @@
 import re
 from pathlib import Path
 
-
 html = Path('reports/autonomy_dashboard.html').read_text(encoding='utf-8')
 pattern = 'onclick=\\"openDrillModal\\(\'([^\']+)\'(?:,\\s*\'([^\']*)\')?\\)\\"'
 matches = re.findall(pattern, html)

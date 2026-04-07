@@ -22,10 +22,10 @@ INVENTORY_PATH = Path("artifacts/adg_analysis/p2_high_severity_inventory.csv")
 TARGET_KIND = "broad_exception_catch"
 
 TEARDOWN_KEYWORDS = frozenset(
-    ["teardown", "cleanup", "close", "exit", "destroy", "dispose", "finalize", "__del__", "__exit__"]
+    ["teardown", "cleanup", "close", "exit", "destroy", "dispose", "finalize", "__del__", "__exit__"],
 )
 BEST_EFFORT_KEYWORDS = frozenset(
-    ["cache", "optional", "enrich", "augment", "fallback", "hint", "suggest", "metric", "log"]
+    ["cache", "optional", "enrich", "augment", "fallback", "hint", "suggest", "metric", "log"],
 )
 
 
@@ -116,12 +116,12 @@ def main() -> None:
             for line in details[cat][:5]:
                 print(f"  {line}")
 
-    print(f"\nnarrows_possible (first 5):")
+    print("\nnarrows_possible (first 5):")
     for line in details["narrows_possible"][:5]:
         print(f"  {line}")
 
     if details["unresolved"]:
-        print(f"\nunresolved (first 5):")
+        print("\nunresolved (first 5):")
         for line in details["unresolved"][:5]:
             print(f"  {line}")
 

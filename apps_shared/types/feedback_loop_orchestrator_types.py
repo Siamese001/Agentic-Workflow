@@ -68,39 +68,25 @@ _emit_applies_guardrail("p0", "feedback_loop_orchestrator_types", "p0_governance
 _emit_reads_policy_state("p0", "feedback_loop_orchestrator_types", "policy_binding")
 _emit_snapshots_state("p0", "feedback_loop_orchestrator_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -281,11 +267,11 @@ class FeedbackLoopOrchestrator:
         }
         self.message_type_transitions = message_type_transitions or {}
         logger.info(
-            f"Initialized FeedbackLoopOrchestrator: max_attempts={max_attempts}, reversion={reversion_enabled}"
+            f"Initialized FeedbackLoopOrchestrator: max_attempts={max_attempts}, reversion={reversion_enabled}",
         )
 
     async def execute_with_feedback(
-        self, generator: Callable, validator: Callable, initial_context: dict[str, Any], k_node_id: str
+        self, generator: Callable, validator: Callable, initial_context: dict[str, Any], k_node_id: str,
     ) -> RegenerationResult:
         """Execute generation with feedback loop.
 
@@ -335,13 +321,13 @@ class FeedbackLoopOrchestrator:
             failure_type = self._classify_failure(validation_result)
             checkpoint.failure_type = failure_type
             logger.warning(
-                f"Validation failed on attempt {attempt}: type={failure_type.value}, score={checkpoint.score:.2f}"
+                f"Validation failed on attempt {attempt}: type={failure_type.value}, score={checkpoint.score:.2f}",
             )
             if self.reversion_enabled and attempt > 1:
                 prev_checkpoint = checkpoints[-2]
                 if checkpoint.score < prev_checkpoint.score:
                     logger.info(
-                        f"Reverting to attempt {attempt - 1} (score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})"
+                        f"Reverting to attempt {attempt - 1} (score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})",
                     )
                     return RegenerationResult(
                         success=True,
@@ -354,13 +340,13 @@ class FeedbackLoopOrchestrator:
             if attempt < self.max_attempts:
                 temperature = self._adjust_temperature(temperature, failure_type)
                 context = self._build_regeneration_context(
-                    initial_context, validation_result, content, attempt
+                    initial_context, validation_result, content, attempt,
                 )
         logger.error(f"Exhausted all {self.max_attempts} attempts for {k_node_id}")
         if self.reversion_enabled and checkpoints:
             best_checkpoint = max(checkpoints, key=lambda cp: cp.score)
             logger.info(
-                f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})"
+                f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})",
             )
             return RegenerationResult(
                 success=False,
@@ -425,18 +411,18 @@ class FeedbackLoopOrchestrator:
             Adjusted temperature
         """
         escalation = self.adaptive_temperature_config["constraint_failure_types"].get(
-            failure_type.value, self.adaptive_temperature_config["escalation_per_retry"]
+            failure_type.value, self.adaptive_temperature_config["escalation_per_retry"],
         )
         new_temp = current_temp + escalation
         max_temp = self.adaptive_temperature_config["max_temperature"]
         adjusted_temp = min(new_temp, max_temp)
         logger.info(
-            f"Temperature adjustment: {current_temp:.2f} -> {adjusted_temp:.2f} (failure_type={failure_type.value}, escalation={escalation})"
+            f"Temperature adjustment: {current_temp:.2f} -> {adjusted_temp:.2f} (failure_type={failure_type.value}, escalation={escalation})",
         )
         return adjusted_temp
 
     def _build_regeneration_context(
-        self, initial_context: dict[str, Any], validation_result: Any, previous_content: str, attempt: int
+        self, initial_context: dict[str, Any], validation_result: Any, previous_content: str, attempt: int,
     ) -> dict[str, Any]:
         """Build context for regeneration with exact failure details.
 
@@ -488,7 +474,7 @@ class FeedbackLoopOrchestrator:
         return "\n".join(summary_lines)
 
     def apply_message_transition(
-        self, current_route: str, target_route: str, content: str, context: dict[str, Any]
+        self, current_route: str, target_route: str, content: str, context: dict[str, Any],
     ) -> tuple[str, dict[str, Any]]:
         """Apply message type transition logic.
 
@@ -546,7 +532,7 @@ class FeedbackLoopOrchestrator:
             report_lines.append(f"  Temperature: {checkpoint.temperature:.2f}")
             report_lines.append(f"  Score: {checkpoint.score:.2f}")
             report_lines.append(
-                f"  Failure Type: {(checkpoint.failure_type.value if checkpoint.failure_type else 'N/A')}"
+                f"  Failure Type: {(checkpoint.failure_type.value if checkpoint.failure_type else 'N/A')}",
             )
             if hasattr(checkpoint.validation_result, "failures"):
                 report_lines.append(f"  Failures: {len(checkpoint.validation_result.failures)}")

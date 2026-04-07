@@ -101,7 +101,7 @@ class _TraceContext:
             ts_utc=self.start_time,
             duration_ms=0,  # Will be set on exit
             status="ok",
-            attributes=self.metadata
+            attributes=self.metadata,
         )
 
         self.tracer.spans.append(span)
@@ -136,7 +136,7 @@ class MinimalRuntimeADG:
                 started_at_utc=0,
                 ended_at_utc=0,
                 nodes=[],
-                edges=[]
+                edges=[],
             )
 
         # Extract nodes
@@ -151,7 +151,7 @@ class MinimalRuntimeADG:
                 started_at_utc=span["ts_utc"],
                 duration_ms=span["duration_ms"],
                 status=span["status"],
-                attributes_json=json.dumps(span.get("attributes", {}))
+                attributes_json=json.dumps(span.get("attributes", {})),
             )
             nodes.append(node)
 
@@ -165,7 +165,7 @@ class MinimalRuntimeADG:
                 edge = RuntimeEdge(
                     src_id=span["parent_span_id"],
                     dst_id=span["span_id"],
-                    relation="parent_child"
+                    relation="parent_child",
                 )
                 edges.append(edge)
 
@@ -175,7 +175,7 @@ class MinimalRuntimeADG:
             edge = RuntimeEdge(
                 src_id=prev["span_id"],
                 dst_id=curr["span_id"],
-                relation="temporal_sequence"
+                relation="temporal_sequence",
             )
             edges.append(edge)
 
@@ -189,7 +189,7 @@ class MinimalRuntimeADG:
             started_at_utc=started,
             ended_at_utc=ended,
             nodes=nodes,
-            edges=edges
+            edges=edges,
         )
 
         return snapshot

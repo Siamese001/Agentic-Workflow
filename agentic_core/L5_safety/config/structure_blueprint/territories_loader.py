@@ -10,8 +10,8 @@ Replaces the deprecated build_sovereign_territories() function from _constants.p
 from __future__ import annotations
 
 from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
-    load_territories,
     load_ast_signals,
+    load_territories,
 )
 
 

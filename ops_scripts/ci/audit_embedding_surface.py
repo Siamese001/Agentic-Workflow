@@ -14,7 +14,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 EMBEDDING_PRIMITIVES = {'AutoModel', 'AutoTokenizer', 'AutoModelForSeq2SeqLM', 'AutoModelForMaskedLM', 'sentence_transformers', 'SentenceTransformer', 'OpenAI', 'EmbeddingServiceFactory', 'EmbeddingResult', 'text-embedding-3', 'all-MiniLM'}

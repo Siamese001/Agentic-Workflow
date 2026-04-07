@@ -26,10 +26,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Artifact mode",
     )
     parser.add_argument(
-        "--audience", default="technical", choices=["technical", "executive", "market-facing"]
+        "--audience", default="technical", choices=["technical", "executive", "market-facing"],
     )
     parser.add_argument(
-        "--compare", default="", help="Comma-separated comparison subjects for comparison mode"
+        "--compare", default="", help="Comma-separated comparison subjects for comparison mode",
     )
     parser.add_argument("--horizon", default="", help="Time horizon e.g. '12 months'")
     parser.add_argument("--out", default="reports/research")
@@ -91,7 +91,7 @@ def main() -> int:
                     "artifacts": result.artifact_paths,
                 },
                 indent=2,
-            )
+            ),
         )
 
     return 0 if result.status.value in ("complete", "dry_run") else 1

@@ -89,7 +89,6 @@ import json
 import sys
 from pathlib import Path
 
-
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 _ROOT = Path(__file__).resolve().parents[2]

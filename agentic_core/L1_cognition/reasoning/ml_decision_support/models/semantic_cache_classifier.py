@@ -39,7 +39,7 @@ class EWMACacheClassifier(BaseMLModel):
         0: "Hot",
         1: "Warm",
         2: "Cold",
-        3: "Stale"
+        3: "Stale",
     }
 
     # Reverse mapping
@@ -51,7 +51,7 @@ class EWMACacheClassifier(BaseMLModel):
             model_version="1.0",
             model_type="ewma",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Create feature schema for cache classifier
@@ -77,7 +77,7 @@ class EWMACacheClassifier(BaseMLModel):
             'resource_utilization',
             'temporal_decay',
             'user_preference',
-            'cache_efficiency'
+            'cache_efficiency',
         ]
 
         # Default thresholds
@@ -85,7 +85,7 @@ class EWMACacheClassifier(BaseMLModel):
             "hot_threshold": 0.7,
             "warm_threshold": 0.4,
             "cold_threshold": 0.2,
-            "stale_threshold": 0.1
+            "stale_threshold": 0.1,
         }
 
         if model_file_path and model_file_path.exists():
@@ -101,78 +101,78 @@ class EWMACacheClassifier(BaseMLModel):
                 feature_type=FeatureType.NUMERIC,
                 description="Frequency of cache access",
                 provenance="cache.access.frequency",
-                validation_rules={"min_value": 0.0, "max_value": 1000.0}
+                validation_rules={"min_value": 0.0, "max_value": 1000.0},
             ),
             FeatureDefinition(
                 name="recency_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Recency of last access",
                 provenance="cache.access.recency",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="hit_ratio",
                 feature_type=FeatureType.NUMERIC,
                 description="Cache hit ratio",
                 provenance="cache.performance.hit_ratio",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="access_pattern_regularity",
                 feature_type=FeatureType.NUMERIC,
                 description="Regularity of access patterns",
                 provenance="cache.pattern.regularity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="content_relevance",
                 feature_type=FeatureType.NUMERIC,
                 description="Content relevance score",
                 provenance="cache.content.relevance",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="semantic_similarity",
                 feature_type=FeatureType.NUMERIC,
                 description="Semantic similarity to queries",
                 provenance="cache.semantic.similarity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_utilization",
                 feature_type=FeatureType.NUMERIC,
                 description="Resource utilization efficiency",
                 provenance="cache.resource.utilization",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="temporal_decay",
                 feature_type=FeatureType.NUMERIC,
                 description="Temporal decay factor",
                 provenance="cache.temporal.decay",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="user_preference",
                 feature_type=FeatureType.NUMERIC,
                 description="User preference score",
                 provenance="cache.user.preference",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="cache_efficiency",
                 feature_type=FeatureType.NUMERIC,
                 description="Overall cache efficiency",
                 provenance="cache.performance.efficiency",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="semantic_cache_classifier",
             schema_version="1.0",
             description="Features for semantic cache classification model",
-            features=features
+            features=features,
         )
 
     def load_model(self) -> None:
@@ -215,8 +215,8 @@ class EWMACacheClassifier(BaseMLModel):
                 'class_names': list(self.CACHE_MAPPING.values()),
                 'feature_schema_digest': self.feature_schema.schema_digest,
                 'saved_at': datetime.now().isoformat(),
-                'total_cache_entries': len(self.cache_entries)
-            }
+                'total_cache_entries': len(self.cache_entries),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -228,7 +228,7 @@ class EWMACacheClassifier(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict cache classification for a cache entry.
@@ -258,7 +258,7 @@ class EWMACacheClassifier(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -286,8 +286,8 @@ class EWMACacheClassifier(BaseMLModel):
                 self.create_prediction(
                     prediction=predicted_classification,
                     confidence=confidence,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -299,7 +299,7 @@ class EWMACacheClassifier(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -311,7 +311,7 @@ class EWMACacheClassifier(BaseMLModel):
                 'raw_prediction_class': predicted_class,
                 'thresholds_passed': passes_threshold,
                 'cache_classification': predicted_classification,
-                'cache_action': self._get_recommended_action(predicted_classification)
+                'cache_action': self._get_recommended_action(predicted_classification),
             })
 
             # Log prediction
@@ -327,14 +327,14 @@ class EWMACacheClassifier(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def update_cache_entry(
         self,
         cache_id: str,
         access_event: dict[str, Any],
-        current_time: datetime | None = None
+        current_time: datetime | None = None,
     ) -> None:
         """
         Update cache entry with new access event.
@@ -357,7 +357,7 @@ class EWMACacheClassifier(BaseMLModel):
                 'miss_count': 0,
                 'content_relevance': 0.5,
                 'semantic_similarity': 0.5,
-                'resource_utilization': 0.5
+                'resource_utilization': 0.5,
             }
             self.access_history[cache_id] = deque(maxlen=100)  # Keep last 100 accesses
             self.ewma_scores[cache_id] = 0.5  # Initial EWMA score
@@ -398,7 +398,7 @@ class EWMACacheClassifier(BaseMLModel):
         cache_id: str,
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> ModelPrediction:
         """
         Classify a specific cache entry.
@@ -420,7 +420,7 @@ class EWMACacheClassifier(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         # Extract features from cache entry
@@ -434,7 +434,7 @@ class EWMACacheClassifier(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
     def get_cache_recommendations(
@@ -442,7 +442,7 @@ class EWMACacheClassifier(BaseMLModel):
         cache_id: str,
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get comprehensive cache management recommendations.
@@ -461,7 +461,7 @@ class EWMACacheClassifier(BaseMLModel):
             cache_id=cache_id,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Get cache entry details
@@ -472,7 +472,7 @@ class EWMACacheClassifier(BaseMLModel):
         recommendations = self._generate_cache_recommendations(
             classification=prediction.prediction,
             entry=entry,
-            ewma_score=ewma_score
+            ewma_score=ewma_score,
         )
 
         # Calculate cache statistics
@@ -487,7 +487,7 @@ class EWMACacheClassifier(BaseMLModel):
             'recommendations': recommendations,
             'statistics': stats,
             'recommended_action': self._get_recommended_action(prediction.prediction),
-            'priority': self._get_cache_priority(prediction.prediction, ewma_score)
+            'priority': self._get_cache_priority(prediction.prediction, ewma_score),
         }
 
     def _extract_features_from_entry(self, cache_id: str) -> dict[str, float]:
@@ -561,7 +561,7 @@ class EWMACacheClassifier(BaseMLModel):
             'resource_utilization': resource_utilization,
             'temporal_decay': temporal_decay,
             'user_preference': user_preference,
-            'cache_efficiency': cache_efficiency
+            'cache_efficiency': cache_efficiency,
         }
 
     def _calculate_ewma_score(self, feature_vector: np.ndarray) -> float:
@@ -577,7 +577,7 @@ class EWMACacheClassifier(BaseMLModel):
             0.05,  # resource_utilization
             0.05,  # temporal_decay
             0.03,  # user_preference
-            0.02   # cache_efficiency
+            0.02,   # cache_efficiency
         ])
 
         # Weighted sum
@@ -640,7 +640,7 @@ class EWMACacheClassifier(BaseMLModel):
             "Hot": "Keep in cache, prioritize for retention",
             "Warm": "Keep in cache, monitor for changes",
             "Cold": "Consider eviction if space needed",
-            "Stale": "Evict from cache immediately"
+            "Stale": "Evict from cache immediately",
         }
         return actions.get(classification, "Monitor cache entry")
 
@@ -648,7 +648,7 @@ class EWMACacheClassifier(BaseMLModel):
         self,
         classification: str,
         entry: dict[str, Any],
-        ewma_score: float
+        ewma_score: float,
     ) -> list[str]:
         """Generate cache management recommendations."""
         recommendations = []
@@ -658,25 +658,25 @@ class EWMACacheClassifier(BaseMLModel):
             recommendations.extend([
                 "Keep entry in primary cache tier",
                 "Consider preloading related content",
-                "Monitor for performance impact"
+                "Monitor for performance impact",
             ])
         elif classification == "Warm":
             recommendations.extend([
                 "Maintain in cache with regular monitoring",
                 "Consider content refresh if available",
-                "Track access patterns for optimization"
+                "Track access patterns for optimization",
             ])
         elif classification == "Cold":
             recommendations.extend([
                 "Consider eviction during cache cleanup",
                 "Move to secondary storage if valuable",
-                "Review content relevance"
+                "Review content relevance",
             ])
         else:  # Stale
             recommendations.extend([
                 "Evict immediately",
                 "Remove from all cache tiers",
-                "Consider content refresh if still relevant"
+                "Consider content refresh if still relevant",
             ])
 
         # Score-based recommendations
@@ -711,7 +711,7 @@ class EWMACacheClassifier(BaseMLModel):
             'age_days': (now - entry.get('created_at', now)).days if entry.get('created_at') else 0,
             'hours_since_last_access': (now - entry.get('last_access', now)).total_seconds() / 3600 if entry.get('last_access') else float('inf'),
             'access_history_length': len(access_history),
-            'ewma_score': self.ewma_scores.get(cache_id, 0.0)
+            'ewma_score': self.ewma_scores.get(cache_id, 0.0),
         }
 
         return stats
@@ -740,7 +740,7 @@ class EWMACacheClassifier(BaseMLModel):
             'resource_utilization': 0.05,
             'temporal_decay': 0.05,
             'user_preference': 0.03,
-            'cache_efficiency': 0.02
+            'cache_efficiency': 0.02,
         }
 
         feature_importance = []
@@ -750,7 +750,7 @@ class EWMACacheClassifier(BaseMLModel):
                 'importance_score': weights.get(feature_name, 0.0),
                 'feature_value': model_input.features.get(feature_name),
                 'rank': i + 1,
-                'weight': weights.get(feature_name, 0.0)
+                'weight': weights.get(feature_name, 0.0),
             })
 
         # Sort by importance
@@ -792,7 +792,7 @@ class EWMACacheClassifier(BaseMLModel):
     def train_model(
         self,
         training_data: list[dict[str, Any]],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the EWMA model (update parameters based on training data).

@@ -126,7 +126,7 @@ class BatchProcessor(Generic[T, R]):
 
             logger.debug(
                 f"Batch {batch_num}/{total_batches}: "
-                f"{len(batch)} items in {elapsed_ms:.1f}ms"
+                f"{len(batch)} items in {elapsed_ms:.1f}ms",
             )
 
         logger.info(f"Processed {total} items in {self.metrics.total_batches} batches")

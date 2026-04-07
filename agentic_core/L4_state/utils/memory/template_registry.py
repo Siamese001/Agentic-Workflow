@@ -8,6 +8,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.prompt_governance.contracts.template_manifest_types import (
+    TemplateManifest,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
@@ -44,9 +47,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_via_uwg,
-)
-from agentic_core.prompt_governance.contracts.template_manifest_types import (
-    TemplateManifest,
 )
 
 # Self-bootstrap governance wiring
@@ -153,7 +153,7 @@ class TemplateRegistry:
         return store.get_mixin(mixin_id)
 
     def register_template(
-        self, manifest: TemplateManifest, content: str
+        self, manifest: TemplateManifest, content: str,
     ) -> str:
         """Register a new template (admin use only).
 

@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -302,7 +301,7 @@ class WorkflowLoader:
                 "description": "Fallback configuration used when JSON file is unavailable",
             },
             "pre_flight_engine_validation": {
-                TESTS_DIR: [{"test_id": "VALIDATE_ITERATION", "description": "Basic iteration check"}]
+                TESTS_DIR: [{"test_id": "VALIDATE_ITERATION", "description": "Basic iteration check"}],
             },
             "1.role": {"description": "Resume generation assistant"},
             "2.Task": {
@@ -310,11 +309,11 @@ class WorkflowLoader:
                     {"phase": 1, "name": "The Clerk: Deterministic Data Scaffolding"},
                     {"phase": 2, "name": "The Artist: Grounded Generation"},
                     {"phase": 3, "name": "The Assembler: Final Rendering & Validation"},
-                ]
+                ],
             },
             "3.context": {
                 "pre_flight_file_complexity_gate": {
-                    "thresholds": {"total_file_count_max": 5, "total_file_size_mb_max": 10}
+                    "thresholds": {"total_file_count_max": 5, "total_file_size_mb_max": 10},
                 },
                 "pre_flight_file_manifest_check": {"required_file_manifest": ["App_Schema_v4.json"]},
             },
@@ -367,7 +366,7 @@ class WorkflowLoader:
         """Get the metadata section."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowLoader.get_metadata"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowLoader.get_metadata",
         )
         if self._cached_metadata is None:
             self._cached_metadata = self._workflow_data.get("metadata", {})
@@ -406,33 +405,33 @@ class WorkflowLoader:
             BRIEF: Any = self.get_reasoning_config().get("creative_brief", {})
             self._cached_creative_brief = CreativeBriefConfig(
                 headline_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("headline", {}).get("word_count", [8, 12])
+                    BRIEF.get("headline", {}).get("word_count", [8, 12]),
                 ),
                 headline_char_max=BRIEF.get("headline", {}).get("char_count_max", 90),
                 executive_summary_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("executive_summary", {}).get("word_count", [120, 140])
+                    BRIEF.get("executive_summary", {}).get("word_count", [120, 140]),
                 ),
                 executive_summary_voice=BRIEF.get("executive_summary", {}).get(
-                    "voice", "third_person_implied"
+                    "voice", "third_person_implied",
                 ),
                 forbidden_patterns=BRIEF.get("executive_summary", {}).get("forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33])
+                    BRIEF.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33]),
                 ),
                 ibm_bullet_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("experience_bullets", {}).get("ibm_bullet_word_count", [24, 30])
+                    BRIEF.get("experience_bullets", {}).get("ibm_bullet_word_count", [24, 30]),
                 ),
                 unify_overview_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("experience_overview", {}).get("unify_word_count", [25, 33])
+                    BRIEF.get("experience_overview", {}).get("unify_word_count", [25, 33]),
                 ),
                 ibm_overview_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("experience_overview", {}).get("ibm_word_count", [22, 28])
+                    BRIEF.get("experience_overview", {}).get("ibm_word_count", [22, 28]),
                 ),
                 competency_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("leadership_competencies", {}).get("word_count_per_desc", [24, 30])
+                    BRIEF.get("leadership_competencies", {}).get("word_count_per_desc", [24, 30]),
                 ),
                 cover_letter_para_word_count=WordCountConstraints.from_list(
-                    BRIEF.get("cover_letter", {}).get("word_count_per_para", [85, 100])
+                    BRIEF.get("cover_letter", {}).get("word_count_per_para", [85, 100]),
                 ),
             )
         return self._cached_creative_brief
@@ -475,7 +474,7 @@ class WorkflowLoader:
             REASONING: Any = self.get_reasoning_config()
             creative_brief: Any = REASONING.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix", {}).get(
-                "thresholds", {}
+                "thresholds", {},
             )
         return self._cached_validation_rules
 
@@ -483,7 +482,7 @@ class WorkflowLoader:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
             self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation", {}).get(
-                TESTS_DIR, []
+                TESTS_DIR, [],
             )
         return self._cached_pre_flight_tests
 
@@ -492,7 +491,7 @@ class WorkflowLoader:
         if self._cached_file_complexity_thresholds is None:
             CONTEXT: Any = self.get_context_config()
             self._cached_file_complexity_thresholds = CONTEXT.get("pre_flight_file_complexity_gate", {}).get(
-                "thresholds", {}
+                "thresholds", {},
             )
         return self._cached_file_complexity_thresholds
 
@@ -501,7 +500,7 @@ class WorkflowLoader:
         if self._cached_required_files is None:
             CONTEXT: Any = self.get_context_config()
             self._cached_required_files = CONTEXT.get("pre_flight_file_manifest_check", {}).get(
-                "required_file_manifest", []
+                "required_file_manifest", [],
             )
         return self._cached_required_files
 

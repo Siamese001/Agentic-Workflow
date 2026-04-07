@@ -30,7 +30,6 @@ from agentic_core.adg.artifact.SplitArtifact import (
     split_artifact,
 )
 
-
 # ---------------------------------------------------------------------------
 # Minimal synthetic fixture
 # ---------------------------------------------------------------------------
@@ -143,7 +142,7 @@ def _assert_parity(artifact: ADGArtifact) -> None:
     planes_ref = split_artifact(artifact)
 
     ng_full, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-        artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+        artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
     )
 
     # Full graph
@@ -206,7 +205,7 @@ class TestNormalizeWithPlanesParity:
         )
         normalizer = ArtifactNormalizer()
         _, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-            artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+            artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
         )
         assert len(ng_file.edges) == 1
         assert len(ng_sym.edges) == 0
@@ -216,7 +215,7 @@ class TestNormalizeWithPlanesParity:
         """Sum of plane edges must equal total artifact relations (every edge assigned)."""
         normalizer = ArtifactNormalizer()
         ng_full, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-            multi_plane_artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+            multi_plane_artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
         )
         plane_total = len(ng_file.edges) + len(ng_sym.edges) + len(ng_gov.edges)
         assert plane_total == len(ng_full.edges), (
@@ -228,7 +227,7 @@ class TestNormalizeWithPlanesParity:
         """Each plane's node IDs must start at 0 and be contiguous (plane-local)."""
         normalizer = ArtifactNormalizer()
         _, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-            minimal_artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+            minimal_artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
         )
         for plane_name, ng in [("file", ng_file), ("sym", ng_sym), ("gov", ng_gov)]:
             if not ng.nodes:

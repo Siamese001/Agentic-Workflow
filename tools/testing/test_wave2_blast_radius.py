@@ -32,23 +32,23 @@ async def test_blast_radius():
         {
             "name": "UniversalWriteGateway blast radius",
             "query": "UniversalWriteGateway dependencies impact affected modules",
-            "collections": ["repo_adg_graph"]
+            "collections": ["repo_adg_graph"],
         },
         {
             "name": "ADG scanner blast radius",
             "query": "ADG static scanner changes impact graph relationships",
-            "collections": ["repo_adg_graph"]
+            "collections": ["repo_adg_graph"],
         },
         {
             "name": "L5 safety layer blast radius",
             "query": "L5 safety guardrails validation rules affected components",
-            "collections": ["repo_adg_graph", "repo_tests_guardrails"]
+            "collections": ["repo_adg_graph", "repo_tests_guardrails"],
         },
         {
             "name": "Test coverage blast radius",
             "query": "unit tests guardrails validation coverage affected areas",
-            "collections": ["repo_tests_guardrails"]
-        }
+            "collections": ["repo_tests_guardrails"],
+        },
     ]
 
     print("\n=== Blast Radius Analysis ===")
@@ -61,7 +61,7 @@ async def test_blast_radius():
         query = RetrievalQuery(
             text=scenario['query'],
             collections=scenario['collections'],
-            max_results=10
+            max_results=10,
         )
 
         # Retrieve results
@@ -116,18 +116,18 @@ async def test_semantic_similarity():
         {
             "name": "Similar execution components",
             "query": "execution orchestrator gateway write operations",
-            "collections": ["repo_symbols", "repo_adg_graph"]
+            "collections": ["repo_symbols", "repo_adg_graph"],
         },
         {
             "name": "Similar safety components",
             "query": "safety validation guardrail rule enforcement",
-            "collections": ["repo_symbols", "repo_tests_guardrails"]
+            "collections": ["repo_symbols", "repo_tests_guardrails"],
         },
         {
             "name": "Similar routing components",
             "query": "routing dispatch gateway path resolution",
-            "collections": ["repo_symbols", "repo_adg_graph"]
-        }
+            "collections": ["repo_symbols", "repo_adg_graph"],
+        },
     ]
 
     for test in similarity_tests:
@@ -136,7 +136,7 @@ async def test_semantic_similarity():
         query = RetrievalQuery(
             text=test['query'],
             collections=test['collections'],
-            max_results=5
+            max_results=5,
         )
 
         results = await retriever.retrieve(query)

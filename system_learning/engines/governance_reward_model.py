@@ -105,39 +105,25 @@ from system_learning.types.optimization_types import (
 _emit_applies_guardrail("p0", "governance_reward_model", "p0_governance")
 _emit_snapshots_state("p0", "governance_reward_model", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -233,7 +219,7 @@ class RewardModelConfig:
         )
         if abs(total - 1.0) > 1e-6:
             raise ValueError(
-                f"Reward weights must sum to 1.0, got {total}"
+                f"Reward weights must sum to 1.0, got {total}",
             )
         for attr in (
             "invariant_floor",
@@ -331,7 +317,7 @@ class GovernanceRewardModel:
         for s in signals:
             if not s.trace_id:
                 logger.warning(
-                    "reward_model: rejecting signal with empty trace_id"
+                    "reward_model: rejecting signal with empty trace_id",
                 )
                 continue
             valid_signals.append(s)
@@ -340,7 +326,7 @@ class GovernanceRewardModel:
             # Zero-signal score — invariant_preserved=False so proposal cannot
             # proceed without evidence
             score_id = _build_score_id(
-                proposal.proposal_id, 0.0, 0, timestamp_utc
+                proposal.proposal_id, 0.0, 0, timestamp_utc,
             )
             return GovernanceRewardScore(
                 score_id=score_id,
@@ -373,7 +359,7 @@ class GovernanceRewardModel:
         mc_contrib = round(cfg.weight_mutation_correctness * mc_mean, 6)
 
         aggregate = round(
-            g_contrib + p_contrib + r_contrib + gc_contrib + mc_contrib, 6
+            g_contrib + p_contrib + r_contrib + gc_contrib + mc_contrib, 6,
         )
         aggregate = max(0.0, min(1.0, aggregate))
 
@@ -385,7 +371,7 @@ class GovernanceRewardModel:
         )
 
         score_id = _build_score_id(
-            proposal.proposal_id, aggregate, len(valid_signals), timestamp_utc
+            proposal.proposal_id, aggregate, len(valid_signals), timestamp_utc,
         )
 
         return GovernanceRewardScore(
@@ -461,7 +447,7 @@ class GovernanceRewardModel:
             # Rebuild with reward_score populated (frozen dataclass copy pattern)
             import dataclasses
             annotated.append(
-                dataclasses.replace(p, reward_score=gs.aggregate_score)
+                dataclasses.replace(p, reward_score=gs.aggregate_score),
             )
         return annotated
 

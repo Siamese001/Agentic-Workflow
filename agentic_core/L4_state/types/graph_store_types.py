@@ -31,7 +31,7 @@ class IGraphStore(ABC):
 
     @abstractmethod
     def get_relationships(
-        self, entity_id: str, direction: str = "both"
+        self, entity_id: str, direction: str = "both",
     ) -> list[GraphRelationship]:
         """Get relationships for an entity.
 

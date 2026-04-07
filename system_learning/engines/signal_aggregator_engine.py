@@ -315,7 +315,7 @@ class SignalAggregatorEngine:
             {
                 "preferences": [p.to_dict() for p in preferences],
                 "telemetry": [t.to_dict() for t in telemetry],
-            }
+            },
         )
 
         # ---------------------------------------------------------------------
@@ -327,7 +327,7 @@ class SignalAggregatorEngine:
                     "trace_id": trace_id,
                     "source_digest": source_digest,
                     "timestamp_utc": timestamp_utc,
-                }
+                },
             ),
             trace_id=trace_id,
             score_bundle=score_bundle,

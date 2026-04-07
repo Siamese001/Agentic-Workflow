@@ -68,7 +68,7 @@ for p, cnt in present_list:
 # L1 cognition modules
 print("\n=== L1 MODULES ===")
 cur.execute(
-    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L1' AND entity_type='module' ORDER BY adg_name"
+    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L1' AND entity_type='module' ORDER BY adg_name",
 )
 rows = cur.fetchall()
 for n in rows:
@@ -78,7 +78,7 @@ for n in rows:
 # L2 LLM modules
 print("\n=== L2 LLM MODULES ===")
 cur.execute(
-    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L2' AND entity_type='module' AND (LOWER(adg_name) LIKE '%llm%' OR LOWER(adg_name) LIKE '%vllm%') ORDER BY adg_name"
+    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L2' AND entity_type='module' AND (LOWER(adg_name) LIKE '%llm%' OR LOWER(adg_name) LIKE '%vllm%') ORDER BY adg_name",
 )
 for n in cur.fetchall():
     print(f"  {n['adg_name'].replace('ADG::Module::', '')} | {n['resolved_path']}")
@@ -86,7 +86,7 @@ for n in cur.fetchall():
 # L5 alignment modules
 print("\n=== L5 ALIGN/LLM/HEAL MODULES ===")
 cur.execute(
-    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L5' AND entity_type='module' AND (LOWER(adg_name) LIKE '%align%' OR LOWER(adg_name) LIKE '%llm%' OR LOWER(adg_name) LIKE '%heal%' OR LOWER(adg_name) LIKE '%guard%') ORDER BY adg_name"
+    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L5' AND entity_type='module' AND (LOWER(adg_name) LIKE '%align%' OR LOWER(adg_name) LIKE '%llm%' OR LOWER(adg_name) LIKE '%heal%' OR LOWER(adg_name) LIKE '%guard%') ORDER BY adg_name",
 )
 for n in cur.fetchall():
     print(f"  {n['adg_name'].replace('ADG::Module::', '')} | {n['resolved_path']}")
@@ -94,7 +94,7 @@ for n in cur.fetchall():
 # L_SL modules with preference/embed/feedback
 print("\n=== L_SL PREFERENCE/EMBED/FEEDBACK MODULES ===")
 cur.execute(
-    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L_SL' AND entity_type='module' AND (LOWER(adg_name) LIKE '%preference%' OR LOWER(adg_name) LIKE '%reward%' OR LOWER(adg_name) LIKE '%feedback%' OR LOWER(adg_name) LIKE '%embed%' OR LOWER(adg_name) LIKE '%openai%' OR LOWER(adg_name) LIKE '%arbitrat%' OR LOWER(adg_name) LIKE '%confidence%') ORDER BY adg_name"
+    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L_SL' AND entity_type='module' AND (LOWER(adg_name) LIKE '%preference%' OR LOWER(adg_name) LIKE '%reward%' OR LOWER(adg_name) LIKE '%feedback%' OR LOWER(adg_name) LIKE '%embed%' OR LOWER(adg_name) LIKE '%openai%' OR LOWER(adg_name) LIKE '%arbitrat%' OR LOWER(adg_name) LIKE '%confidence%') ORDER BY adg_name",
 )
 for n in cur.fetchall():
     print(f"  {n['adg_name'].replace('ADG::Module::', '')} | {n['resolved_path']}")

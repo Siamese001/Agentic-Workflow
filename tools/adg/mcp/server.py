@@ -283,6 +283,54 @@ def adg_reopen_connections() -> dict[str, Any]:
         return {"status": "error", "message": str(e)}
 
 
+@mcp.tool()
+def adg_reload() -> dict[str, Any]:
+    """Auto-reload ADG if a newer snapshot exists.
+
+    Checks if the current snapshot is stale and reloads to the latest one.
+    Returns status indicating whether reload occurred or was unnecessary.
+    """
+    try:
+        svc = _init_service()
+        health_report = svc.health()
+        sqlite_meta = health_report._asdict()
+
+        is_stale = sqlite_meta.get("is_stale", False)
+        current_path = sqlite_meta.get("path")
+        latest_path = sqlite_meta.get("latest_path")
+
+        if not is_stale:
+            return {
+                "status": "ok",
+                "data": {
+                    "reloaded": False,
+                    "message": "Already using latest snapshot.",
+                    "current_path": current_path,
+                },
+            }
+
+        # Reload to latest snapshot
+        _log.info(f"Reloading ADG from {current_path} to {latest_path}")
+        svc.reopen()
+
+        # Verify reload
+        new_health = svc.health()
+        new_meta = new_health._asdict()
+
+        return {
+            "status": "ok",
+            "data": {
+                "reloaded": True,
+                "message": "Reloaded to latest snapshot.",
+                "old_path": current_path,
+                "new_path": new_meta.get("path"),
+            },
+        }
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
+        _log.error("Auto-reload failed: %s", e)
+        return {"status": "error", "message": str(e)}
+
+
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------

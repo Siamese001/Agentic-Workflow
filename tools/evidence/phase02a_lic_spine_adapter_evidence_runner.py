@@ -192,7 +192,7 @@ def main() -> None:
 
     print("Running focused pytest...")
     focused_rc, focused_out = run(
-        [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"]
+        [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
     )
 
     print("Running full suite...")

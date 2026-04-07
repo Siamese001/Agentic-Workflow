@@ -4,7 +4,6 @@ import pytest
 
 from agentic_core.L5_safety.config.severity import (
     SeverityLevel,
-    from_legacy_string,
 )
 from agentic_core.runtime.config.validation_severity_config import (
     ValidationSeverityConfig,
@@ -59,5 +58,5 @@ class TestValidationSeverityConfig:
         with pytest.raises(Exception):
             ValidationSeverityConfig(
                 severity=SeverityLevel.HIGH,
-                extra_field="not_allowed"
+                extra_field="not_allowed",
             )

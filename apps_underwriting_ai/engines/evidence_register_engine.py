@@ -1,11 +1,11 @@
 """
 Evidence Register Engine - Collects and manages evidence for underwriting claims.
 """
-from typing import List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import List, Optional
 
-from ..types import UnderwritingRequest, EvidenceEntry
+from ..types import EvidenceEntry, UnderwritingRequest
 
 
 @dataclass
@@ -25,7 +25,7 @@ class EvidenceRegister:
         evidence_source: str,
         evidence_type: str,
         confidence: float = 0.8,
-        excerpt: Optional[str] = None
+        excerpt: Optional[str] = None,
     ) -> EvidenceEntry:
         """Add a new claim with evidence."""
         entry = EvidenceEntry(
@@ -37,7 +37,7 @@ class EvidenceRegister:
             extraction_timestamp=datetime.now().isoformat(),
             confidence=confidence,
             supporting_excerpt=excerpt,
-            contradicting_evidence=[]
+            contradicting_evidence=[],
         )
         self.entries.append(entry)
         return entry
@@ -77,7 +77,7 @@ class EvidenceRegisterEngine:
     def collect_financial_evidence(
         self,
         register: EvidenceRegister,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> None:
         """Collect evidence from financial package."""
         metrics = request.financials.calculated_metrics
@@ -88,7 +88,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Debt Service Coverage Ratio is {metrics.dscr_ttm:.2f}x",
                 evidence_source="financial_package.calculated_metrics.dscr_ttm",
                 evidence_type="structured_metric",
-                confidence=0.9
+                confidence=0.9,
             )
 
         if metrics.debt_to_ebitda_ttm:
@@ -97,7 +97,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Leverage ratio (Debt/EBITDA) is {metrics.debt_to_ebitda_ttm:.2f}x",
                 evidence_source="financial_package.calculated_metrics.debt_to_ebitda_ttm",
                 evidence_type="structured_metric",
-                confidence=0.9
+                confidence=0.9,
             )
 
         if metrics.ebitda_margin_ttm:
@@ -106,7 +106,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"EBITDA margin is {metrics.ebitda_margin_ttm:.1%}",
                 evidence_source="financial_package.calculated_metrics.ebitda_margin_ttm",
                 evidence_type="structured_metric",
-                confidence=0.9
+                confidence=0.9,
             )
 
         # Add revenue trend evidence
@@ -122,13 +122,13 @@ class EvidenceRegisterEngine:
                     claim_text=f"Revenue growth of {growth:.1%} from prior period",
                     evidence_source="financial_package.periods",
                     evidence_type="structured_metric",
-                    confidence=0.85
+                    confidence=0.85,
                 )
 
     def collect_credit_evidence(
         self,
         register: EvidenceRegister,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> None:
         """Collect evidence from credit package."""
         credit = request.credit
@@ -139,7 +139,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Business credit bureau score is {credit.business_bureau_score}",
                 evidence_source="credit_package.business_bureau_score",
                 evidence_type="structured_metric",
-                confidence=0.95
+                confidence=0.95,
             )
 
         if credit.personal_fico_scores:
@@ -149,7 +149,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Minimum personal FICO score is {min_fico}",
                 evidence_source="credit_package.personal_fico_scores",
                 evidence_type="structured_metric",
-                confidence=0.95
+                confidence=0.95,
             )
 
         if credit.delinquencies_24m > 0:
@@ -158,7 +158,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"{credit.delinquencies_24m} delinquencies in last 24 months",
                 evidence_source="credit_package.delinquencies_24m",
                 evidence_type="structured_metric",
-                confidence=0.95
+                confidence=0.95,
             )
 
         if credit.bankruptcies_ever > 0:
@@ -167,13 +167,13 @@ class EvidenceRegisterEngine:
                 claim_text=f"{credit.bankruptcies_ever} bankruptcy filing(s) on record",
                 evidence_source="credit_package.bankruptcies_ever",
                 evidence_type="structured_metric",
-                confidence=1.0
+                confidence=1.0,
             )
 
     def collect_collateral_evidence(
         self,
         register: EvidenceRegister,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> None:
         """Collect evidence from collateral package."""
         collateral = request.collateral
@@ -184,7 +184,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Collateral estimated value is ${collateral.estimated_value:,.0f}",
                 evidence_source="collateral_package.estimated_value",
                 evidence_type="document",
-                confidence=0.8
+                confidence=0.8,
             )
 
         if collateral.borrowing_base_value:
@@ -193,7 +193,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Borrowing base calculated at ${collateral.borrowing_base_value:,.0f}",
                 evidence_source="collateral_package.borrowing_base_value",
                 evidence_type="structured_metric",
-                confidence=0.85
+                confidence=0.85,
             )
 
         if collateral.appraisal_date:
@@ -202,14 +202,14 @@ class EvidenceRegisterEngine:
                 claim_text=f"Appraisal dated {collateral.appraisal_date}",
                 evidence_source="collateral_package.appraisal_date",
                 evidence_type="document",
-                confidence=0.9
+                confidence=0.9,
             )
 
     def collect_policy_evidence(
         self,
         register: EvidenceRegister,
         request: UnderwritingRequest,
-        policy_exception_count: int
+        policy_exception_count: int,
     ) -> None:
         """Collect evidence from policy context."""
         policy = request.policy_context
@@ -219,7 +219,7 @@ class EvidenceRegisterEngine:
             claim_text=f"Underwriting policy version {policy.policy_version} applied",
             evidence_source="policy_context.policy_version",
             evidence_type="policy_rule",
-            confidence=1.0
+            confidence=1.0,
         )
 
         if policy_exception_count > 0:
@@ -228,7 +228,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"{policy_exception_count} policy exception(s) triggered",
                 evidence_source="policy_context.threshold_checks",
                 evidence_type="policy_rule",
-                confidence=0.95
+                confidence=0.95,
             )
 
         if policy.min_dscr:
@@ -237,13 +237,13 @@ class EvidenceRegisterEngine:
                 claim_text=f"Minimum DSCR requirement: {policy.min_dscr:.2f}x",
                 evidence_source="policy_context.min_dscr",
                 evidence_type="policy_rule",
-                confidence=1.0
+                confidence=1.0,
             )
 
     def collect_relationship_evidence(
         self,
         register: EvidenceRegister,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> None:
         """Collect evidence from relationship context."""
         rel = request.relationship_context
@@ -255,7 +255,7 @@ class EvidenceRegisterEngine:
                 claim_text=f"Existing customer{tenure_text}",
                 evidence_source="relationship_context",
                 evidence_type="structured_metric",
-                confidence=0.95
+                confidence=0.95,
             )
 
         if rel.deposit_relationship:
@@ -264,5 +264,5 @@ class EvidenceRegisterEngine:
                 claim_text="Active deposit relationship",
                 evidence_source="relationship_context.deposit_relationship",
                 evidence_type="structured_metric",
-                confidence=0.95
+                confidence=0.95,
             )

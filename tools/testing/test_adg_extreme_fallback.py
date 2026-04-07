@@ -31,12 +31,12 @@ def test_adg_source_context_fallback() -> dict[str, Any]:
             "test_passed": result.get("status") == "ok",
             "has_provenance": result.get("provenance") == "sqlite",
             "has_data": "data" in result,
-            "result": result
+            "result": result,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -77,12 +77,12 @@ def test_redis_completely_down() -> dict[str, Any]:
             "sqlite_functions_work": sqlite_result.get("status") == "ok",
             "status_result": status_result,
             "cache_result": cache_result,
-            "sqlite_result": sqlite_result
+            "sqlite_result": sqlite_result,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
     finally:
         os.environ['ADG_REDIS_URL'] = original_url
@@ -105,7 +105,7 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
             stderr=subprocess.PIPE,
             text=True,
             env=env,
-            cwd=str(Path(__file__).parent)
+            cwd=str(Path(__file__).parent),
         )
 
         try:
@@ -114,12 +114,12 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
                 "jsonrpc": "2.0",
                 "id": 1,
                 "method": "tools/list",
-                "params": {}
+                "params": {},
             }
 
             stdout, stderr = process.communicate(
                 input=json.dumps(test_message) + "\n",
-                timeout=10
+                timeout=10,
             )
 
             # Check if server responds (even with Redis down)
@@ -138,19 +138,19 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
                 "has_tools": has_tools,
                 "stdout": stdout[:300],
                 "stderr": stderr[:300],
-                "returncode": process.returncode
+                "returncode": process.returncode,
             }
         except subprocess.TimeoutExpired:
             process.kill()
             return {
                 "test_passed": False,
                 "error": "timeout",
-                "server_responded": False
+                "server_responded": False,
             }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -165,7 +165,7 @@ def test_direct_sqlite_access() -> dict[str, Any]:
         if not sqlite_files:
             return {
                 "test_passed": False,
-                "error": "No ADG SQLite files found"
+                "error": "No ADG SQLite files found",
             }
 
         latest_sqlite = max(sqlite_files, key=lambda p: p.stat().st_mtime)
@@ -203,12 +203,12 @@ def test_direct_sqlite_access() -> dict[str, Any]:
             "sample_nodes": len(sample_nodes),
             "sample_edges": len(sample_edges),
             "layer_count": len(layer_distribution),
-            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2)
+            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2),
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -228,7 +228,7 @@ def test_ingest_with_redis_down() -> dict[str, Any]:
             text=True,
             timeout=30,
             env=env,
-            cwd=str(Path(__file__).parent)
+            cwd=str(Path(__file__).parent),
         )
 
         # Should fail gracefully with Redis error
@@ -242,17 +242,17 @@ def test_ingest_with_redis_down() -> dict[str, Any]:
             "fails_gracefully": fails_gracefully,
             "returncode": result.returncode,
             "stdout": result.stdout[:300],
-            "stderr": result.stderr[:300]
+            "stderr": result.stderr[:300],
         }
     except subprocess.TimeoutExpired:
         return {
             "test_passed": False,
-            "error": "timeout"
+            "error": "timeout",
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -281,7 +281,7 @@ def test_mcp_error_messages() -> dict[str, Any]:
                 if result.get("status") == "error":
                     message = result.get("message", "")
                     is_helpful = any(keyword in message.lower() for keyword in [
-                        "run:", "python", "ingest", "redis", "unavailable", "not found"
+                        "run:", "python", "ingest", "redis", "unavailable", "not found",
                     ])
                     helpful_errors.append(is_helpful)
                 else:
@@ -295,12 +295,12 @@ def test_mcp_error_messages() -> dict[str, Any]:
             "test_passed": all_helpful,
             "all_helpful": all_helpful,
             "helpful_count": sum(helpful_errors),
-            "total_scenarios": len(helpful_errors)
+            "total_scenarios": len(helpful_errors),
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -419,7 +419,7 @@ def run_extreme_fallback_test():
             "server_test": server_test,
             "ingest_test": ingest_test,
             "error_test": error_test,
-        }
+        },
     }
 
 

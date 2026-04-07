@@ -44,7 +44,6 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract UWG ingress gate edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             UWG_BLAST_RADIUS_SYMBOLS,
             UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
@@ -52,6 +51,7 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
             UWG_VALIDATES_INTENT_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         if not sym:
@@ -72,7 +72,7 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in UWG_CHECKS_POLICY_HASH_SYMBOLS or tail in UWG_CHECKS_POLICY_HASH_SYMBOLS:
             self.edges.append(
@@ -84,7 +84,7 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in UWG_CHECKS_CAPABILITY_SET_SYMBOLS or tail in UWG_CHECKS_CAPABILITY_SET_SYMBOLS:
             self.edges.append(
@@ -96,7 +96,7 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in UWG_BLAST_RADIUS_SYMBOLS or tail in UWG_BLAST_RADIUS_SYMBOLS:
             self.edges.append(
@@ -108,7 +108,7 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
 
         self.generic_visit(node)
@@ -143,7 +143,6 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract mutation record assembly edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             EXECUTION_TRACE_PACKAGE_SYMBOLS,
             HMAC_SEAL_SYMBOLS,
@@ -151,6 +150,7 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
             MUTATION_REPLAY_KEY_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         if not sym:
@@ -171,7 +171,7 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in MUTATION_REPLAY_KEY_SYMBOLS or tail in MUTATION_REPLAY_KEY_SYMBOLS:
             self.edges.append(
@@ -183,7 +183,7 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in HMAC_SEAL_SYMBOLS or tail in HMAC_SEAL_SYMBOLS:
             self.edges.append(
@@ -195,7 +195,7 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in EXECUTION_TRACE_PACKAGE_SYMBOLS or tail in EXECUTION_TRACE_PACKAGE_SYMBOLS:
             self.edges.append(
@@ -207,7 +207,7 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
 
         self.generic_visit(node)
@@ -246,7 +246,6 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract authoritative commit edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             CLAIMS_WRITE_LOCK_SYMBOLS,
             DURABLE_COMMIT_SYMBOLS,
@@ -258,6 +257,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
             SWAPS_VERSION_ALIAS_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         if not sym:
@@ -278,7 +278,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in DURABLE_COMMIT_SYMBOLS or tail in DURABLE_COMMIT_SYMBOLS:
             self.edges.append(
@@ -290,7 +290,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in HASH_CHAIN_APPEND_SYMBOLS or tail in HASH_CHAIN_APPEND_SYMBOLS:
             self.edges.append(
@@ -302,7 +302,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in ROLLBACK_HEAL_SYMBOLS or tail in ROLLBACK_HEAL_SYMBOLS:
             self.edges.append(
@@ -314,7 +314,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         # Check L4 read surface symbols
         elif base in MATERIALIZES_READ_VIEW_SYMBOLS or tail in MATERIALIZES_READ_VIEW_SYMBOLS:
@@ -327,7 +327,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in RETRIEVAL_SURFACE_REFRESH_SYMBOLS or tail in RETRIEVAL_SURFACE_REFRESH_SYMBOLS:
             self.edges.append(
@@ -339,7 +339,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in SWAPS_VERSION_ALIAS_SYMBOLS or tail in SWAPS_VERSION_ALIAS_SYMBOLS:
             self.edges.append(
@@ -351,7 +351,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in L4_TELEMETRY_SYNC_SYMBOLS or tail in L4_TELEMETRY_SYNC_SYMBOLS:
             self.edges.append(
@@ -363,7 +363,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
 
         self.generic_visit(node)
@@ -399,7 +399,6 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract outbound read bridge edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             L0_RECEIVES_POLICY_HASH_SYMBOLS,
             L3_READS_L4_SURFACE_SYMBOLS,
@@ -408,6 +407,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
             READS_L4_SURFACE_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         if not sym:
@@ -428,7 +428,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in L0_RECEIVES_POLICY_HASH_SYMBOLS or tail in L0_RECEIVES_POLICY_HASH_SYMBOLS:
             self.edges.append(
@@ -440,7 +440,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in L5_READS_L4_SURFACE_SYMBOLS or tail in L5_READS_L4_SURFACE_SYMBOLS:
             self.edges.append(
@@ -452,7 +452,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in L3_READS_L4_SURFACE_SYMBOLS or tail in L3_READS_L4_SURFACE_SYMBOLS:
             self.edges.append(
@@ -464,7 +464,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
         elif base in L6_INGESTS_L4_TRACE_SYMBOLS or tail in L6_INGESTS_L4_TRACE_SYMBOLS:
             self.edges.append(
@@ -476,7 +476,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
-                )
+                ),
             )
 
         self.generic_visit(node)

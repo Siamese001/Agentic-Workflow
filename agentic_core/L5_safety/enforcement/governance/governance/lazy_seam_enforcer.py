@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -230,7 +229,7 @@ def _is_inside_function_or_guarded(tree: ast.AST, target_lineno: int) -> bool:
 
 
 def _get_enclosing_function(
-    tree: ast.AST, target_lineno: int
+    tree: ast.AST, target_lineno: int,
 ) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
     """Return the innermost FunctionDef/AsyncFunctionDef enclosing target_lineno."""
     best = None
@@ -323,7 +322,7 @@ def collect_lazy_upward_imports(
                             import_statement=import_str,
                             line_number=line_no,
                             context=context,
-                        )
+                        ),
                     )
 
     return results
@@ -366,7 +365,7 @@ class LazySeamEnforcer:
             return json.load(f)
 
     def _create_seam_key(
-        self, file_path: str, function_name: str, imported_modules: list[str], imported_symbols: list[tuple]
+        self, file_path: str, function_name: str, imported_modules: list[str], imported_symbols: list[tuple],
     ) -> str:
         """Create a unique key for a seam."""
         return f"{file_path}::{function_name}::{sorted(imported_modules)}::{sorted(imported_symbols)}"

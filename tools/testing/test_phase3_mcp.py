@@ -58,7 +58,7 @@ async def test_meta_learning_mcp():
         "meta_learning_insights",
         "learning_pipeline_status",
         "cross_repo_import",
-        "learning_state_management"
+        "learning_state_management",
     ]
 
     missing_tools = [tool for tool in expected_tools if tool not in tool_names]

@@ -33,7 +33,7 @@ class ScorecardRenderer:
         # Header
         writer.writerow([
             "dimension_id", "display_name", "score", "weight",
-            "weighted_score", "verdict"
+            "weighted_score", "verdict",
         ])
 
         # Rows
@@ -64,7 +64,7 @@ class ScorecardRenderer:
         for row in rows:
             lines.append(
                 f"| {row.display_name} | {row.score:.2%} | {row.weight:.2f} | "
-                f"{row.weighted_score:.4f} | {row.verdict} |"
+                f"{row.weighted_score:.4f} | {row.verdict} |",
             )
 
         lines.append("")

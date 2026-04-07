@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -186,13 +185,13 @@ class ToolEmbeddingCache:
     """
 
     def __init__(
-        self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_EMBEDDING_TTL
+        self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_EMBEDDING_TTL,
     ):
         self._cache = cache or get_hot_cache()
         self._ttl = ttl_seconds
 
     def get_or_fetch(
-        self, tool_definitions: list[dict[str, Any]], fetch_embeddings: Any, *, replay_mode: bool = False
+        self, tool_definitions: list[dict[str, Any]], fetch_embeddings: Any, *, replay_mode: bool = False,
     ) -> tuple[list[list[float]], list[str]]:
         """Read-through helper: return cached embeddings or call *fetch_embeddings*.
 
@@ -236,7 +235,7 @@ class ToolEmbeddingCache:
                 fingerprint = self._compute_tool_fingerprint(tool_definitions)
                 cache_key = f"tool_embeddings:{fingerprint}"
                 self._cache.set_json(
-                    cache_key, {"embeddings": embeddings, "tool_names": tool_names}, ttl_seconds=self._ttl
+                    cache_key, {"embeddings": embeddings, "tool_names": tool_names}, ttl_seconds=self._ttl,
                 )
             except ValueError:
                 pass

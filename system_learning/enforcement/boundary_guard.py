@@ -33,7 +33,7 @@ class _BoundaryVisitor(ast.NodeVisitor):
             return
         if any(module.startswith(p) for p in FORBIDDEN_IMPORT_PREFIXES):
             self.violations.append(
-                f"Line {lineno}: Forbidden import '{module}'"
+                f"Line {lineno}: Forbidden import '{module}'",
             )
 
     def visit_Import(self, node: ast.Import) -> None:
@@ -88,4 +88,7 @@ if __name__ == "__main__":
     import sys
 
     sys.exit(0 if check_system_learning_isolation() else 1)
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)

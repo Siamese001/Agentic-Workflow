@@ -44,7 +44,7 @@ def _make_db_with_edges(edges: list[dict]) -> Path:
             target_span_line INTEGER DEFAULT 0,
             target_span_column INTEGER DEFAULT 0,
             dynamic_resolution TEXT DEFAULT ''
-        )"""
+        )""",
     )
     conn.execute(
         """CREATE TABLE violations (
@@ -56,7 +56,7 @@ def _make_db_with_edges(edges: list[dict]) -> Path:
             line_no INTEGER DEFAULT 0,
             severity TEXT NOT NULL DEFAULT 'MEDIUM',
             disposition TEXT NOT NULL DEFAULT 'untriaged'
-        )"""
+        )""",
     )
     for e in edges:
         conn.execute(
@@ -82,7 +82,7 @@ def _make_db_with_edges(edges: list[dict]) -> Path:
                 WHEN relation_type = 'antipattern' THEN 'LOW'
                 ELSE 'MEDIUM'
             END as severity
-        FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"""
+        FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')""",
     )
     conn.commit()
     conn.close()
@@ -139,7 +139,7 @@ _LOW_KINDS = [
 def test_high_antipattern_in_critical_layer(edge_kind: str, source_file: str) -> None:
     """Exception handling antipatterns in critical layers must be HIGH."""
     db = _make_db_with_edges([
-        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file}
+        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
     ])
     assert _get_severity(db, edge_kind, source_file) == "HIGH"
     Path(db).unlink(missing_ok=True)
@@ -150,7 +150,7 @@ def test_high_antipattern_in_critical_layer(edge_kind: str, source_file: str) ->
 def test_medium_antipattern_in_non_critical_layer(edge_kind: str, source_file: str) -> None:
     """Exception handling antipatterns outside critical layers must be MEDIUM."""
     db = _make_db_with_edges([
-        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file}
+        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
     ])
     assert _get_severity(db, edge_kind, source_file) == "MEDIUM"
     Path(db).unlink(missing_ok=True)
@@ -161,7 +161,7 @@ def test_low_antipattern_false_positive_prone_kinds(edge_kind: str) -> None:
     """False-positive-prone antipattern kinds must stay LOW regardless of layer."""
     source_file = "agentic_core/L0_routing/foo.py"
     db = _make_db_with_edges([
-        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file}
+        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
     ])
     assert _get_severity(db, edge_kind, source_file) == "LOW"
     Path(db).unlink(missing_ok=True)
@@ -170,7 +170,7 @@ def test_low_antipattern_false_positive_prone_kinds(edge_kind: str) -> None:
 def test_violates_edge_defaults_to_medium() -> None:
     """violates edges (layer violations) default to MEDIUM via ELSE branch."""
     db = _make_db_with_edges([
-        {"relation_type": "violates", "edge_kind": "layer_boundary_cross", "source_file": "agentic_core/L0_routing/x.py"}
+        {"relation_type": "violates", "edge_kind": "layer_boundary_cross", "source_file": "agentic_core/L0_routing/x.py"},
     ])
     conn = sqlite3.connect(str(db))
     row = conn.execute("SELECT severity FROM violations WHERE category='violates'").fetchone()
@@ -191,7 +191,7 @@ def test_symbol_like_pattern_no_longer_drives_severity() -> None:
             "edge_kind": "retry_without_backoff",
             "source_file": "apps_rg/engines/foo.py",
             "symbol": "except:Exception",
-        }
+        },
     ])
     assert _get_severity(db, "retry_without_backoff", "apps_rg/engines/foo.py") == "LOW"
     Path(db).unlink(missing_ok=True)

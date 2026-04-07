@@ -320,7 +320,7 @@ def main():
                     "top_classes": info["top_classes"],
                     "top_funcs": info["top_funcs"],
                     "severity": sev,
-                }
+                },
             )
 
     print()

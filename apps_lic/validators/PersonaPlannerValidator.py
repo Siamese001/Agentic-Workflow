@@ -52,39 +52,25 @@ _emit_applies_guardrail("p0", "PersonaPlannerValidator", "p0_governance")
 _emit_reads_policy_state("p0", "PersonaPlannerValidator", "policy_binding")
 _emit_snapshots_state("p0", "PersonaPlannerValidator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -290,7 +276,7 @@ class PersonaPlanner:
         base_persona: Any = self._get_base_persona(Archetype)
         seniority_adjusted: Any = self._apply_seniority_adjustments(base_persona, recipient_profile)
         industry_adjusted: Any = self._apply_industry_adjustments(
-            seniority_adjusted, recipient_profile, outreach_context
+            seniority_adjusted, recipient_profile, outreach_context,
         )
         final_persona: Any = self._apply_grounding_refinements(industry_adjusted, grounding_plan)
         confidence_score: Any = self._calculate_confidence_score(Archetype, recipient_profile, final_persona)
@@ -330,7 +316,7 @@ class PersonaPlanner:
         return base
 
     def _apply_seniority_adjustments(
-        self, persona: dict[str, object], profile: dict[str, object]
+        self, persona: dict[str, object], profile: dict[str, object],
     ) -> dict[str, object]:
         """Apply seniority-based adjustments to persona."""
         seniority = profile.get("seniority", "").upper()
@@ -343,7 +329,7 @@ class PersonaPlanner:
         return adjusted
 
     def _apply_industry_adjustments(
-        self, persona: dict[str, object], profile: dict[str, object], context: dict[str, object]
+        self, persona: dict[str, object], profile: dict[str, object], context: dict[str, object],
     ) -> dict[str, object]:
         """Apply industry-specific adjustments to persona."""
         industry = (
@@ -364,7 +350,7 @@ class PersonaPlanner:
         return adjusted
 
     def _apply_grounding_refinements(
-        self, persona: dict[str, object], grounding_plan: Any | None
+        self, persona: dict[str, object], grounding_plan: Any | None,
     ) -> dict[str, object]:
         """Apply grounding-based refinements to persona."""
         if not grounding_plan:
@@ -392,7 +378,7 @@ class PersonaPlanner:
         return refined
 
     def _calculate_confidence_score(
-        self, Archetype: str, profile: dict[str, object], persona: dict[str, object]
+        self, Archetype: str, profile: dict[str, object], persona: dict[str, object],
     ) -> float:
         """Calculate persona match confidence score."""
         base_score = 0.7

@@ -169,7 +169,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -245,10 +244,10 @@ class MetaLearningClient:
     default_ttl: int = DEFAULT_TTL_SECONDS
     max_healing_depth: int = MAX_HEALING_DEPTH
     domain_thresholds: dict[str, float] = field(
-        default_factory=lambda: {"agentic_core": 0.85, "apps_lic": 0.92, "apps_rg": 0.85}
+        default_factory=lambda: {"agentic_core": 0.85, "apps_lic": 0.92, "apps_rg": 0.85},
     )
     domain_ttls: dict[str, int] = field(
-        default_factory=lambda: {"agentic_core": 3600, "apps_lic": 7200, "apps_rg": 3600}
+        default_factory=lambda: {"agentic_core": 3600, "apps_lic": 7200, "apps_rg": 3600},
     )
     _redis_client: Any = field(default=None, init=False)
     _vector_store: dict = field(default_factory=dict, init=False)
@@ -262,7 +261,7 @@ class MetaLearningClient:
             "pattern_stores": 0,
             "healing_cycles_prevented": 0,
             "by_domain": {},
-        }
+        },
     )
 
     def __new__(cls, *args, **kwargs):
@@ -296,7 +295,7 @@ class MetaLearningClient:
             Logger.info("[MetaLearningClient] Redis connection established")
         except Exception as e:
             raise InfrastructureDependencyError(
-                f"[MetaLearningClient] Redis is a mandatory dependency and is unavailable: {e}"
+                f"[MetaLearningClient] Redis is a mandatory dependency and is unavailable: {e}",
             ) from e
 
     def _initialize_vector_store(self) -> None:
@@ -346,7 +345,7 @@ class MetaLearningClient:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MetaClient.cache_get:{domain}:{key}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MetaClient.cache_get:{domain}:{key}",
         )
         cache_key = self._get_cache_key(key, domain)
         from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
@@ -406,7 +405,7 @@ class MetaLearningClient:
         return True
 
     def store_healing_pattern(
-        self, violation: dict[str, Any], healing_result: dict[str, Any], domain: str = "agentic_core"
+        self, violation: dict[str, Any], healing_result: dict[str, Any], domain: str = "agentic_core",
     ) -> str | None:
         """
         Store a successful healing pattern in Pinecone.
@@ -475,7 +474,7 @@ class MetaLearningClient:
             Logger.warning(f"[MetaLearningClient] Failed to generate embedding: {e}")
             return []
         effective_threshold = min_similarity or self.domain_thresholds.get(
-            domain, DEFAULT_SIMILARITY_THRESHOLD
+            domain, DEFAULT_SIMILARITY_THRESHOLD,
         )
         try:
             ids = list(self._vector_store.keys())
@@ -521,7 +520,7 @@ class MetaLearningClient:
             self.stats["pattern_retrievals"] += 1
             self._update_domain_stats(domain, "pattern_retrievals")
             Logger.info(
-                f"[MetaLearningClient] Retrieved {len(patterns)} patterns for {domain} (threshold={effective_threshold:.2f})"
+                f"[MetaLearningClient] Retrieved {len(patterns)} patterns for {domain} (threshold={effective_threshold:.2f})",
             )
             return patterns
         # guardian: allow-silent-swallow

@@ -78,7 +78,7 @@ class PromptRenderingMixin:
         return self._assigned_templates
 
     def get_primary_template(
-        self, category: TemplateCategory = TemplateCategory.INSTRUCTIONAL
+        self, category: TemplateCategory = TemplateCategory.INSTRUCTIONAL,
     ) -> TemplateCatalogEntry | None:
         """Get the first assigned template of a given category.
 
@@ -147,7 +147,7 @@ class PromptRenderingMixin:
                 agent_name = type(self).__name__
                 raise ValueError(
                     f"No INSTRUCTIONAL template assigned to {agent_name} in template_catalog. "
-                    f"Assign one via TEMPLATE_CATALOG or pass template_name explicitly."
+                    f"Assign one via TEMPLATE_CATALOG or pass template_name explicitly.",
                 )
             template_name = entry.template_name
 

@@ -133,7 +133,7 @@ class TestDecoratorEnforcementIntegration:
 
         # Test each function
         result1 = function_with_kwargs(
-            system_prompt="Test", user_prompt="User", files=[], extra_param="value"
+            system_prompt="Test", user_prompt="User", files=[], extra_param="value",
         )
         assert "extra_param" in result1["kwargs"]
 
@@ -255,11 +255,11 @@ class TestDecoratorEnforcementIntegration:
 
         # Test both functions
         result1 = function1(
-            system_prompt="Test 1", user_prompt="User 1", files=[{"path": "test1.py", "content": "content1"}]
+            system_prompt="Test 1", user_prompt="User 1", files=[{"path": "test1.py", "content": "content1"}],
         )
 
         result2 = function2(
-            system_prompt="Test 2", user_prompt="User 2", files=[{"path": "test2.py", "content": "content2"}]
+            system_prompt="Test 2", user_prompt="User 2", files=[{"path": "test2.py", "content": "content2"}],
         )
 
         assert result1["function"] == "function1"
@@ -480,7 +480,7 @@ class TestDecoratorEnforcementIntegration:
 
         # Successful call
         result1 = sometimes_failing_function(
-            system_prompt="Normal operation", user_prompt="User input", files=[]
+            system_prompt="Normal operation", user_prompt="User input", files=[],
         )
         assert result1["status"] == "success"
 
@@ -490,7 +490,7 @@ class TestDecoratorEnforcementIntegration:
 
         # Successful call after failure
         result2 = sometimes_failing_function(
-            system_prompt="Recovery operation", user_prompt="User input", files=[]
+            system_prompt="Recovery operation", user_prompt="User input", files=[],
         )
         assert result2["status"] == "success"
 

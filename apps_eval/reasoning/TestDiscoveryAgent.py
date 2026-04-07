@@ -62,7 +62,7 @@ class TestDiscoveryAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "TestDiscoveryAgent.discover_tests"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TestDiscoveryAgent.discover_tests",
         )
         _emit_orchestrates_workflow("p3", "test_discovery_agent", "discovery_workflow")
         _emit_dispatches_agent("p3", "test_discovery_agent", "discovery_dispatch")
@@ -91,7 +91,7 @@ class TestDiscoveryAgent:
 
             _log.info("Test discovery complete: %d tests found", len(discovered_tests))
             _emit_records_telemetry_event(
-                "p4", "test_discovery_agent", f"discovery_complete:{len(discovered_tests)}"
+                "p4", "test_discovery_agent", f"discovery_complete:{len(discovered_tests)}",
             )
 
             return result

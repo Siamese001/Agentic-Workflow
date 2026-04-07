@@ -6,7 +6,6 @@ from typing import Any
 
 from services.configuration import ConfigurationService
 
-
 Logger: Any = logging.getLogger(__name__)
 module_version: Any = '1.0.0'
 module_author: Any = 'Agentic-Workflow Team'

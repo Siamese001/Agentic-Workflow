@@ -16,7 +16,6 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(REPO_ROOT) not in sys.path:

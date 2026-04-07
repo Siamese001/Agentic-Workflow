@@ -1,7 +1,7 @@
 """Fix remaining unit test files with eager imports."""
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 REPO_ROOT = Path("c:/Git/Agentic-Workflow")
 
@@ -81,7 +81,7 @@ def {fixture_name}():
     if 'import pytest' in new_content:
         new_content = new_content.replace(
             'import pytest',
-            f'import pytest\n\n{fixtures_code}'
+            f'import pytest\n\n{fixtures_code}',
         )
     else:
         new_content = f'import pytest\n\n{fixtures_code}\n\n{new_content}'

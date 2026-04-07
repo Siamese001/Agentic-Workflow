@@ -41,7 +41,7 @@ rows = list(
     WHERE e.relation_type = 'imports'
     AND n1.layer NOT IN ('L_TEST','L_UNKNOWN','L_TOOLS','L_APP','L_SL','')
     AND n2.layer NOT IN ('L_TEST','L_UNKNOWN','','L0','L_SHARED')
-""")
+"""),
 )
 
 violations = []

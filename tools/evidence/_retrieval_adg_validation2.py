@@ -3,8 +3,8 @@ ADG retrieval wiring validation — uses actual schema:
   nodes(id, adg_name, entity_type, layer, resolved_path, ...)
   edges(id, src_id, dst_id, relation_type, source_file, ...)
 """
-import sqlite3
 import os
+import sqlite3
 
 SQLITE_PATH = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"
 

@@ -1,8 +1,8 @@
 """
 Counter Offer Recommender - Recommends revised terms when original request is too aggressive.
 """
-from typing import List, Optional
 from dataclasses import dataclass
+from typing import List, Optional
 
 from ..types import RiskFeatures, UnderwritingRequest
 
@@ -32,7 +32,7 @@ class CounterOfferRecommender:
     def recommend_counter_offer(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> Optional[CounterOfferTerms]:
         """
         Recommend counter-offer terms.
@@ -69,13 +69,13 @@ class CounterOfferRecommender:
             pricing_adjustment_bps=pricing_adj,
             additional_collateral_required=features.collateral.collateral_quality_score < 0.5,
             additional_guarantor_required=features.credit.personal_fico_min and features.credit.personal_fico_min < 680,
-            rationale=rationale
+            rationale=rationale,
         )
 
     def _calculate_amount_reduction(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> float:
         """Calculate recommended amount reduction percentage."""
         reduction = 0.0
@@ -98,7 +98,7 @@ class CounterOfferRecommender:
     def _calculate_term_reduction(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> float:
         """Calculate recommended term reduction percentage."""
         reduction = 0.0
@@ -117,7 +117,7 @@ class CounterOfferRecommender:
     def _calculate_pricing_adjustment(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> int:
         """Calculate pricing adjustment in basis points."""
         bps = 0
@@ -147,7 +147,7 @@ class CounterOfferRecommender:
         features: RiskFeatures,
         request: UnderwritingRequest,
         amount_reduction: float,
-        term_reduction: float
+        term_reduction: float,
     ) -> List[str]:
         """Build rationale for counter-offer."""
         rationale = []
@@ -155,22 +155,22 @@ class CounterOfferRecommender:
         if amount_reduction > 0:
             if features.capacity.dscr_ttm and features.capacity.dscr_ttm < 1.5:
                 rationale.append(
-                    f"DSCR of {features.capacity.dscr_ttm:.2f}x supports lower facility amount"
+                    f"DSCR of {features.capacity.dscr_ttm:.2f}x supports lower facility amount",
                 )
 
             if features.collateral.ltv and features.collateral.ltv > 0.75:
                 rationale.append(
-                    f"LTV of {features.collateral.ltv:.1%} limits advance against collateral"
+                    f"LTV of {features.collateral.ltv:.1%} limits advance against collateral",
                 )
 
         if term_reduction > 0:
             rationale.append(
-                "Shorter term aligns with business track record and reduces long-term risk"
+                "Shorter term aligns with business track record and reduces long-term risk",
             )
 
         if features.policy.policy_exception_count > 0:
             rationale.append(
-                f"Tighter structure mitigates {features.policy.policy_exception_count} policy exception(s)"
+                f"Tighter structure mitigates {features.policy.policy_exception_count} policy exception(s)",
             )
 
         return rationale

@@ -87,39 +87,25 @@ _emit_applies_guardrail("p0", "style_gate_validator", "p0_governance")
 _emit_reads_policy_state("p0", "style_gate_validator", "policy_binding")
 _emit_snapshots_state("p0", "style_gate_validator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -199,7 +185,7 @@ _BUZZWORDS = frozenset(
         "empower",
         "unlock",
         "transform",
-    ]
+    ],
 )
 
 _UNSUPPORTED_CLAIM_PATTERNS = [
@@ -288,7 +274,7 @@ class StyleGateValidator:
                     severity="WARN",
                     message=f"Section '{section.section_id}' has no evidence anchors.",
                     section_id=section.section_id,
-                )
+                ),
             ]
         return []
 
@@ -306,7 +292,7 @@ class StyleGateValidator:
                 message=f"Section '{section.section_id}' contains buzzwords: {found}",
                 section_id=section.section_id,
                 evidence=", ".join(found),
-            )
+            ),
         ]
 
     def _check_unsupported_claims(self, section: BriefSection) -> list[StyleViolation]:
@@ -323,7 +309,7 @@ class StyleGateValidator:
                         ),
                         section_id=section.section_id,
                         evidence=match.group(0),
-                    )
+                    ),
                 )
         return results
 
@@ -335,7 +321,7 @@ class StyleGateValidator:
                     severity="WARN",
                     message=f"Section '{section.section_id}' is missing a 'why this matters' block.",
                     section_id=section.section_id,
-                )
+                ),
             ]
         return []
 
@@ -347,6 +333,6 @@ class StyleGateValidator:
                     severity="BLOCK",
                     message=f"Section '{section.section_id}' has an empty body.",
                     section_id=section.section_id,
-                )
+                ),
             ]
         return []

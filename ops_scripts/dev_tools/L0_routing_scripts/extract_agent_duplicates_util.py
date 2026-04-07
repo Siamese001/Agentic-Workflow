@@ -109,7 +109,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -232,7 +231,7 @@ for item in data:
                 "canonical_quality": item["canonical_quality"]["quality_score"],
                 "duplicate_quality": dup["quality"]["quality_score"],
                 "rationale": infer_rationale(canonical, dup_path, item["action"]),
-            }
+            },
         )
 results.sort(key=lambda x: (0 if x["action"] == "DELETE" else 1, x["agent_name"]))
 print("# Duplicated Agents Table")
@@ -245,7 +244,7 @@ print("| Agent Name | Canonical Path | Duplicate Path | Action | Quality (C/D) |
 print("| --- | --- | --- | --- | --- | --- |")
 for r in results:
     print(
-        f"| {r['agent_name']} | `{r['canonical']}` | `{r['duplicate']}` | **{r['action']}** | {r['canonical_quality']}/{r['duplicate_quality']} | {r['rationale']} |"
+        f"| {r['agent_name']} | `{r['canonical']}` | `{r['duplicate']}` | **{r['action']}** | {r['canonical_quality']}/{r['duplicate_quality']} | {r['rationale']} |",
     )
 print("\n---\n")
 print("## Quick Actions\n")

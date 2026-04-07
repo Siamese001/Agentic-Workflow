@@ -14,7 +14,7 @@ from tools.enhance_import_only_tests import analyze_module_api, generate_enhance
 files_to_fix = [
     'tests/architecture/test_phantom_folder_regression.py',
     'tests/stress/test_atomic_concurrency.py',
-    'tests/unit/agentic_core/adg/adapters/test___init___adg.py'
+    'tests/unit/agentic_core/adg/adapters/test___init___adg.py',
 ]
 
 for file_path in files_to_fix:

@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -233,10 +232,10 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     genai_available = False
         self.change_detector = MethodChangeDetectorAgent(self.ctx)
         self.test_generator = RegressionTestGenerator(
-            self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client
+            self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client,
         )
         self.test_runner = RegressionTestRunner(
-            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass
+            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass,
         )
         self.generated_tests: list[GeneratedTest] = []
 
@@ -249,7 +248,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute",
         )
         Logger.info("🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...")
         modified_files_to_process: Any = []
@@ -280,7 +279,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         Returns a list of violation descriptions (empty = safe).
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "RegressionOracleAgent._ast_safety_check", "L5_POLICY"
+            str(uuid.uuid4()), "RegressionOracleAgent._ast_safety_check", "L5_POLICY",
         )    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         import ast as _ast
 
@@ -301,7 +300,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 for dangerous in DANGEROUS_CALLS:
                     if dangerous in name:
                         violations.append(
-                            f"Line {node.lineno}: dangerous call '{name}' detected in generated code"
+                            f"Line {node.lineno}: dangerous call '{name}' detected in generated code",
                         )
         return violations
 
@@ -319,7 +318,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 safety_violations = self._ast_safety_check(test_code)
                 if safety_violations:
                     Logger.error(
-                        f"[GAP-05] Rejecting generated test for {change.method_name} — {len(safety_violations)} dangerous node(s): {safety_violations[:3]}"
+                        f"[GAP-05] Rejecting generated test for {change.method_name} — {len(safety_violations)} dangerous node(s): {safety_violations[:3]}",
                     )
                     self.generated_tests.append(
                         GeneratedTest(
@@ -330,11 +329,11 @@ class RegressionOracleAgent(SovereignBaseAgent):
                             edge_cases=edge_cases,
                             passed=False,
                             error_message=f"AST safety rejection: {safety_violations[0]}",
-                        )
+                        ),
                     )
                     continue
                 passed, error_msg = await self.test_runner.run_and_correct_test(
-                    change, test_file, test_code, max_iterations=self.MAX_CORRECTION_ITERATIONS
+                    change, test_file, test_code, max_iterations=self.MAX_CORRECTION_ITERATIONS,
                 )
                 self.generated_tests.append(
                     GeneratedTest(
@@ -345,7 +344,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                         edge_cases=edge_cases,
                         passed=passed,
                         error_message=error_msg,
-                    )
+                    ),
                 )
 
     # guardian: allow-type-erasure
@@ -384,7 +383,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def post_heal_validation(
-        self, generated_tests: list[GeneratedTest], dry_run: bool = True
+        self, generated_tests: list[GeneratedTest], dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -432,7 +431,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def cleanup_violations(
-        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50
+        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
@@ -510,7 +509,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                         file_path=test.test_file,
                         method_name=test.target_method,
                         severity=4,
-                    )
+                    ),
                 )
         cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}

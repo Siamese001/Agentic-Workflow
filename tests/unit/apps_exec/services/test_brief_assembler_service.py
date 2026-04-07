@@ -45,7 +45,7 @@ class TestBriefAssemblerService:
         service = BriefAssemblerService()
         sections = [
             {"heading": "Introduction", "content": "This is the introduction."},
-            {"heading": "Analysis", "content": "This is the analysis."}
+            {"heading": "Analysis", "content": "This is the analysis."},
         ]
 
         brief = service.assemble_brief(sections, "recruiter", 600)
@@ -137,7 +137,7 @@ class TestBriefAssemblerService:
             "persona_id": "recruiter",
             "word_count": 500,
             "complete": True,
-            "sections": ["Introduction", "Analysis"]
+            "sections": ["Introduction", "Analysis"],
         }
 
         summary = service.get_brief_summary(brief)

@@ -2,13 +2,13 @@
 Ingestion module for apps_underwriting_ai.
 """
 
-from .intake_router import IntakeRouter, IngestionResult
-from .structured_ingestion import StructuredIngestion, IngestionMode
-from .document_ingestion import DocumentIngestion, DocumentManifest
-from .json_mapper import JSONMapper
 from .csv_mapper import CSVMapper
-from .xlsx_mapper import XLSXMapper
+from .document_ingestion import DocumentIngestion, DocumentManifest
 from .document_manifest_builder import DocumentManifestBuilder
+from .intake_router import IngestionResult, IntakeRouter
+from .json_mapper import JSONMapper
+from .structured_ingestion import IngestionMode, StructuredIngestion
+from .xlsx_mapper import XLSXMapper
 
 __all__ = [
     "IntakeRouter",

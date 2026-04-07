@@ -38,7 +38,7 @@ class ADGQuerier:
                 if entities:
                     # Get relationships
                     relationships = self.graph_store.get_relationships(
-                        entities[0].id, direction="incoming"
+                        entities[0].id, direction="incoming",
                     )
                     return [{"id": r.target_id} for r in relationships]
             except Exception:
@@ -90,7 +90,7 @@ class ADGQuerier:
 
                 # Check if node has test coverage via 'covers' edges
                 relationships = self.graph_store.get_relationships(
-                    node.id, direction="incoming"
+                    node.id, direction="incoming",
                 )
                 if not relationships:
                     # Calculate centrality for priority scoring
@@ -134,7 +134,7 @@ class ADGQuerier:
                 'summary': {
                     'high_priority_count': len([n for n in uncovered_nodes if n['centrality'] > 0.7]),
                     'medium_priority_count': len([n for n in uncovered_nodes if 0.3 < n['centrality'] <= 0.7]),
-                }
+                },
             }
 
         except Exception as e:

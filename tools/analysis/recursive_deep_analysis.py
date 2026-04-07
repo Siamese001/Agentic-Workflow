@@ -17,7 +17,6 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-
 # ---------------------------------------------------------------------------
 # ADG helpers
 # ---------------------------------------------------------------------------
@@ -56,7 +55,7 @@ def _build_adg_index(db_path: str, target_dir: str) -> dict[str, dict[str, list]
             if source_file not in index:
                 index[source_file] = {r: [] for r in relation_types}
             index[source_file][rel].append(
-                {"line": line_no, "symbol": symbol or dst_name or ""}
+                {"line": line_no, "symbol": symbol or dst_name or ""},
             )
 
     conn.close()
@@ -323,7 +322,7 @@ def analyze(target_dir: str, db_path: str, output_path: str) -> None:
     print("  [3/4] Building summary...")
     summary = build_summary(records, target_dir)
 
-    print(f"\n  RESULTS:")
+    print("\n  RESULTS:")
     print(f"    Total files            : {summary['total_files']}")
     print(f"    Files with issues      : {summary['total_with_issues']}")
     print(f"    Root-level violations  : {summary['total_root_violations']}")
@@ -331,7 +330,7 @@ def analyze(target_dir: str, db_path: str, output_path: str) -> None:
     print(f"    Misplaced files        : {summary['total_misplaced_files']}")
 
     # Print per-folder breakdown
-    print(f"\n  PER-FOLDER BREAKDOWN:")
+    print("\n  PER-FOLDER BREAKDOWN:")
     for folder, fs in sorted(summary["folder_breakdown"].items()):
         issues_count = len(fs["root_violations"]) + len(fs["dead_code_files"])
         marker = "  !" if issues_count else "   "
@@ -349,7 +348,7 @@ def analyze(target_dir: str, db_path: str, output_path: str) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"summary": summary, "files": records}, f, indent=2)
-    print(f"  Done.")
+    print("  Done.")
 
 
 if __name__ == "__main__":
@@ -357,7 +356,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 4:
         print(
-            "Usage: python recursive_deep_analysis.py <target_dir> <adg_db> <output_json>"
+            "Usage: python recursive_deep_analysis.py <target_dir> <adg_db> <output_json>",
         )
         sys.exit(1)
 

@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -223,11 +222,11 @@ class ReClearTicket:
     def _assert_mutable(self) -> None:
         if self.status in (ReClearStatus.CLEARED, ReClearStatus.BLOCKED):
             raise ReClearViolation(
-                f"ReClearTicket '{self.ticket_id}' is terminal (status={self.status.value}). Cleared/Blocked tickets are immutable. Create a new ticket for re-remediation."
+                f"ReClearTicket '{self.ticket_id}' is terminal (status={self.status.value}). Cleared/Blocked tickets are immutable. Create a new ticket for re-remediation.",
             )
 
     def re_evaluate(
-        self, constraint_fn: Callable[[], bool], evidence: dict[str, Any] | None = None
+        self, constraint_fn: Callable[[], bool], evidence: dict[str, Any] | None = None,
     ) -> ReClearTicket:
         """Re-evaluate the original constraint after remediation.
 
@@ -271,11 +270,11 @@ class ReClearTicket:
         """
         if self.status != ReClearStatus.BLOCKED:
             raise ReClearViolation(
-                f"Only BLOCKED tickets may be escalated. Ticket '{self.ticket_id}' is {self.status.value}."
+                f"Only BLOCKED tickets may be escalated. Ticket '{self.ticket_id}' is {self.status.value}.",
             )
         if not note or not note.strip():
             raise ReClearViolation(
-                "escalate() requires a non-empty note explaining the escalation rationale."
+                "escalate() requires a non-empty note explaining the escalation rationale.",
             )
         return ReClearTicket(
             ticket_id=self.ticket_id,
@@ -290,7 +289,7 @@ class ReClearTicket:
 def open_ticket(ticket_id: str, constraint_id: str, violation_summary: str) -> ReClearTicket:
     """Open a new Path D re-clear ticket for a detected violation."""
     return ReClearTicket(
-        ticket_id=ticket_id, constraint_id=constraint_id, violation_summary=violation_summary
+        ticket_id=ticket_id, constraint_id=constraint_id, violation_summary=violation_summary,
     )
 
 

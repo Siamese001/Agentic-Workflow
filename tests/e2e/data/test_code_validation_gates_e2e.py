@@ -303,7 +303,7 @@ class TestDeterminismValidationGate:
                 "duration_ms": 100.0,
                 "status": "ok",
                 "attributes": {},
-            }
+            },
         ]
 
         spans_b = [
@@ -318,7 +318,7 @@ class TestDeterminismValidationGate:
                 "duration_ms": 100.0,
                 "status": "ok",
                 "attributes": {},
-            }
+            },
         ]
 
         snapshot_a = materializer.materialize(spans_a, mission="test")
@@ -346,7 +346,7 @@ class TestDeterminismValidationGate:
                 "duration_ms": 100.0,
                 "status": "ok",
                 "attributes": {},
-            }
+            },
         ]
 
         snapshot = materializer.materialize(spans, mission="test")

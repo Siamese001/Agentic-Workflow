@@ -43,5 +43,5 @@ __all__ = [
     'C1FeatureExtractor',
     'AdvancedL0FeatureExtractor',
     'AdvancedC0FeatureExtractor',
-    'AdvancedL6FeatureExtractor'
+    'AdvancedL6FeatureExtractor',
 ]

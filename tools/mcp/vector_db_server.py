@@ -4,13 +4,14 @@ Vector DB MCP Server - Unified vector database interface for ChromaDB and Pineco
 Provides vector operations for semantic search, embeddings, and similarity queries
 """
 
-import asyncio
 import json
 import logging
 import sys
 import time
 from pathlib import Path
 from typing import Any
+
+import anyio
 
 # Vector database imports
 try:
@@ -68,7 +69,7 @@ class VectorDBMCPServer:
             CHROMA_PATH.mkdir(parents=True, exist_ok=True)
             self.chroma_client = chromadb.PersistentClient(
                 path=str(CHROMA_PATH),
-                settings=Settings(anonymized_telemetry=False)
+                settings=Settings(anonymized_telemetry=False),
             )
             logger.info(f"ChromaDB initialized at: {CHROMA_PATH}")
         except Exception as e:
@@ -102,24 +103,24 @@ class VectorDBMCPServer:
                             "properties": {
                                 "name": {
                                     "type": "string",
-                                    "description": "Collection name"
+                                    "description": "Collection name",
                                 },
                                 "metadata": {
                                     "type": "object",
                                     "description": "Collection metadata",
-                                    "additionalProperties": {"type": "string"}
-                                }
+                                    "additionalProperties": {"type": "string"},
+                                },
                             },
-                            "required": ["name"]
-                        }
+                            "required": ["name"],
+                        },
                     ),
                     Tool(
                         name="list_collections",
                         description="List all vector collections",
                         inputSchema={
                             "type": "object",
-                            "properties": {}
-                        }
+                            "properties": {},
+                        },
                     ),
                     Tool(
                         name="delete_collection",
@@ -129,11 +130,11 @@ class VectorDBMCPServer:
                             "properties": {
                                 "name": {
                                     "type": "string",
-                                    "description": "Collection name"
-                                }
+                                    "description": "Collection name",
+                                },
                             },
-                            "required": ["name"]
-                        }
+                            "required": ["name"],
+                        },
                     ),
                     Tool(
                         name="add_documents",
@@ -143,26 +144,26 @@ class VectorDBMCPServer:
                             "properties": {
                                 "collection_name": {
                                     "type": "string",
-                                    "description": "Target collection"
+                                    "description": "Target collection",
                                 },
                                 "documents": {
                                     "type": "array",
                                     "description": "Documents to add",
-                                    "items": {"type": "string"}
+                                    "items": {"type": "string"},
                                 },
                                 "metadatas": {
                                     "type": "array",
                                     "description": "Metadata for each document",
-                                    "items": {"type": "object"}
+                                    "items": {"type": "object"},
                                 },
                                 "ids": {
                                     "type": "array",
                                     "description": "Unique IDs for each document",
-                                    "items": {"type": "string"}
-                                }
+                                    "items": {"type": "string"},
+                                },
                             },
-                            "required": ["collection_name", "documents"]
-                        }
+                            "required": ["collection_name", "documents"],
+                        },
                     ),
                     Tool(
                         name="query_collection",
@@ -172,31 +173,31 @@ class VectorDBMCPServer:
                             "properties": {
                                 "collection_name": {
                                     "type": "string",
-                                    "description": "Collection to query"
+                                    "description": "Collection to query",
                                 },
                                 "query_text": {
                                     "type": "string",
-                                    "description": "Query text"
+                                    "description": "Query text",
                                 },
                                 "n_results": {
                                     "type": "integer",
                                     "description": "Number of results to return",
                                     "default": 10,
-                                    "maximum": 100
+                                    "maximum": 100,
                                 },
                                 "where": {
                                     "type": "object",
-                                    "description": "Filter conditions"
+                                    "description": "Filter conditions",
                                 },
                                 "include": {
                                     "type": "array",
                                     "description": "What to include in results",
                                     "items": {"type": "string", "enum": ["metadatas", "documents", "distances"]},
-                                    "default": ["metadatas", "documents", "distances"]
-                                }
+                                    "default": ["metadatas", "documents", "distances"],
+                                },
                             },
-                            "required": ["collection_name", "query_text"]
-                        }
+                            "required": ["collection_name", "query_text"],
+                        },
                     ),
                     Tool(
                         name="get_collection_info",
@@ -206,11 +207,11 @@ class VectorDBMCPServer:
                             "properties": {
                                 "name": {
                                     "type": "string",
-                                    "description": "Collection name"
-                                }
+                                    "description": "Collection name",
+                                },
                             },
-                            "required": ["name"]
-                        }
+                            "required": ["name"],
+                        },
                     ),
                     Tool(
                         name="embed_text",
@@ -221,17 +222,17 @@ class VectorDBMCPServer:
                                 "texts": {
                                     "type": "array",
                                     "description": "Texts to embed",
-                                    "items": {"type": "string"}
+                                    "items": {"type": "string"},
                                 },
                                 "batch_size": {
                                     "type": "integer",
                                     "description": "Batch size for processing",
                                     "default": 32,
-                                    "maximum": 32
-                                }
+                                    "maximum": 32,
+                                },
                             },
-                            "required": ["texts"]
-                        }
+                            "required": ["texts"],
+                        },
                     ),
                     Tool(
                         name="semantic_search",
@@ -241,32 +242,32 @@ class VectorDBMCPServer:
                             "properties": {
                                 "query": {
                                     "type": "string",
-                                    "description": "Search query"
+                                    "description": "Search query",
                                 },
                                 "collections": {
                                     "type": "array",
                                     "description": "Collections to search (empty = all)",
-                                    "items": {"type": "string"}
+                                    "items": {"type": "string"},
                                 },
                                 "n_results": {
                                     "type": "integer",
                                     "description": "Results per collection",
                                     "default": 5,
-                                    "maximum": 20
-                                }
+                                    "maximum": 20,
+                                },
                             },
-                            "required": ["query"]
-                        }
+                            "required": ["query"],
+                        },
                     ),
                     Tool(
                         name="vector_stats",
                         description="Get vector database statistics",
                         inputSchema={
                             "type": "object",
-                            "properties": {}
-                        }
-                    )
-                ]
+                            "properties": {},
+                        },
+                    ),
+                ],
             )
 
         @self.server.call_tool()
@@ -297,7 +298,7 @@ class VectorDBMCPServer:
                 logger.error(f"Error in tool {name}: {e}")
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error: {str(e)}")],
-                    isError=True
+                    isError=True,
                 )
 
     async def _create_collection(self, args: dict[str, Any]) -> CallToolResult:
@@ -305,7 +306,7 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         name = args["name"]
@@ -318,9 +319,9 @@ class VectorDBMCPServer:
                 return CallToolResult(
                     content=[TextContent(
                         type="text",
-                        text=f"Collection '{name}' already exists"
+                        text=f"Collection '{name}' already exists",
                     )],
-                    isError=True
+                    isError=True,
                 )
             except Exception:
                 pass  # Collection doesn't exist, which is good
@@ -328,7 +329,7 @@ class VectorDBMCPServer:
             # Create collection
             collection = self.chroma_client.create_collection(
                 name=name,
-                metadata=metadata
+                metadata=metadata,
             )
 
             result = f"✅ Collection '{name}' created successfully\n"
@@ -337,13 +338,13 @@ class VectorDBMCPServer:
                 result += f"Metadata: {json.dumps(metadata, indent=2)}\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result)]
+                content=[TextContent(type="text", text=result)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to create collection: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _list_collections(self, args: dict[str, Any]) -> CallToolResult:
@@ -351,7 +352,7 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -367,13 +368,13 @@ class VectorDBMCPServer:
                 result += "\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result)]
+                content=[TextContent(type="text", text=result)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to list collections: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _delete_collection(self, args: dict[str, Any]) -> CallToolResult:
@@ -381,7 +382,7 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         name = args["name"]
@@ -392,14 +393,14 @@ class VectorDBMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"✅ Collection '{name}' deleted successfully"
-                )]
+                    text=f"✅ Collection '{name}' deleted successfully",
+                )],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to delete collection: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _add_documents(self, args: dict[str, Any]) -> CallToolResult:
@@ -407,14 +408,14 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         # Lazy load embedding model
         if not self._ensure_embedding_model():
             return CallToolResult(
                 content=[TextContent(type="text", text="Failed to load embedding model")],
-                isError=True
+                isError=True,
             )
 
         collection_name = args["collection_name"]
@@ -426,9 +427,9 @@ class VectorDBMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Too many documents (max {MAX_EMBEDDING_BATCH_SIZE})"
+                    text=f"Too many documents (max {MAX_EMBEDDING_BATCH_SIZE})",
                 )],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -450,7 +451,7 @@ class VectorDBMCPServer:
                 documents=documents,
                 embeddings=embeddings.tolist(),
                 metadatas=metadatas if metadatas else None,
-                ids=ids
+                ids=ids,
             )
             add_time = time.time() - start_time
 
@@ -460,13 +461,13 @@ class VectorDBMCPServer:
             result += f"Total time: {embedding_time + add_time:.2f}s\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result)]
+                content=[TextContent(type="text", text=result)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to add documents: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _query_collection(self, args: dict[str, Any]) -> CallToolResult:
@@ -474,14 +475,14 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         # Lazy load embedding model
         if not self._ensure_embedding_model():
             return CallToolResult(
                 content=[TextContent(type="text", text="Failed to load embedding model")],
-                isError=True
+                isError=True,
             )
 
         collection_name = args["collection_name"]
@@ -505,7 +506,7 @@ class VectorDBMCPServer:
                 query_embeddings=query_embedding.tolist(),
                 n_results=n_results,
                 where=where if where else None,
-                include=include
+                include=include,
             )
             query_time = time.time() - start_time
 
@@ -531,13 +532,13 @@ class VectorDBMCPServer:
                     result_text += "\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result_text)]
+                content=[TextContent(type="text", text=result_text)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to query collection: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _get_collection_info(self, args: dict[str, Any]) -> CallToolResult:
@@ -545,7 +546,7 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         name = args["name"]
@@ -579,13 +580,13 @@ class VectorDBMCPServer:
                 info += f"\nCould not retrieve sample: {e}\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=info)]
+                content=[TextContent(type="text", text=info)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to get collection info: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _embed_text(self, args: dict[str, Any]) -> CallToolResult:
@@ -594,7 +595,7 @@ class VectorDBMCPServer:
         if not self._ensure_embedding_model():
             return CallToolResult(
                 content=[TextContent(type="text", text="Failed to load embedding model")],
-                isError=True
+                isError=True,
             )
 
         texts = args["texts"]
@@ -604,9 +605,9 @@ class VectorDBMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Too many texts (max {MAX_EMBEDDING_BATCH_SIZE})"
+                    text=f"Too many texts (max {MAX_EMBEDDING_BATCH_SIZE})",
                 )],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -627,13 +628,13 @@ class VectorDBMCPServer:
                 result += f"   [{', '.join(f'{x:.4f}' for x in embedding[:5])}, ...]\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result)]
+                content=[TextContent(type="text", text=result)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to generate embeddings: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _semantic_search(self, args: dict[str, Any]) -> CallToolResult:
@@ -641,14 +642,14 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         # Lazy load embedding model
         if not self._ensure_embedding_model():
             return CallToolResult(
                 content=[TextContent(type="text", text="Failed to load embedding model")],
-                isError=True
+                isError=True,
             )
 
         query = args["query"]
@@ -675,7 +676,7 @@ class VectorDBMCPServer:
                     search_results = collection.query(
                         query_embeddings=query_embedding.tolist(),
                         n_results=n_results,
-                        include=["metadatas", "documents", "distances"]
+                        include=["metadatas", "documents", "distances"],
                     )
                     search_time = time.time() - start_time
                     total_time += search_time
@@ -683,7 +684,7 @@ class VectorDBMCPServer:
                     results[collection_name] = {
                         "results": search_results,
                         "time": search_time,
-                        "count": len(search_results.get("documents", [[]])[0]) if search_results.get("documents") else 0
+                        "count": len(search_results.get("documents", [[]])[0]) if search_results.get("documents") else 0,
                     }
 
                 except Exception as e:
@@ -715,13 +716,13 @@ class VectorDBMCPServer:
                 result_text += "\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=result_text)]
+                content=[TextContent(type="text", text=result_text)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to perform semantic search: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _vector_stats(self, args: dict[str, Any]) -> CallToolResult:
@@ -729,7 +730,7 @@ class VectorDBMCPServer:
         if not self.chroma_client:
             return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -771,13 +772,13 @@ class VectorDBMCPServer:
                 pass
 
             return CallToolResult(
-                content=[TextContent(type="text", text=stats)]
+                content=[TextContent(type="text", text=stats)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Failed to get vector stats: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
 async def main():
@@ -805,7 +806,7 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        anyio.run(main)
     except KeyboardInterrupt:
         print("Vector DB MCP Server stopped by user")
     except Exception as e:

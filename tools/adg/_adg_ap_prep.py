@@ -2,7 +2,6 @@
 """ADG prep: read whitelist comments from all validators, then list violations."""
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -30,7 +29,7 @@ import subprocess
 
 r = subprocess.run(
     ["python", "ops_scripts/ci/check_anti_patterns.py"],
-    capture_output=True, text=True, cwd=str(REPO)
+    capture_output=True, text=True, cwd=str(REPO),
 )
 lines = r.stdout.splitlines()
 i = 0

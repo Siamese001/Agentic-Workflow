@@ -1,6 +1,5 @@
 """Tests for apps_shared service components."""
 
-import pytest
 
 from apps_shared.services.config_loader_service import (
     ConfigLoaderService,

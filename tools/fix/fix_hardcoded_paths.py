@@ -5,7 +5,6 @@ Replaces hardcoded absolute paths with dynamic resolution using
 Path(__file__).resolve().parents[X] patterns.
 """
 
-import re
 from pathlib import Path
 
 # Patterns to replace
@@ -100,10 +99,10 @@ def fix_file(file_path: Path, replacements: dict[str, str]) -> int:
     """Apply replacements to a file."""
     content = file_path.read_text(encoding="utf-8")
     original = content
-    
+
     for old, new in replacements.items():
         content = content.replace(old, new)
-    
+
     # Add import for Path if needed
     if "REPO_ROOT" in content and "from pathlib import Path" not in content:
         # Find the first import and add after it
@@ -118,7 +117,7 @@ def fix_file(file_path: Path, replacements: dict[str, str]) -> int:
                 lines.insert(import_idx + 2, "")
                 content = "\n".join(lines)
                 break
-    
+
     if content != original:
         file_path.write_text(content, encoding="utf-8")
         return 1
@@ -137,7 +136,7 @@ def main():
                 fixed_count += fixed
         else:
             print(f"Not found: {rel_path}")
-    
+
     print(f"\nTotal files fixed: {fixed_count}")
 
 

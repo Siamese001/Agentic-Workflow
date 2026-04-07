@@ -152,5 +152,5 @@ class EvalRunSummary(BaseModel):
                 "scenarios_run": 25,
                 "scenarios_passed": 23,
                 "overall_score": 0.92,
-            }
+            },
         }

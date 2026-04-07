@@ -107,7 +107,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -196,13 +195,13 @@ def extract_components(html_content, name):
     for target, label in tab_matches:
         components["tabs"].append({"target": target, "label": label.strip()})
     kpi_matches = re.findall(
-        'class="kpi-box[^"]*"[^>]*>.*?<div class="kpi-label">([^<]+)</div>', html_content, re.DOTALL
+        'class="kpi-box[^"]*"[^>]*>.*?<div class="kpi-label">([^<]+)</div>', html_content, re.DOTALL,
     )
     components["kpi_boxes"] = list(set(kpi_matches))
     card_matches = re.findall('<div class="chart-title"[^>]*>([^<]+)</div>', html_content)
     components["chart_cards"] = list(set(card_matches))
     filter_matches = re.findall(
-        "checkbox[^>]*>([^<]+)</label>|checkbox[^>]*>\\s*<[^>]*>([^<]+)<", html_content, re.DOTALL
+        "checkbox[^>]*>([^<]+)</label>|checkbox[^>]*>\\s*<[^>]*>([^<]+)<", html_content, re.DOTALL,
     )
     for match in filter_matches:
         label = match[0] or match[1]
@@ -266,10 +265,10 @@ def compare_components():
     all_issues = []
     for key, label in categories:
         set(mono_components[key]) if isinstance(
-            mono_components[key][0] if mono_components[key] else "", str
+            mono_components[key][0] if mono_components[key] else "", str,
         ) else {str(x) for x in mono_components[key]}
         set(mod_components[key]) if isinstance(
-            mod_components[key][0] if mod_components[key] else "", str
+            mod_components[key][0] if mod_components[key] else "", str,
         ) else {str(x) for x in mod_components[key]}
         print(f"\n{'=' * 50}")
         print(f"📦 {label}")

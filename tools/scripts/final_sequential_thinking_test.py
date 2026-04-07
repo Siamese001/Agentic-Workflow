@@ -17,7 +17,7 @@ def test_all_components():
         'SEQUENTIAL_THINKING_ENABLED': os.environ.get('SEQUENTIAL_THINKING_ENABLED', 'false'),
         'SEQUENTIAL_THINKING_PRIORITY': os.environ.get('SEQUENTIAL_THINKING_PRIORITY', 'not set'),
         'WINDSURF_TOOL_PREFERENCE': os.environ.get('WINDSURF_TOOL_PREFERENCE', 'not set'),
-        'SWE15_SEQUENTIAL_THINKING': os.environ.get('SWE15_SEQUENTIAL_THINKING', 'false')
+        'SWE15_SEQUENTIAL_THINKING': os.environ.get('SWE15_SEQUENTIAL_THINKING', 'false'),
     }
 
     for var, value in env_vars.items():
@@ -51,7 +51,7 @@ def test_all_components():
         "tools/monitoring/mcp_usage_tracker.py",
         "agentic_core/planning/sequential_thinking_workflow.py",
         "apps_shared/prompts/sequential_thinking_templates.py",
-        "ops_scripts/deploy_sequential_thinking.py"
+        "ops_scripts/deploy_sequential_thinking.py",
     ]
 
     for tool_file in tool_files:
@@ -103,7 +103,7 @@ def test_all_components():
         test_tools = [
             {"name": "filesystem", "description": "File system access"},
             {"name": "sequential-thinking", "description": "Sequential reasoning tool"},
-            {"name": "memory", "description": "Memory management"}
+            {"name": "memory", "description": "Memory management"},
         ]
 
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
@@ -115,7 +115,7 @@ def test_all_components():
 
         # Run booster
         result = subprocess.run([
-            "python", "tools/mcp/sequential_thinking_booster.py", input_file, output_file
+            "python", "tools/mcp/sequential_thinking_booster.py", input_file, output_file,
         ], capture_output=True, text=True)
 
         if result.returncode == 0 and Path(output_file).exists():
@@ -148,7 +148,7 @@ def test_all_components():
         # Test complexity-based forcing
         test_cases = [
             {"type": "analysis", "complexity": "low", "files": ["app.py"]},
-            {"type": "debugging", "complexity": "critical", "files": ["logs/", "monitoring/"]}
+            {"type": "debugging", "complexity": "critical", "files": ["logs/", "monitoring/"]},
         ]
 
         for case in test_cases:

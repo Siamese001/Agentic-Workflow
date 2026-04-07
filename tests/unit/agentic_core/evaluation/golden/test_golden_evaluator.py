@@ -64,7 +64,7 @@ def sample_retrieval_ground_truth(tmp_path: Path) -> Path:
             "expected_answer_spans": ["Single mutation authority", "write permissions"],
             "expected_top_k_rank": 1,
             "minimum_recall_at_3": 1.0,
-        }
+        },
     ]
     path = tmp_path / "retrieval_ground_truth.jsonl"
     with open(path, "w") as f:

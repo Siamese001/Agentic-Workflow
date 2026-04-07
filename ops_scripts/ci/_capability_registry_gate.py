@@ -159,7 +159,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"resolve_agent_for_capability exported={resolve_exported} (>=1), "
             f"resolve_agent_for_capability in agent_handoff={resolve_in_handoff} (>=1), "
             f"HandoffDispatcher exported={handoff_dispatcher_in_handoff}",
-        )
+        ),
     )
     return ok
 
@@ -191,7 +191,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"resolve_agent_for_capability in agent_handoff={resolve_in_handoff} (>=1), "
             f"CapabilityDecisionStore exported={decision_store_exported}, "
             f"CapabilityToken in agent_handoff={token_in_handoff}",
-        )
+        ),
     )
     return ok
 
@@ -230,7 +230,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"get_capability_registry exported={get_registry_exported} (>=1), "
             f"get_capability_registry in agent_handoff={registry_in_handoff} (>=1), "
             f"CapabilityRegistryEntry exported={entry_exported}",
-        )
+        ),
     )
     return ok
 
@@ -262,7 +262,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"CapabilityRegistry exported={registry_exported}, "
             f"issues_capability_token non-test sources={issues_token_total}, "
             f"issues_capability_token L3 sources={issues_token_l3}",
-        )
+        ),
     )
     return ok
 
@@ -298,7 +298,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"reset_capability_registry exported={reset_exported}, "
             f"agent_executes_agent L3 non-test sources={agent_executes_l3}, "
             f"agent_executes_agent total non-test sources={agent_executes_total}",
-        )
+        ),
     )
     return ok
 
@@ -366,7 +366,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"OR symbol LIKE '%UnregisteredAgent%' OR symbol LIKE '%CapabilityNotFound%' "
         f"OR symbol LIKE '%CapabilityPermission%' OR symbol LIKE '%UnregisteredDispatch%' "
         f"OR symbol LIKE '%RegistryVersion%' OR symbol LIKE '%ExclusiveCapability%') "
-        f"{NON_TEST} LIMIT 20"
+        f"{NON_TEST} LIMIT 20",
     )
     rows = c.fetchall()
     if rows:
@@ -381,7 +381,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"WHERE (symbol LIKE '%resolve_agent_for_capability%' OR symbol LIKE '%CapabilityRegistry%' "
         f"OR symbol LIKE '%get_capability_registry%' OR symbol LIKE '%CapabilityToken%' "
         f"OR symbol LIKE '%RunContext%') "
-        f"AND source_file LIKE '%agent_handoff%' {NON_TEST} LIMIT 15"
+        f"AND source_file LIKE '%agent_handoff%' {NON_TEST} LIMIT 15",
     )
     rows = c.fetchall()
     if rows:
@@ -393,7 +393,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     print("\n  agent_executes_agent sources (non-test, up to 10):")
     c.execute(
         f"SELECT DISTINCT source_file FROM edges "
-        f"WHERE relation_type='agent_executes_agent' {NON_TEST} LIMIT 10"
+        f"WHERE relation_type='agent_executes_agent' {NON_TEST} LIMIT 10",
     )
     for (f,) in c.fetchall():
         print(f"    {f}")

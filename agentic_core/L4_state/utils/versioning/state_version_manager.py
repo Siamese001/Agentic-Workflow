@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -255,8 +254,8 @@ class StateVersionManager:
                     old_keys
                     & new_keys
                     - {k for k in old_keys & new_keys if self._current_state.get(k) != state.get(k)}
-                )
-            )
+                ),
+            ),
         )
 
         version_payload = f"{self._run_id}:{parent_id}:{_hash_state(state)}:{ts:.6f}"
@@ -267,7 +266,7 @@ class StateVersionManager:
             parent_id=parent_id,
             state_hash=_hash_state(state),
             keys_changed=tuple(
-                sorted(k for k in (old_keys | new_keys) if self._current_state.get(k) != state.get(k))
+                sorted(k for k in (old_keys | new_keys) if self._current_state.get(k) != state.get(k)),
             ),
             author=author,
             timestamp=ts,

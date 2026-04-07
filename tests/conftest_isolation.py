@@ -144,7 +144,7 @@ class StateValidator:
                 results.append({
                     "instance_index": i,
                     "is_clean": None,
-                    "error": "No validation method available"
+                    "error": "No validation method available",
                 })
 
         entity_counts: dict[str, set[int]] = {}
@@ -162,7 +162,7 @@ class StateValidator:
             "total_instances": len(test_instances),
             "clean_instances": sum(1 for r in results if r.get("is_clean") is True),
             "leaky_instances": len(leaky_indices),
-            "results": results
+            "results": results,
         }
 
     @staticmethod
@@ -212,7 +212,7 @@ def clean_env():
     # Keep essential variables but remove test additions
     essential_vars = [
         "PATH", "HOME", "USER", "TEMP", "TMP", "USERNAME",
-        "COMPUTERNAME", "SYSTEMROOT", "WINDIR"
+        "COMPUTERNAME", "SYSTEMROOT", "WINDIR",
     ]
 
     clean_env = {k: v for k, v in original_env.items() if k in essential_vars}

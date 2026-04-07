@@ -135,7 +135,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -485,7 +484,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         message=f"Stale backup file: {item.suffix}",
                         severity=3,
                         auto_fixable=True,
-                    )
+                    ),
                 )
 
             # Check for temp files
@@ -497,7 +496,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         message="Temporary file should be removed",
                         severity=4,
                         auto_fixable=True,
-                    )
+                    ),
                 )
 
             # Python file checks
@@ -511,7 +510,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message="Empty Python file",
                             severity=5,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
                 # Orphaned __init__.py check
@@ -523,7 +522,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message="Orphaned __init__.py with no other Python files",
                             severity=4,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
                 # Debug print check
@@ -537,7 +536,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             line_number=debug_lines[0],
                             severity=2,
                             auto_fixable=False,
-                        )
+                        ),
                     )
 
                 # Commented code check
@@ -550,7 +549,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message=f"Large block of commented-out code ({num_lines} lines)",
                             severity=2,
                             auto_fixable=False,
-                        )
+                        ),
                     )
 
                 # Repeated filename strings check (merged from FileCleanupAgent)
@@ -563,7 +562,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message=f'Repeated string in filename: "{pattern}"',
                             severity=4,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
                 # Copy-pattern filename check
@@ -576,7 +575,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message=f'Copy-pattern filename detected (original: "{original}")',
                             severity=5,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
     def _fix_violations(self) -> int:

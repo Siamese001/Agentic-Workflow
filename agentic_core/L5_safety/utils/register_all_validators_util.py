@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -254,7 +253,7 @@ def initialize() -> dict[str, Any]:
     _REGISTERED = True
     results["status"] = "initialized" if not results["errors"] else "partial"
     Logger.info(
-        f"[Sovereign Integration] Initialized: {len(results['validators'])} validators, {len(results['strategies'])} strategies"
+        f"[Sovereign Integration] Initialized: {len(results['validators'])} validators, {len(results['strategies'])} strategies",
     )
     return results
 

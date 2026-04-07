@@ -87,7 +87,7 @@ class ADGTraceReplayCoverageVerifier:
                         "relation_type": row[1],
                         "symbol": row[2],
                         "source_file": row[3],
-                        "line_no": row[4]
+                        "line_no": row[4],
                     })
 
                 return results
@@ -106,7 +106,7 @@ class ADGTraceReplayCoverageVerifier:
             "writes_to",
             "invokes_provider",
             "invokes_dynamic",
-            "calls"
+            "calls",
         ]
 
         # Get all execution surface edges
@@ -149,7 +149,7 @@ class ADGTraceReplayCoverageVerifier:
             "execution_surface_count": len(surface_edges),
             "trace_edges": [e for e in surface_edges if e["relation_type"] == "records_execution_trace"],
             "replay_key_edges": [e for e in surface_edges if e["relation_type"] == "emits_replay_key"],
-            "hard_fail_edges": hard_fail_edges
+            "hard_fail_edges": hard_fail_edges,
         }
 
     def _verify_critical_execution_surfaces(self) -> dict[str, Any]:
@@ -172,21 +172,21 @@ class ADGTraceReplayCoverageVerifier:
                 critical_failures.append({
                     "module": module_name,
                     "layer": layer,
-                    "issue": "Write-capable module missing execution trace"
+                    "issue": "Write-capable module missing execution trace",
                 })
 
             if coverage["has_external_calls"] and not coverage["has_trace"]:
                 critical_failures.append({
                     "module": module_name,
                     "layer": layer,
-                    "issue": "External-calling module missing execution trace"
+                    "issue": "External-calling module missing execution trace",
                 })
 
             if coverage["has_hard_fail"]:
                 critical_failures.append({
                     "module": module_name,
                     "layer": layer,
-                    "issue": "Module has hard failure without transcript"
+                    "issue": "Module has hard failure without transcript",
                 })
 
         # Summary statistics
@@ -221,7 +221,7 @@ class ADGTraceReplayCoverageVerifier:
             "complete_coverage": complete_coverage,
             "hard_fail_modules": hard_fail_modules,
             "critical_failures": critical_failures,
-            "coverage_results": coverage_results
+            "coverage_results": coverage_results,
         }
 
     def _verify_trace_binding_completeness(self) -> dict[str, Any]:
@@ -239,7 +239,7 @@ class ADGTraceReplayCoverageVerifier:
                     ("emits_replay_key", "Replay key emission"),
                     ("execution_terminates_at_uwg", "UWG termination"),
                     ("validated_by_safety_plane", "Safety plane validation"),
-                    ("validated_by_llm_gateway", "LLM gateway validation")
+                    ("validated_by_llm_gateway", "LLM gateway validation"),
                 ]
 
                 binding_counts = {}
@@ -248,7 +248,7 @@ class ADGTraceReplayCoverageVerifier:
                     count = cursor.fetchone()[0]
                     binding_counts[relation_type] = {
                         "count": count,
-                        "description": description
+                        "description": description,
                     }
 
                 # Check for modules with trace but missing bindings
@@ -282,7 +282,7 @@ class ADGTraceReplayCoverageVerifier:
                 return {
                     "binding_counts": binding_counts,
                     "traced_modules": len(traced_modules),
-                    "traces_without_policy_binding": traces_without_policy
+                    "traces_without_policy_binding": traces_without_policy,
                 }
 
         except Exception as e:
@@ -313,7 +313,7 @@ class ADGTraceReplayCoverageVerifier:
                         "symbol": row[2],
                         "source_file": row[3],
                         "module_name": row[4],
-                        "layer": row[5]
+                        "layer": row[5],
                     })
 
                 print(f"   📊 Found {len(hard_failures)} hard failures")
@@ -339,7 +339,7 @@ class ADGTraceReplayCoverageVerifier:
                 return {
                     "total_hard_failures": len(hard_failures),
                     "untranscripted_critical": len(untranscripted_critical),
-                    "hard_failure_details": hard_failures
+                    "hard_failure_details": hard_failures,
                 }
 
         except Exception as e:
@@ -374,8 +374,8 @@ class ADGTraceReplayCoverageVerifier:
                 "complete_coverage": critical_coverage["complete_coverage"],
                 "critical_failures": len(critical_coverage["critical_failures"]),
                 "hard_failures": hard_fail_analysis["total_hard_failures"],
-                "trace_coverage_percentage": 100 * critical_coverage["traced_modules"] / max(1, critical_coverage["total_modules"])
-            }
+                "trace_coverage_percentage": 100 * critical_coverage["traced_modules"] / max(1, critical_coverage["total_modules"]),
+            },
         }
 
         # Print results
@@ -404,12 +404,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

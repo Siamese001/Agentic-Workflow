@@ -53,13 +53,13 @@ def apply_kimi_k2_5_boosting(tools_list: list[dict[str, Any]]) -> list[dict[str,
     kimi_k2_5_categories = [
         'sequential', 'analysis', 'reasoning', 'planning', 'thinking',
         'dependency', 'graph', 'architecture', 'debug', 'validation',
-        'audit', 'compliance', 'governance', 'safety'
+        'audit', 'compliance', 'governance', 'safety',
     ]
 
     # HARDENED: Chat/cascade suppression patterns
     chat_suppression_patterns = [
         'chat', 'cascade', 'fallback', 'simple', 'basic', 'quick',
-        'immediate', 'instant', 'direct'
+        'immediate', 'instant', 'direct',
     ]
 
     critical_tools = []

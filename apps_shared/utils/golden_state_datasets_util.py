@@ -4,7 +4,6 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192
@@ -87,7 +86,7 @@ def load_golden_cases() -> list[GoldenCase]:
                 agent_sequence=["strategy", "drafting", "qa", "safety"],
                 expected_keypoints=[tc.expected_behavior],
                 correctness_criteria={"category": tc.metadata.get("category")},
-            )
+            ),
         )
     return cases
 

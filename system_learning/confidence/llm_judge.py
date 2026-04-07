@@ -23,7 +23,7 @@ class LLMJudge:
             "score": 0.80,
             "passed": True,
             "feedback": "Evaluation passed",
-            "criteria_met": 4
+            "criteria_met": 4,
         }
 
     def score(self, output: str, criteria: dict[str, Any] | None = None) -> float:

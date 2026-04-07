@@ -100,7 +100,7 @@ THRESHOLDS = {
 # Combined state authority: union of modules with any state edge
 cur.execute(
     f"""SELECT COUNT(DISTINCT {src_col}) FROM edges
-    WHERE {rel_col} IN ('snapshots_state', 'reads_runtime_state', 'observes_runtime_state')"""
+    WHERE {rel_col} IN ('snapshots_state', 'reads_runtime_state', 'observes_runtime_state')""",
 )
 state_union_modules = cur.fetchone()[0]
 

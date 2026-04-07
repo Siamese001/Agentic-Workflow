@@ -171,11 +171,11 @@ def _generate_recommendations(matches: list[CredentialMatch]) -> list[str]:
     if any(m.severity == "high" for m in matches):
         recommendations.append("🚨 HIGH PRIORITY: Remove all hardcoded credentials immediately")
         recommendations.append(
-            "Use environment variables or secure secret management (e.g., AWS Secrets Manager, Azure Key Vault)"
+            "Use environment variables or secure secret management (e.g., AWS Secrets Manager, Azure Key Vault)",
         )
     if any("private_key" in m.pattern_type for m in matches):
         recommendations.append(
-            "⚠️ Private keys detected - move to secure key storage and rotate compromised keys"
+            "⚠️ Private keys detected - move to secure key storage and rotate compromised keys",
         )
     if any("aws" in m.pattern_type.lower() for m in matches):
         recommendations.append("AWS credentials detected - use IAM roles or AWS SSM Parameter Store")
@@ -248,7 +248,7 @@ class CredentialScanner:
                                 pattern_type=pattern_name,
                                 severity=severity,
                                 confidence=confidence,
-                            )
+                            ),
                         )
         except (OSError, UnicodeDecodeError) as e:
             Logger.debug("[CREDENTIAL SCAN] Error scanning %s: %s", file_path, e)

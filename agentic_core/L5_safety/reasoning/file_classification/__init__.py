@@ -7,11 +7,19 @@ This subpackage contains:
 - naming_policy: Filename and path recommendation logic
 """
 
-from .models import ClassificationResult, PlannedChange, Violation
 from .classification_core import (
     classify_file,
     classify_file_with_confidence,
     classify_file_with_signals,
+)
+from .models import ClassificationResult, PlannedChange, Violation
+from .naming_policy import (
+    _check_forbidden_patterns,
+    _sanitize_filename,
+    _to_pascal_case,
+    _to_smart_snake_case,
+    get_compliant_name,
+    normalize_filename,
 )
 from .validation_rules import (
     check_base_agents_purity,
@@ -25,14 +33,6 @@ from .validation_rules import (
     validate_pascal_case_placement,
     validate_single_suffix,
     validate_territory_alignment,
-)
-from .naming_policy import (
-    _check_forbidden_patterns,
-    _sanitize_filename,
-    _to_pascal_case,
-    _to_smart_snake_case,
-    get_compliant_name,
-    normalize_filename,
 )
 
 __all__ = [

@@ -103,7 +103,7 @@ def main() -> int:
     if "HITL-APPROVED:" in commit_msg:
         print(
             f"[guard-guardian-hitl] PASS — {len(new_exemptions)} new guardian exemption(s) "
-            f"with HITL-APPROVED in commit message."
+            f"with HITL-APPROVED in commit message.",
         )
         return 0
 

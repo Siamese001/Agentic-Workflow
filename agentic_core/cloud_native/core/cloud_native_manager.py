@@ -544,13 +544,13 @@ class CloudNativeManager:
                     "minReplicas": config.min_replicas,
                     "maxReplicas": config.max_replicas,
                     "targetCPUUtilization": config.target_cpu_utilization,
-                }
+                },
             }
 
             # Create HPA
             self._k8s_client['autoscaling_v1'].create_namespaced_horizontal_pod_autoscaler(
                 namespace=namespace,
-                body=hpa_spec
+                body=hpa_spec,
             )
 
             Logger.info(f"[CLOUD_NATIVE] Created HPA for {resource_name}")
@@ -631,7 +631,7 @@ class CloudNativeManager:
             self._k8s_client['apps_v1'].patch_namespaced_deployment(
                 name=name,
                 namespace=namespace,
-                body=deployment
+                body=deployment,
             )
 
             # Record scaling event
@@ -726,7 +726,7 @@ class CloudNativeManager:
                 name=resource_name,
                 namespace="unknown",
                 resource_type=ResourceType.POD,
-                status=HealthStatus.UNKNOWN
+                status=HealthStatus.UNKNOWN,
             ))
         else:
             return self._resources.copy()

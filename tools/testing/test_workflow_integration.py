@@ -23,26 +23,26 @@ def test_workflow_integration():
             'name': 'Simple Code Review',
             'complexity': 'low',
             'files': ['app.py'],
-            'type': 'analysis'
+            'type': 'analysis',
         },
         {
             'name': 'Database Migration Planning',
             'complexity': 'medium',
             'files': ['models.py', 'migrations/', 'schema.sql'],
-            'type': 'planning'
+            'type': 'planning',
         },
         {
             'name': 'Microservices Architecture Refactor',
             'complexity': 'high',
             'files': ['services/', 'api/', 'config/'],
-            'type': 'architecture'
+            'type': 'architecture',
         },
         {
             'name': 'Production Outage Debugging',
             'complexity': 'critical',
             'files': ['logs/', 'monitoring/', 'alerts/'],
-            'type': 'debugging'
-        }
+            'type': 'debugging',
+        },
     ]
 
     print('\n🎯 Complexity-Based Auto-Trigger Test')

@@ -55,10 +55,10 @@ class RepoSignalService:
             "workflow_available": shared_snapshot.ci.get("workflow_count", 0) > 0,
             "test_signals_available": bool(
                 shared_snapshot.tests.get("inventory_available")
-                or shared_snapshot.tests.get("surface_available")
+                or shared_snapshot.tests.get("surface_available"),
             ),
             "governance_baseline_available": bool(
-                shared_snapshot.governance.get("denominator_baseline_available")
+                shared_snapshot.governance.get("denominator_baseline_available"),
             ),
             "baseline_delta_available": bool(shared_snapshot.baseline.get("available")),
         }

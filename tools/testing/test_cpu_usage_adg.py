@@ -32,7 +32,7 @@ def measure_cpu_during_adg_generation():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
-        cwd=str(Path(__file__).parent.parent)
+        cwd=str(Path(__file__).parent.parent),
     )
 
     # Monitor CPU while process runs
@@ -46,7 +46,7 @@ def measure_cpu_during_adg_generation():
                 'timestamp': time.time() - start_time,
                 'cpu_percent': cpu_percent,
                 'memory_percent': memory_info.percent,
-                'memory_used_gb': memory_info.used / (1024**3)
+                'memory_used_gb': memory_info.used / (1024**3),
             })
 
             if len(cpu_samples) % 10 == 0:
@@ -74,14 +74,14 @@ def measure_cpu_during_adg_generation():
         'cpu_metrics': {
             'average_percent': round(avg_cpu, 2),
             'max_percent': round(max_cpu, 2),
-            'samples_count': len(cpu_samples)
+            'samples_count': len(cpu_samples),
         },
         'memory_metrics': {
             'average_percent': round(avg_memory, 2),
             'max_percent': round(max_memory, 2),
-            'peak_used_gb': round(max(s['memory_used_gb'] for s in cpu_samples), 2) if cpu_samples else 0
+            'peak_used_gb': round(max(s['memory_used_gb'] for s in cpu_samples), 2) if cpu_samples else 0,
         },
-        'samples': cpu_samples[:100]  # Store first 100 samples for analysis
+        'samples': cpu_samples[:100],  # Store first 100 samples for analysis
     }
 
     # Save results

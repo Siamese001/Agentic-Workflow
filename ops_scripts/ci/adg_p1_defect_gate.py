@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-"""ADG P1 Defect Gate — Blocks commits if P1 (critical) ADG defects exist.
+"""ADG Critical Defect Gate — Blocks commits if ADG:CRITICAL defects exist.
 
-This gate queries the ADG repair routes to check for critical (P1) severity defects.
-If any P1 defects exist, the gate blocks the commit with exit code 1.
+This gate queries the ADG SQLite store for critical-severity violations
+(SeverityLevel.CRITICAL). If any exist, the gate blocks the commit.
 
-SEVERITY SSOT: Uses agentic_core.L5_safety.config.severity.SeverityLevel
+SEVERITY TAXONOMY (agentic_core.L5_safety.config.severity.SeverityLevel):
+    ADG:CRITICAL  = SeverityLevel.CRITICAL  (layer violations, arch defects)
+    ADG:HIGH      = SeverityLevel.HIGH       (anti-patterns, circular deps)
+    ADG:MEDIUM    = SeverityLevel.MEDIUM     (quality debt)
+    ADG:LOW       = SeverityLevel.LOW        (style / informational)
+
+    NOTE: "ADG:P1" is a legacy alias for ADG:CRITICAL.
+    Do NOT confuse with Ruff P0-P3 (different namespace) or V15 phase numbers.
 
 Usage:
     python ops_scripts/ci/adg_p1_defect_gate.py
 
 Exit codes:
-    0 — No P1 defects found (commit allowed)
-    1 — P1 defects found (commit blocked)
+    0 — No ADG:CRITICAL defects found (commit allowed)
+    1 — ADG:CRITICAL defects found (commit blocked)
 """
 
 from __future__ import annotations
@@ -29,7 +36,7 @@ def _get_repo_root() -> Path:
 
 
 def _get_critical_violations() -> list[dict]:
-    """Get detailed critical violations from ADG SQLite."""
+    """Get ADG:CRITICAL violations from the ADG SQLite store."""
     violations = []
     repo_root = _get_repo_root()
 
@@ -38,7 +45,7 @@ def _get_critical_violations() -> list[dict]:
         sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"), reverse=True)
         if not sqlite_files:
             print(
-                "[ADG-P1-GATE] Warning: No ADG SQLite found. Run: python tools/generate/generate_full_adg.py",
+                "[ADG-CRITICAL-GATE] Warning: No ADG SQLite found. Run: python tools/generate/generate_full_adg.py",
                 file=sys.stderr,
             )
             return []
@@ -73,8 +80,8 @@ def _get_critical_violations() -> list[dict]:
             )
 
     except (OSError, sqlite3.Error) as e:
-        print(f"[ADG-P1-GATE] Warning: Could not query ADG SQLite: {e}", file=sys.stderr)
-        print("[ADG-P1-GATE] Run: python tools/generate/generate_full_adg.py", file=sys.stderr)
+        print(f"[ADG-CRITICAL-GATE] Warning: Could not query ADG SQLite: {e}", file=sys.stderr)
+        print("[ADG-CRITICAL-GATE] Run: python tools/generate/generate_full_adg.py", file=sys.stderr)
 
     return violations
 
@@ -89,14 +96,14 @@ def _format_violation(v: dict) -> str:
 
 
 def main() -> int:
-    print("[ADG-P1-GATE] Checking for P1 (critical) ADG defects...")
+    print("[ADG-CRITICAL-GATE] Checking for ADG:CRITICAL defects (SeverityLevel.CRITICAL)...")
 
     # Get critical violations
     violations = _get_critical_violations()
 
     if not violations:
-        print("[ADG-P1-GATE] OK: No P1 (critical) defects found in ADG.")
-        print("[ADG-P1-GATE] Commit allowed.")
+        print("[ADG-CRITICAL-GATE] OK: No ADG:CRITICAL defects found.")
+        print("[ADG-CRITICAL-GATE] Commit allowed.")
         return 0
 
     # Group by category
@@ -108,7 +115,7 @@ def main() -> int:
         grouped[category].append(v)
 
     # Output summary
-    print(f"[ADG-P1-GATE] BLOCKING: {len(violations)} P1 (critical) defect(s) found in ADG:")
+    print(f"[ADG-CRITICAL-GATE] BLOCKING: {len(violations)} ADG:CRITICAL defect(s) found:")
     print()
 
     for category, viols in sorted(grouped.items(), key=lambda x: -len(x[1])):
@@ -119,9 +126,9 @@ def main() -> int:
             print(f"    ... and {len(viols) - 10} more")
         print()
 
-    print("[ADG-P1-GATE] COMMIT BLOCKED - Fix P1 defects before committing.")
-    print("[ADG-P1-GATE] P1 defects are critical layer violations that must be resolved.")
-    print("[ADG-P1-GATE] Run ADG repair: python tools/generate/generate_full_adg.py --repair")
+    print("[ADG-CRITICAL-GATE] COMMIT BLOCKED — Fix ADG:CRITICAL defects before committing.")
+    print("[ADG-CRITICAL-GATE] ADG:CRITICAL = layer boundary violations and architecture defects.")
+    print("[ADG-CRITICAL-GATE] Run ADG repair: python tools/generate/generate_full_adg.py --repair")
     return 1
 
 

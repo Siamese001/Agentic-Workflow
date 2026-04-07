@@ -194,7 +194,7 @@ class EvaluationValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Score {score} for {dim_id} is outside valid range [0, 1]",
                         suggestion="Verify score computation logic",
-                    )
+                    ),
                 )
 
         return violations
@@ -221,7 +221,7 @@ class EvaluationValidator:
                     severity=ViolationSeverity.WARNING,
                     message=f"Missing dimension score: {dim}",
                     suggestion=f"Add evaluation coverage for {dim} dimension",
-                )
+                ),
             )
 
         return violations
@@ -244,7 +244,7 @@ class EvaluationValidator:
                     severity=ViolationSeverity.WARNING,
                     message="Missing execution metadata",
                     suggestion="Include timestamp, duration, and execution context",
-                )
+                ),
             )
 
         return violations
@@ -272,7 +272,7 @@ class EvaluationValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Suite not evaluated: {suite_id}",
                         suggestion=f"Execute evaluation for {suite_id} suite",
-                    )
+                    ),
                 )
 
         return violations
@@ -297,7 +297,7 @@ class EvaluationValidator:
                     severity=ViolationSeverity.WARNING,
                     message=f"Negative latency: {mean_latency}ms",
                     suggestion="Verify latency measurement logic",
-                )
+                ),
             )
         elif mean_latency > 60000:  # > 1 minute
             violations.append(
@@ -308,7 +308,7 @@ class EvaluationValidator:
                     severity=ViolationSeverity.WARNING,
                     message=f"Unusually high latency: {mean_latency}ms",
                     suggestion="Review for timeout or performance degradation",
-                )
+                ),
             )
 
         return violations
@@ -450,7 +450,7 @@ class ScoringGate:
         if overall < self.min_overall_score:
             gates_passed = False
             violations.append(
-                f"Overall score {overall:.2f} below threshold {self.min_overall_score}"
+                f"Overall score {overall:.2f} below threshold {self.min_overall_score}",
             )
 
         # Dimension score gates
@@ -459,7 +459,7 @@ class ScoringGate:
             if score < self.min_dimension_score:
                 gates_passed = False
                 violations.append(
-                    f"Dimension {dim_id} score {score:.2f} below threshold {self.min_dimension_score}"
+                    f"Dimension {dim_id} score {score:.2f} below threshold {self.min_dimension_score}",
                 )
 
         # Regression gate

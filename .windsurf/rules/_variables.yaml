@@ -96,7 +96,7 @@ references:
   EXECUTION_PLAN_TEMPLATE: ".windsurf/templates/execution-plan-template.md"
 
   # Token estimator module
-  TOKEN_ESTIMATOR: "agentic_core/planning/token_estimator.py"
+  TOKEN_ESTIMATOR: "tools/utils/planning/token_estimator.py"
 
   # ADG test accelerator
   ADG_TEST_ACCELERATOR: "tools/adg/adg_test_accelerator.py"

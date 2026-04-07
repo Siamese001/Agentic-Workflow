@@ -624,7 +624,7 @@ class Trace3DVisualizer:
                     "positions": {
                         node_id: node.position
                         for node_id, node in graph.nodes.items()
-                    }
+                    },
                 }
             else:
                 return None

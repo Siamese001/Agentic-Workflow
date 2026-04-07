@@ -74,7 +74,7 @@ def parse_pytest_ini(path: Path) -> PytestConfig:
         markers=markers,
         timeout=timeout,
         n_workers=n_workers,
-        dist_mode=dist_mode
+        dist_mode=dist_mode,
     )
 
 
@@ -115,7 +115,7 @@ def parse_pyproject_toml(path: Path) -> PytestConfig:
         markers=markers,
         timeout=timeout,
         n_workers=n_workers,
-        dist_mode=dist_mode
+        dist_mode=dist_mode,
     )
 
 
@@ -206,7 +206,7 @@ def fix_configs(pytest_ini_path: Path, _pyproject_path: Path) -> bool:
         content = re.sub(
             r'(addopts\s*=\s*)',
             r'\1-n auto --dist=loadfile --timeout=180 ',
-            content
+            content,
         )
         changes_made = True
         print("🔧 AUTO-FIX: Added -n auto --dist=loadfile --timeout=180 to addopts")
@@ -217,7 +217,7 @@ def fix_configs(pytest_ini_path: Path, _pyproject_path: Path) -> bool:
         content = re.sub(
             r'(markers\s*=\s*\n)',
             r'\1    serial: Tests that must run serially (shared Redis state, not xdist-safe)\n',
-            content
+            content,
         )
         changes_made = True
         print("🔧 AUTO-FIX: Added 'serial' marker definition")

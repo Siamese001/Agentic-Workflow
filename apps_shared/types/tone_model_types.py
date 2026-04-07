@@ -61,39 +61,25 @@ _emit_applies_guardrail("p0", "tone_model_types", "p0_governance")
 _emit_reads_policy_state("p0", "tone_model_types", "policy_binding")
 _emit_snapshots_state("p0", "tone_model_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -191,7 +177,7 @@ class StyleProfile(BaseModel):
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: confloat(ge=0.0, le=1.0) = Field(
-        default=0.7, description="Formality level (0=Casual, 1=Academic)"
+        default=0.7, description="Formality level (0=Casual, 1=Academic)",
     )
     emoji_frequency: confloat(ge=0.0, le=1.0) = Field(default=0.2, description="Emoji usage frequency")
     sentence_length_avg: int = Field(default=15, ge=5, le=50, description="Target words per sentence")
@@ -316,7 +302,7 @@ class ToneAnalyzer:
             combined_text = combined_text.strip()
             if len(combined_text) < self.min_sample_length:
                 logger.warning(
-                    f"Insufficient content length ({len(combined_text)}), returning neutral profile"
+                    f"Insufficient content length ({len(combined_text)}), returning neutral profile",
                 )
                 return self._get_neutral_profile()
             metrics = self._calculate_metrics(combined_text)
@@ -661,7 +647,7 @@ class ToneModel:
         logger.info("Initialized ToneModel with all components")
 
     def analyze_and_configure(
-        self, content_samples: list[str], archetype: str | None = None
+        self, content_samples: list[str], archetype: str | None = None,
     ) -> tuple[StyleProfile, GenerationConfig]:
         """Analyze content and generate configuration.
 
@@ -675,7 +661,7 @@ class ToneModel:
         try:
             profile = self.analyzer.analyze_style(content_samples)
             config = self.config_templates.get(
-                profile.primary_tone, self.config_templates[ToneType.AUTHORITATIVE]
+                profile.primary_tone, self.config_templates[ToneType.AUTHORITATIVE],
             )
             if profile.formality_level > 0.8:
                 config.temperature_setting = max(0.1, config.temperature_setting - 0.1)
@@ -684,7 +670,7 @@ class ToneModel:
             if archetype:
                 config = self._adjust_for_archetype(config, archetype)
             logger.info(
-                f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}"
+                f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}",
             )
             return (profile, config)
         # guardian: allow-silent-swallow

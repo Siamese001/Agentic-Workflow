@@ -346,7 +346,7 @@ def analyze_file(file_path: Path, repo_root: Path) -> list[dict]:
                             "message": f"Layer violation: {file_layer} imports from {import_layer}",
                             "import": import_path,
                             "edge": f"{file_layer}->{import_layer}",
-                        }
+                        },
                     )
 
         def visit_Import(self, node: ast.Import) -> None:

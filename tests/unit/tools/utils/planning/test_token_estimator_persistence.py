@@ -50,7 +50,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
             estimates_1.append(estimate)
 
@@ -77,7 +77,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
         final_summary = new_hook.get_budget_summary()
@@ -113,7 +113,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             expected_totals.append(estimate.total_projected_tokens)
@@ -150,7 +150,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
             operations.append(estimate)
 
@@ -182,7 +182,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
         # Corrupt the file
@@ -203,7 +203,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             assert estimate.total_projected_tokens > 0
@@ -229,7 +229,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
         add_time = time.time() - start_time
@@ -279,7 +279,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
         # Verify data types in summary
@@ -314,7 +314,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
         memory_after_add = psutil.Process(os.getpid()).memory_info().rss
@@ -358,7 +358,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             after_time = time.time()
@@ -389,7 +389,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
         # Simulate partial write by truncating file
@@ -417,7 +417,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             assert estimate.total_projected_tokens > 0
@@ -449,7 +449,7 @@ class TestBudgetHistoryPersistence:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             assert estimate.total_projected_tokens > 0
@@ -478,7 +478,7 @@ class TestBudgetHistoryPersistence:
                     diffs=[],
                     logs=[],
                     retrieved_context=[],
-                    prior_steps=[]
+                    prior_steps=[],
                 )
                 estimates.append(estimate)
                 total_estimates.append(estimate)

@@ -64,7 +64,7 @@ class ParentChildHydrator:
         """
         trace_id = f"hydrate_{doc_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ParentChildHydrator.hydrate"
+            trace_id, LayerSegment.L1_REASONING, "ParentChildHydrator.hydrate",
         )
 
         parent_content = None
@@ -99,7 +99,7 @@ class ParentChildHydrator:
 
         _emit_records_telemetry_event(
             "hydration",
-            f"doc_{doc_id}_expanded_{is_expanded}"
+            f"doc_{doc_id}_expanded_{is_expanded}",
         )
 
         log.debug(f"Hydrated {doc_id}: parent={parent_content is not None}, children={len(child_contents)}")

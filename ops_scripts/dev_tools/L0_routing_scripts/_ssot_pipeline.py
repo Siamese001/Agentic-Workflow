@@ -84,39 +84,29 @@ _emit_validates_agent_capability("p1", "_ssot_pipeline", "L0")
 _emit_checks_agent_registry("p1", "_ssot_pipeline", "L0")
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace__ssot_pipeline", "_ssot_pipeline_dispatch_entry")
 emit_determinism_digest("trace__ssot_pipeline", "_ssot_pipeline_dispatch_exit")
@@ -168,7 +158,7 @@ EXECUTION_PLAN = [
         "phase": "2",
         "name": "Reconciliation",
         "agents": [
-            {"key": "reconciler", "method": "heal", "description": "drift reconciliation (confidence gated)"}
+            {"key": "reconciler", "method": "heal", "description": "drift reconciliation (confidence gated)"},
         ],
     },
     {
@@ -265,7 +255,7 @@ CANONICAL_ROSTER_KEYS = frozenset(
         "observability_probe",
         "cognitive_disposition",
         "root_hygiene",
-    }
+    },
 )
 
 AGENT_PIPELINE: list[str] = [
@@ -336,6 +326,7 @@ def run_pipeline(
         AgentRunResult,
         SubphaseResult,
     )
+
     from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import (
         get_agent_dispatch_registry,
     )
@@ -405,7 +396,7 @@ def run_pipeline(
                     agent_name=agent_id,
                 )
                 proceed, reason = decision_engine.should_proceed_with_healing(
-                    confidence, agent_id, territory=territory
+                    confidence, agent_id, territory=territory,
                 )
                 if not proceed:
                     run_result.gated = True
@@ -431,13 +422,15 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
         print("=== MULTI-AGENT ARBITRATION ===")
         task = {"task_id": "execute_ssot_plan", "task_kind": "planning"}
         try:
-            from agentic_core.L3_orchestration.reasoning.arbitration.arbitration_contract import ArbitrationInput
+            from agentic_core.L3_orchestration.reasoning.arbitration.arbitration_contract import (
+                ArbitrationInput,
+            )
             from agentic_core.L3_orchestration.reasoning.arbitration.arbitrator import Arbitrator
             from agentic_core.L3_orchestration.reasoning.arbitration.run_advisors import run_all_advisors
 
             proposals = run_all_advisors(task)
             input_data = ArbitrationInput(
-                task_id=task["task_id"], task_kind=task["task_kind"], proposals=proposals
+                task_id=task["task_id"], task_kind=task["task_kind"], proposals=proposals,
             )
             arbitrator = Arbitrator()
             decision = arbitrator.arbitrate(input_data)
@@ -482,7 +475,7 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
                         "stdout": expr_result.stdout,
                         "stderr": expr_result.stderr,
                         "truncated": expr_result.truncated,
-                    }
+                    },
                 ],
                 "artifact_ref": {
                     "kind": artifact_ref.kind,
@@ -584,7 +577,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
             payload["warnings"] = []
             if report.route_mode == "RESTRICTED":
                 payload["warnings"].append(
-                    f"RESTRICTED mode: risk_score={report.risk_score}, review before proceeding"
+                    f"RESTRICTED mode: risk_score={report.risk_score}, review before proceeding",
                 )
             elif report.route_mode == "HUMAN_REVIEW":
                 payload["warnings"].append(f"HUMAN_REVIEW required: risk_score={report.risk_score}")
@@ -679,7 +672,7 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
         _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
 _config_hash = _hcs(_gcs())
 _transcript_bytes = _j.dumps(
-sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True
+sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True,
 ).encode("utf-8")
 _transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
 _dep_lock_hash = _h.sha256(b"dependency-lock:stable").hexdigest()
@@ -694,7 +687,7 @@ dependency_lock_hash=_dep_lock_hash,
 
 
 def try_summon_orchestrator(
-    project_root: "Path", targets: list[str], execute: bool = False
+    project_root: "Path", targets: list[str], execute: bool = False,
 ) -> "tuple[bool, Any]":
     """Attempt L3 Orchestrator execution. Returns (success, results)."""
     try:

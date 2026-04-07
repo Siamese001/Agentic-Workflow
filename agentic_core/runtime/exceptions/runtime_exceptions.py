@@ -70,7 +70,7 @@ class HealExecutionError(AgentRuntimeError):
     """
 
     def __init__(
-        self, agent_name: str, method_name: str, message: str, original_error: Exception | None = None
+        self, agent_name: str, method_name: str, message: str, original_error: Exception | None = None,
     ):
         context = {
             "agent_name": agent_name,

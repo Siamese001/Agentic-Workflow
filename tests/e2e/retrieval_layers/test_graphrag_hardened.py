@@ -38,7 +38,10 @@ try:
         ParentChildIndexRegistry,
         ParentChildLink,
     )
-    from agentic_core.L3_orchestration.reasoning.engines.adg_integration import ADGQueryClient, GraphRAGADGIntegration
+    from agentic_core.L3_orchestration.reasoning.engines.adg_integration import (
+        ADGQueryClient,
+        GraphRAGADGIntegration,
+    )
     from agentic_core.L3_orchestration.reasoning.engines.graph_aware_indexer import (
         ADGEdgeBinding,
         ADGEdgeExtractor,
@@ -120,7 +123,7 @@ class EvidenceCollector:
     def start_test(self, test_name: str, inputs: dict[str, Any]) -> None:
         """Start collecting evidence for a test."""
         inputs_hash = hashlib.sha256(
-            json.dumps(inputs, sort_keys=True, default=str).encode()
+            json.dumps(inputs, sort_keys=True, default=str).encode(),
         ).hexdigest()[:16]
 
         self._current = TestEvidence(
@@ -147,7 +150,7 @@ class EvidenceCollector:
             raise RuntimeError("No test in progress")
 
         outputs_hash = hashlib.sha256(
-            json.dumps(outputs, sort_keys=True, default=str).encode()
+            json.dumps(outputs, sort_keys=True, default=str).encode(),
         ).hexdigest()[:16]
 
         self._current.outputs_hash = outputs_hash

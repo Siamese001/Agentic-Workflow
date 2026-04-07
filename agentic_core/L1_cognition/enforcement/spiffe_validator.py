@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -261,7 +260,7 @@ class SpiffeManager:
         ttl: Any = ttl_seconds or self.default_ttl_seconds
         now: Any = get_clock().now_epoch()
         spiffe_id: Any = self._generate_spiffe_id(
-            TrustDomain=self.TrustDomain, namespace=namespace, agent_name=agent_name
+            TrustDomain=self.TrustDomain, namespace=namespace, agent_name=agent_name,
         )
         public_key, private_key = self._generate_key_pair()
         identity: Any = AgentIdentity(
@@ -310,7 +309,7 @@ class SpiffeManager:
         if self.enable_logging:
             LOGGER.debug("identity_verified", extra={"spiffe_id": spiffe_id})
         return IdentityVerificationResult(
-            valid=True, identity=identity, reason="Identity verified successfully"
+            valid=True, identity=identity, reason="Identity verified successfully",
         )
 
     def rotate_credentials(self, spiffe_id: str, ttl_seconds: int | None = None) -> AgentIdentity | None:
@@ -335,7 +334,7 @@ class SpiffeManager:
         identity.expires_at = now + ttl
         if self.enable_logging:
             LOGGER.info(
-                "credentials_rotated", extra={"spiffe_id": spiffe_id, "new_expires_at": identity.expires_at}
+                "credentials_rotated", extra={"spiffe_id": spiffe_id, "new_expires_at": identity.expires_at},
             )
         return identity
 
@@ -367,7 +366,7 @@ class SpiffeManager:
         return self._identities.get(spiffe_id)
 
     def list_identities(
-        self, agent_type: IdentityType | None = None, namespace: str | None = None
+        self, agent_type: IdentityType | None = None, namespace: str | None = None,
     ) -> list[AgentIdentity]:
         """List all identities.
 
@@ -456,7 +455,7 @@ class SpiffeManager:
 
 
 def create_spiffe_manager(
-    TrustDomain: TrustDomain = TrustDomain.LOCAL, default_ttl_seconds: int = 3600
+    TrustDomain: TrustDomain = TrustDomain.LOCAL, default_ttl_seconds: int = 3600,
 ) -> SpiffeManager:
     """Factory function to create SPIFFE manager.
 

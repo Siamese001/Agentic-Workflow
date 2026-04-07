@@ -32,28 +32,28 @@ async def test_failure_clustering():
         {
             "name": "UWG write failures",
             "query": "UniversalWriteGateway write failure timeout memory exhausted",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca"]
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca"],
         },
         {
             "name": "ADG scanner timeouts",
             "query": "ADG static scanner timeout performance issue large codebase",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca"]
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca"],
         },
         {
             "name": "L0 routing deadlocks",
             "query": "L0 routing deadlock circular dependency lock contention",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca"]
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca"],
         },
         {
             "name": "L1 cognition memory leaks",
             "query": "L1 cognition memory leak ChromaDB SemanticRetriever connection",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca"]
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca"],
         },
         {
             "name": "L5 safety false positives",
             "query": "L5 safety guardrails false positives validation threshold",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca"]
-        }
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca"],
+        },
     ]
 
     print("\n=== Failure Clustering Analysis ===")
@@ -68,7 +68,7 @@ async def test_failure_clustering():
         query = RetrievalQuery(
             text=scenario['query'],
             collections=scenario['collections'],
-            max_results=20
+            max_results=20,
         )
 
         # Retrieve results
@@ -132,7 +132,7 @@ async def test_temporal_patterns():
     temporal_queries = [
         "recent failures timeout memory",
         "execution traces performance degradation",
-        "incident patterns root causes memory"
+        "incident patterns root causes memory",
     ]
 
     for query in temporal_queries:
@@ -141,7 +141,7 @@ async def test_temporal_patterns():
         req = RetrievalQuery(
             text=query,
             collections=["repo_runtime_evidence", "repo_incidents_rca"],
-            max_results=10
+            max_results=10,
         )
 
         results = await retriever.retrieve(query)
@@ -162,13 +162,13 @@ async def test_cross_collection_analysis():
         {
             "name": "UWG comprehensive analysis",
             "query": "UniversalWriteGateway execution incidents failures performance",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca", "repo_adg_graph"]
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca", "repo_adg_graph"],
         },
         {
             "name": "Safety layer analysis",
             "query": "L5 safety guardrails validation failures incidents",
-            "collections": ["repo_runtime_evidence", "repo_incidents_rca", "repo_tests_guardrails"]
-        }
+            "collections": ["repo_runtime_evidence", "repo_incidents_rca", "repo_tests_guardrails"],
+        },
     ]
 
     for query_info in cross_queries:
@@ -177,7 +177,7 @@ async def test_cross_collection_analysis():
         req = RetrievalQuery(
             text=query_info['query'],
             collections=query_info['collections'],
-            max_results=15
+            max_results=15,
         )
 
         results = await retriever.retrieve(req)

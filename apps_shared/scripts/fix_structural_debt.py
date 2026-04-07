@@ -93,7 +93,7 @@ def process_file(file_path: Any) -> Any:
         if not HAS_ASTOR:
             if has_globals_issue or has_large_func_issue:
                 print(
-                    f"   WARNING: {file_path}: Found structural issues but cannot fix without 'astor' package"
+                    f"   WARNING: {file_path}: Found structural issues but cannot fix without 'astor' package",
                 )
                 os.remove(backup_path)
                 return False

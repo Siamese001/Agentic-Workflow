@@ -76,7 +76,7 @@ class SeniorLibrarianReranker:
         """
         trace_id = f"rerank_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "SeniorLibrarianReranker.rerank"
+            trace_id, LayerSegment.L1_REASONING, "SeniorLibrarianReranker.rerank",
         )
 
         reranked = []
@@ -113,7 +113,7 @@ class SeniorLibrarianReranker:
 
         _emit_records_telemetry_event(
             "rerank",
-            f"candidates_{len(candidates)}_pruned_{len(pruned)}"
+            f"candidates_{len(candidates)}_pruned_{len(pruned)}",
         )
 
         log.debug(f"Reranked {len(candidates)} -> {len(pruned)} (threshold={self.prune_threshold})")

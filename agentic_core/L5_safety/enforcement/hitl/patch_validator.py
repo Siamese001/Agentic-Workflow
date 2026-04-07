@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -213,10 +212,10 @@ def validate_patch(patch: dict[str, Any]) -> ValidatedPatch:
     missing = [f for f in sorted(_REQUIRED_FIELDS) if not patch.get(f)]
     if missing:
         raise HumanPatchValidationError(
-            f"HITL patch missing required field(s): {missing}. All MODIFY_DIFF patches must include: original_plan_hash, structured_patch_schema, reviewer_signature."
+            f"HITL patch missing required field(s): {missing}. All MODIFY_DIFF patches must include: original_plan_hash, structured_patch_schema, reviewer_signature.",
         )
     patch_hash = hashlib.sha256(
-        json.dumps(patch, sort_keys=True, ensure_ascii=True, default=str).encode()
+        json.dumps(patch, sort_keys=True, ensure_ascii=True, default=str).encode(),
     ).hexdigest()
     logger.info(
         "HITL patch validated: reviewer=%s patch_hash=%s",

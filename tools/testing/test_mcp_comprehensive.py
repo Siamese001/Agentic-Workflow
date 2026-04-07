@@ -45,7 +45,7 @@ class MCPTester:
                 ['node', package_path] + test_args,
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
             )
 
             end_time = time.time()
@@ -56,14 +56,14 @@ class MCPTester:
                     'status': 'success',
                     'time': startup_time,
                     'message': 'Server starts successfully',
-                    'package_path': package_path
+                    'package_path': package_path,
                 }
             else:
                 return {
                     'status': 'warning',
                     'time': startup_time,
                     'message': f'Exit code: {result.returncode}',
-                    'stderr': result.stderr[:200] if result.stderr else ''
+                    'stderr': result.stderr[:200] if result.stderr else '',
                 }
 
         except subprocess.TimeoutExpired:
@@ -71,13 +71,13 @@ class MCPTester:
                 'status': 'timeout_success',
                 'time': 5.0,
                 'message': 'Server started (timeout expected)',
-                'package_path': package_path
+                'package_path': package_path,
             }
         except Exception as e:
             return {
                 'status': 'error',
                 'time': 0,
-                'message': f'Exception: {str(e)}'
+                'message': f'Exception: {str(e)}',
             }
 
     def test_python_server(self, name, config):
@@ -100,7 +100,7 @@ class MCPTester:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=cwd
+                cwd=cwd,
             )
 
             if result.returncode == 0:
@@ -109,26 +109,26 @@ class MCPTester:
                     'time': 0,
                     'message': f'Python script valid: {script_path}',
                     'script_path': script_path,
-                    'cwd': cwd
+                    'cwd': cwd,
                 }
             else:
                 return {
                     'status': 'syntax_error',
                     'time': 0,
-                    'message': f'Syntax error: {result.stderr[:200]}'
+                    'message': f'Syntax error: {result.stderr[:200]}',
                 }
 
         except subprocess.TimeoutExpired:
             return {
                 'status': 'timeout',
                 'time': 10.0,
-                'message': 'Compilation timeout'
+                'message': 'Compilation timeout',
             }
         except Exception as e:
             return {
                 'status': 'error',
                 'time': 0,
-                'message': f'Exception: {str(e)}'
+                'message': f'Exception: {str(e)}',
             }
 
     def test_server(self, name, config):
@@ -163,7 +163,7 @@ class MCPTester:
             'python_servers': len(python_servers),
             'avg_node_startup': 0,
             'fastest_node': None,
-            'slowest_node': None
+            'slowest_node': None,
         }
 
         if node_servers:
@@ -201,7 +201,7 @@ class MCPTester:
                 'missing': '❌',
                 'syntax_error': '❌',
                 'error': '❌',
-                'unknown_command': '❌'
+                'unknown_command': '❌',
             }
 
             icon = status_icons.get(result['status'], '❓')
@@ -257,7 +257,7 @@ def main():
         json.dump({
             'timestamp': time.time(),
             'metrics': metrics,
-            'results': tester.results
+            'results': tester.results,
         }, f, indent=2)
 
     print(f'\\n💾 Results saved to: {results_file}')

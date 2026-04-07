@@ -24,7 +24,7 @@ def main():
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type = 'calls' AND symbol LIKE '%render%'"
         ") AND source_file NOT LIKE 'tests/%' "
-        "ORDER BY source_file"
+        "ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")
@@ -38,7 +38,7 @@ def main():
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type = 'calls' AND symbol LIKE '%dispatch%'"
         ") AND source_file NOT LIKE 'tests/%' "
-        "ORDER BY source_file"
+        "ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")
@@ -97,7 +97,7 @@ def main():
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type IN ('generates_prompt', 'consumes_prompt', "
         "    'instruction_injection_source', 'renders_template')"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     agents_no_prompt = [r[0] for r in cur.fetchall()]
     for a in agents_no_prompt:
@@ -108,7 +108,7 @@ def main():
     cur.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE source_file LIKE 'agentic_core/%reasoning/%Agent%' "
-        "AND source_file NOT LIKE 'tests/%'"
+        "AND source_file NOT LIKE 'tests/%'",
     )
     total_agents = cur.fetchone()[0]
     print(f"\n  Summary: {total_agents - len(agents_no_prompt)}/{total_agents} agents have prompt edges")
@@ -146,7 +146,7 @@ def main():
         "  AND e2.relation_type IN ('calls', 'instantiates') "
         "  AND e2.symbol LIKE '%' || REPLACE(e1.symbol, '.', '%') || '%'"
         ") GROUP BY e1.source_file, e1.symbol "
-        "ORDER BY cnt DESC LIMIT 15"
+        "ORDER BY cnt DESC LIMIT 15",
     )
     for src, sym, cnt in cur.fetchall():
         print(f"  {src} imports {sym}")

@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -222,7 +221,7 @@ class CachedStateLedger(SovereignBaseAgent):
             from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
             raise InfrastructureDependencyError(
-                f"[CachedStateLedger] Redis is a mandatory dependency and is unavailable: {e}"
+                f"[CachedStateLedger] Redis is a mandatory dependency and is unavailable: {e}",
             ) from e
         self._successful_traces: list[dict] = []
         self.prefix_context = f"l4_context:{session_id}"
@@ -235,7 +234,7 @@ class CachedStateLedger(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "CachedStateLedger.cache_validation_context"
+            _trace_id, LayerSegment.L4_STATE, "CachedStateLedger.cache_validation_context",
         )
 
         full_key = f"{self.prefix_context}:{key}"
@@ -247,7 +246,7 @@ class CachedStateLedger(SovereignBaseAgent):
         except (AttributeError, TypeError) as e:
             self.logger.debug(f"Cache write failed for {key}: {e}")
         self._record_successful_trace(
-            {"operation": "cache_validation_context", "key": key, "timestamp": time.time()}
+            {"operation": "cache_validation_context", "key": key, "timestamp": time.time()},
         )
 
     def get_cached_validation_context(self, key: str) -> dict | None:
@@ -262,7 +261,7 @@ class CachedStateLedger(SovereignBaseAgent):
                             "key": key,
                             "hit": True,
                             "timestamp": time.time(),
-                        }
+                        },
                     )
                     return json.loads(data)
             else:
@@ -274,7 +273,7 @@ class CachedStateLedger(SovereignBaseAgent):
                             "key": key,
                             "hit": True,
                             "timestamp": time.time(),
-                        }
+                        },
                     )
                 return result
         except (AttributeError, KeyError) as e:

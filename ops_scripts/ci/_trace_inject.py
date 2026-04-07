@@ -11,7 +11,7 @@ emit_determinism_digest("_trace_inject", "_trace_inject_digest")
 record_execution_trace("_trace_inject", "_trace_inject_trace")
 
 # guardian: allow-global-mutation
-sys.path.insert(0, 'c:\\Git\\Agentic-Workflow')
+sys.path.insert(0, str(REPO_ROOT))
 _PC = 'agentic_core.L0_routing.config.path_constants'
 head_content = '#!/usr/bin/env python3\n"""Bloat analysis script for approved folders."""\n\nimport ast\nfrom collections import defaultdict\nfrom datetime import datetime\nfrom pathlib import Path\n\nfrom agentic_core.L5_safety.config.structure_blueprint.ssot import (\n    GLOBAL_EXCLUDED_DIRS,\n    SOVEREIGN_EXCLUDED_FOLDERS,\n)\n\nROOT = Path(__file__).parent.parent\n'
 lines = head_content.splitlines(keepends=True)

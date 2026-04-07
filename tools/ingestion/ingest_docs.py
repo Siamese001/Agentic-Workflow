@@ -79,13 +79,13 @@ class DocumentChunker:
                 for sub_chunk in sub_chunks:
                     chunk_metadata = metadata.copy()
                     chunk_metadata.update(
-                        {"section": current_section, "subsection": section_title, "chunk_type": "section"}
+                        {"section": current_section, "subsection": section_title, "chunk_type": "section"},
                     )
                     chunks.append({"content": sub_chunk, "metadata": chunk_metadata})
             else:
                 chunk_metadata = metadata.copy()
                 chunk_metadata.update(
-                    {"section": current_section, "subsection": section_title, "chunk_type": "section"}
+                    {"section": current_section, "subsection": section_title, "chunk_type": "section"},
                 )
                 chunks.append({"content": section_content, "metadata": chunk_metadata})
 
@@ -252,7 +252,7 @@ class EmbeddingGenerator:
                     "OPENAI_API_KEY environment variable not set. "
                     "Please set it with: export OPENAI_API_KEY=your_key_here "
                     "or use --mock-embeddings for testing "
-                    "or use --embedding-provider bge-m3 for local embeddings"
+                    "or use --embedding-provider bge-m3 for local embeddings",
                 )
             self.client = OpenAI(api_key=api_key)
             self.vector_dimensions = 1536
@@ -320,7 +320,7 @@ class VectorDBIngestor:
     """Handles ingestion into ChromaDB vector store."""
 
     def __init__(
-        self, collection_name: str = "docs", persist_directory: str = None, vector_dimensions: int = 1536
+        self, collection_name: str = "docs", persist_directory: str = None, vector_dimensions: int = 1536,
     ):
         self.collection_name = collection_name
         self.config = MemoryStoreConfig()
@@ -356,7 +356,7 @@ class VectorDBIngestor:
             # Generate unique ID with more entropy
             content_hash = hashlib.sha256(chunk["content"].encode()).hexdigest()[:16]
             chunk_index = hashlib.md5(
-                f"{chunk['metadata']['doc_id']}_{i}_{content_hash}".encode()
+                f"{chunk['metadata']['doc_id']}_{i}_{content_hash}".encode(),
             ).hexdigest()[:8]
             # Fix escape sequences for Python 3.10 compatibility
             doc_id_clean = chunk["metadata"]["doc_id"].replace("/", "_").replace("\\", "_")
@@ -449,7 +449,7 @@ def main():
         help="Embedding provider to use",
     )
     parser.add_argument(
-        "--exclude-glob", action="append", help="Glob pattern to exclude (can be used multiple times)"
+        "--exclude-glob", action="append", help="Glob pattern to exclude (can be used multiple times)",
     )
     parser.add_argument("--limit", type=int, help="Limit number of files to process (for testing)")
 
@@ -470,7 +470,7 @@ def main():
     # Initialize components
     chunker = DocumentChunker()
     embedding_generator = EmbeddingGenerator(
-        mock_embeddings=args.mock_embeddings, embedding_provider=args.embedding_provider
+        mock_embeddings=args.mock_embeddings, embedding_provider=args.embedding_provider,
     )
     ingestor = VectorDBIngestor(args.collection_name, vector_dimensions=embedding_generator.vector_dimensions)
 

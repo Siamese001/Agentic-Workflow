@@ -20,41 +20,9 @@ from agentic_core.L1_cognition.types.guardrail_types import (
     GuardrailSeverity,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    _emit_records_telemetry_event,  # noqa: E402
 )
+
 
 class ConstitutionalRulesEngine:
     """Engine for evaluating constitutional AI rules."""
@@ -78,7 +46,7 @@ class ConstitutionalRulesEngine:
         self._evaluation_stats: dict[str, list[float]] = {
             "evaluation_time": [],
             "rule_violations": {},
-            "severity_counts": {}
+            "severity_counts": {},
         }
 
     def _initialize_default_rules(self) -> None:
@@ -96,7 +64,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT],
             contexts=["response", "generation"],
             category="helpfulness",
-            tags=["core", "user_benefit"]
+            tags=["core", "user_benefit"],
         )
         self.rules[helpfulness_rule.rule_id] = helpfulness_rule
 
@@ -112,7 +80,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT],
             contexts=["response", "generation"],
             category="honesty",
-            tags=["core", "truthfulness"]
+            tags=["core", "truthfulness"],
         )
         self.rules[honesty_rule.rule_id] = honesty_rule
 
@@ -128,7 +96,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT],
             contexts=["response", "generation"],
             category="safety",
-            tags=["core", "safety", "critical"]
+            tags=["core", "safety", "critical"],
         )
         self.rules[harmlessness_rule.rule_id] = harmlessness_rule
 
@@ -144,7 +112,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT],
             contexts=["response", "generation"],
             category="fairness",
-            tags=["ethics", "bias"]
+            tags=["ethics", "bias"],
         )
         self.rules[fairness_rule.rule_id] = fairness_rule
 
@@ -160,7 +128,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT, ContentType.PII],
             contexts=["query", "response", "generation"],
             category="privacy",
-            tags=["privacy", "data_protection"]
+            tags=["privacy", "data_protection"],
         )
         self.rules[privacy_rule.rule_id] = privacy_rule
 
@@ -176,7 +144,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT],
             contexts=["response", "generation"],
             category="transparency",
-            tags=["honesty", "clarity"]
+            tags=["honesty", "clarity"],
         )
         self.rules[transparency_rule.rule_id] = transparency_rule
 
@@ -192,7 +160,7 @@ class ConstitutionalRulesEngine:
             content_types=[ContentType.TEXT],
             contexts=["response", "generation"],
             category="respect",
-            tags=["ethics", "professionalism"]
+            tags=["ethics", "professionalism"],
         )
         self.rules[respect_rule.rule_id] = respect_rule
 
@@ -202,7 +170,7 @@ class ConstitutionalRulesEngine:
 
         _emit_records_telemetry_event(
             "constitutional_rules_engine",
-            f"rule_added_{rule.rule_id}"
+            f"rule_added_{rule.rule_id}",
         )
 
     def remove_rule(self, rule_id: str) -> bool:
@@ -212,7 +180,7 @@ class ConstitutionalRulesEngine:
 
             _emit_records_telemetry_event(
                 "constitutional_rules_engine",
-                f"rule_removed_{rule_id}"
+                f"rule_removed_{rule_id}",
             )
             return True
         return False
@@ -222,7 +190,7 @@ class ConstitutionalRulesEngine:
         content: str,
         content_id: str,
         content_type: str,
-        context: str | None = None
+        context: str | None = None,
     ) -> GuardrailReport:
         """Evaluate content against all constitutional rules.
 
@@ -257,7 +225,7 @@ class ConstitutionalRulesEngine:
 
             # Create report
             report = self._create_report(
-                content_id, content_type, checks, start_time
+                content_id, content_type, checks, start_time,
             )
 
             # Update statistics
@@ -267,7 +235,7 @@ class ConstitutionalRulesEngine:
             _emit_records_telemetry_event(
                 "constitutional_rules_engine",
                 f"evaluation_completed_{len(checks)}_checks_{report.passed}",
-                "evaluation_completed"
+                "evaluation_completed",
             )
 
             return report
@@ -290,13 +258,13 @@ class ConstitutionalRulesEngine:
                 content_modified=False,
                 escalation_required=True,
                 check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def _get_applicable_rules(
         self,
         content_type: str,
-        context: str | None = None
+        context: str | None = None,
     ) -> list[ConstitutionalRule]:
         """Get rules applicable to the content type and context."""
         applicable = []
@@ -320,7 +288,7 @@ class ConstitutionalRulesEngine:
         self,
         rule: ConstitutionalRule,
         content: str,
-        content_id: str
+        content_id: str,
     ) -> GuardrailCheck:
         """Evaluate a single constitutional rule."""
         check_id = f"check_{rule.rule_id}_{content_id}"
@@ -348,8 +316,8 @@ class ConstitutionalRulesEngine:
             check_type="constitutional",
             metadata={
                 "rule_name": rule.name,
-                "rule_category": rule.category
-            }
+                "rule_category": rule.category,
+            },
         )
 
         return check
@@ -357,7 +325,7 @@ class ConstitutionalRulesEngine:
     def _simple_rule_evaluation(
         self,
         rule: ConstitutionalRule,
-        content: str
+        content: str,
     ) -> tuple[bool, float, str, str]:
         """Simple rule evaluation using keyword matching.
 
@@ -375,44 +343,44 @@ class ConstitutionalRulesEngine:
                 "violation_patterns": ["i don't know", "i can't help", "not sure", "no idea"],
                 "positive_patterns": ["here's how", "you can", "let me explain", "to help you"],
                 "violation_reason": "Response may not be helpful",
-                "positive_reason": "Response appears helpful"
+                "positive_reason": "Response appears helpful",
             },
             "honesty_001": {
                 "violation_patterns": ["i am certain", "always true", "never fails", "guaranteed"],
                 "positive_patterns": ["might be", "could be", "uncertain", "depends on"],
                 "violation_reason": "Response may contain overconfident claims",
-                "positive_reason": "Response acknowledges uncertainty"
+                "positive_reason": "Response acknowledges uncertainty",
             },
             "harmlessness_001": {
                 "violation_patterns": ["how to harm", "how to hurt", "self harm", "suicide"],
                 "positive_patterns": ["be safe", "get help", "support", "professional help"],
                 "violation_reason": "Response may contain harmful content",
-                "positive_reason": "Response appears safe"
+                "positive_reason": "Response appears safe",
             },
             "fairness_001": {
                 "violation_patterns": ["always", "never", "all people", "stereotype"],
                 "positive_patterns": ["some people", "often", "can be", "depends on"],
                 "violation_reason": "Response may contain unfair generalizations",
-                "positive_reason": "Response shows nuance"
+                "positive_reason": "Response shows nuance",
             },
             "privacy_001": {
                 "violation_patterns": ["email address", "phone number", "social security", "personal info"],
                 "positive_patterns": ["privacy", "confidential", "anonymous", "protect"],
                 "violation_reason": "Response may compromise privacy",
-                "positive_reason": "Response respects privacy"
+                "positive_reason": "Response respects privacy",
             },
             "transparency_001": {
                 "violation_patterns": ["definitely", "absolutely", "without doubt"],
                 "positive_patterns": ["may", "might", "uncertain", "limited"],
                 "violation_reason": "Response may lack transparency",
-                "positive_reason": "Response is transparent"
+                "positive_reason": "Response is transparent",
             },
             "respect_001": {
                 "violation_patterns": ["stupid question", "obviously", "of course", "clearly"],
                 "positive_patterns": ["good question", "interesting", "let me help", "understand"],
                 "violation_reason": "Response may be disrespectful",
-                "positive_reason": "Response is respectful"
-            }
+                "positive_reason": "Response is respectful",
+            },
         }
 
         patterns = rule_patterns.get(rule.rule_id, {})
@@ -453,7 +421,7 @@ class ConstitutionalRulesEngine:
         content_id: str,
         content_type: str,
         checks: list[GuardrailCheck],
-        start_time: datetime
+        start_time: datetime,
     ) -> GuardrailReport:
         """Create a comprehensive guardrail report."""
         # Calculate overall statistics
@@ -505,7 +473,7 @@ class ConstitutionalRulesEngine:
             actions_taken=actions_taken,
             content_modified=content_modified,
             escalation_required=escalation_required,
-            check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000
+            check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
         )
 
         return report
@@ -551,7 +519,7 @@ class ConstitutionalRulesEngine:
         for rule_id, rule in self.rules.items():
             stats["rule_violations"][rule_id] = {
                 "trigger_count": rule.trigger_count,
-                "last_triggered": rule.last_triggered.isoformat() if rule.last_triggered else None
+                "last_triggered": rule.last_triggered.isoformat() if rule.last_triggered else None,
             }
 
         return stats
@@ -559,7 +527,7 @@ class ConstitutionalRulesEngine:
 
 # Factory function
 def create_constitutional_rules_engine(
-    config: GuardrailConfig | None = None
+    config: GuardrailConfig | None = None,
 ) -> ConstitutionalRulesEngine:
     """Create a constitutional rules engine."""
     return ConstitutionalRulesEngine(config)

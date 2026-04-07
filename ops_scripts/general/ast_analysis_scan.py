@@ -3,7 +3,6 @@ import ast
 import json
 from pathlib import Path
 
-
 ROOT = Path('c:/Git/Agentic-Workflow')
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR, 'tools/evidence', OPS_SCRIPTS_DIR]
 

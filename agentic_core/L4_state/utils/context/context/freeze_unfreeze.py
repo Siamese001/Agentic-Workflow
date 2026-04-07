@@ -24,17 +24,8 @@ from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_applies_guardrail,
-    _emit_dispatches_healing_run,
-    _emit_observes_runtime_state,
     _emit_reads_policy_state,
     _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_snapshots_state,
-    emit_determinism_digest,
-    emit_replay_key,
 )
 
 # Lifecycle trace emissions
@@ -121,7 +112,7 @@ class FreezeUnfreezeContext:
 
         _emit_trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _emit_trace_id, LayerSegment.L3_ORCHESTRATION, "FreezeUnfreezeContext.freeze"
+            _emit_trace_id, LayerSegment.L3_ORCHESTRATION, "FreezeUnfreezeContext.freeze",
         )
 
         # Compute plan hash deterministically
@@ -168,7 +159,7 @@ class FreezeUnfreezeContext:
 
         _emit_trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _emit_trace_id, LayerSegment.L3_ORCHESTRATION, "FreezeUnfreezeContext.unfreeze"
+            _emit_trace_id, LayerSegment.L3_ORCHESTRATION, "FreezeUnfreezeContext.unfreeze",
         )
 
         if self.current_snapshot is None:

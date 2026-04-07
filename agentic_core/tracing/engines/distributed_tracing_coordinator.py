@@ -351,7 +351,7 @@ class DistributedTracingCoordinator:
                     self._propagation_headers["x-span-id"]: context.span_id,
                     self._propagation_headers["x-parent-span-id"]: context.parent_span_id or "",
                     self._propagation_headers["x-baggage"]: json.dumps(context.baggage),
-                }
+                },
             }
         elif self._propagation_format == TracePropagationFormat.BAGGAGE:
             return {

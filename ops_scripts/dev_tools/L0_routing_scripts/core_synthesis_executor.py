@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -218,7 +217,7 @@ class CoreSynthesisExecutor:
         """Execute the complete synthesis and restructure plan."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CoreSynthesisExecutor.execute_synthesis"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CoreSynthesisExecutor.execute_synthesis",
         )
         print("🔬 PHASE 20: ZERO-LOSS SYNTHESIS & RESTRUCTURE")
         print("=" * 80)

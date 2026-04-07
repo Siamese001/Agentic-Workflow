@@ -200,13 +200,16 @@ Examples:
   # Default: healing enabled (mutations applied)
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint
 
-  # Scan/report only — disable healing
+  # Report-only mode — disable healing (CI-friendly)
+  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --report
+
+  # Scan/report only — disable healing (legacy alias for --report)
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --scan-only
 
   # Single territory with healing
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --territory L5_safety
 
-  # Dry-run validation (explicit alias for scan-only)
+  # Dry-run validation (explicit alias for report-only)
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --validate
 
   # Human-in-the-loop mode
@@ -214,11 +217,10 @@ Examples:
 """,
     )
     # --- Mode flags ---
-    parser.add_argument("--heal", action="store_true", help="Enable healing/mutation mode")
     parser.add_argument("--targets", type=str, nargs="+", help="Target paths to scan/heal")
     parser.add_argument("--territory", type=str, help="Specific territory to scan")
     parser.add_argument(
-        "--domains", action="store_true", help="Scan all major domains (explicit; now also the default)"
+        "--domains", action="store_true", help="Scan all major domains (explicit; now also the default)",
     )
     parser.add_argument("--agent", type=str, help="Run specific agent directly")
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
@@ -227,12 +229,15 @@ Examples:
     # --- Behaviour flags ---
     # NOTE: UWG has heal jurisdiction - agents should not override
     parser.add_argument(
-        "--scan-only",
-        action="store_true",
-        help="Scan/report only — no mutations (disables healing)",
+        "--report", "-r", action="store_true", help="Report-only mode — no mutations (disables healing)",
     )
     parser.add_argument(
-        "--validate", action="store_true", help="Validation-only mode (implies scan-only, no mutations)"
+        "--scan-only",
+        action="store_true",
+        help="Legacy alias for --report — no mutations (disables healing)",
+    )
+    parser.add_argument(
+        "--validate", action="store_true", help="Validation-only mode (implies report-only, no mutations)",
     )
     parser.add_argument("--interactive", action="store_true", help="Enable human-in-the-loop prompts")
     parser.add_argument("--manual", action="store_true", help="Disable autonomous mode")
@@ -251,21 +256,21 @@ Examples:
     # --- Introspection flags ---
     parser.add_argument("--plan", action="store_true", help="Print execution plan and exit")
     parser.add_argument(
-        "--arbitrate-plan", action="store_true", help="Multi-agent arbitration on plan (plan mode only)"
+        "--arbitrate-plan", action="store_true", help="Multi-agent arbitration on plan (plan mode only)",
     )
     parser.add_argument("--ptc-plan", action="store_true", help="PTC plan context (plan mode only)")
     parser.add_argument("--fence-self-check", action="store_true", help="Run fence self-check (no mutations)")
     # --- Infra flags ---
     parser.add_argument(
-        "--v15-enforcement", type=int, choices=(0, 1), default=None, help="Override V15_ENFORCEMENT"
+        "--v15-enforcement", type=int, choices=(0, 1), default=None, help="Override V15_ENFORCEMENT",
     )
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase log verbosity")
     parser.add_argument("--verbosity", type=int, default=0, help="Verbosity level (0-3)")
     parser.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
 
-    # UWG heal jurisdiction: dry_run enabled only via --scan-only or --validate
-    args.dry_run = args.scan_only or args.validate
+    # UWG heal jurisdiction: dry_run enabled only via --report, --scan-only, or --validate
+    args.dry_run = args.report or args.scan_only or args.validate
 
     # Set heal flag for backward compatibility (UWG controls actual heal behavior)
     args.heal = not args.dry_run

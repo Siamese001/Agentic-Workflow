@@ -101,7 +101,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
             "expert_reviewed": 0.25,
             "peer_reviewed": 0.3,
             "official_source": 0.4,
-            "version": 0.1
+            "version": 0.1,
         }
 
         score = 0.0
@@ -279,7 +279,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
             "blog": 0.4,
             "forum": 0.3,
             "social": 0.2,
-            "unknown": 0.3
+            "unknown": 0.3,
         }
 
         reliability_score = source_reliability.get(source_type, 0.5)
@@ -323,7 +323,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
             "has_conclusion": 0.1,
             "has_references": 0.1,
             "word_count": 0.2,
-            "structure_score": 0.1
+            "structure_score": 0.1,
         }
 
         score = 0.0
@@ -382,7 +382,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
             "technical_terms": 0.2,
             "query_length": 0.1,
             "nested_queries": 0.15,
-            "boolean_operators": 0.15
+            "boolean_operators": 0.15,
         }
 
         score = 0.0

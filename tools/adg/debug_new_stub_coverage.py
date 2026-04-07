@@ -31,7 +31,7 @@ for stub in sample_stubs:
             "WHERE e.src_id=? AND e.relation_type='imports' "
             "AND n2.resolved_path LIKE 'agentic_core/%'",
             (row["id"],),
-        )
+        ),
     )
     print(f"\n{stub}:")
     for e in edges:
@@ -45,7 +45,7 @@ all_test_files_now = {
         "SELECT DISTINCT n1.resolved_path "
         "FROM edges e JOIN nodes n1 ON e.src_id=n1.id "
         "WHERE e.relation_type='imports' "
-        "AND n1.resolved_path LIKE 'tests/%'"
+        "AND n1.resolved_path LIKE 'tests/%'",
     )
 }
 non_adg = [f for f in all_test_files_now if not Path(f).stem.endswith("_adg")]

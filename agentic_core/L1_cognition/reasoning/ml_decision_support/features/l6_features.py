@@ -311,7 +311,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        semantic_clock: int | None = None
+        semantic_clock: int | None = None,
     ) -> list[dict[str, Any]]:
         """
         Extract features for multiple contexts efficiently.
@@ -338,7 +338,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
                 trace_id=context_trace_id,
                 replay_key=replay_key,
                 policy_hash=policy_hash,
-                semantic_clock=semantic_clock
+                semantic_clock=semantic_clock,
             )
 
             if extraction_result.success:
@@ -354,7 +354,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
                     "replay_mismatch_count": 0.0,
                     "escalation_frequency": 0.0,
                     "healing_success_rate": 1.0,
-                    "semantic_drift_score": 0.0
+                    "semantic_drift_score": 0.0,
                 })
 
         return batch_features

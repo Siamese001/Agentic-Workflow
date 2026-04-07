@@ -1,9 +1,9 @@
 """
 Stale Data Validator - Inspects document dates for staleness.
 """
-from typing import List, Dict, Any
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List
 
 from ..types import UnderwritingRequest
 
@@ -42,7 +42,7 @@ class StaleDataValidator:
 
     def validate(
         self,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> StaleDataResult:
         """
         Validate document freshness.
@@ -60,19 +60,19 @@ class StaleDataValidator:
             latest = request.financials.periods[-1]
             if latest.period_end:
                 self._check_date_freshness(
-                    result, "financial_statement", latest.period_end
+                    result, "financial_statement", latest.period_end,
                 )
 
         # Check collateral appraisal
         if request.collateral.appraisal_date:
             self._check_date_freshness(
-                result, "appraisal", request.collateral.appraisal_date
+                result, "appraisal", request.collateral.appraisal_date,
             )
 
         # Check field exam
         if request.collateral.field_exam_date:
             self._check_date_freshness(
-                result, "field_exam", request.collateral.field_exam_date
+                result, "field_exam", request.collateral.field_exam_date,
             )
 
         # Calculate overall staleness score
@@ -96,7 +96,7 @@ class StaleDataValidator:
         self,
         result: StaleDataResult,
         doc_type: str,
-        date_str: str
+        date_str: str,
     ) -> None:
         """Check if a date is stale."""
         try:
@@ -127,7 +127,7 @@ class StaleDataValidator:
                 "date": date_str,
                 "age_days": age_days,
                 "max_age_days": max_age,
-                "severity": severity
+                "severity": severity,
             })
 
         except Exception:

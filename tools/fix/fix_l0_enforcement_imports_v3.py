@@ -4,8 +4,9 @@ Fix imports for L0 routing enforcement module - Version 3.
 Only export actual module-level classes and functions.
 """
 
-import pathlib
 import ast
+import pathlib
+
 
 def get_module_exports(filepath):
     """Extract only module-level class and function names from a Python file."""
@@ -107,7 +108,7 @@ def fix_init_file(init_path):
             "    emit_determinism_digest,  # noqa: E402",
             "    emit_replay_key,  # noqa: E402",
             ")",
-            ""
+            "",
         ]
 
         # Add module exports

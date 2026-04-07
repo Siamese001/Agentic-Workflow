@@ -111,7 +111,7 @@ def load_context_jit(
     """
     _tid = str(uuid.uuid4())
     _emit_records_execution_trace(
-        _tid, LayerSegment.L0_ROUTING, "elevator_shaft_seam.load_context_jit"
+        _tid, LayerSegment.L0_ROUTING, "elevator_shaft_seam.load_context_jit",
     )
     emit_replay_key(_tid, f"c0:{trace_id}")
     emit_determinism_digest(_tid, f"intent:{intent_class}")

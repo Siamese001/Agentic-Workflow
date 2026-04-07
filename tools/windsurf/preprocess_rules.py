@@ -291,7 +291,7 @@ def cmd_process(args):
     content, undefined, processed_count = processor.generate_consolidated(strict=args.strict)
 
     if undefined and args.strict:
-        print(f"ERROR: Undefined variables found:", file=sys.stderr)
+        print("ERROR: Undefined variables found:", file=sys.stderr)
         for u in undefined:
             print(f"  - {u}", file=sys.stderr)
         return 1
@@ -301,7 +301,7 @@ def cmd_process(args):
     print(f"✓ Processed {processed_count} rule file(s)")
 
     if undefined:
-        print(f"\nWarnings (undefined variables, non-strict mode):")
+        print("\nWarnings (undefined variables, non-strict mode):")
         for u in undefined:
             print(f"  - {u}")
 
@@ -343,7 +343,7 @@ def cmd_check(_args: argparse.Namespace) -> int:
     # Read current output file (skipping header if auto-generated)
     if not RULES_OUTPUT_FILE.exists():
         print(f"✗ Missing: {RULES_OUTPUT_FILE.relative_to(REPO_ROOT)}")
-        print(f"  Run: python tools/windsurf/preprocess_rules.py --process")
+        print("  Run: python tools/windsurf/preprocess_rules.py --process")
         return 1
 
     with open(RULES_OUTPUT_FILE, 'r', encoding='utf-8') as f:
@@ -367,7 +367,7 @@ def cmd_check(_args: argparse.Namespace) -> int:
 
     if expected_hash != actual_hash:
         print(f"✗ Stale: {RULES_OUTPUT_FILE.name} (source changed, rebuild needed)")
-        print(f"  Run: python tools/windsurf/preprocess_rules.py --process")
+        print("  Run: python tools/windsurf/preprocess_rules.py --process")
         return 1
     else:
         print(f"✓ Fresh: {RULES_OUTPUT_FILE.name}")
@@ -384,33 +384,33 @@ Examples:
   %(prog)s --validate        # Check all ${VAR} references are defined
   %(prog)s --check           # Verify .windsurfrules is up-to-date
   %(prog)s --process --strict  # Fail on undefined variables
-        """
+        """,
     )
 
     parser.add_argument(
         '--process',
         action='store_true',
-        help='Expand variables and generate consolidated .windsurfrules'
+        help='Expand variables and generate consolidated .windsurfrules',
     )
     parser.add_argument(
         '--validate',
         action='store_true',
-        help='Validate that all ${VAR} references are defined in _variables.yaml'
+        help='Validate that all ${VAR} references are defined in _variables.yaml',
     )
     parser.add_argument(
         '--check',
         action='store_true',
-        help='Check that .windsurfrules is up-to-date with sources (for CI)'
+        help='Check that .windsurfrules is up-to-date with sources (for CI)',
     )
     parser.add_argument(
         '--strict',
         action='store_true',
-        help='Fail if undefined variables are found'
+        help='Fail if undefined variables are found',
     )
     parser.add_argument(
         '--verbose', '-v',
         action='store_true',
-        help='Verbose output'
+        help='Verbose output',
     )
 
     args = parser.parse_args()

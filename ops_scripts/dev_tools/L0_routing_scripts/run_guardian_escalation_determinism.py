@@ -35,7 +35,6 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     normalize_repo_path,
     write_guardian_result,
 )
-from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -80,6 +79,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
     record_execution_trace,
 )
+from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 
 emit_replay_key("p0", "run_guardian_escalation_determinism")
 emit_determinism_digest("p0", "run_guardian_escalation_determinism")
@@ -138,7 +138,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -208,7 +207,7 @@ RAW_NOTE_SENTINELS: frozenset[str] = frozenset(
         "FailureSignal",
         "EscalationContext",
         "EscalationRecord",
-    }
+    },
 )
 
 # In-place mutation method names on escalation types
@@ -221,7 +220,7 @@ MUTATION_METHOD_NAMES: frozenset[str] = frozenset(
         "__setitem__",
         "add_note",
         "set_context",
-    }
+    },
 )
 
 
@@ -293,7 +292,7 @@ def scan_escalation_patterns(
                                     "path": rel,
                                     "line": node.lineno,
                                     "detail": f"{call_name}() receives f-string/concat arg",
-                                }
+                                },
                             )
                             break
 
@@ -310,13 +309,13 @@ def scan_escalation_patterns(
                                     "path": rel,
                                     "line": node.lineno,
                                     "detail": f"{func.value.id}.{func.attr}() — mutation on escalation obj",
-                                }
+                                },
                             )
 
     return {
         "failure_signal_built_from_raw_notes": sorted(raw_note_viols, key=lambda v: (v["path"], v["line"])),
         "alternate_escalation_context_construction": sorted(
-            alt_ctx_viols, key=lambda v: (v["path"], v["line"])
+            alt_ctx_viols, key=lambda v: (v["path"], v["line"]),
         ),
         "escalation_context_mutation": sorted(mutation_viols, key=lambda v: (v["path"], v["line"])),
     }
@@ -345,7 +344,7 @@ def run_escalation_determinism_guardian(
         v = viols[check_id]
         if v:
             result.add_check(
-                check_id, CheckStatus.FAIL, f"{len(v)} violation(s)", evidence={"violations": v[:20]}
+                check_id, CheckStatus.FAIL, f"{len(v)} violation(s)", evidence={"violations": v[:20]},
             )
         else:
             result.add_check(check_id, CheckStatus.PASS, "No violations detected")

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L3_orchestration.healers.healing_tier_config import (
     HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
 )
-from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -127,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,

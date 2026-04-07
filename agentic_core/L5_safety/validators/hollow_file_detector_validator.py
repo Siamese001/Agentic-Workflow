@@ -271,7 +271,7 @@ class HollowFileDetector(AntiPatternDetector):
                     "behavioral_classes": counter.behavioral_classes,
                     "boilerplate_statements": counter.boilerplate_statements,
                     "total_statements": counter.total_statements,
-                }
+                },
             ))
         elif classification == HollowFileClassification.SCAFFOLDING:
             violations.append(AntiPatternViolation(
@@ -286,7 +286,7 @@ class HollowFileDetector(AntiPatternDetector):
                     "classification": classification.value,
                     "behavioral_classes": counter.behavioral_classes,
                     "total_statements": counter.total_statements,
-                }
+                },
             ))
         elif classification == HollowFileClassification.BOILERPLATE_HEAVY:
             violations.append(AntiPatternViolation(
@@ -302,7 +302,7 @@ class HollowFileDetector(AntiPatternDetector):
                     "boilerplate_ratio": counter.get_boilerplate_ratio(),
                     "boilerplate_statements": counter.boilerplate_statements,
                     "total_statements": counter.total_statements,
-                }
+                },
             ))
 
         return violations

@@ -20,8 +20,8 @@ Each retrieval layer maps to relation types in the ADG. We query:
   - emits_metric_event   -> L6 observability
 """
 
-import sqlite3
 import os
+import sqlite3
 import sys
 
 SQLITE_PATH = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"

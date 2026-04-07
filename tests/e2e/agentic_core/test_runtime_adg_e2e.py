@@ -267,7 +267,7 @@ class TestRuntimeADGFullPipeline:
                     "span_id": f"span-{i:03d}-001",
                     "trace_id": f"trace-{i:03d}",
                     "ts_utc": int(time.time() * 1000) + i * 1000,
-                }
+                },
             ]
             snapshot = materializer.materialize(
                 spans,
@@ -419,7 +419,7 @@ class TestRuntimeADGEdgeCases:
                 "duration_ms": 10.0,
                 "status": "ok",
                 "attributes": {},
-            }
+            },
         ]
 
         snapshot = materializer.materialize(single_span, mission="single-test")

@@ -55,7 +55,8 @@ def remove_test_function(file_path: str, func_name: str) -> bool:
 def main():
     parser = argparse.ArgumentParser(description='Delete unused test functions')
     parser.add_argument('--input', required=True, help='JSON file with test functions to delete')
-    parser.add_argument('--dry-run', action='store_true', help='Preview without deleting')
+    parser.add_argument('--report', '-r', action='store_true', help='Report-only mode (no deletions)')
+    parser.add_argument('--dry-run', action='store_true', help=argparse.SUPPRESS)  # Deprecated, use --report
     parser.add_argument('--limit', type=int, help='Limit number of deletions')
 
     args = parser.parse_args()
@@ -74,14 +75,14 @@ def main():
         file_path = test['file']
         func_name = test['name']
 
-        if args.dry_run:
-            print(f"[DRY-RUN] Would delete {func_name} from {file_path}")
+        if args.report:
+            print(f"[REPORT] Would delete {func_name} from {file_path}")
             deleted += 1
         else:
             if remove_test_function(file_path, func_name):
                 deleted += 1
 
-    print(f'\n{"Would delete" if args.dry_run else "Deleted"} {deleted} test functions')
+    print(f'\n{"Would delete" if args.report else "Deleted"} {deleted} test functions')
     return 0
 
 

@@ -94,6 +94,10 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validator import (
+    get_sovereign_prompt_renderer,
+)
+from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -119,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -134,10 +137,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validator import (
-    get_sovereign_prompt_renderer,
-)
-from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -318,7 +317,7 @@ class RedTeamAgent(SovereignBaseAgent):
         bypassed_count: Any = sum(1 for r in results if r.get("bypassed"))
         print(f"\n[RED-TEAM COMPLETE] {len(results)} tests | {bypassed_count} bypass(es) detected")
         ctx.report(
-            self.__class__.__name__, 16, bypassed_count == 0, f"Red-team results: {bypassed_count} bypasses"
+            self.__class__.__name__, 16, bypassed_count == 0, f"Red-team results: {bypassed_count} bypasses",
         )
 
     def _detect_bypass(self, response: str) -> bool:
@@ -347,7 +346,7 @@ class RedTeamAgent(SovereignBaseAgent):
             )
             report = json.loads(esc_response)
             print(
-                f"   [!] ESCALATION: {report.get('Severity', 'critical')} breach — {report.get('reinforcement_proposal')}"
+                f"   [!] ESCALATION: {report.get('Severity', 'critical')} breach — {report.get('reinforcement_proposal')}",
             )
             if hasattr(ctx, "audit_log"):
                 ctx.audit_log.record(
@@ -446,7 +445,7 @@ class RedTeamAgent(SovereignBaseAgent):
                 self.logger.info("  Dry run - would execute adversarial tests")
                 skipped = len(self.adversarial_fragments)
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)"
+                f"[{agent_name}] Complete: {violations_found} bypasses found (manual review required)",
             )
             return {
                 "violations_found": violations_found,

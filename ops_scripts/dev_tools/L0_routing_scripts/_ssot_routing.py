@@ -14,10 +14,20 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     DEFAULT_TIMEOUT,
+)
+from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_X as _CONF_X,
+)
+from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
+)
+from agentic_core.L0_routing.config.path_constants import (
     QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
+)
+from agentic_core.L0_routing.config.path_constants import (
     SSOT_SCORE_THRESHOLD_DET as _SCORE_DET,
+)
+from agentic_core.L0_routing.config.path_constants import (
     SSOT_SCORE_THRESHOLD_QWEN as _SCORE_QWEN,
 )
 from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
@@ -58,23 +68,37 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_runtime_state,
     _emit_reads_through,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
@@ -84,52 +108,23 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
+    _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
+    _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_writes_via_uwg,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 
 logger = logging.getLogger(__name__)
@@ -331,13 +326,13 @@ class SovereignDecisionEngine:
 
         WSL_PYTHON = "/home/amita/venvs/vllm/bin/python"
         INFERENCE_SCRIPT = str(
-            Path(__file__).parent.parent.parent / "L2_execution" / "healers" / "qwen_vllm_inference.py"
+            Path(__file__).parent.parent.parent / "L2_execution" / "healers" / "qwen_vllm_inference.py",
         )
         MODEL_PATH = "/home/amita/models/Qwen2.5-14B-Instruct-AWQ"
 
         # guardian: allow-type-erasure
         def _arbiter(
-            agent_name: str, violation_types: list, territory: str, score: int = 0, gate: str = ""
+            agent_name: str, violation_types: list, territory: str, score: int = 0, gate: str = "",
         ) -> dict:
             script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
             repo_root_wsl = (
@@ -391,7 +386,7 @@ class SovereignDecisionEngine:
         return 0.5
 
     def _compute_novelty_score(
-        self, failure_type: "FailureType | None", territory: str, confidence: "ConfidenceScore"
+        self, failure_type: "FailureType | None", territory: str, confidence: "ConfidenceScore",
     ) -> int:
         """Compute the novelty score N (0-3) for RoutingInputs.
 
@@ -426,7 +421,7 @@ class SovereignDecisionEngine:
                 )
 
                 raise VectorSourceMismatchError(
-                    f"Vector source mismatch: stored dim={mat.shape[1]}, query dim={q.shape[0]}"
+                    f"Vector source mismatch: stored dim={mat.shape[1]}, query dim={q.shape[0]}",
                 )
             max_sim = float(_np.dot(mat, q).max())
             if max_sim >= 0.85:
@@ -478,7 +473,7 @@ class SovereignDecisionEngine:
                 for _inc in _advisory:
                     if not getattr(_inc, "advisory_only", True):
                         raise _SovereigntyError(
-                            f"advisory_only=False on incident {getattr(_inc, 'content_hash', '?')!r}; routing tier MUST NOT be influenced by retrieval results."
+                            f"advisory_only=False on incident {getattr(_inc, 'content_hash', '?')!r}; routing tier MUST NOT be influenced by retrieval results.",
                         )
                 if _advisory:
                     logger.debug(
@@ -488,7 +483,9 @@ class SovereignDecisionEngine:
                         _advisory[0].advisory_only,
                     )
             except (ImportError, AttributeError, ValueError) as _exc:
-                from agentic_core.L1_cognition.reasoning.healing_memory_retriever import SovereigntyError as _SE
+                from agentic_core.L1_cognition.reasoning.healing_memory_retriever import (
+                    SovereigntyError as _SE,
+                )
 
                 if isinstance(_exc, _SE):
                     raise
@@ -795,16 +792,18 @@ class SovereignDecisionEngine:
             return (False, f"HITL-DEFER ({confidence.value:.2f})")
 
     async def analyze_violations_with_cognitive_disposition(
-        self, violations: list, territory: str, state_mgr
+        self, violations: list, territory: str, state_mgr,
     ):
         """Analyze violations using CognitiveDispositionAgent for enhanced confidence."""
         if not self.enable_cda:
             fallback_conf = self.calculate_healing_confidence(
-                len(violations), [str(v) for v in violations[:10]], territory, agent_name="location"
+                len(violations), [str(v) for v in violations[:10]], territory, agent_name="location",
             )
             return ([], fallback_conf)
         try:
-            from agentic_core.L0_routing.enforcement.safety_validators_seam import load_cognitive_disposition_agent
+            from agentic_core.L0_routing.enforcement.safety_validators_seam import (
+                load_cognitive_disposition_agent,
+            )
 
             CognitiveDispositionAgent = load_cognitive_disposition_agent()
             cda = CognitiveDispositionAgent()
@@ -812,18 +811,18 @@ class SovereignDecisionEngine:
             if dispositions:
                 avg_confidence = sum(d.confidence for d in dispositions) / len(dispositions)
                 enhanced_confidence = ConfidenceScore(
-                    value=avg_confidence, reasoning=f"Cognitive analysis of {len(dispositions)} dispositions"
+                    value=avg_confidence, reasoning=f"Cognitive analysis of {len(dispositions)} dispositions",
                 )
             else:
                 enhanced_confidence = ConfidenceScore(
-                    value=0.5, reasoning="No cognitive dispositions generated"
+                    value=0.5, reasoning="No cognitive dispositions generated",
                 )
             return (dispositions, enhanced_confidence)
         # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("CognitiveDispositionAgent not available, using default confidence")
             bmg_conf = self.calculate_healing_confidence(
-                len(violations), [str(v) for v in violations[:10]], territory, agent_name="location"
+                len(violations), [str(v) for v in violations[:10]], territory, agent_name="location",
             )
             return ([], bmg_conf)
         except (AttributeError, ValueError) as e:
@@ -840,7 +839,7 @@ class SovereignDecisionEngine:
             return False
         if len(self._operation_stack) >= self._max_stack_depth:
             logging.critical(
-                f"Sovereignty DENIED for {agent_name}: Stack depth exceeded ({len(self._operation_stack)})"
+                f"Sovereignty DENIED for {agent_name}: Stack depth exceeded ({len(self._operation_stack)})",
             )
             return False
         op_signature = f"{agent_name}:{operation}"

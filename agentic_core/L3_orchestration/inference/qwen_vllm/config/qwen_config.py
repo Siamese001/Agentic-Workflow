@@ -44,22 +44,22 @@ class QwenInferenceConfig:
             max_tokens=1024,
             temperature=0.1,
             confidence_threshold=0.6,
-            timeout_seconds=30
+            timeout_seconds=30,
         ),
         "complex_reasoning": QwenModelConfig(
             model_id="Qwen/Qwen2.5-14B-Instruct-AWQ",
             max_tokens=2048,
             temperature=0.2,
             confidence_threshold=0.7,
-            timeout_seconds=60
+            timeout_seconds=60,
         ),
         "evaluation": QwenModelConfig(
             model_id="Qwen/Qwen2.5-7B-Instruct",
             max_tokens=1536,
             temperature=0.05,
             confidence_threshold=0.8,
-            timeout_seconds=45
-        )
+            timeout_seconds=45,
+        ),
     }
 
     # App-specific prompt configurations
@@ -70,37 +70,37 @@ class QwenInferenceConfig:
                 "code_review": "Please review this code for quality, security, and best practices:\n\n{code}",
                 "test_generation": "Generate comprehensive unit tests for this function:\n\n{function}",
                 "performance_analysis": "Analyze the performance characteristics of this code:\n\n{code}",
-                "architecture_review": "Evaluate this architectural design:\n\n{design}"
+                "architecture_review": "Evaluate this architectural design:\n\n{design}",
             },
-            default_template="code_review"
+            default_template="code_review",
         ),
         "apps_research": QwenPromptConfig(
             app_name="apps_research",
             prompt_templates={
                 "synthesis": "Synthesize these research findings into a coherent summary:\n\n{findings}",
                 "analysis": "Analyze this research data for key insights:\n\n{data}",
-                "literature_review": "Review this literature and identify gaps:\n\n{literature}"
+                "literature_review": "Review this literature and identify gaps:\n\n{literature}",
             },
-            default_template="synthesis"
+            default_template="synthesis",
         ),
         "apps_rg": QwenPromptConfig(
             app_name="apps_rg",
             prompt_templates={
                 "resume_analysis": "Analyze this resume for the given job requirements:\n\nResume: {resume}\n\nRequirements: {requirements}",
                 "job_matching": "Calculate match score between candidate and job:\n\nCandidate: {candidate}\n\nJob: {job}",
-                "gap_analysis": "Identify skill gaps for this career transition:\n\n{profile}"
+                "gap_analysis": "Identify skill gaps for this career transition:\n\n{profile}",
             },
-            default_template="resume_analysis"
+            default_template="resume_analysis",
         ),
         "apps_lic": QwenPromptConfig(
             app_name="apps_lic",
             prompt_templates={
                 "lead_scoring": "Score this lead based on qualification and intent:\n\n{lead}",
                 "campaign_optimization": "Optimize this campaign for better conversion:\n\n{campaign}",
-                "outreach_generation": "Generate personalized outreach message:\n\n{profile}"
+                "outreach_generation": "Generate personalized outreach message:\n\n{profile}",
             },
-            default_template="lead_scoring"
-        )
+            default_template="lead_scoring",
+        ),
     }
 
     @classmethod

@@ -166,7 +166,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"record_routing_telemetry exported in routing_telemetry={rrt_exported} (>=1), "
             f"RoutingTelemetry exported={rt_exported} (>=1), "
             f"callers: agentic_router={rrt_in_router} path_router={rrt_in_path} total={total_callers} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -203,7 +203,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"total={total_rtc_users} (>=1), "
             f"record_routing_telemetry callers: agentic_router={rrt_in_router} path_router={rrt_in_path} "
             f"total={total_callers} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -232,7 +232,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"RoutingOutcomeStatus exported={ros_exported} (>=1), "
             f"used in: agentic_router={ros_in_router} path_router={ros_in_path} total={total_users} (>=1), "
             f"ROUTE_SUCCEEDED in routing_telemetry={succeeded}, ROUTE_FAILED={failed}, ROUTE_ESCALATED={escalated}",
-        )
+        ),
     )
     return ok
 
@@ -269,7 +269,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"chokepoints with both contract+telemetry: agentic_router={int(contract_and_telemetry_router)} "
             f"path_router={int(contract_and_telemetry_path)} total={both_wired} (>=1), "
             f"RoutingTelemetryStore exported={store_exported}",
-        )
+        ),
     )
     return ok
 
@@ -296,7 +296,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"RoutingTelemetry exported (has queue/load fields)={rt_exported} (>=1), "
             f"NOT_INSTRUMENTED null-value in routing_telemetry={not_instrumented}, "
             f"get_routing_telemetry_store exported={get_store_exported}",
-        )
+        ),
     )
     return ok
 
@@ -346,7 +346,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     c = conn.cursor()
 
     c.execute(
-        f"SELECT COUNT(*) FROM edges WHERE relation_type IN ('routes_path','routes_through') {NON_TEST}"
+        f"SELECT COUNT(*) FROM edges WHERE relation_type IN ('routes_path','routes_through') {NON_TEST}",
     )
     print(f"  Runtime routes_path/routes_through (edges, non-test): {c.fetchone()[0]}")
 
@@ -358,7 +358,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"SELECT DISTINCT source_file, symbol FROM edges "
         f"WHERE (symbol LIKE '%RoutingTelemetry%' OR symbol LIKE '%record_routing_telemetry%' "
         f"OR symbol LIKE '%RoutingOutcomeStatus%' OR symbol LIKE '%NullMetricReason%') "
-        f"{NON_TEST} LIMIT 20"
+        f"{NON_TEST} LIMIT 20",
     )
     rows = c.fetchall()
     if rows:
@@ -371,7 +371,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     c.execute(
         f"SELECT DISTINCT source_file, relation_type, symbol FROM edges "
         f"WHERE relation_type IN ('calls','invokes_dynamic') "
-        f"AND symbol LIKE '%record_routing_telemetry%' {NON_TEST} LIMIT 10"
+        f"AND symbol LIKE '%record_routing_telemetry%' {NON_TEST} LIMIT 10",
     )
     rows = c.fetchall()
     if rows:

@@ -67,7 +67,7 @@ def test_l4_storage_integration():
                 "duration_ms": 100.0,
                 "status": "ok",
                 "attributes": {"test": "l4_storage"},
-            }
+            },
         ]
 
         snapshot = materializer.materialize(test_spans, mission="l4-test-mission")
@@ -140,7 +140,7 @@ def test_l4_storage_integration():
         'l4_default_compliant', 'l4_custom_compliant', 'l4_invalid_rejected',
         'l4_snapshot_created', 'l4_persist_success', 'l4_retrieve_success', 'l4_trace_index',
         'l4_base_dir_exists', 'l4_index_file_exists', 'l4_trace_index_exists',
-        'l4_index_valid', 'l4_trace_index_valid'
+        'l4_index_valid', 'l4_trace_index_valid',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -204,7 +204,7 @@ def test_l6_integration():
                 "duration_ms": 150.0,
                 "status": "ok",
                 "attributes": {"test": "l6_meta_learning"},
-            }
+            },
         ]
 
         snapshot = materializer.materialize(test_spans, mission="l6-test-mission")
@@ -285,7 +285,7 @@ def test_l6_integration():
         'l6_bridge_init', 'l6_custom_bridge_init',
         'l6_snapshot_created', 'l6_store_success',
         'l6_patterns_retrieved', 'l6_layer_distribution', 'l6_component_distribution', 'l6_span_type_distribution',
-        'l6_evolution_log', 'l6_evolution_events', 'l6_runtime_events'
+        'l6_evolution_log', 'l6_evolution_events', 'l6_runtime_events',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -432,7 +432,7 @@ def test_auto_persistence():
         'auto_adapter_init', 'auto_factory_init',
         'auto_orchestrator_trace', 'auto_cognitive_trace', 'auto_action_trace',
         'auto_status_retrieved', 'auto_enabled', 'auto_l4_available', 'auto_l6_available',
-        'auto_force_tool_trace', 'auto_force_success'
+        'auto_force_tool_trace', 'auto_force_success',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)

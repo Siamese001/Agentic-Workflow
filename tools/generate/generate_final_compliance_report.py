@@ -33,7 +33,7 @@ class FinalComplianceReporter:
             'test_category_markers': 'tools/test_category_markers_report.json',
             'test_validation': 'tools/test_enforcement_validation_report.json',
             'comprehensive_validation': 'tools/comprehensive_architectural_validation_report.json',
-            'adg_separation': 'tools/adg_separation_deployment_report.json'
+            'adg_separation': 'tools/adg_separation_deployment_report.json',
         }
 
         for report_name, report_path in reports.items():
@@ -63,13 +63,13 @@ class FinalComplianceReporter:
                 'before': 817,
                 'after': 0,
                 'improvement': 817,
-                'percentage_improvement': 100.0
+                'percentage_improvement': 100.0,
             },
             'adg_contamination': {
                 'before': 502628,
                 'after': 0,
                 'improvement': 502628,
-                'percentage_improvement': 100.0
+                'percentage_improvement': 100.0,
             },
             'silent_swallowers': {
                 'total': 12562,
@@ -78,7 +78,7 @@ class FinalComplianceReporter:
                 'low_severity': 1715,
                 'high_fixed': self.report_data.get('high_severity_fixes', {}).get('fixes_applied', 0),
                 'medium_fixed': self.report_data.get('medium_severity_fixes', {}).get('fixes_applied', 0),
-                'comments_added': self.report_data.get('guardian_comments', {}).get('comments_added', 0)
+                'comments_added': self.report_data.get('guardian_comments', {}).get('comments_added', 0),
             },
             'test_enforcement': {
                 'total': 65349,
@@ -86,15 +86,15 @@ class FinalComplianceReporter:
                 'medium_severity': 57759,
                 'low_severity': 0,
                 'high_fixed': self.report_data.get('test_enforcement_fixes', {}).get('fixes_applied', 0),
-                'markers_added': self.report_data.get('test_category_markers', {}).get('markers_added', 0)
+                'markers_added': self.report_data.get('test_category_markers', {}).get('markers_added', 0),
             },
             'infrastructure': {
                 'l_contracts_created': True,
                 'clean_scanner_deployed': True,
                 'runtime_scanner_deployed': True,
                 'validation_tools_created': 12,
-                'fix_scripts_created': 8
-            }
+                'fix_scripts_created': 8,
+            },
         }
 
         # Calculate remaining work
@@ -156,7 +156,7 @@ class FinalComplianceReporter:
             'test_enforcement_complete': test_enforcement_complete,
             'overall_complete': overall_complete,
             'overall_progress': overall_progress,
-            'completion_level': self._determine_completion_level(overall_complete, overall_progress)
+            'completion_level': self._determine_completion_level(overall_complete, overall_progress),
         }
 
         self.report_data['completion_status'] = status
@@ -198,7 +198,7 @@ class FinalComplianceReporter:
             'report_metadata': {
                 'generated_at': self.start_time.isoformat(),
                 'report_type': 'final_architectural_compliance',
-                'version': '1.0'
+                'version': '1.0',
             },
             'executive_summary': {
                 'title': 'ADG Architectural Violations Fix - Final Report',
@@ -211,8 +211,8 @@ class FinalComplianceReporter:
                     "Created L_CONTRACTS layer for cross-layer interfaces",
                     "Deployed clean static/runtime ADG separation",
                     "Established fix patterns for all violation types",
-                    "Created comprehensive validation infrastructure"
-                ]
+                    "Created comprehensive validation infrastructure",
+                ],
             },
             'detailed_metrics': metrics,
             'completion_status': status,
@@ -225,22 +225,22 @@ class FinalComplianceReporter:
                     'fix_test_enforcement_high.py',
                     'add_test_category_markers.py',
                     'validate_test_enforcement.py',
-                    'comprehensive_architectural_validation.py'
+                    'comprehensive_architectural_validation.py',
                 ],
                 'layers_created': ['L_CONTRACTS'],
                 'scanners_deployed': ['generate_static_adg.py', 'generate_runtime_adg.py'],
-                'validation_tools': ['check_layer_violations_fixed.py', 'validate_test_enforcement.py']
+                'validation_tools': ['check_layer_violations_fixed.py', 'validate_test_enforcement.py'],
             },
             'remaining_work': {
                 'silent_swallowers': {
                     'high_remaining': metrics['silent_swallowers']['remaining_high'],
                     'medium_remaining': metrics['silent_swallowers']['remaining_medium'],
-                    'low_remaining': metrics['silent_swallowers']['remaining_low']
+                    'low_remaining': metrics['silent_swallowers']['remaining_low'],
                 },
                 'test_enforcement': {
                     'high_remaining': metrics['test_enforcement']['remaining_high'],
-                    'medium_remaining': metrics['test_enforcement']['medium_severity']
-                }
+                    'medium_remaining': metrics['test_enforcement']['medium_severity'],
+                },
             } if not status['overall_complete'] else {},
             'next_steps': self._generate_next_steps(status, metrics),
             'lessons_learned': [
@@ -248,15 +248,15 @@ class FinalComplianceReporter:
                 "Static/runtime ADG separation is critical for clean analysis",
                 "Fix patterns must be established before systematic application",
                 "Comprehensive validation infrastructure is essential",
-                "Progress tracking and reporting enables systematic completion"
+                "Progress tracking and reporting enables systematic completion",
             ],
             'recommendations': [
                 "Complete remaining HIGH severity silent swallower fixes",
                 "Systematically apply test enforcement fixes",
                 "Establish ongoing compliance monitoring",
                 "Document architectural policies based on lessons learned",
-                "Train team on new architectural standards"
-            ]
+                "Train team on new architectural standards",
+            ],
         }
 
         # Write report
@@ -281,7 +281,7 @@ class FinalComplianceReporter:
                 "Monitor compliance with automated checks",
                 "Prevent regressions with CI gates",
                 "Document architectural policies",
-                "Train team on new standards"
+                "Train team on new standards",
             ]
         else:
             steps = []

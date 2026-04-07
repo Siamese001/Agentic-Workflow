@@ -127,7 +127,7 @@ for filepath in ['system_learning/engines/rlhf_optimizer.py',
             d = r.hgetall(f'adg:node:{imp}')
             if d:
                 importer_names.append(
-                    f"[{d.get(b'layer',b'?').decode()}] {d.get(b'adg_name',b'?').decode().replace('ADG::Module::','')}"
+                    f"[{d.get(b'layer',b'?').decode()}] {d.get(b'adg_name',b'?').decode().replace('ADG::Module::','')}",
                 )
         print(f"\n{name} ({layer})")
         print(f"  imported by ({len(importers)} total): {importer_names if importer_names else 'NOBODY'}")

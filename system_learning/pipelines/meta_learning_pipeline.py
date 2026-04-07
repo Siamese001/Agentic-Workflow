@@ -123,21 +123,14 @@ _emit_links_execution_to_snapshot("p4", "meta_learning_pipeline", "exec_snapshot
 
 logger = logging.getLogger(__name__)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -145,18 +138,12 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_snapshots_state,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -164,6 +151,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from system_learning.arbitration.engine import ArbitrationEngine
 from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
 from system_learning.confidence.engine import HealingConfidenceScorer
+from system_learning.constraints.dampening import CooldownPolicy, SampleSizePolicy
 from system_learning.correlation.engine import RiskCorrelator
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
@@ -185,7 +173,6 @@ from system_learning.fingerprinting.engine import FailureFingerprinter
 from system_learning.invariants.freeze_gate import FreezeStateReader
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
-from system_learning.constraints.dampening import CooldownPolicy, SampleSizePolicy
 from system_learning.validators.oscillation_detector import OscillationPolicy
 from system_learning.validators.shadow_evaluator import ShadowThresholds
 
@@ -256,7 +243,7 @@ def _accumulate_shadow_telemetry(telemetry: dict[str, Any]) -> None:
 
 
 def _analyze_shadow_drift_and_write(
-    profile_id: str, now_utc: int, l4_writer: L4StateWriter
+    profile_id: str, now_utc: int, l4_writer: L4StateWriter,
 ) -> DriftSummary | None:
     """Analyze accumulated shadow telemetry and write to L4.
 
@@ -272,12 +259,12 @@ def _analyze_shadow_drift_and_write(
     if not _shadow_telemetry_batch:
         return None
     drift_summary = _shadow_drift_analyzer.analyze_batch(
-        shadow_records=_shadow_telemetry_batch, profile_id=profile_id, now_utc=now_utc
+        shadow_records=_shadow_telemetry_batch, profile_id=profile_id, now_utc=now_utc,
     )
     try:
         summary_json = drift_summary.to_canonical_json().encode("utf-8")
         l4_writer.write_l4c_shadow_drift(
-            payload_bytes=summary_json, component_name="meta-learning", created_utc=now_utc
+            payload_bytes=summary_json, component_name="meta-learning", created_utc=now_utc,
         )
     # guardian: allow-silent-swallow
     except Exception as _l4_err:
@@ -287,7 +274,7 @@ def _analyze_shadow_drift_and_write(
 
 
 def _generate_policy_recommendation_and_write(
-    drift_summary: DriftSummary, active_profile: RetrievalProfile, now_utc: int, l4_writer: L4StateWriter
+    drift_summary: DriftSummary, active_profile: RetrievalProfile, now_utc: int, l4_writer: L4StateWriter,
 ) -> PolicyRecommendation | None:
     """Generate policy recommendation from drift analysis and write to L4.
 
@@ -303,12 +290,12 @@ def _generate_policy_recommendation_and_write(
     if drift_summary is None:
         return None
     recommendation = _policy_recommendation_engine.generate_recommendation(
-        drift_summary=drift_summary, active_profile=active_profile, now_utc=now_utc
+        drift_summary=drift_summary, active_profile=active_profile, now_utc=now_utc,
     )
     try:
         recommendation_json = recommendation.to_canonical_json().encode("utf-8")
         l4_writer.write_l4c_policy_recommendation(
-            payload_bytes=recommendation_json, component_name="meta-learning", created_utc=now_utc
+            payload_bytes=recommendation_json, component_name="meta-learning", created_utc=now_utc,
         )
     # guardian: allow-silent-swallow
     except Exception as _l4_err:
@@ -336,12 +323,12 @@ def _create_proposal_and_write(
     if policy_recommendation is None:
         return None
     proposal = _proposal_manager.create_proposal(
-        recommendation=policy_recommendation, active_profile=active_profile, now_utc=now_utc
+        recommendation=policy_recommendation, active_profile=active_profile, now_utc=now_utc,
     )
     try:
         proposal_json = proposal.to_canonical_json().encode("utf-8")
         l4_writer.write_l4c_retrieval_profile_proposal(
-            payload_bytes=proposal_json, component_name="meta-learning", created_utc=now_utc
+            payload_bytes=proposal_json, component_name="meta-learning", created_utc=now_utc,
         )
     # guardian: allow-silent-swallow
     except Exception as _l4_err:
@@ -661,7 +648,7 @@ def _analyze_historical_patterns(
             return None
         # guardian: allow-magic-config
         pattern_summary = deps.pattern_analysis_engine.analyze(
-            historical_embeddings=historical_embeddings, metadata=metadata, min_cluster_size=3
+            historical_embeddings=historical_embeddings, metadata=metadata, min_cluster_size=3,
         )
         print(f"W3-PATTERN-DIGEST: {pattern_summary.pattern_digest}")
         return pattern_summary
@@ -755,7 +742,6 @@ def _retrieve_semantic_context(rca_report: Any, pattern_report: Any, now_utc: in
     import hashlib
 
     import numpy as np
-
     from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
     _live_vec = bmg_embed_text(failure_signature)
@@ -777,7 +763,7 @@ def _retrieve_semantic_context(rca_report: Any, pattern_report: Any, now_utc: in
         cosine_sim = round(
             float(
                 np.dot(query_vector, shadow_vector)
-                / (np.linalg.norm(query_vector) * np.linalg.norm(shadow_vector))
+                / (np.linalg.norm(query_vector) * np.linalg.norm(shadow_vector)),
             ),
             6,
         )
@@ -810,7 +796,7 @@ def _retrieve_semantic_context(rca_report: Any, pattern_report: Any, now_utc: in
         result_data = f"{failure_signature}|{topk_hashes}|{topk_scores}"
         artifact_hash = hashlib.sha256(result_data.encode()).hexdigest()
         _wc_dig = _wc_digest(
-            failure_signature, _vector_source, retrieval_profile.profile_id, len(topk_hashes)
+            failure_signature, _vector_source, retrieval_profile.profile_id, len(topk_hashes),
         )
         return {
             "embedding_enabled_at_time": True,
@@ -840,7 +826,7 @@ def _retrieve_semantic_context(rca_report: Any, pattern_report: Any, now_utc: in
 
 
 def run_pipeline(
-    now_utc: int, window_start_utc: int, window_end_utc: int, cfg: PipelineConfig, deps: PipelineDependencies
+    now_utc: int, window_start_utc: int, window_end_utc: int, cfg: PipelineConfig, deps: PipelineDependencies,
 ) -> tuple[Any, ...]:
     """Run end-to-end meta-learning pipeline.
 
@@ -945,7 +931,7 @@ def run_pipeline(
         and hasattr(snapshot, "drift_events")
     ):
         correlated_risk = deps.risk_correlator.build(
-            rca_report.fingerprints or [], snapshot.drift_events or []
+            rca_report.fingerprints or [], snapshot.drift_events or [],
         )
         if hasattr(rca_report, "with_correlated_risk"):
             rca_report = rca_report.with_correlated_risk(correlated_risk)
@@ -1021,7 +1007,7 @@ def run_pipeline(
             import json as _json_dpo
 
             current_threshold_config_bytes = _json_dpo.dumps(
-                current_configs, separators=(",", ":"), sort_keys=True
+                current_configs, separators=(",", ":"), sort_keys=True,
             ).encode("utf-8")
             dpo_proposal = deps.rlhf_optimizer.propose_from_dpo(
                 dpo_batch_bytes=deps.dpo_batch_bytes,
@@ -1064,12 +1050,12 @@ def run_pipeline(
             evaluate_shadow(production, shadow, cfg.shadow_thresholds)
         surface_name = getattr(pkg, "surface_name", "unknown")
         if hasattr(deps.config_provider, "get_last_update_utc") and hasattr(
-            cfg.cooldown_policy, "min_seconds_between_updates"
+            cfg.cooldown_policy, "min_seconds_between_updates",
         ):
             last_update_utc = deps.config_provider.get_last_update_utc(surface_name)
             if last_update_utc is not None:
                 assert_cooldown_ok(
-                    last_update_utc=last_update_utc, now_utc=now_utc, cooldown_policy=cfg.cooldown_policy
+                    last_update_utc=last_update_utc, now_utc=now_utc, cooldown_policy=cfg.cooldown_policy,
                 )
         else:
             last_update_utc = None
@@ -1083,7 +1069,7 @@ def run_pipeline(
             assert_min_sample_size(n_observations=n_observations, sample_policy=cfg.sample_policy)
         if hasattr(deps.config_provider, "get_param_history") and hasattr(cfg.oscillation_policy, "window"):
             param_history = deps.config_provider.get_param_history(
-                surface_name, cfg.oscillation_policy.window
+                surface_name, cfg.oscillation_policy.window,
             )
             if len(param_history) > 0:
                 freeze_decision = compute_freeze_decision(
@@ -1094,7 +1080,7 @@ def run_pipeline(
                 )
                 if freeze_decision.should_freeze:
                     raise ValidationError(
-                        f"Oscillation detected for {surface_name}: freeze until {freeze_decision.freeze_until_utc}"
+                        f"Oscillation detected for {surface_name}: freeze until {freeze_decision.freeze_until_utc}",
                     )
         validated_proposals.append(pkg)
     if deps.arbitration_engine is not None and deps.arbitration_policy is not None and validated_proposals:
@@ -1116,7 +1102,7 @@ def run_pipeline(
     intake_record = None
     if deps.healing_outcome_intake_adapter is not None:
         _window_records = deps.healing_outcome_intake_adapter.get_recent_records(
-            window_start_utc, window_end_utc
+            window_start_utc, window_end_utc,
         )
         if _window_records:
             from system_learning.types.healing_outcome_types import HealingOutcomeEvent as _WHE
@@ -1132,7 +1118,7 @@ def run_pipeline(
                                 failure_type=_s.failure_type,
                                 success=True,
                                 timestamp_utc=now_utc,
-                            )
+                            ),
                         )
                     for _ in range(_s.failure_count):
                         _window_aggregator.ingest(
@@ -1142,10 +1128,10 @@ def run_pipeline(
                                 failure_type=_s.failure_type,
                                 success=False,
                                 timestamp_utc=now_utc,
-                            )
+                            ),
                         )
             intake_record = deps.healing_outcome_intake_adapter.build_record(
-                aggregator=_window_aggregator, created_utc=now_utc, source="meta-learning-pipeline-window"
+                aggregator=_window_aggregator, created_utc=now_utc, source="meta-learning-pipeline-window",
             )
             deps.healing_outcome_intake_adapter.persist_record(intake_record)
         else:
@@ -1156,13 +1142,13 @@ def run_pipeline(
         and hasattr(intake_record, "snapshot")    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
     ):
         aggregate_snapshot = deps.healing_config_optimizer.create_snapshot_from_intake(
-            intake_record, created_utc=now_utc
+            intake_record, created_utc=now_utc,
         )
         if deps.l4_state_writer is not None:
             try:
                 payload_bytes = aggregate_snapshot.canonical_bytes()
                 deps.l4_state_writer.write_l4b_healing_snapshot(
-                    payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
+                    payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc,
                 )
             except RuntimeError as e:
                 print(f"L4 write failed: {e}")
@@ -1205,7 +1191,7 @@ def run_pipeline(
         drift_snapshot_bytes=_drift_snapshot_bytes_86,
     )
     embedding_metadata = _retrieve_semantic_context(
-        rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc
+        rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc,
     )
     if deps.cross_repo_learning_context is not None:
         embedding_metadata = {
@@ -1217,7 +1203,7 @@ def run_pipeline(
 
         active_profile = get_active_retrieval_profile(now_utc)
         drift_summary = _analyze_shadow_drift_and_write(
-            profile_id=active_profile.profile_id, now_utc=now_utc, l4_writer=deps.l4_state_writer
+            profile_id=active_profile.profile_id, now_utc=now_utc, l4_writer=deps.l4_state_writer,
         )
         if drift_summary is not None:
             drift_summary.emit_digest()
@@ -1257,28 +1243,28 @@ def run_pipeline(
             profile_proposal.emit_digest()
         if deps.healing_config_optimizer is not None:
             if hasattr(
-                deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns_and_embeddings"
+                deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns_and_embeddings",
             ):
                 threshold_proposal = (
                     deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns_and_embeddings(
-                        _8_5_aggregate_snapshot, pattern_report, embedding_metadata
+                        _8_5_aggregate_snapshot, pattern_report, embedding_metadata,
                     )
                 )
             elif hasattr(deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns"):
                 threshold_proposal = (
                     deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns(
-                        _8_5_aggregate_snapshot, pattern_report
+                        _8_5_aggregate_snapshot, pattern_report,
                     )
                 )
             else:
                 threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
-                    _8_5_aggregate_snapshot
+                    _8_5_aggregate_snapshot,
                 )
         else:
             threshold_proposal = None
         if threshold_proposal is not None and embedding_metadata:
             _artifact_hash = embedding_metadata.get("embedding_artifact_hash") or embedding_metadata.get(
-                "content_hash"
+                "content_hash",
             )
             if _artifact_hash and hasattr(threshold_proposal, "embedding_context_hash"):
                 from dataclasses import replace as _dc_replace_ec
@@ -1296,11 +1282,11 @@ def run_pipeline(
     _ag_present = deps.approval_gate is not None
     if _vs_present and (not _ag_present):
         raise PipelineError(
-            "partial injection: approval_gate required when version_store is present; both must be injected together when proposal_only=False"
+            "partial injection: approval_gate required when version_store is present; both must be injected together when proposal_only=False",
         )
     if _ag_present and (not _vs_present):
         raise PipelineError(
-            "partial injection: version_store required when approval_gate is present; both must be injected together when proposal_only=False"
+            "partial injection: version_store required when approval_gate is present; both must be injected together when proposal_only=False",
         )
     if not _vs_present:
         raise PipelineError("version_store required when proposal_only=False")

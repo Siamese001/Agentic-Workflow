@@ -4,7 +4,6 @@ Fix all generated tests to use importlib instead of direct imports.
 import pathlib
 
 
-
 def fix_test_file(test_path: pathlib.Path):
     """Fix a test file to use importlib."""
     content = test_path.read_text(encoding='utf-8')

@@ -44,78 +44,78 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Complexity score of policy being evaluated",
                 provenance="policy.complexity.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="compliance_risk_level",
                 feature_type=FeatureType.NUMERIC,
                 description="Compliance and regulatory risk level",
                 provenance="policy.compliance.risk_level",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="historical_false_positive_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical false positive rate for similar policies",
                 provenance="history.metrics.false_positive_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="historical_false_negative_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical false negative rate for similar policies",
                 provenance="history.metrics.false_negative_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="business_impact_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Business impact score of policy decision",
                 provenance="policy.business.impact_score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="stakeholder_criticality",
                 feature_type=FeatureType.NUMERIC,
                 description="Criticality of affected stakeholders",
                 provenance="policy.stakeholders.criticality",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="audit_requirement_level",
                 feature_type=FeatureType.NUMERIC,
                 description="Level of audit and monitoring requirements",
                 provenance="policy.audit.requirement_level",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="risk_mitigation_effectiveness",
                 feature_type=FeatureType.NUMERIC,
                 description="Effectiveness of existing risk mitigations",
                 provenance="policy.mitigation.effectiveness",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="regulatory_change_frequency",
                 feature_type=FeatureType.NUMERIC,
                 description="Frequency of regulatory changes in this domain",
                 provenance="environment.regulatory.change_frequency",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="precedent_strength",
                 feature_type=FeatureType.NUMERIC,
                 description="Strength of existing precedents for this policy type",
                 provenance="policy.precedent.strength",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="l5_risk_calibrator",
             schema_version="1.0",
             description="Features for L5 risk calibration model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -146,7 +146,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
             "exception_handling": 0.15,
             "cross_dependencies": 0.2,
             "temporal_constraints": 0.1,
-            "stakeholder_count": 0.1
+            "stakeholder_count": 0.1,
         }
 
         score = 0.0
@@ -204,7 +204,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
             "violation_severity": 0.25,
             "audit_frequency": 0.2,
             "reporting_complexity": 0.15,
-            "change_management": 0.1
+            "change_management": 0.1,
         }
 
         score = 0.0
@@ -322,7 +322,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
             "operational_impact": 0.25,
             "reputational_impact": 0.2,
             "customer_impact": 0.15,
-            "strategic_impact": 0.1
+            "strategic_impact": 0.1,
         }
 
         score = 0.0
@@ -384,7 +384,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
             "regulator": 0.8,
             "investor": 0.7,
             "executive": 0.9,
-            "board": 1.0
+            "board": 1.0,
         }
 
         total_criticality = 0.0

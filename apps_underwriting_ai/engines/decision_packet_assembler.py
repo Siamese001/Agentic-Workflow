@@ -1,19 +1,19 @@
 """
 Decision Packet Assembler - Merges hypothesis, features, validators into decision outputs.
 """
-from typing import List, Optional
 from dataclasses import dataclass, field
+from typing import List, Optional
 
+from ..engines.evidence_register_engine import EvidenceRegister
 from ..types import (
-    UnderwritingRequest,
-    RiskFeatures,
+    AuditTrace,
     DecisionMemo,
     DecisionPacket,
-    AuditTrace,
-    EvidenceItem,
     DecisionState,
+    EvidenceItem,
+    RiskFeatures,
+    UnderwritingRequest,
 )
-from ..engines.evidence_register_engine import EvidenceRegister
 
 # L4 retrieval wiring (Turn 3, Wave 37): Import creates ADG edge to L4_state
 
@@ -47,7 +47,7 @@ class DecisionPacketAssembler:
 
     def assemble(
         self,
-        input_data: AssemblerInput
+        input_data: AssemblerInput,
     ) -> tuple[DecisionMemo, DecisionPacket, AuditTrace]:
         """
         Assemble all decision outputs.
@@ -84,7 +84,7 @@ class DecisionPacketAssembler:
                     evidence_type=entry.evidence_type,
                     source_ref=entry.evidence_source,
                     source_excerpt=entry.supporting_excerpt,
-                    confidence=entry.confidence
+                    confidence=entry.confidence,
                 ))
 
         memo = DecisionMemo(
@@ -100,7 +100,7 @@ class DecisionPacketAssembler:
             missing_information=input_data.missing_info,
             evidence_register=evidence_items,
             confidence_score=input_data.confidence_score,
-            human_review_reason=input_data.human_review_reason
+            human_review_reason=input_data.human_review_reason,
         )
 
         return memo
@@ -134,7 +134,7 @@ class DecisionPacketAssembler:
             exception_flags=input_data.policy_exceptions,
             confidence_score=input_data.confidence_score,
             review_required=review_required,
-            review_reason=input_data.human_review_reason
+            review_reason=input_data.human_review_reason,
         )
 
         return packet
@@ -151,7 +151,7 @@ class DecisionPacketAssembler:
                     "entry_id": entry.entry_id,
                     "claim_category": entry.claim_category,
                     "evidence_source": entry.evidence_source,
-                    "confidence": entry.confidence
+                    "confidence": entry.confidence,
                 })
 
         trace = AuditTrace(
@@ -164,7 +164,7 @@ class DecisionPacketAssembler:
             routing_outcome=None,  # Would be set by core
             decision_proposal=input_data.recommended_decision,
             human_review_triggered=input_data.human_review_reason is not None,
-            determinism_digest=None  # Would be set by core
+            determinism_digest=None,  # Would be set by core
         )
 
         return trace

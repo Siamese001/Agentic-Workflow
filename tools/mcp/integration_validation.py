@@ -45,7 +45,7 @@ class MCPIntegrationValidator:
             "api_integration",
             "data_processing",
             "testing_workflow",
-            "deployment_validation"
+            "deployment_validation",
         ]
 
         for scenario in scenarios:
@@ -140,7 +140,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run tests
       run: python -m pytest tests/
-"""
+""",
         }
 
         for file_path, content in test_files.items():
@@ -158,7 +158,7 @@ jobs:
             "start_time": time.time(),
             "success": True,
             "steps": [],
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -202,7 +202,7 @@ jobs:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -224,7 +224,7 @@ jobs:
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -246,7 +246,7 @@ jobs:
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -268,7 +268,7 @@ jobs:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -296,7 +296,7 @@ jobs:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -361,7 +361,7 @@ if __name__ == '__main__':
                 capture_output=True,
                 text=True,
                 timeout=30,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -389,7 +389,7 @@ if __name__ == '__main__':
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -446,7 +446,7 @@ Returns:
                 documents=[doc_content],
                 embeddings=embedding.tolist(),
                 ids=["api_docs"],
-                metadatas=[{"type": "api_documentation", "module": "main"}]
+                metadatas=[{"type": "api_documentation", "module": "main"}],
             )
 
             start_time = time.time()
@@ -455,7 +455,7 @@ Returns:
             query_embedding = model.encode(["main function"])
             results = collection.query(
                 query_embeddings=query_embedding.tolist(),
-                n_results=1
+                n_results=1,
             )
 
             end_time = time.time()
@@ -484,7 +484,7 @@ Returns:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -506,7 +506,7 @@ Returns:
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -557,7 +557,7 @@ Returns:
             endpoints = [
                 ("https://httpbin.org/get", "GET"),
                 ("https://httpbin.org/post", "POST"),
-                ("https://httpbin.org/put", "PUT")
+                ("https://httpbin.org/put", "PUT"),
             ]
 
             results = []
@@ -575,7 +575,7 @@ Returns:
                     "method": method,
                     "status_code": response.status_code,
                     "duration": end_time - start_time,
-                    "success": response.status_code == 200
+                    "success": response.status_code == 200,
                 })
 
             step["duration"] = sum(r["duration"] for r in results)
@@ -628,7 +628,7 @@ Returns:
             api_data = [
                 "User profile API endpoint returns user information",
                 "Product catalog API provides product details and pricing",
-                "Order management API handles order creation and tracking"
+                "Order management API handles order creation and tracking",
             ]
 
             embeddings = model.encode(api_data)
@@ -636,7 +636,7 @@ Returns:
                 documents=api_data,
                 embeddings=embeddings.tolist(),
                 ids=[f"api_{i}" for i in range(len(api_data))],
-                metadatas=[{"type": "api_documentation", "index": i} for i in range(len(api_data))]
+                metadatas=[{"type": "api_documentation", "index": i} for i in range(len(api_data))],
             )
 
             start_time = time.time()
@@ -697,7 +697,7 @@ print(f'Total: {total}')
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -732,7 +732,7 @@ print(f'Total: {total}')
             data_docs = [
                 "Item 1 has value 100 and is in the low price range",
                 "Item 2 has value 200 and is in the medium price range",
-                "Item 3 has value 300 and is in the high price range"
+                "Item 3 has value 300 and is in the high price range",
             ]
 
             embeddings = model.encode(data_docs)
@@ -740,7 +740,7 @@ print(f'Total: {total}')
                 documents=data_docs,
                 embeddings=embeddings.tolist(),
                 ids=[f"data_{i}" for i in range(len(data_docs))],
-                metadatas=[{"item_id": i+1, "value": (i+1)*100} for i in range(len(data_docs))]
+                metadatas=[{"item_id": i+1, "value": (i+1)*100} for i in range(len(data_docs))],
             )
 
             start_time = time.time()
@@ -771,7 +771,7 @@ print(f'Total: {total}')
                 capture_output=True,
                 text=True,
                 timeout=30,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -795,7 +795,7 @@ print(f'Total: {total}')
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -852,7 +852,7 @@ print(f'Total: {total}')
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=self.temp_workspace
+                cwd=self.temp_workspace,
             )
             end_time = time.time()
 
@@ -975,7 +975,7 @@ print(f'Total: {total}')
             "duration": time.time() - self.start_time,
             "repository": str(REPO_ROOT),
             "workspace": str(self.temp_workspace),
-            "results": self.results
+            "results": self.results,
         }
 
         try:

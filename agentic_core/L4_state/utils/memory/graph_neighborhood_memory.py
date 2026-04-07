@@ -133,7 +133,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -517,7 +516,7 @@ class GraphNeighborhoodMemory:
 
             # Traverse the graph to find related entities
             paths = self._graph_store.traverse(
-                start_entity.id, max_depth=max_depth, relation_types=relation_types
+                start_entity.id, max_depth=max_depth, relation_types=relation_types,
             )
 
             # Collect unique entity IDs from paths
@@ -538,7 +537,7 @@ class GraphNeighborhoodMemory:
 
             logger.info(
                 f"GraphNeighborhoodMemory[Graph]: Found {len(related_cards)} cards "
-                f"within {max_depth} hops of {adg_entity_name}"
+                f"within {max_depth} hops of {adg_entity_name}",
             )
             return related_cards
 
@@ -583,14 +582,14 @@ class GraphNeighborhoodMemory:
             # Sort by centrality (descending)
             high_centrality_cards.sort(
                 key=lambda c: self._graph_store.get_centrality(
-                    self._graph_store.search_entities(c.adg_entity_name, limit=1)[0].id
+                    self._graph_store.search_entities(c.adg_entity_name, limit=1)[0].id,
                 ) if self._graph_store.search_entities(c.adg_entity_name, limit=1) else 0.0,
                 reverse=True,
             )
 
             logger.info(
                 f"GraphNeighborhoodMemory[Graph]: Found {len(high_centrality_cards)} "
-                f"high-centrality cards (>= {min_centrality})"
+                f"high-centrality cards (>= {min_centrality})",
             )
             return high_centrality_cards
 

@@ -64,12 +64,12 @@ _REACT_MODULES = frozenset(
         "agentic_core/L1_cognition/enforcement/react_strategy.py",
         "agentic_core/L1_cognition/engines/react_engine.py",
         "agentic_core/L1_cognition/config/react_config.py",
-    }
+    },
 )
 _LATE_CHUNK_MODULES = frozenset(
     {
         "agentic_core/utils/workflow_engines/late_chunking.py",
-    }
+    },
 )
 
 # ADG layer values: L0, L1, L2, L3, L4, L5, L6, L_APP, L_OPS, L_PG,
@@ -197,7 +197,7 @@ def _detect_violations_for_surface(
                     "target_path": target_path,
                     "target_layer": target_layer,
                     "relation_type": row_dict.get("relation_type", ""),
-                }
+                },
             )
     return violations
 
@@ -269,15 +269,15 @@ def main() -> int:
     )
     print(
         f"[ADG-AUDIT] react_nodes={report['react_node_count']}  "
-        f"fan_in={report['react_fan_in']}  fan_out={report['react_fan_out']}"
+        f"fan_in={report['react_fan_in']}  fan_out={report['react_fan_out']}",
     )
     print(
         f"[ADG-AUDIT] chunk_nodes={report['late_chunk_node_count']}  "
-        f"fan_in={report['late_chunk_fan_in']}  fan_out={report['late_chunk_fan_out']}"
+        f"fan_in={report['late_chunk_fan_in']}  fan_out={report['late_chunk_fan_out']}",
     )
     print(
         f"[ADG-AUDIT] layer_violations={report['layer_violation_count']}  "
-        f"dead_imports={report['dead_imports_in_surface']}"
+        f"dead_imports={report['dead_imports_in_surface']}",
     )
     print(f"[ADG-AUDIT] Report: {_REPORT_OUT}")
     if report["layer_violation_count"] > 0:

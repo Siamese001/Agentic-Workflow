@@ -149,7 +149,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -231,7 +230,7 @@ class HealingMemoryEmbedder:
             "fallback_hashes": 0,
             "batch_operations": 0,
             "errors": 0,
-        }
+        },
     )
 
     def __new__(cls, *args, **kwargs):
@@ -254,7 +253,7 @@ class HealingMemoryEmbedder:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryEmbedder.reset_instance"
+            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryEmbedder.reset_instance",
         )
 
         global _embedder_singleton
@@ -312,7 +311,7 @@ class HealingMemoryEmbedder:
         return None
 
     def embed_healing_pattern(
-        self, violation: dict[str, Any], healing_result: dict[str, Any]
+        self, violation: dict[str, Any], healing_result: dict[str, Any],
     ) -> list[float] | None:
         """
         Generate embedding for a healing pattern (violation + result).

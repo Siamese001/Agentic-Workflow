@@ -31,7 +31,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
     # Gate 2: Dependency Graph Gate
     try:
         result = subprocess.run(
-            ["python", "tools/adg/adg_stale_guard.py"], capture_output=True, text=True, timeout=60
+            ["python", "tools/adg/adg_stale_guard.py"], capture_output=True, text=True, timeout=60,
         )
         if result.returncode != 0:
             issues.append("ADG freshness gate failed")
@@ -41,7 +41,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
     # Gate 3: Test Integrity Gate
     try:
         result = subprocess.run(
-            ["python", "ops_scripts/ci/check_test_integrity.py"], capture_output=True, text=True, timeout=30
+            ["python", "ops_scripts/ci/check_test_integrity.py"], capture_output=True, text=True, timeout=30,
         )
         if result.returncode != 0:
             issues.append("Test integrity gate failed")

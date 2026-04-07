@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -184,7 +183,7 @@ _emit_proposal_commits_routing("p1", "heal_llm_seam_types", "routing_commit")
 
 # Capability token: only standard_heal may set this to True
 _HEAL_SEAM_CAPABILITY: contextvars.ContextVar[bool] = contextvars.ContextVar(
-    "_HEAL_SEAM_CAPABILITY", default=False
+    "_HEAL_SEAM_CAPABILITY", default=False,
 )
 
 
@@ -213,7 +212,7 @@ def assert_heal_seam_capability() -> None:
     if not _HEAL_SEAM_CAPABILITY.get():
         raise HealSeamBypassError(
             "LLM escalation attempted outside canonical seam (standard_heal). "
-            "Direct calls to DEFAULT_HEAL_LLM_CALLER are forbidden."
+            "Direct calls to DEFAULT_HEAL_LLM_CALLER are forbidden.",
         )
 
 
@@ -344,7 +343,7 @@ class HealBudgetCaps:
 _ESCALATION_COUNT: contextvars.ContextVar[int] = contextvars.ContextVar("_ESCALATION_COUNT", default=0)
 _HIGH_TIER_COUNT: contextvars.ContextVar[int] = contextvars.ContextVar("_HIGH_TIER_COUNT", default=0)
 _BUDGET_CAPS: contextvars.ContextVar[HealBudgetCaps | None] = contextvars.ContextVar(
-    "_BUDGET_CAPS", default=None
+    "_BUDGET_CAPS", default=None,
 )
 
 
@@ -373,7 +372,7 @@ def increment_escalation_count(tier: str | None = None) -> None:
     current = _ESCALATION_COUNT.get()
     if current >= caps.max_escalations_per_run:
         raise HealBudgetExceededError(
-            f"Escalation budget exceeded: {current} >= {caps.max_escalations_per_run}"
+            f"Escalation budget exceeded: {current} >= {caps.max_escalations_per_run}",
         )
 
     _ESCALATION_COUNT.set(current + 1)
@@ -383,7 +382,7 @@ def increment_escalation_count(tier: str | None = None) -> None:
         high_current = _HIGH_TIER_COUNT.get()
         if high_current >= caps.max_high_tier_per_run:
             raise HealBudgetExceededError(
-                f"HIGH-tier budget exceeded: {high_current} >= {caps.max_high_tier_per_run}"
+                f"HIGH-tier budget exceeded: {high_current} >= {caps.max_high_tier_per_run}",
             )
         _HIGH_TIER_COUNT.set(high_current + 1)
 
@@ -483,7 +482,7 @@ def emit_heal_telemetry(
             raise ValueError(
                 f"Telemetry artifact conflict: {filepath} exists with different content. "
                 f"Expected hash: {hashlib.sha256(content_bytes).hexdigest()[:16]}, "
-                f"Found hash: {hashlib.sha256(existing).hexdigest()[:16]}"
+                f"Found hash: {hashlib.sha256(existing).hexdigest()[:16]}",
             )
         # Already exists with identical content, no-op
         return filepath
@@ -505,7 +504,7 @@ REPO_HEAL_ALLOWLIST_EXTENSIONS = frozenset(
         ".md",
         ".txt",
         ".json",
-    }
+    },
 )
 
 
@@ -657,7 +656,7 @@ def build_repo_heal_plan(repo_root: str) -> RepoHealPlan:
                     operation="validate",
                     reason="baseline_scan",
                     priority=10,
-                )
+                ),
             )
 
     # Sort operations deterministically

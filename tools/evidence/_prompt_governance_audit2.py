@@ -13,7 +13,7 @@ def main():
     cur.execute(
         "SELECT source_file, symbol, COUNT(*) FROM edges "
         "WHERE relation_type = 'generates_prompt' "
-        "GROUP BY source_file, symbol ORDER BY source_file"
+        "GROUP BY source_file, symbol ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]} | {r[1]} | count={r[2]}")
@@ -22,7 +22,7 @@ def main():
     cur.execute(
         "SELECT source_file, symbol, COUNT(*) FROM edges "
         "WHERE relation_type = 'instruction_injection_source' "
-        "GROUP BY source_file, symbol"
+        "GROUP BY source_file, symbol",
     )
     for r in cur.fetchall():
         print(f"  {r[0]} | {r[1]} | count={r[2]}")
@@ -31,7 +31,7 @@ def main():
     cur.execute(
         "SELECT source_file, symbol, COUNT(*) FROM edges "
         "WHERE relation_type = 'consumes_prompt' "
-        "GROUP BY source_file, symbol"
+        "GROUP BY source_file, symbol",
     )
     for r in cur.fetchall():
         print(f"  {r[0]} | {r[1]} | count={r[2]}")
@@ -40,7 +40,7 @@ def main():
     cur.execute(
         "SELECT source_file, symbol, COUNT(*) FROM edges "
         "WHERE relation_type = 'prompt_template_used_by' "
-        "GROUP BY source_file, symbol ORDER BY source_file"
+        "GROUP BY source_file, symbol ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]} | {r[1]} | count={r[2]}")
@@ -51,7 +51,7 @@ def main():
         "SELECT DISTINCT source_file FROM edges "
         "WHERE source_file LIKE 'apps_%/reasoning/%' "
         "AND source_file NOT LIKE '%__init__%' "
-        "ORDER BY source_file"
+        "ORDER BY source_file",
     )
     all_agents = [r[0] for r in cur.fetchall()]
 
@@ -59,7 +59,7 @@ def main():
         "SELECT DISTINCT source_file FROM edges "
         "WHERE source_file LIKE 'apps_%/reasoning/%' "
         "AND relation_type IN ('generates_prompt', 'consumes_prompt', "
-        "'instruction_injection_source', 'prompt_template_used_by') "
+        "'instruction_injection_source', 'prompt_template_used_by') ",
     )
     agents_with_prompt = {r[0] for r in cur.fetchall()}
 

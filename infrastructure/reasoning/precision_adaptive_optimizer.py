@@ -83,7 +83,7 @@ class PrecisionOptimizationParameters:
             "cache_ttl_seconds": self.cache_ttl_seconds,
             "cost_per_request": self.cost_per_request,
             "latency_target_ms": self.latency_target_ms,
-            "throughput_target_rps": self.throughput_target_rps
+            "throughput_target_rps": self.throughput_target_rps,
         }, sort_keys=True)
         checksum = hashlib.sha256(content.encode()).hexdigest()[:16]
         object.__setattr__(self, '_checksum', checksum)
@@ -104,7 +104,7 @@ class PrecisionOptimizationParameters:
             "cache_ttl_seconds": self.cache_ttl_seconds,
             "cost_per_request": self.cost_per_request,
             "latency_target_ms": self.latency_target_ms,
-            "throughput_target_rps": self.throughput_target_rps
+            "throughput_target_rps": self.throughput_target_rps,
         }, sort_keys=True)
         expected = hashlib.sha256(content.encode()).hexdigest()[:16]
         return self.checksum == expected
@@ -138,7 +138,7 @@ class PrecisionPerformanceMetrics:
             "token_usage": self.token_usage,
             "throughput_rps": self.throughput_rps,
             "cpu_usage_percent": self.cpu_usage_percent,
-            "memory_usage_percent": self.memory_usage_percent
+            "memory_usage_percent": self.memory_usage_percent,
         }
 
 
@@ -394,7 +394,7 @@ class PrecisionFeatureExtractor:
             "load_factor",
             "cost_trend",
             "latency_trend",
-            "success_trend"
+            "success_trend",
         ]
 
     def extract_features(self, metrics_history: list[PrecisionPerformanceMetrics], current_params: PrecisionOptimizationParameters) -> list[float]:
@@ -458,7 +458,7 @@ class PrecisionFeatureExtractor:
             load_factor,
             cost_trend,
             latency_trend,
-            success_trend
+            success_trend,
         ]
 
         # Ensure all features are finite
@@ -513,7 +513,7 @@ class PrecisionAdaptiveOptimizer:
                 timeout_seconds=30.0 * (layer_types.index(layer_type) + 1),
                 cost_per_request=0.001 * (layer_types.index(layer_type) + 1),
                 latency_target_ms=50.0 * (layer_types.index(layer_type) + 1),
-                throughput_target_rps=1000.0 / (layer_types.index(layer_type) + 1)
+                throughput_target_rps=1000.0 / (layer_types.index(layer_type) + 1),
             )
 
     async def add_performance_metrics(self, layer_type: str, metrics: PrecisionPerformanceMetrics) -> None:
@@ -554,7 +554,7 @@ class PrecisionAdaptiveOptimizer:
             "old_params": current_params.to_dict(),
             "new_params": new_params.to_dict(),
             "suggestions": suggestions,
-            "metrics_count": len(metrics_list)
+            "metrics_count": len(metrics_list),
         }
 
         self.optimization_history.append(optimization_record)
@@ -591,7 +591,7 @@ class PrecisionAdaptiveOptimizer:
                 "similarity_threshold": 0.01,
                 "top_k": 1,
                 "token_budget": 50,
-                "timeout_seconds": 1.0
+                "timeout_seconds": 1.0,
             }
         else:
             adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
@@ -608,14 +608,14 @@ class PrecisionAdaptiveOptimizer:
                 "similarity_threshold": 0.02,
                 "top_k": 2,
                 "token_budget": 100,
-                "timeout_seconds": 2.0
+                "timeout_seconds": 2.0,
             }
         elif avg_suggestion < 0.4:
             adjustments = {
                 "similarity_threshold": -0.02,
                 "top_k": -2,
                 "token_budget": -100,
-                "timeout_seconds": -2.0
+                "timeout_seconds": -2.0,
             }
         else:
             adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
@@ -632,14 +632,14 @@ class PrecisionAdaptiveOptimizer:
                 "similarity_threshold": 0.05,
                 "top_k": 5,
                 "token_budget": 500,
-                "timeout_seconds": 5.0
+                "timeout_seconds": 5.0,
             }
         else:
             adjustments = {
                 "similarity_threshold": -0.05,
                 "top_k": -5,
                 "token_budget": -500,
-                "timeout_seconds": -5.0
+                "timeout_seconds": -5.0,
             }
 
         return self._apply_adjustments(current_params, adjustments, factor=0.7)
@@ -654,7 +654,7 @@ class PrecisionAdaptiveOptimizer:
                 "similarity_threshold": 0.03,  # Higher threshold = less processing
                 "top_k": -3,  # Fewer results
                 "token_budget": -200,  # Less tokens
-                "timeout_seconds": -1.0  # Shorter timeout
+                "timeout_seconds": -1.0,  # Shorter timeout
             }
         else:
             adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
@@ -671,7 +671,7 @@ class PrecisionAdaptiveOptimizer:
                 "similarity_threshold": 0.04,  # Higher threshold = faster
                 "top_k": -2,  # Fewer results = faster
                 "token_budget": -100,  # Less processing
-                "timeout_seconds": -3.0  # Much shorter timeout
+                "timeout_seconds": -3.0,  # Much shorter timeout
             }
         else:
             adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
@@ -688,7 +688,7 @@ class PrecisionAdaptiveOptimizer:
                 "similarity_threshold": -0.02,  # Lower threshold = more hits
                 "top_k": 3,  # More results
                 "token_budget": 300,  # More capacity
-                "timeout_seconds": 2.0  # Longer timeout for more processing
+                "timeout_seconds": 2.0,  # Longer timeout for more processing
             }
         else:
             adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
@@ -719,7 +719,7 @@ class PrecisionAdaptiveOptimizer:
             cache_ttl_seconds=current_params.cache_ttl_seconds,
             cost_per_request=current_params.cost_per_request,
             latency_target_ms=current_params.latency_target_ms,
-            throughput_target_rps=current_params.throughput_target_rps
+            throughput_target_rps=current_params.throughput_target_rps,
         )
 
     async def train_models(self, layer_type: str) -> dict[str, bool]:
@@ -783,7 +783,7 @@ class PrecisionAdaptiveOptimizer:
             model_status[name] = {
                 "trained": model.is_trained(),
                 "samples": getattr(model, 'training_samples', 0),
-                "feature_importance": model.get_feature_importance() if model.is_trained() else {}
+                "feature_importance": model.get_feature_importance() if model.is_trained() else {},
             }
 
         return {
@@ -796,7 +796,7 @@ class PrecisionAdaptiveOptimizer:
             },
             "metrics_count": {
                 layer_type: len(history) for layer_type, history in self.metrics_history.items()
-            }
+            },
         }
 
     def set_optimization_strategy(self, strategy: OptimizationStrategy) -> None:
@@ -818,5 +818,5 @@ __all__ = [
     "PrecisionLinearRegression",
     "PrecisionNeuralNetwork",
     "PrecisionFeatureExtractor",
-    "PrecisionAdaptiveOptimizer"
+    "PrecisionAdaptiveOptimizer",
 ]

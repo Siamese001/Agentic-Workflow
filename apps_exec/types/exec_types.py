@@ -17,7 +17,7 @@ BriefTone = Literal["board-ready", "cto-ready", "recruiter-friendly", "technical
 
 EmphasisArea = Literal[
     "governance", "orchestration", "rag", "commercialization",
-    "safety", "observability", "determinism"
+    "safety", "observability", "determinism",
 ]
 
 BriefStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
@@ -156,5 +156,5 @@ class RunSummary(BaseModel):
                 "sections_generated": 6,
                 "capabilities_extracted": 12,
                 "quality_score": 0.85,
-            }
+            },
         }

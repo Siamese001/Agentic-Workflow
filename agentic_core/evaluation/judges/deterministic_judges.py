@@ -47,7 +47,7 @@ _P0_GOVERNANCE_DIMS = frozenset(
         "snapshots_state",
         "emits_replay_key",
         "emits_determinism_digest",
-    }
+    },
 )
 
 # ---------------------------------------------------------------------------
@@ -60,7 +60,7 @@ _FORBIDDEN_IMPORTS = frozenset(
         "shutil.rmtree",
         "ctypes",
         "pickle",
-    }
+    },
 )
 
 _IMPORT_ALLOWLIST_PATHS = frozenset(
@@ -68,7 +68,7 @@ _IMPORT_ALLOWLIST_PATHS = frozenset(
         "ops_scripts/",
         "tools/",
         "tests/",
-    }
+    },
 )
 
 
@@ -144,11 +144,11 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
                             "target_layer": target_layer,
                             "source_file": edge.get("source_file", ""),
                             "line_no": edge.get("line_no", 0),
-                        }
+                        },
                     ),
                     file_path=edge.get("source_file", ""),
                     line_no=edge.get("line_no", 0),
-                )
+                ),
             )
 
     if total == 0:
@@ -167,7 +167,7 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
     if violations:
         suggestions.append(
             f"Fix {len(violations)} layer boundary violation(s): "
-            f"{module_layer} should not import from higher layers"
+            f"{module_layer} should not import from higher layers",
         )
 
     return JudgeVerdict(
@@ -218,13 +218,13 @@ def judge_qual_001(bundle: EvidenceBundle) -> JudgeVerdict:
                 value=json.dumps(edge),
                 file_path=edge.get("source_file", ""),
                 line_no=edge.get("line_no", 0),
-            )
+            ),
         )
 
     suggestions = []
     if violation_count > 0:
         suggestions.append(
-            f"Reduce {violation_count} anti-pattern violation(s) to improve code quality"
+            f"Reduce {violation_count} anti-pattern violation(s) to improve code quality",
         )
 
     return JudgeVerdict(
@@ -268,7 +268,7 @@ def judge_qual_002(bundle: EvidenceBundle) -> JudgeVerdict:
     suggestions = []
     if fanout > threshold:
         suggestions.append(
-            f"Module has {fanout} outgoing calls — consider splitting into smaller modules"
+            f"Module has {fanout} outgoing calls — consider splitting into smaller modules",
         )
 
     return JudgeVerdict(
@@ -397,7 +397,7 @@ def judge_cov_001(bundle: EvidenceBundle) -> JudgeVerdict:
     suggestions = []
     if missing:
         suggestions.append(
-            f"Wire missing governance dims: {', '.join(sorted(missing))}"
+            f"Wire missing governance dims: {', '.join(sorted(missing))}",
         )
 
     evidence_items = [
@@ -470,7 +470,7 @@ def judge_gov_002(bundle: EvidenceBundle) -> JudgeVerdict:
     ungoverned = total_writes - governed_writes
     if ungoverned > 0:
         suggestions.append(
-            f"Route {ungoverned} direct write(s) through UniversalWriteGateway"
+            f"Route {ungoverned} direct write(s) through UniversalWriteGateway",
         )
 
     return JudgeVerdict(
@@ -531,7 +531,7 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
                         value=target_name,
                         file_path=edge.get("source_file", ""),
                         line_no=edge.get("line_no", 0),
-                    )
+                    ),
                 )
 
     score = 1.0 if not violations else 0.0
@@ -541,7 +541,7 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
     if violations:
         forbidden_found = {v.key for v in violations}
         suggestions.append(
-            f"Remove forbidden import(s): {', '.join(sorted(forbidden_found))}"
+            f"Remove forbidden import(s): {', '.join(sorted(forbidden_found))}",
         )
 
     return JudgeVerdict(

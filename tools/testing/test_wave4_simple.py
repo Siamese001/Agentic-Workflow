@@ -25,13 +25,13 @@ def test_query_routing():
         ("Find failures related to memory leaks", "failure_analysis"),
         ("What were the recent commits?", "historical_analysis"),
         ("How does execution work?", "execution_intelligence"),
-        ("What is the system architecture?", "structural_analysis")
+        ("What is the system architecture?", "structural_analysis"),
     ]
 
     available_collections = [
         "repo_code_chunks", "repo_symbols", "repo_arch_docs",
         "repo_adg_graph", "repo_tests_guardrails",
-        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca"
+        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca",
     ]
 
     routing_success = 0
@@ -68,20 +68,20 @@ def test_reranking_engine():
             content="UniversalWriteGateway write operations implementation",
             metadata={"artifact_type": "code", "layer": "L2", "file_path": "uwg.py"},
             score=0.8,
-            collection="repo_code_chunks"
+            collection="repo_code_chunks",
         ),
         RetrievalResult(
             content="ADG static scanner dependency graph analysis",
             metadata={"artifact_type": "sym", "layer": "L4", "file_path": "scanner.py"},
             score=0.7,
-            collection="repo_symbols"
+            collection="repo_symbols",
         ),
         RetrievalResult(
             content="L1 cognition semantic retrieval components",
             metadata={"artifact_type": "code", "layer": "L1", "file_path": "retriever.py"},
             score=0.6,
-            collection="repo_code_chunks"
-        )
+            collection="repo_code_chunks",
+        ),
     ]
 
     dummy_fusion = FusionResult(
@@ -90,14 +90,14 @@ def test_reranking_engine():
         fusion_strategy="score_fusion",
         total_results=3,
         execution_time_ms=50.0,
-        query_variations_used=["explain UWG", "describe UniversalWriteGateway"]
+        query_variations_used=["explain UWG", "describe UniversalWriteGateway"],
     )
 
     try:
         rerank_result = reranker.rerank_results(
             fusion_result=dummy_fusion,
             query="What does UWG do?",
-            max_results=10
+            max_results=10,
         )
 
         print(f"Original results: {len(rerank_result.original_results)}")
@@ -181,7 +181,7 @@ def test_fusion_strategies():
             "reciprocal_rank_fusion",
             "score_fusion",
             "collection_priority_fusion",
-            "hybrid_fusion"
+            "hybrid_fusion",
         ]
 
         print("Available fusion strategies:")
@@ -206,7 +206,7 @@ def verify_wave4_artifacts():
         "agentic_core/L1_cognition/engines/reranking_engine.py",
         "agentic_core/L1_cognition/engines/advanced_semantic_retriever.py",
         "test_wave4_advanced_retrieval.py",
-        "test_wave4_simple.py"
+        "test_wave4_simple.py",
     ]
 
     for artifact in artifacts:

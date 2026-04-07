@@ -159,10 +159,10 @@ class ChunkManifestRegistry:
         """
         _trace_id = f"l4d_store_{manifest.chunk_id[:16]}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ChunkManifestRegistry.store_manifest"
+            _trace_id, LayerSegment.L4_STATE, "ChunkManifestRegistry.store_manifest",
         )
         _emit_records_learning_event(
-            _trace_id, "chunk_manifest_stored", f"doc:{manifest.doc_id}"
+            _trace_id, "chunk_manifest_stored", f"doc:{manifest.doc_id}",
         )
 
         if manifest.fact_vec:
@@ -445,7 +445,7 @@ class ChunkManifestRegistry:
             return True
 
         computed_hash = hashlib.sha256(
-            json.dumps(manifest.fact_vec, sort_keys=True).encode()
+            json.dumps(manifest.fact_vec, sort_keys=True).encode(),
         ).hexdigest()[:16]
 
         return computed_hash == manifest.fact_vec_hash

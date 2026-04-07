@@ -149,7 +149,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     """
     version_missing = _count_exported(conn, "StateVersionMissingError", "state_transition_registry")
     commit_exported = _count_exported(
-        conn, "commit_versioned_state_transition", "commit_versioned_state_transition"
+        conn, "commit_versioned_state_transition", "commit_versioned_state_transition",
     )
     commit_in_run_state = _count_in_file(conn, "commit_versioned_state_transition", "run_state_authority")
     commit_in_scoped = _count_in_file(conn, "commit_versioned_state_transition", "run_scoped_state_authority")
@@ -165,7 +165,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"in run_state_authority={commit_in_run_state} (>=1), "
             f"in run_scoped_state_authority={commit_in_scoped} (>=1), "
             f"StateTransitionRecord exported={state_transition_record}",
-        )
+        ),
     )
     return ok
 
@@ -195,7 +195,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"SnapshotPolicy exported={snapshot_policy} (>=1), "
             f"snapshots_state non-test sources={snapshots_edges} (>=1), "
             f"snapshots_state L4 sources={snapshots_l4}",
-        )
+        ),
     )
     return ok
 
@@ -228,7 +228,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"read_versioned_state exported={read_versioned} (>=1), "
             f"reads_runtime_state non-test sources={reads_edges} (>=1), "
             f"reads_runtime_state L4 sources={reads_l4}",
-        )
+        ),
     )
     return ok
 
@@ -258,7 +258,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"conflict_detected non-test sources={conflict_edges}, "
             f"StateVersionRegistry exported={registry_exported} (>=1), "
             f"writes_through non-test sources={writes_through}",
-        )
+        ),
     )
     return ok
 
@@ -276,7 +276,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     """
     lineage_error = _count_exported(conn, "SnapshotLineageError", "state_transition_registry")
     transition_function = _count_exported(
-        conn, "state_transition_committed", "commit_versioned_state_transition"
+        conn, "state_transition_committed", "commit_versioned_state_transition",
     )
     transition_edges = _count_distinct_sources(conn, "state_transition_committed", NON_TEST)
     snapshots_edges = _count_distinct_sources(conn, "snapshots_state", NON_TEST)
@@ -294,7 +294,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"state_transition_committed non-test sources={transition_edges}, "
             f"snapshots_state non-test sources={snapshots_edges} (>=1), "
             f"observes_runtime_state non-test sources={observes_state} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -364,7 +364,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"OR symbol LIKE '%SnapshotPolicy%' OR symbol LIKE '%StateVersionMissing%' "
         f"OR symbol LIKE '%StateConflict%' OR symbol LIKE '%UnversionedState%' "
         f"OR symbol LIKE '%SnapshotLineage%') "
-        f"{NON_TEST} LIMIT 20"
+        f"{NON_TEST} LIMIT 20",
     )
     rows = c.fetchall()
     if rows:
@@ -380,7 +380,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"OR symbol LIKE '%StateTransitionRecord%' OR symbol LIKE '%StateContext%' "
         f"OR symbol LIKE '%ActorContext%' OR symbol LIKE '%MutationPayload%') "
         f"AND (source_file LIKE '%run_state_authority%' OR source_file LIKE '%run_scoped_state_authority%') "
-        f"{NON_TEST} LIMIT 15"
+        f"{NON_TEST} LIMIT 15",
     )
     rows = c.fetchall()
     if rows:
@@ -392,7 +392,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     print("\n  state_transition_committed sources (non-test, up to 10):")
     c.execute(
         f"SELECT DISTINCT source_file FROM edges "
-        f"WHERE relation_type='state_transition_committed' {NON_TEST} LIMIT 10"
+        f"WHERE relation_type='state_transition_committed' {NON_TEST} LIMIT 10",
     )
     for (f,) in c.fetchall():
         print(f"    {f}")

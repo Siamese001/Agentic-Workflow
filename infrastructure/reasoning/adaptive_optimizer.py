@@ -229,7 +229,7 @@ class PerformanceAnalyzer:
             # Variability
             math.sqrt(
                 sum((m.latency_ms - sum(m.latency_ms for m in recent) / len(recent)) ** 2 for m in recent)
-                / len(recent)
+                / len(recent),
             ),
             len(recent) / self.history_size,  # Utilization
         ]
@@ -304,7 +304,7 @@ class CostAnalyzer:
                     "type": "increase_threshold",
                     "description": "Increase similarity threshold to reduce false positives",
                     "expected_savings": "15-25%",
-                }
+                },
             )
 
         elif layer_type == LayerType.RAG_RETRIEVAL and avg_cost > 0.07:
@@ -313,7 +313,7 @@ class CostAnalyzer:
                     "type": "reduce_top_k",
                     "description": "Reduce Top-K to limit document retrieval",
                     "expected_savings": "10-20%",
-                }
+                },
             )
 
         elif layer_type == LayerType.AGENTIC_ACTION and avg_cost > 0.15:
@@ -322,7 +322,7 @@ class CostAnalyzer:
                     "type": "optimize_timeout",
                     "description": "Optimize timeout to reduce unnecessary processing",
                     "expected_savings": "5-15%",
-                }
+                },
             )
 
         return suggestions
@@ -601,7 +601,7 @@ class AdaptiveOptimizer:
         return score / weight_sum if weight_sum > 0 else 0.5
 
     def _calculate_improvement(
-        self, old_params: OptimizationParameters, new_params: OptimizationParameters, layer_type: LayerType
+        self, old_params: OptimizationParameters, new_params: OptimizationParameters, layer_type: LayerType,
     ) -> dict[str, float]:
         """Calculate expected improvement."""
         old_cost = self.cost_analyzer.predict_cost(layer_type, old_params)

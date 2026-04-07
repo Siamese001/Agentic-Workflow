@@ -58,7 +58,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
         "execution": ["## Rules", "## Success Criteria"],
         "rca": ["## Violation", "## Root Cause", "## Corrective Actions"],
         "gap_analysis": ["## Gap Register", "## Execution Plan"],
-        "investigation": ["## Findings", "## Evidence"]
+        "investigation": ["## Findings", "## Evidence"],
     }
 
     required_sections = section_requirements.get(plan_type, [])
@@ -206,7 +206,7 @@ def find_plans_needing_sections(repo_root: Path) -> list[Path]:
                     "execution": ["## Rules", "## Success Criteria"],
                     "rca": ["## Violation", "## Root Cause", "## Corrective Actions"],
                     "gap_analysis": ["## Gap Register", "## Execution Plan"],
-                    "investigation": ["## Findings", "## Evidence"]
+                    "investigation": ["## Findings", "## Evidence"],
                 }
 
                 required_sections = section_requirements.get(plan_type, [])

@@ -5,7 +5,6 @@ import logging
 import time
 from typing import Any
 
-
 Logger: Any = logging.getLogger(__name__)
 
 class GenerateSubjectLine:

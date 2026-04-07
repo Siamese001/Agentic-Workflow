@@ -491,7 +491,7 @@ def main() -> None:
         print(f"DRY RUN: {total_files} files would be fixed")
     else:
         print(
-            f"DONE: {total_files} files fixed, {total_replacements} string replacements, {total_new_imports} import names added"
+            f"DONE: {total_files} files fixed, {total_replacements} string replacements, {total_new_imports} import names added",
         )
     if errors:
         print(f"ERRORS ({len(errors)}):")

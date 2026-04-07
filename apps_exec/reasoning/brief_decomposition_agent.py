@@ -181,7 +181,7 @@ class BriefDecomposer:
                     word_count_target=word_count,
                     dependencies=self._determine_dependencies(section_type, components),
                     key_messages=self._generate_key_messages(section_type, audience_persona),
-                )
+                ),
             )
 
         # Determine narrative flow
@@ -226,7 +226,7 @@ class BriefDecomposer:
                         audience_persona=persona,
                         source_material_summary=source_material[:500],
                         evidence_gaps=["decomposition_failed"],
-                    )
+                    ),
                 )
 
         return results

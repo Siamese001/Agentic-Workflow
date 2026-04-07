@@ -304,7 +304,7 @@ def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
 
 
 _AGENT_LOW_CONFIDENCE_ROOTS: frozenset[str] = frozenset(
-    {TESTS_DIR, "docs", "data", "artifacts", OPS_SCRIPTS_DIR}
+    {TESTS_DIR, "docs", "data", "artifacts", OPS_SCRIPTS_DIR},
 )
 
 

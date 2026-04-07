@@ -18,41 +18,9 @@ from agentic_core.L1_cognition.types.rag_types import (
 )
 from agentic_core.L1_cognition.types.search_types import SearchResponse
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    _emit_records_telemetry_event,  # noqa: E402
 )
+
 
 class ContextAssembler:
     """Assembles context from search results for RAG generation."""
@@ -60,7 +28,7 @@ class ContextAssembler:
     def __init__(
         self,
         search_engine: SearchFusionEngine,
-        config: RAGConfig | None = None
+        config: RAGConfig | None = None,
     ) -> None:
         """Initialize the context assembler.
 
@@ -76,7 +44,7 @@ class ContextAssembler:
         self._assembly_stats: dict[str, list[float]] = {
             "assembly_time": [],
             "context_length": [],
-            "item_count": []
+            "item_count": [],
         }
 
     async def assemble_context(self, query: RAGQuery) -> RAGContext:
@@ -102,12 +70,12 @@ class ContextAssembler:
 
             # Step 4: Apply length constraints
             final_items, truncation_applied = self._apply_length_constraints(
-                filtered_items, query
+                filtered_items, query,
             )
 
             # Step 5: Calculate statistics
             context = self._create_context(
-                query, final_items, truncation_applied, start_time
+                query, final_items, truncation_applied, start_time,
             )
 
             # Update statistics
@@ -118,7 +86,7 @@ class ContextAssembler:
 
             _emit_records_telemetry_event(
                 "context_assembler",
-                f"context_assembled_{context.total_items}_items_{context.total_length}_chars"
+                f"context_assembled_{context.total_items}_items_{context.total_length}_chars",
             )
 
             return context
@@ -139,7 +107,7 @@ class ContextAssembler:
                 assembly_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
                 assembly_method="error",
                 truncation_applied=False,
-                warnings=[f"Context assembly failed: {str(e)}"]
+                warnings=[f"Context assembly failed: {str(e)}"],
             )
 
     async def _search_for_context(self, query: RAGQuery) -> SearchResponse:
@@ -160,7 +128,7 @@ class ContextAssembler:
                 include_communities=query.include_communities,
                 include_entities=True,
                 entity_types=query.search_filters.get("entity_types"),
-                relation_types=query.search_filters.get("relation_types")
+                relation_types=query.search_filters.get("relation_types"),
             )
 
         # Execute search
@@ -171,7 +139,7 @@ class ContextAssembler:
     def _convert_to_context_items(
         self,
         search_response: SearchResponse,
-        query: RAGQuery
+        query: RAGQuery,
     ) -> list[ContextItem]:
         """Convert search results to context items."""
         context_items = []
@@ -198,7 +166,7 @@ class ContextAssembler:
                 context_type=context_type,
                 hierarchy_level=result.metadata.get("community_level"),
                 surrounding_context=result.context,
-                formatted_content=None  # Will be formatted later
+                formatted_content=None,  # Will be formatted later
             )
 
             context_items.append(item)
@@ -208,7 +176,7 @@ class ContextAssembler:
     def _filter_and_rank_items(
         self,
         items: list[ContextItem],
-        query: RAGQuery
+        query: RAGQuery,
     ) -> list[ContextItem]:
         """Filter and rank context items."""
         # Apply filters
@@ -241,7 +209,7 @@ class ContextAssembler:
     def _apply_diversity_filtering(
         self,
         items: list[ContextItem],
-        query: RAGQuery
+        query: RAGQuery,
     ) -> list[ContextItem]:
         """Apply diversity filtering to avoid redundant items."""
         if len(items) <= query.min_context_items:
@@ -301,7 +269,7 @@ class ContextAssembler:
     def _apply_length_constraints(
         self,
         items: list[ContextItem],
-        query: RAGQuery
+        query: RAGQuery,
     ) -> tuple[list[ContextItem], bool]:
         """Apply length constraints to context items."""
         total_length = sum(len(item.content) for item in items)
@@ -338,7 +306,7 @@ class ContextAssembler:
                         context_type="truncated",
                         hierarchy_level=item.hierarchy_level,
                         surrounding_context=item.surrounding_context,
-                        formatted_content=None
+                        formatted_content=None,
                     )
                     truncated_items.append(truncated_item)
                 break
@@ -350,7 +318,7 @@ class ContextAssembler:
         query: RAGQuery,
         items: list[ContextItem],
         truncation_applied: bool,
-        start_time: datetime
+        start_time: datetime,
     ) -> RAGContext:
         """Create the RAG context object."""
         # Calculate statistics
@@ -396,7 +364,7 @@ class ContextAssembler:
             assembly_time_ms=assembly_time,
             assembly_method="filtered_ranked",
             truncation_applied=truncation_applied,
-            warnings=warnings
+            warnings=warnings,
         )
 
     def _estimate_tokens(self, text_length: int) -> int:
@@ -414,14 +382,14 @@ class ContextAssembler:
                     "avg": sum(values) / len(values),
                     "min": min(values),
                     "max": max(values),
-                    "count": len(values)
+                    "count": len(values),
                 }
             else:
                 stats[metric] = {
                     "avg": 0.0,
                     "min": 0.0,
                     "max": 0.0,
-                    "count": 0
+                    "count": 0,
                 }
 
         return stats
@@ -430,7 +398,7 @@ class ContextAssembler:
 # Factory function
 def create_context_assembler(
     search_engine: SearchFusionEngine,
-    config: RAGConfig | None = None
+    config: RAGConfig | None = None,
 ) -> ContextAssembler:
     """Create a context assembler."""
     return ContextAssembler(search_engine, config)

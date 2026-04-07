@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"historical_success_rate exported={success_rate} (>=1), "
             f"historical_failure_rate exported={failure_rate} (>=1), "
             f"HistoricalMetrics exported={metrics_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -152,7 +152,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"latency_profile_hash exported={latency_hash} (>=1), "
             f"strategy_evaluated exported={evaluation_emitter} (>=1), "
             f"ExecutionStrategy exported={strategy_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -199,7 +199,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"trace_id exported={trace_id} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1), "
             f"ExecutionContext exported={execution_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -241,7 +241,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"unsafe_strategy_rejected exported={unsafe_emitter} (>=1), "
             f"ExecutionStrategy exported={strategy_context} (>=1), "
             f"choose_execution_strategy exported={choose_function} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -283,7 +283,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"check_policy_compliance exported={compliance_function} (>=1), "
             f"policy_compliance_checked exported={compliance_emitter} (>=1), "
             f"ExecutionContext exported={execution_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -330,7 +330,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L2_execution/adaptation%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

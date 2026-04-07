@@ -96,21 +96,14 @@ _emit_links_execution_to_snapshot("p4", "rag_sovereignty", "exec_snapshot_link")
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -118,17 +111,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -191,7 +178,7 @@ _DECISION_NODES: frozenset[str] = frozenset(
         canonical_name("Decision", "RoutingDecision"),
         canonical_name("Decision", "SafetyThreshold"),
         canonical_name("Decision", "TierSelection"),
-    }
+    },
 )
 _C0_CONTEXT_NODE = canonical_name("Retrieval", "C0Context")
 _RAG_MODULE_PATTERNS: frozenset[str] = frozenset(
@@ -203,7 +190,7 @@ _RAG_MODULE_PATTERNS: frozenset[str] = frozenset(
         "bmg_embedding_similarity",
         "healing_contexts",
         "retrieval",
-    }
+    },
 )
 _DECISION_MODULE_PATTERNS: frozenset[str] = frozenset(
     {
@@ -213,7 +200,7 @@ _DECISION_MODULE_PATTERNS: frozenset[str] = frozenset(
         "escalation_router",
         "timeshift_router",
         "assembly_stage",
-    }
+    },
 )
 
 
@@ -260,7 +247,7 @@ class RAGSovereigntyReport:
 
 
 def check_rag_sovereignty(
-    result: ScanResult, client: ADGMCPClient | None = None, extra_edges: list[dict] | None = None
+    result: ScanResult, client: ADGMCPClient | None = None, extra_edges: list[dict] | None = None,
 ) -> RAGSovereigntyReport:
     """Enforce RAG C0 informational-only policy.
 
@@ -285,7 +272,7 @@ def check_rag_sovereignty(
                 to_module=_module_rel(edge.to_name),
                 source_file=edge.source_file,
                 line_no=edge.line_no,
-            )
+            ),
         )
     if extra_edges:
         for ee in extra_edges:
@@ -300,7 +287,7 @@ def check_rag_sovereignty(
                         to_module=_module_rel(to_adg),
                         source_file="<synthetic>",
                         line_no=0,
-                    )
+                    ),
                 )
     proof_digest = _compute_proof_digest(result, violations)
     report = RAGSovereigntyReport(
@@ -342,7 +329,7 @@ def _persist_proof(result: ScanResult, report: RAGSovereigntyReport, client: ADG
 
 def _ensure_graph_nodes(client: ADGMCPClient) -> None:
     client.upsert_entity(
-        _C0_CONTEXT_NODE, "retrieval_component", ["component:C0Context", f"policy_id:{_POLICY_ID}"]
+        _C0_CONTEXT_NODE, "retrieval_component", ["component:C0Context", f"policy_id:{_POLICY_ID}"],
     )
     for dn in sorted(_DECISION_NODES):
         client.upsert_entity(dn, "decision_point", [f"policy_id:{_POLICY_ID}"])

@@ -34,7 +34,7 @@ class ConcreteRetrievalMetric(RetrievalMetric):
         return "test_retrieval"
 
     def compute(
-        self, prediction: list[str], ground_truth: list[str], context: object = None
+        self, prediction: list[str], ground_truth: list[str], context: object = None,
     ) -> float:
         if not prediction or not ground_truth:
             return 0.0
@@ -71,7 +71,7 @@ class ConcreteClassificationMetric(ClassificationMetric):
         return correct / len(ground_truth)
 
     def confusion(
-        self, prediction: list, ground_truth: list
+        self, prediction: list, ground_truth: list,
     ) -> ConfusionMatrix:
         tp = sum(1 for p, g in zip(prediction, ground_truth) if p == g == 1)
         fp = sum(1 for p, g in zip(prediction, ground_truth) if p == 1 and g == 0)

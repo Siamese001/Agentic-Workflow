@@ -27,7 +27,6 @@ import re
 import sys
 from typing import Optional
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -48,7 +47,7 @@ def _collect_targets(
         if not report_file.exists():
             print(f"  WARNING: Report file not found: {rp} — SKIPPING", file=sys.stderr)
             continue
-        
+
         try:
             data = json.loads(report_file.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
@@ -120,7 +119,7 @@ def _strip_symbols_from_file(
 
         # Single-line import: from X import A, B, C
         single_match = re.match(
-            r'^(\s*from\s+\S+\s+import\s+)(.*?)(\s*)$', str(line).rstrip('\n\r')
+            r'^(\s*from\s+\S+\s+import\s+)(.*?)(\s*)$', str(line).rstrip('\n\r'),
         )
         if single_match and '(' not in line:
             prefix = single_match.group(1)
@@ -286,7 +285,7 @@ def main() -> int:
 
     if args.log:
         pathlib.Path(args.log).write_text(
-            json.dumps(change_log, indent=2), encoding="utf-8"
+            json.dumps(change_log, indent=2), encoding="utf-8",
         )
         print(f"Change log written to: {args.log}")
 

@@ -64,10 +64,10 @@ class UWGMigrationRewriter(ast.NodeTransformer):
                     func=ast.Attribute(
                         value=ast.Name(id='uwg', ctx=ast.Load()),
                         attr='write_through',
-                        ctx=ast.Load()
+                        ctx=ast.Load(),
                     ),
                     args=[path_expr, content_expr],
-                    keywords=[]
+                    keywords=[],
                 )
 
             # Detect Path.write_bytes(data)
@@ -84,10 +84,10 @@ class UWGMigrationRewriter(ast.NodeTransformer):
                     func=ast.Attribute(
                         value=ast.Name(id='uwg', ctx=ast.Load()),
                         attr='write_through',
-                        ctx=ast.Load()
+                        ctx=ast.Load(),
                     ),
                     args=[path_expr, data_expr],
-                    keywords=[ast.keyword(arg='binary', value=ast.Constant(value=True))]
+                    keywords=[ast.keyword(arg='binary', value=ast.Constant(value=True))],
                 )
 
         # Continue traversal
@@ -100,7 +100,7 @@ def inject_uwg_import(tree: ast.Module) -> ast.Module:
     uwg_import = ast.ImportFrom(
         module='agentic_core.L2_execution.UniversalWriteGateway',
         names=[ast.alias(name='UniversalWriteGateway', asname='uwg')],
-        level=0
+        level=0,
     )
 
     # Check if already imported
@@ -178,18 +178,16 @@ def main():
     parser = argparse.ArgumentParser(description='Bulk UWG write-path migration')
     parser.add_argument('--layer', choices=['L_APP', 'L3', 'L0', 'L2', 'L4', 'L5'], help='Layer to migrate')
     parser.add_argument('--all', action='store_true', help='Migrate all layers')
-    parser.add_argument('--dry-run', action='store_true', help='Dry run (no writes)')
-    parser.add_argument('--execute', action='store_true', help='Execute migration (write files)')
+    parser.add_argument('--report', '-r', action='store_true', help='Report-only mode (no writes)')
+    parser.add_argument('--dry-run', action='store_true', help=argparse.SUPPRESS)  # Deprecated, use --report
+    parser.add_argument('--execute', action='store_true', help=argparse.SUPPRESS)  # Deprecated, default is now execute
 
     args = parser.parse_args()
 
     if not args.layer and not args.all:
         parser.error('Must specify --layer or --all')
 
-    if args.execute and args.dry_run:
-        parser.error('Cannot specify both --execute and --dry-run')
-
-    dry_run = not args.execute
+    dry_run = args.report
 
     layers = ['L_APP', 'L3', 'L0'] if args.all else [args.layer]
 
@@ -228,7 +226,7 @@ def main():
     print(f"{'='*60}")
 
     if dry_run:
-        print("\nRe-run with --execute to apply changes")
+        print("\nRe-run without --report to apply changes")
 
 
 if __name__ == '__main__':

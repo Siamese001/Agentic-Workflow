@@ -31,7 +31,7 @@ class MCPRedisFix:
                 db=0,
                 decode_responses=True,
                 socket_timeout=30,
-                socket_connect_timeout=10
+                socket_connect_timeout=10,
             )
             # Test connection
             self.redis_client.ping()
@@ -290,7 +290,7 @@ if __name__ == "__main__":
             process = subprocess.Popen(
                 cmd, shell=True, cwd=str(self.repo_root),
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, bufsize=1, universal_newlines=True
+                text=True, bufsize=1, universal_newlines=True,
             )
 
             output_lines = []
@@ -312,7 +312,7 @@ if __name__ == "__main__":
                         "success": False,
                         "stdout": "\n".join(output_lines),
                         "stderr": f"Command timed out after {timeout}s",
-                        "timed_out": True
+                        "timed_out": True,
                     }
 
             return_code = process.poll()
@@ -322,7 +322,7 @@ if __name__ == "__main__":
                 "stdout": "\n".join(output_lines),
                 "stderr": "",
                 "returncode": return_code,
-                "timed_out": False
+                "timed_out": False,
             }
 
         except Exception as e:
@@ -330,7 +330,7 @@ if __name__ == "__main__":
                 "success": False,
                 "stdout": "",
                 "stderr": f"Error running command: {str(e)}",
-                "timed_out": False
+                "timed_out": False,
             }
 
     def test_mcp_redis_functions(self) -> dict:

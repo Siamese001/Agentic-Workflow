@@ -340,7 +340,7 @@ class CostGuardrailMixin:
         return input_cost + output_cost
 
     def record_token_usage(
-        self, prompt_tokens: int, completion_tokens: int, model: str = "unknown"
+        self, prompt_tokens: int, completion_tokens: int, model: str = "unknown",
     ) -> TokenUsage:
         """
         Record token usage for an operation.
@@ -361,17 +361,17 @@ class CostGuardrailMixin:
         with self._cost_lock:
             if total_tokens > self._budget_config.max_tokens_per_request:
                 raise BudgetExceededError(
-                    "tokens_per_request", total_tokens, self._budget_config.max_tokens_per_request
+                    "tokens_per_request", total_tokens, self._budget_config.max_tokens_per_request,
                 )
             new_session_total = self._total_session_tokens + total_tokens
             if new_session_total > self._budget_config.max_tokens_per_session:
                 raise BudgetExceededError(
-                    "tokens_per_session", new_session_total, self._budget_config.max_tokens_per_session
+                    "tokens_per_session", new_session_total, self._budget_config.max_tokens_per_session,
                 )
             new_session_cost = self._total_session_cost + estimated_cost
             if new_session_cost > self._budget_config.max_cost_per_session_usd:
                 raise BudgetExceededError(
-                    "cost_per_session", new_session_cost, self._budget_config.max_cost_per_session_usd
+                    "cost_per_session", new_session_cost, self._budget_config.max_cost_per_session_usd,
                 )
             usage = TokenUsage(
                 prompt_tokens=prompt_tokens,
@@ -385,7 +385,7 @@ class CostGuardrailMixin:
             self._total_session_cost = new_session_cost
             self._check_budget_alerts()
         Logger.debug(
-            f"[COST] Recorded: {total_tokens} tokens, ${estimated_cost:.4f} (Session: {self._total_session_tokens} tokens, ${self._total_session_cost:.4f})"
+            f"[COST] Recorded: {total_tokens} tokens, ${estimated_cost:.4f} (Session: {self._total_session_tokens} tokens, ${self._total_session_cost:.4f})",
         )
         return usage
 
@@ -396,13 +396,13 @@ class CostGuardrailMixin:
         if token_pct >= threshold and "token_threshold" not in self._budget_alerts_sent:
             self._budget_alerts_sent.add("token_threshold")
             Logger.warning(
-                f"[COST ALERT] Token usage at {token_pct:.0%} of session limit ({self._total_session_tokens}/{self._budget_config.max_tokens_per_session})"
+                f"[COST ALERT] Token usage at {token_pct:.0%} of session limit ({self._total_session_tokens}/{self._budget_config.max_tokens_per_session})",
             )
         cost_pct = self._total_session_cost / self._budget_config.max_cost_per_session_usd
         if cost_pct >= threshold and "cost_threshold" not in self._budget_alerts_sent:
             self._budget_alerts_sent.add("cost_threshold")
             Logger.warning(
-                f"[COST ALERT] Cost at {cost_pct:.0%} of session limit (${self._total_session_cost:.4f}/${self._budget_config.max_cost_per_session_usd})"
+                f"[COST ALERT] Cost at {cost_pct:.0%} of session limit (${self._total_session_cost:.4f}/${self._budget_config.max_cost_per_session_usd})",
             )
 
     def check_recursion_limit(self, operation_id: str) -> None:
@@ -419,7 +419,7 @@ class CostGuardrailMixin:
             current_depth = self._call_stack.count(operation_id)
             if current_depth >= self._budget_config.max_recursive_depth:
                 raise RecursionLimitError(
-                    "recursive_depth", current_depth, self._budget_config.max_recursive_depth
+                    "recursive_depth", current_depth, self._budget_config.max_recursive_depth,
                 )
             self._call_stack.append(operation_id)
 
@@ -451,7 +451,7 @@ class CostGuardrailMixin:
             current_count = self._loop_counters.get(loop_id, 0) + 1
             if current_count > self._budget_config.max_loop_iterations:
                 raise RecursionLimitError(
-                    "loop_iterations", current_count, self._budget_config.max_loop_iterations
+                    "loop_iterations", current_count, self._budget_config.max_loop_iterations,
                 )
             self._loop_counters[loop_id] = current_count
             return current_count

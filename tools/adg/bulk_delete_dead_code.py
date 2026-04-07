@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Bulk delete dead code based on ADG analysis."""
+"""
+Bulk delete dead code based on ADG analysis.
+
+Default: Execute deletions (heal mode)
+Use --report for report-only mode (CI-friendly)
+"""
 
 import argparse
 import json
@@ -191,8 +196,7 @@ def main():
     parser.add_argument('--cluster', action='store_true', help='Use graph-based clustering')
     parser.add_argument('--output', help='Output JSON file for targets')
     parser.add_argument('--input', help='Input JSON file with targets to delete')
-    parser.add_argument('--dry-run', action='store_true', help='Preview deletions without executing')
-    parser.add_argument('--execute', action='store_true', help='Execute deletions')
+    parser.add_argument('--report', '-r', action='store_true', help='Report-only mode (no deletions)')
 
     args = parser.parse_args()
 
@@ -218,18 +222,18 @@ def main():
 
         print(f'Processing {len(targets)} targets...')
 
-        for target in targets[:5] if args.dry_run else targets:
+        for target in targets[:5] if args.report else targets:
             path = target.get('resolved_path', target.get('source_file', ''))
             name = target.get('adg_name', target.get('symbol', ''))
 
-            if args.dry_run:
-                print(f'[DRY-RUN] Would delete: {name} from {path}')
+            if args.report:
+                print(f'[REPORT] Would delete: {name} from {path}')
             else:
                 # Actual deletion logic would go here
                 print(f'[DELETE] {name} from {path}')
 
-        if args.dry_run:
-            print(f'\nDry run complete. Use --execute to delete {len(targets)} items.')
+        if args.report:
+            print(f'\nReport complete. Use default mode (no --report) to delete {len(targets)} items.')
         else:
             print(f'\nProcessed {len(targets)} targets.')
         return 0

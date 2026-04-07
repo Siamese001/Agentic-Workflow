@@ -60,7 +60,7 @@ class TestsIngestion:
             "test_*.py",
             "*_test.py",
             "**/test_*.py",
-            "**/*_test.py"
+            "**/*_test.py",
         ]
 
         test_files = set()
@@ -108,7 +108,7 @@ class TestsIngestion:
                     "layer": self._infer_test_layer(rel_path),
                     "subsystem": self._infer_test_subsystem(rel_path),
                     "line_count": len(content.splitlines()),
-                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16],
                 }
 
                 # Only add non-empty list fields
@@ -140,7 +140,7 @@ class TestsIngestion:
                     collection_name="repo_tests_guardrails",
                     documents=batch_docs,
                     metadatas=batch_metas,
-                    ids=batch_ids
+                    ids=batch_ids,
                 )
                 logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} test files")
 
@@ -163,7 +163,7 @@ class TestsIngestion:
             "**/validation*.py",
             "**/rules*.py",
             "**/policy*.py",
-            "**/constraint*.py"
+            "**/constraint*.py",
         ]
 
         guardrail_files = set()
@@ -217,7 +217,7 @@ class TestsIngestion:
                     "rule_count": len(guardrail_info["rules"]),
                     "validation_count": len(guardrail_info["validations"]),
                     "constraint_count": len(guardrail_info["constraints"]),
-                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16],
                 }
 
                 # Only add non-empty list fields
@@ -247,7 +247,7 @@ class TestsIngestion:
                     collection_name="repo_tests_guardrails",
                     documents=batch_docs,
                     metadatas=batch_metas,
-                    ids=batch_ids
+                    ids=batch_ids,
                 )
                 logger.info(f"Added guardrail batch {i//batch_size + 1}: {len(batch_docs)} files")
 
@@ -291,7 +291,7 @@ class TestsIngestion:
             "classes": classes,
             "functions": functions,
             "fixtures": fixtures,
-            "guardrails": list(set(guardrails))  # Remove duplicates
+            "guardrails": list(set(guardrails)),  # Remove duplicates
         }
 
     def _extract_guardrail_patterns(self, content: str) -> dict[str, list[str]]:
@@ -330,7 +330,7 @@ class TestsIngestion:
         return {
             "rules": list(set(rules)),
             "validations": list(set(validations)),
-            "constraints": list(set(constraints))
+            "constraints": list(set(constraints)),
         }
 
     def _infer_test_type(self, file_path: str) -> str:
@@ -455,7 +455,7 @@ def main():
     # Run ingestion
     ingestion = TestsIngestion(
         repo_root=args.repo_root,
-        chroma_persist_dir=args.chroma_dir
+        chroma_persist_dir=args.chroma_dir,
     )
 
     if args.dry_run:

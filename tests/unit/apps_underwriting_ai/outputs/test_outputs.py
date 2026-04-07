@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai outputs module."""
 
-import pytest
 
 
 class TestOutputsImportable:

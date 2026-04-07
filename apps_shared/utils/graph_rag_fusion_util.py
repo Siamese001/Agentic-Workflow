@@ -62,39 +62,25 @@ _emit_applies_guardrail("p0", "graph_rag_fusion_util", "p0_governance")
 _emit_reads_policy_state("p0", "graph_rag_fusion_util", "policy_binding")
 _emit_snapshots_state("p0", "graph_rag_fusion_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -406,7 +392,7 @@ class GraphRAGFusion:
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
     async def query(
-        self, natural_query: str, query_type: QueryType | None = None, max_results: int = DEFAULT_MAX_RESULTS
+        self, natural_query: str, query_type: QueryType | None = None, max_results: int = DEFAULT_MAX_RESULTS,
     ) -> FusionResult:
         """Execute a GraphRAG fusion query.
 
@@ -557,7 +543,7 @@ class GraphRAGFusion:
         if isinstance(graph_result, Exception):
             graph_result = FusionResult(query=query, query_type=QueryType.GRAPH_ONLY)
         fused_context = self._fuse_results(
-            vector_result.vector_results, graph_result.graph_results, query_type
+            vector_result.vector_results, graph_result.graph_results, query_type,
         )
         combined_sources = vector_result.sources + graph_result.sources
         combined_confidence = max(vector_result.confidence, graph_result.confidence)
@@ -577,7 +563,7 @@ class GraphRAGFusion:
         )
 
     def _fuse_results(
-        self, vector_results: list[dict[str, Any]], graph_context: GraphContext, query_type: QueryType
+        self, vector_results: list[dict[str, Any]], graph_context: GraphContext, query_type: QueryType,
     ) -> str:
         """Fuse vector and graph results into context.
 
@@ -649,7 +635,7 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 
 
 async def graphrag_query(
-    query: str, query_type: QueryType | None = None, max_results: int = DEFAULT_MAX_RESULTS, **kwargs
+    query: str, query_type: QueryType | None = None, max_results: int = DEFAULT_MAX_RESULTS, **kwargs,
 ) -> FusionResult:
     """Convenience function for GraphRAG query.
 

@@ -124,7 +124,7 @@ class InMemoryResearchStore:
                     claim_types=data.get("claim_types", {}),
                     metadata=meta,
                     similarity_score=score,
-                )
+                ),
             )
 
         return results
@@ -149,7 +149,7 @@ class InMemoryResearchStore:
                         claim_types=data.get("claim_types", {}),
                         metadata=meta,
                         similarity_score=1.0,
-                    )
+                    ),
                 )
 
         return sorted(results, key=lambda x: x.timestamp, reverse=True)[:limit]

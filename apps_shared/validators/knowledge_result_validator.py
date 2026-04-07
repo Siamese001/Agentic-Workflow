@@ -60,39 +60,25 @@ _emit_applies_guardrail("p0", "knowledge_result_validator", "p0_governance")
 _emit_reads_policy_state("p0", "knowledge_result_validator", "policy_binding")
 _emit_snapshots_state("p0", "knowledge_result_validator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -219,7 +205,7 @@ class L5ConsolidatedKnowledge:
                     "phone": "(555) 123-4567",
                     "linkedin": "linkedin.com/in/johndoe",
                 },
-            }
+            },
         }
 
     def _load_fallback_templates(self) -> dict[str, Any]:
@@ -279,7 +265,7 @@ class L5ConsolidatedKnowledge:
         if types is None:
             types: Any = ["profile", "template"]
         result: Any = KnowledgeResult(
-            user_profile=None, template=None, metadata={"query": query, "types": types}
+            user_profile=None, template=None, metadata={"query": query, "types": types},
         )
         if "profile" in types:
             result.user_profile = self._get_user_profile(query)
@@ -308,7 +294,7 @@ class L5ConsolidatedKnowledge:
         if self.pinecone_client:
             try:
                 templates = self.pinecone_client.query(
-                    vector=self._embed_query(query), top_k=1, include_metadata=True
+                    vector=self._embed_query(query), top_k=1, include_metadata=True,
                 )
                 if templates:
                     Logger.info("Retrieved template from Pinecone")
@@ -378,7 +364,7 @@ class L5ConsolidatedKnowledge:
             try:
                 embedding: Any = self._embed_query(template.get("name", ""))
                 self.pinecone_client.upsert(
-                    vectors=[{"id": template.get("id", "custom"), "values": embedding, "metadata": template}]
+                    vectors=[{"id": template.get("id", "custom"), "values": embedding, "metadata": template}],
                 )
                 Logger.info("Template added to Pinecone")
                 return True
@@ -411,7 +397,7 @@ class L5ConsolidatedKnowledge:
                 "status": "PASS" if brand_score >= 0.7 else "FAIL",
                 "score": brand_score,
                 "reason": "Brand tone and style analysis",
-            }
+            },
         )
         spam_score: Any = self._check_spam_indicators(pitch)
         evaluations.append(
@@ -420,7 +406,7 @@ class L5ConsolidatedKnowledge:
                 "status": "PASS" if spam_score <= 0.3 else "FAIL",
                 "score": spam_score,
                 "reason": "Spam and promotional content analysis",
-            }
+            },
         )
         professionalism_score: Any = self._check_professionalism(pitch)
         evaluations.append(
@@ -429,7 +415,7 @@ class L5ConsolidatedKnowledge:
                 "status": "PASS" if professionalism_score >= 0.6 else "FAIL",
                 "score": professionalism_score,
                 "reason": "Professional tone and language analysis",
-            }
+            },
         )
         pass_count: Any = sum(1 for e in evaluations if e["status"] == "PASS")
         total_count: Any = len(evaluations)
@@ -498,7 +484,7 @@ _consolidated_knowledge = None
 
 
 def get_consolidated_knowledge(
-    memory_client: Any = None, pinecone_client: Any = None
+    memory_client: Any = None, pinecone_client: Any = None,
 ) -> L5ConsolidatedKnowledge:
     """Get singleton instance of consolidated knowledge."""
     global _consolidated_knowledge

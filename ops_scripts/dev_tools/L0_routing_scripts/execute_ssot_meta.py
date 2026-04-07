@@ -39,7 +39,7 @@ def _fire_meta_learning_intake_required(
     state: Any,
     timestamp: int,
     _output_dir: Path,
-    healing_actions: list[dict] | None = None
+    healing_actions: list[dict] | None = None,
 ) -> MetaLearningResult:
     """Process healing actions for meta-learning intake.
 
@@ -90,5 +90,5 @@ def _fire_meta_learning_intake_required(
     return MetaLearningResult(
         records_persisted=records_persisted,
         proposals=tuple(proposals),
-        errors=errors
+        errors=errors,
     )

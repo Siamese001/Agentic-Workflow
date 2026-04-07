@@ -79,7 +79,7 @@ class PrecisionExtractor(ast.NodeVisitor):
         side_effect_patterns = [
             'open.', 'write.', 'read.', 'os.', 'sys.', 'subprocess.',
             'requests.', 'urllib.', 'socket.', 'sqlite3.', 'mysql.',
-            'redis.', 'mongodb.', 'print(', 'logging.'
+            'redis.', 'mongodb.', 'print(', 'logging.',
         ]
         return any(pattern in call_target for pattern in side_effect_patterns)
 

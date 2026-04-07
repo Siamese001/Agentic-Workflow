@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -434,7 +433,7 @@ def main() -> Any:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Dynamic Seal Agent - Surgical refactoring of import violations"
+        description="Dynamic Seal Agent - Surgical refactoring of import violations",
     )
     parser.add_argument("--pattern", help="Target violation pattern (e.g., 'L3 → L5')", default=None)
     parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode (no files modified)")

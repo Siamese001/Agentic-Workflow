@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -213,7 +212,7 @@ class MLWriteIntent:
     def __post_init__(self) -> None:
         if self.kind not in self._ALLOWED_KINDS:
             raise ValueError(
-                f"MLWriteIntent: kind must be one of {sorted(self._ALLOWED_KINDS)}, got {self.kind!r}"
+                f"MLWriteIntent: kind must be one of {sorted(self._ALLOWED_KINDS)}, got {self.kind!r}",
             )
         if not isinstance(self.payload, dict):
             raise TypeError(f"MLWriteIntent: payload must be a dict, got {type(self.payload).__name__}")
@@ -287,7 +286,7 @@ class MLWriteIntentExecutor:
         guardrail.check(operation="execute_ml_write", target=intent.target_path)
         if not _SANDBOX_ACTIVE:
             raise MLWriteEnvelopeViolation(
-                f"execute() called outside L2.2 commit sandbox for kind={intent.kind!r}"
+                f"execute() called outside L2.2 commit sandbox for kind={intent.kind!r}",
             )
         return {"executed": True, "kind": intent.kind, "intent_hash": intent.intent_hash}
 
@@ -301,5 +300,5 @@ def execute_ml_write_intent_outside_sandbox(intent: MLWriteIntent) -> None:
     """
     if not _SANDBOX_ACTIVE:
         raise MLWriteEnvelopeViolation(
-            f"Direct ML write attempted outside L2.2 sandbox for kind={intent.kind!r}"
+            f"Direct ML write attempted outside L2.2 sandbox for kind={intent.kind!r}",
         )

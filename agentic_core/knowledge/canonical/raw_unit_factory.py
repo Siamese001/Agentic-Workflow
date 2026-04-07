@@ -77,7 +77,7 @@ class RawUnitFactory:
         """
         trace_id = f"create_unit_{uuid.uuid4().hex[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_from_content"
+            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_from_content",
         )
 
         # Generate unique identifier
@@ -164,7 +164,7 @@ class RawUnitFactory:
         """
         trace_id = f"create_children_{parent_unit.identifier.unit_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_child_units"
+            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_child_units",
         )
 
         child_units = []
@@ -204,7 +204,7 @@ class RawUnitFactory:
         """
         trace_id = f"version_{existing_unit.identifier.unit_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_versioned_unit"
+            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_versioned_unit",
         )
 
         # Check if content actually changed
@@ -278,7 +278,7 @@ class RawUnitFactory:
         """
         trace_id = f"tombstone_{unit.identifier.unit_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.tombstone_unit"
+            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.tombstone_unit",
         )
 
         # Create tombstoned version

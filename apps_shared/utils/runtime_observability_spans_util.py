@@ -38,7 +38,7 @@ def start_span(name: str, ctx: dict[str, object] | None = None) -> dict[str, obj
         TelemetryEvent(
             name=name,
             data={"event_type": "span_start", "span_id": span_id, "ctx": ctx or {}},
-        )
+        ),
     )
     return record
 
@@ -59,5 +59,5 @@ def end_span(span_record: dict[str, object]) -> None:
                 "duration_ms": duration,
                 "ctx": span_record.get("ctx", {}),
             },
-        )
+        ),
     )

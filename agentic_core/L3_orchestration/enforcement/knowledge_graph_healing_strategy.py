@@ -2,44 +2,11 @@ from __future__ import annotations
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
     _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
     _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    _emit_validates_agent_capability,  # noqa: E402
 )
 
 _emit_routes_to_agent("p1", "knowledge_graph_healing_strategy", "L3")
@@ -59,36 +26,7 @@ from typing import Any
 from agentic_core.L0_routing.utils.filesystem_mcp_client import get_filesystem_client
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
     _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
 )
 
 Logger: Any = logging.getLogger(__name__)
@@ -130,7 +68,7 @@ class KnowledgeGraphHealingStrategy:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "KnowledgeGraphHealingStrategy.diagnose"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "KnowledgeGraphHealingStrategy.diagnose",
         )
 
         fixes: Any = []
@@ -152,7 +90,7 @@ class KnowledgeGraphHealingStrategy:
                         "reason": "Knowledge graph drift detected (Missing/Stale Entities)",
                         "priority": self.priority,
                         "strategy": self.name,
-                    }
+                    },
                 )
         Logger.info(f"[L0 KG HEALING] Diagnosed {len(fixes)} knowledge graph drift issues")
         return fixes
@@ -202,13 +140,13 @@ class KnowledgeGraphHealingStrategy:
             ]
             if entities or relations:
                 Logger.info(
-                    f"[L0 KG HEALING] Persisting {len(entities)} entities and {len(relations)} relations"
+                    f"[L0 KG HEALING] Persisting {len(entities)} entities and {len(relations)} relations",
                 )
                 persist_result: Any = await self._persist_kg_data(entities, relations, source_id)
                 if persist_result:
                     self.processed_today += 1
                     Logger.info(
-                        f"[L0 KG HEALING] KG Synchronized: {source_id} | {len(entities)}e, {len(relations)}r"
+                        f"[L0 KG HEALING] KG Synchronized: {source_id} | {len(entities)}e, {len(relations)}r",
                     )
                     return True
                 else:
@@ -216,7 +154,7 @@ class KnowledgeGraphHealingStrategy:
                     return False
             else:
                 Logger.warning(
-                    f"[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}"
+                    f"[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}",
                 )
                 return False
         except (RuntimeError, ValueError) as e:
@@ -255,7 +193,7 @@ class KnowledgeGraphHealingStrategy:
                                 "entityType": "Class",
                                 "observations": [f"Defined in {source_id} at line {node.lineno}"],
                                 "confidence": 0.95,
-                            }
+                            },
                         )
                         relations.append(
                             {
@@ -263,7 +201,7 @@ class KnowledgeGraphHealingStrategy:
                                 "to": node.name,
                                 "relationType": "DEFINES_CLASS",
                                 "confidence": 0.95,
-                            }
+                            },
                         )
                     elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         entities.append(
@@ -272,7 +210,7 @@ class KnowledgeGraphHealingStrategy:
                                 "entityType": "Function",
                                 "observations": [f"Defined in {source_id} at line {node.lineno}"],
                                 "confidence": 0.9,
-                            }
+                            },
                         )
                     elif isinstance(node, ast.Import):
                         for alias in node.names:
@@ -282,7 +220,7 @@ class KnowledgeGraphHealingStrategy:
                                     "to": alias.name,
                                     "relationType": "IMPORTS",
                                     "confidence": 0.85,
-                                }
+                                },
                             )
                     elif isinstance(node, ast.ImportFrom) and node.module:
                         relations.append(
@@ -291,7 +229,7 @@ class KnowledgeGraphHealingStrategy:
                                 "to": node.module,
                                 "relationType": "IMPORTS_FROM",
                                 "confidence": 0.85,
-                            }
+                            },
                         )
             except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 for match in re.finditer("(?m)^class (\\w+)", text):
@@ -301,7 +239,7 @@ class KnowledgeGraphHealingStrategy:
                             "entityType": "Class",
                             "observations": [f"Regex-extracted from {source_id}"],
                             "confidence": 0.7,
-                        }
+                        },
                     )
                 for match in re.finditer("(?m)^def (\\w+)", text):
                     entities.append(
@@ -310,7 +248,7 @@ class KnowledgeGraphHealingStrategy:
                             "entityType": "Function",
                             "observations": [f"Regex-extracted from {source_id}"],
                             "confidence": 0.65,
-                        }
+                        },
                     )
             result = {
                 "entities": entities,
@@ -319,7 +257,7 @@ class KnowledgeGraphHealingStrategy:
                 "extracted_at": datetime.utcnow().isoformat(),
             }
             Logger.info(
-                f"[L0 KG HEALING] Extraction complete for {source_id}: {len(entities)} entities, {len(relations)} relations"
+                f"[L0 KG HEALING] Extraction complete for {source_id}: {len(entities)} entities, {len(relations)} relations",
             )
             return result
         except (RuntimeError, ValueError) as e:
@@ -353,10 +291,10 @@ class KnowledgeGraphHealingStrategy:
                 )
             for rel in relations:
                 self._bridge.create_relation(
-                    from_entity=rel["from"], to_entity=rel["to"], relation_type=rel["relationType"]
+                    from_entity=rel["from"], to_entity=rel["to"], relation_type=rel["relationType"],
                 )
             Logger.info(
-                f"[L0 KG HEALING] Persistence complete for {source_id}: {len(entities)} entities, {len(relations)} relations"
+                f"[L0 KG HEALING] Persistence complete for {source_id}: {len(entities)} entities, {len(relations)} relations",
             )
             return True
         except (RuntimeError, ValueError) as e:

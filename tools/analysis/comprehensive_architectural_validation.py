@@ -30,7 +30,7 @@ class ComprehensiveArchitecturalValidator:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
             )
 
             layer_results = {
@@ -38,7 +38,7 @@ class ComprehensiveArchitecturalValidator:
                 'output': result.stdout,
                 'errors': result.stderr,
                 'violations': 0,
-                'compliant': result.returncode == 0
+                'compliant': result.returncode == 0,
             }
 
             # Parse violations from output
@@ -59,7 +59,7 @@ class ComprehensiveArchitecturalValidator:
                 'exit_code': -1,
                 'errors': 'Timeout',
                 'compliant': False,
-                'violations': -1
+                'violations': -1,
             }
             print("  ❌ Layer validation timed out")
         except Exception as e:
@@ -67,7 +67,7 @@ class ComprehensiveArchitecturalValidator:
                 'exit_code': -1,
                 'errors': str(e),
                 'compliant': False,
-                'violations': -1
+                'violations': -1,
             }
             print(f"  ❌ Layer validation error: {e}")
 
@@ -93,13 +93,13 @@ class ComprehensiveArchitecturalValidator:
                     'medium_severity': medium_severity,
                     'low_severity': low_severity,
                     'compliant': high_severity == 0,  # High severity must be 0
-                    'report_exists': True
+                    'report_exists': True,
                 }
             else:
                 swallower_results = {
                     'total_violations': -1,
                     'compliant': False,
-                    'report_exists': False
+                    'report_exists': False,
                 }
 
             self.validation_results['silent_swallowers'] = swallower_results
@@ -114,7 +114,7 @@ class ComprehensiveArchitecturalValidator:
             self.validation_results['silent_swallowers'] = {
                 'total_violations': -1,
                 'compliant': False,
-                'errors': str(e)
+                'errors': str(e),
             }
             print(f"  ❌ Silent swallower validation error: {e}")
 
@@ -138,13 +138,13 @@ class ComprehensiveArchitecturalValidator:
                     'high_severity': high_severity,
                     'medium_severity': medium_severity,
                     'compliant': high_severity == 0,  # High severity must be 0
-                    'report_exists': True
+                    'report_exists': True,
                 }
             else:
                 test_results = {
                     'total_violations': -1,
                     'compliant': False,
-                    'report_exists': False
+                    'report_exists': False,
                 }
 
             self.validation_results['test_enforcement'] = test_results
@@ -158,7 +158,7 @@ class ComprehensiveArchitecturalValidator:
             self.validation_results['test_enforcement'] = {
                 'total_violations': -1,
                 'compliant': False,
-                'errors': str(e)
+                'errors': str(e),
             }
             print(f"  ❌ Test enforcement validation error: {e}")
 
@@ -179,7 +179,7 @@ class ComprehensiveArchitecturalValidator:
                 'runtime_exists': len(runtime_files) > 0,
                 'clean_files': len(clean_files),
                 'runtime_files': len(runtime_files),
-                'compliant': len(clean_files) > 0 and len(runtime_files) > 0
+                'compliant': len(clean_files) > 0 and len(runtime_files) > 0,
             }
 
             self.validation_results['adg_separation'] = separation_results
@@ -193,7 +193,7 @@ class ComprehensiveArchitecturalValidator:
                 'clean_static_exists': False,
                 'runtime_exists': False,
                 'compliant': False,
-                'errors': str(e)
+                'errors': str(e),
             }
             print(f"  ❌ ADG separation validation error: {e}")
 
@@ -211,7 +211,7 @@ class ComprehensiveArchitecturalValidator:
                 'directory_exists': l_contracts_dir.exists(),
                 'init_exists': init_file.exists(),
                 'contract_exists': contract_file.exists(),
-                'compliant': l_contracts_dir.exists() and init_file.exists() and contract_file.exists()
+                'compliant': l_contracts_dir.exists() and init_file.exists() and contract_file.exists(),
             }
 
             self.validation_results['l_contracts'] = l_contracts_results
@@ -225,7 +225,7 @@ class ComprehensiveArchitecturalValidator:
             self.validation_results['l_contracts'] = {
                 'directory_exists': False,
                 'compliant': False,
-                'errors': str(e)
+                'errors': str(e),
             }
             print(f"  ❌ L_CONTRACTS validation error: {e}")
 
@@ -238,7 +238,7 @@ class ComprehensiveArchitecturalValidator:
             'silent_swallowers': {'weight': 0.25, 'required': True},
             'test_enforcement': {'weight': 0.25, 'required': True},
             'adg_separation': {'weight': 0.1, 'required': True},
-            'l_contracts': {'weight': 0.1, 'required': True}
+            'l_contracts': {'weight': 0.1, 'required': True},
         }
 
         total_score = 0
@@ -260,7 +260,7 @@ class ComprehensiveArchitecturalValidator:
                 'compliant': compliant,
                 'score': score,
                 'weight': weight,
-                'required': required
+                'required': required,
             }
 
             total_score += score
@@ -288,9 +288,9 @@ class ComprehensiveArchitecturalValidator:
                 'critical_issues': [
                     cat for cat, details in compliance_details.items()
                     if not details['compliant'] and details['required']
-                ]
+                ],
             },
-            'recommendations': self._generate_recommendations(compliance_details)
+            'recommendations': self._generate_recommendations(compliance_details),
         }
 
         report_file = PROJECT_ROOT / "tools" / "comprehensive_architectural_validation_report.json"

@@ -26,47 +26,27 @@ from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
 from agentic_core.L5_safety.types.human_decision_artifact_types import (
     HumanDecisionArtifact as L5HumanDecisionArtifact,
 )
+from agentic_core.L6_observability.types.dpo_types import DPOExampleId
 from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
     DefaultDeterministicDPOPairGenerator,
 )
-from agentic_core.L6_observability.types.dpo_types import DPOExampleId
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_applies_guardrail,
-    _emit_captures_evaluation_metric,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_healing_run,
-    _emit_emits_metric_event,
-    _emit_escalates_failure,
     _emit_feeds_meta_learning,
     _emit_improves_agent_policy,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
-    _emit_orchestrates_workflow,
     _emit_reads_policy_state,
     _emit_records_execution_trace,
-    _emit_records_healing_outcome,
     _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_records_telemetry_event,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_snapshots_state,
-    _emit_stores_embedding,
     _emit_stores_learning_state,
     _emit_triggers_alert,
     _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
     _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-    emit_determinism_digest,
-    emit_replay_key,
 )
 
 
@@ -258,7 +238,7 @@ class DeskDGovernedBoard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_human_decision"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_human_decision",
         )
 
         # Map action to human decision string
@@ -378,7 +358,7 @@ class DeskDGovernedBoard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_batch_for_rlhf"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_batch_for_rlhf",
         )
 
         if len(records) < min_pairs:

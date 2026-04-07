@@ -43,7 +43,7 @@ def main():
             print(f"\n{i}. {agent_name}")
             print(f"   Path: {info['path']}")
             print(
-                f"   Typed: {info['typed_pct']:.0f}% | Doc: {info['documented_pct']:.0f}% | schema: {info['schema_strictness']:.0f}%"
+                f"   Typed: {info['typed_pct']:.0f}% | Doc: {info['documented_pct']:.0f}% | schema: {info['schema_strictness']:.0f}%",
             )
         else:
             print(f"\n{i}. {agent_name} - NOT FOUND")

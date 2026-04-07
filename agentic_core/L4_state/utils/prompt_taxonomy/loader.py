@@ -100,7 +100,7 @@ class TemplateLoader:
         return name_map.get(category_snake.lower())
 
     def load_category_template(
-        self, category: PromptCategory, custom_path: Path | None = None, **variables: Any
+        self, category: PromptCategory, custom_path: Path | None = None, **variables: Any,
     ) -> CategoryTemplate:
         """
         Load template for a specific category.
@@ -157,7 +157,7 @@ class TemplateLoader:
         return self.registry
 
     def to_authority_slot(
-        self, category: PromptCategory, variables: dict[str, Any], source_layer: str = "L4"
+        self, category: PromptCategory, variables: dict[str, Any], source_layer: str = "L4",
     ) -> AuthoritySlot:
         """
         Load template and convert directly to AuthoritySlot.

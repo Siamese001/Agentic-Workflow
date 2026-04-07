@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -243,7 +242,7 @@ class SovereignImportSurgeon:
                         match.group(2)
                         suggested: Any = self._convert_relative_to_absolute(import_stmt, file_path)
                         violations.append(
-                            ImportViolation(str(file_path), line_num, line, "COMMENTED_IMPORT", suggested)
+                            ImportViolation(str(file_path), line_num, line, "COMMENTED_IMPORT", suggested),
                         )
                 if APPS_SHARED_DIR in str(file_path) and "P1_core" in str(file_path):
                     if not line.strip().startswith("#") and self.relative_import_pattern.search(line):
@@ -251,16 +250,16 @@ class SovereignImportSurgeon:
                         if suggested != line.strip():
                             violations.append(
                                 ImportViolation(
-                                    str(file_path), line_num, line, "RELATIVE_TO_ABSOLUTE", suggested
-                                )
+                                    str(file_path), line_num, line, "RELATIVE_TO_ABSOLUTE", suggested,
+                                ),
                             )
                 if not line.strip().startswith("#") and self.apps_shared_pattern.search(line):
                     suggested: Any = line.replace(
-                        "from apps_shared import", "from apps_shared.P1_core import"
+                        "from apps_shared import", "from apps_shared.P1_core import",
                     )
                     if suggested != line:
                         violations.append(
-                            ImportViolation(str(file_path), line_num, line, "APP_STAGING", suggested.strip())
+                            ImportViolation(str(file_path), line_num, line, "APP_STAGING", suggested.strip()),
                         )
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:

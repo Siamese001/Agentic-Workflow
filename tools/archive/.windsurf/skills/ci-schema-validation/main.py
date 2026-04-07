@@ -34,7 +34,7 @@ def validate_schema_fields(file_path: str) -> tuple[bool, str, str]:
             capture_output=True,
             text=True,
             timeout=30,
-            cwd=Path.cwd()
+            cwd=Path.cwd(),
         )
 
         success = result.returncode == 0

@@ -63,20 +63,14 @@ if TYPE_CHECKING:
     from agentic_core.L2_execution.protocol import SubphaseResult
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -84,22 +78,18 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
     emit_determinism_digest,
     emit_replay_key,
 )
+
 
 def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:
     """Normalise an agent return dict into SubphaseResult.
@@ -295,7 +285,7 @@ class ArchGovAdapter:
 
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.comprehensive_territory_audit(
-            target_territories=[territory], check_layer_boundaries=True
+            target_territories=[territory], check_layer_boundaries=True,
         )
         self._audit_report = raw if isinstance(raw, dict) else {}
         return _to_result(raw)
@@ -468,7 +458,7 @@ def build_adapters(agents: dict[str, Any], project_root: Path) -> dict[str, Any]
     adapters: dict[str, Any] = {}
     for key, adapter_cls in ADAPTER_REGISTRY.items():
         agent_cls = agents.get(key) or agents.get(
-            "conversational_repair" if key == "observability_probe" else key
+            "conversational_repair" if key == "observability_probe" else key,
         )
         if agent_cls is None:
             continue

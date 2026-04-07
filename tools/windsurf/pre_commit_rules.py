@@ -28,7 +28,7 @@ def main():
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
-        check=False
+        check=False,
     )
 
     if result.returncode != 0:
@@ -47,7 +47,7 @@ def main():
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
-        check=False
+        check=False,
     )
 
     if result.returncode != 0:
@@ -57,7 +57,7 @@ def main():
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,
-            check=False
+            check=False,
         )
 
         if result.returncode != 0:
@@ -67,7 +67,7 @@ def main():
 
         print("[" + HOOK_NAME + "] ✓ Regenerated _build/ directory")
         print(f"[{HOOK_NAME}] ⚠️  You need to stage the updated files:")
-        print(f"       git add .windsurf/rules/_build/")
+        print("       git add .windsurf/rules/_build/")
         return 1  # Block commit so user can stage the changes
 
     print(f"[{HOOK_NAME}] ✓ _build/ is up-to-date")

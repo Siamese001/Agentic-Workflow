@@ -322,7 +322,7 @@ class InvariantRunner:
             status = "PASS" if result.passed else "FAIL"
             logger.info(
                 f"Check {check.name}: {status} "
-                f"({len(result.findings)} findings, {result.checked_count} checked)"
+                f"({len(result.findings)} findings, {result.checked_count} checked)",
             )
 
         return self.results

@@ -43,78 +43,78 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Semantic similarity between query and routing options",
                 provenance="routing.semantic.similarity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="intent_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="Confidence in query intent classification",
                 provenance="routing.intent.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="context_relevance",
                 feature_type=FeatureType.NUMERIC,
                 description="Relevance of current context to routing decision",
                 provenance="routing.context.relevance",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="user_preference_score",
                 feature_type=FeatureType.NUMERIC,
                 description="User preference score for routing option",
                 provenance="routing.user.preference",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="historical_success_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical success rate for similar routing decisions",
                 provenance="routing.historical.success_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_availability",
                 feature_type=FeatureType.NUMERIC,
                 description="Current resource availability for routing",
                 provenance="routing.resource.availability",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="routing_efficiency",
                 feature_type=FeatureType.NUMERIC,
                 description="Efficiency score of routing option",
                 provenance="routing.efficiency.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="system_load_factor",
                 feature_type=FeatureType.NUMERIC,
                 description="Current system load affecting routing",
                 provenance="routing.system.load_factor",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="query_complexity",
                 feature_type=FeatureType.NUMERIC,
                 description="Complexity of the query being routed",
                 provenance="routing.query.complexity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="routing_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="Overall confidence in routing decision",
                 provenance="routing.overall.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="advanced_l0_router",
             schema_version="1.0",
             description="Enhanced features for L0 neural network routing model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -213,7 +213,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
             "recent_interactions": 0.25,
             "user_state": 0.2,
             "environmental_factors": 0.15,
-            "temporal_relevance": 0.1
+            "temporal_relevance": 0.1,
         }
 
         relevance_score = 0.0
@@ -347,7 +347,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
             "throughput": 0.25,
             "error_rate": 0.2,
             "resource_utilization": 0.15,
-            "latency": 0.1
+            "latency": 0.1,
         }
 
         efficiency_score = 0.0
@@ -402,7 +402,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
             "memory_load": 0.25,
             "disk_io": 0.2,
             "network_io": 0.15,
-            "active_connections": 0.1
+            "active_connections": 0.1,
         }
 
         load_score = 0.0
@@ -451,7 +451,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
             "intent_complexity": 0.2,
             "context_requirements": 0.15,
             "nested_queries": 0.1,
-            "special_operations": 0.1
+            "special_operations": 0.1,
         }
 
         complexity_score = 0.0
@@ -501,7 +501,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
             "context_relevance": 0.15,
             "user_preference": 0.15,
             "historical_success": 0.15,
-            "resource_availability": 0.1
+            "resource_availability": 0.1,
         }
 
         # Extract individual confidences

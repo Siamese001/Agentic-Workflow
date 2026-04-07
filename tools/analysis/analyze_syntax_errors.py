@@ -23,7 +23,7 @@ def analyze_syntax_errors():
         for dirpath, dirnames, filenames in os.walk(root_path):
             dirnames[:] = [d for d in dirnames if d not in [
                 '__pycache__', '.git', 'node_modules', 'venv', '.venv', 'env',
-                'archives', '.mypy_cache', '.pytest_cache', '.tox', 'htmlcov'
+                'archives', '.mypy_cache', '.pytest_cache', '.tox', 'htmlcov',
             ]]
             for fname in filenames:
                 if fname.endswith('.py') and not fname.endswith('.pyc'):
@@ -40,7 +40,7 @@ def analyze_syntax_errors():
                             'message': str(e),
                             'text': e.text,
                             'category': rel_path.split('/')[0] if '/' in rel_path else 'root',
-                            'size': fp.stat().st_size
+                            'size': fp.stat().st_size,
                         })
                     except Exception as e:
                         syntax_errors.append({
@@ -49,7 +49,7 @@ def analyze_syntax_errors():
                             'message': f'Non-syntax error: {str(e)}',
                             'text': '',
                             'category': rel_path.split('/')[0] if '/' in rel_path else 'root',
-                            'size': fp.stat().st_size
+                            'size': fp.stat().st_size,
                         })
 
     # Categorize by directory
@@ -77,7 +77,7 @@ def analyze_syntax_errors():
         json.dump({
             'total': len(syntax_errors),
             'categories': {k: len(v) for k, v in categories.items()},
-            'details': syntax_errors
+            'details': syntax_errors,
         }, f, indent=2)
 
     print('Detailed report saved to: syntax_error_report.json')

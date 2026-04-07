@@ -158,7 +158,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -370,7 +369,7 @@ class StateVersionedRead:
         trace_id: str,
     ) -> StateVersionedRead:
         payload = json.dumps(
-            {"value": value, "version": state_version, "namespace": namespace}, sort_keys=True, default=str
+            {"value": value, "version": state_version, "namespace": namespace}, sort_keys=True, default=str,
         )
         source_hash = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
         return cls(
@@ -425,7 +424,7 @@ class StateVersionRegistry:
         if version == 0:
             raise StateVersionMissingError(
                 f"StateVersionRegistry.load_previous_version: no previous version "
-                f"for namespace='{state_namespace}' key='{key}'"
+                f"for namespace='{state_namespace}' key='{key}'",
             )
         return version
 
@@ -463,7 +462,7 @@ class StateVersionRegistry:
                         trace_id=trace_id,
                     )
                 raise StateVersionMissingError(
-                    f"StateVersionRegistry.versioned_read: namespace '{state_namespace}' not found"
+                    f"StateVersionRegistry.versioned_read: namespace '{state_namespace}' not found",
                 )
             value = self._state[state_namespace].get(key, default)
             if value is None and default is not None:

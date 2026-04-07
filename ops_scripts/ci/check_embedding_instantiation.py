@@ -12,7 +12,6 @@ import ast
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BLOCKED_CONSTRUCTORS = {'OpenAIEmbedder', 'OpenAIEmbeddingClient', 'LocalFAISSStore', 'FAISSStore', 'SentenceTransformerEmbedder', 'BGEEmbedder', 'LocalEmbedder', 'HuggingFaceEmbedder', 'VLLMEmbedder'}
 ALLOWED_PATHS = {'system_learning/engines/embedding_service_factory.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/historical_ingestion_orchestrator.py'}

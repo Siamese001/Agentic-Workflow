@@ -17,7 +17,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 
 
 def get_python_files_fast(
-    root_dir: Path, exclude_dirs: list[str] | None = None, exclude_patterns: list[str] | None = None
+    root_dir: Path, exclude_dirs: list[str] | None = None, exclude_patterns: list[str] | None = None,
 ) -> Generator[Path, None, None]:
     """
     Fast Python file discovery with configurable filtering.
@@ -88,7 +88,7 @@ def get_canonical_path(path: Path) -> Path:
 
 
 def remove_duplicate_suffix_path(
-    duplicate_path: Path, problematic_suffixes: list[str]
+    duplicate_path: Path, problematic_suffixes: list[str],
 ) -> tuple[Path, str | None]:
     """
     Get the canonical path by removing duplicate suffix.

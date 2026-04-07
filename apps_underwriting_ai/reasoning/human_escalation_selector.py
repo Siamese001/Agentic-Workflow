@@ -37,7 +37,7 @@ class HumanEscalationSelector:
         self,
         features: RiskFeatures,
         request: UnderwritingRequest,
-        validator_results: dict
+        validator_results: dict,
     ) -> tuple[bool, List[str]]:
         """
         Determine if case should escalate to human.
@@ -98,7 +98,7 @@ class HumanEscalationSelector:
     def _is_unusual_structure(
         self,
         request: UnderwritingRequest,
-        features: RiskFeatures
+        features: RiskFeatures,
     ) -> bool:
         """Check if loan structure is unusual."""
         unusual = False
@@ -120,7 +120,7 @@ class HumanEscalationSelector:
     def _check_manual_review_triggers(
         self,
         request: UnderwritingRequest,
-        features: RiskFeatures
+        features: RiskFeatures,
     ) -> bool:
         """Check if any manual review triggers from policy are hit."""
         triggers = request.policy_context.human_review_triggers

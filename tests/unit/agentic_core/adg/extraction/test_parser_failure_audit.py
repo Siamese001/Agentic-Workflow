@@ -22,7 +22,7 @@ class TestParserFailureLogging:
                 bad_file,
                 repo_root=tmp_path,
                 layer="L2",
-                scan_mode="full"
+                scan_mode="full",
             )
 
         # Verify parse was marked as failed
@@ -54,7 +54,7 @@ class TestParserFailureLogging:
                 nonexistent,
                 repo_root=tmp_path,
                 layer="L2",
-                scan_mode="full"
+                scan_mode="full",
             )
 
         # Verify parse was marked as failed

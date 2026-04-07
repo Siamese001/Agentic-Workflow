@@ -1,11 +1,10 @@
 """
 Structured Ingestion - Normalizes and maps structured data to canonical schema.
 """
-from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime
-
+from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class IngestionMode(Enum):
@@ -95,7 +94,7 @@ class StructuredIngestion:
     def normalize_field_names(
         self,
         data: Dict[str, Any],
-        field_map: Optional[Dict[str, str]] = None
+        field_map: Optional[Dict[str, str]] = None,
     ) -> MappingResult:
         """
         Normalize field names to canonical schema.
@@ -123,7 +122,7 @@ class StructuredIngestion:
             if raw_field != canonical_field:
                 result.field_mapping_log[raw_field] = canonical_field
                 result.warnings.append(
-                    f"Mapped field '{raw_field}' to '{canonical_field}'"
+                    f"Mapped field '{raw_field}' to '{canonical_field}'",
                 )
 
         result.data = normalized
@@ -158,7 +157,7 @@ class StructuredIngestion:
 
     def standardize_periods(
         self,
-        periods: list[Dict[str, Any]]
+        periods: list[Dict[str, Any]],
     ) -> list[Dict[str, Any]]:
         """Standardize period labels and validate dates."""
         standardized = []
@@ -201,7 +200,7 @@ class StructuredIngestion:
     def validate_required_fields(
         self,
         data: Dict[str, Any],
-        required: list[str]
+        required: list[str],
     ) -> list[str]:
         """Validate that required fields are present."""
         errors = []
@@ -235,7 +234,7 @@ class StructuredIngestion:
         field_name: str,
         source_value: Any,
         normalized_value: Any,
-        transformation: Optional[str] = None
+        transformation: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Log field-level provenance information."""
         return {
@@ -243,5 +242,5 @@ class StructuredIngestion:
             "source_value": source_value,
             "normalized_value": normalized_value,
             "transformation": transformation,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }

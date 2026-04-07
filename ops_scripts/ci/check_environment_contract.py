@@ -59,7 +59,7 @@ class EnvironmentContractVisitor(ast.NodeVisitor):
                     if len(val) > 5:  # skip trivial "/" values
                         self.violations.append(
                             f"{self.filepath}:{child.lineno}: "
-                            f"hardcoded absolute path {child.value!r} — use relative or config-driven path (§20)"
+                            f"hardcoded absolute path {child.value!r} — use relative or config-driven path (§20)",
                         )
         self.generic_visit(node)
 
@@ -77,7 +77,7 @@ class EnvironmentContractVisitor(ast.NodeVisitor):
                 ):
                     self.violations.append(
                         f"{self.filepath}:{node.lineno}: "
-                        f"sys.path.{call.func.attr} in production code — forbidden (§20.5)"
+                        f"sys.path.{call.func.attr} in production code — forbidden (§20.5)",
                     )
         self.generic_visit(node)
 
@@ -86,7 +86,7 @@ class EnvironmentContractVisitor(ast.NodeVisitor):
             if alias.name.split(".")[0] in GUARDED_IMPORTS:
                 self.violations.append(
                     f"{self.filepath}:{node.lineno}: "
-                    f"import {alias.name!r} without verified availability guard (§20.5)"
+                    f"import {alias.name!r} without verified availability guard (§20.5)",
                 )
         self.generic_visit(node)
 
@@ -94,7 +94,7 @@ class EnvironmentContractVisitor(ast.NodeVisitor):
         if node.module and node.module.split(".")[0] in GUARDED_IMPORTS:
             self.violations.append(
                 f"{self.filepath}:{node.lineno}: "
-                f"from {node.module!r} import ... without verified availability guard (§20.5)"
+                f"from {node.module!r} import ... without verified availability guard (§20.5)",
             )
         self.generic_visit(node)
 

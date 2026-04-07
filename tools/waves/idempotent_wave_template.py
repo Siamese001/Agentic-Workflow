@@ -67,7 +67,7 @@ class IdempotentWave:
                     pattern_type: list(patterns)
                     for pattern_type, patterns in state.patterns_applied.items()
                 },
-                'idempotent': True
+                'idempotent': True,
             }
         return {}
 
@@ -122,7 +122,7 @@ class IdempotentWave2a(IdempotentWave):
             'target_files': len(target_files),
             'files_modified': files_modified,
             'skips_removed': skips_removed,
-            'idempotent': True
+            'idempotent': True,
         }
 
     def _find_target_files(self) -> list[Path]:
@@ -180,7 +180,7 @@ class IdempotentWave5c(IdempotentWave):
             'target_files': len(conftest_files),
             'files_modified': files_modified,
             'improvements_added': improvements_added,
-            'idempotent': True
+            'idempotent': True,
         }
 
     def _harden_conftest(self, conftest_file: Path) -> bool:

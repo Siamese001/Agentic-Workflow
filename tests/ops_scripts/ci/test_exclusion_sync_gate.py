@@ -11,15 +11,14 @@ Tests cover:
 """
 from __future__ import annotations
 
-import tempfile
+# Import the module under test
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Import the module under test
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent / "ops_scripts" / "ci"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "ops_scripts" / "ci"))
 
 import exclusion_sync_gate
 
@@ -63,8 +62,16 @@ special_dirs:
         yaml_path = tmp_path / "excluded_paths.yaml"
         yaml_path.write_text(yaml_content)
 
-        with patch.object(exclusion_sync_gate.Path, "__new__", return_value=yaml_path):
-            dirs = exclusion_sync_gate.load_yaml_exclusions()
+        # Mock the config path calculation
+        with patch.object(exclusion_sync_gate.Path, "__file__", str(yaml_path)):
+            # Patch the path calculation to return our test file
+            original_path = exclusion_sync_gate.Path
+            def mock_path_calc(*args, **kwargs):
+                if args and isinstance(args[0], str):
+                    return original_path(args[0])
+                return yaml_path
+            with patch.object(exclusion_sync_gate, "Path", side_effect=mock_path_calc):
+                dirs = exclusion_sync_gate.load_yaml_exclusions()
 
         assert "__pycache__" in dirs
         assert ".git" in dirs

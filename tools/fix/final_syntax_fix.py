@@ -24,9 +24,9 @@ class FinalSyntaxFixer:
                 'orphaned_imports': 0,
                 'incomplete_imports': 0,
                 'unmatched_parens': 0,
-                'bad_indentation': 0
+                'bad_indentation': 0,
             },
-            'files_with_errors': 0
+            'files_with_errors': 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 

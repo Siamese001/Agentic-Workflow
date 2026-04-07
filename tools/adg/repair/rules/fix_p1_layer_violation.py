@@ -10,7 +10,7 @@ from pathlib import Path
 
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
-from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tools.adg.repair.types import Deficiency, FixResult
 
 
 @repair_rule("fix_p1_layer_violation", priority=5)

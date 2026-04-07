@@ -68,7 +68,7 @@ def audit_registry_linkages(registry_path: Path, base_dir: Path) -> tuple[list[d
                         "template_path": str(template_path.relative_to(base_dir)),
                         "error": "Template file not found",
                         "status": "FAIL",
-                    }
+                    },
                 )
                 continue
             schema = extract_schema_from_template(template_path)
@@ -79,7 +79,7 @@ def audit_registry_linkages(registry_path: Path, base_dir: Path) -> tuple[list[d
                         "template_path": str(template_path.relative_to(base_dir)),
                         "error": "Missing Phase 4 schema header",
                         "status": "FAIL",
-                    }
+                    },
                 )
                 continue
             passed.append(
@@ -89,7 +89,7 @@ def audit_registry_linkages(registry_path: Path, base_dir: Path) -> tuple[list[d
                     "required_vars": schema["required_vars"],
                     "optional_vars": schema["optional_vars"],
                     "status": "PASS",
-                }
+                },
             )
     return (passed, failed)
 

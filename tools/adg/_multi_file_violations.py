@@ -45,7 +45,7 @@ for fname in FILES:
         ORDER BY e.line_no
     """,
             (f"%/{fname}", f"%\\{fname}"),
-        )
+        ),
     )
     if rows:
         print(f"\n=== {fname} ===")

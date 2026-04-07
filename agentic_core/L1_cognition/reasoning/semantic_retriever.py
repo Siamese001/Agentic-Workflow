@@ -59,7 +59,7 @@ class SemanticRetriever:
             "architecture": ["repo_arch_docs", "repo_symbols"],
             "implementation": ["repo_code_chunks", "repo_symbols"],
             "documentation": ["repo_arch_docs"],
-            "general": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"]
+            "general": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
         }
 
         # Available collections
@@ -146,7 +146,7 @@ class SemanticRetriever:
                 collection_name=collection,
                 query_texts=[query.text],
                 n_results=query.max_results,
-                where=query.filters
+                where=query.filters,
             )
 
             # Convert to RetrievalResult objects
@@ -156,7 +156,7 @@ class SemanticRetriever:
                     content=chroma_results['documents'][0][i],
                     metadata=chroma_results['metadatas'][0][i],
                     score=1.0 - chroma_results['distances'][0][i],  # Convert distance to similarity
-                    collection=collection
+                    collection=collection,
                 )
                 results.append(result)
 
@@ -194,7 +194,7 @@ class SemanticRetriever:
         collection_priority = {
             "repo_symbols": 1.1,
             "repo_code_chunks": 1.05,
-            "repo_arch_docs": 1.0
+            "repo_arch_docs": 1.0,
         }
 
         for result in all_results:
@@ -219,7 +219,7 @@ class SemanticRetriever:
         query = RetrievalQuery(
             text=question,
             collections=[],  # Auto-route
-            max_results=10
+            max_results=10,
         )
 
         # Retrieve results
@@ -257,7 +257,7 @@ async def main():
         "What does the UniversalWriteGateway do?",
         "How does the ADG scanner work?",
         "What are the L0-L6 layers?",
-        "Show me the ChromaDB client implementation"
+        "Show me the ChromaDB client implementation",
     ]
 
     for question in questions:

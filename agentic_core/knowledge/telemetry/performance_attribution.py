@@ -91,7 +91,7 @@ class PerformanceAttribution:
         """
         trace_id = f"perf_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "PerformanceAttribution.record_query"
+            trace_id, LayerSegment.L1_REASONING, "PerformanceAttribution.record_query",
         )
 
         intent = getattr(tags, 'intent', 'unknown')
@@ -156,7 +156,7 @@ class PerformanceAttribution:
         sorted_intents = sorted(
             self._by_intent.items(),
             key=lambda x: x[1].avg_latency_ms,
-            reverse=True
+            reverse=True,
         )
         return [(intent, m.avg_latency_ms) for intent, m in sorted_intents[:n]]
 
@@ -171,7 +171,7 @@ class PerformanceAttribution:
         """
         sorted_domains = sorted(
             self._by_domain.items(),
-            key=lambda x: x[1].success_rate
+            key=lambda x: x[1].success_rate,
         )
         return [(domain, m.success_rate) for domain, m in sorted_domains[:n]]
 

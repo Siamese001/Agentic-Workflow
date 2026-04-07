@@ -130,7 +130,7 @@ def query_redis():
         'sl_proposer_nodes': sl_proposer_nodes,
         'approval_nodes': approval_nodes,
         'sl_outcome_nodes': sl_outcome_nodes,
-        'change_package_nodes': change_package_nodes
+        'change_package_nodes': change_package_nodes,
     }
 
 if __name__ == "__main__":

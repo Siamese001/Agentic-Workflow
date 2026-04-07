@@ -286,7 +286,7 @@ except ImportError:
                 "count": len(violations),
                 "global_mutations": len([v for v in violations if "Global mutation" in v.message]),
                 "silent_degradations": len(
-                    [v for v in violations if "Silent ImportError swallow" in v.message]
+                    [v for v in violations if "Silent ImportError swallow" in v.message],
                 ),
                 "details": sorted([(v.line_number, v.message) for v in violations]),
             }

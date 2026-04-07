@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -131,7 +130,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
-    _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
@@ -238,7 +236,7 @@ class SecureToolsImpl:
         target: Path = (self.work_dir / filename).resolve()
         if not str(target).startswith(str(self.work_dir)):
             raise ValueError(
-                f"SECURITY VIOLATION: Path '{filename}' attempts to escape workspace. Resolved path: '{target}' is outside '{self.work_dir}'."
+                f"SECURITY VIOLATION: Path '{filename}' attempts to escape workspace. Resolved path: '{target}' is outside '{self.work_dir}'.",
             )
         return target
 
@@ -349,7 +347,7 @@ class SecureToolsImpl:
         if any(b in command for b in self.BLACKLIST_COMMANDS):
             Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
             raise ValueError(
-                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute."
+                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.",
             )
         Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
         try:

@@ -54,7 +54,7 @@ class GravityStateAgent(SovereignBaseAgent):
             healed_import=healed_import,
             violation_type=violation_type,
             healing_strategy=healing_strategy,
-            **kwargs
+            **kwargs,
         )
 
     def get_healing_history(self, file_path: str | None = None) -> list[dict[str, Any]]:

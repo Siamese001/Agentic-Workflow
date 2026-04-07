@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -74,7 +75,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 
 _emit_emits_metric_event("injection_scan_util", "p4obs", "metric_1")
 _emit_emits_metric_event("injection_scan_util", "p4obs", "metric_2")

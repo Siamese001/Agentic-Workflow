@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -214,12 +213,12 @@ class DefaultDeterministicRollbackRefiner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DefaultDeterministicRollbackRefiner.refine"
+            _trace_id, LayerSegment.L2_EXECUTION, "DefaultDeterministicRollbackRefiner.refine",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:DefaultDeterministicRollbackRefiner.refine".encode()
+            f"{_trace_id}:DefaultDeterministicRollbackRefiner.refine".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -228,7 +227,7 @@ class DefaultDeterministicRollbackRefiner:
 
         # Score all candidate strategies
         scored_candidates = self._score_candidates(
-            request.candidates, strategy_stats, request.failure_signature
+            request.candidates, strategy_stats, request.failure_signature,
         )
 
         # Sort by score (descending), then by name for deterministic tie-breaking

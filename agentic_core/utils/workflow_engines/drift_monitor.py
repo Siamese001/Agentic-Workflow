@@ -86,39 +86,25 @@ _emit_applies_guardrail("p0", "drift_monitor", "p0_governance")
 _emit_reads_policy_state("p0", "drift_monitor", "policy_binding")
 _emit_snapshots_state("p0", "drift_monitor", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -294,7 +280,7 @@ class RetrievalDriftMonitor:
                     delta=snapshot.retrieval_hit_rate - self.hit_rate_threshold,
                     severity="warning",
                     message=f"Retrieval hit rate {snapshot.retrieval_hit_rate:.3f} below threshold {self.hit_rate_threshold:.3f}",
-                )
+                ),
             )
         if snapshot.score_distribution_std > self.score_std_threshold:
             alerts.append(
@@ -308,7 +294,7 @@ class RetrievalDriftMonitor:
                     delta=snapshot.score_distribution_std - self.score_std_threshold,
                     severity="warning",
                     message=f"Score distribution std {snapshot.score_distribution_std:.3f} exceeds threshold {self.score_std_threshold:.3f}",
-                )
+                ),
             )
         if snapshot.top_k_stability < self.stability_threshold:
             alerts.append(
@@ -322,7 +308,7 @@ class RetrievalDriftMonitor:
                     delta=snapshot.top_k_stability - self.stability_threshold,
                     severity="info",
                     message=f"Top-k stability {snapshot.top_k_stability:.3f} below threshold {self.stability_threshold:.3f}",
-                )
+                ),
             )
         return alerts
 
@@ -417,7 +403,7 @@ class EmbeddingDriftMonitor:
                     delta=0.0,
                     severity="critical",
                     message=f"Embedding model version mismatch: expected {self.current_model_version!r}, got {snapshot.embedding_model_version!r}",
-                )
+                ),
             )
         if snapshot.vector_norm_std > self.norm_std_threshold:
             alerts.append(
@@ -431,7 +417,7 @@ class EmbeddingDriftMonitor:
                     delta=snapshot.vector_norm_std - self.norm_std_threshold,
                     severity="warning",
                     message=f"Vector norm std {snapshot.vector_norm_std:.3f} exceeds threshold {self.norm_std_threshold:.3f}",
-                )
+                ),
             )
         if snapshot.similarity_distribution_mean < self.similarity_mean_threshold:
             alerts.append(
@@ -445,7 +431,7 @@ class EmbeddingDriftMonitor:
                     delta=snapshot.similarity_distribution_mean - self.similarity_mean_threshold,
                     severity="warning",
                     message=f"Similarity distribution mean {snapshot.similarity_distribution_mean:.3f} below threshold {self.similarity_mean_threshold:.3f}",
-                )
+                ),
             )
         return alerts
 
@@ -544,7 +530,7 @@ class AnswerQualityMonitor:
                     delta=snapshot.groundedness_rate - self.groundedness_threshold,
                     severity="warning",
                     message=f"Groundedness rate {snapshot.groundedness_rate:.3f} below threshold {self.groundedness_threshold:.3f}",
-                )
+                ),
             )
         if snapshot.hallucination_rate > self.hallucination_threshold:
             alerts.append(
@@ -558,7 +544,7 @@ class AnswerQualityMonitor:
                     delta=snapshot.hallucination_rate - self.hallucination_threshold,
                     severity="critical",
                     message=f"Hallucination rate {snapshot.hallucination_rate:.3f} exceeds threshold {self.hallucination_threshold:.3f}",
-                )
+                ),
             )
         if snapshot.human_override_rate > self.override_threshold:
             alerts.append(
@@ -572,7 +558,7 @@ class AnswerQualityMonitor:
                     delta=snapshot.human_override_rate - self.override_threshold,
                     severity="warning",
                     message=f"Human override rate {snapshot.human_override_rate:.3f} exceeds threshold {self.override_threshold:.3f}",
-                )
+                ),
             )
         return alerts
 
@@ -592,7 +578,7 @@ class AnswerQualityMonitor:
 
 
 def emit_alerts_to_registry(
-    alerts: list[DriftAlert], source: str, threshold_map: dict[str, float] | None = None
+    alerts: list[DriftAlert], source: str, threshold_map: dict[str, float] | None = None,
 ) -> None:
     """P5-5B: Convert DriftAlerts to DriftRegistryEntry and record in DriftRegistry.
 
@@ -652,7 +638,7 @@ def emit_alerts_to_registry(
         # guardian: allow-silent-swallow
         except Exception:
             _logger.debug(
-                "emit_alerts_to_registry: failed to record entry for %s", alert.metric_name, exc_info=True
+                "emit_alerts_to_registry: failed to record entry for %s", alert.metric_name, exc_info=True,
             )
             continue
         if alert.severity == "critical":

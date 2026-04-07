@@ -68,7 +68,7 @@ class TestVisitor(ast.NodeVisitor):
                     dependency="",
                     current_behavior="pass",
                     inferred_category="core",  # Default assumption
-                    line_number=node.lineno
+                    line_number=node.lineno,
                 ))
         self.current_function = None
         self.generic_visit(node)
@@ -86,7 +86,7 @@ class TestVisitor(ast.NodeVisitor):
                     dependency="",
                     current_behavior="pass",
                     inferred_category="core",
-                    line_number=node.lineno
+                    line_number=node.lineno,
                 ))
         self.current_function = None
         self.generic_visit(node)
@@ -149,7 +149,7 @@ class TestVisitor(ast.NodeVisitor):
             current_behavior="skip",
             inferred_category="optional",  # Skip suggests optional
             line_number=node.lineno,
-            skip_reason=reason
+            skip_reason=reason,
         ))
 
     def extract_importorskip_info(self, node: ast.Call):
@@ -172,7 +172,7 @@ class TestVisitor(ast.NodeVisitor):
             current_behavior="skip",
             inferred_category="optional",
             line_number=node.lineno,
-            skip_reason=f"Missing dependency: {dependency}"
+            skip_reason=f"Missing dependency: {dependency}",
         ))
 
     def extract_importerror_info(self, try_node: ast.Try):
@@ -200,7 +200,7 @@ class TestVisitor(ast.NodeVisitor):
             current_behavior="skip",
             inferred_category="optional",
             line_number=try_node.lineno,
-            skip_reason=f"ImportError for {dependency}"
+            skip_reason=f"ImportError for {dependency}",
         ))
 
 
@@ -273,9 +273,9 @@ def build_inventory() -> dict[str, Any]:
             "scan_timestamp": "2026-03-24T18:31:00Z",
             "total_test_files": len(test_files),
             "total_tests": len(all_tests),
-            "scanner_version": "1.0"
+            "scanner_version": "1.0",
         },
-        "tests": []
+        "tests": [],
     }
 
     # Convert tests to dict format
@@ -296,7 +296,7 @@ def build_inventory() -> dict[str, Any]:
     inventory["summary"] = {
         "skip_types": skip_types,
         "categories": categories,
-        "behaviors": behaviors
+        "behaviors": behaviors,
     }
 
     return inventory

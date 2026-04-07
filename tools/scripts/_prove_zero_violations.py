@@ -109,7 +109,7 @@ def main() -> None:
     output_lines = r_baseline.stdout.splitlines()
     summary = next(
         (l for l in reversed(output_lines) if "violations" in l.lower() or "[OK]" in l),
-        ""
+        "",
     )
 
     print(f"Baseline state: {baseline_path.relative_to(REPO)}")

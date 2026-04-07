@@ -2,6 +2,7 @@
 import os
 import re
 
+
 def aggressive_clean(filepath):
     """Remove all stray code patterns from test files."""
     with open(filepath, 'r', encoding='utf-8', errors='replace') as f:

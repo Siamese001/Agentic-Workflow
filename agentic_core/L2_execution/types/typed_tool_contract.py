@@ -142,7 +142,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -437,7 +436,7 @@ class TypedToolRegistry:
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"TypedToolRegistry.register:{entry.tool_name}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"TypedToolRegistry.register:{entry.tool_name}",
         )
         with self._lock:
             self._entries[(entry.tool_name, entry.tool_version)] = entry
@@ -508,7 +507,7 @@ def invoke_typed_tool(
     if not tool_contract.tool_contract_id:
         raise MissingToolContractError(
             "invoke_typed_tool: tool_contract_id is required. "
-            "No governed tool may execute without a ToolContract."
+            "No governed tool may execute without a ToolContract.",
         )
 
     _registry = registry or get_typed_tool_registry()
@@ -522,7 +521,7 @@ def invoke_typed_tool(
     if entry is None:
         raise UnregisteredToolError(
             f"invoke_typed_tool: tool '{tool_contract.tool_name}' v{tool_contract.tool_version} "
-            f"is not registered. Only registered tools may execute (spec §4)."
+            f"is not registered. Only registered tools may execute (spec §4).",
         )
 
     missing_input = entry.input_schema.validate(typed_input)
@@ -535,7 +534,7 @@ def invoke_typed_tool(
         )
         raise ToolInputSchemaViolation(
             f"invoke_typed_tool: input for '{tool_contract.tool_name}' missing required fields: "
-            f"{missing_input} (input_schema_hash={tool_contract.input_schema_hash})"
+            f"{missing_input} (input_schema_hash={tool_contract.input_schema_hash})",
         )
 
     _GUARDRAIL_LOG.debug(
@@ -573,7 +572,7 @@ def invoke_typed_tool(
     _callable = tool_callable or entry.callable
     if _callable is None:
         raise UnregisteredToolError(
-            f"invoke_typed_tool: tool '{tool_contract.tool_name}' has no callable registered."
+            f"invoke_typed_tool: tool '{tool_contract.tool_name}' has no callable registered.",
         )
 
     _start = _time.monotonic()
@@ -610,7 +609,7 @@ def invoke_typed_tool(
         raise ToolOutputSchemaViolation(
             f"invoke_typed_tool: output for '{tool_contract.tool_name}' missing required fields: "
             f"{missing_output} (output_schema_hash={tool_contract.output_schema_hash}). "
-            f"Fail-closed: output schema must be fully satisfied."
+            f"Fail-closed: output schema must be fully satisfied.",
         )
 
     _GUARDRAIL_LOG.debug(

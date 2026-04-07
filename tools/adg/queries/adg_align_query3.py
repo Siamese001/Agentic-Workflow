@@ -51,7 +51,7 @@ print("=== CONCEPT ABSENCE CHECK (PROD nodes only) ===")
 for kw, label in absence_check.items():
     cur.execute(
         "SELECT COUNT(*) FROM nodes WHERE layer NOT IN ('L_TEST','L_UNKNOWN','') "
-        f"AND (LOWER(adg_name) LIKE '%{kw}%' OR LOWER(resolved_path) LIKE '%{kw}%')"
+        f"AND (LOWER(adg_name) LIKE '%{kw}%' OR LOWER(resolved_path) LIKE '%{kw}%')",
     )
     cnt = cur.fetchone()[0]
     status = "PRESENT" if cnt > 0 else "ABSENT "
@@ -107,7 +107,7 @@ align_nodes = cur.fetchall()
 ids = [str(n["id"]) for n in align_nodes]
 placeholders = ",".join(["?"] * len(ids))
 cur.execute(
-    f"SELECT DISTINCT dst_id FROM edges WHERE relation_type='covers' AND dst_id IN ({placeholders})", ids
+    f"SELECT DISTINCT dst_id FROM edges WHERE relation_type='covers' AND dst_id IN ({placeholders})", ids,
 )
 covered_ids = {str(r["dst_id"]) for r in cur.fetchall()}
 uncovered = [n for n in align_nodes if str(n["id"]) not in covered_ids]

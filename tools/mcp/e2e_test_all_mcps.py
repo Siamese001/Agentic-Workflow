@@ -100,7 +100,7 @@ This is a test markdown file for vector search testing.
 def example():
     return "test"
 ```
-'''
+''',
         }
 
         for filename, content in test_files.items():
@@ -118,7 +118,7 @@ def example():
             "read_file": ["type"] if is_windows else ["cat"],
             "current_dir": ["cd"] if is_windows else ["pwd"],
             "env_vars": ["set"] if is_windows else ["env"],
-            "is_windows": is_windows
+            "is_windows": is_windows,
         }
 
     async def _test_server_e2e(self, server_name: str) -> dict[str, Any]:
@@ -128,7 +128,7 @@ def example():
             "scenarios": {},
             "start_time": time.time(),
             "success": True,
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -183,7 +183,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=10,
-                shell=cmds["is_windows"]  # Use shell on Windows for dir command
+                shell=cmds["is_windows"],  # Use shell on Windows for dir command
             )
             end_time = time.time()
 
@@ -192,14 +192,14 @@ def example():
                     "name": "List files",
                     "success": True,
                     "duration": end_time - start_time,
-                    "output_lines": len(process.stdout.split('\n'))
+                    "output_lines": len(process.stdout.split('\n')),
                 })
             else:
                 result["success"] = False
                 result["tests"].append({
                     "name": "List files",
                     "success": False,
-                    "error": process.stderr
+                    "error": process.stderr,
                 })
 
             # Test file content reading
@@ -210,7 +210,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=10,
-                shell=cmds["is_windows"]  # Use shell on Windows for type command
+                shell=cmds["is_windows"],  # Use shell on Windows for type command
             )
             end_time = time.time()
 
@@ -219,14 +219,14 @@ def example():
                     "name": "Read file",
                     "success": True,
                     "duration": end_time - start_time,
-                    "content_size": len(process.stdout)
+                    "content_size": len(process.stdout),
                 })
             else:
                 result["success"] = False
                 result["tests"].append({
                     "name": "Read file",
                     "success": False,
-                    "error": process.stderr
+                    "error": process.stderr,
                 })
 
         except Exception as e:
@@ -234,7 +234,7 @@ def example():
             result["tests"].append({
                 "name": "File operations error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -251,7 +251,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=15,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -259,7 +259,7 @@ def example():
                 "name": "Git status",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "has_changes": len(process.stdout.strip()) > 0
+                "has_changes": len(process.stdout.strip()) > 0,
             })
 
             # Test git log
@@ -269,7 +269,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -277,7 +277,7 @@ def example():
                 "name": "Git log",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "commits_shown": len(process.stdout.strip().split('\n')) if process.stdout.strip() else 0
+                "commits_shown": len(process.stdout.strip().split('\n')) if process.stdout.strip() else 0,
             })
 
         except Exception as e:
@@ -285,7 +285,7 @@ def example():
             result["tests"].append({
                 "name": "Git operations error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -301,7 +301,7 @@ def example():
                 ["python", str(self.test_data_dir / "sample_python.py")],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -309,7 +309,7 @@ def example():
                 "name": "Execute Python script",
                 "success": process.returncode == 0 and "Hello from test file!" in process.stdout,
                 "duration": end_time - start_time,
-                "output": process.stdout.strip()
+                "output": process.stdout.strip(),
             })
 
             # Test Python module check
@@ -318,7 +318,7 @@ def example():
                 ["python", "-c", "import sys; print(f'Python {sys.version}')"],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -326,7 +326,7 @@ def example():
                 "name": "Python version check",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "version": process.stdout.strip()
+                "version": process.stdout.strip(),
             })
 
         except Exception as e:
@@ -334,7 +334,7 @@ def example():
             result["tests"].append({
                 "name": "Python operations error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -351,7 +351,7 @@ def example():
                 ["python", "-c", "import os; print(os.getcwd())"],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
             )
             end_time = time.time()
 
@@ -359,7 +359,7 @@ def example():
                 "name": "Current directory",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "directory": process.stdout.strip()
+                "directory": process.stdout.strip(),
             })
 
             # Test environment variables - use python for cross-platform
@@ -368,7 +368,7 @@ def example():
                 ["python", "-c", "import os; [print(f'{k}={v}') for k, v in list(os.environ.items())[:5]]"],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
             )
             end_time = time.time()
 
@@ -376,7 +376,7 @@ def example():
                 "name": "Environment variables",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "env_vars_count": len(process.stdout.strip().split('\n')) if process.stdout.strip() else 0
+                "env_vars_count": len(process.stdout.strip().split('\n')) if process.stdout.strip() else 0,
             })
 
         except Exception as e:
@@ -384,7 +384,7 @@ def example():
             result["tests"].append({
                 "name": "System info error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -419,7 +419,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=30,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -430,7 +430,7 @@ def example():
                 "name": "Discover routing tests",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "tests_found": test_count
+                "tests_found": test_count,
             })
 
             # Discover all tests
@@ -440,7 +440,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -451,7 +451,7 @@ def example():
                 "name": "Discover all tests",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "total_tests": total_tests
+                "total_tests": total_tests,
             })
 
         except Exception as e:
@@ -459,7 +459,7 @@ def example():
             result["tests"].append({
                 "name": "Test discovery error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -476,7 +476,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -505,7 +505,7 @@ def example():
                 "passed": passed,
                 "failed": failed,
                 "errors": errors,
-                "total": passed + failed + errors
+                "total": passed + failed + errors,
             })
 
         except Exception as e:
@@ -513,7 +513,7 @@ def example():
             result["tests"].append({
                 "name": "Test execution error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -530,7 +530,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=90,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -550,7 +550,7 @@ def example():
                 "success": process.returncode in [0, 1] and coverage_data is not None,
                 "duration": end_time - start_time,
                 "coverage_generated": coverage_data is not None,
-                "total_coverage": coverage_data.get('totals', {}).get('percent_covered', 0) if coverage_data else 0
+                "total_coverage": coverage_data.get('totals', {}).get('percent_covered', 0) if coverage_data else 0,
             })
 
         except Exception as e:
@@ -558,7 +558,7 @@ def example():
             result["tests"].append({
                 "name": "Coverage analysis error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -575,7 +575,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -583,7 +583,7 @@ def example():
                 "name": "Pytest version",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "version": process.stdout.strip()
+                "version": process.stdout.strip(),
             })
 
             # Check pytest configuration
@@ -593,7 +593,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=15,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -601,7 +601,7 @@ def example():
                 "name": "Configuration check",
                 "success": process.returncode == 0,
                 "duration": end_time - start_time,
-                "config_lines": len(process.stdout.split('\n')) if process.stdout else 0
+                "config_lines": len(process.stdout.split('\n')) if process.stdout else 0,
             })
 
         except Exception as e:
@@ -609,7 +609,7 @@ def example():
             result["tests"].append({
                 "name": "Test analysis error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -649,7 +649,7 @@ def example():
                 "success": response.status_code == 200,
                 "duration": end_time - start_time,
                 "status_code": response.status_code,
-                "response_size": len(response.content)
+                "response_size": len(response.content),
             })
 
             # Test POST request
@@ -657,7 +657,7 @@ def example():
             response = requests.post(
                 "https://httpbin.org/post",
                 json={"test": "data", "timestamp": time.time()},
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -666,7 +666,7 @@ def example():
                 "success": response.status_code == 200,
                 "duration": end_time - start_time,
                 "status_code": response.status_code,
-                "json_response": response.json().get("json", {})
+                "json_response": response.json().get("json", {}),
             })
 
             # Test PUT request
@@ -674,7 +674,7 @@ def example():
             response = requests.put(
                 "https://httpbin.org/put",
                 json={"updated": True},
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -682,7 +682,7 @@ def example():
                 "name": "PUT request",
                 "success": response.status_code == 200,
                 "duration": end_time - start_time,
-                "status_code": response.status_code
+                "status_code": response.status_code,
             })
 
         except Exception as e:
@@ -690,7 +690,7 @@ def example():
             result["tests"].append({
                 "name": "API testing error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -707,7 +707,7 @@ def example():
             response = requests.get(
                 "https://httpbin.org/bearer",
                 headers={"Authorization": "Bearer test-token"},
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -715,7 +715,7 @@ def example():
                 "name": "Bearer token auth",
                 "success": response.status_code == 200,
                 "duration": end_time - start_time,
-                "authenticated": response.json().get("authenticated", False)
+                "authenticated": response.json().get("authenticated", False),
             })
 
             # Test Basic authentication
@@ -723,7 +723,7 @@ def example():
             response = requests.get(
                 "https://httpbin.org/basic-auth/user/pass",
                 auth=("user", "pass"),
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -731,7 +731,7 @@ def example():
                 "name": "Basic auth",
                 "success": response.status_code == 200,
                 "duration": end_time - start_time,
-                "authenticated": response.json().get("authenticated", False)
+                "authenticated": response.json().get("authenticated", False),
             })
 
         except Exception as e:
@@ -739,7 +739,7 @@ def example():
             result["tests"].append({
                 "name": "Authentication error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -760,7 +760,7 @@ def example():
                 "name": "404 handling",
                 "success": response.status_code == 404,
                 "duration": end_time - start_time,
-                "error_handled": True
+                "error_handled": True,
             })
 
             # Test timeout
@@ -777,7 +777,7 @@ def example():
                 "name": "Timeout handling",
                 "success": timeout_handled,
                 "duration": end_time - start_time,
-                "timeout_handled": timeout_handled
+                "timeout_handled": timeout_handled,
             })
 
         except Exception as e:
@@ -785,7 +785,7 @@ def example():
             result["tests"].append({
                 "name": "Error handling error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -804,7 +804,7 @@ def example():
                 "https://httpbin.org/get",
                 "https://httpbin.org/get",
                 "https://httpbin.org/get",
-                "https://httpbin.org/get"
+                "https://httpbin.org/get",
             ]
 
             # Test concurrent requests
@@ -827,7 +827,7 @@ def example():
                 "duration": end_time - start_time,
                 "requests_count": len(urls),
                 "success_count": success_count,
-                "avg_time_per_request": (end_time - start_time) / len(urls)
+                "avg_time_per_request": (end_time - start_time) / len(urls),
             })
 
         except Exception as e:
@@ -835,7 +835,7 @@ def example():
             result["tests"].append({
                 "name": "Batch operations error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -890,7 +890,7 @@ def example():
                 "Machine learning uses algorithms to find patterns",
                 "Docker containers help with application deployment",
                 "Git is used for version control",
-                "REST APIs use HTTP methods for communication"
+                "REST APIs use HTTP methods for communication",
             ]
 
             embeddings = model.encode(documents)
@@ -899,7 +899,7 @@ def example():
                 documents=documents,
                 embeddings=embeddings.tolist(),
                 ids=[f"doc_{i}" for i in range(len(documents))],
-                metadatas=[{"category": "tech", "index": i} for i in range(len(documents))]
+                metadatas=[{"category": "tech", "index": i} for i in range(len(documents))],
             )
 
             end_time = time.time()
@@ -909,7 +909,7 @@ def example():
                 "success": True,
                 "duration": end_time - start_time,
                 "documents_count": len(documents),
-                "embedding_dimension": embeddings.shape[1]
+                "embedding_dimension": embeddings.shape[1],
             })
 
             # Verify indexing
@@ -921,7 +921,7 @@ def example():
                 "name": "Verify indexing",
                 "success": count == len(documents),
                 "duration": end_time - start_time,
-                "stored_count": count
+                "stored_count": count,
             })
 
         except Exception as e:
@@ -929,7 +929,7 @@ def example():
             result["tests"].append({
                 "name": "Document indexing error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -953,7 +953,7 @@ def example():
             queries = [
                 "programming languages",
                 "version control systems",
-                "containerization technology"
+                "containerization technology",
             ]
 
             for query in queries:
@@ -962,7 +962,7 @@ def example():
                 query_embedding = model.encode([query])
                 results = collection.query(
                     query_embeddings=query_embedding.tolist(),
-                    n_results=3
+                    n_results=3,
                 )
 
                 end_time = time.time()
@@ -972,7 +972,7 @@ def example():
                     "success": len(results["documents"][0]) > 0,
                     "duration": end_time - start_time,
                     "results_count": len(results["documents"][0]),
-                    "top_result": results["documents"][0][0] if results["documents"] else None
+                    "top_result": results["documents"][0][0] if results["documents"] else None,
                 })
 
         except Exception as e:
@@ -980,7 +980,7 @@ def example():
             result["tests"].append({
                 "name": "Semantic search error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1004,7 +1004,7 @@ def example():
                 "name": "List collections",
                 "success": True,
                 "duration": end_time - start_time,
-                "collection_count": len(collections)
+                "collection_count": len(collections),
             })
 
             # Get collection info
@@ -1017,7 +1017,7 @@ def example():
                 "name": "Collection info",
                 "success": True,
                 "duration": end_time - start_time,
-                "document_count": count
+                "document_count": count,
             })
 
             # Delete collection
@@ -1028,7 +1028,7 @@ def example():
             result["tests"].append({
                 "name": "Delete collection",
                 "success": True,
-                "duration": end_time - start_time
+                "duration": end_time - start_time,
             })
 
         except Exception as e:
@@ -1036,7 +1036,7 @@ def example():
             result["tests"].append({
                 "name": "Collection management error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1078,7 +1078,7 @@ def example():
                     "success": True,
                     "duration": end_time - start_time,
                     "batch_size": batch_size,
-                    "docs_per_second": batch_size / (end_time - start_time)
+                    "docs_per_second": batch_size / (end_time - start_time),
                 })
 
         except Exception as e:
@@ -1086,7 +1086,7 @@ def example():
             result["tests"].append({
                 "name": "Performance testing error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1118,7 +1118,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=60,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
             end_time = time.time()
 
@@ -1131,7 +1131,7 @@ def example():
                 "success": process.returncode in [0, 1],
                 "duration": end_time - start_time,
                 "test_results": len(test_results),
-                "exit_code": process.returncode
+                "exit_code": process.returncode,
             })
 
         except Exception as e:
@@ -1139,7 +1139,7 @@ def example():
             result["tests"].append({
                 "name": "Terminal pytest integration error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1183,7 +1183,7 @@ def example():
                 documents=[text_content],
                 embeddings=embedding.tolist(),
                 ids=["http_content"],
-                metadatas=[{"source": "httpbin.org", "type": "json"}]
+                metadatas=[{"source": "httpbin.org", "type": "json"}],
             )
 
             end_time = time.time()
@@ -1193,7 +1193,7 @@ def example():
                 "success": True,
                 "duration": end_time - start_time,
                 "content_size": len(text_content),
-                "indexed": True
+                "indexed": True,
             })
 
         except Exception as e:
@@ -1201,7 +1201,7 @@ def example():
             result["tests"].append({
                 "name": "HTTP Vector DB integration error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1220,7 +1220,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=10,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
 
             commit_info = process.stdout.strip()
@@ -1254,7 +1254,7 @@ def example():
                 documents=[combined_text],
                 embeddings=embedding.tolist(),
                 ids=["workflow_data"],
-                metadatas=[{"workflow": "multi_server", "timestamp": time.time()}]
+                metadatas=[{"workflow": "multi_server", "timestamp": time.time()}],
             )
 
             # Step 4: Pytest - Run a quick test to verify system health
@@ -1263,7 +1263,7 @@ def example():
                 capture_output=True,
                 text=True,
                 timeout=30,
-                cwd=REPO_ROOT
+                cwd=REPO_ROOT,
             )
 
             end_time = time.time()
@@ -1276,7 +1276,7 @@ def example():
                 "git_success": process.returncode == 0,
                 "http_success": response.status_code == 200,
                 "vector_db_success": True,
-                "pytest_success": test_process.returncode in [0, 1]
+                "pytest_success": test_process.returncode in [0, 1],
             })
 
         except Exception as e:
@@ -1284,7 +1284,7 @@ def example():
             result["tests"].append({
                 "name": "Multi-server workflow error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1332,7 +1332,7 @@ def example():
                 "duration": end_time - start_time,
                 "requests_count": len(urls),
                 "success_rate": success_count / len(urls),
-                "avg_time_per_request": (end_time - start_time) / len(urls)
+                "avg_time_per_request": (end_time - start_time) / len(urls),
             })
 
         except Exception as e:
@@ -1340,7 +1340,7 @@ def example():
             result["tests"].append({
                 "name": "Concurrent operations error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1368,7 +1368,7 @@ def example():
                 "duration": end_time - start_time,
                 "document_count": len(large_documents),
                 "embedding_dimension": embeddings.shape[1],
-                "docs_per_second": len(large_documents) / (end_time - start_time)
+                "docs_per_second": len(large_documents) / (end_time - start_time),
             })
 
         except Exception as e:
@@ -1376,7 +1376,7 @@ def example():
             result["tests"].append({
                 "name": "Large datasets error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1414,7 +1414,7 @@ def example():
                 "peak_memory_mb": peak_memory,
                 "final_memory_mb": final_memory,
                 "memory_increase_mb": peak_memory - baseline_memory,
-                "memory_recovered_mb": peak_memory - final_memory
+                "memory_recovered_mb": peak_memory - final_memory,
             })
 
         except Exception as e:
@@ -1422,7 +1422,7 @@ def example():
             result["tests"].append({
                 "name": "Memory stress error",
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
         return result
@@ -1510,7 +1510,7 @@ def example():
             "timestamp": time.time(),
             "duration": time.time() - self.start_time,
             "repository": str(REPO_ROOT),
-            "results": self.results
+            "results": self.results,
         }
 
         try:

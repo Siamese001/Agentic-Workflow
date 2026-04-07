@@ -1,10 +1,10 @@
 """
 Collateral Summary Parser - Parses appraisal and collateral documents.
 """
-from typing import Optional
+import re
 from dataclasses import dataclass
 from pathlib import Path
-import re
+from typing import Optional
 
 
 @dataclass

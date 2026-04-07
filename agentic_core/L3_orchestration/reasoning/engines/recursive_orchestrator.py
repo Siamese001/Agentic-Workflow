@@ -131,7 +131,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -245,7 +244,7 @@ class RetryContext:
                 "max_attempts": self.max_attempts,
                 "failure_reasons": self.failure_reasons,
                 "accumulated_context": self.accumulated_context,
-            }
+            },
         }
 
 
@@ -304,7 +303,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecursiveOrchestrator.handle_task_status"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecursiveOrchestrator.handle_task_status",
         )
 
         if status == TaskStatus.SUCCESS:
@@ -353,7 +352,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         retry_ctx.add_failure(failure_reason, additional_context)
         if not retry_ctx.can_retry:
             logger.warning(
-                f"Max retries exceeded for chain starting at {retry_ctx.original_node_id}. Attempts: {retry_ctx.attempt_number}/{retry_ctx.max_attempts}"
+                f"Max retries exceeded for chain starting at {retry_ctx.original_node_id}. Attempts: {retry_ctx.attempt_number}/{retry_ctx.max_attempts}",
             )
             if self.on_max_retries_exceeded:
                 self.on_max_retries_exceeded(failed_node_id, retry_ctx)
@@ -367,10 +366,10 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             retry_function = self._get_node_function(failed_node_id)
         if retry_function is None:
             raise ValueError(
-                f"Cannot determine retry function for {failed_node_id}. Provide retry_function parameter."
+                f"Cannot determine retry function for {failed_node_id}. Provide retry_function parameter.",
             )
         result = self._spawn_retry_successor(
-            failed_node_id=failed_node_id, retry_function=retry_function, retry_context=retry_ctx
+            failed_node_id=failed_node_id, retry_function=retry_function, retry_context=retry_ctx,
         )
         if result.get("success"):
             new_node_id = result.get("new_node_id")
@@ -381,13 +380,13 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             if self.on_retry_spawned:
                 self.on_retry_spawned(failed_node_id, new_node_id, retry_ctx.attempt_number)
             logger.info(
-                f"Spawned retry node {new_node_id} for {failed_node_id} (attempt {retry_ctx.attempt_number}/{retry_ctx.max_attempts})"
+                f"Spawned retry node {new_node_id} for {failed_node_id} (attempt {retry_ctx.attempt_number}/{retry_ctx.max_attempts})",
             )
         return result
 
     # guardian: allow-type-erasure
     def _spawn_retry_successor(
-        self, failed_node_id: str, retry_function: str, retry_context: RetryContext
+        self, failed_node_id: str, retry_function: str, retry_context: RetryContext,
     ) -> dict[str, Any]:
         """
         Spawn a successor node using DAGMutation.
@@ -405,7 +404,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         retry_params = retry_context.to_parameters()
         final_params = {**base_params, **retry_params}
         hop_spec = HopSpec(
-            hop_function=retry_function, parameters=final_params, priority=1, retry_policy={"max_attempts": 0}
+            hop_function=retry_function, parameters=final_params, priority=1, retry_policy={"max_attempts": 0},
         )
         mutation = DAGMutation(
             action=MutationAction.SPAWN_SUCCESSOR,
@@ -454,7 +453,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         if node_id in self.retry_contexts:
             ctx = self.retry_contexts[node_id]
             logger.info(
-                f"Retry chain completed successfully for {ctx.original_node_id} after {ctx.attempt_number} attempts"
+                f"Retry chain completed successfully for {ctx.original_node_id} after {ctx.attempt_number} attempts",
             )
             del self.retry_contexts[node_id]
 
@@ -498,7 +497,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         - Retry limits respected
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}

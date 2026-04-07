@@ -121,7 +121,7 @@ def fix_inline_try_except_skip(filepath: pathlib.Path) -> dict:
         r'(?:\1    [^\n]*\n)*?'  # Optional additional lines in try
         r'\1except \(?(?:ImportError|ModuleNotFoundError)[^:]*:\n'
         r'(?:\1    [^\n]*\n)*',  # except body
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def replace_match(m):
@@ -158,7 +158,7 @@ def fix_skip_cannot_import(filepath: pathlib.Path) -> dict:
         r'((?:\1    (?:from |import )[^\n]+\n)+)'  # import lines
         r'\1except (?:\(?(?:ImportError|ModuleNotFoundError)[^:]*\)?:\n)'
         r'\1    pytest\.skip\([^\)]+\)\n',
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def replace_match(m):

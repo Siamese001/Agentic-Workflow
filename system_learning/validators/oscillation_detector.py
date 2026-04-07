@@ -99,7 +99,7 @@ def detect_oscillation(values: tuple[float, ...], policy: OscillationPolicy) -> 
 
 
 def compute_freeze_decision(
-    values: tuple[float, ...], last_update_utc: int, now_utc: int, policy: OscillationPolicy
+    values: tuple[float, ...], last_update_utc: int, now_utc: int, policy: OscillationPolicy,
 ) -> FreezeDecision:
     """Compute freeze decision based on oscillation detection.
 

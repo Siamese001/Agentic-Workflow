@@ -98,6 +98,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -123,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -138,7 +138,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
 
 _emit_emits_metric_event("safety_types", "p4obs", "metric_1")
 _emit_emits_metric_event("safety_types", "p4obs", "metric_2")
@@ -431,7 +430,7 @@ class SelfUpdatingSafetyEngine:
         confidence = 0.0
         if matched_rules:
             confidence = sum(1.0 if not rule.auto_generated else 0.8 for rule in matched_rules) / len(
-                matched_rules
+                matched_rules,
             )
         recommendations = self._generate_recommendations(matched_rules)
         detection = ThreatDetection(
@@ -447,7 +446,7 @@ class SelfUpdatingSafetyEngine:
                 "detected": detection.detected,
                 "ThreatLevel": detection.ThreatLevel.value,
                 "rules_matched": len(matched_rules),
-            }
+            },
         )
         if detection.detected:
             await self._learn_from_detection(text, matched_rules)

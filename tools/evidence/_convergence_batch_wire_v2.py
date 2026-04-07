@@ -168,7 +168,7 @@ def wire_module(module_rel: str) -> None:
         import_block = []
         if len(symbols_to_import) == 1:
             import_block.append(
-                f"from agentic_core.runtime.contracts.lifecycle_trace_contract import {symbols_to_import[0]}"
+                f"from agentic_core.runtime.contracts.lifecycle_trace_contract import {symbols_to_import[0]}",
             )
         else:
             import_block.append("from agentic_core.runtime.contracts.lifecycle_trace_contract import (")

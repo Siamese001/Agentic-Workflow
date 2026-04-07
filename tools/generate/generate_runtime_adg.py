@@ -68,7 +68,7 @@ class RuntimeTraceCollector:
                 line_no=45,
                 symbol="execute",
                 timestamp="2026-03-24T18:00:00Z",
-                execution_context="agent_execution"
+                execution_context="agent_execution",
             ),
             RuntimeEdge(
                 from_name="agent::CoverageAgent",
@@ -79,7 +79,7 @@ class RuntimeTraceCollector:
                 line_no=67,
                 symbol="analyze",
                 timestamp="2026-03-24T18:00:01Z",
-                execution_context="agent_execution"
+                execution_context="agent_execution",
             ),
 
             # Policy actions
@@ -92,7 +92,7 @@ class RuntimeTraceCollector:
                 line_no=123,
                 symbol="apply_guardrail",
                 timestamp="2026-03-24T18:00:02Z",
-                execution_context="policy_check"
+                execution_context="policy_check",
             ),
 
             # Healing operations
@@ -105,7 +105,7 @@ class RuntimeTraceCollector:
                 line_no=89,
                 symbol="heal",
                 timestamp="2026-03-24T18:00:03Z",
-                execution_context="healing_loop"
+                execution_context="healing_loop",
             ),
 
             # Learning signals
@@ -118,7 +118,7 @@ class RuntimeTraceCollector:
                 line_no=234,
                 symbol="capture_pattern",
                 timestamp="2026-03-24T18:00:04Z",
-                execution_context="learning"
+                execution_context="learning",
             ),
         ]
 
@@ -232,7 +232,7 @@ def create_runtime_adg() -> None:
 
                 cursor.execute(
                     "INSERT OR IGNORE INTO nodes (adg_name, entity_type, identity_kind, confidence) VALUES (?, ?, ?, ?)",
-                    (node_name, entity_type, entity_type, 1.0)
+                    (node_name, entity_type, entity_type, 1.0),
                 )
                 cursor.execute("SELECT id FROM nodes WHERE adg_name = ?", (node_name,))
                 node_id_map[node_name] = cursor.fetchone()[0]
@@ -246,7 +246,7 @@ def create_runtime_adg() -> None:
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol, timestamp, execution_context)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol, edge.timestamp, edge.execution_context)
+            (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol, edge.timestamp, edge.execution_context),
         )
 
     conn.commit()

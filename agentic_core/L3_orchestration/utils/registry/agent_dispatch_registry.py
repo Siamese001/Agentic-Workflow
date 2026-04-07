@@ -164,7 +164,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -384,7 +383,7 @@ class AgentDispatchRegistry:
             if self.guardrail_mode == "enforce":
                 raise DispatchDeniedError(
                     f"AgentDispatchRegistry: guardrail denied dispatch. "
-                    f"caller={caller} target={target_class}.{method}"
+                    f"caller={caller} target={target_class}.{method}",
                 ) from gve
             logger.warning(
                 "DISPATCH_REGISTRY guardrail_blocked (warn mode: continuing) caller=%s target=%s method=%s",
@@ -425,12 +424,12 @@ class AgentDispatchRegistry:
             else:
                 raise DispatchDeniedError(
                     f"AgentDispatchRegistry: dispatch denied. "
-                    f"caller={caller} target={target_class}.{method} reason={denial_reason}"
+                    f"caller={caller} target={target_class}.{method} reason={denial_reason}",
                 )
 
         if not hasattr(target_instance, method):
             raise AttributeError(
-                f"AgentDispatchRegistry: {target_class!r} has no method {method!r}. caller={caller}"
+                f"AgentDispatchRegistry: {target_class!r} has no method {method!r}. caller={caller}",
             )
 
         result = getattr(target_instance, method)(*args, **kwargs)
@@ -513,7 +512,7 @@ class AgentDispatchRegistry:
         if target_name not in self._instances:
             raise UnregisteredAgentError(
                 f"AgentDispatchRegistry: agent '{target_name}' not registered. "
-                f"Registered: {sorted(self._instances)}"
+                f"Registered: {sorted(self._instances)}",
             )
         return self.dispatch(
             caller=caller,

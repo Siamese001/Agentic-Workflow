@@ -162,7 +162,7 @@ def check_agent_deletions() -> bool:
             print(f"   Minimum required: {MIN_DEPRECATION_DAYS} days")
             print(f"   Agent was deprecated on: {dep_date_str}")
             print(
-                f"   Earliest deletion date: {(dep_date + timedelta(days=MIN_DEPRECATION_DAYS)).strftime('%Y-%m-%d')}"
+                f"   Earliest deletion date: {(dep_date + timedelta(days=MIN_DEPRECATION_DAYS)).strftime('%Y-%m-%d')}",
             )
             return False
 

@@ -20,41 +20,9 @@ from agentic_core.L1_cognition.types.search_types import (
     SearchResult,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    _emit_records_telemetry_event,  # noqa: E402
 )
+
 
 class DRIFTSearchEngine:
     """Implements DRIFT search strategy for GraphRAG."""
@@ -62,7 +30,7 @@ class DRIFTSearchEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        config: DRIFTSearchConfig | None = None
+        config: DRIFTSearchConfig | None = None,
     ) -> None:
         """Initialize the DRIFT search engine.
 
@@ -96,7 +64,7 @@ class DRIFTSearchEngine:
 
             # Step 2: Dynamic fusion of results
             fused_results = await self._dynamic_fusion(
-                semantic_results, structural_results, reasoning_results, query
+                semantic_results, structural_results, reasoning_results, query,
             )
 
             # Step 3: Apply adaptive traversal
@@ -127,13 +95,13 @@ class DRIFTSearchEngine:
                     "semantic_results": len(semantic_results),
                     "structural_results": len(structural_results),
                     "reasoning_results": len(reasoning_results),
-                    "max_reasoning_depth": self.config.max_reasoning_depth
-                }
+                    "max_reasoning_depth": self.config.max_reasoning_depth,
+                },
             )
 
             _emit_records_telemetry_event(
                 "drift_search_engine",
-                f"search_completed_{len(filtered_results)}_results"
+                f"search_completed_{len(filtered_results)}_results",
             )
 
             return response
@@ -150,7 +118,7 @@ class DRIFTSearchEngine:
                 min_relevance_score=0.0,
                 search_strategy="drift",
                 fusion_method="dynamic_reasoning_informed",
-                errors=[f"DRIFT search failed: {str(e)}"]
+                errors=[f"DRIFT search failed: {str(e)}"],
             )
 
     async def _semantic_search(self, query: SearchQuery) -> list[SearchResult]:
@@ -158,7 +126,7 @@ class DRIFTSearchEngine:
         # Find entities using text search (sync call)
         search_result = self.graph_store.search_entities(
             query=query.text,
-            limit=query.max_results
+            limit=query.max_results,
         )
 
         results = []
@@ -175,8 +143,8 @@ class DRIFTSearchEngine:
                 source_file=entity.metadata.get("file_path"),
                 metadata={
                     "search_type": "semantic",
-                    "entity_type": entity.entity_type
-                }
+                    "entity_type": entity.entity_type,
+                },
             )
             results.append(result)
 
@@ -187,7 +155,7 @@ class DRIFTSearchEngine:
         # Find seed entities first (sync call)
         seed_search = self.graph_store.search_entities(
             query=query.text,
-            limit=5
+            limit=5,
         )
 
         results = []
@@ -198,7 +166,7 @@ class DRIFTSearchEngine:
             traversal = self.graph_store.traverse(
                 start_id=entity.id,
                 max_depth=2,
-                relation_types=query.relation_types if hasattr(query, 'relation_types') else None
+                relation_types=query.relation_types if hasattr(query, 'relation_types') else None,
             )
 
             # Convert traversal results to search results
@@ -206,7 +174,7 @@ class DRIFTSearchEngine:
                 for path_entity in path.nodes:
                     # Calculate structural relevance
                     struct_score = self._calculate_structural_relevance(
-                        path_entity, entity, query
+                        path_entity, entity, query,
                     )
 
                     result = SearchResult(
@@ -219,8 +187,8 @@ class DRIFTSearchEngine:
                         metadata={
                             "search_type": "structural",
                             "seed_entity": entity.id,
-                            "path_length": len(path.relationships)
-                        }
+                            "path_length": len(path.relationships),
+                        },
                     )
                     results.append(result)
 
@@ -241,7 +209,7 @@ class DRIFTSearchEngine:
             # Find entities with keyword (sync call)
             keyword_search = self.graph_store.search_entities(
                 query=keyword,
-                limit=10
+                limit=10,
             )
 
             # Apply reasoning depth
@@ -258,8 +226,8 @@ class DRIFTSearchEngine:
                         metadata={
                             "search_type": "reasoning",
                             "reasoning_keyword": keyword,
-                            "reasoning_depth": 1
-                        }
+                            "reasoning_depth": 1,
+                        },
                     )
                     results.append(result)
 
@@ -269,7 +237,7 @@ class DRIFTSearchEngine:
         self,
         entity: GraphEntity,
         seed_entity: GraphEntity,
-        query: SearchQuery
+        query: SearchQuery,
     ) -> float:
         """Calculate structural relevance score."""
         # Base score from text similarity
@@ -289,7 +257,7 @@ class DRIFTSearchEngine:
         self,
         entity: GraphEntity,
         keyword: str,
-        query: SearchQuery
+        query: SearchQuery,
     ) -> float:
         """Apply reasoning depth scoring."""
         # Base similarity
@@ -305,7 +273,7 @@ class DRIFTSearchEngine:
         semantic_results: list[SearchResult],
         structural_results: list[SearchResult],
         reasoning_results: list[SearchResult],
-        query: SearchQuery
+        query: SearchQuery,
     ) -> list[SearchResult]:
         """Dynamically fuse results from multiple strategies."""
         # Group results by entity ID
@@ -372,8 +340,8 @@ class DRIFTSearchEngine:
                         "fused_score": fused_score,
                         "semantic_score": semantic_score,
                         "structural_score": structural_score,
-                        "reasoning_score": reasoning_score
-                    }
+                        "reasoning_score": reasoning_score,
+                    },
                 )
                 fused_results.append(fused_result)
 
@@ -385,7 +353,7 @@ class DRIFTSearchEngine:
     async def _adaptive_traversal(
         self,
         results: list[SearchResult],
-        query: SearchQuery
+        query: SearchQuery,
     ) -> list[SearchResult]:
         """Apply adaptive traversal to expand result context."""
         if not self.config.adaptive_hop_selection:
@@ -399,7 +367,7 @@ class DRIFTSearchEngine:
                 traversal = self.graph_store.traverse(
                     start_id=result.item_id,
                     max_depth=1,
-                    relation_types=query.relation_types if hasattr(query, 'relation_types') else None
+                    relation_types=query.relation_types if hasattr(query, 'relation_types') else None,
                 )
 
                 # Update result with traversal context
@@ -420,7 +388,7 @@ class DRIFTSearchEngine:
     def _context_aware_pruning(
         self,
         results: list[SearchResult],
-        query: SearchQuery
+        query: SearchQuery,
     ) -> list[SearchResult]:
         """Apply context-aware pruning to remove redundant results."""
         if not self.config.context_aware_pruning:
@@ -509,7 +477,7 @@ class DRIFTSearchEngine:
 # Factory function
 def create_drift_search_engine(
     graph_store: IGraphStore,
-    config: DRIFTSearchConfig | None = None
+    config: DRIFTSearchConfig | None = None,
 ) -> DRIFTSearchEngine:
     """Create a DRIFT search engine."""
     return DRIFTSearchEngine(graph_store, config)

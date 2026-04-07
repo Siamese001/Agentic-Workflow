@@ -40,7 +40,7 @@ class L1CapacityPlanner(BaseMLModel):
         4: "Scale_Down_Conservative",
         5: "Scale_Down_Moderate",
         6: "Scale_Down_Aggressive",
-        7: "Reallocate_Resources"
+        7: "Reallocate_Resources",
     }
 
     # Reverse mapping
@@ -52,7 +52,7 @@ class L1CapacityPlanner(BaseMLModel):
             model_version="1.0",
             model_type="time_series",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -73,7 +73,7 @@ class L1CapacityPlanner(BaseMLModel):
             "high_utilization_threshold": 0.8,
             "low_utilization_threshold": 0.3,
             "growth_rate_threshold": 0.1,
-            "volatility_threshold": 0.3
+            "volatility_threshold": 0.3,
         }
 
         if model_file_path and model_file_path.exists():
@@ -114,8 +114,8 @@ class L1CapacityPlanner(BaseMLModel):
                 'feature_schema_digest': self.feature_schema.schema_digest,
                 'saved_at': datetime.now().isoformat(),
                 'lookback_window': self.lookback_window,
-                'forecast_horizon': self.forecast_horizon
-            }
+                'forecast_horizon': self.forecast_horizon,
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -127,7 +127,7 @@ class L1CapacityPlanner(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict capacity planning action.
@@ -160,7 +160,7 @@ class L1CapacityPlanner(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -195,8 +195,8 @@ class L1CapacityPlanner(BaseMLModel):
                     prediction=predicted_action,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -209,7 +209,7 @@ class L1CapacityPlanner(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -221,7 +221,7 @@ class L1CapacityPlanner(BaseMLModel):
                 'class_probabilities': [float(p) for p in class_probabilities],
                 'thresholds_passed': passes_threshold,
                 'capacity_action': predicted_action,
-                'requires_scaling': predicted_action != "Maintain_Current"
+                'requires_scaling': predicted_action != "Maintain_Current",
             })
 
             # Log prediction
@@ -237,7 +237,7 @@ class L1CapacityPlanner(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def plan_capacity(
@@ -245,7 +245,7 @@ class L1CapacityPlanner(BaseMLModel):
         capacity_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get comprehensive capacity planning recommendations.
@@ -264,7 +264,7 @@ class L1CapacityPlanner(BaseMLModel):
             context=capacity_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -272,7 +272,7 @@ class L1CapacityPlanner(BaseMLModel):
                 'capacity_action': 'Maintain_Current',
                 'confidence': 0.0,
                 'reason': 'Feature extraction failed',
-                'recommendations': ['Check capacity data availability']
+                'recommendations': ['Check capacity data availability'],
             }
 
         # Validate input
@@ -284,14 +284,14 @@ class L1CapacityPlanner(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate detailed recommendations
         recommendations = self._generate_capacity_recommendations(
             action=prediction.prediction,
             context=capacity_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Generate demand forecast
@@ -301,14 +301,14 @@ class L1CapacityPlanner(BaseMLModel):
         resource_requirements = self._calculate_resource_requirements(
             action=prediction.prediction,
             context=capacity_context,
-            forecast=demand_forecast
+            forecast=demand_forecast,
         )
 
         # Assess cost implications
         cost_analysis = self._analyze_cost_impact(
             action=prediction.prediction,
             context=capacity_context,
-            requirements=resource_requirements
+            requirements=resource_requirements,
         )
 
         return {
@@ -321,7 +321,7 @@ class L1CapacityPlanner(BaseMLModel):
             'resource_requirements': resource_requirements,
             'cost_analysis': cost_analysis,
             'implementation_timeline': self._estimate_implementation_timeline(prediction.prediction),
-            'risk_assessment': self._assess_capacity_risks(prediction.prediction, capacity_context)
+            'risk_assessment': self._assess_capacity_risks(prediction.prediction, capacity_context),
         }
 
     def forecast_demand(
@@ -330,7 +330,7 @@ class L1CapacityPlanner(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        forecast_days: int = 7
+        forecast_days: int = 7,
     ) -> dict[str, Any]:
         """
         Generate demand forecast using time series analysis.
@@ -349,7 +349,7 @@ class L1CapacityPlanner(BaseMLModel):
             return {
                 'error': 'Insufficient historical data',
                 'minimum_required': 7,
-                'provided': len(historical_data)
+                'provided': len(historical_data),
             }
 
         # Extract demand values
@@ -393,7 +393,7 @@ class L1CapacityPlanner(BaseMLModel):
             forecast.append({
                 'day': day,
                 'forecast_demand': forecast_demand,
-                'confidence': max(0.5, 1.0 - (day * 0.1))  # Decreasing confidence
+                'confidence': max(0.5, 1.0 - (day * 0.1)),  # Decreasing confidence
             })
 
         return {
@@ -401,7 +401,7 @@ class L1CapacityPlanner(BaseMLModel):
             'trend': trend,
             'method': 'moving_average_with_trend',
             'data_points_used': len(demand_values),
-            'forecast_period_days': forecast_days
+            'forecast_period_days': forecast_days,
         }
 
     def _predict_time_series(self, feature_vector: np.ndarray) -> np.ndarray:
@@ -424,7 +424,7 @@ class L1CapacityPlanner(BaseMLModel):
             4: [-0.1, 0.0, 0.1, 0.2, 0.2, 0.2, 0.1, 0.2],  # Scale_Down_Conservative
             5: [-0.2, -0.1, 0.0, 0.1, 0.2, 0.2, 0.2, 0.3],  # Scale_Down_Moderate
             6: [-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4],  # Scale_Down_Aggressive
-            7: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]    # Reallocate_Resources
+            7: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],    # Reallocate_Resources
         }
 
         for class_idx, influences in feature_influence.items():
@@ -444,7 +444,7 @@ class L1CapacityPlanner(BaseMLModel):
         self,
         action: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> list[str]:
         """Generate action-specific capacity recommendations."""
         recommendations = []
@@ -454,7 +454,7 @@ class L1CapacityPlanner(BaseMLModel):
                 "Increase resource allocation to meet demand",
                 "Monitor utilization after scaling",
                 "Update capacity planning forecasts",
-                "Consider auto-scaling policies"
+                "Consider auto-scaling policies",
             ])
 
             if "Aggressive" in action:
@@ -469,7 +469,7 @@ class L1CapacityPlanner(BaseMLModel):
                 "Reduce resource allocation to optimize costs",
                 "Monitor performance after scaling down",
                 "Ensure SLA compliance is maintained",
-                "Consider rightsizing instances"
+                "Consider rightsizing instances",
             ])
 
             if "Aggressive" in action:
@@ -484,7 +484,7 @@ class L1CapacityPlanner(BaseMLModel):
                 "Current capacity is optimal",
                 "Continue monitoring for changes",
                 "Maintain current configuration",
-                "Regular capacity reviews"
+                "Regular capacity reviews",
             ])
 
         elif action == "Reallocate_Resources":
@@ -492,7 +492,7 @@ class L1CapacityPlanner(BaseMLModel):
                 "Reallocate resources for better efficiency",
                 "Optimize resource distribution",
                 "Consider workload-specific allocation",
-                "Monitor reallocation impact"
+                "Monitor reallocation impact",
             ])
 
         # Add context-specific recommendations
@@ -523,21 +523,21 @@ class L1CapacityPlanner(BaseMLModel):
             forecast.append({
                 'day': day,
                 'forecast_demand': forecast_demand,
-                'confidence': max(0.3, 1.0 - (day * 0.1))
+                'confidence': max(0.3, 1.0 - (day * 0.1)),
             })
 
         return {
             'forecast': forecast,
             'current_demand': current_demand,
             'growth_rate': growth_rate,
-            'forecast_period': forecast_days
+            'forecast_period': forecast_days,
         }
 
     def _calculate_resource_requirements(
         self,
         action: str,
         context: dict[str, Any],
-        forecast: dict[str, Any]
+        forecast: dict[str, Any],
     ) -> dict[str, Any]:
         """Calculate resource requirements for the action."""
         current_resources = context.get("resources", {})
@@ -588,14 +588,14 @@ class L1CapacityPlanner(BaseMLModel):
             'current_cpu': current_cpu,
             'current_memory': current_memory,
             'scaling_factor': scaling_factor,
-            'peak_demand': peak_demand
+            'peak_demand': peak_demand,
         }
 
     def _analyze_cost_impact(
         self,
         action: str,
         context: dict[str, Any],
-        requirements: dict[str, Any]
+        requirements: dict[str, Any],
     ) -> dict[str, Any]:
         """Analyze cost impact of capacity action."""
         current_cost = context.get("cost", {}).get("monthly_cost", 1000)
@@ -620,7 +620,7 @@ class L1CapacityPlanner(BaseMLModel):
             'projected_monthly_cost': new_total_cost,
             'cost_change': cost_change,
             'cost_change_percent': cost_change_percent,
-            'cost_per_request': new_total_cost / requirements.get('peak_demand', 1000)
+            'cost_per_request': new_total_cost / requirements.get('peak_demand', 1000),
         }
 
     def _estimate_implementation_timeline(self, action: str) -> str:
@@ -633,7 +633,7 @@ class L1CapacityPlanner(BaseMLModel):
             "Scale_Down_Conservative": "4-8 hours",
             "Scale_Down_Moderate": "2-4 hours",
             "Scale_Down_Aggressive": "1-2 hours",
-            "Reallocate_Resources": "2-6 hours"
+            "Reallocate_Resources": "2-6 hours",
         }
 
         return timelines.get(action, "4-8 hours")
@@ -644,7 +644,7 @@ class L1CapacityPlanner(BaseMLModel):
             "performance_risk": "Low",
             "availability_risk": "Low",
             "cost_risk": "Low",
-            "scalability_risk": "Low"
+            "scalability_risk": "Low",
         }
 
         if action.startswith("Scale_Down"):
@@ -680,7 +680,7 @@ class L1CapacityPlanner(BaseMLModel):
             'forecast_accuracy': 0.05,
             'resource_efficiency': 0.04,
             'cost_per_request': 0.02,
-            'capacity_buffer': 0.01
+            'capacity_buffer': 0.01,
         }
 
         feature_importance = []
@@ -690,7 +690,7 @@ class L1CapacityPlanner(BaseMLModel):
                 'feature_name': feature_name,
                 'importance_score': importance,
                 'feature_value': model_input.features.get(feature_name),
-                'rank': i + 1
+                'rank': i + 1,
             })
 
         # Sort by importance
@@ -742,7 +742,7 @@ class L1CapacityPlanner(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the time series model.

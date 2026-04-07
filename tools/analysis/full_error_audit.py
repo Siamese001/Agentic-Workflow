@@ -29,7 +29,7 @@ for td in test_dirs:
         ["python", "-m", "pytest", td, "--co", "--tb=short", "-q",
          "--override-ini=testpaths=" + td],
         capture_output=True, text=True, cwd=root, timeout=60,
-        encoding="utf-8", errors="replace"
+        encoding="utf-8", errors="replace",
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 

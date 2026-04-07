@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -231,7 +230,7 @@ class MCPToolServer:
     """MCP tool server for managing and executing tools."""
 
     def __init__(
-        self, name: str = "agentic-workflow-tools", *, allow_legacy_capability_enforcer: bool = False
+        self, name: str = "agentic-workflow-tools", *, allow_legacy_capability_enforcer: bool = False,
     ):
         """Initialize MCP tool server.
 
@@ -261,11 +260,11 @@ class MCPToolServer:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MCPServerConfig.set_capability_enforcer"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MCPServerConfig.set_capability_enforcer",
         )
         if not self._allow_legacy_capability_enforcer:
             raise ValueError(
-                "legacy capability enforcer is disabled. Use allow_legacy_capability_enforcer=True at construction or pass capability_token= per call."
+                "legacy capability enforcer is disabled. Use allow_legacy_capability_enforcer=True at construction or pass capability_token= per call.",
             )
         self._capability_enforcer = enforcer
 
@@ -342,7 +341,7 @@ class MCPToolServer:
 
     @runtime_guard("B.execute_tool.mcp_tool_types")
     def execute_tool(
-        self, name: str, arguments: dict[str, Any], *, capability_token: Any | None = None
+        self, name: str, arguments: dict[str, Any], *, capability_token: Any | None = None,
     ) -> MCPToolResult:
         """Execute a tool.
 
@@ -593,7 +592,7 @@ def execute_tool_with_capability(
 
 
 def execute_tool_calls(
-    server: MCPToolServer, tool_calls: list[dict[str, Any]], *, capability_token: Any | None = None
+    server: MCPToolServer, tool_calls: list[dict[str, Any]], *, capability_token: Any | None = None,
 ) -> list[MCPToolResult]:
     """Execute multiple tool calls.
 

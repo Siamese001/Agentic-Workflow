@@ -50,7 +50,7 @@ class AdvancedL6Detector(BaseMLModel):
         4: "Informational",
         5: "Adaptive_Monitoring",
         6: "Contextual_Analysis",
-        7: "Normal_Operation"
+        7: "Normal_Operation",
     }
 
     # Reverse mapping
@@ -65,7 +65,7 @@ class AdvancedL6Detector(BaseMLModel):
             model_version="1.0",
             model_type="autoencoder_inspired",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -84,7 +84,7 @@ class AdvancedL6Detector(BaseMLModel):
             "latent_dim": 16,
             "reconstruction_weight": 0.7,
             "regularization_weight": 0.3,
-            "anomaly_threshold": 0.1
+            "anomaly_threshold": 0.1,
         }
 
         # Default thresholds
@@ -93,7 +93,7 @@ class AdvancedL6Detector(BaseMLModel):
             "critical_threshold": 0.8,
             "behavioral_threshold": 0.6,
             "system_threshold": 0.7,
-            "security_threshold": 0.9
+            "security_threshold": 0.9,
         }
 
         if model_file_path and model_file_path.exists():
@@ -134,8 +134,8 @@ class AdvancedL6Detector(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -147,7 +147,7 @@ class AdvancedL6Detector(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict advanced anomaly detection decision.
@@ -180,7 +180,7 @@ class AdvancedL6Detector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -215,8 +215,8 @@ class AdvancedL6Detector(BaseMLModel):
                     prediction=predicted_anomaly,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -229,7 +229,7 @@ class AdvancedL6Detector(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -241,7 +241,7 @@ class AdvancedL6Detector(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'anomaly_action': predicted_anomaly,
-                'autoencoder_config': self.autoencoder_config
+                'autoencoder_config': self.autoencoder_config,
             })
 
             # Log prediction
@@ -257,7 +257,7 @@ class AdvancedL6Detector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def detect_anomalies_intelligently(
@@ -265,7 +265,7 @@ class AdvancedL6Detector(BaseMLModel):
         anomaly_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get intelligent anomaly detection recommendation.
@@ -284,7 +284,7 @@ class AdvancedL6Detector(BaseMLModel):
             context=anomaly_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -292,7 +292,7 @@ class AdvancedL6Detector(BaseMLModel):
                 'anomaly_action': 'Normal_Operation',
                 'confidence': 0.0,
                 'reason': 'Feature extraction failed',
-                'recommendations': ['Check anomaly data availability']
+                'recommendations': ['Check anomaly data availability'],
             }
 
         # Validate input
@@ -304,27 +304,27 @@ class AdvancedL6Detector(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate detailed anomaly recommendations
         recommendations = self._generate_anomaly_recommendations(
             action=prediction.prediction,
             context=anomaly_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Analyze anomaly factors
         anomaly_analysis = self._analyze_anomaly_factors(
             context=anomaly_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Calculate anomaly severity
         severity_assessment = self._assess_anomaly_severity(
             action=prediction.prediction,
             context=anomaly_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         return {
@@ -336,7 +336,7 @@ class AdvancedL6Detector(BaseMLModel):
             'anomaly_analysis': anomaly_analysis,
             'severity_assessment': severity_assessment,
             'alternative_responses': self._get_alternative_responses(prediction.probability_distribution),
-            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence)
+            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
         }
 
     def analyze_behavioral_patterns(
@@ -344,7 +344,7 @@ class AdvancedL6Detector(BaseMLModel):
         behavioral_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Analyze behavioral patterns for anomaly detection.
@@ -363,7 +363,7 @@ class AdvancedL6Detector(BaseMLModel):
             'behavioral_deviation': behavioral_context.get('behavioral_deviation', 0.0),
             'request_frequency': behavioral_context.get('request_frequency', 100),
             'response_patterns': behavioral_context.get('response_patterns', 0.5),
-            'error_patterns': behavioral_context.get('error_patterns', 0.01)
+            'error_patterns': behavioral_context.get('error_patterns', 0.01),
         }
 
         # Analyze behavioral patterns
@@ -371,7 +371,7 @@ class AdvancedL6Detector(BaseMLModel):
             'deviation_analysis': self._analyze_deviation_patterns(behavioral_context),
             'frequency_analysis': self._analyze_frequency_patterns(behavioral_context),
             'response_analysis': self._analyze_response_patterns(behavioral_context),
-            'error_analysis': self._analyze_error_patterns(behavioral_context)
+            'error_analysis': self._analyze_error_patterns(behavioral_context),
         }
 
         # Generate behavioral-based anomaly suggestions
@@ -394,7 +394,7 @@ class AdvancedL6Detector(BaseMLModel):
             'behavioral_features': behavioral_features,
             'anomaly_suggestions': anomaly_suggestions,
             'behavioral_confidence': behavioral_context.get('behavioral_confidence', 0.5),
-            'recommended_action': self._recommend_behavioral_action(behavioral_analysis)
+            'recommended_action': self._recommend_behavioral_action(behavioral_analysis),
         }
 
     def assess_system_health(
@@ -402,7 +402,7 @@ class AdvancedL6Detector(BaseMLModel):
         system_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Assess system health for anomaly detection.
@@ -420,7 +420,7 @@ class AdvancedL6Detector(BaseMLModel):
         system_features = {
             'system_metric_anomaly': system_context.get('system_metric_anomaly', 0.0),
             'performance_degradation': system_context.get('performance_degradation', 0.0),
-            'resource_anomaly': system_context.get('resource_anomaly', 0.0)
+            'resource_anomaly': system_context.get('resource_anomaly', 0.0),
         }
 
         # Analyze system health
@@ -428,7 +428,7 @@ class AdvancedL6Detector(BaseMLModel):
             'metric_health': self._analyze_metric_health(system_context),
             'performance_health': self._analyze_performance_health(system_context),
             'resource_health': self._analyze_resource_health(system_context),
-            'overall_health': self._calculate_overall_health(system_context)
+            'overall_health': self._calculate_overall_health(system_context),
         }
 
         # Generate system-based anomaly suggestions
@@ -449,7 +449,7 @@ class AdvancedL6Detector(BaseMLModel):
             'system_features': system_features,
             'anomaly_suggestions': anomaly_suggestions,
             'health_confidence': system_context.get('health_confidence', 0.5),
-            'recommended_action': self._recommend_system_action(system_analysis)
+            'recommended_action': self._recommend_system_action(system_analysis),
         }
 
     def evaluate_security_threats(
@@ -457,7 +457,7 @@ class AdvancedL6Detector(BaseMLModel):
         security_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Evaluate security threats for anomaly detection.
@@ -476,7 +476,7 @@ class AdvancedL6Detector(BaseMLModel):
             'security_anomaly': security_context.get('security_anomaly', 0.0),
             'authentication_anomaly': security_context.get('authentication_anomaly', 0.0),
             'authorization_anomaly': security_context.get('authorization_anomaly', 0.0),
-            'threat_indicators': security_context.get('threat_indicators', 0.0)
+            'threat_indicators': security_context.get('threat_indicators', 0.0),
         }
 
         # Analyze security threats
@@ -484,7 +484,7 @@ class AdvancedL6Detector(BaseMLModel):
             'authentication_security': self._analyze_authentication_security(security_context),
             'authorization_security': self._analyze_authorization_security(security_context),
             'access_pattern_security': self._analyze_access_pattern_security(security_context),
-            'threat_assessment': self._assess_threat_level(security_context)
+            'threat_assessment': self._assess_threat_level(security_context),
         }
 
         # Generate security-based anomaly suggestions
@@ -505,14 +505,14 @@ class AdvancedL6Detector(BaseMLModel):
             'security_features': security_features,
             'anomaly_suggestions': anomaly_suggestions,
             'security_confidence': security_context.get('security_confidence', 0.5),
-            'recommended_action': self._recommend_security_action(security_analysis)
+            'recommended_action': self._recommend_security_action(security_analysis),
         }
 
     def _generate_anomaly_recommendations(
         self,
         action: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> list[str]:
         """Generate action-specific anomaly recommendations."""
         recommendations = []
@@ -522,56 +522,56 @@ class AdvancedL6Detector(BaseMLModel):
                 "Immediate investigation required for critical anomaly",
                 "Escalate to security and operations teams",
                 "Implement emergency response procedures",
-                "Document all anomaly indicators and context"
+                "Document all anomaly indicators and context",
             ])
         elif action == "High_Priority":
             recommendations.extend([
                 "High priority investigation of anomaly indicators",
                 "Notify relevant stakeholders and teams",
                 "Implement monitoring and containment procedures",
-                "Review system logs and performance metrics"
+                "Review system logs and performance metrics",
             ])
         elif action == "Medium_Priority":
             recommendations.extend([
                 "Medium priority investigation of anomaly patterns",
                 "Monitor for escalation or resolution",
                 "Review recent system changes and updates",
-                "Document anomaly for future reference"
+                "Document anomaly for future reference",
             ])
         elif action == "Low_Priority":
             recommendations.extend([
                 "Low priority monitoring of anomaly indicators",
                 "Track anomaly trends and patterns",
                 "Review during regular maintenance windows",
-                "Consider preventive measures if pattern persists"
+                "Consider preventive measures if pattern persists",
             ])
         elif action == "Informational":
             recommendations.extend([
                 "Informational anomaly - log for reference",
                 "Monitor for pattern development",
                 "Include in regular system health reviews",
-                "No immediate action required"
+                "No immediate action required",
             ])
         elif action == "Adaptive_Monitoring":
             recommendations.extend([
                 "Implement adaptive monitoring for anomaly patterns",
                 "Adjust monitoring thresholds based on context",
                 "Create custom alerts for specific conditions",
-                "Review and update monitoring strategies"
+                "Review and update monitoring strategies",
             ])
         elif action == "Contextual_Analysis":
             recommendations.extend([
                 "Perform contextual analysis of anomaly indicators",
                 "Consider environmental and temporal factors",
                 "Evaluate anomaly in broader system context",
-                "Adjust detection thresholds based on context"
+                "Adjust detection thresholds based on context",
             ])
         else:  # Normal_Operation
             recommendations.extend([
                 "Normal operation detected - no anomalies",
                 "Continue standard monitoring procedures",
                 "Maintain regular system health checks",
-                "Document normal operating parameters"
+                "Document normal operating parameters",
             ])
 
         # Add context-specific recommendations
@@ -592,13 +592,13 @@ class AdvancedL6Detector(BaseMLModel):
     def _analyze_anomaly_factors(
         self,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Analyze anomaly factors and their impact."""
         factor_analysis = {
             'primary_factors': [],
             'secondary_factors': [],
-            'contributing_factors': []
+            'contributing_factors': [],
         }
 
         # Analyze behavioral factors
@@ -608,14 +608,14 @@ class AdvancedL6Detector(BaseMLModel):
                 'factor': 'behavioral_deviation',
                 'score': behavioral_deviation,
                 'impact': 'high',
-                'description': 'Significant behavioral deviation detected'
+                'description': 'Significant behavioral deviation detected',
             })
         elif behavioral_deviation > 0.4:
             factor_analysis['secondary_factors'].append({
                 'factor': 'behavioral_deviation',
                 'score': behavioral_deviation,
                 'impact': 'medium',
-                'description': 'Moderate behavioral deviation observed'
+                'description': 'Moderate behavioral deviation observed',
             })
 
         # Analyze system factors
@@ -625,7 +625,7 @@ class AdvancedL6Detector(BaseMLModel):
                 'factor': 'system_metric_anomaly',
                 'score': system_metric_anomaly,
                 'impact': 'high',
-                'description': 'System metrics indicate anomaly'
+                'description': 'System metrics indicate anomaly',
             })
 
         # Analyze reconstruction error
@@ -635,7 +635,7 @@ class AdvancedL6Detector(BaseMLModel):
                 'factor': 'reconstruction_error',
                 'score': reconstruction_error,
                 'impact': 'high',
-                'description': 'High reconstruction error indicates anomaly'
+                'description': 'High reconstruction error indicates anomaly',
             })
 
         # Analyze multivariate factors
@@ -645,7 +645,7 @@ class AdvancedL6Detector(BaseMLModel):
                 'factor': 'multivariate_anomaly',
                 'score': multivariate_anomaly,
                 'impact': 'contributing',
-                'description': 'Multivariate anomaly contributes to detection'
+                'description': 'Multivariate anomaly contributes to detection',
             })
 
         return factor_analysis
@@ -654,7 +654,7 @@ class AdvancedL6Detector(BaseMLModel):
         self,
         action: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Assess anomaly severity for the chosen action."""
         # Base severity estimates by action
@@ -663,50 +663,50 @@ class AdvancedL6Detector(BaseMLModel):
                 "severity_score": 0.9,
                 "impact_level": "critical",
                 "response_time": "immediate",
-                "escalation_required": True
+                "escalation_required": True,
             },
             "High_Priority": {
                 "severity_score": 0.7,
                 "impact_level": "high",
                 "response_time": "urgent",
-                "escalation_required": True
+                "escalation_required": True,
             },
             "Medium_Priority": {
                 "severity_score": 0.5,
                 "impact_level": "medium",
                 "response_time": "standard",
-                "escalation_required": False
+                "escalation_required": False,
             },
             "Low_Priority": {
                 "severity_score": 0.3,
                 "impact_level": "low",
                 "response_time": "routine",
-                "escalation_required": False
+                "escalation_required": False,
             },
             "Informational": {
                 "severity_score": 0.1,
                 "impact_level": "informational",
                 "response_time": "scheduled",
-                "escalation_required": False
+                "escalation_required": False,
             },
             "Adaptive_Monitoring": {
                 "severity_score": 0.4,
                 "impact_level": "adaptive",
                 "response_time": "conditional",
-                "escalation_required": False
+                "escalation_required": False,
             },
             "Contextual_Analysis": {
                 "severity_score": 0.3,
                 "impact_level": "contextual",
                 "response_time": "investigative",
-                "escalation_required": False
+                "escalation_required": False,
             },
             "Normal_Operation": {
                 "severity_score": 0.0,
                 "impact_level": "normal",
                 "response_time": "none",
-                "escalation_required": False
-            }
+                "escalation_required": False,
+            },
         }
 
         base_severity = severity_estimates.get(action, severity_estimates["Normal_Operation"])
@@ -746,7 +746,7 @@ class AdvancedL6Detector(BaseMLModel):
         sorted_responses = sorted(
             probability_distribution.items(),
             key=lambda x: x[1],
-            reverse=True
+            reverse=True,
         )[1:4]  # Skip the primary response
 
         for response, probability in sorted_responses:
@@ -755,7 +755,7 @@ class AdvancedL6Detector(BaseMLModel):
                     'response': response,
                     'probability': probability,
                     'confidence': probability,
-                    'recommendation': f"Consider {response} as alternative"
+                    'recommendation': f"Consider {response} as alternative",
                 })
 
         return alternatives
@@ -797,7 +797,7 @@ class AdvancedL6Detector(BaseMLModel):
                     'metric': metric,
                     'current_value': current_value,
                     'baseline_value': baseline_value,
-                    'deviation': deviation
+                    'deviation': deviation,
                 })
 
         avg_deviation = deviation_score / len(deviation_factors) if deviation_factors else 0.0
@@ -805,7 +805,7 @@ class AdvancedL6Detector(BaseMLModel):
         return {
             'deviation_score': avg_deviation,
             'severity': 'high' if avg_deviation > 0.7 else 'medium' if avg_deviation > 0.4 else 'low',
-            'factors': deviation_factors
+            'factors': deviation_factors,
         }
 
     def _analyze_frequency_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
@@ -822,7 +822,7 @@ class AdvancedL6Detector(BaseMLModel):
             'anomaly_score': frequency_deviation,
             'severity': 'high' if frequency_deviation > 0.5 else 'medium' if frequency_deviation > 0.2 else 'low',
             'current_frequency': current_frequency,
-            'baseline_frequency': baseline_frequency
+            'baseline_frequency': baseline_frequency,
         }
 
     def _analyze_response_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
@@ -836,7 +836,7 @@ class AdvancedL6Detector(BaseMLModel):
             'anomaly_score': response_deviation,
             'severity': 'high' if response_deviation > 0.3 else 'medium' if response_deviation > 0.1 else 'low',
             'current_response': current_response,
-            'baseline_response': baseline_response
+            'baseline_response': baseline_response,
         }
 
     def _analyze_error_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
@@ -853,7 +853,7 @@ class AdvancedL6Detector(BaseMLModel):
             'anomaly_score': error_deviation,
             'severity': 'high' if error_deviation > 2.0 else 'medium' if error_deviation > 1.0 else 'low',
             'current_errors': current_errors,
-            'baseline_errors': baseline_errors
+            'baseline_errors': baseline_errors,
         }
 
     def _recommend_behavioral_action(self, behavioral_analysis: dict[str, Any]) -> str:
@@ -891,7 +891,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return {
             'score': avg_health,
-            'status': 'healthy' if avg_health > 0.7 else 'degraded' if avg_health > 0.4 else 'unhealthy'
+            'status': 'healthy' if avg_health > 0.7 else 'degraded' if avg_health > 0.4 else 'unhealthy',
         }
 
     def _analyze_performance_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
@@ -919,7 +919,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return {
             'score': health_score,
-            'status': 'healthy' if health_score > 0.7 else 'degraded' if health_score > 0.4 else 'unhealthy'
+            'status': 'healthy' if health_score > 0.7 else 'degraded' if health_score > 0.4 else 'unhealthy',
         }
 
     def _analyze_resource_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
@@ -945,7 +945,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return {
             'score': health_score,
-            'status': 'healthy' if health_score > 0.7 else 'degraded' if health_score > 0.4 else 'unhealthy'
+            'status': 'healthy' if health_score > 0.7 else 'degraded' if health_score > 0.4 else 'unhealthy',
         }
 
     def _calculate_overall_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
@@ -966,8 +966,8 @@ class AdvancedL6Detector(BaseMLModel):
             'components': {
                 'metrics': metric_health,
                 'performance': performance_health,
-                'resources': resource_health
-            }
+                'resources': resource_health,
+            },
         }
 
     def _recommend_system_action(self, system_analysis: dict[str, Any]) -> str:
@@ -993,7 +993,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return {
             'score': security_score,
-            'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal'
+            'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal',
         }
 
     def _analyze_authorization_security(self, security_context: dict[str, Any]) -> dict[str, Any]:
@@ -1008,7 +1008,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return {
             'score': security_score,
-            'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal'
+            'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal',
         }
 
     def _analyze_access_pattern_security(self, security_context: dict[str, Any]) -> dict[str, Any]:
@@ -1019,7 +1019,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return {
             'score': security_score,
-            'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal'
+            'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal',
         }
 
     def _assess_threat_level(self, security_context: dict[str, Any]) -> dict[str, Any]:
@@ -1031,12 +1031,12 @@ class AdvancedL6Detector(BaseMLModel):
         threat_score = max(
             auth_security['score'],
             authz_security['score'],
-            access_security['score']
+            access_security['score'],
         )
 
         return {
             'score': threat_score,
-            'level': 'critical' if threat_score > 0.7 else 'high' if threat_score > 0.4 else 'medium' if threat_score > 0.2 else 'low'
+            'level': 'critical' if threat_score > 0.7 else 'high' if threat_score > 0.4 else 'medium' if threat_score > 0.2 else 'low',
         }
 
     def _recommend_security_action(self, security_analysis: dict[str, Any]) -> str:
@@ -1072,7 +1072,7 @@ class AdvancedL6Detector(BaseMLModel):
                     'feature_name': name,
                     'importance_score': importance,
                     'feature_value': model_input.features.get(name),
-                    'rank': i + 1
+                    'rank': i + 1,
                 })
 
             # Sort by importance (all equal for Isolation Forest)
@@ -1128,7 +1128,7 @@ class AdvancedL6Detector(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the Autoencoder-inspired model.
@@ -1170,8 +1170,8 @@ class AdvancedL6Detector(BaseMLModel):
                 n_estimators=100,
                 max_samples='auto',
                 contamination=0.1,
-                random_state=42
-            ))
+                random_state=42,
+            )),
         ])
 
         # Train model

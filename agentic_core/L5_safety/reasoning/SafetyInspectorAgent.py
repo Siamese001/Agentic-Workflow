@@ -210,7 +210,7 @@ class ConstitutionalOverseer:
         ]
         self._compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self._forbidden_commands]
         Logger.info(
-            f"Constitutional Overseer initialized with {len(self._forbidden_commands)} forbidden patterns"
+            f"Constitutional Overseer initialized with {len(self._forbidden_commands)} forbidden patterns",
         )
 
     async def validate_action(self, request: ActionRequest) -> ViolationCheck:
@@ -458,10 +458,10 @@ class SafetyInspectorAgent(SovereignBaseAgent):
         call_ts = time.time()
         if self._socratic_call_count >= self._max_socratic_calls:
             Logger.warning(
-                f"Socratic Judge rate limit ({self._max_socratic_calls}) reached. Defaulting to YES for: {file_path}"
+                f"Socratic Judge rate limit ({self._max_socratic_calls}) reached. Defaulting to YES for: {file_path}",
             )
             self._socratic_audit_log.append(
-                {"ts": call_ts, "file": file_path, "issue": issue, "verdict": "YES", "reason": "rate_limit"}
+                {"ts": call_ts, "file": file_path, "issue": issue, "verdict": "YES", "reason": "rate_limit"},
             )
             return "YES"
         self._socratic_call_count += 1
@@ -487,7 +487,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                 code_snippet = "<unreadable>"
             prompt = f"Role: Socratic Judge - Expert Code Security Reviewer\n\nContext: {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet (sanitized, 500 chars):\n{code_snippet}\n\nAnswer ONLY 'YES' (real violation) or 'NO' (false positive)."
             result_dict = await asyncio.wait_for(
-                llm_router.validate_content(prompt=prompt), timeout=DEFAULT_TIMEOUT
+                llm_router.validate_content(prompt=prompt), timeout=DEFAULT_TIMEOUT,
             )
             if isinstance(result_dict, dict):
                 response_text = result_dict.get("response", result_dict.get("reason", ""))
@@ -524,7 +524,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                     "verdict": verdict,
                     "reason": reason,
                     "call_index": self._socratic_call_count,
-                }
+                },
             )
         return verdict
 

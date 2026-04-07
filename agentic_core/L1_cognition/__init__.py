@@ -22,6 +22,20 @@ from agentic_core.L1_cognition.reasoning.knowledge_orchestrator import (
     reuse_reasoning_pattern,
     validate_reasoning_pattern,
 )
+from agentic_core.L1_cognition.reasoning.plan_creator import (
+    PlanningPolicy,
+    ReasoningPlanContext,
+    create_reasoning_plan,
+    create_simple_reasoning_plan,
+    enforce_plan_checkpoint,
+    execute_plan_step,
+    plan_checkpoint_enforced,
+    plan_revision_recorded,
+    plan_step_executed,
+    query_reasoning_plans,
+    reasoning_plan_emitted,
+    record_plan_revision,
+)
 
 # P4/L1 Reasoning Knowledge Base exports
 from agentic_core.L1_cognition.reasoning.reasoning_knowledge import (
@@ -38,20 +52,6 @@ from agentic_core.L1_cognition.reasoning.reasoning_knowledge import (
     reasoning_steps_hash,
     reuse_count,
     validation_status,
-)
-from agentic_core.L1_cognition.reasoning.plan_creator import (
-    PlanningPolicy,
-    ReasoningPlanContext,
-    create_reasoning_plan,
-    create_simple_reasoning_plan,
-    enforce_plan_checkpoint,
-    execute_plan_step,
-    plan_checkpoint_enforced,
-    plan_revision_recorded,
-    plan_step_executed,
-    query_reasoning_plans,
-    reasoning_plan_emitted,
-    record_plan_revision,
 )
 
 # P3/L1 Multi-Step Reasoning Planning exports

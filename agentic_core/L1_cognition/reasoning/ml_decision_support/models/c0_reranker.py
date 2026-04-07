@@ -46,7 +46,7 @@ class C0RetrievalReranker(BaseMLModel):
             model_version="1.0",
             model_type="lightgbm",
             prediction_type=PredictionType.REGRESSION,  # Predict relevance score
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -62,7 +62,7 @@ class C0RetrievalReranker(BaseMLModel):
         self.threshold_config = {
             "score_threshold": 0.5,
             "min_relevance": 0.3,
-            "max_documents": 100
+            "max_documents": 100,
         }
 
         if model_file_path and model_file_path.exists():
@@ -109,8 +109,8 @@ class C0RetrievalReranker(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'feature_schema_digest': self.feature_schema.schema_digest,
                 'saved_at': datetime.now().isoformat(),
-                'lightgbm_params': getattr(self.model, 'params', {})
-            }
+                'lightgbm_params': getattr(self.model, 'params', {}),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -122,7 +122,7 @@ class C0RetrievalReranker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict relevance score for document reranking.
@@ -155,7 +155,7 @@ class C0RetrievalReranker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -182,8 +182,8 @@ class C0RetrievalReranker(BaseMLModel):
                 self.create_prediction(
                     prediction=relevance_score,
                     confidence=confidence,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Determine final decision mode
@@ -200,7 +200,7 @@ class C0RetrievalReranker(BaseMLModel):
                 decision_mode=final_decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -210,7 +210,7 @@ class C0RetrievalReranker(BaseMLModel):
                 'preprocessing_steps': preprocessing_steps,
                 'relevance_score': relevance_score,
                 'is_above_threshold': passes_threshold,
-                'ranking_position': None  # Will be set during batch ranking
+                'ranking_position': None,  # Will be set during batch ranking
             })
 
             # Log prediction
@@ -226,7 +226,7 @@ class C0RetrievalReranker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def rerank_documents(
@@ -236,7 +236,7 @@ class C0RetrievalReranker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        max_documents: int | None = None
+        max_documents: int | None = None,
     ) -> list[dict[str, Any]]:
         """
         Rerank a list of documents based on relevance scores.
@@ -268,7 +268,7 @@ class C0RetrievalReranker(BaseMLModel):
                 "cache_stats": document.get("cache_stats", {}),
                 "domain": query.get("domain", "general"),
                 "domain_terms": query.get("domain_terms", []),
-                "technical_terms": query.get("technical_terms", [])
+                "technical_terms": query.get("technical_terms", []),
             }
 
             # Extract features
@@ -276,7 +276,7 @@ class C0RetrievalReranker(BaseMLModel):
                 context=context,
                 trace_id=f"{trace_id}_doc_{i}",
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             if extraction_result.success:
@@ -289,7 +289,7 @@ class C0RetrievalReranker(BaseMLModel):
                     model_input=model_input,
                     trace_id=f"{trace_id}_doc_{i}",
                     replay_key=replay_key,
-                    policy_hash=policy_hash
+                    policy_hash=policy_hash,
                 )
 
                 document_scores.append({
@@ -299,7 +299,7 @@ class C0RetrievalReranker(BaseMLModel):
                     'confidence': prediction.confidence,
                     'top_features': prediction.top_features,
                     'decision_mode': prediction.decision_mode,
-                    'prediction_metadata': prediction.model_metadata
+                    'prediction_metadata': prediction.model_metadata,
                 })
             else:
                 # Feature extraction failed - give low score
@@ -310,7 +310,7 @@ class C0RetrievalReranker(BaseMLModel):
                     'confidence': 0.0,
                     'top_features': [],
                     'decision_mode': DecisionMode.BLOCKED,
-                    'prediction_metadata': {'error': 'Feature extraction failed'}
+                    'prediction_metadata': {'error': 'Feature extraction failed'},
                 })
 
         # Sort by relevance score (descending)
@@ -340,7 +340,7 @@ class C0RetrievalReranker(BaseMLModel):
                     'importance_score': float(importance),
                     'feature_value': model_input.features.get(name),
                     'rank': i + 1,
-                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0
+                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0,
                 })
 
             # Sort by importance
@@ -430,7 +430,7 @@ class C0RetrievalReranker(BaseMLModel):
         training_data: list[dict[str, Any]],
         feature_names: list[str],
         training_data_digest: str = "",
-        lgb_params: dict[str, Any] | None = None
+        lgb_params: dict[str, Any] | None = None,
     ) -> None:
         """
         Train the LightGBM model.
@@ -471,7 +471,7 @@ class C0RetrievalReranker(BaseMLModel):
             'bagging_fraction': 0.8,
             'bagging_freq': 5,
             'verbose': -1,
-            'random_state': 42
+            'random_state': 42,
         }
 
         # Merge with provided parameters
@@ -486,7 +486,7 @@ class C0RetrievalReranker(BaseMLModel):
             train_data,
             num_boost_round=100,
             valid_sets=[train_data],
-            callbacks=[lgb.log_evaluation(10)]
+            callbacks=[lgb.log_evaluation(10)],
         )
 
         # Store feature names and importance
@@ -505,7 +505,7 @@ class C0RetrievalReranker(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict relevance from context (convenience method).
@@ -528,7 +528,7 @@ class C0RetrievalReranker(BaseMLModel):
             "cache_stats": document.get("cache_stats", {}),
             "domain": query.get("domain", "general"),
             "domain_terms": query.get("domain_terms", []),
-            "technical_terms": query.get("technical_terms", [])
+            "technical_terms": query.get("technical_terms", []),
         }
 
         # Extract features
@@ -536,7 +536,7 @@ class C0RetrievalReranker(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -547,7 +547,7 @@ class C0RetrievalReranker(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         # Validate input
@@ -560,5 +560,5 @@ class C0RetrievalReranker(BaseMLModel):
             trace_id=trace_id,
             replay_key=replay_key,
             policy_hash=policy_hash,
-            decision_mode=decision_mode
+            decision_mode=decision_mode,
         )

@@ -26,28 +26,28 @@ class MCPGitKrakenFix:
             result = subprocess.run(
                 cmd, shell=True, cwd=str(self.repo_root),
                 capture_output=True, text=True,
-                timeout=timeout
+                timeout=timeout,
             )
 
             return {
                 "success": result.returncode == 0,
                 "stdout": result.stdout,
                 "stderr": result.stderr,
-                "returncode": result.returncode
+                "returncode": result.returncode,
             }
         except subprocess.TimeoutExpired:
             return {
                 "success": False,
                 "stdout": "",
                 "stderr": f"Command timed out after {timeout}s: {cmd}",
-                "returncode": -1
+                "returncode": -1,
             }
         except Exception as e:
             return {
                 "success": False,
                 "stdout": "",
                 "stderr": f"Unexpected error: {str(e)}",
-                "returncode": -2
+                "returncode": -2,
             }
 
     def check_large_files(self, files: list[str]) -> list[str]:
@@ -111,7 +111,7 @@ class MCPGitKrakenFix:
                 "success": True,
                 "stdout": "No files to add (large files excluded)",
                 "stderr": "",
-                "returncode": 0
+                "returncode": 0,
             }
 
         # Add files
@@ -304,7 +304,7 @@ def main():
         f'python "{wrapper_file}" add {test_file.name}',
         cwd=str(repo_root),
         capture_output=True,
-        text=True
+        text=True,
     )
     add_result = json.loads(result.stdout)
     print(f"✅ Wrapper add: {add_result['success']}")
@@ -314,7 +314,7 @@ def main():
         f'python "{wrapper_file}" commit-safe "Test wrapper script"',
         cwd=str(repo_root),
         capture_output=True,
-        text=True
+        text=True,
     )
     commit_result = json.loads(result.stdout)
     print(f"✅ Wrapper commit: {commit_result['success']}")

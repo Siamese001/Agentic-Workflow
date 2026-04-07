@@ -18,7 +18,7 @@ def node_name(nid):
 
 # 1. violates edges
 rows = conn.execute(
-    "SELECT src_id, dst_id, source_file, symbol FROM edges WHERE relation_type='violates' LIMIT 20"
+    "SELECT src_id, dst_id, source_file, symbol FROM edges WHERE relation_type='violates' LIMIT 20",
 ).fetchall()
 print(f"\n=== VIOLATIONS count={len(rows)} ===")
 for r in rows:
@@ -31,7 +31,7 @@ for r in rows:
 
 # 2. dead imports in execute_ssot
 execute_ssot_node = conn.execute(
-    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/execute_ssot.py'"
+    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/execute_ssot.py'",
 ).fetchone()
 if execute_ssot_node:
     eid = execute_ssot_node["id"]
@@ -60,7 +60,7 @@ rows8 = conn.execute(
          AND n.resolved_path NOT LIKE 'tests/%'
          AND n.resolved_path NOT LIKE 'ops_scripts/%'
          AND n.resolved_path LIKE 'agentic_core/adg/runtime/__init__.py'
-       ORDER BY e.line_no"""
+       ORDER BY e.line_no""",
 ).fetchall()
 print(f"\n=== DEAD IMPORTS in agentic_core/adg/runtime/__init__.py count={len(rows8)} ===")
 for r in rows8:
@@ -72,7 +72,7 @@ rows9 = conn.execute(
        FROM edges e JOIN nodes n ON e.src_id=n.id
        WHERE e.relation_type='dead_imports'
          AND n.resolved_path = 'agentic_core/adg/runtime/__init__.py'
-       ORDER BY e.line_no"""
+       ORDER BY e.line_no""",
 ).fetchall()
 print(f"\n=== agentic_core/adg/runtime/__init__.py dead imports count={len(rows9)} ===")
 for r in rows9:

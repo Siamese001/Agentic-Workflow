@@ -87,7 +87,7 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
                 self.uses_cid_registry_constructor = True
                 self.violations.append(
                     f"Line {node.lineno}: Direct CIDRegistry() constructor call detected. "
-                    "CIDRegistry should be injected, not constructed in adapter."
+                    "CIDRegistry should be injected, not constructed in adapter.",
                 )
 
         # Check for new_cycle calls
@@ -95,7 +95,7 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
             self.calls_new_cycle = True
             self.violations.append(
                 f"Line {node.lineno}: Direct new_cycle() call detected. "
-                "new_cycle should only be called via BaseSpineAdapter.execute()."
+                "new_cycle should only be called via BaseSpineAdapter.execute().",
             )
 
         # Check for canonical_hash calls
@@ -103,7 +103,7 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
             self.uses_canonical_hash = True
             self.violations.append(
                 f"Line {node.lineno}: Direct canonical_hash() call detected. "
-                "CID derivation should be delegated to BaseSpineAdapter."
+                "CID derivation should be delegated to BaseSpineAdapter.",
             )
 
         # Check for strip_nondeterministic calls
@@ -111,7 +111,7 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
             self.uses_strip_nondeterministic = True
             self.violations.append(
                 f"Line {node.lineno}: Direct strip_nondeterministic() call detected. "
-                "CID derivation should be delegated to BaseSpineAdapter."
+                "CID derivation should be delegated to BaseSpineAdapter.",
             )
 
         self.generic_visit(node)
@@ -120,18 +120,18 @@ class SpineAdapterContractVisitor(ast.NodeVisitor):
         """Return list of violations."""
         if not self.has_spine_adapter_class:
             self.violations.append(
-                "No spine adapter class found. Expected a class with 'spine' or 'adapter' in the name."
+                "No spine adapter class found. Expected a class with 'spine' or 'adapter' in the name.",
             )
 
         if self.has_spine_adapter_class and not self.subclasses_base_spine_adapter:
             self.violations.append(
                 "Spine adapter class does not subclass BaseSpineAdapter. "
-                "All spine adapters must inherit from BaseSpineAdapter."
+                "All spine adapters must inherit from BaseSpineAdapter.",
             )
 
         if self.has_spine_adapter_class and not self.imports_base_spine_adapter:
             self.violations.append(
-                "BaseSpineAdapter not imported. Spine adapters must import BaseSpineAdapter."
+                "BaseSpineAdapter not imported. Spine adapters must import BaseSpineAdapter.",
             )
 
         return sorted(self.violations)

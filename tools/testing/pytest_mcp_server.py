@@ -122,13 +122,13 @@ ADG_INCREMENTAL_SCRIPT = PROJECT_ROOT / "tools/adg_incremental_update.py"
 GOVERNANCE_TESTS = [
     "tests/unit/agentic_core/L0_routing/",
     "tests/unit/agentic_core/L5_safety/",
-    "tests/integration/governance/"
+    "tests/integration/governance/",
 ]
 
 SMOKE_TESTS = [
     "tests/unit/agentic_core/adg/",
     "tests/unit/agentic_core/runtime/",
-    "tests/integration/adg/"
+    "tests/integration/adg/",
 ]
 
 # Cache for test status
@@ -185,7 +185,7 @@ def _run_pytest(args: list[str], timeout: int = 300) -> dict[str, Any]:
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=str(PROJECT_ROOT)
+            cwd=str(PROJECT_ROOT),
         )
 
         return {
@@ -194,21 +194,21 @@ def _run_pytest(args: list[str], timeout: int = 300) -> dict[str, Any]:
             "stdout": result.stdout,
             "stderr": result.stderr,
             "command": " ".join(cmd),
-            "timestamp": int(time.time())
+            "timestamp": int(time.time()),
         }
     except subprocess.TimeoutExpired:
         return {
             "success": False,
             "error": "Test execution timed out",
             "command": " ".join(cmd),
-            "timestamp": int(time.time())
+            "timestamp": int(time.time()),
         }
     except Exception as e:
         return {
             "success": False,
             "error": str(e),
             "command": " ".join(cmd),
-            "timestamp": int(time.time())
+            "timestamp": int(time.time()),
         }
 
 
@@ -220,7 +220,7 @@ def _parse_pytest_output(output: str) -> dict[str, Any]:
         "failed": 0,
         "skipped": 0,
         "errors": 0,
-        "duration": 0.0
+        "duration": 0.0,
     }
 
     lines = output.split('\n')
@@ -264,7 +264,7 @@ def pytest_status() -> dict[str, Any]:
         "total_test_files": _test_cache.get("total_test_files", 0),
         "health_score": 0.0,
         "recent_failures": [],
-        "recommendations": []
+        "recommendations": [],
     }
 
     # Calculate health score
@@ -314,14 +314,14 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
             capture_output=True,
             text=True,
             timeout=120,
-            cwd=str(PROJECT_ROOT)
+            cwd=str(PROJECT_ROOT),
         )
 
         if impact_result.returncode != 0:
             return {
                 "success": False,
                 "error": f"ADG impact analysis failed: {impact_result.stderr}",
-                "file_list": file_list
+                "file_list": file_list,
             }
 
         # Parse impact output to get affected test files
@@ -340,7 +340,7 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
                 "message": "No tests affected by the specified changes",
                 "file_list": file_list,
                 "affected_modules": [],
-                "impact_analysis": impact_result.stdout
+                "impact_analysis": impact_result.stdout,
             }
 
         # Run tests for affected modules
@@ -361,13 +361,13 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
             "impact_analysis": impact_result.stdout,
             "test_execution": test_result,
             "test_results": parsed_results,
-            "timestamp": int(time.time())
+            "timestamp": int(time.time()),
         }
 
         logger.info("pytest_adg_impact_executed", extra={
             "file_count": len(file_list),
             "affected_modules": len(affected_modules),
-            "success": result["success"]
+            "success": result["success"],
         })
 
         return result
@@ -376,17 +376,17 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
         return {
             "success": False,
             "error": "ADG impact analysis timed out",
-            "file_list": file_list
+            "file_list": file_list,
         }
     except Exception as e:
         logger.error("pytest_adg_impact_error", extra={
             "file_count": len(file_list),
-            "error": str(e)
+            "error": str(e),
         })
         return {
             "success": False,
             "error": str(e),
-            "file_list": file_list
+            "file_list": file_list,
         }
 
 
@@ -409,7 +409,7 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         return {
             "success": False,
             "error": "No governance test paths found",
-            "searched_paths": GOVERNANCE_TESTS
+            "searched_paths": GOVERNANCE_TESTS,
         }
 
     # Add governance-specific pytest options
@@ -417,7 +417,7 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         "-v",
         "--tb=short",
         "--strict-markers",
-        "-m", "governance or integration"
+        "-m", "governance or integration",
     ])
 
     test_result = _run_pytest(governance_args, timeout)
@@ -446,12 +446,12 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         "test_results": parsed_results,
         "compliance_status": compliance_status,
         "constitutional_rule_3_violation": violation,
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
     }
 
     logger.info("pytest_guardians_executed", extra={
         "success": result["success"],
-        "compliance": compliance_status
+        "compliance": compliance_status,
     })
 
     return result
@@ -476,7 +476,7 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         return {
             "success": False,
             "error": "No smoke test paths found",
-            "searched_paths": SMOKE_TESTS
+            "searched_paths": SMOKE_TESTS,
         }
 
     # Add smoke test specific options
@@ -484,7 +484,7 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         "-v",
         "--tb=short",
         "-m", "smoke or unit",
-        "--maxfail=5"  # Stop after 5 failures for quick feedback
+        "--maxfail=5",  # Stop after 5 failures for quick feedback
     ])
 
     test_result = _run_pytest(smoke_args, timeout)
@@ -504,12 +504,12 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         "test_execution": test_result,
         "test_results": parsed_results,
         "critical_path_status": critical_path_status,
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
     }
 
     logger.info("pytest_smoke_executed", extra={
         "success": result["success"],
-        "critical_path": critical_path_status
+        "critical_path": critical_path_status,
     })
 
     return result
@@ -531,7 +531,7 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
         "--cov-report=term-missing",
         "--cov-report=json:coverage.json",
         "--cov-report=html",
-        "tests/"
+        "tests/",
     ]
 
     coverage_result = _run_pytest(coverage_args, timeout=600)
@@ -567,7 +567,7 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
                     "lines_covered": 0,
                     "lines_missing": 0,
                     "total_lines": 0,
-                    "coverage_percent": 0.0
+                    "coverage_percent": 0.0,
                 }
 
             layer_coverage[layer]["files"] += 1
@@ -589,12 +589,12 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
         "coverage_execution": coverage_result,
         "layer_coverage": layer_coverage,
         "overall_coverage": coverage_data.get("totals", {}).get("percent_covered", 0),
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
     }
 
     logger.info("pytest_coverage_analyzed", extra={
         "layer_filter": layer_filter,
-        "overall_coverage": result["overall_coverage"]
+        "overall_coverage": result["overall_coverage"],
     })
 
     return result
@@ -616,7 +616,7 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
         "test_run_id": test_run_id or "latest",
         "failures": [],
         "adg_context": {},
-        "recommendations": []
+        "recommendations": [],
     }
 
     # Look for recent failure files
@@ -634,7 +634,7 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
                         failure_analysis["failures"].append({
                             "cache_file": str(cache_file),
                             "detected_failure": True,
-                            "analysis": "Failure detected in cache file"
+                            "analysis": "Failure detected in cache file",
                         })
             except Exception:
                 continue
@@ -645,22 +645,22 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
             "Check ADG impact analysis for affected modules",
             "Run pytest_run_adg_impact for targeted testing",
             "Verify layer boundary compliance if architecture tests failed",
-            "Check import discipline if dependency tests failed"
+            "Check import discipline if dependency tests failed",
         ])
     else:
         failure_analysis["recommendations"].append(
-            "No recent failures detected - run tests to generate failure data"
+            "No recent failures detected - run tests to generate failure data",
         )
 
     result = {
         "success": True,
         "analysis": failure_analysis,
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
     }
 
     logger.info("pytest_failure_analyzed", extra={
         "test_run_id": test_run_id or "latest",
-        "failures_found": len(failure_analysis["failures"])
+        "failures_found": len(failure_analysis["failures"]),
     })
 
     return result

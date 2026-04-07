@@ -129,7 +129,7 @@ def gate_b(cur: sqlite3.Cursor) -> tuple[bool, str]:
         " WHERE e.relation_type='agent_executes_agent'"
         " AND e.source_file LIKE '%L3_orchestration%'"
         " AND e.source_file NOT LIKE '%test%'"
-        " AND e.source_file NOT LIKE '%tests%'"
+        " AND e.source_file NOT LIKE '%tests%'",
     )
     n = cur.fetchone()[0]
     ok = n >= GATE_B_MIN_DISPATCH_SOURCES
@@ -150,7 +150,7 @@ def gate_c(cur: sqlite3.Cursor) -> tuple[bool, str]:
         " AND e.source_file LIKE '%L3_orchestration%'"
         " AND e.source_file NOT LIKE '%test%'"
         " AND e.source_file NOT LIKE '%registry%'"
-        " AND e.source_file NOT LIKE '%contracts%'"
+        " AND e.source_file NOT LIKE '%contracts%'",
     )
     bypass_count = cur.fetchone()[0]
     ok = bypass_count <= GATE_C_MAX_GETATTR_BYPASSES
@@ -199,7 +199,7 @@ def gate_e(cur: sqlite3.Cursor) -> tuple[bool, str]:
         "SELECT COUNT(DISTINCT e.source_file) FROM edges e"
         " WHERE e.relation_type='agent_executes_agent'"
         " AND e.source_file LIKE '%L3_orchestration%'"
-        " AND e.source_file NOT LIKE '%test%'"
+        " AND e.source_file NOT LIKE '%test%'",
     )
     n = cur.fetchone()[0]
     ok = n >= GATE_E_MIN_OWNERSHIP_SOURCES

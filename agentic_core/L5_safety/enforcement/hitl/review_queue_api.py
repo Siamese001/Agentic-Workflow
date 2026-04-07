@@ -168,7 +168,7 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
         decision_type = HITLDecisionType(decision_str)
     except ValueError:
         return jsonify({
-            "error": f"Invalid decision: {decision_str}. Must be one of: approve, reject, override, defer"
+            "error": f"Invalid decision: {decision_str}. Must be one of: approve, reject, override, defer",
         }), 400
 
     checkpoint = _hitl_graph.checkpoint_by_id(checkpoint_id)

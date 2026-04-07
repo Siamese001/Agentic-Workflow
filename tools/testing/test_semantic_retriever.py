@@ -29,7 +29,7 @@ async def test_retriever():
         "What does the UniversalWriteGateway do?",
         "How does the ADG scanner work?",
         "What are the L0-L6 layers?",
-        "Show me the ChromaDB client implementation"
+        "Show me the ChromaDB client implementation",
     ]
 
     print("\nTesting Questions:")
@@ -46,7 +46,7 @@ async def test_retriever():
     query = RetrievalQuery(
         text="UniversalWriteGateway",
         collections=["repo_symbols", "repo_code_chunks"],
-        max_results=5
+        max_results=5,
     )
     results = await retriever.retrieve(query)
     print(f"Found {len(results)} results for direct query")

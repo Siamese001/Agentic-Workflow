@@ -1,10 +1,10 @@
 """
 Debt Schedule Parser - Parses debt schedules from uploaded documents.
 """
-from typing import Dict, Optional, List
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
-import re
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -85,7 +85,7 @@ class DebtScheduleParser:
                     entry = DebtEntry(
                         lender=match.group(1).strip() if len(match.groups()) > 0 else "Unknown",
                         facility_type=match.group(2) if len(match.groups()) > 1 else "Unknown",
-                        current_balance=float(match.group(3).replace(',', '')) if len(match.groups()) > 2 else None
+                        current_balance=float(match.group(3).replace(',', '')) if len(match.groups()) > 2 else None,
                     )
                     entries.append(entry)
                 except (ValueError, IndexError):

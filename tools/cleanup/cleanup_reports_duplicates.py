@@ -33,7 +33,7 @@ def analyze_report_duplicates():
                     'path': file_path,
                     'timestamp': timestamp,
                     'datetime': datetime.strptime(timestamp, "%Y%m%d_%H%M"),
-                    'size': file_path.stat().st_size
+                    'size': file_path.stat().st_size,
                 })
 
     # Find duplicates
@@ -53,7 +53,7 @@ def analyze_report_duplicates():
                 'reports': reports,
                 'waste': waste_size,
                 'keep': reports[0],  # Keep the newest
-                'remove': reports[1:]  # Remove older ones
+                'remove': reports[1:],  # Remove older ones
             }
 
     print(f"Found {len(duplicate_groups) } report types with duplicates")

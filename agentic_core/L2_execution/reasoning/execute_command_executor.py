@@ -247,7 +247,7 @@ def validate_sandbox(path: str) -> Path:
         abs_path.relative_to(project_root)
     except ValueError:
         raise ValueError(
-            f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'."
+            f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'.",
         )
     return abs_path
 
@@ -353,7 +353,7 @@ def execute_with_timeout(
         work_dir: Any = validate_sandbox(cwd)
     try:
         result: Any = safe_execute(
-            command, cwd=str(work_dir), capture_output=capture_output, text=True, timeout=timeout, check=check
+            command, cwd=str(work_dir), capture_output=capture_output, text=True, timeout=timeout, check=check,
         )
         return result
     except subprocess.TimeoutExpired as e:
@@ -411,7 +411,7 @@ def check_tool_installed(tool_name: str) -> bool:
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
             result: Any = safe_execute(
-                [command, "--version"], capture_output=True, timeout=DEFAULT_TIMEOUT, check=False
+                [command, "--version"], capture_output=True, timeout=DEFAULT_TIMEOUT, check=False,
             )
             if result.returncode == 0:
                 return True
@@ -440,7 +440,7 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
     args.append(target_path)
     try:
         result: Any = execute_with_timeout(
-            command=args, timeout=DEFAULT_TIMEOUT, capture_output=True, check=False
+            command=args, timeout=DEFAULT_TIMEOUT, capture_output=True, check=False,
         )
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr

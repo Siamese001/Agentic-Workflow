@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -307,7 +306,7 @@ class ResourceManagerAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def set_budget(
-        self, resource_type: ResourceType, total: float, hard_cap: bool = True, warning_threshold: float = 0.8
+        self, resource_type: ResourceType, total: float, hard_cap: bool = True, warning_threshold: float = 0.8,
     ) -> None:
         """Set budget for a resource type."""
         with self._lock:
@@ -320,7 +319,7 @@ class ResourceManagerAgent(SovereignBaseAgent):
             Logger.info(f"Budget set: {resource_type.name} = {total}")
 
     def allocate(
-        self, agent_id: str, resource_type: ResourceType, amount: float, priority: int = 0
+        self, agent_id: str, resource_type: ResourceType, amount: float, priority: int = 0,
     ) -> ResourceAllocation:
         """
         Allocate resources to an agent.
@@ -362,18 +361,18 @@ class ResourceManagerAgent(SovereignBaseAgent):
                 self._agent_allocations[agent_id].append(allocation)
                 if budget.utilization >= budget.warning_threshold:
                     Logger.warning(
-                        f"WARNING: {resource_type.name} at {budget.utilization * 100:.1f}% utilization"
+                        f"WARNING: {resource_type.name} at {budget.utilization * 100:.1f}% utilization",
                     )
                 Logger.debug(f"Allocated {amount} {resource_type.name} to {agent_id}")
                 return allocation
             if self._agent_config.enable_fallback:
                 return self._apply_fallback(agent_id, resource_type, amount, priority)
             return ResourceAllocation(
-                resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.DENIED
+                resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.DENIED,
             )
 
     def _apply_fallback(
-        self, agent_id: str, resource_type: ResourceType, amount: float, priority: int
+        self, agent_id: str, resource_type: ResourceType, amount: float, priority: int,
     ) -> ResourceAllocation:
         """Apply fallback strategies when allocation fails."""
         for strategy in self._agent_config.fallback_strategies:
@@ -381,7 +380,7 @@ class ResourceManagerAgent(SovereignBaseAgent):
                 self._pending_queue.append((agent_id, resource_type, amount, priority))
                 Logger.info(f"Queued allocation request from {agent_id}")
                 return ResourceAllocation(
-                    resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.FALLBACK
+                    resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.FALLBACK,
                 )
             elif strategy == "throttle":
                 budget = self._budgets[resource_type]
@@ -396,7 +395,7 @@ class ResourceManagerAgent(SovereignBaseAgent):
                         status=AllocationStatus.FALLBACK,
                     )
         return ResourceAllocation(
-            resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.DENIED
+            resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.DENIED,
         )
 
     def release(self, agent_id: str, resource_type: ResourceType, amount: float) -> bool:

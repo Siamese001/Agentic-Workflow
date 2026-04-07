@@ -59,7 +59,7 @@ class DeterministicInferenceEngine:
         self,
         models: dict[str, BaseMLModel],
         shadow_logger: ShadowLogger,
-        replay_harness: ReplayHarness
+        replay_harness: ReplayHarness,
     ):
         self.models = models
         self.shadow_logger = shadow_logger
@@ -72,12 +72,12 @@ class DeterministicInferenceEngine:
             'failed_inferences': 0,
             'shadow_inferences': 0,
             'production_inferences': 0,
-            'average_inference_time_ms': 0.0
+            'average_inference_time_ms': 0.0,
         }
 
     def infer(
         self,
-        request: InferenceRequest
+        request: InferenceRequest,
     ) -> InferenceResult:
         """
         Execute ML inference with deterministic behavior.
@@ -118,7 +118,7 @@ class DeterministicInferenceEngine:
                 prediction=prediction,
                 inference_metadata=self._create_inference_metadata(request, prediction),
                 success=True,
-                inference_time_ms=inference_time
+                inference_time_ms=inference_time,
             )
 
             # Log inference completion
@@ -138,7 +138,7 @@ class DeterministicInferenceEngine:
                 inference_metadata={'error': error_message},
                 success=False,
                 error_message=error_message,
-                inference_time_ms=inference_time
+                inference_time_ms=inference_time,
             )
 
             # Log inference failure
@@ -148,7 +148,7 @@ class DeterministicInferenceEngine:
 
     def infer_batch(
         self,
-        requests: list[InferenceRequest]
+        requests: list[InferenceRequest],
     ) -> list[InferenceResult]:
         """
         Execute multiple inferences efficiently.
@@ -171,7 +171,7 @@ class DeterministicInferenceEngine:
         self,
         model_name: str,
         model_version: str,
-        test_cases: list[dict[str, Any]]
+        test_cases: list[dict[str, Any]],
     ) -> dict[str, Any]:
         """
         Validate model determinism using replay harness.
@@ -202,7 +202,7 @@ class DeterministicInferenceEngine:
                 replay_key=case.get('replay_key', f"det_replay_{i}"),
                 policy_hash=case.get('policy_hash', "det_policy"),
                 semantic_clock=case.get('semantic_clock'),
-                decision_mode=DecisionMode.SHADOW_ONLY
+                decision_mode=DecisionMode.SHADOW_ONLY,
             )
 
             # Execute original prediction
@@ -214,7 +214,7 @@ class DeterministicInferenceEngine:
                 'replay_key': request.replay_key,
                 'policy_hash': request.policy_hash,
                 'semantic_clock': request.semantic_clock,
-                'original_prediction': original_result.prediction
+                'original_prediction': original_result.prediction,
             }
 
             replay_cases.append(replay_case)
@@ -234,7 +234,7 @@ class DeterministicInferenceEngine:
                 'successful_inferences': self.stats['successful_inferences'],
                 'failed_inferences': self.stats['failed_inferences'],
                 'success_rate': self.stats['successful_inferences'] / max(1, self.stats['total_inferences']),
-                'average_inference_time_ms': self.stats['average_inference_time_ms']
+                'average_inference_time_ms': self.stats['average_inference_time_ms'],
             }
 
             # Add model-specific statistics if available
@@ -250,7 +250,7 @@ class DeterministicInferenceEngine:
                 **self.stats,
                 'available_models': list(self.models.keys()),
                 'shadow_statistics': self.shadow_logger.get_shadow_statistics(),
-                'replay_statistics': self.replay_harness.get_replay_statistics()
+                'replay_statistics': self.replay_harness.get_replay_statistics(),
             }
 
     def _validate_request(self, request: InferenceRequest) -> None:
@@ -289,7 +289,7 @@ class DeterministicInferenceEngine:
                 trace_id=request.trace_id,
                 replay_key=request.replay_key,
                 policy_hash=request.policy_hash,
-                semantic_clock=request.semantic_clock
+                semantic_clock=request.semantic_clock,
             )
 
             if not extraction_result.success and request.validation_required:
@@ -311,7 +311,7 @@ class DeterministicInferenceEngine:
             trace_id=request.trace_id,
             replay_key=request.replay_key,
             policy_hash=request.policy_hash,
-            decision_mode=request.decision_mode
+            decision_mode=request.decision_mode,
         )
 
         return prediction
@@ -325,7 +325,7 @@ class DeterministicInferenceEngine:
                     context=request.context,
                     trace_id=request.trace_id,
                     replay_key=request.replay_key,
-                    policy_hash=request.policy_hash
+                    policy_hash=request.policy_hash,
                 )
 
                 if extraction_result.success:
@@ -340,7 +340,7 @@ class DeterministicInferenceEngine:
             self.shadow_logger.log_prediction(
                 model_input=model_input,
                 model_prediction=prediction,
-                logging_mode=ShadowMode.LOG_ONLY
+                logging_mode=ShadowMode.LOG_ONLY,
             )
 
         except Exception as e:
@@ -359,7 +359,7 @@ class DeterministicInferenceEngine:
             'prediction_timestamp': prediction.prediction_timestamp.isoformat(),
             'feature_digest': prediction.feature_digest,
             'training_data_digest': prediction.training_data_digest,
-            'threshold_used': prediction.threshold_used
+            'threshold_used': prediction.threshold_used,
         }
 
     def _update_stats(self, inference_time: float, is_shadow: bool, success: bool) -> None:
@@ -394,13 +394,13 @@ class DeterministicInferenceEngine:
                 'prediction': result.prediction.prediction if result.prediction else None,
                 'confidence': result.prediction.confidence if result.prediction else None,
                 'inference_time_ms': result.inference_time_ms,
-                'success': result.success
+                'success': result.success,
             }
 
             _emit_records_execution_trace(
                 root_trace_id=request.trace_id,
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="inference_completed"
+                operation="inference_completed",
             )
 
         except Exception as e:
@@ -417,13 +417,13 @@ class DeterministicInferenceEngine:
                 'shadow_mode': request.shadow_mode,
                 'error_message': result.error_message,
                 'inference_time_ms': result.inference_time_ms,
-                'success': result.success
+                'success': result.success,
             }
 
             _emit_records_execution_trace(
                 root_trace_id=request.trace_id,
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="inference_failed"
+                operation="inference_failed",
             )
 
         except Exception as e:

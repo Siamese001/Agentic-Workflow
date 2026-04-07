@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Memory Management Rules
 
 ## Purpose
@@ -30,7 +33,14 @@ Stale entities are purged during memory sync.
 
 1. **Primary trigger:** After every ADG regeneration
 2. **Historical frequency:** Every 3–7 days (based on ADG regen patterns)
-3. **Manual trigger:** When `check_memory_health.py` reports warning
+## CI Integration
+
+Memory health is checked via CI gate:
+- Daily health check: `python ops_scripts/ci/check_memory_health.py`
+- Triggers manual purge when threshold exceeded
+- Blocks commits if memory corruption detected
+
+Manual trigger: When `check_memory_health.py` reports warning
 
 **Never run purge sync:**
 - During active repair loops (risk of losing triage context)

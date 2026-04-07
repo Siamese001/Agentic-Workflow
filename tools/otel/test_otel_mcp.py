@@ -61,7 +61,7 @@ async def test_mcp_server():
         "otel_policy_decisions",
         "otel_metrics_summary",
         "otel_anomalies",
-        "otel_ingest_to_runtime_adg"
+        "otel_ingest_to_runtime_adg",
     ]
 
     missing_tools = [tool for tool in expected_tools if tool not in tool_names]

@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 
-
 def main():
     current_path = Path('agent_discovery_full.json')
     backup_path = Path('agent_discovery_full.json.backup_phase3')

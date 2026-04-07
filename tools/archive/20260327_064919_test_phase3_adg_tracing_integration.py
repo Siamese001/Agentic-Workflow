@@ -124,7 +124,7 @@ def test_integrated_tracing_mixin():
     test_keys = [
         'integrated_mixin_init', 'integrated_status_available', 'otel_enabled', 'runtime_adg_enabled',
         'integrated_span_created', 'dual_span_collection', 'runtime_adg_persistence', 'persistence_success',
-        'trace_flushing'
+        'trace_flushing',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -262,7 +262,7 @@ def test_adg_tracing_hooks():
     test_keys = [
         'hooks_decorator', 'hooked_execution', 'execution_results',
         'hook_manager_available', 'hook_status_available', 'global_hooks_enabled',
-        'cognitive_decorator', 'tool_decorator'
+        'cognitive_decorator', 'tool_decorator',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -406,7 +406,7 @@ def test_auto_span_collector():
 
     test_keys = [
         'collector_init', 'agent_registration', 'collection_start_stop',
-        'span_collection', 'global_collector', 'global_stats_available'
+        'span_collection', 'global_collector', 'global_stats_available',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -507,7 +507,7 @@ def test_tracing_mixin_integration():
     print("=" * 80)
 
     test_keys = [
-        'bridge_agent_init', 'span_bridging', 'bridge_flush', 'bridge_status', 'bridge_enabled'
+        'bridge_agent_init', 'span_bridging', 'bridge_flush', 'bridge_status', 'bridge_enabled',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)
@@ -667,7 +667,7 @@ def test_end_to_end_agent_execution():
     test_keys = [
         'complete_agent_init', 'full_execution', 'adg_integration_status',
         'otel_integration', 'runtime_adg_integration', 'force_persistence',
-        'persistence_result_success', 'multi_execution'
+        'persistence_result_success', 'multi_execution',
     ]
 
     success_count = sum(1 for key in test_keys if results.get(key) is True)

@@ -197,7 +197,7 @@ class PlainTextParser:
                             category=self._classify_requirement(req_text),
                             priority="mandatory" if "must" in req_text.lower() else "preferred",
                             text=req_text,
-                        )
+                        ),
                     )
                     req_counter += 1
 
@@ -217,7 +217,7 @@ class PlainTextParser:
                     constraint_id=f"C{c_counter:03d}",
                     category="budget",
                     description=f"Budget limit: {match.group(1)}",
-                )
+                ),
             )
             c_counter += 1
 
@@ -228,7 +228,7 @@ class PlainTextParser:
                     constraint_id=f"C{c_counter:03d}",
                     category="timeline",
                     description=f"Timeline: {match.group(1)}",
-                )
+                ),
             )
             c_counter += 1
 
@@ -252,7 +252,7 @@ class PlainTextParser:
                     category=cat.lower(),
                     weight=weight,
                     description=f"{cat} evaluation criterion",
-                )
+                ),
             )
             ec_counter += 1
 

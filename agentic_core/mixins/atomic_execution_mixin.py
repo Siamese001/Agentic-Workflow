@@ -71,39 +71,25 @@ _emit_applies_guardrail("p0", "atomic_execution_mixin", "p0_governance")
 _emit_reads_policy_state("p0", "atomic_execution_mixin", "policy_binding")
 _emit_snapshots_state("p0", "atomic_execution_mixin", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -371,7 +357,7 @@ class AtomicExecutionMixin:
             yield txn
             txn.committed = True
             logger.info(
-                f"Transaction {txn_id} committed successfully. Modified: {len(txn.modified_files)}, Created: {len(txn.created_files)}"
+                f"Transaction {txn_id} committed successfully. Modified: {len(txn.modified_files)}, Created: {len(txn.created_files)}",
             )
             if cleanup_on_success:
                 self._cleanup_transaction(txn)
@@ -382,11 +368,11 @@ class AtomicExecutionMixin:
             self._rollback_transaction(txn)
             self._cleanup_transaction(txn)
             raise AtomicExecutionError(
-                f"Operation '{operation_name}' failed: {e}", txn_id, rolled_back=True
+                f"Operation '{operation_name}' failed: {e}", txn_id, rolled_back=True,
             ) from e
 
     def atomic_write(
-        self, txn: AtomicTransaction, file_path: Path, content: str, encoding: str = "utf-8"
+        self, txn: AtomicTransaction, file_path: Path, content: str, encoding: str = "utf-8",
     ) -> None:
         """
         Write to a file within an atomic transaction.
@@ -399,7 +385,7 @@ class AtomicExecutionMixin:
         """
         if txn.committed or txn.rolled_back:
             raise AtomicExecutionError(
-                "Cannot write to committed/rolled-back transaction", txn.transaction_id
+                "Cannot write to committed/rolled-back transaction", txn.transaction_id,
             )
         if file_path.exists():
             self._backup_file(txn, file_path)
@@ -423,7 +409,7 @@ class AtomicExecutionMixin:
         """
         if txn.committed or txn.rolled_back:
             raise AtomicExecutionError(
-                "Cannot delete in committed/rolled-back transaction", txn.transaction_id
+                "Cannot delete in committed/rolled-back transaction", txn.transaction_id,
             )
         if not file_path.exists():
             return
@@ -446,7 +432,7 @@ class AtomicExecutionMixin:
         """
         if txn.committed or txn.rolled_back:
             raise AtomicExecutionError(
-                "Cannot rename in committed/rolled-back transaction", txn.transaction_id
+                "Cannot rename in committed/rolled-back transaction", txn.transaction_id,
             )
         if not src_path.exists():
             raise AtomicExecutionError(f"Source file does not exist: {src_path}", txn.transaction_id)
@@ -463,7 +449,7 @@ class AtomicExecutionMixin:
             logger.debug(f"Atomic rename {src_path} -> {dst_path}")
         except Exception as e:
             raise AtomicExecutionError(
-                f"Rename failed {src_path} -> {dst_path}: {e}", txn.transaction_id
+                f"Rename failed {src_path} -> {dst_path}: {e}", txn.transaction_id,
             ) from e
 
     def get_active_transactions(self) -> dict[str, AtomicTransaction]:

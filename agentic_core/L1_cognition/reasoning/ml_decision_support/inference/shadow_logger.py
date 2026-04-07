@@ -81,7 +81,7 @@ class ShadowLogger:
             'ml_better': 0,
             'ml_worse': 0,
             'confidence_disagreements': 0,
-            'path_disagreements': 0
+            'path_disagreements': 0,
         }
 
     def log_prediction(
@@ -89,7 +89,7 @@ class ShadowLogger:
         model_input: ModelInput,
         model_prediction: ModelPrediction,
         logging_mode: ShadowMode = ShadowMode.LOG_ONLY,
-        actual_decision: dict[str, Any] | None = None
+        actual_decision: dict[str, Any] | None = None,
     ) -> str:
         """
         Log a model prediction in shadow mode.
@@ -115,13 +115,13 @@ class ShadowLogger:
             model_prediction=asdict(model_prediction),
             actual_decision=actual_decision,
             logging_mode=logging_mode,
-            session_id=self.session_id
+            session_id=self.session_id,
         )
 
         # Add comparison if actual decision provided
         if actual_decision and logging_mode in [ShadowMode.COMPARE, ShadowMode.TRAINING_DATA]:
             log_entry.comparison_result = self._compare_predictions(
-                model_prediction, actual_decision
+                model_prediction, actual_decision,
             )
             self._update_stats(log_entry.comparison_result)
 
@@ -140,7 +140,7 @@ class ShadowLogger:
         self,
         predictions: list[tuple[ModelInput, ModelPrediction]],
         logging_mode: ShadowMode = ShadowMode.LOG_ONLY,
-        actual_decisions: list[dict[str, Any]] | None = None
+        actual_decisions: list[dict[str, Any]] | None = None,
     ) -> list[str]:
         """
         Log multiple predictions efficiently.
@@ -162,7 +162,7 @@ class ShadowLogger:
                 model_input=model_input,
                 model_prediction=model_prediction,
                 logging_mode=logging_mode,
-                actual_decision=actual_decision
+                actual_decision=actual_decision,
             )
             log_ids.append(log_id)
 
@@ -172,7 +172,7 @@ class ShadowLogger:
         self,
         trace_id: str,
         actual_decision: dict[str, Any],
-        actual_outcome: dict[str, Any] | None = None
+        actual_outcome: dict[str, Any] | None = None,
     ) -> ComparisonResult | None:
         """
         Compare a shadow prediction with actual decision.
@@ -214,8 +214,8 @@ class ShadowLogger:
             'log_files': {
                 'shadow_predictions': str(self.shadow_log_file),
                 'comparisons': str(self.comparison_log_file),
-                'training_data': str(self.training_data_file)
-            }
+                'training_data': str(self.training_data_file),
+            },
         }
 
     def get_improvement_opportunities(self, limit: int = 100) -> list[dict[str, Any]]:
@@ -249,7 +249,7 @@ class ShadowLogger:
         self,
         output_file: Path | None = None,
         min_confidence: float = 0.7,
-        include_comparisons: bool = True
+        include_comparisons: bool = True,
     ) -> Path:
         """
         Export shadow logs as training data.
@@ -283,7 +283,7 @@ class ShadowLogger:
                             'prediction': prediction.get('prediction'),
                             'confidence': confidence,
                             'trace_id': entry.get('trace_id'),
-                            'timestamp': entry.get('timestamp')
+                            'timestamp': entry.get('timestamp'),
                         }
 
                         if include_comparisons and entry.get('comparison_result'):
@@ -305,7 +305,7 @@ class ShadowLogger:
     def _compare_predictions(
         self,
         model_prediction: ModelPrediction,
-        actual_decision: dict[str, Any]
+        actual_decision: dict[str, Any],
     ) -> ComparisonResult:
         """Compare ML prediction with actual decision."""
         # Extract decision values
@@ -341,7 +341,7 @@ class ShadowLogger:
             confidence_difference=confidence_difference,
             path_difference=path_difference,
             ml_better=ml_better,
-            improvement_opportunity=improvement_opportunity
+            improvement_opportunity=improvement_opportunity,
         )
 
     def _write_log_entry(self, log_entry: ShadowLogEntry, logging_mode: ShadowMode) -> None:
@@ -377,7 +377,7 @@ class ShadowLogger:
             if log_entry.comparison_result:
                 comparison_data = {
                     **log_data,
-                    'comparison_result': asdict(log_entry.comparison_result)
+                    'comparison_result': asdict(log_entry.comparison_result),
                 }
                 with open(self.comparison_log_file, 'a', encoding='utf-8') as f:
                     f.write(json.dumps(comparison_data) + '\n')
@@ -390,7 +390,7 @@ class ShadowLogger:
             if log_entry.comparison_result:
                 comparison_data = {
                     **log_data,
-                    'comparison_result': asdict(log_entry.comparison_result)
+                    'comparison_result': asdict(log_entry.comparison_result),
                 }
                 with open(self.comparison_log_file, 'a', encoding='utf-8') as f:
                     f.write(json.dumps(comparison_data) + '\n')
@@ -403,8 +403,8 @@ class ShadowLogger:
                 'metadata': {
                     'trace_id': log_entry.trace_id,
                     'timestamp': log_entry.timestamp.isoformat(),
-                    'model_version': log_entry.model_version
-                }
+                    'model_version': log_entry.model_version,
+                },
             }
 
             if log_entry.actual_decision:
@@ -441,13 +441,13 @@ class ShadowLogger:
                 'logging_mode': log_entry.logging_mode.value,
                 'prediction': log_entry.model_prediction.get('prediction'),
                 'confidence': log_entry.model_prediction.get('confidence'),
-                'has_comparison': log_entry.comparison_result is not None
+                'has_comparison': log_entry.comparison_result is not None,
             }
 
             _emit_records_execution_trace(
                 root_trace_id=log_entry.trace_id,
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="shadow_prediction_logged"
+                operation="shadow_prediction_logged",
             )
 
         except Exception as e:
@@ -486,7 +486,7 @@ class ShadowLogger:
         comparison_data = {
             'trace_id': trace_id,
             'comparison_result': asdict(comparison),
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
         }
 
         with open(self.comparison_log_file, 'a', encoding='utf-8') as f:

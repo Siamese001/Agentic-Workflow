@@ -26,7 +26,7 @@ class MetricsMixin:
         self,
         name: str,
         value: float,
-        labels: dict[str, str] | None = None
+        labels: dict[str, str] | None = None,
     ) -> None:
         """Record a metric value with optional labels."""
         if name not in self._metrics:
@@ -39,7 +39,7 @@ class MetricsMixin:
             name: {
                 "count": len(values),
                 "avg": sum(v[0] for v in values) / len(values) if values else 0,
-                "values": values
+                "values": values,
             }
             for name, values in self._metrics.items()
         }

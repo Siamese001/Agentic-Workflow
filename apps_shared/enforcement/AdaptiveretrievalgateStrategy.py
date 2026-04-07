@@ -58,39 +58,25 @@ _emit_applies_guardrail("p0", "AdaptiveretrievalgateStrategy", "p0_governance")
 _emit_reads_policy_state("p0", "AdaptiveretrievalgateStrategy", "policy_binding")
 _emit_snapshots_state("p0", "AdaptiveretrievalgateStrategy", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -197,14 +183,14 @@ class AdaptiveRetrievalGate:
                 re.IGNORECASE,
             ),
             "reference": re.compile(
-                "\\b(previous|last|that|above|mentioned|earlier|said|told|asked|discussed)\\b", re.IGNORECASE
+                "\\b(previous|last|that|above|mentioned|earlier|said|told|asked|discussed)\\b", re.IGNORECASE,
             ),
             "self_reference": re.compile(
                 "\\b(who are you|what are you|what can you do|how do you work|your name|help)\\b",
                 re.IGNORECASE,
             ),
             "continuation": re.compile(
-                "^(and|but|so|then|also|plus|however|therefore|meanwhile)\\b", re.IGNORECASE
+                "^(and|but|so|then|also|plus|however|therefore|meanwhile)\\b", re.IGNORECASE,
             ),
         }
         self.complex_keywords = {
@@ -317,7 +303,7 @@ class AdaptiveRetrievalGate:
         query = query.strip()
         if not query:
             return RetrievalDecision(
-                should_retrieve=False, reason="Empty query", query_type="EMPTY", confidence=1.0
+                should_retrieve=False, reason="Empty query", query_type="EMPTY", confidence=1.0,
             )
         query_type = self._classify_query_type(query)
         complexity_score = self._calculate_complexity_score(query, query_type)
@@ -359,10 +345,10 @@ class AdaptiveRetrievalGate:
                 reason = "Short query likely a clarification"
                 confidence = 0.7
         logger.info(
-            f"Retrieval decision: {should_retrieve} | Type: {query_type} | Reason: {reason} | Query: {query[:50]}..."
+            f"Retrieval decision: {should_retrieve} | Type: {query_type} | Reason: {reason} | Query: {query[:50]}...",
         )
         return RetrievalDecision(
-            should_retrieve=should_retrieve, reason=reason, query_type=query_type, confidence=confidence
+            should_retrieve=should_retrieve, reason=reason, query_type=query_type, confidence=confidence,
         )
 
     def get_statistics(self, decisions: list[RetrievalDecision]) -> dict[str, float]:

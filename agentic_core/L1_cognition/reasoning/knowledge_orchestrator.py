@@ -312,7 +312,7 @@ def capture_reasoning_pattern(
         ReasoningKnowledgeError: If pattern capture fails (Gate A/E)
     """
     _emit_records_execution_trace(
-        reasoning_trace.trace_id, LayerSegment.L1_COGNITION, "capture_reasoning_pattern"
+        reasoning_trace.trace_id, LayerSegment.L1_COGNITION, "capture_reasoning_pattern",
     )
     _registry = registry or get_reasoning_knowledge_registry()
     _gw = get_routing_gateway(reasoning_context.run_id if hasattr(reasoning_context, "run_id") else "")
@@ -399,7 +399,7 @@ def capture_reasoning_pattern(
 
 
 def _identify_reusable_reasoning_patterns(
-    reasoning_trace: ReasoningTrace, reasoning_context: ReasoningContext
+    reasoning_trace: ReasoningTrace, reasoning_context: ReasoningContext,
 ) -> dict[str, Any]:
     """Identify reusable reasoning patterns."""
     # This would normally analyze the reasoning trace for reusable patterns
@@ -456,7 +456,7 @@ def _store_pattern_metadata(
 
 
 def _link_to_successful_outcomes(
-    pattern_metadata: dict[str, Any], evaluation_result: EvaluationResult
+    pattern_metadata: dict[str, Any], evaluation_result: EvaluationResult,
 ) -> dict[str, Any]:
     """Link pattern to successful outcomes."""
     # Check if outcome is successful based on evaluation
@@ -635,7 +635,7 @@ def get_pattern_recommendations(
                 "reuse_count": pattern.reuse_count,
                 "pattern_version": pattern.pattern_version,
                 "validation_status": pattern.validation_status,
-            }
+            },
         )
 
     return recommendations[:5]  # Return top 5 recommendations

@@ -92,7 +92,7 @@ class HollowFileCleanupAnalyzer:
             incoming_edges=incoming_edges,
             outgoing_edges=outgoing_edges,
             incoming_count=len(incoming_edges),
-            outgoing_count=len(outgoing_edges)
+            outgoing_count=len(outgoing_edges),
         )
 
     def _analyze_imports(self, content: str, file_path: str) -> tuple[list[str], list[str]]:
@@ -161,7 +161,7 @@ class HollowFileCleanupAnalyzer:
                 "incoming_count": analysis.incoming_count,
                 "outgoing_count": analysis.outgoing_count,
                 "incoming_edges": analysis.incoming_edges,
-                "outgoing_edges": analysis.outgoing_edges
+                "outgoing_edges": analysis.outgoing_edges,
             }
 
             # Classify by safety
@@ -265,7 +265,7 @@ def main():
         for tier, files in [
             ("Tier 1 - Safe Delete", manifest.tier1_safe_delete),
             ("Tier 2 - Boilerplate Only", manifest.tier2_boilerplate_only),
-            ("Tier 3 - Behavioral Imports", manifest.tier3_behavioral_imports)
+            ("Tier 3 - Behavioral Imports", manifest.tier3_behavioral_imports),
         ]:
             if files:
                 print(f"\n{tier}:")
@@ -282,14 +282,14 @@ def main():
                 "total_hollow_files": len(analyses),
                 "tier1_safe_delete": len(manifest.tier1_safe_delete),
                 "tier2_boilerplate_only": len(manifest.tier2_boilerplate_only),
-                "tier3_behavioral_imports": len(manifest.tier3_behavioral_imports)
+                "tier3_behavioral_imports": len(manifest.tier3_behavioral_imports),
             },
             "manifest": {
                 "tier1_safe_delete": manifest.tier1_safe_delete,
                 "tier2_boilerplate_only": manifest.tier2_boilerplate_only,
-                "tier3_behavioral_imports": manifest.tier3_behavioral_imports
+                "tier3_behavioral_imports": manifest.tier3_behavioral_imports,
             },
-            "metadata": manifest.metadata
+            "metadata": manifest.metadata,
         }
 
         args.output.write_text(json.dumps(output_data, indent=2))

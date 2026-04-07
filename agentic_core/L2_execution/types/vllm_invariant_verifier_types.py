@@ -112,7 +112,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -223,7 +222,7 @@ def verify_gateway_invariants(
                     severity=InvariantSeverity.FAIL.value,
                     message="Local request missing explicit max_tokens",
                     context={"provider": provider_selected},
-                )
+                ),
             )
     if local_request is not None:
         temperature = getattr(local_request, "temperature", None)
@@ -234,7 +233,7 @@ def verify_gateway_invariants(
                     severity=InvariantSeverity.FAIL.value,
                     message=f"Local request temperature must be 0.0 for determinism, got {temperature}",
                     context={"provider": provider_selected, "temperature": temperature},
-                )
+                ),
             )
     if local_request is not None:
         seed = getattr(local_request, "seed", None)
@@ -245,7 +244,7 @@ def verify_gateway_invariants(
                     severity=InvariantSeverity.FAIL.value,
                     message="Local request missing seed for deterministic replay",
                     context={"provider": provider_selected},
-                )
+                ),
             )
     fingerprint_hash = telemetry_dict.get("fingerprint_hash")
     if not fingerprint_hash:
@@ -255,7 +254,7 @@ def verify_gateway_invariants(
                 severity=InvariantSeverity.FAIL.value,
                 message="Telemetry missing fingerprint_hash for replay sealing",
                 context={"provider": provider_selected},
-            )
+            ),
         )
     if "gemini" in provider_selected.lower():
         failure_type = telemetry_dict.get("failure_type")
@@ -266,7 +265,7 @@ def verify_gateway_invariants(
                     severity=InvariantSeverity.FAIL.value,
                     message="Gemini fallback requires explicit failure_type",
                     context={"provider": provider_selected},
-                )
+                ),
             )
     if replay_hash_enabled:
         replay_hash = telemetry_dict.get("replay_hash")
@@ -277,7 +276,7 @@ def verify_gateway_invariants(
                     severity=InvariantSeverity.FAIL.value,
                     message="Replay hash enforcement enabled but replay_hash missing from telemetry",
                     context={"provider": provider_selected, "replay_hash_enabled": True},
-                )
+                ),
             )
     if not gpu_import_policy_ok:
         violations.append(
@@ -286,7 +285,7 @@ def verify_gateway_invariants(
                 severity=InvariantSeverity.FAIL.value,
                 message="GPU import policy violation detected in L0-L6 layers",
                 context={"gpu_import_policy_ok": False},
-            )
+            ),
         )
     violations.sort(key=lambda v: (v.invariant_id, v.severity))
     return violations

@@ -22,7 +22,7 @@ class TestBriefRenderer:
         mock_result.model_dump.return_value = {
             "audience": "recruiter",
             "tone": "professional",
-            "status": "completed"
+            "status": "completed",
         }
 
         renderer = BriefRenderer()

@@ -99,8 +99,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
@@ -246,11 +249,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -427,7 +428,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SelfUpdatingSafetyEngineAgent.detect_threats"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SelfUpdatingSafetyEngineAgent.detect_threats",
         )
         matched_rules: Any = []
         max_threat_level: Any = ThreatLevel.LOW
@@ -441,7 +442,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
         confidence: Any = 0.0
         if matched_rules:
             confidence: Any = sum(1.0 if not rule.auto_generated else 0.8 for rule in matched_rules) / len(
-                matched_rules
+                matched_rules,
             )
         recommendations: Any = self._generate_recommendations(matched_rules)
         detection: Any = ThreatDetection(
@@ -457,7 +458,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
                 "detected": detection.detected,
                 "ThreatLevel": detection.ThreatLevel.value,
                 "rules_matched": len(matched_rules),
-            }
+            },
         )
         if detection.detected:
             await self._learn_from_detection(text, matched_rules)
@@ -558,13 +559,13 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
                 "auto_generated": rule.auto_generated,
             }
             rule_recommendations = SafetyAnalysisMixin._generate_recommendations(
-                rule.ThreatLevel.value, context
+                rule.ThreatLevel.value, context,
             )
             recommendations.extend(
                 [
                     f"{rule.ThreatLevel.value.upper()}: {rule.description} - {rec}"
                     for rec in rule_recommendations
-                ]
+                ],
             )
         return recommendations
 

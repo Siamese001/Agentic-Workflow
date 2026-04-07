@@ -43,7 +43,7 @@ def test_adg_mcp_server_import() -> dict[str, Any]:
             "has_tools": hasattr(adg_mcp_server, 'adg_status'),
             "has_redis_func": hasattr(adg_mcp_server, '_redis'),
             "has_cache_meta": hasattr(adg_mcp_server, '_cache_meta'),
-            "error": None
+            "error": None,
         }
 
         return result
@@ -54,7 +54,7 @@ def test_adg_mcp_server_import() -> dict[str, Any]:
             "has_tools": False,
             "has_redis_func": False,
             "has_cache_meta": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -83,12 +83,12 @@ def test_adg_redis_functions() -> dict[str, Any]:
             "cache_meta_works": isinstance(cache_result, dict),
             "redis_connected": redis_connected,
             "status_result": status_result,
-            "cache_result": cache_result
+            "cache_result": cache_result,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -129,12 +129,12 @@ def test_redis_unavailable_fallback() -> dict[str, Any]:
             "status_handles_down": handles_redis_down,
             "cache_handles_down": cache_handles_down,
             "status_result": status_result,
-            "cache_result": cache_result
+            "cache_result": cache_result,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
     finally:
         # Restore original Redis URL
@@ -151,7 +151,7 @@ def test_mcp_server_stdio() -> dict[str, Any]:
             "jsonrpc": "2.0",
             "id": 1,
             "method": "tools/list",
-            "params": {}
+            "params": {},
         }
 
         process = subprocess.Popen(
@@ -160,14 +160,14 @@ def test_mcp_server_stdio() -> dict[str, Any]:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            cwd=str(Path(__file__).parent)
+            cwd=str(Path(__file__).parent),
         )
 
         try:
             # Send test message
             stdout, stderr = process.communicate(
                 input=json.dumps(test_message) + "\n",
-                timeout=5
+                timeout=5,
             )
 
             # Try to parse response
@@ -185,19 +185,19 @@ def test_mcp_server_stdio() -> dict[str, Any]:
                 "has_tools": has_tools,
                 "stdout": stdout[:200],
                 "stderr": stderr[:200],
-                "returncode": process.returncode
+                "returncode": process.returncode,
             }
         except subprocess.TimeoutExpired:
             process.kill()
             return {
                 "test_passed": False,
                 "error": "timeout",
-                "server_responded": False
+                "server_responded": False,
             }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -212,7 +212,7 @@ def test_sqlite_fallback_available() -> dict[str, Any]:
         if not sqlite_files:
             return {
                 "test_passed": False,
-                "error": "No ADG SQLite files found"
+                "error": "No ADG SQLite files found",
             }
 
         latest_sqlite = max(sqlite_files, key=lambda p: p.stat().st_mtime)
@@ -242,12 +242,12 @@ def test_sqlite_fallback_available() -> dict[str, Any]:
             "edge_count": edge_count,
             "table_count": len(tables),
             "tables": tables[:5],  # First 5 tables
-            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2)
+            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2),
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -259,7 +259,7 @@ def test_ingest_script_functionality() -> dict[str, Any]:
         if not ingest_path.exists():
             return {
                 "test_passed": False,
-                "error": "Ingest script not found"
+                "error": "Ingest script not found",
             }
 
         # Test ingest script with --check flag (if available) or --help
@@ -268,7 +268,7 @@ def test_ingest_script_functionality() -> dict[str, Any]:
                 [sys.executable, str(ingest_path), "--help"],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             help_available = result.returncode == 0
@@ -283,17 +283,17 @@ def test_ingest_script_functionality() -> dict[str, Any]:
                 "help_available": help_available,
                 "script_importable": script_importable,
                 "stdout": result.stdout[:300],
-                "stderr": result.stderr[:300]
+                "stderr": result.stderr[:300],
             }
         except Exception as e:
             return {
                 "test_passed": False,
-                "error": str(e)
+                "error": str(e),
             }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -305,7 +305,7 @@ def test_mcp_configuration() -> dict[str, Any]:
         if not mcp_config_path.exists():
             return {
                 "test_passed": False,
-                "error": "MCP config not found"
+                "error": "MCP config not found",
             }
 
         with open(mcp_config_path) as f:
@@ -340,12 +340,12 @@ def test_mcp_configuration() -> dict[str, Any]:
             "env_vars": list(env.keys()),
             "is_python_fallback": is_python_fallback,
             "has_required_env": has_required_env,
-            "server_enabled": server_enabled
+            "server_enabled": server_enabled,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -385,12 +385,12 @@ def test_error_handling_robustness() -> dict[str, Any]:
             "test_passed": all_handle_errors,
             "all_handle_errors": all_handle_errors,
             "test_results": results,
-            "error_count": sum(1 for r in results if not r)
+            "error_count": sum(1 for r in results if not r),
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -546,7 +546,7 @@ def run_comprehensive_test():
             "ingest_test": ingest_test,
             "config_test": config_test,
             "error_test": error_test,
-        }
+        },
     }
 
 

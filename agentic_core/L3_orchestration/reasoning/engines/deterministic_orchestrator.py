@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.types.governance_types import GovernedPayload
-from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.reasoning.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
@@ -28,6 +27,7 @@ from agentic_core.L3_orchestration.types.execution_trace_types import (
 from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
     create_human_review_draft,
 )
+from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
 
 # ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -133,7 +133,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -597,7 +596,7 @@ class DeterministicOrchestrator:
                     "step_id": 1,
                     "action": "process_payload",
                     "deterministic": True,
-                }
+                },
             ],
         }
 

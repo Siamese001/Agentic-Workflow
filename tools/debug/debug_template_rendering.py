@@ -40,7 +40,7 @@ def debug_template_rendering():
         'node_count': '10,432',
         'edge_count': '681,161',
         'layer_info': 'L0: 7,220 nodes, L1: 4,362 nodes, L2-L6: 2,850 nodes',
-        'violation_count': '5,301'
+        'violation_count': '5,301',
     }
 
     print("Test Variables:")
@@ -78,7 +78,7 @@ def debug_template_rendering():
             '10,432': 'Node count',
             '681,161': 'Edge count',
             '5,301': 'Violation count',
-            'L0: 7,220': 'Layer info'
+            'L0: 7,220': 'Layer info',
         }
 
         for data, description in real_data_checks.items():
@@ -130,27 +130,27 @@ def test_all_adg_templates():
         'current_traversal_time': '2.3s average',
         'graph_size': '681,161 edges',
         'traversal_frequency': '100+ queries/hour',
-        'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal'
+        'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal',
     }
 
     adg_templates = [
         (SequentialThinkingTemplate.SWE_ADG_ANALYSIS, {
             'analysis_title': 'System ADG Health Analysis',
             'context': 'Comprehensive analysis of system architecture and dependency graph',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION, {
             'remediation_title': 'Critical Violation Remediation Strategy',
             'context': 'System has 5,301 violations requiring systematic remediation',
-            **adg_context
+            **adg_context,
         }),
 
         (SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW, {
             'review_title': 'System Architecture Review',
             'context': 'Comprehensive review of current system architecture and patterns',
-            **adg_context
-        })
+            **adg_context,
+        }),
     ]
 
     results = []
@@ -173,7 +173,7 @@ def test_all_adg_templates():
                 'success': True,
                 'has_real_data': has_real_data,
                 'has_adg_context': has_adg_context,
-                'length': len(rendered)
+                'length': len(rendered),
             })
 
             print(f"✅ {template.name}")
@@ -190,7 +190,7 @@ def test_all_adg_templates():
             results.append({
                 'template': template_type.value,
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     return results

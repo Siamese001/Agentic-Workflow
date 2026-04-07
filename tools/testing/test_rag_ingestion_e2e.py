@@ -169,14 +169,14 @@ PR-204,This claim/service is being held for review,276,1.8%
                         "success": True,
                         "content_length": len(result),
                         "ingestion_time": elapsed,
-                        "format": doc_path.suffix
+                        "format": doc_path.suffix,
                     }
                     print(f"    ✓ Success: {len(result)} chars in {elapsed:.3f}s")
                 else:
                     ingestion_results[doc_path.name] = {
                         "success": False,
                         "error": "Empty result",
-                        "format": doc_path.suffix
+                        "format": doc_path.suffix,
                     }
                     print("    ✗ Failed: Empty result")
 
@@ -184,7 +184,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                 ingestion_results[doc_path.name] = {
                     "success": False,
                     "error": str(e),
-                    "format": doc_path.suffix
+                    "format": doc_path.suffix,
                 }
                 print(f"    ✗ Failed: {e}")
 
@@ -195,7 +195,7 @@ PR-204,This claim/service is being held for review,276,1.8%
             "total": total_docs,
             "successful": successful,
             "success_rate": successful / total_docs,
-            "details": ingestion_results
+            "details": ingestion_results,
         }
 
     async def test_retrieval(self, orchestrator) -> dict[str, Any]:
@@ -210,7 +210,7 @@ PR-204,This claim/service is being held for review,276,1.8%
             "What are the coverage criteria for inpatient stays?",
             "How long do I have to submit a claim?",
             "What documentation is required?",
-            "What is the average processing time?"
+            "What is the average processing time?",
         ]
 
         retrieval_results = {}
@@ -229,7 +229,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                         "success": True,
                         "result_count": len(results),
                         "top_score": results[0].get('score', 0) if results else 0,
-                        "results": results[:3]  # Keep top 3 for validation
+                        "results": results[:3],  # Keep top 3 for validation
                     }
                     print(f"    ✓ Found {len(results)} results")
 
@@ -242,7 +242,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                     retrieval_results[query] = {
                         "success": False,
                         "error": "No results",
-                        "result_count": 0
+                        "result_count": 0,
                     }
                     print("    ✗ No results found")
 
@@ -250,7 +250,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                 retrieval_results[query] = {
                     "success": False,
                     "error": str(e),
-                    "result_count": 0
+                    "result_count": 0,
                 }
                 print(f"    ✗ Error: {e}")
 
@@ -261,7 +261,7 @@ PR-204,This claim/service is being held for review,276,1.8%
             "total": len(test_queries),
             "successful": successful_retrievals,
             "success_rate": successful_retrievals / len(test_queries),
-            "details": retrieval_results
+            "details": retrieval_results,
         }
 
     def validate_content_quality(self) -> dict[str, Any]:
@@ -272,7 +272,7 @@ PR-204,This claim/service is being held for review,276,1.8%
             "total_docs": len(self.ingestion_results),
             "avg_content_length": 0,
             "format_coverage": {},
-            "error_analysis": {}
+            "error_analysis": {},
         }
 
         total_length = 0

@@ -98,7 +98,6 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -275,7 +274,7 @@ class autonomous_execution_engine:
                 Logger.warning("L3: Low resource budget, skipping mission")
                 return
             checkpoint_id = await self.CheckpointManager.auto_checkpoint_if_needed(
-                state={"mission": "validation", "timestamp": datetime.utcnow().isoformat()}, files_to_track=[]
+                state={"mission": "validation", "timestamp": datetime.utcnow().isoformat()}, files_to_track=[],
             )
             Logger.info("L3: Starting validation mission")
             await asyncio.sleep(DEFAULT_SLEEP)
@@ -299,7 +298,7 @@ class autonomous_execution_engine:
             }
             if self.consecutive_failures > self.max_consecutive_failures:
                 Logger.critical(
-                    f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode."
+                    f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode.",
                 )
                 self.running = False
 
@@ -309,7 +308,7 @@ class autonomous_execution_engine:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "autonomous_execution_engine.eternal_execution_cycle"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "autonomous_execution_engine.eternal_execution_cycle",
         )
 
         Logger.info("L3: Eternal execution cycle active")

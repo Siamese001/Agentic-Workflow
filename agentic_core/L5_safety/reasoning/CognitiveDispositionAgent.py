@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -50,7 +51,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     # noqa: E402
     emit_replay_key,
 )
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "CognitiveDispositionAgent")
 emit_determinism_digest("p0", "CognitiveDispositionAgent")
@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -223,19 +222,19 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
         }
 
     async def analyze_violation_async(
-        self, file_path: Path, violation_type: str, context: dict = None
+        self, file_path: Path, violation_type: str, context: dict = None,
     ) -> DispositionDecision:
         """Analyze violation using Native LLM Gateway."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CognitiveDispositionAgent.analyze_violation_async"
+            _trace_id, LayerSegment.L5_POLICY, "CognitiveDispositionAgent.analyze_violation_async",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:CognitiveDispositionAgent.analyze_violation_async".encode()
+            f"{_trace_id}:CognitiveDispositionAgent.analyze_violation_async".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -280,7 +279,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
 
     def analyze_violation(
-        self, file_path: Path, violation_type: str, context: dict = None
+        self, file_path: Path, violation_type: str, context: dict = None,
     ) -> DispositionDecision:
         """Sync wrapper around analyze_violation_async.
 
@@ -303,7 +302,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             ctx = {"territory": territory, **{k: v[k] for k in v if k not in ("file", "path", "type")}}
             try:
                 decision = await self.analyze_violation_async(
-                    file_path=Path(path_str) if path_str else Path("."), violation_type=vtype, context=ctx
+                    file_path=Path(path_str) if path_str else Path("."), violation_type=vtype, context=ctx,
                 )
                 decisions.append(decision)
             # guardian: allow-silent-swallow -- per-violation failure is logged and returns MANUAL_REVIEW disposition

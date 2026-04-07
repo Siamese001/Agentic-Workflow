@@ -64,39 +64,25 @@ _emit_reads_policy_state("p0", "agent_spec_config", "policy_binding")
 _emit_snapshots_state("p0", "agent_spec_config", "state_snapshot")
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -210,10 +196,10 @@ class SourceRegisterConfig(BaseModel):
 
     max_sources: int = Field(default=20, ge=1)
     required_fields: list[str] = Field(
-        default_factory=lambda: ["source_id", "title", "claim_type", "confidence"]
+        default_factory=lambda: ["source_id", "title", "claim_type", "confidence"],
     )
     claim_types: list[str] = Field(
-        default_factory=lambda: ["direct_evidence", "interpretation", "analyst_inference", "assumption"]
+        default_factory=lambda: ["direct_evidence", "interpretation", "analyst_inference", "assumption"],
     )
 
 
@@ -281,7 +267,7 @@ class ResearchAgentSpecs(BaseModel):
                 required_sections=["hook", "insight", "evidence", "call_to_action"],
                 max_words=800,
             ),
-        }
+        },
     )
     source_register: SourceRegisterConfig = Field(default_factory=SourceRegisterConfig)
     gate: ResearchGateConfig = Field(default_factory=ResearchGateConfig)
@@ -297,7 +283,7 @@ class ResearchAgentSpecs(BaseModel):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchAgentSpecs.validate_modes_non_empty"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchAgentSpecs.validate_modes_non_empty",
         )
 
         if not self.artifact_modes:

@@ -22,7 +22,7 @@ class AdvancedSyntaxFixer:
             'legacy_comments_removed': 0,
             'imports_moved_to_functions': 0,
             'unmatched_parens_removed': 0,
-            'files_with_errors': 0
+            'files_with_errors': 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 

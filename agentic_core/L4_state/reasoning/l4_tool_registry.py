@@ -201,11 +201,11 @@ class ToolRegistry:
                     if not type_valid:
                         errors.append(
                             f"Parameter '{param_name}' has wrong type. "
-                            f"Expected {expected_type}, got {type(param_value).__name__}"
+                            f"Expected {expected_type}, got {type(param_value).__name__}",
                         )
 
         _emit_validates_capability(
-            f"validate_{tool_name}", "ToolRegistry", f"valid_{not errors}"
+            f"validate_{tool_name}", "ToolRegistry", f"valid_{not errors}",
         )
 
         return len(errors) == 0, errors

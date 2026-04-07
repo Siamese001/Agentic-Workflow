@@ -125,7 +125,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -284,12 +283,12 @@ class SafetyExecutorAgent(SovereignBaseAgent):
         _emit_applies_guardrail(str(uuid.uuid4()), "SafetyExecutorAgent._init_default_gates", "L5_POLICY")
         self._gates.append(
             SafetyGate(
-                name="context_integrity", check_fn=lambda ctx: ctx is not None, severity="HIGH", blocking=True
-            )
+                name="context_integrity", check_fn=lambda ctx: ctx is not None, severity="HIGH", blocking=True,
+            ),
         )
 
     def add_gate(
-        self, name: str, check_fn: Callable[..., bool], severity: str = "HIGH", blocking: bool = True
+        self, name: str, check_fn: Callable[..., bool], severity: str = "HIGH", blocking: bool = True,
     ) -> None:
         """Add a custom safety gate."""
         import uuid as _uuid  # noqa: PLC0415
@@ -306,7 +305,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
         Logger.info(f"Added safety gate: {name}")
 
     def execute(
-        self, fn: Callable[..., T], *args, context: dict[str, Any] | None = None, **kwargs
+        self, fn: Callable[..., T], *args, context: dict[str, Any] | None = None, **kwargs,
     ) -> ExecutionResult:
         """
         Execute a function with safety checks.

@@ -94,11 +94,12 @@ import logging
 import uuid
 from typing import Any
 
+from agentic_core.L3_orchestration.reasoning.engines.coordinator_capability_orchestrator import (
+    WorkflowCoordinator,
+)
 from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.L3_orchestration.reasoning.engines.coordinator_capability_orchestrator import WorkflowCoordinator
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -118,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -194,16 +194,16 @@ class RecoveryCoordinatorOrchestrator(WorkflowCoordinator):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "RecoveryCoordinatorOrchestrator.coordinate", "p0_governance"
+            str(_uuid.uuid4()), "RecoveryCoordinatorOrchestrator.coordinate", "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecoveryCoordinatorOrchestrator.coordinate"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecoveryCoordinatorOrchestrator.coordinate",
         )
         _emit_agent_executes_agent(
-            str(uuid.uuid4()), "RecoveryCoordinatorOrchestrator", "RecoveryCoordinatorOrchestrator.coordinate"
+            str(uuid.uuid4()), "RecoveryCoordinatorOrchestrator", "RecoveryCoordinatorOrchestrator.coordinate",
         )
         with get_trace_context().run_frame(
             layer="L3",

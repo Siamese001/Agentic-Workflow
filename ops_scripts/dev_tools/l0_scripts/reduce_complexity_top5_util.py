@@ -7,7 +7,6 @@ import json
 from pathlib import Path
 
 
-
 def analyze_method_complexity(file_path: Path) -> list[tuple[str, int]]:
     """Analyze complexity of each method in a file."""
     try:

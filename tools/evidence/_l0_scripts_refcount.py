@@ -14,7 +14,7 @@ script_modules = {f.stem for f in script_files}
 import_counts = {}
 for stem in sorted(script_modules):
     pattern = re.compile(
-        rf"from agentic_core\.L0_routing\.scripts\.{re.escape(stem)}|import agentic_core\.L0_routing\.scripts\.{re.escape(stem)}"
+        rf"from agentic_core\.L0_routing\.scripts\.{re.escape(stem)}|import agentic_core\.L0_routing\.scripts\.{re.escape(stem)}",
     )
     matches = []
     for py in REPO.rglob("*.py"):

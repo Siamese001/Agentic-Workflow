@@ -12,7 +12,7 @@ def get_import_errors():
         ["pytest", "tests/unit/agentic_core/L0_routing/enforcement/", "--tb=no", "-q"],
         capture_output=True,
         text=True,
-        cwd="C:\\Git\\Agentic-Workflow"
+        cwd=str(REPO_ROOT),
     )
 
     # Extract ImportError patterns

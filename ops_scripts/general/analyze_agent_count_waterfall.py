@@ -9,7 +9,6 @@ import sys
 from collections import defaultdict
 
 
-
 def get_agent_count_at_commit(commit_hash):
     """Get agent count from agent_discovery_full.json at a specific commit."""
     try:

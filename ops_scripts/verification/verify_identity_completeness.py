@@ -61,24 +61,24 @@ class ADGIdentityCompletenessVerifier:
 
     # Required node fields
     REQUIRED_NODE_FIELDS = {
-        "id", "adg_name", "entity_type", "layer", "confidence"
+        "id", "adg_name", "entity_type", "layer", "confidence",
     }
 
     # Enhanced node fields for decision-grade analysis
     ENHANCED_NODE_FIELDS = {
         "resolved_path", "identity_origin", "domain", "owner_surface",
-        "canonical_symbol", "source_hash"
+        "canonical_symbol", "source_hash",
     }
 
     # Required edge fields
     REQUIRED_EDGE_FIELDS = {
-        "id", "src_id", "dst_id", "relation_type", "edge_kind", "source_file", "line_no", "symbol"
+        "id", "src_id", "dst_id", "relation_type", "edge_kind", "source_file", "line_no", "symbol",
     }
 
     # Enhanced edge fields for decision-grade analysis
     ENHANCED_EDGE_FIELDS = {
         "confidence", "extraction_rule", "authority_level", "policy_scope",
-        "replay_relevance", "learning_relevance"
+        "replay_relevance", "learning_relevance",
     }
 
     # Valid values for enum fields
@@ -397,7 +397,7 @@ class ADGIdentityCompletenessVerifier:
                     "required_fields": len(self.REQUIRED_NODE_FIELDS & node_columns),
                     "enhanced_fields": len(self.ENHANCED_NODE_FIELDS & node_columns),
                     "total_required": len(self.REQUIRED_NODE_FIELDS),
-                    "total_enhanced": len(self.ENHANCED_NODE_FIELDS)
+                    "total_enhanced": len(self.ENHANCED_NODE_FIELDS),
                 }
 
                 # Edge completeness metrics
@@ -406,7 +406,7 @@ class ADGIdentityCompletenessVerifier:
                     "required_fields": len(self.REQUIRED_EDGE_FIELDS & edge_columns),
                     "enhanced_fields": len(self.ENHANCED_EDGE_FIELDS & edge_columns),
                     "total_required": len(self.REQUIRED_EDGE_FIELDS),
-                    "total_enhanced": len(self.ENHANCED_EDGE_FIELDS)
+                    "total_enhanced": len(self.ENHANCED_EDGE_FIELDS),
                 }
 
                 # Identity distribution
@@ -455,19 +455,19 @@ class ADGIdentityCompletenessVerifier:
         result = {
             "status": "PASS" if not self.errors else "FAIL",
             "artifacts_verified": {
-                "sqlite": str(self.sqlite_path)
+                "sqlite": str(self.sqlite_path),
             },
             "schema_completeness": {
                 "node_fields": metrics.get("node_field_completeness", {}),
-                "edge_fields": metrics.get("edge_field_completeness", {})
+                "edge_fields": metrics.get("edge_field_completeness", {}),
             },
             "identity_metrics": {
                 "distribution": metrics.get("identity_distribution", {}),
                 "confidence": metrics.get("confidence_distribution", {}),
-                "module_layers": metrics.get("module_layer_distribution", {})
+                "module_layers": metrics.get("module_layer_distribution", {}),
             },
             "errors": self.errors,
-            "warnings": self.warnings
+            "warnings": self.warnings,
         }
 
         # Print results
@@ -502,12 +502,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

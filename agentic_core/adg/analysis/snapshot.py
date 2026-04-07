@@ -140,10 +140,10 @@ def build_snapshot(result: ScanResult) -> CanonicalSnapshot:
     )
 
     canonical_edges: list[tuple[str, str, str]] = sorted(
-        {(e.from_name, e.relation_type, e.to_name) for e in result.edges}
+        {(e.from_name, e.relation_type, e.to_name) for e in result.edges},
     )
     canonical_nodes: list[str] = sorted(
-        {e.from_name for e in result.edges} | {e.to_name for e in result.edges}
+        {e.from_name for e in result.edges} | {e.to_name for e in result.edges},
     )
 
     edge_payload = json.dumps(canonical_edges, sort_keys=True, separators=(",", ":"))

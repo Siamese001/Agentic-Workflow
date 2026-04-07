@@ -49,7 +49,7 @@ def analyze_impact():
                 "pattern_count": count,
                 "risk": risk,
                 "lines": [i["line"] for i in items],
-            }
+            },
         )
 
     # Check for the specific bug pattern

@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai ingestion module."""
 
-import pytest
 
 
 class TestIngestionImportable:

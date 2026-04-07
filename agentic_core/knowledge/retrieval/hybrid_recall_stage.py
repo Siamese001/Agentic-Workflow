@@ -74,7 +74,7 @@ class HybridRecallStage:
         """
         trace_id = f"recall_{hash(str(query_vector)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "HybridRecallStage.recall"
+            trace_id, LayerSegment.L1_REASONING, "HybridRecallStage.recall",
         )
 
         # Dense retrieval
@@ -88,7 +88,7 @@ class HybridRecallStage:
 
         _emit_records_telemetry_event(
             "hybrid_recall",
-            f"dense_{len(dense_results)}_sparse_{len(sparse_results)}"
+            f"dense_{len(dense_results)}_sparse_{len(sparse_results)}",
         )
 
         log.debug(f"Hybrid recall: {len(dense_results)} dense + {len(sparse_results)} sparse = {len(merged)} merged")

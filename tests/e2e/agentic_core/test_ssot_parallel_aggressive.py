@@ -23,7 +23,7 @@ def run_version(name: str, use_legacy: bool) -> dict:
         capture_output=True,
         text=True,
         timeout=120,
-        cwd='c:/Git/Agentic-Workflow'
+        cwd='c:/Git/Agentic-Workflow',
     )
 
     elapsed = time.time() - start

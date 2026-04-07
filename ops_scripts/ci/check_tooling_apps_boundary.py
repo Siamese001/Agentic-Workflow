@@ -107,12 +107,12 @@ class ToolingAppsBoundaryChecker:
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Check tooling/apps_* boundary violations"
+        description="Check tooling/apps_* boundary violations",
     )
     parser.add_argument(
         "--staged-only",
         action="store_true",
-        help="Only check staged files (git diff --cached)"
+        help="Only check staged files (git diff --cached)",
     )
     args = parser.parse_args()
 

@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 
 _MODULE_PREFIX = "ADG::Module::"
 _PROMPT_RELATIONS = frozenset(
-    {"generates_prompt", "consumes_prompt", "assembles_into", "injects_into", "overrides_prompt"}
+    {"generates_prompt", "consumes_prompt", "assembles_into", "injects_into", "overrides_prompt"},
 )
 
 

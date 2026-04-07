@@ -59,39 +59,25 @@ _emit_applies_guardrail("p0", "replay_validator", "p0_governance")
 _emit_reads_policy_state("p0", "replay_validator", "policy_binding")
 _emit_snapshots_state("p0", "replay_validator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -218,15 +204,15 @@ class ReplayValidator:
         embeddings_hash = hashlib.sha256(embeddings_bytes).hexdigest()
         if row_index_hash != manifest.get("row_index_hash"):
             raise DeterminismViolationError(
-                f"Row index hash mismatch: computed {row_index_hash}, expected {manifest.get('row_index_hash')}"
+                f"Row index hash mismatch: computed {row_index_hash}, expected {manifest.get('row_index_hash')}",
             )
         if embeddings_hash != manifest.get("matrix_hash"):
             raise DeterminismViolationError(
-                f"Embeddings hash mismatch: computed {embeddings_hash}, expected {manifest.get('matrix_hash')}"
+                f"Embeddings hash mismatch: computed {embeddings_hash}, expected {manifest.get('matrix_hash')}",
             )
         if manifest.get("seed_index_version_hash") != seed_index_version_hash:
             raise DeterminismViolationError(
-                f"Seed index version hash mismatch: manifest {manifest.get('seed_index_version_hash')}, expected {seed_index_version_hash}"
+                f"Seed index version hash mismatch: manifest {manifest.get('seed_index_version_hash')}, expected {seed_index_version_hash}",
             )
 
     def validate_embedding_artifact(
@@ -252,13 +238,13 @@ class ReplayValidator:
             raise DeterminismViolationError(f"Expected EmbeddingArtifact, got {type(artifact)}")
         if artifact.seed_index_version_hash != expected_seed_index_version_hash:
             raise DeterminismViolationError(
-                f"Seed index version hash mismatch: artifact {artifact.seed_index_version_hash}, expected {expected_seed_index_version_hash}"
+                f"Seed index version hash mismatch: artifact {artifact.seed_index_version_hash}, expected {expected_seed_index_version_hash}",
             )
         if reference_artifact_hash is not None:
             computed_hash = artifact.artifact_hash()
             if computed_hash != reference_artifact_hash:
                 raise DeterminismViolationError(
-                    f"Artifact hash mismatch: computed {computed_hash}, expected {reference_artifact_hash}"
+                    f"Artifact hash mismatch: computed {computed_hash}, expected {reference_artifact_hash}",
                 )
         if not artifact.supporting_trace_ids:
             raise DeterminismViolationError("supporting_trace_ids cannot be empty")
@@ -270,7 +256,7 @@ class ReplayValidator:
             raise DeterminismViolationError("supporting_content_hashes contains empty strings")
         if artifact.k != len(artifact.supporting_trace_ids):
             raise DeterminismViolationError(
-                f"k ({artifact.k}) does not match number of trace IDs ({len(artifact.supporting_trace_ids)})"
+                f"k ({artifact.k}) does not match number of trace IDs ({len(artifact.supporting_trace_ids)})",
             )
         if artifact.supporting_trace_ids != sorted(artifact.supporting_trace_ids):
             raise DeterminismViolationError("supporting_trace_ids not in canonical sorted order")

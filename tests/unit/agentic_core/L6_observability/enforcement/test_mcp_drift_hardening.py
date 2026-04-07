@@ -36,7 +36,7 @@ class TestMCPDriftRecorderHardening:
                     "env": {},
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
+                    "layer": "L6",
                 },
                 "missing_command": {  # Missing required command
                     "args": ["server.py"],
@@ -47,8 +47,8 @@ class TestMCPDriftRecorderHardening:
                     "args": None,
                     "env": None,
                     "capabilities": None,
-                }
-            }
+                },
+            },
         }
 
         config_path = tmp_path / "malformed.json"
@@ -79,7 +79,7 @@ class TestMCPDriftRecorderHardening:
                     "env": {"KEY": "val\u00fce_with_\u00e9ncoding"},
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
+                    "layer": "L6",
                 },
                 "special_chars": {
                     "command": "python",
@@ -87,9 +87,9 @@ class TestMCPDriftRecorderHardening:
                     "env": {"PATH": "/path/to/dir;C:\\Windows\\System32"},
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
-                }
-            }
+                    "layer": "L6",
+                },
+            },
         }
 
         config_path = tmp_path / "unicode.json"
@@ -121,7 +121,7 @@ class TestMCPDriftRecorderHardening:
                 "env": {f"KEY_{j}": f"value_{j}" for j in range(50)},  # 50 env vars each
                 "capabilities": ["tools", "resources", "prompts"],
                 "deploymentMode": "local",
-                "layer": f"L{i % 7}"
+                "layer": f"L{i % 7}",
             }
 
         config = {"mcpServers": servers}
@@ -152,7 +152,7 @@ class TestMCPDriftRecorderHardening:
                     "env": {},
                     "capabilities": [],
                     "deploymentMode": "",
-                    "layer": ""
+                    "layer": "",
                 },
                 "whitespace_values": {
                     "command": "  python  ",
@@ -160,9 +160,9 @@ class TestMCPDriftRecorderHardening:
                     "env": {"KEY": "  value  "},
                     "capabilities": ["  tools  ", ""],
                     "deploymentMode": "  local  ",
-                    "layer": "  L6  "
-                }
-            }
+                    "layer": "  L6  ",
+                },
+            },
         }
 
         config_path = tmp_path / "empty_whitespace.json"
@@ -191,15 +191,15 @@ class TestMCPDriftRecorderHardening:
                     "env": {
                         "LEVEL_1": {
                             "LEVEL_2": {
-                                "LEVEL_3": "deep_value"
-                            }
-                        }
+                                "LEVEL_3": "deep_value",
+                            },
+                        },
                     },
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
-                }
-            }
+                    "layer": "L6",
+                },
+            },
         }
 
         # Modified nested structure
@@ -211,15 +211,15 @@ class TestMCPDriftRecorderHardening:
                     "env": {
                         "LEVEL_1": {
                             "LEVEL_2": {
-                                "LEVEL_3": "different_value"  # Changed deep value
-                            }
-                        }
+                                "LEVEL_3": "different_value",  # Changed deep value
+                            },
+                        },
                     },
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
-                }
-            }
+                    "layer": "L6",
+                },
+            },
         }
 
         baseline_path = tmp_path / "baseline_nested.json"
@@ -275,7 +275,7 @@ class TestMCPL6ObservabilityStoreHardening:
             timestamp=time.time(),
             source_file="/tmp/test.json",
             servers={},
-            metadata={}
+            metadata={},
         )
 
         # Mock Path.mkdir to simulate disk full during save
@@ -314,7 +314,7 @@ class TestMCPL6ObservabilityStoreHardening:
         import threading
 
         store = MCPL6ObservabilityStore(
-            MCPL6PersistenceConfig(base_dir=str(tmp_path), max_snapshots=5)
+            MCPL6PersistenceConfig(base_dir=str(tmp_path), max_snapshots=5),
         )
 
         recorder = MCPDriftRecorder(agent_id="test")
@@ -329,7 +329,7 @@ class TestMCPL6ObservabilityStoreHardening:
                         timestamp=time.time(),
                         source_file=f"/tmp/race-{i}.json",
                         servers={},
-                        metadata={}
+                        metadata={},
                     )
                     store.save_snapshot(snapshot)
                     time.sleep(0.01)
@@ -360,9 +360,9 @@ class TestMCPL6ObservabilityStoreHardening:
                     "env": {},
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
-                }
-            }
+                    "layer": "L6",
+                },
+            },
         }
 
         config_path = tmp_path / "malicious.json"
@@ -395,7 +395,7 @@ class TestMCPDriftMonitorHardening:
 
         monitor = MCPDriftMonitor(
             config_path=tmp_path / "nonexistent.json",
-            store=store
+            store=store,
         )
 
         # Implementation handles missing config gracefully by capturing error metadata
@@ -416,7 +416,7 @@ class TestMCPDriftMonitorHardening:
                 "env": {},
                 "capabilities": ["tools"],
                 "deploymentMode": "local",
-                "layer": "L6"
+                "layer": "L6",
             }}}, f)
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
@@ -467,7 +467,7 @@ class TestMCPDriftMonitorHardening:
                 "env": {},
                 "capabilities": ["tools"],
                 "deploymentMode": "local",
-                "layer": "L6"
+                "layer": "L6",
             }}}, f)
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
@@ -495,7 +495,7 @@ class TestMCPDriftMonitorHardening:
         with open(config_path, "w") as f:
             json.dump({"mcpServers": {"server1": {
                 "command": "python", "args": ["s1.py"], "env": {},
-                "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6"
+                "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6",
             }}}, f)
         monitor.start_monitoring()
 
@@ -505,7 +505,7 @@ class TestMCPDriftMonitorHardening:
             with open(config_path, "w") as f:
                 json.dump({"mcpServers": {f"server{i}": {
                     "command": "python", "args": [f"s{i}.py"], "env": {},
-                    "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6"
+                    "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6",
                 }}}, f)
 
             report = monitor.check_drift()
@@ -530,14 +530,14 @@ class TestSecurityScenarios:
                         "server.py",
                         "; rm -rf /",  # Command injection attempt
                         "$(whoami)",
-                        "`cat /etc/passwd`"
+                        "`cat /etc/passwd`",
                     ],
                     "env": {},
                     "capabilities": ["tools"],
                     "deploymentMode": "local",
-                    "layer": "L6"
-                }
-            }
+                    "layer": "L6",
+                },
+            },
         }
 
         config_path = tmp_path / "injection.json"
@@ -568,12 +568,12 @@ class TestSecurityScenarios:
                     "capabilities": [
                         "<script>alert('xss')</script>",
                         "tools<img src=x onerror=alert(1)>",
-                        "normal_capability"
+                        "normal_capability",
                     ],
                     "deploymentMode": "local",
-                    "layer": "L6"
-                }
-            }
+                    "layer": "L6",
+                },
+            },
         }
 
         config_path = tmp_path / "xss.json"
@@ -603,9 +603,9 @@ class TestSecurityScenarios:
                         "env": {"VAR": f"val_{i}"},
                         "capabilities": ["tools"],
                         "deploymentMode": "local",
-                        "layer": f"L{i % 7}"
-                    }
-                }
+                        "layer": f"L{i % 7}",
+                    },
+                },
             }
             configs.append(config)
 
@@ -639,9 +639,9 @@ class TestResilienceAndRecovery:
             servers={"s1": MCPServerState(
                 name="s1", command="python", args=("s1.py",), env=tuple(),
                 capabilities=("tools",), target_layer="L6",
-                disabled=False
+                disabled=False,
             )},
-            metadata={}
+            metadata={},
         )
 
         # Save valid snapshot
@@ -684,7 +684,7 @@ class TestResilienceAndRecovery:
         with open(config_path, "w") as f:
             json.dump({"mcpServers": {"new_server": {
                 "command": "python", "args": ["new.py"], "env": {},
-                "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6"
+                "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6",
             }}}, f)
 
         # Should work after recovery - returns a report

@@ -1,0 +1,121 @@
+---
+trigger:
+  - file_change
+  - pre_commit
+---
+# MCP PyTest Enforcement Rule
+
+## Constitutional Rule
+
+**All MCP server code changes MUST pass PyTest validation before commit.**
+
+## Scope
+
+This rule applies to:
+- All MCP server implementations in `tools/adg/mcp/`, `tools/redis_mcp/`, `tools/memory_mcp/`, `tools/filesystem_mcp/`
+- MCP client code in `agentic_core/`
+- MCP-related test files in `tests/integration/`, `tests/unit/`
+
+## Mandatory Test Requirements
+
+### 1. MCP Server Tests
+
+Every MCP server MUST have:
+- **Unit tests**: Test individual tool functions in isolation
+- **Integration tests**: Test MCP protocol communication
+- **Health check tests**: Verify health probe functionality
+- **Error handling tests**: Test timeout, connection failure, invalid input
+
+**Required test coverage:**
+- All tools with `@mcp.tool` decorator must have tests
+- All MCP startup/shutdown sequences must be tested
+- All error paths must have test coverage
+
+### 2. Hung Process Detection
+
+**CRITICAL**: All MCP servers MUST handle hung process scenarios:
+
+| Scenario | Required Behavior | Test Coverage |
+|----------|-------------------|---------------|
+| Tool call timeout | Return error, don't hang | Test with timeout decorator |
+| Connection failure | Graceful degradation, retry | Test with mock failures |
+| Process spawn failure | Surface error immediately | Test with invalid paths |
+| Stderr overflow | Capture and report | Test with large stderr |
+| Zombie process | Cleanup on exit | Test process lifecycle |
+
+**CI Enforcement:**
+- Pre-commit hook: `mcp-pytest-scan` (T21)
+- Gate: `ops_scripts/ci/check_mcp_pytest_coverage.py`
+- Hung process detection: `ops_scripts/ci/mcp_hung_process_detector.py`
+
+### 3. MCP Redis Specific Tests
+
+**ADG Redis MCP** (`tools/adg/mcp/`) MUST have:
+- Redis connection pool tests
+- Cache hit/miss tests
+- Concurrent access tests
+- Timeout and retry tests
+- Reconnection logic tests
+
+**Test Commands:**
+```bash
+# Unit tests
+pytest tests/unit/tools/adg/mcp/ -v
+
+# Integration tests (requires Redis running)
+pytest tests/integration/tools/adg/mcp/ -v --mcp-integration
+
+# Hung process simulation
+pytest tests/integration/tools/adg/mcp/test_hung_process.py -v
+```
+
+### 4. MCP Memory Specific Tests
+
+**Memory MCP** (`tools/memory_mcp/`) MUST have:
+- Memory graph CRUD tests
+- Entity relationship tests
+- Search and query tests
+- Bulk operation tests
+
+### 5. MCP Filesystem Specific Tests
+
+**Filesystem MCP** (`tools/filesystem_mcp/`) MUST have:
+- Path validation tests
+- Permission tests (mocked)
+- File operation tests
+- Directory traversal tests
+
+## Failure Modes
+
+| Check | Failure Action |
+|-------|----------------|
+| Missing test coverage | Block commit, require tests |
+| Hung process test missing | Block commit, add hung process tests |
+| Timeout handling missing | Block commit, add timeout decorator |
+| Health check missing | Block commit, add health probe |
+| Integration test missing | Block commit, add integration test |
+
+## CI Integration
+
+When MCP code changes:
+1. Run unit tests: `pytest tests/unit/tools/*/mcp/ -v`
+2. Run integration tests: `pytest tests/integration/tools/*/mcp/ -v --mcp-integration`
+3. Run hung process detector: `python ops_scripts/ci/mcp_hung_process_detector.py`
+4. CI gate enforces all checks before merge
+
+Pre-commit hook triggers on any file in `tools/*/mcp/` or `agentic_core/*/mcp/`.
+
+## Enforcement
+
+All MCP PyTest checks are enforced via:
+- Pre-commit hooks (`.pre-commit-config.yaml`)
+- CI gates (`python ops_scripts/ci/run_contract_gates.py`)
+- Manual review for MCP architecture changes
+
+**No bypass exceptions.** MCP test violations must be fixed before commit.
+
+## Related Rules
+
+- `.windsurf/rules/mcp-config-ssot.md` — MCP configuration management
+- `.windsurf/rules/security-hardening.md` — Security checks for MCP code
+- `.windsurf/rules/constitutional.md` §11 — Terminal process lifecycle management

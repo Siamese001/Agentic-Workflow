@@ -17,7 +17,7 @@ cur = conn.cursor()
 print("\n=== Antipattern edge_kind breakdown ===")
 cur.execute(
     "SELECT edge_kind, COUNT(*) FROM edges WHERE relation_type='antipattern' "
-    "GROUP BY edge_kind ORDER BY COUNT(*) DESC"
+    "GROUP BY edge_kind ORDER BY COUNT(*) DESC",
 )
 for row in cur.fetchall():
     print(f"  {row[0]}: {row[1]}")
@@ -25,7 +25,7 @@ for row in cur.fetchall():
 print("\n=== Antipattern symbol breakdown (top 30) ===")
 cur.execute(
     "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='antipattern' "
-    "GROUP BY symbol ORDER BY COUNT(*) DESC LIMIT 30"
+    "GROUP BY symbol ORDER BY COUNT(*) DESC LIMIT 30",
 )
 for row in cur.fetchall():
     print(f"  {row[0]}: {row[1]}")
@@ -157,7 +157,7 @@ exception_detected = cur.fetchone()[0]
 print(f"  'except Exception' silent swallows detected by scanner: {exception_detected}")
 print(f"  'except Exception' TOTAL in codebase: {len([x for x in broad_catches if x[2] == 'Exception'])}")
 print(
-    f"  GAP (broad catches NOT detected): {len([x for x in broad_catches if x[2] == 'Exception']) - exception_detected}"
+    f"  GAP (broad catches NOT detected): {len([x for x in broad_catches if x[2] == 'Exception']) - exception_detected}",
 )
 
 conn.close()

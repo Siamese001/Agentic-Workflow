@@ -66,12 +66,12 @@ for row in c.fetchall():
 
 print("\n=== ElevatorShaft / semantic_clock nodes ===")
 c.execute(
-    "SELECT adg_name, entity_type, layer, resolved_path FROM nodes WHERE adg_name LIKE '%ElevatorShaft%' LIMIT 10"
+    "SELECT adg_name, entity_type, layer, resolved_path FROM nodes WHERE adg_name LIKE '%ElevatorShaft%' LIMIT 10",
 )
 for row in c.fetchall():
     print(f"  {row}")
 c.execute(
-    "SELECT adg_name, entity_type, layer, resolved_path FROM nodes WHERE adg_name LIKE '%semantic_clock%' LIMIT 10"
+    "SELECT adg_name, entity_type, layer, resolved_path FROM nodes WHERE adg_name LIKE '%semantic_clock%' LIMIT 10",
 )
 for row in c.fetchall():
     print(f"  {row}")

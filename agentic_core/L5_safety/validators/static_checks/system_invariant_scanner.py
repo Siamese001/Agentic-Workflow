@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -391,7 +390,7 @@ def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
                         rule_id="SYNTAX_ERROR",
                         snippet="Syntax error",
                         description=f"Syntax error: {e}",
-                    )
+                    ),
                 )
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
@@ -402,7 +401,7 @@ def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
                         rule_id="SCAN_ERROR",
                         snippet="Scan error",
                         description=f"Scan error: {e}",
-                    )
+                    ),
                 )
     violations.sort(key=lambda v: (v.file_path, v.line, v.rule_id))
     return violations

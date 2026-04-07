@@ -305,7 +305,7 @@ class SpineBypassVisitor(ast.NodeVisitor):
         if name in BANNED_INSTANTIATION:
             rel = self.file_path.relative_to(PROJECT_ROOT).as_posix()
             self.violations.append(
-                f"{rel}:{node.lineno}:spine_bypass:banned direct instantiation of '{name}'"
+                f"{rel}:{node.lineno}:spine_bypass:banned direct instantiation of '{name}'",
             )
         self.generic_visit(node)
 
@@ -336,7 +336,7 @@ class RandomnessVisitor(ast.NodeVisitor):
             ("random", "shuffle"),
             ("random", "sample"),
             ("random", "seed"),
-        }
+        },
     )
 
     # Banned bare module names used as callables.
@@ -357,7 +357,7 @@ class RandomnessVisitor(ast.NodeVisitor):
             pair = (chain[0], chain[1])
             if pair in self.BANNED_ATTR_CHAINS:
                 self.violations.append(
-                    f"{rel}:{node.lineno}:randomness:banned randomness call '{'.'.join(chain[:2])}'"
+                    f"{rel}:{node.lineno}:randomness:banned randomness call '{'.'.join(chain[:2])}'",
                 )
         self.generic_visit(node)
 
@@ -469,19 +469,19 @@ def main() -> int:
         existing = len(current_set & baseline)
         print(
             f"[OK] Spine bypass + randomness guard: 0 new violations "
-            f"({len(files)} files scanned, {existing} baselined)"
+            f"({len(files)} files scanned, {existing} baselined)",
         )
         return 0
 
     print(
         f"[FAIL] Spine bypass + randomness guard: {len(new_violations)} NEW violation(s) "
-        f"(out of {len(current_set)} total)\n"
+        f"(out of {len(current_set)} total)\n",
     )
     for v in new_violations:
         print(f"  {v}")
     print(
         "\n[ACTION] Fix violations or run with ALLOW_SPINE_BASELINE_WRITE=1 "
-        "--write-baseline to baseline pre-existing debt."
+        "--write-baseline to baseline pre-existing debt.",
     )
     return 1
 

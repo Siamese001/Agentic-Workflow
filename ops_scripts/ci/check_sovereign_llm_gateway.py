@@ -218,7 +218,7 @@ _EXEMPT_PATH_SEGMENTS = frozenset(
         "engines",
         "constraints",
         "utils",
-    }
+    },
 )
 
 

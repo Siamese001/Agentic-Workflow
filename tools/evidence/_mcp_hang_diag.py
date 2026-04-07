@@ -44,7 +44,7 @@ def test_mcp_server(name, cmd, timeout=8):
                         "capabilities": {},
                         "clientInfo": {"name": "diag", "version": "1"},
                     },
-                }
+                },
             )
             + "\n"
         )

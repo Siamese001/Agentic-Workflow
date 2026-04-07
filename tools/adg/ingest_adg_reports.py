@@ -24,7 +24,7 @@ def ingest_adg_reports():
         "docs/reports/infrastructure_gaps_four_layer_analysis.md",
         "docs/reports/infrastructure_hardening_implementation_report.md",
         "docs/reports/rca_gravity_leak_corruption_phase4.md",
-        "docs/reports/system-learning-signal-enhancement-final-report.md"
+        "docs/reports/system-learning-signal-enhancement-final-report.md",
     ]
 
     # P0-P4 final validation reports
@@ -33,7 +33,7 @@ def ingest_adg_reports():
         "docs/reports/p1_microwave_final_validation.md",
         "docs/reports/p2_microwave_final_validation.md",
         "docs/reports/p3_microwave_final_validation.md",
-        "docs/reports/p4_microwave_final_validation.md"
+        "docs/reports/p4_microwave_final_validation.md",
     ]
 
     all_files = adg_report_files + p_reports
@@ -48,7 +48,7 @@ def ingest_adg_reports():
     except Exception:
         collection = client.create_collection(
             name="adg_artifacts",
-            metadata={"description": "ADG artifact reports and analyses"}
+            metadata={"description": "ADG artifact reports and analyses"},
         )
         logger.info("Created new collection: adg_artifacts")
 
@@ -89,8 +89,8 @@ def ingest_adg_reports():
                     'filename': file_path.name,
                     'artifact_type': artifact_type,
                     'type': 'adg_artifact',
-                    'report_category': file_path.parent.name if file_path.parent != Path('.') else 'root'
-                }
+                    'report_category': file_path.parent.name if file_path.parent != Path('.') else 'root',
+                },
             }
 
             chunks.append(chunk)
@@ -121,7 +121,7 @@ def ingest_adg_reports():
         ids=ids,
         documents=documents,
         metadatas=metadatas,
-        embeddings=embeddings
+        embeddings=embeddings,
     )
 
     logger.info(f"Successfully ingested {len(chunks)} chunks into ChromaDB")
@@ -131,7 +131,7 @@ def ingest_adg_reports():
         "collection_name": "adg_artifacts",
         "total_chunks": collection.count(),
         "vector_dimensions": 1536,
-        "vector_metric": "cosine"
+        "vector_metric": "cosine",
     }
 
     logger.info(f"Collection stats: {stats}")

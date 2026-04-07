@@ -13,7 +13,7 @@ def run_command(cmd, cwd=None):
         cwd=cwd,
         capture_output=True,
         text=True,
-        timeout=300  # 5 minute timeout
+        timeout=300,  # 5 minute timeout
     )
     return result.stdout, result.stderr, result.returncode
 
@@ -26,7 +26,7 @@ def benchmark_collection():
     start_time = time.time()
     stdout, stderr, returncode = run_command(
         "python -m pytest --collect-only -q tests/",
-        cwd="."
+        cwd=".",
     )
     end_time = time.time()
 
@@ -52,7 +52,7 @@ def benchmark_collection():
         "collection_time_seconds": collection_time,
         "test_count": test_count,
         "return_code": returncode,
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
 
     with open("test_collection_before.json", "w") as f:

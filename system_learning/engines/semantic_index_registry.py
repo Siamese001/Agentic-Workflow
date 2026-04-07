@@ -140,39 +140,25 @@ from system_learning.types.semantic_memory_types import (
 _emit_applies_guardrail("p0", "semantic_index_registry", "p0_governance")
 _emit_snapshots_state("p0", "semantic_index_registry", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -254,7 +240,7 @@ ALL_INDEXES = frozenset(
         INDEX_REPLAY,
         INDEX_PREFERENCE,
         INDEX_GUARDRAIL,
-    }
+    },
 )
 
 
@@ -407,7 +393,7 @@ class SemanticIndexRegistry:
                         healer_id=meta.get("healer_id", ""),
                         route_path=meta.get("route_path", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -433,7 +419,7 @@ class SemanticIndexRegistry:
                         layer=meta.get("layer", ""),
                         risk_label=meta.get("risk_label", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -458,7 +444,7 @@ class SemanticIndexRegistry:
                         target_resource=meta.get("target_resource", ""),
                         commit_outcome=meta.get("commit_outcome", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -484,7 +470,7 @@ class SemanticIndexRegistry:
                         template_id=meta.get("template_id", ""),
                         model=meta.get("model", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -510,7 +496,7 @@ class SemanticIndexRegistry:
                         completeness_score=float(meta.get("completeness_score", 0.0)),
                         escalation_flag=bool(meta.get("escalation_flag", False)),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -535,7 +521,7 @@ class SemanticIndexRegistry:
                         nondeterminism_type=meta.get("nondeterminism_type", ""),
                         replay_key=meta.get("replay_key", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -560,7 +546,7 @@ class SemanticIndexRegistry:
                         decision=meta.get("decision", ""),
                         agent=meta.get("agent", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -586,7 +572,7 @@ class SemanticIndexRegistry:
                         verdict=meta.get("verdict", ""),
                         strictness_level=meta.get("strictness_level", ""),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow

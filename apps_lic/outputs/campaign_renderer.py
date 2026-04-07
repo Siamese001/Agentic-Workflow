@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Any
 
-from apps_lic.types import CampaignResult, CampaignRunSummary, DraftPackage
+from apps_lic.types import CampaignResult, CampaignRunSummary
 
 _log = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class CampaignRenderer:
         ]
 
         for i, draft in enumerate(result.drafts, 1):
-            lines.extend([f"### Draft {i}", "", f"```", draft.draft[:500], "```", ""])
+            lines.extend([f"### Draft {i}", "", "```", draft.draft[:500], "```", ""])
 
         if result.gate_violations:
             lines.extend(["## Gate Violations", ""])

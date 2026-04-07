@@ -215,7 +215,7 @@ def _extract_semantic_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]
 
 
 def _extract_actor_edges(
-    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]],
 ) -> list[RuntimeADGEdge]:
     """Extract actor edges from span attributes."""
     edges: list[RuntimeADGEdge] = []
@@ -224,13 +224,13 @@ def _extract_actor_edges(
         edges.append(RuntimeADGEdge(
             src_id=str(actor_id)[:128],
             dst_id=span_id,
-            relation="actor"
+            relation="actor",
         ))
     return edges
 
 
 def _extract_target_edges(
-    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]],
 ) -> list[RuntimeADGEdge]:
     """Extract target edges from span attributes."""
     edges: list[RuntimeADGEdge] = []
@@ -239,13 +239,13 @@ def _extract_target_edges(
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=str(target_id)[:128],
-            relation="target"
+            relation="target",
         ))
     return edges
 
 
 def _extract_dependency_edges(
-    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]],
 ) -> list[RuntimeADGEdge]:
     """Extract dependency edges from span attributes."""
     edges: list[RuntimeADGEdge] = []
@@ -255,7 +255,7 @@ def _extract_dependency_edges(
             edges.append(RuntimeADGEdge(
                 src_id=str(depends_on)[:128],
                 dst_id=span_id,
-                relation="dependency"
+                relation="dependency",
             ))
         elif isinstance(depends_on, list):
             for dep in depends_on[:10]:  # Limit dependencies
@@ -263,7 +263,7 @@ def _extract_dependency_edges(
                     edges.append(RuntimeADGEdge(
                         src_id=str(dep)[:128],
                         dst_id=span_id,
-                        relation="dependency"
+                        relation="dependency",
                     ))
     return edges
 
@@ -278,7 +278,7 @@ def _extract_read_write_edges(span_id: str, attrs: dict[str, Any]) -> list[Runti
         edges.append(RuntimeADGEdge(
             src_id=str(reads_from)[:128],
             dst_id=span_id,
-            relation="read_edge"
+            relation="read_edge",
         ))
 
     # Write edges
@@ -287,7 +287,7 @@ def _extract_read_write_edges(span_id: str, attrs: dict[str, Any]) -> list[Runti
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=str(writes_to)[:128],
-            relation="write_edge"
+            relation="write_edge",
         ))
 
     return edges
@@ -305,7 +305,7 @@ def _extract_tool_invocation_edges(span_id: str, attrs: dict[str, Any]) -> list[
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"tool.{str(tool_name)[:120]}",
-            relation="tool_invocation_edge"
+            relation="tool_invocation_edge",
         ))
 
     # Also check explicit tool_invocation attribute
@@ -314,14 +314,14 @@ def _extract_tool_invocation_edges(span_id: str, attrs: dict[str, Any]) -> list[
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"tool.{str(invoked_tool)[:120]}",
-            relation="tool_invocation_edge"
+            relation="tool_invocation_edge",
         ))
 
     return edges
 
 
 def _extract_orchestration_handoff_edges(
-    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]],
 ) -> list[RuntimeADGEdge]:
     """Extract orchestration handoff edges from span attributes."""
     edges: list[RuntimeADGEdge] = []
@@ -331,7 +331,7 @@ def _extract_orchestration_handoff_edges(
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=str(handoff_to)[:128],
-            relation="orchestration_handoff_edge"
+            relation="orchestration_handoff_edge",
         ))
 
     # Check span kind for orchestrator
@@ -341,14 +341,14 @@ def _extract_orchestration_handoff_edges(
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"orchestrator.{str(orchestrator_name)[:115]}",
-            relation="orchestration_handoff_edge"
+            relation="orchestration_handoff_edge",
         ))
 
     return edges
 
 
 def _extract_retry_edges(
-    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]],
 ) -> list[RuntimeADGEdge]:
     """Extract retry edges from span attributes."""
     edges: list[RuntimeADGEdge] = []
@@ -358,7 +358,7 @@ def _extract_retry_edges(
         edges.append(RuntimeADGEdge(
             src_id=str(retry_of)[:128],
             dst_id=span_id,
-            relation="retry_edge"
+            relation="retry_edge",
         ))
 
     # Check for retry_count indicating this is a retry
@@ -370,7 +370,7 @@ def _extract_retry_edges(
             edges.append(RuntimeADGEdge(
                 src_id=str(parent_span_id)[:128],
                 dst_id=span_id,
-                relation="retry_edge"
+                relation="retry_edge",
             ))
 
     return edges
@@ -386,7 +386,7 @@ def _extract_evaluation_edges(span_id: str, attrs: dict[str, Any]) -> list[Runti
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=str(evaluated)[:128],
-            relation="evaluation_edge"
+            relation="evaluation_edge",
         ))
 
     # Check span kind
@@ -397,7 +397,7 @@ def _extract_evaluation_edges(span_id: str, attrs: dict[str, Any]) -> list[Runti
             edges.append(RuntimeADGEdge(
                 src_id=span_id,
                 dst_id=str(eval_subject)[:128],
-                relation="evaluation_edge"
+                relation="evaluation_edge",
             ))
 
     return edges
@@ -413,7 +413,7 @@ def _extract_policy_validation_edges(span_id: str, attrs: dict[str, Any]) -> lis
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"policy.{str(policy_check)[:123]}",
-            relation="policy_validation_edge"
+            relation="policy_validation_edge",
         ))
 
     # Check for guardrail triggers
@@ -422,7 +422,7 @@ def _extract_policy_validation_edges(span_id: str, attrs: dict[str, Any]) -> lis
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"guardrail.{str(guardrail_type)[:120]}",
-            relation="policy_validation_edge"
+            relation="policy_validation_edge",
         ))
 
     return edges
@@ -437,7 +437,7 @@ def _extract_human_escalation_edges(span_id: str, attrs: dict[str, Any]) -> list
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"human.{str(escalated_to)[:124]}",
-            relation="human_escalation_edge"
+            relation="human_escalation_edge",
         ))
 
     # Check for escalation reason
@@ -446,14 +446,14 @@ def _extract_human_escalation_edges(span_id: str, attrs: dict[str, Any]) -> list
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id="human.escalation",
-            relation="human_escalation_edge"
+            relation="human_escalation_edge",
         ))
 
     return edges
 
 
 def _extract_failure_propagation_edges(
-    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]],
 ) -> list[RuntimeADGEdge]:
     """Extract failure propagation edges from span attributes."""
     edges: list[RuntimeADGEdge] = []
@@ -469,7 +469,7 @@ def _extract_failure_propagation_edges(
             edges.append(RuntimeADGEdge(
                 src_id=span_id,
                 dst_id=f"failure.{str(failed_component)[:121]}",
-                relation="failure_propagation_edge"
+                relation="failure_propagation_edge",
             ))
 
         # Check for affected_by attribute
@@ -478,7 +478,7 @@ def _extract_failure_propagation_edges(
             edges.append(RuntimeADGEdge(
                 src_id=str(affected_by)[:128],
                 dst_id=span_id,
-                relation="failure_propagation_edge"
+                relation="failure_propagation_edge",
             ))
 
     return edges
@@ -494,7 +494,7 @@ def _extract_outcome_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeA
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"outcome.{str(outcome)[:122]}",
-            relation="outcome_edge"
+            relation="outcome_edge",
         ))
 
     # Check for result_status
@@ -503,7 +503,7 @@ def _extract_outcome_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeA
         edges.append(RuntimeADGEdge(
             src_id=span_id,
             dst_id=f"outcome.{str(result_status)[:122]}",
-            relation="outcome_edge"
+            relation="outcome_edge",
         ))
 
     return edges

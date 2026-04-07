@@ -65,7 +65,7 @@ class ScopeMetadataResolver:
         """
         trace_id = f"scope_{hashlib.sha256(str(filter_context).encode()).hexdigest()[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ScopeMetadataResolver.resolve"
+            trace_id, LayerSegment.L1_REASONING, "ScopeMetadataResolver.resolve",
         )
 
         # Check cache

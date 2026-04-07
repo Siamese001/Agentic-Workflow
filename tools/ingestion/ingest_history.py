@@ -63,7 +63,7 @@ class HistoryIngestion:
                 "--pretty=format:%H|%an|%ad|%s|%b",
                 "--date=iso",
                 "--name-only",
-                "-1000"  # Last 1000 commits
+                "-1000",  # Last 1000 commits
             ]
 
             result = subprocess.run(
@@ -71,7 +71,7 @@ class HistoryIngestion:
                 cwd=self.repo_root,
                 capture_output=True,
                 text=True,
-                encoding='utf-8'
+                encoding='utf-8',
             )
 
             if result.returncode != 0:
@@ -112,7 +112,7 @@ class HistoryIngestion:
                     "file_types": commit["file_types"],
                     "components": commit["components"],
                     "layers": commit["layers"],
-                    "canonical_digest": hashlib.sha256(commit['hash'].encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(commit['hash'].encode()).hexdigest()[:16],
                 }
 
                 # Only add non-empty list fields
@@ -142,7 +142,7 @@ class HistoryIngestion:
                         collection_name="repo_git_history",
                         documents=batch_docs,
                         metadatas=batch_metas,
-                        ids=batch_ids
+                        ids=batch_ids,
                     )
                     logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} commits")
                 except Exception as e:
@@ -168,7 +168,7 @@ class HistoryIngestion:
             "**/incident_*.json",
             "**/rca_*.md",
             "**/*incident*.md",
-            "**/*rca*.md"
+            "**/*rca*.md",
         ]
 
         incident_files = set()
@@ -180,7 +180,7 @@ class HistoryIngestion:
             "docs/reports/plans",  # RCA plans are stored here
             "incidents",
             "rca",
-            "postmortem"
+            "postmortem",
         ]
 
         for incident_dir in incident_dirs:
@@ -241,7 +241,7 @@ class HistoryIngestion:
                     "root_cause_count": len(incident_info["root_causes"]),
                     "symptom_count": len(incident_info["symptoms"]),
                     "file_size": len(content),
-                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16],
                 }
 
                 # Only add non-empty list fields
@@ -272,7 +272,7 @@ class HistoryIngestion:
                         collection_name="repo_incidents_rca",
                         documents=batch_docs,
                         metadatas=batch_metas,
-                        ids=batch_ids
+                        ids=batch_ids,
                     )
                     logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} incidents")
                 except Exception as e:
@@ -301,7 +301,7 @@ class HistoryIngestion:
                 "layers": ["L2", "L4"],
                 "root_causes": ["Memory exhaustion", "Connection timeout"],
                 "symptoms": ["Write operations failing", "Increased latency"],
-                "fixes": ["Increased memory limits", "Connection pooling"]
+                "fixes": ["Increased memory limits", "Connection pooling"],
             },
             {
                 "name": "ADG Scanner Timeout",
@@ -311,7 +311,7 @@ class HistoryIngestion:
                 "layers": ["L4"],
                 "root_causes": ["Large codebase", "Inefficient queries"],
                 "symptoms": ["Scan timeouts", "High CPU usage"],
-                "fixes": ["Query optimization", "Incremental scanning"]
+                "fixes": ["Query optimization", "Incremental scanning"],
             },
             {
                 "name": "L0 Routing Deadlock",
@@ -321,7 +321,7 @@ class HistoryIngestion:
                 "layers": ["L0", "L5"],
                 "root_causes": ["Lock contention", "Circular dependency"],
                 "symptoms": ["Request hanging", "System freeze"],
-                "fixes": ["Lock reordering", "Dependency injection"]
+                "fixes": ["Lock reordering", "Dependency injection"],
             },
             {
                 "name": "L1 Cognition Memory Leak",
@@ -331,7 +331,7 @@ class HistoryIngestion:
                 "layers": ["L1", "L4"],
                 "root_causes": ["Unclosed connections", "Cache not cleared"],
                 "symptoms": ["Memory growth", "Performance degradation"],
-                "fixes": ["Connection management", "Cache cleanup"]
+                "fixes": ["Connection management", "Cache cleanup"],
             },
             {
                 "name": "L5 Safety False Positives",
@@ -341,8 +341,8 @@ class HistoryIngestion:
                 "layers": ["L5"],
                 "root_causes": ["Incorrect thresholds", "Rule conflicts"],
                 "symptoms": ["False rejections", "User complaints"],
-                "fixes": ["Threshold tuning", "Rule prioritization"]
-            }
+                "fixes": ["Threshold tuning", "Rule prioritization"],
+            },
         ]
 
         # Generate variations to reach 100+ incidents for clustering
@@ -387,7 +387,7 @@ class HistoryIngestion:
                 "variant": i,
                 "base_scenario": i % len(synthetic_incidents),
                 "impact_score": i * 2 + 10,
-                "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16]
+                "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16],
             }
 
             documents.append(doc_content)
@@ -407,7 +407,7 @@ class HistoryIngestion:
                         collection_name="repo_incidents_rca",
                         documents=batch_docs,
                         metadatas=batch_metas,
-                        ids=batch_ids
+                        ids=batch_ids,
                     )
                     logger.info(f"Added synthetic batch {i//batch_size + 1}: {len(batch_docs)} incidents")
                 except Exception as e:
@@ -444,7 +444,7 @@ class HistoryIngestion:
                         "files": [],
                         "file_types": [],
                         "components": [],
-                        "layers": []
+                        "layers": [],
                     }
                 parsing_files = False
 
@@ -493,7 +493,7 @@ class HistoryIngestion:
             "layers": [],
             "root_causes": [],
             "symptoms": [],
-            "fixes": []
+            "fixes": [],
         }
 
         # Extract from filename first
@@ -607,7 +607,7 @@ def main():
     # Run ingestion
     ingestion = HistoryIngestion(
         repo_root=args.repo_root,
-        chroma_persist_dir=args.chroma_dir
+        chroma_persist_dir=args.chroma_dir,
     )
 
     if args.dry_run:

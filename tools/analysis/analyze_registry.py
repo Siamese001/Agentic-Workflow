@@ -3,7 +3,7 @@ from pathlib import Path
 
 files = [
     'agentic_core/agents/agent_registry.py',
-    'agentic_core/agents/types/agent_registry.py'
+    'agentic_core/agents/types/agent_registry.py',
 ]
 
 for f in files:

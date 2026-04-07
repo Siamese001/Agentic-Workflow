@@ -129,7 +129,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -186,7 +185,7 @@ _emit_invokes_eval("p1", "structural_namespace_fence_enforcer", "eval_call")
 _emit_proposal_commits_routing("p1", "structural_namespace_fence_enforcer", "routing_commit")
 
 _TRACKED_ROOTS: frozenset = frozenset(
-    {APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR}
+    {APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR},
 )
 _ALLOWED_CROSS: dict[str, set[str]] = {
     "apps_lic": {"agentic_core.types", "agentic_core.interfaces", "agentic_core.runtime"},
@@ -325,7 +324,7 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "StructuralNamespaceFinder.find_spec"
+            _trace_id, LayerSegment.L5_POLICY, "StructuralNamespaceFinder.find_spec",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -342,7 +341,7 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
         # guardian: allow-config-with-logic
         if self._tracker.is_forbidden_cross_import(caller_ns, fullname):
             raise ImportError(
-                f"Namespace boundary violation: '{caller_ns}' (module '{caller_module}') may not import '{fullname}'"
+                f"Namespace boundary violation: '{caller_ns}' (module '{caller_module}') may not import '{fullname}'",
             )
         return None
 

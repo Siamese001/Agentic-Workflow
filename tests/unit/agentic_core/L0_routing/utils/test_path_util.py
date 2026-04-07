@@ -43,7 +43,7 @@ class TestPathNormalization:
 
     def test_path_replace_backslash_to_forward_slash(self):
         """Test the .replace('\\', '/') pattern used in codebase."""
-        windows_path = "C:\\Git\\Agentic-Workflow"
+        windows_path = str(REPO_ROOT)
         normalized = windows_path.replace("\\", "/")
         assert normalized == "C:/Git/Agentic-Workflow"
         assert "." not in normalized.replace("C:", "").replace("/", "")  # No dots as separators
@@ -59,7 +59,7 @@ class TestPathNormalization:
     def test_path_no_mangled_dots(self):
         """Ensure no backslash-to-dot mangling occurs."""
         # This tests the specific RCA bug: c:.Git.Agentic-Workflow
-        test_path = "C:\\Git\\Agentic-Workflow"
+        test_path = str(REPO_ROOT)
         # Correct normalization
         correct = test_path.replace("\\", "/")
         # Incorrect mangling (the bug pattern)

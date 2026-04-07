@@ -110,7 +110,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -190,7 +189,7 @@ SOVEREIGN_KERNEL_COMPONENTS: frozenset[str] = frozenset(
         "agentic_core.config",
         "agentic_core.patterns",
         "agentic_core.base_agents",
-    }
+    },
 )
 MODULAR_EXTENSIONS: frozenset[str] = frozenset(
     {
@@ -213,7 +212,7 @@ MODULAR_EXTENSIONS: frozenset[str] = frozenset(
         "agentic_core.L2_execution.healers.healing_tier_dispatcher",
         "agentic_core.L6_observability.enhanced_observability",
         "agentic_core.telemetry",
-    }
+    },
 )
 
 

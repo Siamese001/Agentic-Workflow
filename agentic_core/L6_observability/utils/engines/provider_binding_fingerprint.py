@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -207,7 +206,7 @@ class ProviderBindingFingerprint:
     def __post_init__(self) -> None:
         if not isinstance(self.fingerprint, str) or len(self.fingerprint) != 64:
             raise ValueError(
-                f"ProviderBindingFingerprint: fingerprint must be 64-char hex, got {self.fingerprint!r}"
+                f"ProviderBindingFingerprint: fingerprint must be 64-char hex, got {self.fingerprint!r}",
             )
 
 
@@ -251,10 +250,10 @@ def capture_provider_bindings(overrides: dict[str, str] | None = None) -> Provid
         (
             ProviderBinding(provider_id=pid, model_id=mid, tier=tier_map.get(pid, "UNKNOWN"))
             for pid, mid in sorted(registry.items())
-        )
+        ),
     )
     material = {
-        "bindings": [{"model_id": b.model_id, "provider_id": b.provider_id, "tier": b.tier} for b in bindings]
+        "bindings": [{"model_id": b.model_id, "provider_id": b.provider_id, "tier": b.tier} for b in bindings],
     }
     fingerprint = hashlib.sha256(_canonical_json_bytes(material)).hexdigest()
     return ProviderBindingFingerprint(bindings=bindings, fingerprint=fingerprint)

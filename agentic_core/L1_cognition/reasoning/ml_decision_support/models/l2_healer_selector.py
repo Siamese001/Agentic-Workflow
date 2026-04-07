@@ -42,7 +42,7 @@ class L2HealerSelector(BaseMLModel):
         2: "Alternative_Path",
         3: "Circuit_Breaker",
         4: "Fallback_Service",
-        5: "Manual_Intervention"
+        5: "Manual_Intervention",
     }
 
     # Reverse mapping
@@ -54,7 +54,7 @@ class L2HealerSelector(BaseMLModel):
             model_version="1.0",
             model_type="logistic_regression",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -70,7 +70,7 @@ class L2HealerSelector(BaseMLModel):
         self.threshold_config = {
             "confidence_threshold": 0.6,
             "selection_threshold": 0.5,
-            "fallback_threshold": 0.3
+            "fallback_threshold": 0.3,
         }
 
         if model_file_path and model_file_path.exists():
@@ -109,8 +109,8 @@ class L2HealerSelector(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -122,7 +122,7 @@ class L2HealerSelector(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict optimal healer for error recovery.
@@ -155,7 +155,7 @@ class L2HealerSelector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -190,8 +190,8 @@ class L2HealerSelector(BaseMLModel):
                     prediction=predicted_healer,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Determine final decision mode
@@ -209,7 +209,7 @@ class L2HealerSelector(BaseMLModel):
                 decision_mode=final_decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -221,7 +221,7 @@ class L2HealerSelector(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'selected_healer': predicted_healer,
-                'requires_escalation': final_decision_mode == DecisionMode.ESCALATED
+                'requires_escalation': final_decision_mode == DecisionMode.ESCALATED,
             })
 
             # Log prediction
@@ -237,7 +237,7 @@ class L2HealerSelector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def select_healer(
@@ -247,7 +247,7 @@ class L2HealerSelector(BaseMLModel):
         context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Select optimal healer from available options.
@@ -269,7 +269,7 @@ class L2HealerSelector(BaseMLModel):
                 'selected_healer': None,
                 'confidence': 0.0,
                 'reason': 'No healers available',
-                'recommendations': ['Add more healing strategies', 'Implement default retry mechanism']
+                'recommendations': ['Add more healing strategies', 'Implement default retry mechanism'],
             }
 
         # Score each healer
@@ -284,7 +284,7 @@ class L2HealerSelector(BaseMLModel):
                 "system_state": context.get("system_state", {}),
                 "history": context.get("history", {}),
                 "healing_context": context.get("healing_context", {}),
-                "trace_id": f"{trace_id}_healer_{i}"
+                "trace_id": f"{trace_id}_healer_{i}",
             }
 
             # Extract features
@@ -292,7 +292,7 @@ class L2HealerSelector(BaseMLModel):
                 context=healer_context,
                 trace_id=f"{trace_id}_healer_{i}",
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             if extraction_result.success:
@@ -305,7 +305,7 @@ class L2HealerSelector(BaseMLModel):
                     model_input=model_input,
                     trace_id=f"{trace_id}_healer_{i}",
                     replay_key=replay_key,
-                    policy_hash=policy_hash
+                    policy_hash=policy_hash,
                 )
 
                 healer_scores.append({
@@ -316,7 +316,7 @@ class L2HealerSelector(BaseMLModel):
                     'confidence': prediction.confidence,
                     'top_features': prediction.top_features,
                     'decision_mode': prediction.decision_mode,
-                    'prediction_metadata': prediction.model_metadata
+                    'prediction_metadata': prediction.model_metadata,
                 })
             else:
                 # Feature extraction failed
@@ -328,7 +328,7 @@ class L2HealerSelector(BaseMLModel):
                     'confidence': 0.0,
                     'top_features': [],
                     'decision_mode': DecisionMode.BLOCKED,
-                    'prediction_metadata': {'error': 'Feature extraction failed'}
+                    'prediction_metadata': {'error': 'Feature extraction failed'},
                 })
 
         # Sort by selection score
@@ -341,7 +341,7 @@ class L2HealerSelector(BaseMLModel):
         recommendations = self._generate_healer_recommendations(
             best_healer=best_healer,
             error=error,
-            available_healers=available_healers
+            available_healers=available_healers,
         )
 
         return {
@@ -354,7 +354,7 @@ class L2HealerSelector(BaseMLModel):
             'decision_mode': best_healer['decision_mode'],
             'all_healer_scores': healer_scores,
             'recommendations': recommendations,
-            'requires_escalation': best_healer['decision_mode'] == DecisionMode.ESCALATED
+            'requires_escalation': best_healer['decision_mode'] == DecisionMode.ESCALATED,
         }
 
     def get_healing_strategy(
@@ -363,7 +363,7 @@ class L2HealerSelector(BaseMLModel):
         context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get comprehensive healing strategy recommendation.
@@ -393,7 +393,7 @@ class L2HealerSelector(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Combine into comprehensive strategy
@@ -402,7 +402,7 @@ class L2HealerSelector(BaseMLModel):
                 'type': error_type,
                 'severity': error_severity,
                 'impact': error.get('impact', 'unknown'),
-                'recoverable': error.get('recoverable', True)
+                'recoverable': error.get('recoverable', True),
             },
             'healing_strategy': strategy,
             'recommended_healer': healer_selection,
@@ -410,14 +410,14 @@ class L2HealerSelector(BaseMLModel):
             'monitoring_requirements': self._get_monitoring_requirements(error),
             'success_probability': healer_selection.get('confidence', 0.5),
             'estimated_recovery_time': self._estimate_recovery_time(error, healer_selection),
-            'resource_requirements': self._calculate_resource_requirements(error, healer_selection)
+            'resource_requirements': self._calculate_resource_requirements(error, healer_selection),
         }
 
     def _generate_healer_recommendations(
         self,
         best_healer: dict[str, Any],
         error: dict[str, Any],
-        available_healers: list[dict[str, Any]]
+        available_healers: list[dict[str, Any]],
     ) -> list[str]:
         """Generate healer-specific recommendations."""
         recommendations = []
@@ -474,7 +474,7 @@ class L2HealerSelector(BaseMLModel):
             'primary_approach': 'automated',
             'escalation_threshold': 'medium',
             'monitoring_level': 'standard',
-            'rollback_plan': 'available'
+            'rollback_plan': 'available',
         }
 
         # Adjust strategy based on error severity
@@ -483,14 +483,14 @@ class L2HealerSelector(BaseMLModel):
                 'primary_approach': 'manual_intervention',
                 'escalation_threshold': 'immediate',
                 'monitoring_level': 'intensive',
-                'rollback_plan': 'required'
+                'rollback_plan': 'required',
             })
         elif error_severity == 'high':
             strategy.update({
                 'primary_approach': 'supervised_automated',
                 'escalation_threshold': 'low',
                 'monitoring_level': 'enhanced',
-                'rollback_plan': 'recommended'
+                'rollback_plan': 'recommended',
             })
 
         # Adjust based on impact scope
@@ -542,7 +542,7 @@ class L2HealerSelector(BaseMLModel):
                 "Real-time performance monitoring",
                 "Resource usage tracking",
                 "Error rate monitoring",
-                "User impact assessment"
+                "User impact assessment",
             ])
 
         requirements.append("Log all healing attempts")
@@ -562,7 +562,7 @@ class L2HealerSelector(BaseMLModel):
             'Alternative_Path': 3,
             'Circuit_Breaker': 2,
             'Fallback_Service': 4,
-            'Manual_Intervention': 30
+            'Manual_Intervention': 30,
         }
 
         base_time = base_times.get(healer_type, 5)
@@ -591,7 +591,7 @@ class L2HealerSelector(BaseMLModel):
             'memory': 'low',
             'storage': 'minimal',
             'network': 'low',
-            'human_intervention': 'none'
+            'human_intervention': 'none',
         }
 
         # Adjust based on healer type
@@ -599,7 +599,7 @@ class L2HealerSelector(BaseMLModel):
             requirements.update({
                 'cpu': 'medium',
                 'memory': 'medium',
-                'storage': 'moderate'
+                'storage': 'moderate',
             })
         elif healer_type == 'Manual_Intervention':
             requirements['human_intervention'] = 'required'
@@ -645,7 +645,7 @@ class L2HealerSelector(BaseMLModel):
                         'importance_score': float(score),
                         'coefficient_value': float(coefficients[i]) if i < len(coefficients) else 0.0,
                         'feature_value': model_input.features.get(name),
-                        'rank': i + 1
+                        'rank': i + 1,
                     })
 
             # Sort by importance
@@ -710,7 +710,7 @@ class L2HealerSelector(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the logistic regression model.
@@ -752,8 +752,8 @@ class L2HealerSelector(BaseMLModel):
                 multi_class='multinomial',
                 solver='lbfgs',
                 max_iter=1000,
-                random_state=42
-            ))
+                random_state=42,
+            )),
         ])
 
         # Train model

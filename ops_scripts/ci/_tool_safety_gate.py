@@ -110,7 +110,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             ok,
             f"L5 ToolSafetyContract sources={tsc_sources} (total={tsc_total} >=1), "
             f"L5 invoke_tool_safely sources={its_sources} (total={its_total} >=1)",
-        )
+        ),
     )
     return ok
 
@@ -125,7 +125,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%ToolCapabilityError%' "
-        "AND source_file LIKE '%tool_safety_contract%'"
+        "AND source_file LIKE '%tool_safety_contract%'",
     )
     cap_in_contract = c.fetchone()[0]
 
@@ -140,7 +140,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"ToolCapabilityError in tool_safety_contract={cap_in_contract} (>=1), "
             f"total ToolCapabilityError sources={cap_total}, "
             f"capability_token symbol sources={tok_total}",
-        )
+        ),
     )
     return ok
 
@@ -160,7 +160,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%policy_hash%' "
-        "AND source_file LIKE '%tool_safety_contract%'"
+        "AND source_file LIKE '%tool_safety_contract%'",
     )
     ph_in_contract = c.fetchone()[0]
 
@@ -171,7 +171,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             ok,
             f"references_policy_hash L5={rph_l5} (>=1), total={rph_total}, "
             f"policy_hash in tool_safety_contract={ph_in_contract} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -189,7 +189,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
 
     # Also check GuardrailDecision / ToolGuardrailDeniedError in contract
     gdd_in_contract = _count_symbol_sources(
-        conn, "ToolGuardrailDeniedError", "AND source_file LIKE '%tool_safety_contract%'"
+        conn, "ToolGuardrailDeniedError", "AND source_file LIKE '%tool_safety_contract%'",
     )
 
     ok = ag_l5 >= 1 and vsp_total >= 10
@@ -200,7 +200,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"applies_guardrail L5={ag_l5} (>=1) total={ag_total}, "
             f"validated_by_safety_plane total={vsp_total} (>=10), "
             f"ToolGuardrailDeniedError in contract={gdd_in_contract}",
-        )
+        ),
     )
     return ok
 
@@ -219,14 +219,14 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%ToolActionClass%' "
-        "AND source_file LIKE '%tool_safety_contract%'"
+        "AND source_file LIKE '%tool_safety_contract%'",
     )
     tac_in_contract = c.fetchone()[0]
 
     c.execute(
         "SELECT COUNT(DISTINCT source_file) FROM edges "
         "WHERE symbol LIKE '%HUMAN_GATED%' "
-        "AND source_file LIKE '%tool_safety_contract%'"
+        "AND source_file LIKE '%tool_safety_contract%'",
     )
     hg_in_contract = c.fetchone()[0]
 
@@ -239,7 +239,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"requires_human_review L5={rhr_l5} (>=1) total={rhr_total}, "
             f"ToolActionClass in contract={tac_in_contract} (>=1), "
             f"HUMAN_GATED in contract={hg_in_contract}",
-        )
+        ),
     )
     return ok
 
@@ -287,7 +287,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     # Show L5 applies_guardrail sources
     c.execute(
         f"SELECT DISTINCT source_file, symbol FROM edges "
-        f"WHERE relation_type='applies_guardrail' {L5_FILTER} LIMIT 20"
+        f"WHERE relation_type='applies_guardrail' {L5_FILTER} LIMIT 20",
     )
     print("\n  L5 applies_guardrail sources (up to 20):")
     rows = c.fetchall()
@@ -300,7 +300,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     # Show L5 requires_human_review sources
     c.execute(
         f"SELECT DISTINCT source_file, symbol FROM edges "
-        f"WHERE relation_type='requires_human_review' {L5_FILTER} LIMIT 10"
+        f"WHERE relation_type='requires_human_review' {L5_FILTER} LIMIT 10",
     )
     print("\n  L5 requires_human_review sources (up to 10):")
     rows = c.fetchall()

@@ -287,7 +287,7 @@ APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_sub
 APPS_EVAL_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_EVAL_DIR)
 APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_EXEC_DIR)
 APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(
-    _APPS_RESEARCH_DIR
+    _APPS_RESEARCH_DIR,
 )
 APPS_RFP_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_RFP_DIR)
 

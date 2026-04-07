@@ -84,21 +84,14 @@ _emit_applies_guardrail("p0", "drift_lifecycle", "p0_governance")
 _emit_reads_policy_state("p0", "drift_lifecycle", "policy_binding")
 _emit_snapshots_state("p0", "drift_lifecycle", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -106,17 +99,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -452,7 +439,7 @@ def _run_meta_learning_bus(
                 reward_threshold=META_BUS_REWARD_THRESHOLD,
                 commit_reward_threshold=META_BUS_COMMIT_THRESHOLD,
                 emit_adg_relations=True,
-            )
+            ),
         )
         result = bus.process_traces(
             traces=[(f"drift-{timestamp}", trace_signal, timestamp)],
@@ -502,7 +489,7 @@ def _build_work_queue(
                 path=path,
                 fan_out=0,
                 risk_class="HIGH",
-            )
+            ),
         )
 
     remaining = budget - len(items)
@@ -520,7 +507,7 @@ def _build_work_queue(
                 path=path,
                 fan_out=fan_out,
                 risk_class=risk,
-            )
+            ),
         )
 
     remaining = budget - len(items)
@@ -550,7 +537,7 @@ def _write_work_queue(r: redis.Redis, items: list[WorkItem]) -> None:
                     "fan_out": item.fan_out,
                     "risk_class": item.risk_class,
                     "commit_id": item.commit_id,
-                }
+                },
             ),
         )
     pipe.expire("adg:drift:work_queue", WORK_QUEUE_TTL)
@@ -829,7 +816,7 @@ def _run_outcome_trace(
                 reward_threshold=META_BUS_REWARD_THRESHOLD,
                 commit_reward_threshold=META_BUS_COMMIT_THRESHOLD,
                 emit_adg_relations=True,
-            )
+            ),
         )
         bus.process_single_trace(
             trace_id="drift-heal-{}".format(commit_id[:8] if commit_id else "none"),
@@ -872,7 +859,7 @@ def _rescore(dry_run: bool) -> float:
     except redis.RedisError as exc:
         raise RuntimeError(
             f"[lifecycle] ADG Redis unavailable during rescore — "
-            f"run: python tools/adg/adg_redis_ingest.py --force. Error: {exc}"
+            f"run: python tools/adg/adg_redis_ingest.py --force. Error: {exc}",
         ) from exc
 
 
@@ -916,7 +903,7 @@ def _maybe_escalate(r: redis.Redis, result: LifecycleResult) -> None:
                 "delta": result.delta,
                 "work_items": [{"kind": i.kind, "path": i.path} for i in result.work_items],
                 "timestamp": result.timestamp,
-            }
+            },
         )
         r.rpush("adg:drift:escalation", entry)
         r.expire("adg:drift:escalation", LIFECYCLE_TTL)

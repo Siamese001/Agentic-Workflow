@@ -25,7 +25,7 @@ def main():
     # Edge type summary
     print("\n=== EDGE TYPE COUNTS (top 30) ===")
     cur.execute(
-        "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC LIMIT 30"
+        "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC LIMIT 30",
     )
     for rt, cnt in cur.fetchall():
         print(f"  {rt}: {cnt}")
@@ -40,7 +40,7 @@ def main():
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type IN ('generates_prompt', 'consumes_prompt', "
         "    'instruction_injection_source', 'renders_template')"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")
@@ -53,7 +53,7 @@ def main():
         "AND source_file NOT IN ("
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type = 'calls' AND symbol LIKE '%render%'"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")
@@ -66,7 +66,7 @@ def main():
         "AND source_file NOT IN ("
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type = 'calls' AND symbol LIKE '%dispatch%'"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")
@@ -80,7 +80,7 @@ def main():
         "AND source_file NOT IN ("
         "  SELECT DISTINCT source_file FROM edges "
         "  WHERE relation_type = 'checks_agent_registry'"
-        ") ORDER BY source_file"
+        ") ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")
@@ -107,7 +107,7 @@ def main():
     cur.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'calls'")
     total_callers = cur.fetchone()[0]
     cur.execute(
-        "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'records_execution_trace'"
+        "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'records_execution_trace'",
     )
     traced = cur.fetchone()[0]
     print(f"  Total modules with calls: {total_callers}")
@@ -140,7 +140,7 @@ def main():
             )
             gap = cur.fetchone()[0]
             print(
-                f"  {edge_type}: {total} files, {gap} WITHOUT guardrail ({100 * gap // max(total, 1)}% gap)"
+                f"  {edge_type}: {total} files, {gap} WITHOUT guardrail ({100 * gap // max(total, 1)}% gap)",
             )
 
     # 8. Orchestration wiring gaps
@@ -174,7 +174,7 @@ def main():
         "  WHERE e2.source_file = e1.source_file "
         "  AND e2.relation_type = 'calls' "
         "  AND e2.symbol LIKE '%' || e1.symbol || '%'"
-        ") ORDER BY e1.source_file"
+        ") ORDER BY e1.source_file",
     )
     for src, sym in cur.fetchall():
         print(f"  {src} imports {sym} but never calls it")
@@ -185,7 +185,7 @@ def main():
         "SELECT DISTINCT source_file FROM edges "
         "WHERE symbol LIKE '%standard_heal%' "
         "AND source_file NOT LIKE 'tests/%' "
-        "ORDER BY source_file"
+        "ORDER BY source_file",
     )
     for r in cur.fetchall():
         print(f"  {r[0]}")

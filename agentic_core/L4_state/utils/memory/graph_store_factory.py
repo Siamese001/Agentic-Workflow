@@ -28,27 +28,27 @@ def get_default_adg_db_path() -> Path | None:
     """
     # Try repository root relative path
     db_path = Path(_DEFAULT_ADG_DB_PATH)
-    
+
     if db_path.exists() and db_path.is_file():
         logger.info("[SQLiteGraphStore Factory] Found ADG database at: %s", db_path)
         return db_path
-    
+
     # Try absolute path from current working directory
     cwd_db_path = Path.cwd() / _DEFAULT_ADG_DB_PATH
     if cwd_db_path.exists() and cwd_db_path.is_file():
         logger.info("[SQLiteGraphStore Factory] Found ADG database at: %s", cwd_db_path)
         return cwd_db_path
-    
+
     logger.warning(
         "[SQLiteGraphStore Factory] ADG database not found at %s or %s",
         db_path,
-        cwd_db_path
+        cwd_db_path,
     )
     return None
 
 
 def create_sqlite_graph_store(
-    db_path: str | Path | None = None
+    db_path: str | Path | None = None,
 ) -> SQLiteGraphStore:
     """Create a SQLiteGraphStore instance.
     
@@ -63,24 +63,24 @@ def create_sqlite_graph_store(
     """
     if db_path is None:
         db_path = get_default_adg_db_path()
-    
+
     if db_path is None:
         raise FileNotFoundError(
             "ADG SQLite database not found. Please provide db_path or ensure "
-            "the database exists at the default location."
+            "the database exists at the default location.",
         )
-    
+
     db_path = Path(db_path)
     if not db_path.exists():
         raise FileNotFoundError(f"ADG SQLite database not found at: {db_path}")
-    
+
     logger.info("[SQLiteGraphStore Factory] Creating SQLiteGraphStore with: %s", db_path)
-    
+
     return SQLiteGraphStore(db_path=str(db_path))
 
 
 def create_sqlite_graph_store_or_none(
-    db_path: str | Path | None = None
+    db_path: str | Path | None = None,
 ) -> SQLiteGraphStore | None:
     """Create a SQLiteGraphStore instance, returning None if database not found.
     

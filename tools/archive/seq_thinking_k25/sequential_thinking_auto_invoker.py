@@ -176,7 +176,7 @@ Proceeding with thought {self.invocation_count} of structured analysis."""
             "revisesThought": None,
             "branchFromThought": None,
             "branchId": None,
-            "needsMoreThoughts": True
+            "needsMoreThoughts": True,
         }
 
     def get_invocation_prompt(self, original_prompt: str) -> str:
@@ -240,7 +240,7 @@ class CascadeChatInterceptor:
                 'modified_prompt': modified_prompt,
                 'payload': payload,
                 'tool_name': 'sequential-thinking',
-                'tool_method': 'sequentialthinking'
+                'tool_method': 'sequentialthinking',
             }
         else:
             return {
@@ -248,7 +248,7 @@ class CascadeChatInterceptor:
                 'modified_prompt': prompt,
                 'payload': None,
                 'tool_name': None,
-                'tool_method': None
+                'tool_method': None,
             }
 
     def get_invocation_instruction(self) -> str:

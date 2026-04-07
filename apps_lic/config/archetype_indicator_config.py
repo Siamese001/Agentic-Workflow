@@ -7,7 +7,6 @@ Moved from apps_lic/reasoning/ArchetypeIndicatorsAgent.py (2026-03-11, P1-C).
 
 from pydantic import BaseModel, Field
 
-
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

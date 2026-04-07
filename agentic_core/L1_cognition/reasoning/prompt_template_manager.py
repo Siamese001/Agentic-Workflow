@@ -99,7 +99,7 @@ class PromptTemplateManager:
     def __init__(
         self,
         config: RAGConfig | None = None,
-        templates_path: Path | None = None
+        templates_path: Path | None = None,
     ) -> None:
         """Initialize the prompt template manager.
 
@@ -135,7 +135,7 @@ class PromptTemplateManager:
             optional_placeholders=["sources", "item_count", "avg_relevance"],
             template_type="qa",
             target_llm="generic",
-            version="1.0"
+            version="1.0",
         )
         self.templates["qa_default"] = qa_template
 
@@ -150,7 +150,7 @@ class PromptTemplateManager:
             optional_placeholders=["query", "sources", "item_count"],
             template_type="summarization",
             target_llm="generic",
-            version="1.0"
+            version="1.0",
         )
         self.templates["summarization_default"] = summary_template
 
@@ -165,7 +165,7 @@ class PromptTemplateManager:
             optional_placeholders=["sources", "item_count"],
             template_type="explanation",
             target_llm="generic",
-            version="1.0"
+            version="1.0",
         )
         self.templates["explanation_default"] = explanation_template
 
@@ -180,7 +180,7 @@ class PromptTemplateManager:
             optional_placeholders=["sources", "item_count", "avg_relevance"],
             template_type="analysis",
             target_llm="generic",
-            version="1.0"
+            version="1.0",
         )
         self.templates["analysis_default"] = analysis_template
 
@@ -195,7 +195,7 @@ class PromptTemplateManager:
             optional_placeholders=["sources", "item_count"],
             template_type="qa",
             target_llm="code",
-            version="1.0"
+            version="1.0",
         )
         self.templates["code_qa_default"] = code_qa_template
 
@@ -219,7 +219,7 @@ class PromptTemplateManager:
                     optional_placeholders=template_data.get("optional_placeholders", []),
                     template_type=template_data.get("template_type", "qa"),
                     target_llm=template_data.get("target_llm", "generic"),
-                    version=template_data.get("version", "1.0")
+                    version=template_data.get("version", "1.0"),
                 )
 
                 self.templates[template.template_id] = template
@@ -231,7 +231,7 @@ class PromptTemplateManager:
     def get_template(
         self,
         template_id: str | None = None,
-        query_type: str | None = None
+        query_type: str | None = None,
     ) -> PromptTemplate:
         """Get a prompt template.
 
@@ -266,7 +266,7 @@ class PromptTemplateManager:
         query_type: str | None = None,
         context: RAGContext | None = None,
         query: RAGQuery | None = None,
-        additional_data: dict[str, Any] | None = None
+        additional_data: dict[str, Any] | None = None,
     ) -> tuple[str, str]:
         """Render a template with context and query.
 
@@ -297,7 +297,7 @@ class PromptTemplateManager:
         _emit_records_telemetry_event(
             query.query_id,
             "prompt_template_manager",
-            f"template_rendered_{template.template_id}_{template.template_type}"
+            f"template_rendered_{template.template_id}_{template.template_type}",
         )
 
         return system_prompt, user_prompt
@@ -317,7 +317,7 @@ class PromptTemplateManager:
         _emit_records_telemetry_event(
             template.template_id,
             "prompt_template_manager",
-            f"template_added_{template.template_id}"
+            f"template_added_{template.template_id}",
         )
 
     def remove_template(self, template_id: str) -> bool:
@@ -328,7 +328,7 @@ class PromptTemplateManager:
             _emit_records_telemetry_event(
                 template_id,
                 "prompt_template_manager",
-                f"template_removed_{template_id}"
+                f"template_removed_{template_id}",
             )
             return True
         return False
@@ -394,7 +394,7 @@ class PromptTemplateManager:
                 "optional_placeholders": template.optional_placeholders,
                 "template_type": template.template_type,
                 "target_llm": template.target_llm,
-                "version": template.version
+                "version": template.version,
             }
 
             with open(template_file, 'w', encoding='utf-8') as f:
@@ -412,7 +412,7 @@ class PromptTemplateManager:
             "total_templates": len(self.templates),
             "templates_by_type": {},
             "most_used": None,
-            "recently_used": None
+            "recently_used": None,
         }
 
         # Count by type
@@ -425,7 +425,7 @@ class PromptTemplateManager:
             most_used = max(self.templates.values(), key=lambda t: t.usage_count)
             stats["most_used"] = {
                 "template_id": most_used.template_id,
-                "usage_count": most_used.usage_count
+                "usage_count": most_used.usage_count,
             }
 
         # Find recently used
@@ -434,7 +434,7 @@ class PromptTemplateManager:
             most_recent = max(recent_templates, key=lambda t: t.last_used)
             stats["recently_used"] = {
                 "template_id": most_recent.template_id,
-                "last_used": most_recent.last_used.isoformat()
+                "last_used": most_recent.last_used.isoformat(),
             }
 
         return stats
@@ -443,7 +443,7 @@ class PromptTemplateManager:
 # Factory function
 def create_prompt_template_manager(
     config: RAGConfig | None = None,
-    templates_path: Path | None = None
+    templates_path: Path | None = None,
 ) -> PromptTemplateManager:
     """Create a prompt template manager."""
     return PromptTemplateManager(config, templates_path)

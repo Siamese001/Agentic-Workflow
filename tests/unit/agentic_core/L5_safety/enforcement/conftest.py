@@ -2,6 +2,7 @@
 import sys
 from pathlib import Path
 
+
 def _find_repo_root():
     """Find repo root by looking for pytest.ini or .git."""
     current = Path(__file__).resolve()

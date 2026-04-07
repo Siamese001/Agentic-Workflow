@@ -93,7 +93,6 @@ from typing import Any
 from agentic_core.config.hygiene_registry_config import CORE_HYGIENE_AGENTS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -238,7 +237,7 @@ class HealingStrategy:
         _emit_agent_executes_agent(str(uuid.uuid4()), "HealingStrategy", "HealingStrategy.should_run_tier")
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"HealingStrategy.should_run_tier:{tier_name}"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"HealingStrategy.should_run_tier:{tier_name}",
         )
         if self.target_tier is None:
             return True
@@ -381,7 +380,7 @@ class HealingStrategy:
             return None
 
     def execute_agent(
-        self, agent: Any, agent_name: str, dry_run: bool = True, execute: bool = False, **kwargs: Any
+        self, agent: Any, agent_name: str, dry_run: bool = True, execute: bool = False, **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute a single agent and return results.

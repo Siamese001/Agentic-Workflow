@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # ADG Repair Discipline — Constitutional Rule §ADG-1
 
 ## HARD GATES — NEVER BYPASS
@@ -31,14 +34,32 @@ When a symbol is undefined in N files:
 - **FORBIDDEN**: patch each of the N call sites
 - **REQUIRED**: fix the single root definition node identified by ADG dependency chain
 
-### §ADG-1.4 No Text-Search Debugging
+### §ADG-1.4 No Text-Search Debugging — ADG MCP MANDATORY
 
 **FORBIDDEN** patterns:
-- `grep` / `find` for missing constants or imports as the primary triage method
+- `grep_search` / `find_by_name` for dependencies, imports, call-sites, or class/def discovery
 - Hunting literal strings to satisfy source-text assertion tests without ADG justification
 - Patching test files to fix `import pytest` or similar without tracing the dependency chain
+- Using text search as fallback when ADG MCP returns an error
 
-**REQUIRED**: Use ADG semantic graph edges to trace from failing test → import edge → root module.
+**REQUIRED**: Use ADG MCP tools exclusively for all dependency analysis:
+
+| Query Need | Required MCP Tool |
+|------------|-------------------|
+| Trace import chain | `mcp0_adg_edge_fanout` with `relation_type=imports` |
+| Find who calls a function | `mcp0_adg_edge_fanin` |
+| Locate symbol definition | `mcp0_adg_node` |
+| List files in a layer | `mcp0_adg_nodes_by_layer` |
+| Find nodes in a file | `mcp0_adg_nodes_by_file` |
+
+**If ADG MCP is broken:** STOP. Run `/mcp-failure-rca`. Fix the MCP. Do NOT fall back to grep.
+
+The correct escalation when `mcp0_adg_*` fails:
+```
+python ops_scripts/ci/mcp_health_monitor.py --probe
+Remove-Item -Recurse -Force tools/adg/core/__pycache__
+# Restart ADG MCP server in Windsurf IDE
+```
 
 ---
 
@@ -136,3 +157,17 @@ Every edit must pass this check before being made:
 | Scoped convergence check (§7.2) | `pytest <all_cluster_test_files>` |
 | Blast-radius verification (§7.3 cond. 2) | `pytest <adg_reachable_dependents>` |
 | Full suite (§7.3 cond. 3) | `pytest tests/unit` — ONLY after §7.2 and blast-radius are green |
+
+---
+
+## AUDIT TRAIL DISCIPLINE
+
+Every repair iteration MUST record:
+- **Timestamp**: ISO8601 timestamp of each edit
+- **Edit location**: File path and line numbers changed
+- **Rationale**: Which cluster/repair class this addresses
+- **Test verification**: Scoped test run results
+- **ADG snapshot**: Used for dependency tracing
+
+Audit trail MUST be included in evidence files under `docs/reports/plans/`.
+Missing audit trail = gate failure.

@@ -58,39 +58,25 @@ _emit_applies_guardrail("p0", "InfrastructureUpgradesOrchestrator", "p0_governan
 _emit_reads_policy_state("p0", "InfrastructureUpgradesOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "InfrastructureUpgradesOrchestrator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -211,7 +197,7 @@ class InfrastructureUpgradesOrchestrator:
     async def _setup_event_subscriptions(self) -> None:
         """Setup event subscriptions for component coordination."""
         await self.infrastructure.event_bus.subscribe(
-            "events.content_generated", self._handle_content_generated
+            "events.content_generated", self._handle_content_generated,
         )
         await self.infrastructure.event_bus.subscribe("events.cache_miss", self._handle_cache_miss)
         await self.infrastructure.event_bus.subscribe("events.tone_violation", self._handle_tone_violation)
@@ -369,7 +355,7 @@ class InfrastructureUpgradesOrchestrator:
         )
         try:
             result = await self.infrastructure.execute_with_infrastructure(
-                task_type, prompt, complexity_score=5, trace_id=trace_id
+                task_type, prompt, complexity_score=5, trace_id=trace_id,
             )
             content = result["result"]
             tone_violations = []
@@ -395,7 +381,7 @@ class InfrastructureUpgradesOrchestrator:
             if use_cache:
                 cache_key = f"{task_type.value}:{prompt}"
                 self.global_cache.put(
-                    cache_key, result, text_for_embedding=prompt, source_engine="InfrastructureUpgrades"
+                    cache_key, result, text_for_embedding=prompt, source_engine="InfrastructureUpgrades",
                 )
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_complete",
@@ -462,7 +448,7 @@ class InfrastructureUpgradesOrchestrator:
             "fact_ledger": self.fact_ledger.get_stats() if self.fact_ledger else {},
             "global_cache": self.global_cache.get_stats() if self.global_cache else {},
             "tone_enforcer": {
-                "profiles_loaded": len(self.tone_enforcer.profiles) if self.tone_enforcer else 0
+                "profiles_loaded": len(self.tone_enforcer.profiles) if self.tone_enforcer else 0,
             },
         }
 
@@ -512,7 +498,7 @@ async def generate_with_consistency(
     """
     orchestrator = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
-        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id
+        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id,
     )
 
 

@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"lifecycle_policy_applied exported={emitter_function} (>=1), "
             f"reads_runtime_state sources={read_edges} (>=1), "
             f"writes_to sources={write_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -147,7 +147,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"EXPIRED exported={expired_status} (>=1), "
             f"ACTIVE exported={active_status} (>=1), "
             f"lifecycle_policy_applied exported={emitter_function} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -189,7 +189,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"DELETED exported={deleted_status} (>=1), "
             f"state_archived exported={archive_emitter} (>=1), "
             f"state_deleted exported={delete_emitter} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -231,7 +231,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"lifecycle_transition_recorded exported={transition_emitter} (>=1), "
             f"writes_through sources={write_through_edges} (>=1), "
             f"snapshots_state sources={snapshot_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -273,7 +273,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"PENDING_DELETION exported={pending_deletion_status} (>=1), "
             f"state_deleted exported={delete_emitter} (>=1), "
             f"writes_to sources={write_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -335,7 +335,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L4_persistence/lifecycle%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

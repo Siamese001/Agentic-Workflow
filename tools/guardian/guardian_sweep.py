@@ -108,7 +108,7 @@ class GuardianSweepFixer:
                     'evidence': evidence,
                     'disposition': disposition,
                     'disposition_source': disposition_source,
-                    'has_guardian': '# guardian:' in disposition_source if disposition_source else False
+                    'has_guardian': '# guardian:' in disposition_source if disposition_source else False,
                 })
 
         finally:
@@ -162,7 +162,7 @@ class GuardianSweepFixer:
 
                         # Phase 1: Update disposition in ADG
                         self._update_violation_disposition(
-                            file_path, line_no, 'approved', f'guardian: {guardian_msg}'
+                            file_path, line_no, 'approved', f'guardian: {guardian_msg}',
                         )
 
                         if self.annotations_added % 500 == 0:
@@ -179,7 +179,7 @@ class GuardianSweepFixer:
             'annotations_added': self.annotations_added,
             'skipped_guarded': self.skipped_guarded,
             'errors': self.errors,
-            'remaining_unannotated': len(self.violations) - self.annotations_added - self.skipped_guarded
+            'remaining_unannotated': len(self.violations) - self.annotations_added - self.skipped_guarded,
         }
 
     def _update_violation_disposition(self, file_path: Path, line_no: int, disposition: str, source: str):
@@ -315,7 +315,7 @@ class GuardianSweepFixer:
             'severity_distribution': severity_counts,
             'wave_status': (
                 'COMPLETED' if (self.annotations_added + self.skipped_guarded) == len(self.violations) else 'PARTIAL'
-            )
+            ),
         }
 
         report_file = PROJECT_ROOT / "tools" / "wave30_guardian_sweep_report.json"
@@ -328,7 +328,7 @@ class GuardianSweepFixer:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Wave 3.0: Guardian Annotation Sweep'
+        description='Wave 3.0: Guardian Annotation Sweep',
     )
     parser.add_argument('--wave30', action='store_true',
                         help='Apply guardian annotation sweep to all violations')

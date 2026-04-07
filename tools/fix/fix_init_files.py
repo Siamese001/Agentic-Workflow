@@ -27,7 +27,7 @@ for filepath in files_to_fix:
     # Create new content with correct module path
     new_content = template.replace(
         'agentic_core.L0_routing.scripts.__init__',
-        module_path
+        module_path,
     )
 
     with open(filepath, 'w', encoding='utf-8') as f:

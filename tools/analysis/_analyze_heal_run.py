@@ -268,7 +268,7 @@ print()
 print("=" * 72)
 total_evaluated = len(gates_bool)
 print(
-    f"  VERDICT: {passed}/{total_evaluated} evaluated gates passed  |  {failed} FAIL  |  G6={'OPEN: ' + str(open_territories) + ' territories' if open_territories else 'CLEAN'}  |  G9=N/A (first run)"
+    f"  VERDICT: {passed}/{total_evaluated} evaluated gates passed  |  {failed} FAIL  |  G6={'OPEN: ' + str(open_territories) + ' territories' if open_territories else 'CLEAN'}  |  G9=N/A (first run)",
 )
 print()
 print("  STRUCTURAL BACKLOG (manual-only, cannot auto-fix):")

@@ -70,39 +70,25 @@ _emit_applies_guardrail("p0", "authenticity_patterns_util", "p0_governance")
 _emit_reads_policy_state("p0", "authenticity_patterns_util", "policy_binding")
 _emit_snapshots_state("p0", "authenticity_patterns_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -408,7 +394,7 @@ class ThematicAnalysisNode:
             gics_industry=gics_industry,
         )
         logger.info(
-            f"Thematic analysis complete: {primary_theme} with {len(secondary_themes)} secondary themes"
+            f"Thematic analysis complete: {primary_theme} with {len(secondary_themes)} secondary themes",
         )
         return output
 
@@ -458,7 +444,7 @@ class ThematicAnalysisNode:
         )
 
     def _gather_competitive_intelligence(
-        self, job_description: str, company_name: str
+        self, job_description: str, company_name: str,
     ) -> CompetitiveIntelligence:
         """Gather competitive intelligence from peer job descriptions."""
         return CompetitiveIntelligence(
@@ -518,7 +504,7 @@ class TwoPhaseGenerationNode:
         }
 
     def generate_unify_bullets_phase_a(
-        self, thematic_output: ThematicAnalysisOutput, role_extraction: dict[str, Any]
+        self, thematic_output: ThematicAnalysisOutput, role_extraction: dict[str, Any],
     ) -> BulletGenerationOutput:
         """
         Phase A: Generate Unify Consulting bullets (7 bullets with 3V-3T-1S provenance)
@@ -553,7 +539,7 @@ class TwoPhaseGenerationNode:
         return output
 
     def synthesize_unify_overview_phase_b(
-        self, bullet_output: BulletGenerationOutput, thematic_output: ThematicAnalysisOutput
+        self, bullet_output: BulletGenerationOutput, thematic_output: ThematicAnalysisOutput,
     ) -> OverviewSynthesisOutput:
         """
         Phase B: Synthesize Unify Consulting overview from generated bullets
@@ -609,7 +595,7 @@ class TwoPhaseGenerationNode:
         return 0.85
 
     def _synthesize_overview(
-        self, bullets: list[str], themes: list[str], differentiators: list[str], target_words: int
+        self, bullets: list[str], themes: list[str], differentiators: list[str], target_words: int,
     ) -> str:
         """Synthesize overview from bullets without repeating achievements."""
         return "Led strategic technology transformation initiatives driving operational excellence and innovation across enterprise platforms"
@@ -704,7 +690,7 @@ class WordCountEnforcementEngine:
 
     # guardian: allow-magic-config
     def enforce_with_regeneration(
-        self, content: str, content_type: str, max_attempts: int = 3
+        self, content: str, content_type: str, max_attempts: int = 3,
     ) -> tuple[str, ValidationResult]:
         """
         Enforce word count constraints with regeneration.
@@ -720,7 +706,7 @@ class WordCountEnforcementEngine:
                 return (current_content, last_validation)
             logger.warning(f"Attempt {attempt + 1}: {last_validation.violation_type} - regenerating")
             current_content = self.regeneration_engine.regenerate(
-                current_content, last_validation.violation_type, last_validation
+                current_content, last_validation.violation_type, last_validation,
             )
             last_validation = self.validate_content(current_content, content_type)
         error_msg = f"Content failed validation after {max_attempts} attempts. Final count: {last_validation.word_count}"
@@ -846,7 +832,7 @@ class ValidationGate:
         return signature
 
     def _log_execution(
-        self, execution_data: dict[str, Any], validation_result: dict[str, Any], signature: str
+        self, execution_data: dict[str, Any], validation_result: dict[str, Any], signature: str,
     ) -> None:
         """Log execution for audit trail."""
         log_entry = {
@@ -874,7 +860,7 @@ def example_two_phase_generation():
     overview_output = two_phase_node.synthesize_unify_overview_phase_b(bullet_output, thematic_output)
     print(f"Overview: {overview_output.overview}")
     final_overview, validation = word_enforcer.enforce_with_regeneration(
-        overview_output.overview, "K.5B_unify_overview"
+        overview_output.overview, "K.5B_unify_overview",
     )
     print(f"Final overview ({validation.word_count} words): {final_overview}")
 

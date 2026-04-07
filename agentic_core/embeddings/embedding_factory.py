@@ -65,39 +65,25 @@ _emit_applies_guardrail("p0", "embedding_factory", "p0_governance")
 _emit_reads_policy_state("p0", "embedding_factory", "policy_binding")
 _emit_snapshots_state("p0", "embedding_factory", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -279,7 +265,6 @@ def create_embedding_client(
 
     # Import SDKs only when needed (lazy import for determinism)
     if provider == "openai":
-        from openai import AsyncOpenAI
         from data.sdks_mcps.client_wrappers import create_openai_client
 
         raw_client = create_openai_client()
@@ -313,12 +298,12 @@ def create_embedding_client(
 
                 _trace_id = str(_uuid.uuid4())
                 _emit_records_execution_trace(
-                    _trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbeddingClient.get_embedding"
+                    _trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbeddingClient.get_embedding",
                 )
 
                 # W11: Use deterministic cache key
                 cache_key = create_deterministic_cache_key(
-                    guarded_text.redacted_text, self.embedder_identity
+                    guarded_text.redacted_text, self.embedder_identity,
                 )
                 if cache_key in self._cache:
                     return self._cache[cache_key]
@@ -345,7 +330,7 @@ def create_embedding_client(
 
                 for i, guarded_text in enumerate(guarded_texts):
                     cache_key = create_deterministic_cache_key(
-                        guarded_text.redacted_text, self.embedder_identity
+                        guarded_text.redacted_text, self.embedder_identity,
                     )
                     if cache_key in self._cache:
                         results[i] = self._cache[cache_key]
@@ -372,7 +357,7 @@ def create_embedding_client(
                     original_index, guarded_text = texts_to_embed[i]
                     # W11: Use deterministic cache key
                     cache_key = create_deterministic_cache_key(
-                        guarded_text.redacted_text, self.embedder_identity
+                        guarded_text.redacted_text, self.embedder_identity,
                     )
                     self._cache[cache_key] = embedding
                     results[original_index] = embedding
@@ -435,7 +420,7 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
     except ImportError as e:
         raise ImportError(
             "sentence-transformers is required for BGE-M3 embeddings. "
-            "Install with: pip install sentence-transformers"
+            "Install with: pip install sentence-transformers",
         ) from e
 
     # Load model
@@ -471,12 +456,12 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
 
             _trace_id = str(_uuid.uuid4())
             _emit_records_execution_trace(
-                _trace_id, LayerSegment.L3_ORCHESTRATION, "BGEM3EmbeddingClient.get_embedding"
+                _trace_id, LayerSegment.L3_ORCHESTRATION, "BGEM3EmbeddingClient.get_embedding",
             )
 
             # Use deterministic cache key
             cache_key = create_deterministic_cache_key(
-                guarded_text.redacted_text, self.embedder_identity
+                guarded_text.redacted_text, self.embedder_identity,
             )
             if cache_key in self._cache:
                 return self._cache[cache_key]
@@ -503,7 +488,7 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
 
             for i, guarded_text in enumerate(guarded_texts):
                 cache_key = create_deterministic_cache_key(
-                    guarded_text.redacted_text, self.embedder_identity
+                    guarded_text.redacted_text, self.embedder_identity,
                 )
                 if cache_key in self._cache:
                     results[i] = self._cache[cache_key]
@@ -570,7 +555,7 @@ def guard_embedding_instantiation(module_name: str, class_name: str) -> None:
         raise EmbeddingSovereigntyViolationError(
             f"EMBEDDING_SOVEREIGNTY_VIOLATION: {module_name}.{class_name} "
             f"attempted to instantiate embedding client outside factory. "
-            f"Use agentic_core.embeddings.embedding_factory.create_embedding_client() instead."
+            f"Use agentic_core.embeddings.embedding_factory.create_embedding_client() instead.",
         )
 
 

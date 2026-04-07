@@ -44,8 +44,12 @@ class _JITContextVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract JIT context edges from call expressions."""
+        from agentic_core.adg.contracts.schema_util import (
+            FREEZE_METHOD_NAMES,
+            JIT_CONTEXT_CLASSES,
+            canonical_name,
+        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.contracts.schema_util import FREEZE_METHOD_NAMES, JIT_CONTEXT_CLASSES, canonical_name
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -64,7 +68,7 @@ class _JITContextVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in FREEZE_METHOD_NAMES:
             if "unfreeze" in tail:
@@ -82,7 +86,7 @@ class _JITContextVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -116,12 +120,12 @@ class _BoundaryVerifierVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract boundary verification edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             CAPABILITY_CHOKEPOINT_CLASSES,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -136,7 +140,7 @@ class _BoundaryVerifierVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in CAPABILITY_CHOKEPOINT_CLASSES or base in CAPABILITY_CHOKEPOINT_CLASSES:
             self.edges.append(
@@ -148,7 +152,7 @@ class _BoundaryVerifierVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -184,13 +188,13 @@ class _DeterminismControlVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract determinism control edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             DETERMINISM_PATCH_METHODS,
             REPLAY_GUARD_CLASSES,
             SEMANTIC_CLOCK_CLASSES,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -205,7 +209,7 @@ class _DeterminismControlVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in REPLAY_GUARD_CLASSES or base in REPLAY_GUARD_CLASSES:
             self.edges.append(
@@ -217,7 +221,7 @@ class _DeterminismControlVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in DETERMINISM_PATCH_METHODS:
             if "digest" in tail or tail in ("stamp_decision", "emit_routing_digest"):
@@ -235,7 +239,7 @@ class _DeterminismControlVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -270,12 +274,12 @@ class _IOInterceptionVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract I/O interception edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             IO_INTERCEPT_CLASSES,
             NETWORK_TRANSCRIPT_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -290,7 +294,7 @@ class _IOInterceptionVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in NETWORK_TRANSCRIPT_SYMBOLS:
             if "hard_fail" in tail:
@@ -306,7 +310,7 @@ class _IOInterceptionVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 

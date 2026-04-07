@@ -159,7 +159,7 @@ class ContextItem:
                 f"Type: {self.item_type}",
                 f"Title: {self.title}",
                 f"Content: {self.content}",
-                f"Relevance: {self.relevance_score:.2f}"
+                f"Relevance: {self.relevance_score:.2f}",
             ]
             if self.source_file:
                 parts.append(f"Source: {self.source_file}")
@@ -268,7 +268,7 @@ class PromptTemplate:
         self,
         context: RAGContext,
         query: RAGQuery,
-        additional_data: dict[str, Any] | None = None
+        additional_data: dict[str, Any] | None = None,
     ) -> tuple[str, str]:
         """Render the template with context and query."""
         # Prepare placeholder values
@@ -278,7 +278,7 @@ class PromptTemplate:
             "query_type": query.query_type,
             "sources": "\n".join(context.get_sources()),
             "item_count": str(context.total_items),
-            "avg_relevance": f"{context.avg_relevance_score:.2f}"
+            "avg_relevance": f"{context.avg_relevance_score:.2f}",
         }
 
         # Add additional data
@@ -395,10 +395,10 @@ class RAGResponse:
             "quality_scores": {
                 "overall": self.overall_quality_score,
                 "context": self.context_quality_score,
-                "generation": self.generation_quality_score
+                "generation": self.generation_quality_score,
             },
             "has_errors": len(self.errors) > 0,
-            "has_warnings": len(self.warnings) > 0
+            "has_warnings": len(self.warnings) > 0,
         }
 
 

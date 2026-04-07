@@ -301,7 +301,7 @@ def grep_file(path: Path, pattern: str) -> list[tuple[int, str]]:
 
 
 def find_call_sites_ast(
-    files: list[Path], func_names: set[str], attr_names: set[str] | None = None
+    files: list[Path], func_names: set[str], attr_names: set[str] | None = None,
 ) -> list[dict]:
     """Find call sites of functions/methods by AST traversal."""
     results = []
@@ -327,7 +327,7 @@ def find_call_sites_ast(
                         "file": rel(path),
                         "line": node.lineno,
                         "call": name,
-                    }
+                    },
                 )
     return results
 
@@ -349,7 +349,7 @@ def find_name_usages_ast(files: list[Path], names: set[str]) -> list[dict]:
                             "line": node.col_offset,
                             "lineno": getattr(node, "lineno", 0),
                             "name": n,
-                        }
+                        },
                     )
     return results
 
@@ -413,7 +413,7 @@ def main() -> None:
     # ─── S2: EmbeddingFactory call sites ──────────────────────────────────────
     print("=== S2: EmbeddingFactory / create_embedding_client CALL SITES (AST) ===")
     emb_calls = find_call_sites_ast(
-        files, {"create_embedding_client", "get_embedding_client", "register_embedding_client"}
+        files, {"create_embedding_client", "get_embedding_client", "register_embedding_client"},
     )
     print(f"CALL_COUNT: {len(emb_calls)}")
     print(format_hits(emb_calls, ["file", "line", "call"]))
@@ -430,7 +430,7 @@ def main() -> None:
     # ─── S3: UniversalWriteGateway call sites ─────────────────────────────────
     print("=== S3: UniversalWriteGateway CALL SITES (AST) ===")
     uwg_calls = find_call_sites_ast(
-        files, {"write", "execute_write", "get_instance"}, attr_names={"write", "execute_write"}
+        files, {"write", "execute_write", "get_instance"}, attr_names={"write", "execute_write"},
     )
     uwg_refs = []
     for f in files:
@@ -498,7 +498,7 @@ def main() -> None:
             hits = grep_file(f, pat)
             for ln, text in hits:
                 sdk_violations.append(
-                    {"file": rel(f), "line": ln, "pattern": pat[:40], "text": text.strip()[:80]}
+                    {"file": rel(f), "line": ln, "pattern": pat[:40], "text": text.strip()[:80]},
                 )
     print(f"SDK_IMPORT_VIOLATIONS (outside gateway): {len(sdk_violations)}")
     print(format_hits(sdk_violations[:20], ["file", "line", "text"]))
@@ -609,7 +609,7 @@ def main() -> None:
     apps_writes = []
     for f in apps_files:
         hits = grep_file(
-            f, r"L4|L5|L0|SovereignLLMGateway|UniversalWriteGateway|route_generation|execute_write"
+            f, r"L4|L5|L0|SovereignLLMGateway|UniversalWriteGateway|route_generation|execute_write",
         )
         for ln, text in hits:
             apps_writes.append({"file": rel(f), "line": ln, "text": text.strip()[:80]})

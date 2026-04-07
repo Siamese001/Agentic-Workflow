@@ -107,7 +107,7 @@ def enforce_no_unverified_writes(monkeypatch: pytest.MonkeyPatch) -> Generator[N
         if is_write and not _is_temp_path(str_path) and not is_path_validated(str_path):
             raise AssertionError(
                 f"Unverified write detected: open({str_path!r}, {mode!r})\n"
-                f"Call mark_path_validated(path) after validation before writing."
+                f"Call mark_path_validated(path) after validation before writing.",
             )
         return _builtin_open(file, mode, *args, **kwargs)  # type: ignore[call-overload]
 

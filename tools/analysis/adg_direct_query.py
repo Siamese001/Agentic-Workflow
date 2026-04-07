@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Query ADG SQLite database directly for dead code analysis."""
 
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict
 
 
 def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
@@ -19,7 +19,7 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
         'unused_imports': [],
         'unreachable_code': [],
         'duplicate_methods': [],
-        'orphans': []
+        'orphans': [],
     }
 
     # Query for nodes in target directory
@@ -59,7 +59,7 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
                 results['dead_imports'].append({
                     'node_id': node_id,
                     'file_path': resolved_path,
-                    'name': adg_name
+                    'name': adg_name,
                 })
 
     # Query for unused imports
@@ -88,7 +88,7 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
                 results['unused_imports'].append({
                     'node_id': node_id,
                     'file_path': resolved_path,
-                    'name': adg_name
+                    'name': adg_name,
                 })
 
     # Query for unreachable code
@@ -117,7 +117,7 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
                 results['unreachable_code'].append({
                     'node_id': node_id,
                     'file_path': resolved_path,
-                    'name': adg_name
+                    'name': adg_name,
                 })
 
     # Query for duplicate methods
@@ -146,7 +146,7 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
                 results['duplicate_methods'].append({
                     'node_id': node_id,
                     'file_path': resolved_path,
-                    'name': adg_name
+                    'name': adg_name,
                 })
 
     conn.close()

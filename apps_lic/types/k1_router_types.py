@@ -57,39 +57,25 @@ _emit_applies_guardrail("p0", "k1_router_types", "p0_governance")
 _emit_reads_policy_state("p0", "k1_router_types", "policy_binding")
 _emit_snapshots_state("p0", "k1_router_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -224,7 +210,7 @@ class K1Router:
             },
         )
         self.cxo_precedence_tokens: list[str] = self.config.get(
-            "cxo_precedence_tokens", ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"]
+            "cxo_precedence_tokens", ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"],
         )
         self.route_configs: dict[str, Any] = self.config.get("route_configs", {})
 
@@ -302,7 +288,7 @@ class K1Router:
         archetype_result = self._classify_archetype(contact_title, contact_about)
         entrance_gates_passed.append("GATE_4_ARCHETYPE_CLASSIFIED")
         logger.info(
-            f"Gate 4: Archetype = {archetype_result.archetype} (confidence={archetype_result.confidence:.2f}, CXO_precedence={archetype_result.cxo_precedence_triggered})"
+            f"Gate 4: Archetype = {archetype_result.archetype} (confidence={archetype_result.confidence:.2f}, CXO_precedence={archetype_result.cxo_precedence_triggered})",
         )
         route_result = self._select_route(
             lifecycle=lifecycle,
@@ -420,7 +406,7 @@ class K1Router:
         )
 
     def _select_route(
-        self, lifecycle: str, premium_available: bool, route_override: str | None, archetype: str
+        self, lifecycle: str, premium_available: bool, route_override: str | None, archetype: str,
     ) -> RouteSelectionResult:
         """Select message route with premium routing validation.
 
@@ -443,7 +429,7 @@ class K1Router:
                     blocking_reason="INMAIL route selected but Premium InMail not available. Operator response to Gate 3A conflicts with route selection.",
                 )
             return RouteSelectionResult(
-                route=selected_route, premium_available=premium_available, premium_routing_mismatch=False
+                route=selected_route, premium_available=premium_available, premium_routing_mismatch=False,
             )
         if lifecycle == "EXISTING":
             selected_route = "FOLLOW_UP"
@@ -452,5 +438,5 @@ class K1Router:
         else:
             selected_route = "CONNECTION_REQ"
         return RouteSelectionResult(
-            route=selected_route, premium_available=premium_available, premium_routing_mismatch=False
+            route=selected_route, premium_available=premium_available, premium_routing_mismatch=False,
         )

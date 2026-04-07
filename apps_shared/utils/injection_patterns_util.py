@@ -35,7 +35,7 @@ class InjectionPatterns:
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
     def process(
-        self, payload: str | int | float | bool | list | dict, context: dict | None = None
+        self, payload: str | int | float | bool | list | dict, context: dict | None = None,
     ) -> ExecutionResult:
         """
         Execute the primary logic for this module.
@@ -59,7 +59,7 @@ class InjectionPatterns:
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(
-        self, data: str | int | float | bool | list | dict, context: dict | None
+        self, data: str | int | float | bool | list | dict, context: dict | None,
     ) -> str | int | float | bool | list | dict:
         """Internal execution executor to be implemented or extended."""
         return data

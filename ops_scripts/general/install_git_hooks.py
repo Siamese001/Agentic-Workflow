@@ -12,7 +12,6 @@ import stat
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 HOOKS_DIR = REPO_ROOT / '.git' / 'hooks'
 PRE_COMMIT_FILE = HOOKS_DIR / 'pre-commit'

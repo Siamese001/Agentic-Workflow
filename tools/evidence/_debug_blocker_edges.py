@@ -21,7 +21,7 @@ for module in MODULES:
     # Check by source_file
     rows = c.execute(
         "SELECT relation_type, edge_kind, symbol, line_no FROM edges WHERE source_file = ? ORDER BY relation_type",
-        (module,)
+        (module,),
     ).fetchall()
     print(f"  Edges by source_file: {len(rows)}")
     for r in rows[:30]:
@@ -35,7 +35,7 @@ for module in MODULES:
         "SELECT e.relation_type, e.source_file, e.symbol FROM edges e "
         "JOIN nodes n ON e.src_id = n.id "
         "WHERE n.resolved_path LIKE ? ORDER BY e.relation_type",
-        (f"%{module}%",)
+        (f"%{module}%",),
     ).fetchall()
     print(f"\n  Edges by resolved_path match: {len(rows2)}")
     # Check if emits_determinism_digest or records_execution_trace present

@@ -23,7 +23,7 @@ MCP_SERVERS = {
     "terminal": "tools/mcp/terminal_server.py",
     "pytest": "tools/mcp/pytest_server.py",
     "enhanced_http": "tools/mcp/enhanced_http_server.py",
-    "vector_db": "tools/mcp/vector_db_server.py"
+    "vector_db": "tools/mcp/vector_db_server.py",
 }
 
 class MCPSmokeTester:
@@ -53,7 +53,7 @@ class MCPSmokeTester:
             "tests": {},
             "start_time": time.time(),
             "success": True,
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -146,7 +146,7 @@ class MCPSmokeTester:
                 "terminal": ["subprocess"],
                 "pytest": ["xml.etree.ElementTree"],
                 "enhanced_http": ["aiohttp", "requests"],
-                "vector_db": ["chromadb", "sentence_transformers"]
+                "vector_db": ["chromadb", "sentence_transformers"],
             }
 
             key_imports.extend(server_specific.get(server_path.split('/')[-1].replace('_server.py', ''), []))
@@ -177,7 +177,7 @@ class MCPSmokeTester:
                 [sys.executable, "-m", "py_compile", str(full_path)],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             if process.returncode == 0:
@@ -218,7 +218,7 @@ class MCPSmokeTester:
                 ["python", "-c", "import subprocess; print(subprocess.run(['echo', 'test'], capture_output=True, text=True).stdout)"],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
             )
 
             if process.returncode == 0 and "test" in process.stdout:
@@ -241,7 +241,7 @@ class MCPSmokeTester:
                 ["python", "-m", "pytest", "--version"],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             if process.returncode == 0:
@@ -360,7 +360,7 @@ class MCPSmokeTester:
             "timestamp": time.time(),
             "duration": time.time() - self.start_time,
             "repository": str(REPO_ROOT),
-            "results": self.test_results
+            "results": self.test_results,
         }
 
         report_file = REPO_ROOT / "docs" / "reports" / "mcp_smoke_test_report.json"

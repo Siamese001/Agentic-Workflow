@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -199,12 +198,12 @@ class ViolationEventStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ViolationEventStore.store_violation_event"
+            _trace_id, LayerSegment.L4_STATE, "ViolationEventStore.store_violation_event",
         )
 
         if not isinstance(event, ViolationEvent):
             raise TypeError(
-                f"ViolationEventStore.store_violation_event: expected ViolationEvent, got {type(event).__name__}"
+                f"ViolationEventStore.store_violation_event: expected ViolationEvent, got {type(event).__name__}",
             )
         self._events[event.event_hash] = event
         return event.event_hash
@@ -231,7 +230,7 @@ class ViolationEventStore:
         """
         if window_ticks < 0:
             raise ValueError(
-                f"ViolationEventStore.fetch_window: window_ticks must be >= 0, got {window_ticks}"
+                f"ViolationEventStore.fetch_window: window_ticks must be >= 0, got {window_ticks}",
             )
         low = before_tick - window_ticks
         window = [e for e in self._events.values() if low <= e.commit_tick < before_tick]

@@ -328,7 +328,7 @@ def discover_artifacts(git_root: Path) -> tuple[DiscoveredArtifact, ...]:
                     bucket=bucket,
                     disposition=disposition,
                     reason=f"{reason}; {disposition_reason}",
-                )
+                ),
             )
 
     artifacts.sort(key=lambda a: a.absolute_path)
@@ -347,7 +347,7 @@ def discover_artifacts(git_root: Path) -> tuple[DiscoveredArtifact, ...]:
                 item,
                 disposition="ignore",
                 reason=f"duplicate content hash; canonical={canonical}",
-            )
+            ),
         )
 
     return tuple(deduped)
@@ -371,7 +371,7 @@ def build_accepted_manifest(discovered: tuple[DiscoveredArtifact, ...]) -> tuple
                 disposition=item.disposition,
                 bucket=item.bucket,
                 artifact_kind=item.artifact_type_guess,
-            )
+            ),
         )
 
     accepted.sort(key=lambda x: (x.source_repo, x.source_path, x.content_hash))
@@ -416,7 +416,7 @@ def build_embedding_import_records(accepted: tuple[AcceptedArtifact, ...]) -> tu
                 namespace=namespace,
                 target_dimension=dimension,
                 text=normalized.decode("utf-8"),
-            )
+            ),
         )
 
     records.sort(key=lambda r: (r.namespace, r.content_hash, r.source_path))
@@ -432,7 +432,7 @@ def _validate_embedding_dimensions(records: list[EmbeddingImportRecord] | tuple[
     for namespace, dims in sorted(by_namespace.items()):
         if len(dims) > 1:
             raise RuntimeError(
-                f"HARD FAIL: vector dimension mismatch in namespace {namespace}: {sorted(dims)}"
+                f"HARD FAIL: vector dimension mismatch in namespace {namespace}: {sorted(dims)}",
             )
 
 
@@ -469,7 +469,7 @@ def run_import(git_root: Path) -> ImportRunResult:
     discovery_digest = _digest_of_dataclasses(discovered)
     accepted_digest = _digest_of_dataclasses(accepted)
     normalized_set_digest = _sha256_hex(
-        _canonical_json_bytes(sorted({r.content_hash for r in embedding_records}))
+        _canonical_json_bytes(sorted({r.content_hash for r in embedding_records})),
     )
     embedding_digest = _digest_of_dataclasses(embedding_records)
     wiring_map = _build_wiring_map()
@@ -485,8 +485,8 @@ def run_import(git_root: Path) -> ImportRunResult:
                 "embedding_record_count": len(embedding_records),
                 "proposal_only": True,
                 "wiring_map": wiring_map,
-            }
-        )
+            },
+        ),
     )
 
     digests = ImportDigests(
@@ -561,7 +561,7 @@ def write_run_artifacts(repo_root: Path, result: ImportRunResult) -> dict[str, s
     lines.append("|---|---:|---:|---|---|")
     for item in result.discovered:
         lines.append(
-            f"| `{item.absolute_path}` | `{item.artifact_type_guess}` | {item.confidence:.3f} | `{item.content_hash}` | `{item.disposition}` |"
+            f"| `{item.absolute_path}` | `{item.artifact_type_guess}` | {item.confidence:.3f} | `{item.content_hash}` | `{item.disposition}` |",
         )
 
     lines.append("")
@@ -586,7 +586,7 @@ def write_run_artifacts(repo_root: Path, result: ImportRunResult) -> dict[str, s
     lines.append(f"- normalized_content_digest_set: `{result.digests.normalized_content_digest_set}`")
     lines.append(f"- embedding_import_digest: `{result.digests.embedding_import_digest}`")
     lines.append(
-        f"- system_learning_incorporation_digest: `{result.digests.system_learning_incorporation_digest}`"
+        f"- system_learning_incorporation_digest: `{result.digests.system_learning_incorporation_digest}`",
     )
 
     lines.append("")
@@ -646,7 +646,7 @@ def load_cross_repo_learning_context(repo_root: Path) -> dict[str, Any]:
         previous = seen_paths.get(source_path)
         if previous is not None and previous != content_hash:
             raise RuntimeError(
-                f"HARD FAIL: duplicate conflicting manifests for {source_path}: {previous} vs {content_hash}"
+                f"HARD FAIL: duplicate conflicting manifests for {source_path}: {previous} vs {content_hash}",
             )
         seen_paths[source_path] = content_hash
 

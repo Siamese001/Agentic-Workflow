@@ -107,9 +107,10 @@ mcp = FastMCP("otel-mcp")
 # Logger
 logger = logging.getLogger(__name__)
 
-# Configuration
-RUNTIME_ADG_DIR = Path("C:/Git/Agentic-Workflow/system_learning/meta_learning/runtime_adg_snapshots")
-RUNTIME_ADG_STORE = Path("C:/Git/Agentic-Workflow/system_learning/runtime_adg")
+# Configuration — canonical L4 sovereign store path
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ADG_DIR = _REPO_ROOT / "agentic_core" / "L4_state" / "memory" / "runtime_adg"
+RUNTIME_ADG_STORE = RUNTIME_ADG_DIR
 
 # Cache for recent traces (in production, use Redis or similar)
 _trace_cache: dict[str, dict[str, Any]] = {}
@@ -123,11 +124,10 @@ _metrics_cache: dict[str, Any] = {
 
 
 def _get_runtime_adg_store():
-    """Get runtime ADG store instance."""
+    """Get runtime ADG store instance — uses FileBackedRuntimeADGStore (L4 canonical)."""
     try:
-        from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
-        from system_learning.runtime_adg.store import InMemoryRuntimeADGStore
-        store = InMemoryRuntimeADGStore()
+        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+        store = FileBackedRuntimeADGStore(RUNTIME_ADG_STORE)
         return store
     except ImportError:
         logger.warning("Runtime ADG store not available, using fallback")
@@ -186,13 +186,39 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
     if len(trace_id) < 8 or len(trace_id) > 128:
         return {"success": False, "error": "trace_id must be between 8 and 128 characters"}
 
-    # Check cache first
+    # Check in-process cache first
     if trace_id in _trace_cache:
         logger.info("otel_trace_cache_hit", extra={"trace_id": trace_id})
         return _trace_cache[trace_id]
 
-    # Try to load from runtime ADG snapshots
-    snapshot_files = list(RUNTIME_ADG_DIR.glob(f"*{trace_id}*.json"))
+    # Try to load from FileBackedRuntimeADGStore (canonical L4 store)
+    store = _get_runtime_adg_store()
+    if store is not None:
+        try:
+            version_id = store.get_version_id_for_trace(trace_id)
+            if version_id:
+                raw = store.get_by_version(version_id)
+                if raw:
+                    import json as _json
+                    snapshot = _json.loads(raw)
+                    adg_edges = _convert_snapshot_to_adg_edges(snapshot)
+                    result = {
+                        "trace_id": trace_id,
+                        "snapshot_id": snapshot.get("snapshot_id"),
+                        "timestamp": snapshot.get("started_at_utc"),
+                        "node_count": len(snapshot.get("nodes", [])),
+                        "edge_count": len(adg_edges),
+                        "adg_edges": adg_edges,
+                        "source": "file_backed_runtime_adg_store",
+                    }
+                    _trace_cache[trace_id] = result
+                    logger.info("otel_trace_loaded_from_store", extra={"trace_id": trace_id})
+                    return result
+        except Exception as e:
+            logger.error("otel_trace_store_read_error", extra={"trace_id": trace_id, "error": str(e)})
+
+    # Fall back: scan JSON snapshot files
+    snapshot_files = list(RUNTIME_ADG_DIR.glob(f"*{trace_id}*.json")) if RUNTIME_ADG_DIR.exists() else []
 
     if snapshot_files:
         try:
@@ -209,7 +235,7 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
                 "node_count": len(snapshot.get("nodes", [])),
                 "edge_count": len(adg_edges),
                 "adg_edges": adg_edges,
-                "source": "runtime_adg_snapshot"
+                "source": "runtime_adg_snapshot",
             }
 
             # Cache result
@@ -218,7 +244,7 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
             logger.info("otel_trace_loaded", extra={
                 "trace_id": trace_id,
                 "node_count": result["node_count"],
-                "edge_count": result["edge_count"]
+                "edge_count": result["edge_count"],
             })
 
             return result
@@ -249,7 +275,7 @@ def otel_spans_by_agent(agent_class: str, limit: int = 50) -> dict[str, Any]:
     spans = []
 
     # Search through cached traces
-    for trace_id, trace_data in _trace_cache.values():
+    for _tid, trace_data in _trace_cache.items():
         for edge in trace_data.get("adg_edges", []):
             if edge.get("component") == agent_class:
                 spans.append(edge)
@@ -262,12 +288,12 @@ def otel_spans_by_agent(agent_class: str, limit: int = 50) -> dict[str, Any]:
         "agent_class": agent_class,
         "span_count": len(spans),
         "spans": spans[:limit],
-        "search_time": int(time.time())
+        "search_time": int(time.time()),
     }
 
     logger.info("otel_spans_by_agent_searched", extra={
         "agent_class": agent_class,
-        "span_count": result["span_count"]
+        "span_count": result["span_count"],
     })
 
     return result
@@ -302,7 +328,7 @@ def otel_healing_chain(trace_id: str) -> dict[str, Any]:
             "source": edge.get("source"),
             "target": edge.get("target"),
             "timestamp": edge.get("timestamp"),
-            "attributes": edge.get("attributes", {})
+            "attributes": edge.get("attributes", {}),
         })
 
     result = {
@@ -310,12 +336,12 @@ def otel_healing_chain(trace_id: str) -> dict[str, Any]:
         "healing_events_found": len(healing_edges),
         "healing_chain": chain,
         "has_escalation": any("escalation" in edge.get("relation_type", "").lower()
-                             for edge in healing_edges)
+                             for edge in healing_edges),
     }
 
     logger.info("otel_healing_chain_analyzed", extra={
         "trace_id": trace_id,
-        "healing_events": result["healing_events_found"]
+        "healing_events": result["healing_events_found"],
     })
 
     return result
@@ -348,7 +374,7 @@ def otel_policy_decisions(time_window_hours: int = 24) -> dict[str, Any]:
                     "source": edge.get("source"),
                     "target": edge.get("target"),
                     "timestamp": edge.get("timestamp"),
-                    "attributes": edge.get("attributes", {})
+                    "attributes": edge.get("attributes", {}),
                 })
 
     result = {
@@ -356,12 +382,12 @@ def otel_policy_decisions(time_window_hours: int = 24) -> dict[str, Any]:
         "policy_decisions_found": len(policy_decisions),
         "policy_decisions": policy_decisions,
         "safety_plane_validations": len([d for d in policy_decisions
-                                        if "safety" in d.get("relation_type", "").lower()])
+                                        if "safety" in d.get("relation_type", "").lower()]),
     }
 
     logger.info("otel_policy_decisions_analyzed", extra={
         "time_window_hours": time_window_hours,
-        "decisions_found": result["policy_decisions_found"]
+        "decisions_found": result["policy_decisions_found"],
     })
 
     return result
@@ -407,12 +433,12 @@ def otel_metrics_summary() -> dict[str, Any]:
         "layer_breakdown": dict(sorted(layer_counts.items())),
         "top_components": dict(sorted(component_counts.items(),
                                      key=lambda x: x[1], reverse=True)[:10]),
-        "global_metrics": _metrics_cache
+        "global_metrics": _metrics_cache,
     }
 
     logger.info("otel_metrics_summary_generated", extra={
         "total_edges": total_edges,
-        "error_rate": result["error_rate"]
+        "error_rate": result["error_rate"],
     })
 
     return result
@@ -457,7 +483,7 @@ def otel_anomalies(severity: str = "any") -> dict[str, Any]:
                         "error": attributes.get("error"),
                         "circuit_breaker_open": attributes.get("circuit_breaker_open"),
                         "safety_plane_triggered": attributes.get("safety_plane_triggered"),
-                        "attributes": attributes
+                        "attributes": attributes,
                     })
 
     # Sort by timestamp (most recent first)
@@ -469,12 +495,12 @@ def otel_anomalies(severity: str = "any") -> dict[str, Any]:
         "anomalies": anomalies[:100],  # Limit to 100 most recent
         "high_severity_count": len([a for a in anomalies if a.get("severity") == "high"]),
         "medium_severity_count": len([a for a in anomalies if a.get("severity") == "medium"]),
-        "low_severity_count": len([a for a in anomalies if a.get("severity") == "low"])
+        "low_severity_count": len([a for a in anomalies if a.get("severity") == "low"]),
     }
 
     logger.info("otel_anomalies_analyzed", extra={
         "severity": severity,
-        "anomalies_found": result["anomalies_found"]
+        "anomalies_found": result["anomalies_found"],
     })
 
     return result
@@ -496,23 +522,19 @@ def otel_ingest_to_runtime_adg(trace_data: dict[str, Any]) -> dict[str, Any]:
         return {
             "success": False,
             "error": "Runtime ADG store not available",
-            "trace_id": trace_data.get("trace_id", "unknown")
+            "trace_id": trace_data.get("trace_id", "unknown"),
         }
 
     try:
-        # Convert trace data to RuntimeADGSnapshot format
-        from system_learning.runtime_adg.snapshot import create_runtime_adg_snapshot
+        from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
 
-        # Create snapshot from trace data
         spans = trace_data.get("spans", [])
         if len(spans) > 1000:
             return {"success": False, "error": "Too many spans for single ingestion (max 1000)"}
 
-        snapshot = create_runtime_adg_snapshot(
-            trace_id=trace_data.get("trace_id", f"trace_{int(time.time())}"),
-            spans=spans,
-            metadata=trace_data.get("metadata", {})
-        )
+        mission = trace_data.get("mission") or trace_data.get("trace_id") or f"trace_{int(time.time())}"
+        materializer = RuntimeADGMaterializer()
+        snapshot = materializer.materialize(spans, mission=mission)
 
         # Persist to store
         version_id = store.persist(snapshot)
@@ -528,7 +550,7 @@ def otel_ingest_to_runtime_adg(trace_data: dict[str, Any]) -> dict[str, Any]:
             "snapshot_id": snapshot.snapshot_id,
             "version_id": version_id,
             "spans_ingested": len(trace_data.get("spans", [])),
-            "timestamp": int(time.time())
+            "timestamp": int(time.time()),
         }
 
         logger.info("otel_ingest_success", extra=result)
@@ -537,14 +559,14 @@ def otel_ingest_to_runtime_adg(trace_data: dict[str, Any]) -> dict[str, Any]:
     except Exception as e:
         logger.error("otel_ingest_error", extra={
             "trace_id": trace_data.get("trace_id", "unknown"),
-            "error": str(e)
+            "error": str(e),
         })
         _metrics_cache["error_count"] += 1
 
         return {
             "success": False,
             "error": str(e),
-            "trace_id": trace_data.get("trace_id", "unknown")
+            "trace_id": trace_data.get("trace_id", "unknown"),
         }
 
 
@@ -574,8 +596,8 @@ def _convert_snapshot_to_adg_edges(snapshot: dict[str, Any]) -> list[dict[str, A
                         "span_id": node.get("span_id"),
                         "parent_span_id": parent_span_id,
                         "status": node.get("status"),
-                        "duration_ms": node.get("duration_ms")
-                    }
+                        "duration_ms": node.get("duration_ms"),
+                    },
                 }
                 edges.append(edge)
 
@@ -594,7 +616,7 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
             "component": "NervousSystem",
             "started_at_utc": int(time.time()) * 1000,
             "duration_ms": 5000.0,
-            "status": "ok"
+            "status": "ok",
         },
         {
             "span_id": "span_2",
@@ -605,7 +627,7 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
             "component": "CognitivePlane",
             "started_at_utc": int(time.time()) * 1000 + 1000,
             "duration_ms": 2000.0,
-            "status": "ok"
+            "status": "ok",
         },
         {
             "span_id": "span_3",
@@ -616,8 +638,8 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
             "component": "SearchTool",
             "started_at_utc": int(time.time()) * 1000 + 2000,
             "duration_ms": 1500.0,
-            "status": "ok"
-        }
+            "status": "ok",
+        },
     ]
 
     # Convert to ADG edges
@@ -638,8 +660,8 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
                         "span_id": span["span_id"],
                         "parent_span_id": span["parent_span_id"],
                         "status": span["status"],
-                        "duration_ms": span["duration_ms"]
-                    }
+                        "duration_ms": span["duration_ms"],
+                    },
                 })
 
     return {
@@ -649,7 +671,7 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
         "node_count": len(mock_spans),
         "edge_count": len(adg_edges),
         "adg_edges": adg_edges,
-        "source": "mock_data"
+        "source": "mock_data",
     }
 
 

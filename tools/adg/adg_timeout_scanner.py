@@ -176,7 +176,7 @@ class ADGTimeoutScanner:
                                             symbol=call_text,
                                             violation_type=violation_type,
                                             context=line.strip(),
-                                        )
+                                        ),
                                     )
                 except Exception as e:
                     warnings.warn(f"Failed to scan {py_file}: {e}", stacklevel=2)
@@ -279,7 +279,7 @@ class ADGTimeoutScanner:
                                         symbol="while True",
                                         violation_type="while_true_no_timeout_guard",
                                         context=line.strip(),
-                                    )
+                                    ),
                                 )
                 except Exception as e:
                     warnings.warn(f"Failed to scan {py_file}: {e}", stacklevel=2)
@@ -291,7 +291,7 @@ def main():
     """Main entry point for the ADG timeout scanner."""
     parser = argparse.ArgumentParser(description="ADG Timeout Scanner")
     parser.add_argument(
-        "--directory", action="append", help="Directories to scan (can be used multiple times)"
+        "--directory", action="append", help="Directories to scan (can be used multiple times)",
     )
     parser.add_argument("--symbol", help="Specific symbol to scan for")
     parser.add_argument("--loops", action="store_true", help="Scan for while True loops without timeout")

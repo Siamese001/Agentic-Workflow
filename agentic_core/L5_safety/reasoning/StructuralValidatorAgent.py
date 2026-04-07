@@ -132,7 +132,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -253,7 +252,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                 "enable_naming": self._config.enable_naming,
                 "enable_documentation": self._config.enable_documentation,
                 "agent_suffix": self._config.agent_suffix,
-            }
+            },
         )
 
     @property
@@ -271,12 +270,12 @@ class StructuralValidatorAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "StructuralValidatorAgent.validate_structure"
+            _trace_id, LayerSegment.L5_POLICY, "StructuralValidatorAgent.validate_structure",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:StructuralValidatorAgent.validate_structure".encode()
+            f"{_trace_id}:StructuralValidatorAgent.validate_structure".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -369,7 +368,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                                 message=f"Class '{node.name}' in agent file must end with '{self.config.agent_suffix}'",
                                 suggested_fix=f"{node.name}{self.config.agent_suffix}",
                                 auto_fixable=True,
-                            )
+                            ),
                         )
         except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             pass
@@ -377,7 +376,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def force_rename_class(
-        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True
+        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True,
     ) -> dict[str, Any]:
         """Safely renames a class using Atomic Writes."""
         if not file_path.exists():
@@ -427,7 +426,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         try:
             if violation_type == "naming" and violation.get("old_name") and violation.get("new_name"):
                 result = self.force_rename_class(
-                    Path(path), violation["old_name"], violation["new_name"], dry_run=False
+                    Path(path), violation["old_name"], violation["new_name"], dry_run=False,
                 )
                 if "error" not in result:
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}

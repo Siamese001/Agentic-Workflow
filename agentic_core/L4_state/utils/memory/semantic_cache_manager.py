@@ -136,10 +136,10 @@ class PII_Sanitizer:
     PATTERNS = {
         "EMAIL": re.compile("\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b", re.IGNORECASE),
         "IPV4": re.compile(
-            "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b"
+            "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b",
         ),
         "IPV6": re.compile(
-            "\\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,7}:\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\\b|\\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\\b"
+            "\\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,7}:\\b|\\b(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\\b|\\b::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}\\b",
         ),
         "OPENAI_KEY": re.compile("\\bsk-[a-zA-Z0-9]{20,}\\b"),
         "ANTHROPIC_KEY": re.compile("\\bsk-ant-[a-zA-Z0-9-]{20,}\\b"),
@@ -293,7 +293,7 @@ class SemanticCacheManager:
         """
         if SemanticCacheManager._instance is not None:
             raise RuntimeError(
-                "[HiveMind] SINGLETON VIOLATION: Use SemanticCacheManager.get_instance() instead of direct instantiation."
+                "[HiveMind] SINGLETON VIOLATION: Use SemanticCacheManager.get_instance() instead of direct instantiation.",
             )
         self._initialize(api_key)
 
@@ -312,10 +312,10 @@ class SemanticCacheManager:
         self.similarity_threshold = 0.98
         self.strict_mode = os.environ.get("HIVE_MIND_STRICT_MODE", "true").lower() == "true"
         self.trace_sampling_rate = float(
-            os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE", str(self.DEFAULT_TRACE_SAMPLING_RATE))
+            os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE", str(self.DEFAULT_TRACE_SAMPLING_RATE)),
         )
         self.promotion_threshold = float(
-            os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD", str(self.DEFAULT_PROMOTION_THRESHOLD))
+            os.environ.get("HIVE_MIND_PROMOTION_THRESHOLD", str(self.DEFAULT_PROMOTION_THRESHOLD)),
         )
         self._lock = threading.RLock()
         self.stateless_mode = False
@@ -345,7 +345,7 @@ class SemanticCacheManager:
                 raise CriticalInfrastructureError(error_msg)
             else:
                 Logger.error(
-                    "[HiveMind] Hive Mind infrastructure unavailable. Entering STATELESS fallback mode."
+                    "[HiveMind] Hive Mind infrastructure unavailable. Entering STATELESS fallback mode.",
                 )
                 self.stateless_mode = True
         if self.redis_enabled:
@@ -357,7 +357,7 @@ class SemanticCacheManager:
         else:
             Logger.warning("[HiveMind] Long-Term Memory (Native L2) unavailable")
         Logger.info(
-            f"[HiveMind] Config: strict_mode={self.strict_mode}, sampling_rate={self.trace_sampling_rate}, promotion_threshold={self.promotion_threshold}"
+            f"[HiveMind] Config: strict_mode={self.strict_mode}, sampling_rate={self.trace_sampling_rate}, promotion_threshold={self.promotion_threshold}",
         )
 
     def _init_gptcache(self) -> Exception | None:
@@ -434,7 +434,7 @@ class SemanticCacheManager:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SemanticCacheManager.recall:{namespace}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SemanticCacheManager.recall:{namespace}",
         )
         if self.stateless_mode:
             return None
@@ -493,7 +493,7 @@ class SemanticCacheManager:
         return hash_int & 4294967295 < threshold
 
     def learn(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None
+        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None,
     ) -> None:
         """
         Teach the Hive Mind a new result (Working Memory).
@@ -539,7 +539,7 @@ class SemanticCacheManager:
             self.stats["cache_stores"] += 1
 
     async def learn_async(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None
+        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None,
     ) -> None:
         """
         [PHASE 25] Async version of learn for fire-and-forget pattern.
@@ -575,7 +575,7 @@ class SemanticCacheManager:
             self.stats["cache_stores"] += 1
 
     async def promote_to_long_term(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float
+        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float,
     ) -> bool:
         """
         Promote a memory to Long-Term DNA storage (Native L2 persistent backend).
@@ -594,7 +594,7 @@ class SemanticCacheManager:
         """
         if feedback_score < self.promotion_threshold:
             Logger.debug(
-                f"[HiveMind] Promotion rejected: feedback_score={feedback_score} < threshold={self.promotion_threshold}"
+                f"[HiveMind] Promotion rejected: feedback_score={feedback_score} < threshold={self.promotion_threshold}",
             )
             return False
         if not self.gptcache_enabled:
@@ -626,7 +626,7 @@ class SemanticCacheManager:
             with self._lock:
                 self.stats["promotions"] += 1
             Logger.info(
-                f"[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})"
+                f"[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})",
             )
             return True
         # guardian: allow-silent-swallow
@@ -674,11 +674,11 @@ class SemanticCacheManager:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
                         asyncio.ensure_future(
-                            self.promote_to_long_term(context, namespace, clean_result, feedback_score)
+                            self.promote_to_long_term(context, namespace, clean_result, feedback_score),
                         )
                     else:
                         loop.run_until_complete(
-                            self.promote_to_long_term(context, namespace, clean_result, feedback_score)
+                            self.promote_to_long_term(context, namespace, clean_result, feedback_score),
                         )
                 # guardian: allow-silent-swallow
                 except Exception as e:

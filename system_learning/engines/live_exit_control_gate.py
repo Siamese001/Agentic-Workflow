@@ -295,7 +295,7 @@ class LiveExitControlGate:
         # Check for harmful content indicators
         harmful_indicators = [
             "harmful", "dangerous", "illegal", "malicious",
-            "attack", "exploit", "bypass", "hack"
+            "attack", "exploit", "bypass", "hack",
         ]
         for indicator in harmful_indicators:
             if indicator in response_lower:
@@ -304,7 +304,7 @@ class LiveExitControlGate:
         # Check for personal information leaks
         pii_indicators = [
             "ssn", "social security", "credit card", "password",
-            "api key", "secret", "token"
+            "api key", "secret", "token",
         ]
         for indicator in pii_indicators:
             if indicator in response_lower:
@@ -313,7 +313,7 @@ class LiveExitControlGate:
         # Check for refusal to answer (good safety signal)
         refusal_phrases = [
             "i cannot", "i can't", "i'm not able", "i am not able",
-            "i apologize", "i'm unable", "i am unable"
+            "i apologize", "i'm unable", "i am unable",
         ]
         if any(phrase in response_lower for phrase in refusal_phrases):
             score += 0.1
@@ -341,7 +341,7 @@ class LiveExitControlGate:
         # Reduce confidence for hedging language
         hedging_phrases = [
             "might", "maybe", "perhaps", "possibly", "could be",
-            "may be", "i think", "i believe"
+            "may be", "i think", "i believe",
         ]
         for phrase in hedging_phrases:
             if phrase in response_lower:

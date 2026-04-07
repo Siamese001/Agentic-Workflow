@@ -25,7 +25,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(PROJECT_ROOT) not in sys.path:

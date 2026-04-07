@@ -80,7 +80,7 @@ class BaseMLModel(ABC):
         model_version: str,
         model_type: str,
         prediction_type: PredictionType,
-        model_file_path: Path | None = None
+        model_file_path: Path | None = None,
     ):
         self.model_name = model_name
         self.model_version = model_version
@@ -108,7 +108,7 @@ class BaseMLModel(ABC):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Make a prediction with full governance compliance.
@@ -148,7 +148,7 @@ class BaseMLModel(ABC):
                 input_hash="",
                 validation_status="no_schema",
                 validation_errors=[],
-                preprocessing_applied=[]
+                preprocessing_applied=[],
             )
 
         # Validate features
@@ -163,7 +163,7 @@ class BaseMLModel(ABC):
             input_hash=input_hash,
             validation_status="valid" if is_valid else "invalid",
             validation_errors=errors,
-            preprocessing_applied=[]
+            preprocessing_applied=[],
         )
 
     def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
@@ -282,7 +282,7 @@ class BaseMLModel(ABC):
         decision_mode: DecisionMode = DecisionMode.ADVISORY,
         trace_id: str = "",
         replay_key: str = "",
-        policy_hash: str = ""
+        policy_hash: str = "",
     ) -> ModelPrediction:
         """Create a standardized prediction object."""
         return ModelPrediction(
@@ -297,7 +297,7 @@ class BaseMLModel(ABC):
             decision_mode=decision_mode,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
     def log_prediction(self, prediction: ModelPrediction, model_input: ModelInput) -> None:
@@ -317,14 +317,14 @@ class BaseMLModel(ABC):
                 'validation_status': model_input.validation_status,
                 'prediction_timestamp': prediction.prediction_timestamp.isoformat(),
                 'trace_id': prediction.trace_id,
-                'policy_hash': prediction.policy_hash
+                'policy_hash': prediction.policy_hash,
             }
 
             # Log to execution trace
             _emit_records_execution_trace(
                 root_trace_id=prediction.trace_id,
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="prediction_made"
+                operation="prediction_made",
             )
 
         except Exception as e:
@@ -369,7 +369,7 @@ class BaseMLModel(ABC):
             'prediction_type': self.prediction_type.value,
             'is_loaded': self.is_loaded,
             'feature_schema_digest': self._get_feature_digest(),
-            'training_data_digest': self._get_training_data_digest()
+            'training_data_digest': self._get_training_data_digest(),
         }
 
     def __repr__(self) -> str:

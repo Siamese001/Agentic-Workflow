@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -211,7 +210,7 @@ class GuardrailViolationError(PermissionError):
     def __init__(self, result: GuardrailCheckResult) -> None:
         super().__init__(
             f"GuardrailGate DENY: operation='{result.operation}' "
-            f"target='{result.target}' reason='{result.reason}'"
+            f"target='{result.target}' reason='{result.reason}'",
         )
         self.result = result
 

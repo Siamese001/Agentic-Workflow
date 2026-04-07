@@ -177,11 +177,11 @@ def run_gate(db_path: str) -> int:
         transcript_coverage = 1.0
     pct_c = transcript_coverage * 100
     print(
-        f"[GATE] C — transcript_coverage= {pct_c:.1f}%  (need >= {THRESHOLD_TRANSCRIPT_COVERAGE * 100:.0f}%)"
+        f"[GATE] C — transcript_coverage= {pct_c:.1f}%  (need >= {THRESHOLD_TRANSCRIPT_COVERAGE * 100:.0f}%)",
     )
     if transcript_coverage < THRESHOLD_TRANSCRIPT_COVERAGE:
         failures.append(
-            f"Gate C FAIL: transcript_coverage={pct_c:.1f}% < {THRESHOLD_TRANSCRIPT_COVERAGE * 100:.0f}%"
+            f"Gate C FAIL: transcript_coverage={pct_c:.1f}% < {THRESHOLD_TRANSCRIPT_COVERAGE * 100:.0f}%",
         )
 
     # Gate D: policy binding — every traced L1 module must also have references_policy_hash
@@ -189,7 +189,7 @@ def run_gate(db_path: str) -> int:
     print(f"[GATE] D — unbound_policy_traces = {unbound_policy}  (need == 0)")
     if unbound_policy > 0:
         failures.append(
-            f"Gate D FAIL: {unbound_policy} runtime L1 trace module(s) lack references_policy_hash"
+            f"Gate D FAIL: {unbound_policy} runtime L1 trace module(s) lack references_policy_hash",
         )
 
     # Gate E: context binding — check for context_hash attribute on ReasoningContext

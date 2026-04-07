@@ -174,7 +174,7 @@ class SkillStatusDashboard:
             # Try to run the skill with --help or similar
             main_script = Path(skill_info["path"]) / "main.py"
             result = subprocess.run(
-                ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=10
+                ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=10,
             )
 
             duration = time.time() - start_time
@@ -242,7 +242,7 @@ class SkillStatusDashboard:
             health = metric.health_score
 
             report.append(
-                f"{skill_name:<25} {health:<10} {metric.success_rate:>6.1f}% {metric.total_runs:>6} {metric.average_duration:>8.2f}s {status_icon}"
+                f"{skill_name:<25} {health:<10} {metric.success_rate:>6.1f}% {metric.total_runs:>6} {metric.average_duration:>8.2f}s {status_icon}",
             )
 
         # Summary
@@ -343,7 +343,7 @@ class SkillStatusDashboard:
             status_icon = "✅" if metric.exists else "❌"
 
             report.append(
-                f"| {skill_name} | {metric.health_score} | {metric.success_rate:.1f}% | {metric.total_runs} | {metric.average_duration:.2f}s | {status_icon} |"
+                f"| {skill_name} | {metric.health_score} | {metric.success_rate:.1f}% | {metric.total_runs} | {metric.average_duration:.2f}s | {status_icon} |",
             )
 
         return "\n".join(report)

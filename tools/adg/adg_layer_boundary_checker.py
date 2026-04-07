@@ -86,7 +86,7 @@ class ADGLayerBoundaryChecker:
                 target_layer="",
                 import_module="",
                 violation_type="check_error",
-                message=f"Failed to check layer boundaries: {e}"
+                message=f"Failed to check layer boundaries: {e}",
             ))
 
         return violations
@@ -117,12 +117,12 @@ class ADGLayerBoundaryChecker:
 
                 if target_layer:
                     violations.extend(self._check_layer_violation(
-                        source_layer, target_layer, module_name, line_num, rel_path
+                        source_layer, target_layer, module_name, line_num, rel_path,
                     ))
                 else:
                     # Module not found in ADG, check if it's a layer violation by pattern
                     violations.extend(self._check_pattern_violation(
-                        source_layer, module_name, line_num, rel_path
+                        source_layer, module_name, line_num, rel_path,
                     ))
 
         except Exception as e:
@@ -165,7 +165,7 @@ class ADGLayerBoundaryChecker:
                             "type": "import",
                             "module": alias.name,
                             "alias": alias.asname,
-                            "line": node.lineno
+                            "line": node.lineno,
                         })
                 elif isinstance(node, ast.ImportFrom):
                     module = node.module or ""
@@ -175,7 +175,7 @@ class ADGLayerBoundaryChecker:
                             "module": module,
                             "name": alias.name,
                             "alias": alias.asname,
-                            "line": node.lineno
+                            "line": node.lineno,
                         })
 
             return imports
@@ -219,7 +219,7 @@ class ADGLayerBoundaryChecker:
                         target_layer=target_layer,
                         import_module=module_name,
                         violation_type="layer_inversion",
-                        message=f"Layer inversion: {source_layer} imports from {target_layer}"
+                        message=f"Layer inversion: {source_layer} imports from {target_layer}",
                     ))
 
         # Check apps_* direct L* imports
@@ -232,7 +232,7 @@ class ADGLayerBoundaryChecker:
                     target_layer=target_layer,
                     import_module=module_name,
                     violation_type="apps_direct_l_import",
-                    message=f"Apps layer {source_layer} directly imports from {target_layer} (use agentic_core.interfaces shims)"
+                    message=f"Apps layer {source_layer} directly imports from {target_layer} (use agentic_core.interfaces shims)",
                 ))
 
         return violations
@@ -246,7 +246,7 @@ class ADGLayerBoundaryChecker:
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
             if module_name.startswith(layer + "."):
                 violations.extend(self._check_layer_violation(
-                    source_layer, layer, module_name, line_num, file_path
+                    source_layer, layer, module_name, line_num, file_path,
                 ))
                 break
 
@@ -273,7 +273,7 @@ class ADGLayerBoundaryChecker:
 
                 # Check violations based on patterns only
                 violations.extend(self._check_pattern_violation(
-                    source_layer, module_name, line_num, rel_path
+                    source_layer, module_name, line_num, rel_path,
                 ))
 
         except Exception as e:
@@ -284,7 +284,7 @@ class ADGLayerBoundaryChecker:
                 target_layer="",
                 import_module="",
                 violation_type="check_error",
-                message=f"Failed to check layer boundaries: {e}"
+                message=f"Failed to check layer boundaries: {e}",
             ))
 
         return violations
@@ -329,7 +329,7 @@ class ADGLayerBoundaryChecker:
                 target_layer="",
                 import_module="",
                 violation_type="check_error",
-                message=f"Failed to check layer {layer}: {e}"
+                message=f"Failed to check layer {layer}: {e}",
             ))
 
         return violations
@@ -343,7 +343,7 @@ class ADGLayerBoundaryChecker:
             summary = {
                 "layers": {},
                 "total_files": 0,
-                "total_violations": 0
+                "total_violations": 0,
             }
 
             # Get basic statistics from ADG
@@ -351,7 +351,7 @@ class ADGLayerBoundaryChecker:
                 nodes = self.bridge.nodes_in_layer(layer)
                 summary["layers"][layer] = {
                     "node_count": len(nodes),
-                    "files": len(set(node.file_path for node in nodes if node.file_path))
+                    "files": len(set(node.file_path for node in nodes if node.file_path)),
                 }
                 summary["total_files"] += summary["layers"][layer]["files"]
 
@@ -401,7 +401,7 @@ def main():
                 "target_layer": v.target_layer,
                 "import_module": v.import_module,
                 "violation_type": v.violation_type,
-                "message": v.message
+                "message": v.message,
             }
             for v in violations
         ]

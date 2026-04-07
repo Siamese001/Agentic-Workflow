@@ -19,7 +19,7 @@ def filter_by_directory(input_path: str, output_path: str, dir_pattern: str):
     output_data = {
         'adg_database': data.get('adg_database'),
         'directory': dir_pattern,
-        'unused_functions': filtered
+        'unused_functions': filtered,
     }
 
     with open(output_path, 'w', encoding='utf-8') as f:

@@ -140,7 +140,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -367,7 +366,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         self.stats["n_duplicates_removed"] += removed
         if removed:
             print(
-                f"[HYGIENE] _N duplicate cleanup: {removed} file(s) {'removed' if not self.dry_run else 'flagged (dry-run)'}"
+                f"[HYGIENE] _N duplicate cleanup: {removed} file(s) {'removed' if not self.dry_run else 'flagged (dry-run)'}",
             )
 
     def _cleanup_unused_temp_folders(self):
@@ -422,7 +421,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
 
         if deleted:
             print(
-                f"[HYGIENE] Temp folder cleanup: {deleted} folder(s) {'deleted' if not self.dry_run else 'flagged (dry-run)'}"
+                f"[HYGIENE] Temp folder cleanup: {deleted} folder(s) {'deleted' if not self.dry_run else 'flagged (dry-run)'}",
             )
 
     def _evacuate_root_scripts(self):
@@ -608,7 +607,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                             "severity": "low",
                             "recommended_action": f"Delete '{name}'",
                             "confidence": 0.95,
-                        }
+                        },
                     )
                     continue
                 # Temp/cache folders that should be auto-deleted
@@ -629,7 +628,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                             "severity": "low",
                             "recommended_action": f"Delete '{name}' if unused (>7 days old)",
                             "confidence": 0.95,
-                        }
+                        },
                     )
                     continue
                 if entry.is_dir() and name in delete_patterns:
@@ -641,7 +640,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                             "severity": "low",
                             "recommended_action": f"Delete {name} (add to .gitignore)",
                             "confidence": 0.95,
-                        }
+                        },
                     )
                 elif entry.is_dir():
                     violations.append(
@@ -654,7 +653,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                                 f"Move '{name}' to its canonical SSOT location or register it as a sovereign territory"
                             ),
                             "confidence": 0.9,
-                        }
+                        },
                     )
                 elif entry.is_file() and name not in approved_files:
                     violations.append(
@@ -667,7 +666,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                                 f"Move '{name}' to its canonical SSOT location or add to approved list"
                             ),
                             "confidence": 0.8,    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
-                        }
+                        },
                     )
         except OSError as exc:
             violations.append(
@@ -678,7 +677,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     "severity": "high",
                     "recommended_action": "Fix project root access permissions",
                     "confidence": 1.0,
-                }
+                },
             )
 
         return {"violations": violations}

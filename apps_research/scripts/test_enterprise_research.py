@@ -173,7 +173,7 @@ async def test_single_topic_brief():
     print("\n🛡️ Validation:")
     print(f"   Validations Run: {len(result.validation_results)}")
     print(
-        f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}"
+        f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}",
     )
     print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
 
@@ -258,7 +258,7 @@ async def test_with_source_retrieval():
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Similar Research Found: {len(result.similar_research)}")
     print(
-        f"   Quality Benchmarks: {list(result.quality_benchmarks.keys()) if result.quality_benchmarks else []}"
+        f"   Quality Benchmarks: {list(result.quality_benchmarks.keys()) if result.quality_benchmarks else []}",
     )
 
     if result.quality_benchmarks and "error" not in result.quality_benchmarks:

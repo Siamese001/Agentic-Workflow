@@ -49,7 +49,7 @@ class CapabilityExtractor:
             "git_operations": ["git_add", "git_commit", "git_push", "git_status"],
             "path_operations": ["path_join", "path_exists", "get_extension", "get_basename"],
             "validation": ["validate", "check", "verify", "ensure"],
-            "error_handling": ["handle_error", "catch_exception", "log_error", "raise_error"]
+            "error_handling": ["handle_error", "catch_exception", "log_error", "raise_error"],
         }
 
     def load_manifest(self, manifest_path: str) -> list[dict[str, Any]]:
@@ -93,7 +93,7 @@ class CapabilityExtractor:
                 "capability_patterns": defaultdict(list),
                 "reusable_score": 0,
                 "size_lines": len(content.splitlines()),
-                "size_bytes": len(content)
+                "size_bytes": len(content),
             }
 
             # Extract functions
@@ -105,7 +105,7 @@ class CapabilityExtractor:
                         "args": [arg.arg for arg in node.args.args],
                         "docstring": ast.get_docstring(node),
                         "is_private": node.name.startswith('_'),
-                        "calls": self._extract_function_calls(node)
+                        "calls": self._extract_function_calls(node),
                     }
                     capabilities["functions"].append(func_info)
 
@@ -115,7 +115,7 @@ class CapabilityExtractor:
                         "line": node.lineno,
                         "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)],
                         "docstring": ast.get_docstring(node),
-                        "is_private": node.name.startswith('_')
+                        "is_private": node.name.startswith('_'),
                     }
                     capabilities["classes"].append(class_info)
 
@@ -219,7 +219,7 @@ class CapabilityExtractor:
                 "reusable_score": candidate["reusable_score"],
                 "functions_extracted": len([f for f in candidate.get("functions", []) if not f.get("is_private", True)]),
                 "classes_extracted": len([c for c in candidate.get("classes", []) if not c.get("is_private", True)]),
-                "status": "extracted"
+                "status": "extracted",
             }
             self.extraction_log.append(log_entry)
 
@@ -279,7 +279,7 @@ class CapabilityExtractor:
             "generated_time": datetime.now().isoformat(),
             "shared_modules_directory": str(self.shared_modules_dir.relative_to(self.repo_root)),
             "total_extractions": len(self.extraction_log),
-            "extractions": self.extraction_log
+            "extractions": self.extraction_log,
         }
 
         with open(log_file, 'w', encoding='utf-8') as f:

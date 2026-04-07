@@ -196,5 +196,5 @@ class RfpRunSummary(BaseModel):
                 "risks_identified": 12,
                 "assumptions_declared": 5,
                 "quality_score": 0.85,
-            }
+            },
         }

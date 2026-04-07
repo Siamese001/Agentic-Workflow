@@ -153,7 +153,7 @@ class RoutingSignalDetector:
         """
         trace_id = f"signal_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "RoutingSignalDetector.detect"
+            trace_id, LayerSegment.L1_REASONING, "RoutingSignalDetector.detect",
         )
 
         query_lower = query.lower()
@@ -205,7 +205,7 @@ class RoutingSignalDetector:
 
         _emit_records_telemetry_event(
             "routing_signal",
-            f"{best_intent.value}_{best_domain.value}"
+            f"{best_intent.value}_{best_domain.value}",
         )
 
         log.debug(f"Detected signal: intent={best_intent.value}, domain={best_domain.value}")

@@ -41,7 +41,7 @@ class L0RouteRecommender(BaseMLModel):
         0: "Path_A",  # Basic - simple requests
         1: "Path_B",  # Standard - moderate complexity
         2: "Path_C",  # Advanced - high complexity
-        3: "Path_D"   # Expert - maximum complexity/escalation
+        3: "Path_D",   # Expert - maximum complexity/escalation
     }
 
     # Reverse mapping
@@ -53,7 +53,7 @@ class L0RouteRecommender(BaseMLModel):
             model_version="1.0",
             model_type="logistic_regression",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -69,7 +69,7 @@ class L0RouteRecommender(BaseMLModel):
         self.threshold_config = {
             "confidence_threshold": 0.7,
             "min_class_probability": 0.3,
-            "escalation_threshold": 0.8
+            "escalation_threshold": 0.8,
         }
 
         if model_file_path and model_file_path.exists():
@@ -108,8 +108,8 @@ class L0RouteRecommender(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -121,7 +121,7 @@ class L0RouteRecommender(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Make routing recommendation with full governance compliance.
@@ -154,7 +154,7 @@ class L0RouteRecommender(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -189,8 +189,8 @@ class L0RouteRecommender(BaseMLModel):
                     prediction=predicted_path,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Determine final decision mode based on thresholds
@@ -208,7 +208,7 @@ class L0RouteRecommender(BaseMLModel):
                 decision_mode=final_decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -218,7 +218,7 @@ class L0RouteRecommender(BaseMLModel):
                 'preprocessing_steps': preprocessing_steps,
                 'raw_prediction_class': int(predicted_class),
                 'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold
+                'thresholds_passed': passes_threshold,
             })
 
             # Log prediction
@@ -234,7 +234,7 @@ class L0RouteRecommender(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
@@ -267,7 +267,7 @@ class L0RouteRecommender(BaseMLModel):
                         'importance_score': float(score),
                         'coefficient_value': float(coefficients[i]) if i < len(coefficients) else 0.0,
                         'feature_value': model_input.features.get(name),
-                        'rank': i + 1
+                        'rank': i + 1,
                     })
 
             # Sort by importance
@@ -333,7 +333,7 @@ class L0RouteRecommender(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the logistic regression model.
@@ -373,8 +373,8 @@ class L0RouteRecommender(BaseMLModel):
                 multi_class='multinomial',
                 solver='lbfgs',
                 max_iter=1000,
-                random_state=42
-            ))
+                random_state=42,
+            )),
         ])
 
         # Train model
@@ -392,7 +392,7 @@ class L0RouteRecommender(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict directly from context (convenience method).
@@ -412,7 +412,7 @@ class L0RouteRecommender(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -423,7 +423,7 @@ class L0RouteRecommender(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         # Validate input
@@ -436,7 +436,7 @@ class L0RouteRecommender(BaseMLModel):
             trace_id=trace_id,
             replay_key=replay_key,
             policy_hash=policy_hash,
-            decision_mode=decision_mode
+            decision_mode=decision_mode,
         )
 
     def get_path_recommendations_with_confidence(
@@ -444,7 +444,7 @@ class L0RouteRecommender(BaseMLModel):
         context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, float]:
         """
         Get all path recommendations with confidence scores.
@@ -462,7 +462,7 @@ class L0RouteRecommender(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if prediction.probability_distribution:

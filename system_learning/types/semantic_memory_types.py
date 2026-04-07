@@ -65,39 +65,25 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "semantic_memory_types", "p0_governance")
 _emit_snapshots_state("p0", "semantic_memory_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -283,7 +269,7 @@ class MutationDiffRecord:
             raise ValueError("mutation_id must not be empty")
         if self.commit_outcome not in ("committed", "rolled_back", "pending"):
             raise ValueError(
-                f"commit_outcome must be committed/rolled_back/pending, got {self.commit_outcome!r}"
+                f"commit_outcome must be committed/rolled_back/pending, got {self.commit_outcome!r}",
             )
         h = _sha256_json(self._canonical_dict())
         object.__setattr__(self, "diff_hash", h)
@@ -549,7 +535,7 @@ class PolicyGuardrailCase:
             raise ValueError("case_id must not be empty")
         if self.verdict not in ("true_positive", "false_positive", "false_negative"):
             raise ValueError(
-                f"verdict must be true_positive/false_positive/false_negative, got {self.verdict!r}"
+                f"verdict must be true_positive/false_positive/false_negative, got {self.verdict!r}",
             )
         h = _sha256_json(self._canonical_dict())
         object.__setattr__(self, "case_hash", h)
@@ -613,7 +599,7 @@ class ReplayFailureRecord:
     timestamp_utc: int
     failure_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(
-        default="C0_INFORMATIONAL", init=False
+        default="C0_INFORMATIONAL", init=False,
     )
 
     def __post_init__(self) -> None:
@@ -697,7 +683,7 @@ class PromptOutcomeEmbeddingRecord:
     timestamp_utc: int
     record_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(
-        default="C0_INFORMATIONAL", init=False
+        default="C0_INFORMATIONAL", init=False,
     )
 
     def __post_init__(self) -> None:
@@ -706,11 +692,11 @@ class PromptOutcomeEmbeddingRecord:
         if not self.task_description:
             raise ValueError("task_description must not be empty")
         if self.safety_outcome not in (
-            "ALLOWED", "BLOCKED", "ESCALATED", "HEALED", "UNKNOWN"
+            "ALLOWED", "BLOCKED", "ESCALATED", "HEALED", "UNKNOWN",
         ):
             raise ValueError(
                 f"safety_outcome must be ALLOWED/BLOCKED/ESCALATED/HEALED/UNKNOWN, "
-                f"got {self.safety_outcome!r}"
+                f"got {self.safety_outcome!r}",
             )
         h = _sha256_json(self._canonical_dict())
         object.__setattr__(self, "record_hash", h)
@@ -795,7 +781,7 @@ class RetrievalCaseRecord:
     timestamp_utc: int
     case_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(
-        default="C0_INFORMATIONAL", init=False
+        default="C0_INFORMATIONAL", init=False,
     )
 
     def __post_init__(self) -> None:
@@ -805,11 +791,11 @@ class RetrievalCaseRecord:
             raise ValueError("query_summary must not be empty")
         if not (0.0 <= self.support_score <= 1.0):
             raise ValueError(
-                f"support_score must be in [0.0, 1.0], got {self.support_score}"
+                f"support_score must be in [0.0, 1.0], got {self.support_score}",
             )
         if not (0.0 <= self.completeness_score <= 1.0):
             raise ValueError(
-                f"completeness_score must be in [0.0, 1.0], got {self.completeness_score}"
+                f"completeness_score must be in [0.0, 1.0], got {self.completeness_score}",
             )
         h = _sha256_json(self._canonical_dict())
         object.__setattr__(self, "case_hash", h)

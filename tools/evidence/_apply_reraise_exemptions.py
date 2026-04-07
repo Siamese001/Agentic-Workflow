@@ -11,9 +11,9 @@ Usage:
 from __future__ import annotations
 
 import ast
+import json
 import sys
 from pathlib import Path
-import json
 
 ENRICHED_PATH = Path("artifacts/adg_analysis/has_reraise_enriched.json")
 JUSTIFICATION = "intentional error boundary, re-raises all caught exceptions to caller"

@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -257,11 +256,11 @@ class AchvBulletSynthesizer:
         SELF.CONFIG = config or BulletSynthesizerConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutorAgent()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+            initial_temperature=self.config.temperature,
         )
 
     def generate_bullets(
-        self, experience_data: dict[str, Any], context: dict[str, Any]
+        self, experience_data: dict[str, Any], context: dict[str, Any],
     ) -> BulletSynthesizerResult:
         """
         Generate achievement bullets with provenance tracking.
@@ -277,12 +276,12 @@ class AchvBulletSynthesizer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "AchvBulletSynthesizer.generate_bullets"
+            _trace_id, LayerSegment.L5_POLICY, "AchvBulletSynthesizer.generate_bullets",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:AchvBulletSynthesizer.generate_bullets".encode()
+            f"{_trace_id}:AchvBulletSynthesizer.generate_bullets".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -305,7 +304,7 @@ class AchvBulletSynthesizer:
                 )
                 validation_results.append(count_result)
                 self.recovery_loop.record_failure(
-                    gate_id=count_result.gate_id, MESSAGE=count_result.message, DETAILS=count_result.details
+                    gate_id=count_result.gate_id, MESSAGE=count_result.message, DETAILS=count_result.details,
                 )
                 if not recovery.should_retry:
                     break
@@ -361,7 +360,7 @@ class AchvBulletSynthesizer:
         )
 
     def _generate_bullet_set(
-        self, experience_data: dict[str, Any], context: dict[str, Any], temperature: float, attempt: int
+        self, experience_data: dict[str, Any], context: dict[str, Any], temperature: float, attempt: int,
     ) -> list[str]:
         """
         Generate set of bullets using LLM.
@@ -429,7 +428,7 @@ class AchvBulletSynthesizer:
         )
 
     def _validate_provenance_pattern(
-        self, provenance_log: BulletProvenanceLog, bullet_num: int
+        self, provenance_log: BulletProvenanceLog, bullet_num: int,
     ) -> ValidationResult:
         """
         Validate provenance pattern matches expected pattern.
@@ -462,7 +461,7 @@ class AchvBulletSynthesizer:
         )
 
     def _generate_qa_report(
-        self, bullets: list[str], provenance_logs: list[BulletProvenanceLog]
+        self, bullets: list[str], provenance_logs: list[BulletProvenanceLog],
     ) -> dict[str, Any]:
         """Generate QA Report with provenance tracking"""
         return {

@@ -11,7 +11,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXC
 MOVED_AGENTS = ['executive_title_composer', 'HardenedAnthropicExecutor', 'hardened_openai_executor', 'providers_anthropic_client', 'Router', 'strategist_biowriter', 'utilities_deep_brain_harvest']
 FORBIDDEN_PATH = 'apps_shared.common_utils'
 NEW_PATH_HINT = 'apps_rg.engines'
-ROOT_DIR = 'C:\\Git\\Agentic-Workflow'
+ROOT_DIR = str(REPO_ROOT)
 
 def scan_for_stale_imports():
     stale_count = 0

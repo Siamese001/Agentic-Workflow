@@ -35,8 +35,8 @@ def test_sequential_thinking_prompts():
                 "services": ["auth-service", "user-service", "order-service", "payment-service"],
                 "database": "PostgreSQL cluster",
                 "message_queue": "RabbitMQ",
-                "load_balancer": "Nginx"
-            }
+                "load_balancer": "Nginx",
+            },
         },
         {
             "name": "Performance Debugging",
@@ -48,8 +48,8 @@ def test_sequential_thinking_prompts():
                 "error_rate": "15%",
                 "memory_usage": "8GB/16GB",
                 "active_connections": "1000/100",
-                "recent_deploy": "2 hours ago"
-            }
+                "recent_deploy": "2 hours ago",
+            },
         },
         {
             "name": "Feature Implementation",
@@ -61,8 +61,8 @@ def test_sequential_thinking_prompts():
                 "backend": "Node.js",
                 "database": "MongoDB",
                 "websocket_library": "Socket.io",
-                "requirements": ["message_history", "user_presence", "read_receipts"]
-            }
+                "requirements": ["message_history", "user_presence", "read_receipts"],
+            },
         },
         {
             "name": "Code Refactoring",
@@ -73,8 +73,8 @@ def test_sequential_thinking_prompts():
             "context": {
                 "current_module": "user.py (2000 lines)",
                 "dependencies": ["auth", "profile", "preferences", "notifications"],
-                "test_coverage": "45%"
-            }
+                "test_coverage": "45%",
+            },
         },
         {
             "name": "Security Analysis",
@@ -86,8 +86,8 @@ def test_sequential_thinking_prompts():
                 "auth_method": "JWT tokens",
                 "password_policy": "8 chars min",
                 "session_timeout": "30 minutes",
-                "recent_incidents": ["token leakage", "brute force attempts"]
-            }
+                "recent_incidents": ["token leakage", "brute force attempts"],
+            },
         },
         {
             "name": "API Design",
@@ -99,8 +99,8 @@ def test_sequential_thinking_prompts():
                 "endpoints_needed": ["products", "users", "orders", "payments", "reviews"],
                 "authentication": "OAuth 2.0",
                 "rate_limiting": "1000 requests/hour",
-                "documentation": "OpenAPI 3.0"
-            }
+                "documentation": "OpenAPI 3.0",
+            },
         },
         {
             "name": "Database Optimization",
@@ -112,8 +112,8 @@ def test_sequential_thinking_prompts():
                 "database": "PostgreSQL",
                 "slow_queries": ["user_search", "order_history", "product_recommendations"],
                 "table_sizes": ["users: 1M rows", "orders: 5M rows", "products: 100K rows"],
-                "current_indexes": ["primary keys only"]
-            }
+                "current_indexes": ["primary keys only"],
+            },
         },
         {
             "name": "Integration Testing",
@@ -125,9 +125,9 @@ def test_sequential_thinking_prompts():
                 "services": 8,
                 "api_endpoints": 45,
                 "critical_workflows": ["user_registration", "order_processing", "payment"],
-                "testing_tools": ["Docker", "TestContainers", "Cypress"]
-            }
-        }
+                "testing_tools": ["Docker", "TestContainers", "Cypress"],
+            },
+        },
     ]
 
     print("🚀 Testing Sequential Thinking MCP with Variety of Prompts")
@@ -144,7 +144,7 @@ def test_sequential_thinking_prompts():
         try:
             result = subprocess.run([
                 sys.executable, str(usage_tracker),
-                "--log", "sequential-thinking", scenario['type'], "true", "2.5", "5000"
+                "--log", "sequential-thinking", scenario['type'], "true", "2.5", "5000",
             ], capture_output=True, text=True, cwd=repo_root)
 
             if result.returncode == 0:
@@ -160,7 +160,7 @@ def test_sequential_thinking_prompts():
                     "complexity": scenario['complexity'],
                     "thoughts_generated": len(thoughts),
                     "success": True,
-                    "token_estimate": estimate_tokens(scenario)
+                    "token_estimate": estimate_tokens(scenario),
                 })
 
                 # Show first thought as example
@@ -172,7 +172,7 @@ def test_sequential_thinking_prompts():
                 results.append({
                     "scenario": scenario['name'],
                     "success": False,
-                    "error": result.stderr
+                    "error": result.stderr,
                 })
 
         except Exception as e:
@@ -180,7 +180,7 @@ def test_sequential_thinking_prompts():
             results.append({
                 "scenario": scenario['name'],
                 "success": False,
-                "error": str(e)
+                "error": str(e),
             })
 
     return results
@@ -195,7 +195,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Evaluating data consistency strategies across services",
             "Thought 4: Designing deployment and scaling strategies",
             "Thought 5: Assessing security and monitoring requirements",
-            "Thought 6: Recommending architectural improvements and migration path"
+            "Thought 6: Recommending architectural improvements and migration path",
         ],
         "debugging": [
             "Thought 1: Analyzing performance degradation symptoms and patterns",
@@ -203,7 +203,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Examining recent changes and deployment impacts",
             "Thought 4: Planning systematic debugging approach and diagnostics",
             "Thought 5: Implementing immediate mitigation strategies",
-            "Thought 6: Developing long-term prevention and monitoring solutions"
+            "Thought 6: Developing long-term prevention and monitoring solutions",
         ],
         "implementation": [
             "Thought 1: Breaking down real-time notification requirements",
@@ -211,7 +211,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Planning database schema and message persistence",
             "Thought 4: Implementing connection management and scaling strategies",
             "Thought 5: Developing testing and validation approach",
-            "Thought 6: Planning deployment and monitoring strategy"
+            "Thought 6: Planning deployment and monitoring strategy",
         ],
         "refactoring": [
             "Thought 1: Analyzing current monolithic structure and dependencies",
@@ -219,7 +219,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Planning refactoring strategy and migration approach",
             "Thought 4: Designing new service interfaces and contracts",
             "Thought 5: Implementing testing strategy for refactored components",
-            "Thought 6: Planning deployment and rollback procedures"
+            "Thought 6: Planning deployment and rollback procedures",
         ],
         "analysis": [
             "Thought 1: Comprehensive security assessment methodology",
@@ -227,7 +227,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Identifying OWASP Top 10 vulnerabilities",
             "Thought 4: Evaluating data protection and privacy concerns",
             "Thought 5: Assessing infrastructure and deployment security",
-            "Thought 6: Recommending security improvements and monitoring"
+            "Thought 6: Recommending security improvements and monitoring",
         ],
         "planning": [
             "Thought 1: Defining API requirements and resource modeling",
@@ -235,7 +235,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Planning authentication and authorization strategy",
             "Thought 4: Designing error handling and response standards",
             "Thought 5: Planning API versioning and evolution strategy",
-            "Thought 6: Defining documentation and testing requirements"
+            "Thought 6: Defining documentation and testing requirements",
         ],
         "testing": [
             "Thought 1: Analyzing microservices testing challenges and requirements",
@@ -243,8 +243,8 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
             "Thought 3: Planning integration testing scenarios and environments",
             "Thought 4: Implementing end-to-end testing workflows",
             "Thought 5: Designing performance and load testing approach",
-            "Thought 6: Planning test automation and CI/CD integration"
-        ]
+            "Thought 6: Planning test automation and CI/CD integration",
+        ],
     }
 
     return thought_templates.get(scenario['type'], [
@@ -253,7 +253,7 @@ def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
         "Thought 3: Identifying dependencies and relationships",
         "Thought 4: Developing systematic approach",
         "Thought 5: Planning validation and testing",
-        "Thought 6: Defining next steps and recommendations"
+        "Thought 6: Defining next steps and recommendations",
     ])
 
 def estimate_tokens(scenario: dict[str, Any]) -> int:

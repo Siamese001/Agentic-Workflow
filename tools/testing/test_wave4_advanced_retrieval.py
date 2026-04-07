@@ -33,13 +33,13 @@ async def test_query_routing():
         ("Find failures related to memory leaks", "FAILURE_ANALYSIS"),
         ("What were the recent commits?", "HISTORICAL_ANALYSIS"),
         ("How does execution work?", "EXECUTION_INTELLIGENCE"),
-        ("What is the system architecture?", "STRUCTURAL_ANALYSIS")
+        ("What is the system architecture?", "STRUCTURAL_ANALYSIS"),
     ]
 
     available_collections = [
         "repo_code_chunks", "repo_symbols", "repo_arch_docs",
         "repo_adg_graph", "repo_tests_guardrails",
-        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca"
+        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca",
     ]
 
     routing_success = 0
@@ -74,7 +74,7 @@ async def test_multi_query_fusion():
         test_queries = [
             "UniversalWriteGateway implementation",
             "ADG dependency analysis",
-            "L1 cognition components"
+            "L1 cognition components",
         ]
 
         fusion_success = 0
@@ -87,7 +87,7 @@ async def test_multi_query_fusion():
                     query=query,
                     fusion_strategy="reciprocal_rank_fusion",
                     max_results_per_collection=5,
-                    generate_variations=True
+                    generate_variations=True,
                 )
 
                 print(f"  Collections searched: {len(result.collection_results)}")
@@ -129,20 +129,20 @@ async def test_reranking_engine():
             content="UniversalWriteGateway write operations implementation",
             metadata={"artifact_type": "code", "layer": "L2", "file_path": "uwg.py"},
             score=0.8,
-            collection="repo_code_chunks"
+            collection="repo_code_chunks",
         ),
         RetrievalResult(
             content="ADG static scanner dependency graph analysis",
             metadata={"artifact_type": "sym", "layer": "L4", "file_path": "scanner.py"},
             score=0.7,
-            collection="repo_symbols"
+            collection="repo_symbols",
         ),
         RetrievalResult(
             content="L1 cognition semantic retrieval components",
             metadata={"artifact_type": "code", "layer": "L1", "file_path": "retriever.py"},
             score=0.6,
-            collection="repo_code_chunks"
-        )
+            collection="repo_code_chunks",
+        ),
     ]
 
     dummy_fusion = FusionResult(
@@ -151,14 +151,14 @@ async def test_reranking_engine():
         fusion_strategy="score_fusion",
         total_results=3,
         execution_time_ms=50.0,
-        query_variations_used=["explain UWG", "describe UniversalWriteGateway"]
+        query_variations_used=["explain UWG", "describe UniversalWriteGateway"],
     )
 
     try:
         rerank_result = reranker.rerank_results(
             fusion_result=dummy_fusion,
             query="What does UWG do?",
-            max_results=10
+            max_results=10,
         )
 
         print(f"Original results: {len(rerank_result.original_results)}")
@@ -189,7 +189,7 @@ async def test_advanced_retrieval():
         test_queries = [
             "What does the UniversalWriteGateway do?",
             "Show me the blast radius for ADG scanner changes",
-            "Find failures related to memory leaks in L1 cognition"
+            "Find failures related to memory leaks in L1 cognition",
         ]
 
         retrieval_success = 0
@@ -202,7 +202,7 @@ async def test_advanced_retrieval():
                     query=query,
                     fusion_strategy="reciprocal_rank_fusion",
                     enable_reranking=True,
-                    max_final_results=5
+                    max_final_results=5,
                 )
 
                 response = await retriever.retrieve(request)
@@ -260,7 +260,7 @@ async def test_fusion_strategies():
                     query=query,
                     fusion_strategy=strategy,
                     enable_reranking=False,  # Disable for fair comparison
-                    max_final_results=10
+                    max_final_results=10,
                 )
 
                 response = await retriever.retrieve(request)
@@ -268,7 +268,7 @@ async def test_fusion_strategies():
                 strategy_results[strategy] = {
                     "results_count": len(response.final_results),
                     "execution_time": response.execution_time_ms,
-                    "collections_searched": len(response.fusion_result.collection_results)
+                    "collections_searched": len(response.fusion_result.collection_results),
                 }
 
                 print(f"{strategy}:")
@@ -314,7 +314,7 @@ async def test_performance():
             "ADG graph analysis",
             "L1 cognition retrieval",
             "L5 safety validation",
-            "L0 routing dispatch"
+            "L0 routing dispatch",
         ]
 
         start_time = time.time()
@@ -327,7 +327,7 @@ async def test_performance():
                     query=query,
                     fusion_strategy="reciprocal_rank_fusion",
                     enable_reranking=True,
-                    max_final_results=5
+                    max_final_results=5,
                 )
 
                 response = await retriever.retrieve(request)

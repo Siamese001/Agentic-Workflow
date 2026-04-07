@@ -40,7 +40,7 @@ class TestCalibrateFromOutcomes:
                 "avg_latency_ms": 1000.0,
                 "error_rate": 0.15,  # 15% error rate > 10% threshold
                 "p95_latency_ms": 1500.0,
-            }
+            },
         ]
 
         report = engine.calibrate_from_outcomes(aggregates)
@@ -61,7 +61,7 @@ class TestCalibrateFromOutcomes:
                 "avg_latency_ms": 250.0,  # < 500ms
                 "error_rate": 0.02,  # < 5%
                 "p95_latency_ms": 400.0,
-            }
+            },
         ]
 
         report = engine.calibrate_from_outcomes(aggregates)
@@ -82,7 +82,7 @@ class TestCalibrateFromOutcomes:
                 "avg_latency_ms": 750.0,  # Between 500-1000ms
                 "error_rate": 0.07,  # Between 5-10%
                 "p95_latency_ms": 1000.0,
-            }
+            },
         ]
 
         report = engine.calibrate_from_outcomes(aggregates)
@@ -131,7 +131,7 @@ class TestCalibrateFromOutcomes:
                 "avg_latency_ms": 500.0,  # Exactly at threshold
                 "error_rate": 0.05,  # Exactly at threshold
                 "p95_latency_ms": 750.0,
-            }
+            },
         ]
 
         report = engine.calibrate_from_outcomes(aggregates)
@@ -158,7 +158,7 @@ class TestCalibrateFromOutcomes:
         aggregates = [
             {
                 "path_id": "unknown_path",
-            }
+            },
         ]
 
         report = engine.calibrate_from_outcomes(aggregates)

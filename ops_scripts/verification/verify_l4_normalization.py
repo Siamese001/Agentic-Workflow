@@ -31,7 +31,7 @@ class ADGL4NormalizationVerifier:
     L4_ENTITY_TYPES = {
         "module", "datastore", "side_effect_endpoint", "embedding_store",
         "retrieval_component", "decision_point", "policy", "validation_artifact",
-        "learning_state", "provenance_state"
+        "learning_state", "provenance_state",
     }
 
     def __init__(self, adg_dir: Path):
@@ -72,7 +72,7 @@ class ADGL4NormalizationVerifier:
                         "entity_type": row[2],
                         "layer": row[3],
                         "identity_kind": row[4],
-                        "confidence": row[5]
+                        "confidence": row[5],
                     })
 
                 print(f"   📊 Found {len(l4_nodes)} nodes in L4")
@@ -99,7 +99,7 @@ class ADGL4NormalizationVerifier:
                     "total_l4_nodes": len(l4_nodes),
                     "unknown_classifications": len(unknown_classifications),
                     "entity_distribution": entity_distribution,
-                    "l4_nodes": l4_nodes
+                    "l4_nodes": l4_nodes,
                 }
 
         except Exception as e:
@@ -128,7 +128,7 @@ class ADGL4NormalizationVerifier:
                         "entity_type": row[2],
                         "identity_kind": row[3],
                         "confidence": row[4],
-                        "resolved_path": row[5]
+                        "resolved_path": row[5],
                     })
 
                 print(f"   📊 Analyzing {len(l4_modules)} L4 modules")
@@ -155,7 +155,7 @@ class ADGL4NormalizationVerifier:
                             "module_name": module["name"],
                             "identity_kind": module["identity_kind"],
                             "confidence": module["confidence"],
-                            "issues": issues
+                            "issues": issues,
                         })
 
                 print(f"   📊 L4 identity issues: {len(identity_issues)}")
@@ -164,7 +164,7 @@ class ADGL4NormalizationVerifier:
                     "total_l4_modules": len(l4_modules),
                     "identity_issues": len(identity_issues),
                     "identity_compliance_rate": (len(l4_modules) - len(identity_issues)) / max(1, len(l4_modules)),
-                    "issue_details": identity_issues
+                    "issue_details": identity_issues,
                 }
 
         except Exception as e:
@@ -197,7 +197,7 @@ class ADGL4NormalizationVerifier:
                         "layer": row[3],
                         "identity_kind": row[4],
                         "confidence": row[5],
-                        "resolved_path": row[6]
+                        "resolved_path": row[6],
                     })
 
                 # Check for UNKNOWN layer nodes in L4 (this is the key check)
@@ -207,7 +207,7 @@ class ADGL4NormalizationVerifier:
                     "l4_nodes": l4_nodes,
                     "total_l4_nodes": len(l4_nodes),
                     "unknown_layer_count": len(unknown_layer_nodes),
-                    "status": "PASS" if len(unknown_layer_nodes) == 0 else "FAIL"
+                    "status": "PASS" if len(unknown_layer_nodes) == 0 else "FAIL",
                 }
 
         except Exception as e:
@@ -224,7 +224,7 @@ class ADGL4NormalizationVerifier:
                 # Get L4 persistence-related nodes
                 persistence_entities = [
                     "datastore", "side_effect_endpoint", "embedding_store",
-                    "validation_artifact", "learning_state", "provenance_state"
+                    "validation_artifact", "learning_state", "provenance_state",
                 ]
 
                 placeholders = ','.join(['?' for _ in persistence_entities])
@@ -241,7 +241,7 @@ class ADGL4NormalizationVerifier:
                         "name": row[1],
                         "entity_type": row[2],
                         "resolved_path": row[3],
-                        "confidence": row[4]
+                        "confidence": row[4],
                     })
 
                 print(f"   📊 Found {len(persistence_nodes)} L4 persistence nodes")
@@ -253,13 +253,13 @@ class ADGL4NormalizationVerifier:
                         path_issues.append({
                             "node_name": node["name"],
                             "entity_type": node["entity_type"],
-                            "issue": "Missing resolved path"
+                            "issue": "Missing resolved path",
                         })
                     elif not Path(node["resolved_path"]).is_absolute():
                         path_issues.append({
                             "node_name": node["name"],
                             "entity_type": node["entity_type"],
-                            "issue": "Non-absolute path"
+                            "issue": "Non-absolute path",
                         })
 
                 # Check for canonical state ledger participation
@@ -280,7 +280,7 @@ class ADGL4NormalizationVerifier:
                     "persistence_nodes": len(persistence_nodes),
                     "path_issues": len(path_issues),
                     "ledger_participation": ledger_participation,
-                    "path_issue_details": path_issues
+                    "path_issue_details": path_issues,
                 }
 
         except Exception as e:
@@ -300,7 +300,7 @@ class ADGL4NormalizationVerifier:
                     ("learning_state", "Learning state"),
                     ("provenance_state", "Provenance state"),
                     ("policy", "Policy artifacts"),
-                    ("decision_point", "Decision points")
+                    ("decision_point", "Decision points"),
                 ]
 
                 layer_distribution = {}
@@ -317,7 +317,7 @@ class ADGL4NormalizationVerifier:
                         "description": description,
                         "distribution": distribution,
                         "l4_count": distribution.get("L4", 0),
-                        "total_count": sum(distribution.values())
+                        "total_count": sum(distribution.values()),
                     }
 
                 # Check for artifacts outside L4 that should be in L4
@@ -335,7 +335,7 @@ class ADGL4NormalizationVerifier:
                                 "l4_count": l4_count,
                                 "total_count": total_count,
                                 "l4_percentage": l4_percentage,
-                                "distribution": info["distribution"]
+                                "distribution": info["distribution"],
                             })
 
                 print("   📊 Artifact distribution analysis:")
@@ -349,7 +349,7 @@ class ADGL4NormalizationVerifier:
                 return {
                     "layer_distribution": layer_distribution,
                     "misplaced_artifacts": len(misplaced_artifacts),
-                    "misplaced_details": misplaced_artifacts
+                    "misplaced_details": misplaced_artifacts,
                 }
 
         except Exception as e:
@@ -396,8 +396,8 @@ class ADGL4NormalizationVerifier:
                 "identity_issues": identity_resolution["identity_issues"],
                 "path_issues": persistence_paths["path_issues"],
                 "misplaced_artifacts": authoritative_location["misplaced_artifacts"],
-                "identity_compliance_rate": identity_resolution["identity_compliance_rate"]
-            }
+                "identity_compliance_rate": identity_resolution["identity_compliance_rate"],
+            },
         }
 
         # Print results
@@ -432,12 +432,12 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
 
     args = parser.parse_args()

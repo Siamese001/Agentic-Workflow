@@ -74,7 +74,7 @@ class TestPerformanceMetrics:
             cost_estimate=0.5,
             success_rate=0.95,
             cache_hit_rate=0.8,
-            throughput=1000.0
+            throughput=1000.0,
         )
 
         assert metrics.layer_type == "L0_routing"
@@ -135,7 +135,7 @@ class TestDistributedStateManager:
         # Merge: take max counter, union of data
         merged = {
             "counter": max(local_state["counter"], remote_state["counter"]),
-            "data": list(set(local_state["data"]) | set(remote_state["data"]))
+            "data": list(set(local_state["data"]) | set(remote_state["data"])),
         }
 
         assert merged["counter"] == 5
@@ -253,7 +253,7 @@ class TestImplementationPlan:
         response = {
             "layer": layer,
             "status": status,
-            "metrics": {"latency_ms": 50, "cost": 0.3}
+            "metrics": {"latency_ms": 50, "cost": 0.3},
         }
 
         assert response["layer"] == layer

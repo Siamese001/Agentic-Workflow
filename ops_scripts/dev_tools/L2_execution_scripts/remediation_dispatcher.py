@@ -160,6 +160,7 @@ from agentic_core.L3_orchestration.healers.healing_tier_dispatcher import (
     dispatch_healing,
 )
 from agentic_core.L3_orchestration.healers.healing_tier_types import FailureSignal
+
 from agentic_core.L2_execution.types.heal_contract_types import (
     CombinedHealResult,
     HealCheckResult,
@@ -194,7 +195,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -295,7 +295,7 @@ HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
         ("guardian_import_boundary", "heal_guardian_import_boundary"),
         ("guardian_layer_inversion", "heal_guardian_layer_inversion"),
         ("guardian_ssot_drift", "heal_guardian_ssot_drift"),
-    }
+    },
 )
 
 # Hint key pattern: "key=value" pairs, space-separated
@@ -344,12 +344,12 @@ class CanonicalEscalationPayload:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "CanonicalEscalationPayload.to_canonical_string"
+            _trace_id, LayerSegment.L2_EXECUTION, "CanonicalEscalationPayload.to_canonical_string",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:CanonicalEscalationPayload.to_canonical_string".encode()
+            f"{_trace_id}:CanonicalEscalationPayload.to_canonical_string".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

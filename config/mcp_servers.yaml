@@ -14,7 +14,7 @@
 # REPOSITORY ROOT — Single point of change for repo location
 # All server paths use ${REPO_ROOT} placeholder. Expanded by expand_mcp_config.py.
 # ============================================================================
-repo_root: "${REPO_ROOT}"
+repo_root: "C:/Git/Agentic-Workflow"
 
 schema_version: "1.0.0"
 last_updated: "2026-04-04"
@@ -35,9 +35,12 @@ servers:
     enabled: true
     target_layer: "L0"
     description: "Git operations, issue tracking, and pull request management"
-    command: "gk"
+    command: "${GITKRAKEN_EXE}"
     args:
       - "mcp"
+      - "--host=windsurf"
+      - "--source=gitlens"
+      - "--scheme=windsurf"
     cwd: "${REPO_ROOT}"
     capabilities:
       - git_operations
@@ -343,9 +346,12 @@ servers:
     description: "Persistent SQLite-backed knowledge graph (custom server replaces npx @modelcontextprotocol/server-memory)"
     command: "python"
     args:
-      - "-c"
-      - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/memory/adg_memory_server.py'; exec(open(r'${REPO_ROOT}/tools/memory/adg_memory_server.py', encoding='utf-8').read())"
+      - "${REPO_ROOT}/tools/memory/adg_memory_server.py"
     cwd: "${REPO_ROOT}"
+    env:
+      ADG_REDIS_URL: "redis://localhost:6379/0"
+      MEMORY_DB: "${REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite"
+      PYTHONPATH: "${REPO_ROOT}"
     capabilities:
       - knowledge_graph
       - entity_persistence
@@ -393,36 +399,186 @@ servers:
         description: "Recall persistent project context"
 
   # ==========================================================================
-  # Sequential Thinking (mcp7_*) - Problem solving workflow
+  # Browser / Puppeteer (no prefix assignment - mirrors Windsurf 'browser' entry)
   # ==========================================================================
-  sequential_thinking:
-    name: "Sequential Thinking"
+  browser:
+    name: "Browser"
     prefix: "mcp7"
     enabled: true
-    target_layer: "L1"
-    description: "Dynamic and reflective problem-solving through structured thinking"
+    target_layer: "L2"
+    description: "Browser automation via Puppeteer for web interaction and scraping"
     command: "npx.cmd"
     args:
       - "-y"
-      - "@modelcontextprotocol/server-sequential-thinking"
-    cwd: "${REPO_ROOT}"
+      - "@modelcontextprotocol/server-puppeteer"
     capabilities:
-      - hypothesis_branching
-      - logic_pruning
-      - dynamic_reasoning
-      - problem_decomposition
+      - browser_automation
+      - web_scraping
+      - page_navigation
     tools:
-      sequential_thinking:
-        target: "mcp7_sequentialthinking"
-        description: "Execute structured sequential thinking workflow"
+      browser_navigate:
+        target: "mcp7_puppeteer_navigate"
+        description: "Navigate to a URL"
+      browser_screenshot:
+        target: "mcp7_puppeteer_screenshot"
+        description: "Take a screenshot"
+      browser_click:
+        target: "mcp7_puppeteer_click"
+        description: "Click an element"
+      browser_fill:
+        target: "mcp7_puppeteer_fill"
+        description: "Fill a form field"
+      browser_evaluate:
+        target: "mcp7_puppeteer_evaluate"
+        description: "Execute JavaScript in browser"
 
   # ==========================================================================
-  # Vector DB (mcp8_*) - Embeddings and semantic search
+  # Playwright (mcp9_*) - Browser automation and web interaction
+  # ==========================================================================
+  playwright:
+    name: "Playwright"
+    prefix: "mcp9"
+    enabled: true
+    target_layer: "L2"
+    description: "Browser automation, web scraping, and UI interaction for testing/debugging"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@playwright/mcp"
+    cwd: "${REPO_ROOT}"
+    capabilities:
+      - browser_automation
+      - web_scraping
+      - ui_interaction
+      - screenshot_capture
+      - page_navigation
+    tools:
+      playwright_navigate:
+        target: "mcp9_playwright_navigate"
+        description: "Navigate to a URL in browser"
+      playwright_click:
+        target: "mcp9_playwright_click"
+        description: "Click an element on the page"
+      playwright_screenshot:
+        target: "mcp9_playwright_screenshot"
+        description: "Take a screenshot of current page"
+      playwright_fill:
+        target: "mcp9_playwright_fill"
+        description: "Fill form fields"
+      playwright_get_text:
+        target: "mcp9_playwright_get_visible_text"
+        description: "Extract text from page"
+      playwright_evaluate:
+        target: "mcp9_playwright_evaluate"
+        description: "Execute JavaScript in browser context"
+
+  # ==========================================================================
+  # Fetch (no Windsurf prefix) - Web content retrieval
+  # ==========================================================================
+  fetch:
+    name: "Fetch"
+    prefix: "mcp8"
+    enabled: true
+    target_layer: "L2"
+    description: "Web content retrieval and URL fetching"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "mcp-fetch"
+    capabilities:
+      - url_fetching
+      - web_content_retrieval
+    tools:
+      fetch_url:
+        target: "mcp8_fetch"
+        description: "Fetch content from a URL"
+
+  # ==========================================================================
+  # Figma (no Windsurf prefix) - Design file access
+  # ==========================================================================
+  figma:
+    name: "Figma"
+    prefix: "mcp13"
+    enabled: true
+    target_layer: "L2"
+    description: "Figma design file access and asset export"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "figma-mcp-pro"
+      - "--figma-api-key"
+      - "${FIGMA_API_KEY}"
+    capabilities:
+      - design_access
+      - asset_export
+      - component_inspection
+    tools:
+      figma_get_data:
+        target: "mcp13_get_figma_data"
+        description: "Get Figma design data"
+      figma_download_assets:
+        target: "mcp13_download_design_assets"
+        description: "Download design assets"
+
+  # ==========================================================================
+  # GitHub (no Windsurf prefix) - GitHub API operations
+  # ==========================================================================
+  github:
+    name: "GitHub"
+    prefix: "mcp14"
+    enabled: true
+    target_layer: "L0"
+    description: "GitHub API for issues, PRs, and repository management"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-github"
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+    capabilities:
+      - issue_management
+      - pull_request_management
+      - repository_access
+    tools:
+      github_create_issue:
+        target: "mcp14_create_issue"
+        description: "Create a GitHub issue"
+      github_list_issues:
+        target: "mcp14_list_issues"
+        description: "List GitHub issues"
+      github_create_pr:
+        target: "mcp14_create_pull_request"
+        description: "Create a pull request"
+
+  # ==========================================================================
+  # Postgres Memory (no Windsurf prefix) - PostgreSQL-backed memory
+  # ==========================================================================
+  postgres_memory:
+    name: "Postgres Memory"
+    prefix: "mcp15"
+    enabled: true
+    target_layer: "L4"
+    description: "PostgreSQL-backed persistent memory store"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-postgres"
+      - "postgresql://postgres:postgres@localhost:5432/mcp_db"
+    capabilities:
+      - persistent_memory
+      - sql_queries
+    tools:
+      pg_query:
+        target: "mcp15_query"
+        description: "Run a read-only SQL query"
+
+  # ==========================================================================
+  # Vector DB (mcp16_*) - Embeddings and semantic search
   # ==========================================================================
   vector_db:
     name: "Vector DB"
-    prefix: "mcp8"
-    enabled: true
+    prefix: "mcp16"
+    enabled: false
     target_layer: "L4"
     description: "Vector database for embeddings and semantic search"
     command: "python"
@@ -465,12 +621,12 @@ servers:
         description: "Get vector database statistics"
 
   # ==========================================================================
-  # OpenTelemetry MCP (mcp9_*) - Runtime tracing and execution observability
+  # OpenTelemetry MCP (mcp17_*) - Runtime tracing and execution observability
   # ==========================================================================
   otel_mcp:
     name: "OpenTelemetry MCP"
-    prefix: "mcp9"
-    enabled: true
+    prefix: "mcp17"
+    enabled: false
     target_layer: "L6"
     description: "Runtime ADG tracing, OTel span queries, Prometheus metrics, healing chain analysis"
     command: "python"
@@ -512,11 +668,47 @@ servers:
         description: "Push collected OTel spans to runtime_adg_*.sqlite"
 
   # ==========================================================================
-  # Redis MCP (mcp10_*) - Cache/state inspection and targeted invalidation
+  # Task Manager (mcp10_*) - Task decomposition and tracking
+  # ==========================================================================
+  task_manager:
+    name: "Task Manager"
+    prefix: "mcp18"
+    enabled: false
+    target_layer: "L1"
+    description: "Task decomposition, step tracking, and progress preservation for multi-step work"
+    command: "npx.cmd"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-task-manager"
+    cwd: "${REPO_ROOT}"
+    capabilities:
+      - task_decomposition
+      - step_tracking
+      - progress_preservation
+      - task_state_management
+    tools:
+      task_create:
+        target: "mcp10_create_task"
+        description: "Create a new task with description and metadata"
+      task_update:
+        target: "mcp10_update_task"
+        description: "Update task status, progress, or notes"
+      task_list:
+        target: "mcp10_list_tasks"
+        description: "List all tasks with optional filtering"
+      task_get:
+        target: "mcp10_get_task"
+        description: "Get details of a specific task"
+      task_delete:
+        target: "mcp10_delete_task"
+        description: "Delete a task"
+
+  # ==========================================================================
+  # Redis MCP (mcp11_*) - Cache/state inspection and targeted invalidation
   # ==========================================================================
   redis_mcp:
     name: "Redis MCP"
-    prefix: "mcp10"
+    prefix: "mcp19"
     enabled: true
     target_layer: "L4"
     description: "Redis cache/state inspection for ADG hot cache, sovereign orchestration fabric, and tool embedding cache"
@@ -538,42 +730,42 @@ servers:
       - adg_cache_management
     tools:
       redis_health:
-        target: "mcp10_redis_health"
+        target: "mcp19_redis_health"
         description: "Ping Redis and return INFO stats (memory, keyspace, uptime)"
       redis_dbsize:
-        target: "mcp10_redis_dbsize"
+        target: "mcp19_redis_dbsize"
         description: "Total key count in the current Redis database"
       redis_namespace_stats:
-        target: "mcp10_redis_namespace_stats"
+        target: "mcp19_redis_namespace_stats"
         description: "Key counts grouped by namespace prefix"
       redis_keys:
-        target: "mcp10_redis_keys"
+        target: "mcp19_redis_keys"
         description: "SCAN for keys matching a pattern (safe, non-blocking)"
       redis_get:
-        target: "mcp10_redis_get"
+        target: "mcp19_redis_get"
         description: "GET a single key (auto-detects string/hash/list/set)"
       redis_hgetall:
-        target: "mcp10_redis_hgetall"
+        target: "mcp19_redis_hgetall"
         description: "HGETALL a hash key (e.g. ADG node cache entries)"
       redis_ttl:
-        target: "mcp10_redis_ttl"
+        target: "mcp19_redis_ttl"
         description: "TTL remaining on a key"
       redis_del_key:
-        target: "mcp10_redis_del_key"
+        target: "mcp19_redis_del_key"
         description: "DEL a single specific key (targeted invalidation)"
       redis_flush_namespace:
-        target: "mcp10_redis_flush_namespace"
+        target: "mcp19_redis_flush_namespace"
         description: "DEL all keys matching a pattern (dry_run=True by default)"
       redis_stats:
-        target: "mcp10_redis_stats"
+        target: "mcp19_redis_stats"
         description: "Full Redis INFO: memory, persistence, replication, clients"
 
   # ==========================================================================
-  # Pytest MCP (mcp11_*) - Test discovery, execution, and triage
+  # Pytest MCP (mcp12_*) - Test discovery, execution, and triage
   # ==========================================================================
   pytest_mcp:
     name: "Pytest MCP"
-    prefix: "mcp11"
+    prefix: "mcp20"
     enabled: true
     target_layer: "L5"
     description: "Test discovery, targeted execution, CI gate analysis, and failure triage for the 2,771-module test suite"
@@ -591,28 +783,28 @@ servers:
       - ci_gate_analysis
     tools:
       pytest_discover:
-        target: "mcp11_discover_tests"
+        target: "mcp20_discover_tests"
         description: "Discover all tests in the repository by path/pattern"
       pytest_run:
-        target: "mcp11_run_tests"
+        target: "mcp20_run_tests"
         description: "Run pytest with specified path, markers, and options"
       pytest_run_file:
-        target: "mcp11_run_test_file"
+        target: "mcp20_run_test_file"
         description: "Run a single test file"
       pytest_run_function:
-        target: "mcp11_run_test_function"
+        target: "mcp20_run_test_function"
         description: "Run a specific test function by ID"
       pytest_last_results:
-        target: "mcp11_get_last_results"
+        target: "mcp20_get_last_results"
         description: "Get results from the last test run"
       pytest_coverage:
-        target: "mcp11_get_coverage"
+        target: "mcp20_get_coverage"
         description: "Get test coverage report"
       pytest_markers:
-        target: "mcp11_list_markers"
+        target: "mcp20_list_markers"
         description: "List all pytest markers defined in the project"
       pytest_failing:
-        target: "mcp11_get_failing_tests"
+        target: "mcp20_get_failing_tests"
         description: "Get currently failing tests from last run"
 
 # ============================================================================
@@ -652,5 +844,11 @@ validation:
     - mcp7
     - mcp8
     - mcp9
-    - mcp10
-    - mcp11
+    - mcp13
+    - mcp14
+    - mcp15
+    - mcp16
+    - mcp17
+    - mcp18
+    - mcp19
+    - mcp20

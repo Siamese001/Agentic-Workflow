@@ -112,7 +112,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -252,7 +251,7 @@ def evaluate_injection_regression(data_root: str = None, limit: int = None) -> I
         "attack_distribution": attack_dist,
     }
     cert_hash = hashlib.sha256(
-        json.dumps(hash_data, sort_keys=True, separators=(",", ":")).encode()
+        json.dumps(hash_data, sort_keys=True, separators=(",", ":")).encode(),
     ).hexdigest()
     return InjectionRegressionResult(
         total_samples=len(samples),

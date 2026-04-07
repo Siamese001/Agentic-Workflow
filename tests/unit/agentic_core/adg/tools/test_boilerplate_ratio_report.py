@@ -143,14 +143,14 @@ def test_generate_ratio_report(mock_scan, mock_calculate):
     mock_scan.return_value = [
         Path("agentic_core/L0_routing/file1.py"),  # Will be L0
         Path("agentic_core/L0_routing/file2.py"),  # Will be L0
-        Path("agentic_core/L5_safety/file1.py")    # Will be L5
+        Path("agentic_core/L5_safety/file1.py"),    # Will be L5
     ]
 
     # Mock ratio calculations
     mock_calculate.side_effect = [
         (1.0, {"classification": "hollow", "behavioral_nodes": 0, "boilerplate_nodes": 5, "lines": 10}),
         (0.5, {"classification": "healthy", "behavioral_nodes": 2, "boilerplate_nodes": 2, "lines": 20}),
-        (0.8, {"classification": "boilerplate_heavy", "behavioral_nodes": 1, "boilerplate_nodes": 4, "lines": 15})
+        (0.8, {"classification": "boilerplate_heavy", "behavioral_nodes": 1, "boilerplate_nodes": 4, "lines": 15}),
     ]
 
     analyzer = BoilerplateRatioAnalyzer(Path("."))
@@ -221,8 +221,8 @@ def test_print_summary(capsys):
                 median_ratio=0.75,
                 total_lines=30,
                 behavioral_nodes=2,
-                boilerplate_nodes=8
-            )
+                boilerplate_nodes=8,
+            ),
         },
         file_details=[
             {
@@ -232,7 +232,7 @@ def test_print_summary(capsys):
                 "classification": "hollow",
                 "behavioral_nodes": 0,
                 "boilerplate_nodes": 5,
-                "lines": 10
+                "lines": 10,
             },
             {
                 "file": "L0_file2.py",
@@ -241,8 +241,8 @@ def test_print_summary(capsys):
                 "classification": "healthy",
                 "behavioral_nodes": 2,
                 "boilerplate_nodes": 2,
-                "lines": 20
-            }
+                "lines": 20,
+            },
         ],
         summary={
             "total_files": 2,
@@ -250,8 +250,8 @@ def test_print_summary(capsys):
             "total_boilerplate_heavy": 1,
             "total_healthy": 0,
             "overall_hollow_percentage": 50.0,
-            "overall_boilerplate_heavy_percentage": 50.0
-        }
+            "overall_boilerplate_heavy_percentage": 50.0,
+        },
     )
 
     analyzer = BoilerplateRatioAnalyzer(Path("."))

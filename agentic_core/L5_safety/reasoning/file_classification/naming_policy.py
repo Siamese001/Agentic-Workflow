@@ -7,8 +7,6 @@ and compliant name generation.
 import re
 from pathlib import Path
 
-from .models import Violation
-
 
 def _to_pascal_case(name: str) -> str:
     """Convert snake_case or mixed case to PascalCase.

@@ -15,7 +15,7 @@ for f in sorted(tests_dir.rglob('test_*.py')):
         broken_files.append({
             'file': str(f),
             'error': str(e),
-            'line': e.lineno or 0
+            'line': e.lineno or 0,
         })
     except Exception:
         continue

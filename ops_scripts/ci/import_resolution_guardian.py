@@ -107,9 +107,10 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
+    APPS_PACKAGES,  # SSOT list of all apps_* packages
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
@@ -117,21 +118,14 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -139,17 +133,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -268,7 +256,8 @@ _emit_reads_through("l4", "import_resolution_guardian", "urg_read_60")
 _emit_reads_through("l4", "import_resolution_guardian", "urg_read_61")
 _emit_reads_through("l4", "import_resolution_guardian", "urg_read_62")
 
-SCAN_ROOTS: tuple[str, ...] = (AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR)
+# Construct SCAN_ROOTS from SSOT: agentic_core + all apps_* packages (auto-expands as new apps are added)
+SCAN_ROOTS: tuple[str, ...] = (AGENTIC_CORE_DIR, *APPS_PACKAGES)
 INTERNAL_ROOTS: frozenset[str] = frozenset(SCAN_ROOTS)
 WALK_EXCLUDES: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 BASELINE_PATH = PROJECT_ROOT / 'artifacts' / 'import_health' / 'import_health_baseline.json'

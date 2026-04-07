@@ -389,7 +389,7 @@ def create_truly_clean_static_adg() -> None:
         module_adg = canonical_name("Module", module)
         cursor.execute(
             "INSERT OR IGNORE INTO nodes (adg_name, entity_type, identity_kind, confidence) VALUES (?, ?, ?, ?)",
-            (module_adg, "module", "module", 1.0)
+            (module_adg, "module", "module", 1.0),
         )
         cursor.execute("SELECT id FROM nodes WHERE adg_name = ?", (module_adg,))
         node_id_map[module_adg] = cursor.fetchone()[0]
@@ -401,7 +401,7 @@ def create_truly_clean_static_adg() -> None:
                 entity_type = "symbol" if "::" in node_name else "layer" if edge.relation_type == "belongs_to_layer" else "module"
                 cursor.execute(
                     "INSERT OR IGNORE INTO nodes (adg_name, entity_type, identity_kind, confidence) VALUES (?, ?, ?, ?)",
-                    (node_name, entity_type, entity_type, 1.0)
+                    (node_name, entity_type, entity_type, 1.0),
                 )
                 cursor.execute("SELECT id FROM nodes WHERE adg_name = ?", (node_name,))
                 node_id_map[node_name] = cursor.fetchone()[0]
@@ -415,7 +415,7 @@ def create_truly_clean_static_adg() -> None:
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol)
+            (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol),
         )
 
     conn.commit()

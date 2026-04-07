@@ -41,7 +41,7 @@ def serialize_source_register(sources: list[Any]) -> list[dict[str, Any]]:
                 "summary": s.summary,
                 "url": s.url,
                 "section_id": s.section_id,
-            }
+            },
         )
     return result
 

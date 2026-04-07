@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Identify dead code using ADG snapshot signals."""
 
-import json
 import ast
-from pathlib import Path
-from typing import Dict, List, Set
+import json
 import re
+from pathlib import Path
+from typing import Dict, List
 
 
 def parse_adg_snapshot(snapshot_path: str) -> Dict:
@@ -31,7 +31,7 @@ def find_unused_imports(file_path: Path) -> List[Dict]:
                         'type': 'import',
                         'name': alias.name,
                         'alias': alias.asname,
-                        'line': node.lineno
+                        'line': node.lineno,
                     })
             elif isinstance(node, ast.ImportFrom):
                 module = node.module or ''
@@ -41,7 +41,7 @@ def find_unused_imports(file_path: Path) -> List[Dict]:
                         'module': module,
                         'name': alias.name,
                         'alias': alias.asname,
-                        'line': node.lineno
+                        'line': node.lineno,
                     })
 
         # Simple heuristic: if import name never appears in the rest of the file
@@ -82,7 +82,7 @@ def find_duplicate_methods(file_path: Path) -> List[Dict]:
                     'name': node.name,
                     'line': node.lineno,
                     'args': len(node.args.args),
-                    'signature': sig
+                    'signature': sig,
                 })
 
         # Find duplicates by signature
@@ -93,7 +93,7 @@ def find_duplicate_methods(file_path: Path) -> List[Dict]:
                 duplicates.append({
                     'function': func['name'],
                     'line': func['line'],
-                    'duplicate_of': seen[func['signature']]
+                    'duplicate_of': seen[func['signature']],
                 })
             else:
                 seen[func['signature']] = func['name']
@@ -112,8 +112,8 @@ def analyze_dead_code(target_dir: str, snapshot_path: str) -> Dict:
         'summary': {
             'files_analyzed': 0,
             'unused_imports': 0,
-            'duplicate_methods': 0
-        }
+            'duplicate_methods': 0,
+        },
     }
 
     # Parse ADG snapshot
@@ -122,7 +122,7 @@ def analyze_dead_code(target_dir: str, snapshot_path: str) -> Dict:
         'unused_imports': snapshot.get('graph_plane_counts', {}).get('unused_import', 0),
         'dead_imports': snapshot.get('graph_plane_counts', {}).get('dead_imports', 0),
         'unreachable_after_raise': snapshot.get('graph_plane_counts', {}).get('unreachable_after_raise', 0),
-        'duplicate_method': snapshot.get('graph_plane_counts', {}).get('duplicate_method', 0)
+        'duplicate_method': snapshot.get('graph_plane_counts', {}).get('duplicate_method', 0),
     }
 
     # Analyze Python files in target directory
@@ -141,7 +141,7 @@ def analyze_dead_code(target_dir: str, snapshot_path: str) -> Dict:
         if unused_imports or duplicate_methods:
             results['file_analysis'][relative_path] = {
                 'unused_imports': unused_imports,
-                'duplicate_methods': duplicate_methods
+                'duplicate_methods': duplicate_methods,
             }
 
             results['summary']['unused_imports'] += len(unused_imports)
@@ -169,20 +169,20 @@ def main():
 
     results = analyze_dead_code(target_dir, snapshot_path)
 
-    print(f"\nADG Dead Code Signals:")
+    print("\nADG Dead Code Signals:")
     print(f"  Unused imports: {results['adg_signals']['unused_imports']}")
     print(f"  Dead imports: {results['adg_signals']['dead_imports']}")
     print(f"  Unreachable after raise: {results['adg_signals']['unreachable_after_raise']}")
     print(f"  Duplicate methods: {results['adg_signals']['duplicate_method']}")
 
-    print(f"\nFile Analysis Summary:")
+    print("\nFile Analysis Summary:")
     print(f"  Files analyzed: {results['summary']['files_analyzed']}")
     print(f"  Files with issues: {len(results['file_analysis'])}")
     print(f"  Potential unused imports: {results['summary']['unused_imports']}")
     print(f"  Potential duplicate methods: {results['summary']['duplicate_methods']}")
 
     if results['file_analysis']:
-        print(f"\nFiles with dead code issues:")
+        print("\nFiles with dead code issues:")
         for file_path, issues in results['file_analysis'].items():
             print(f"  {file_path}:")
             if issues['unused_imports']:

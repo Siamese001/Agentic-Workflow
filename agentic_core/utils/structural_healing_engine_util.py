@@ -167,7 +167,7 @@ _emit_links_execution_to_snapshot("p4", "structural_healing_engine_util", "exec_
 
 
 def relocate_file(
-    source_path: Path, target_path: Path, project_root: Path, *, dry_run: bool = True
+    source_path: Path, target_path: Path, project_root: Path, *, dry_run: bool = True,
 ) -> dict[str, Any]:
     """Relocate a file with integrity verification and rollback.
 
@@ -220,7 +220,7 @@ def analyze_file_structure(file_path: Path, *, max_lines: int = 800) -> dict[str
     }
     if structure_info["line_count"] > max_lines:
         structure_info["issues"].append(
-            f"File too large: {structure_info['line_count']} lines (limit: {max_lines})"
+            f"File too large: {structure_info['line_count']} lines (limit: {max_lines})",
         )
     try:
         ast.parse(content)
@@ -271,7 +271,7 @@ def suggest_file_split(file_path: Path, *, max_lines: int = 800) -> list[dict[st
                 "strategy": "split_by_classes",
                 "description": "Split file into separate class files",
                 "priority": "high",
-            }
+            },
         )
     if "def " in content:
         suggestions.append(
@@ -279,7 +279,7 @@ def suggest_file_split(file_path: Path, *, max_lines: int = 800) -> list[dict[st
                 "strategy": "split_by_functions",
                 "description": "Group related functions into modules",
                 "priority": "medium",
-            }
+            },
         )
     return suggestions
 

@@ -55,7 +55,7 @@ class IndexVerificationResult:
 
 
 def _verify_single_index(
-    index_id: str, index_dir: Path, *, expected_embedder_id: str | None
+    index_id: str, index_dir: Path, *, expected_embedder_id: str | None,
 ) -> IndexVerificationResult:
     """Verify one 3-file FAISS artifact and return its verification result.
 
@@ -87,7 +87,7 @@ def _verify_single_index(
         raise StartupIntegrityError(f"[{index_id}] manifest.json missing required fields: {sorted(missing)}")
     if expected_embedder_id is not None and manifest["embedder_id"] != expected_embedder_id:
         raise StartupIntegrityError(
-            f"[{index_id}] embedder_id mismatch: manifest has '{manifest['embedder_id']}' but runtime expects '{expected_embedder_id}'"
+            f"[{index_id}] embedder_id mismatch: manifest has '{manifest['embedder_id']}' but runtime expects '{expected_embedder_id}'",
         )
     try:
         index_bytes = index_path.read_bytes()
@@ -96,7 +96,7 @@ def _verify_single_index(
     actual_sha_index = hashlib.sha256(index_bytes).hexdigest()
     if actual_sha_index != manifest["sha256_index"]:
         raise StartupIntegrityError(
-            f"[{index_id}] index.json SHA-256 mismatch: expected {manifest['sha256_index']!r}, got {actual_sha_index!r}"
+            f"[{index_id}] index.json SHA-256 mismatch: expected {manifest['sha256_index']!r}, got {actual_sha_index!r}",
         )
     try:
         meta_bytes = meta_path.read_bytes()
@@ -105,7 +105,7 @@ def _verify_single_index(
     actual_sha_meta = hashlib.sha256(meta_bytes).hexdigest()
     if actual_sha_meta != manifest["sha256_meta_canonical"]:
         raise StartupIntegrityError(
-            f"[{index_id}] meta.json SHA-256 mismatch: expected {manifest['sha256_meta_canonical']!r}, got {actual_sha_meta!r}"
+            f"[{index_id}] meta.json SHA-256 mismatch: expected {manifest['sha256_meta_canonical']!r}, got {actual_sha_meta!r}",
         )
     sha256_manifest = hashlib.sha256(manifest_bytes).hexdigest()
     digest_input = f"{manifest['embedder_id']}|{manifest['model_version']}|{manifest['dims']}|{manifest['vector_count']}|{manifest['sha256_index']}|{manifest['sha256_meta_canonical']}|{sha256_manifest}"

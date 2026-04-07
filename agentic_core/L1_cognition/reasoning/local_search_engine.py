@@ -100,7 +100,7 @@ class LocalSearchEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        config: LocalSearchConfig | None = None
+        config: LocalSearchConfig | None = None,
     ) -> None:
         """Initialize the local search engine.
 
@@ -141,7 +141,7 @@ class LocalSearchEngine:
                     avg_relevance_score=0.0,
                     max_relevance_score=0.0,
                     min_relevance_score=0.0,
-                    search_strategy="local"
+                    search_strategy="local",
                 )
 
             # Step 2: Expand search using graph traversal
@@ -170,13 +170,13 @@ class LocalSearchEngine:
                 metadata={
                     "seed_entities": len(seed_entities),
                     "expanded_entities": len(expanded_entities),
-                    "max_hops": self.config.max_hops
-                }
+                    "max_hops": self.config.max_hops,
+                },
             )
 
             _emit_records_telemetry_event(
                 "local_search_engine",
-                f"search_completed_{len(filtered_results)}_results"
+                f"search_completed_{len(filtered_results)}_results",
             )
 
             return response
@@ -192,7 +192,7 @@ class LocalSearchEngine:
                 max_relevance_score=0.0,
                 min_relevance_score=0.0,
                 search_strategy="local",
-                errors=[f"Local search failed: {str(e)}"]
+                errors=[f"Local search failed: {str(e)}"],
             )
 
     async def _find_seed_entities(self, query: SearchQuery) -> list[GraphEntity]:
@@ -200,7 +200,7 @@ class LocalSearchEngine:
         # Use the graph store's search functionality (sync call)
         search_result = self.graph_store.search_entities(
             query=query.text,
-            limit=query.max_results * 2  # Get more to have better coverage
+            limit=query.max_results * 2,  # Get more to have better coverage
         )
 
         # Filter by relevance threshold
@@ -216,7 +216,7 @@ class LocalSearchEngine:
     async def _expand_search(
         self,
         seed_entities: list[GraphEntity],
-        query: SearchQuery
+        query: SearchQuery,
     ) -> list[GraphEntity]:
         """Expand search using graph traversal from seed entities."""
         expanded_entities = set(seed_entities)  # Use set to avoid duplicates
@@ -231,7 +231,7 @@ class LocalSearchEngine:
             for entity in current_level:
                 # Get relationships (sync call)
                 relationships = self.graph_store.get_relationships(
-                    entity.id, direction="both"
+                    entity.id, direction="both",
                 )
 
                 for rel in relationships:
@@ -266,7 +266,7 @@ class LocalSearchEngine:
         self,
         entities: list[GraphEntity],
         query: SearchQuery,
-        seed_entities: list[GraphEntity]
+        seed_entities: list[GraphEntity],
     ) -> list[SearchResult]:
         """Score and rank entities based on multiple factors."""
         results = []
@@ -310,8 +310,8 @@ class LocalSearchEngine:
                     "proximity_score": proximity_score,
                     "community_score": community_score,
                     "recency_score": recency_score,
-                    "is_seed": entity.id in seed_entity_ids
-                }
+                    "is_seed": entity.id in seed_entity_ids,
+                },
             )
             results.append(result)
 
@@ -344,7 +344,7 @@ class LocalSearchEngine:
     def _calculate_proximity_score(
         self,
         entity: GraphEntity,
-        seed_entity_ids: set[str]
+        seed_entity_ids: set[str],
     ) -> float:
         """Calculate graph proximity score to seed entities."""
         if entity.id in seed_entity_ids:
@@ -357,7 +357,7 @@ class LocalSearchEngine:
     async def _calculate_community_score(
         self,
         entity: GraphEntity,
-        seed_entities: list[GraphEntity]
+        seed_entities: list[GraphEntity],
     ) -> float:
         """Calculate community coherence score."""
         # Simplified: check if entity shares community with seeds
@@ -461,7 +461,7 @@ class LocalSearchEngine:
 # Factory function
 def create_local_search_engine(
     graph_store: IGraphStore,
-    config: LocalSearchConfig | None = None
+    config: LocalSearchConfig | None = None,
 ) -> LocalSearchEngine:
     """Create a local search engine."""
     return LocalSearchEngine(graph_store, config)
@@ -469,7 +469,7 @@ def create_local_search_engine(
 
 def create_local_search_engine_with_sqlite(
     db_path: str | None = None,
-    config: LocalSearchConfig | None = None
+    config: LocalSearchConfig | None = None,
 ) -> LocalSearchEngine:
     """Create a local search engine with SQLiteGraphStore backend.
     
@@ -487,7 +487,7 @@ def create_local_search_engine_with_sqlite(
         FileNotFoundError: If ADG database not found
     """
     from agentic_core.L4_state.utils.memory.graph_store_factory import create_sqlite_graph_store
-    
+
     graph_store = create_sqlite_graph_store(db_path)
     return create_local_search_engine(graph_store, config)
 

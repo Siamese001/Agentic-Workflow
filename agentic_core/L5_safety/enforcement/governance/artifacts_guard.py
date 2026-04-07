@@ -114,7 +114,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -231,7 +230,7 @@ def scan_artifacts_directory(artifacts_path: Path) -> dict[str, Any]:
                     "file": str(relative_path),
                     "type": "forbidden_artifact_name",
                     "detail": f"Forbidden artifact name: {relative_path}",
-                }
+                },
             )
         sensitive_violations = scan_sensitive_content(file_path)
         for violation in sensitive_violations:

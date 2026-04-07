@@ -122,7 +122,7 @@ class InstructionPacket:
             raise ValueError("intent_class must not be empty")
         if not 0.0 <= self.escalation_threshold <= 1.0:
             raise ValueError(
-                f"escalation_threshold must be in [0.0, 1.0], got {self.escalation_threshold}"
+                f"escalation_threshold must be in [0.0, 1.0], got {self.escalation_threshold}",
             )
 
     def to_dict(self) -> dict[str, Any]:

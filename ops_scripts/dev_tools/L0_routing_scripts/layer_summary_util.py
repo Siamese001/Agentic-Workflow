@@ -186,7 +186,7 @@ for layer in [
         t_pct = 100 * s["testing"] // s["count"]
         tl_pct = 100 * s["tools"] // s["count"]
         print(
-            f"| {layer} | {s['count']} | {s['healing']} ({h_pct}%) | {s['mcp']} ({m_pct}%) | {s['testing']} ({t_pct}%) | {s['tools']} ({tl_pct}%) |"
+            f"| {layer} | {s['count']} | {s['healing']} ({h_pct}%) | {s['mcp']} ({m_pct}%) | {s['testing']} ({t_pct}%) | {s['tools']} ({tl_pct}%) |",
         )
 total = sum(s["count"] for s in stats.values())
 heal = sum(s["healing"] for s in stats.values())
@@ -194,5 +194,5 @@ mcp = sum(s["mcp"] for s in stats.values())
 test = sum(s["testing"] for s in stats.values())
 tools = sum(s["tools"] for s in stats.values())
 print(
-    f"| **TOTAL** | **{total}** | **{heal}** ({100 * heal // total}%) | **{mcp}** ({100 * mcp // total}%) | **{test}** ({100 * test // total}%) | **{tools}** ({100 * tools // total}%) |"
+    f"| **TOTAL** | **{total}** | **{heal}** ({100 * heal // total}%) | **{mcp}** ({100 * mcp // total}%) | **{test}** ({100 * test // total}%) | **{tools}** ({100 * tools // total}%) |",
 )

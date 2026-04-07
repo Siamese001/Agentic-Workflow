@@ -63,7 +63,7 @@ class SequentialThinkingEnhancedWorkflow:
         """
         self.preflight_hook = PlanningPreflightHook(
             estimator=ContextWindowEstimator(budget=custom_budget),
-            budget_file=budget_file
+            budget_file=budget_file,
         )
 
         self.seq_thinking_enabled = seq_thinking_enabled and self._check_seq_thinking_available()
@@ -79,7 +79,7 @@ class SequentialThinkingEnhancedWorkflow:
             'max_thoughts': int(os.environ.get('SEQUENTIAL_THINKING_MAX_THOUGHTS', '15')),
             'token_budget': int(os.environ.get('SEQUENTIAL_THINKING_TOKEN_BUDGET', '30000')),
             'complexity_threshold': os.environ.get('SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD', 'medium'),
-            'auto_trigger': os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'true').lower() == 'true'
+            'auto_trigger': os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'true').lower() == 'true',
         }
 
     def _check_seq_thinking_available(self) -> bool:
@@ -239,7 +239,7 @@ class SequentialThinkingEnhancedWorkflow:
 
         # Base variables for all templates
         base_vars = {
-            'context': f'Analysis of {step_type} task with current system state'
+            'context': f'Analysis of {step_type} task with current system state',
         }
 
         # Template-specific variable mappings
@@ -249,7 +249,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'node_count': adg_context['node_count'],
                 'edge_count': adg_context['edge_count'],
                 'layer_info': adg_context['layer_info'],
-                'violation_count': adg_context['violation_count']
+                'violation_count': adg_context['violation_count'],
             },
 
             SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION: {
@@ -258,7 +258,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'high_severity_count': adg_context['high_severity_count'],
                 'medium_severity_count': adg_context['medium_severity_count'],
                 'low_severity_count': adg_context['low_severity_count'],
-                'common_violation_types': adg_context['common_violation_types']
+                'common_violation_types': adg_context['common_violation_types'],
             },
 
             SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT: {
@@ -266,7 +266,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'layer_count': adg_context['layer_count'],
                 'layer_distribution': adg_context['layer_distribution'],
                 'boundary_violations': adg_context['boundary_violations'],
-                'gravity_violations': adg_context['gravity_violations']
+                'gravity_violations': adg_context['gravity_violations'],
             },
 
             SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS: {
@@ -274,7 +274,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'dependency_count': adg_context['dependency_count'],
                 'circular_deps': adg_context['circular_deps'],
                 'longest_chain': adg_context['longest_chain'],
-                'hub_nodes': adg_context['hub_nodes']
+                'hub_nodes': adg_context['hub_nodes'],
             },
 
             SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW: {
@@ -282,7 +282,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'component_count': adg_context['component_count'],
                 'patterns_used': adg_context['patterns_used'],
                 'integration_points': adg_context['integration_points'],
-                'quality_attributes': adg_context['quality_attributes']
+                'quality_attributes': adg_context['quality_attributes'],
             },
 
             SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION: {
@@ -290,7 +290,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'antipattern_count': adg_context['antipattern_count'],
                 'high_impact_count': adg_context['high_impact_count'],
                 'common_categories': adg_context['common_categories'],
-                'affected_files': adg_context['affected_files']
+                'affected_files': adg_context['affected_files'],
             },
 
             SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING: {
@@ -298,7 +298,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'system_size': adg_context['system_size'],
                 'complexity_metrics': adg_context['complexity_metrics'],
                 'identified_issues': adg_context['identified_issues'],
-                'restructuring_goals': adg_context['restructuring_goals']
+                'restructuring_goals': adg_context['restructuring_goals'],
             },
 
             SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION: {
@@ -306,8 +306,8 @@ class SequentialThinkingEnhancedWorkflow:
                 'current_traversal_time': adg_context['current_traversal_time'],
                 'graph_size': adg_context['graph_size'],
                 'traversal_frequency': adg_context['traversal_frequency'],
-                'bottlenecks': adg_context['bottlenecks']
-            }
+                'bottlenecks': adg_context['bottlenecks'],
+            },
         }
 
         # Get template-specific variables
@@ -322,7 +322,7 @@ class SequentialThinkingEnhancedWorkflow:
                 'step_name': step_config.get('name', step_type),
                 'step_description': step_config.get('description', ''),
                 'step_files': ', '.join(step_config.get('files', [])),
-                'step_complexity': step_config.get('complexity', 'medium')
+                'step_complexity': step_config.get('complexity', 'medium'),
             })
 
         return template_vars
@@ -395,7 +395,7 @@ class SequentialThinkingEnhancedWorkflow:
                     'current_traversal_time': ADG_FALLBACK_CONTEXT['current_traversal_time'],
                     'graph_size': f'{edge_count} edges',
                     'traversal_frequency': ADG_FALLBACK_CONTEXT['traversal_frequency'],
-                    'bottlenecks': ADG_FALLBACK_CONTEXT['bottlenecks']
+                    'bottlenecks': ADG_FALLBACK_CONTEXT['bottlenecks'],
                 }
             else:
                 # Use fallback data only
@@ -426,7 +426,7 @@ class SequentialThinkingEnhancedWorkflow:
             'refactoring': SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,
             'planning': SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
             'testing': SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
-            'integration': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS
+            'integration': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
         }
 
         return complexity_mapping.get(step_type, SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW)
@@ -562,7 +562,7 @@ Debug the issue systematically using sequential thinking.
 - What documentation should be updated?
 
 Please debug this systematically using sequential thinking.
-"""
+""",
         }
 
         return templates.get(step_type, templates['analysis'])
@@ -603,13 +603,13 @@ Please debug this systematically using sequential thinking.
                 # Fallback formatting
                 prompt = template.format(
                     step_name=step_name,
-                    context=context_str
+                    context=context_str,
                 )
         except Exception as e:
             logger.warning(f"Template formatting failed, using fallback: {e}")
             prompt = template.format(
                 step_name=step_name,
-                context=context_str
+                context=context_str,
             )
 
         # In a real implementation, this would call the sequential thinking MCP
@@ -622,15 +622,15 @@ Please debug this systematically using sequential thinking.
                 "Thought 3: Identifying dependencies and risks",
                 "Thought 4: Developing systematic approach",
                 "Thought 5: Planning validation strategy",
-                "Thought 6: Defining next steps and success criteria"
+                "Thought 6: Defining next steps and success criteria",
             ],
             'recommendations': [
                 "Proceed with structured approach",
                 "Monitor for complexity indicators",
-                "Validate assumptions early"
+                "Validate assumptions early",
             ],
             'token_usage': 5000,  # Estimated
-            'response_time': 2.5   # Estimated
+            'response_time': 2.5,   # Estimated
         }
 
         self.seq_thinking_usage += 1
@@ -676,7 +676,7 @@ Please debug this systematically using sequential thinking.
             'compression_applied': len(estimate.compression_applied) > 0,
             'top_contributors': estimate.top_contributors,
             'recommendations': estimate.recommended_reductions,
-            'sequential_thinking_used': step_config.get('force_sequential_thinking', False)
+            'sequential_thinking_used': step_config.get('force_sequential_thinking', False),
         }
 
         # Execute the actual step logic
@@ -694,7 +694,7 @@ Please debug this systematically using sequential thinking.
         else:  # 'block'
             # This should be caught by the preflight hook, but add safety
             raise TokenBudgetExceededError(
-                f"Step {step_name} blocked: {estimate.total_projected_tokens:,} tokens"
+                f"Step {step_name} blocked: {estimate.total_projected_tokens:,} tokens",
             )
 
         self.step_results.append(step_result)
@@ -711,7 +711,7 @@ Please debug this systematically using sequential thinking.
             'logs': self._get_log_contents(step_config.get('logs', [])),
             'retrieved_context': self._get_retrieved_context(step_config.get('context', [])),
             'prior_steps': self._get_prior_step_contents(),
-            'sequential_thinking_enabled': self.seq_thinking_enabled
+            'sequential_thinking_enabled': self.seq_thinking_enabled,
         }
 
         return base_context
@@ -725,7 +725,7 @@ Please debug this systematically using sequential thinking.
             'refactoring': "You are a code refactoring specialist. Improve the code structure.",
             'documentation': "You are a technical writer. Create clear documentation.",
             'debugging': "You are a debugging specialist. Systematically identify and resolve issues.",
-            'planning': "You are a system architect. Plan complex implementations systematically."
+            'planning': "You are a system architect. Plan complex implementations systematically.",
         }
 
         base_prompt = base_prompts.get(step_type, "You are a helpful assistant.")
@@ -745,13 +745,13 @@ Please debug this systematically using sequential thinking.
                     content = f.read()
                 files.append({
                     'path': file_path,
-                    'content': content
+                    'content': content,
                 })
             else:
                 # Simulate file content for demonstration
                 files.append({
                     'path': file_path,
-                    'content': f"# Simulated content for {file_path}\n" + "def example_function():\n    pass\n" * 100
+                    'content': f"# Simulated content for {file_path}\n" + "def example_function():\n    pass\n" * 100,
                 })
         return files
 
@@ -770,7 +770,7 @@ Please debug this systematically using sequential thinking.
 +    pass"""
             diffs.append({
                 'path': diff_path,
-                'content': diff_content
+                'content': diff_content,
             })
         return diffs
 
@@ -789,7 +789,7 @@ FileNotFoundError: Config file not found
 2023-01-01 12:00:03 INFO Process completed"""
             logs.append({
                 'source': source,
-                'content': log_content
+                'content': log_content,
             })
         return logs
 
@@ -806,7 +806,7 @@ It contains important information about coding standards and patterns.
             context.append({
                 'source': source,
                 'content': context_content,
-                'chunk_id': f"chunk_{i+1}"
+                'chunk_id': f"chunk_{i+1}",
             })
         return context
 
@@ -824,7 +824,7 @@ It contains important information about coding standards and patterns.
             'execution_time': execution_time,
             'output_tokens': 5000,  # Simulated output
             'success': True,
-            'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"]
+            'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"],
         }
 
     def get_workflow_summary(self) -> dict[str, Any]:
@@ -837,11 +837,11 @@ It contains important information about coding standards and patterns.
                 'total_steps': len(self.step_results),
                 'total_tokens': sum(r['estimated_tokens'] for r in self.step_results),
                 'sequential_thinking_usage': self.seq_thinking_usage,
-                'sequential_thinking_enabled': self.seq_thinking_enabled
+                'sequential_thinking_enabled': self.seq_thinking_enabled,
             },
             'budget_summary': budget_summary,
             'step_results': self.step_results,
-            'sequential_thinking_config': self.seq_thinking_config
+            'sequential_thinking_config': self.seq_thinking_config,
         }
 
 
@@ -852,13 +852,13 @@ def example_sequential_thinking_workflow():
     # Initialize workflow with sequential thinking enabled
     custom_budget = TokenBudget(
         WARNING_THRESHOLD=120000,  # Earlier warning for demo
-        SAFE_OPERATING_CAP=150000   # Lower safe cap for demo
+        SAFE_OPERATING_CAP=150000,   # Lower safe cap for demo
     )
 
     workflow = SequentialThinkingEnhancedWorkflow(
         budget_file=Path("docs/reports/plans/seq_thinking_workflow_budget.json"),
         custom_budget=custom_budget,
-        seq_thinking_enabled=True
+        seq_thinking_enabled=True,
     )
 
     # Define phase configuration with complex tasks that should trigger sequential thinking
@@ -872,7 +872,7 @@ def example_sequential_thinking_workflow():
                     'prompt': 'Analyze the system architecture for scalability issues',
                     'files': ['src/main.py', 'src/utils.py', 'src/config.py', 'src/database.py', 'src/api.py'],
                     'context': ['architecture.md', 'requirements.txt'],
-                    'complexity': 'high'
+                    'complexity': 'high',
                 },
                 {
                     'name': 'dependency_analysis',
@@ -880,9 +880,9 @@ def example_sequential_thinking_workflow():
                     'prompt': 'Analyze dependencies and potential conflicts',
                     'files': ['requirements.txt', 'setup.py', 'pyproject.toml'],
                     'logs': ['pip_install.log'],
-                    'complexity': 'medium'
-                }
-            ]
+                    'complexity': 'medium',
+                },
+            ],
         },
         {
             'name': 'implementation_wave',
@@ -894,7 +894,7 @@ def example_sequential_thinking_workflow():
                     'files': ['src/main.py', 'src/utils.py'],
                     'diffs': ['src/main.py'],
                     'context': ['documentation.md', 'api_reference.md'],
-                    'complexity': 'high'
+                    'complexity': 'high',
                 },
                 {
                     'name': 'debug_session',
@@ -902,10 +902,10 @@ def example_sequential_thinking_workflow():
                     'prompt': 'Debug the performance issue in the main module',
                     'files': ['src/main.py', 'logs/error.log'],
                     'logs': ['performance.log', 'error.log'],
-                    'complexity': 'critical'
-                }
-            ]
-        }
+                    'complexity': 'critical',
+                },
+            ],
+        },
     ]
 
     # Execute the phase

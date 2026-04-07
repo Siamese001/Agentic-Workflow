@@ -434,7 +434,7 @@ def _make_diff(rel_path: str, agent_info: dict, mode: str, bmg: bool, rationale:
         lines.append(f'+            f"You are {class_name}. Past patterns:\\n{{context}}\\n\\n"')
         lines.append('+            f"Task: {args!r}\\nKwargs: {kwargs!r}\\n"')
         lines.append(
-            '+            "Produce a healing recommendation as JSON with keys: status, actions, rationale."'
+            '+            "Produce a healing recommendation as JSON with keys: status, actions, rationale."',
         )
         lines.append("+        )")
     else:
@@ -442,7 +442,7 @@ def _make_diff(rel_path: str, agent_info: dict, mode: str, bmg: bool, rationale:
         lines.append(f'+            f"You are {class_name}. "')
         lines.append('+            f"Task: {args!r}\\nKwargs: {kwargs!r}\\n"')
         lines.append(
-            '+            "Produce a healing recommendation as JSON with keys: status, actions, rationale."'
+            '+            "Produce a healing recommendation as JSON with keys: status, actions, rationale."',
         )
         lines.append("+        )")
     lines.append("+        result = self._call_qwen_vllm(prompt)")
@@ -503,7 +503,7 @@ def build_report() -> str:
                 "rationale": rationale,
                 "agent_info": agent_info,
                 "filepath": filepath,
-            }
+            },
         )
 
     # Summary counts
@@ -533,7 +533,7 @@ def build_report() -> str:
     md.append(f"| Model | `{VLLM_MODEL}` |")
     md.append(f"| BMG index | `{BMG_INDEX}` (dim={BMG_DIM}, cosine, AWS us-east-1) |")
     md.append(
-        "| BMG embedding source | `system_learning.engines.embedding_service_factory.EmbeddingServiceFactory` |"
+        "| BMG embedding source | `system_learning.engines.embedding_service_factory.EmbeddingServiceFactory` |",
     )
     md.append("| Diff format | Unified git-diff (copy-pastable) |")
     md.append("")
@@ -613,7 +613,7 @@ def build_report() -> str:
             file_short = r["file"].replace("\\", "/")
             md.append(
                 f"| `{r['class_name']}` | `{file_short}` | {r['layer']} "
-                f"| **{r['mode']}** | {bmg_str} | {r['rationale']} |"
+                f"| **{r['mode']}** | {bmg_str} | {r['rationale']} |",
             )
 
     # Any layers not in canonical order
@@ -624,7 +624,7 @@ def build_report() -> str:
                 file_short = r["file"].replace("\\", "/")
                 md.append(
                     f"| `{r['class_name']}` | `{file_short}` | {r['layer']} "
-                    f"| **{r['mode']}** | {bmg_str} | {r['rationale']} |"
+                    f"| **{r['mode']}** | {bmg_str} | {r['rationale']} |",
                 )
 
     md.append("")
@@ -635,7 +635,7 @@ def build_report() -> str:
     md.append(
         f"> The following {len(q_rows) + len(h_rows)} diffs show exactly where to inject "
         "`_call_qwen_vllm()` (and `_retrieve_healing_patterns()` for BMG agents) "
-        "into each agent's healing/execution method. **No file is modified by this script.**"
+        "into each agent's healing/execution method. **No file is modified by this script.**",
     )
     md.append("")
 

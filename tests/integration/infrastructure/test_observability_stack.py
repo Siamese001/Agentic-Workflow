@@ -29,7 +29,7 @@ class TestObservabilityStack:
         try:
             response = requests.get(
                 "http://prometheus:9090/api/v1/targets",
-                timeout=10
+                timeout=10,
             )
             assert response.status_code == 200
             data = response.json()
@@ -48,7 +48,7 @@ class TestObservabilityStack:
         try:
             response = requests.get(
                 "http://jaeger-query:16686/api/services",
-                timeout=10
+                timeout=10,
             )
             assert response.status_code == 200
             data = response.json()
@@ -90,7 +90,7 @@ class TestObservabilityStack:
         agent = BaseDispatchAgent(config_dict={"timeout": 5})
         result = agent.execute(
             "integration_test",
-            {"test_id": test_id, "query": "e2e telemetry test"}
+            {"test_id": test_id, "query": "e2e telemetry test"},
         )
 
         assert result.SUCCESS, f"Agent execution failed: {result.ERROR}"
@@ -102,7 +102,7 @@ class TestObservabilityStack:
         try:
             response = requests.get(
                 "http://jaeger-query:16686/api/traces?limit=10&lookback=1m",
-                timeout=10
+                timeout=10,
             )
             if response.status_code == 200:
                 data = response.json()

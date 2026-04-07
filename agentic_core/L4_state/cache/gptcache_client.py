@@ -76,7 +76,7 @@ class NativePersistentCacheClient:
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     last_access_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
-                """
+                """,
             )
             self._sqlite_conn.commit()
 
@@ -86,7 +86,7 @@ class NativePersistentCacheClient:
             # ChromaDB uses default embedding function (all-MiniLM-L6-v2) automatically
             self._chroma_collection = self._chroma_client.get_or_create_collection(
                 name="l2_semantic_cache",
-                metadata={"hnsw:space": "cosine"}
+                metadata={"hnsw:space": "cosine"},
             )
 
             self._cache = "real"
@@ -121,7 +121,7 @@ class NativePersistentCacheClient:
                         ORDER BY last_access_at ASC
                         LIMIT ?
                         """,
-                        (evict_count,)
+                        (evict_count,),
                     )
                     ids_to_evict = [row[0] for row in cursor.fetchall()]
 
@@ -129,7 +129,7 @@ class NativePersistentCacheClient:
                     placeholders = ",".join("?" * len(ids_to_evict))
                     cursor.execute(
                         f"DELETE FROM l2_cache WHERE id IN ({placeholders})",
-                        ids_to_evict
+                        ids_to_evict,
                     )
                     self._sqlite_conn.commit()
 
@@ -162,7 +162,7 @@ class NativePersistentCacheClient:
             # Search ChromaDB for similar entries (ChromaDB handles embeddings automatically)
             results = self._chroma_collection.query(
                 query_texts=[query],
-                n_results=1
+                n_results=1,
             )
 
             if results["ids"] and results["ids"][0]:
@@ -177,7 +177,7 @@ class NativePersistentCacheClient:
                     cursor = self._sqlite_conn.cursor()
                     cursor.execute(
                         "SELECT response FROM l2_cache WHERE id = ?",
-                        (top_id,)
+                        (top_id,),
                     )
                     row = cursor.fetchone()
 
@@ -185,7 +185,7 @@ class NativePersistentCacheClient:
                         # Update last_access_at
                         cursor.execute(
                             "UPDATE l2_cache SET last_access_at = CURRENT_TIMESTAMP WHERE id = ?",
-                            (top_id,)
+                            (top_id,),
                         )
                         self._sqlite_conn.commit()
 
@@ -221,7 +221,7 @@ class NativePersistentCacheClient:
             self._chroma_collection.upsert(
                 ids=[query_id],
                 documents=[query],
-                metadatas={"created_at": "now"}
+                metadatas={"created_at": "now"},
             )
 
             # Upsert to SQLite (scalar store)
@@ -230,7 +230,7 @@ class NativePersistentCacheClient:
                 INSERT OR REPLACE INTO l2_cache (id, query, response)
                 VALUES (?, ?, ?)
                 """,
-                (query_id, query, response)
+                (query_id, query, response),
             )
             self._sqlite_conn.commit()
 
@@ -279,7 +279,7 @@ class NativePersistentCacheClient:
             # Clear ChromaDB collection
             self._chroma_client.delete_collection("l2_semantic_cache")
             self._chroma_collection = self._chroma_client.get_or_create_collection(
-                name="l2_semantic_cache"
+                name="l2_semantic_cache",
             )
 
             # Clear SQLite table
@@ -314,7 +314,7 @@ class NativePersistentCacheClient:
             # Search ChromaDB (ChromaDB handles embeddings automatically via query_texts)
             results = self._chroma_collection.query(
                 query_texts=[query_text],
-                n_results=5  # Return top 5 results
+                n_results=5,  # Return top 5 results
             )
 
             formatted_results = []
@@ -328,14 +328,14 @@ class NativePersistentCacheClient:
                         cursor = self._sqlite_conn.cursor()
                         cursor.execute(
                             "SELECT response FROM l2_cache WHERE id = ?",
-                            (entry_id,)
+                            (entry_id,),
                         )
                         row = cursor.fetchone()
 
                         if row:
                             formatted_results.append({
                                 "score": similarity,
-                                "metadata": {"payload": row[0]}
+                                "metadata": {"payload": row[0]},
                             })
 
             if formatted_results:

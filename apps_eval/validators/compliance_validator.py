@@ -37,7 +37,7 @@ class ComplianceValidator:
         if result.overall_score < request.config.min_pass_rate:
             self._violations.append(
                 f"COMPLIANCE: Overall score {result.overall_score:.2f} below minimum "
-                f"{request.config.min_pass_rate:.2f}"
+                f"{request.config.min_pass_rate:.2f}",
             )
 
         # Validate deterministic results requirement
@@ -51,7 +51,7 @@ class ComplianceValidator:
             for scenario in suite.scenarios:
                 if scenario.outcome == "ERROR":
                     self._violations.append(
-                        f"COMPLIANCE: Critical error in {scenario.scenario_id}: {scenario.message}"
+                        f"COMPLIANCE: Critical error in {scenario.scenario_id}: {scenario.message}",
                     )
 
         passed = len(self._violations) == 0
@@ -62,7 +62,7 @@ class ComplianceValidator:
         for scenario in suite.scenarios:
             if not scenario.deterministic:
                 self._violations.append(
-                    f"COMPLIANCE: Non-deterministic result in {scenario.scenario_id}"
+                    f"COMPLIANCE: Non-deterministic result in {scenario.scenario_id}",
                 )
                 return False
         return True

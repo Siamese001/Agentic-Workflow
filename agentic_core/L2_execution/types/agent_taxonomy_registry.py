@@ -104,10 +104,10 @@ class AgentTaxonomyRegistry:
             "shim_count": shims,
             "l2_noncompliant": l2_noncompliant,
             "wave_1_pilot_agents": len(
-                [a for a in self._agents.values() if a.file_path.startswith("agentic_core/base_agents")]
+                [a for a in self._agents.values() if a.file_path.startswith("agentic_core/base_agents")],
             ),
             "wave_2_hop_agents": len(
-                [a for a in self._agents.values() if "Hop" in a.class_name or "HOP" in a.class_name]
+                [a for a in self._agents.values() if "Hop" in a.class_name or "HOP" in a.class_name],
             ),
         }
 

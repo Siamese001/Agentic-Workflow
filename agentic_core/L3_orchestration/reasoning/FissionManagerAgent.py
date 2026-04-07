@@ -94,6 +94,7 @@ import os
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -119,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -134,7 +134,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 _emit_emits_metric_event("FissionManagerAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("FissionManagerAgent", "p4obs", "metric_2")
@@ -216,7 +215,7 @@ class FissionManagerAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "FissionManagerAgent.execute_fission"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FissionManagerAgent.execute_fission",
         )
 
         Logger.info(f"FISSION TRIGGERED: {file_path} ({reason})")

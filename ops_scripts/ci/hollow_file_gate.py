@@ -106,7 +106,7 @@ def scan_file(file_path: Path) -> dict[str, Any]:
 
     return {
         "status": violation.metadata.get("classification", "unknown"),
-        "violations": [v.to_dict() for v in hollow_violations]
+        "violations": [v.to_dict() for v in hollow_violations],
     }
 
 
@@ -117,7 +117,7 @@ def initialize_baseline(scanner: AntiPatternScanner, baseline_path: Path) -> Non
     baseline = {
         "version": "1.0",
         "generated_at": str(os.popen("git rev-parse HEAD").read().strip()),
-        "files": {}
+        "files": {},
     }
 
     # Scan all Python files in default directories

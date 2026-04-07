@@ -107,7 +107,7 @@ class MockLLMClient:
         temperature: float = 0.7,
         max_tokens: int = 1000,
         top_p: float = 0.9,
-        top_k: int = 40
+        top_k: int = 40,
     ) -> GenerationResult:
         """Generate text using mock LLM."""
         # This is a mock implementation
@@ -135,7 +135,7 @@ class MockLLMClient:
             relevance_score=0.7,
             completeness_score=0.75,
             source_citations=[],
-            attribution_confidence=0.6
+            attribution_confidence=0.6,
         )
 
 
@@ -146,7 +146,7 @@ class RAGPipeline:
         self,
         search_engine: SearchFusionEngine,
         config: RAGConfig | None = None,
-        llm_client: Any | None = None
+        llm_client: Any | None = None,
     ) -> None:
         """Initialize the RAG pipeline.
 
@@ -170,7 +170,7 @@ class RAGPipeline:
             "search_time": [],
             "context_time": [],
             "generation_time": [],
-            "quality_score": []
+            "quality_score": [],
         }
 
     async def process_query(self, query: RAGQuery) -> RAGResponse:
@@ -195,7 +195,7 @@ class RAGPipeline:
             system_prompt, user_prompt = self.template_manager.render_template(
                 query_type=query.query_type,
                 context=context,
-                query=query
+                query=query,
             )
             template_time = (datetime.utcnow() - template_start).total_seconds() * 1000
 
@@ -207,7 +207,7 @@ class RAGPipeline:
                 temperature=query.temperature,
                 max_tokens=query.max_tokens,
                 top_p=query.top_p,
-                top_k=query.top_k
+                top_k=query.top_k,
             )
             generation_time = (datetime.utcnow() - generation_start).total_seconds() * 1000
 
@@ -232,7 +232,7 @@ class RAGPipeline:
                 context_quality_score=context_quality,
                 generation_quality_score=generation_quality,
                 errors=[],
-                warnings=context.warnings
+                warnings=context.warnings,
             )
 
             # Update statistics
@@ -240,7 +240,7 @@ class RAGPipeline:
 
             _emit_records_telemetry_event(
                 "rag_pipeline",
-                f"query_processed_{response.overall_quality_score:.2f}_quality"
+                f"query_processed_{response.overall_quality_score:.2f}_quality",
             )
 
             return response
@@ -265,7 +265,7 @@ class RAGPipeline:
                     assembly_time_ms=0.0,
                     assembly_method="error",
                     truncation_applied=False,
-                    warnings=[]
+                    warnings=[],
                 ),
                 template=self.template_manager.get_template(query_type=query.query_type),
                 generation=GenerationResult(
@@ -279,7 +279,7 @@ class RAGPipeline:
                     coherence_score=0.0,
                     relevance_score=0.0,
                     completeness_score=0.0,
-                    errors=[f"Pipeline error: {str(e)}"]
+                    errors=[f"Pipeline error: {str(e)}"],
                 ),
                 total_time_ms=total_time,
                 search_time_ms=0.0,
@@ -288,7 +288,7 @@ class RAGPipeline:
                 overall_quality_score=0.0,
                 context_quality_score=0.0,
                 generation_quality_score=0.0,
-                errors=[f"RAG pipeline failed: {str(e)}"]
+                errors=[f"RAG pipeline failed: {str(e)}"],
             )
 
     async def process_batch(self, queries: list[RAGQuery]) -> list[RAGResponse]:
@@ -312,7 +312,7 @@ class RAGPipeline:
         # Process all queries
         responses = await asyncio.gather(
             *[process_single(query) for query in queries],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
         # Handle exceptions
@@ -335,7 +335,7 @@ class RAGPipeline:
                         source_distribution={},
                         assembly_time_ms=0.0,
                         assembly_method="error",
-                        truncation_applied=False
+                        truncation_applied=False,
                     ),
                     template=self.template_manager.get_template(),
                     generation=GenerationResult(
@@ -349,7 +349,7 @@ class RAGPipeline:
                         coherence_score=0.0,
                         relevance_score=0.0,
                         completeness_score=0.0,
-                        errors=[f"Batch processing error: {str(response)}"]
+                        errors=[f"Batch processing error: {str(response)}"],
                     ),
                     total_time_ms=0.0,
                     search_time_ms=0.0,
@@ -358,7 +358,7 @@ class RAGPipeline:
                     overall_quality_score=0.0,
                     context_quality_score=0.0,
                     generation_quality_score=0.0,
-                    errors=[f"Batch processing failed: {str(response)}"]
+                    errors=[f"Batch processing failed: {str(response)}"],
                 )
                 processed_responses.append(error_response)
             else:
@@ -427,7 +427,7 @@ class RAGPipeline:
                     "max": max(values),
                     "p95": self._percentile(values, 0.95),
                     "p99": self._percentile(values, 0.99),
-                    "count": len(values)
+                    "count": len(values),
                 }
             else:
                 stats[metric] = {
@@ -436,7 +436,7 @@ class RAGPipeline:
                     "max": 0.0,
                     "p95": 0.0,
                     "p99": 0.0,
-                    "count": 0
+                    "count": 0,
                 }
 
         return stats
@@ -468,7 +468,7 @@ class RAGPipeline:
             avg_context_items=0.0,  # Would need to track separately
             avg_context_length=0.0,  # Would need to track separately
             truncation_rate=0.0,  # Would need to track separately
-            template_usage=self.template_manager.get_template_stats()["templates_by_type"]
+            template_usage=self.template_manager.get_template_stats()["templates_by_type"],
         )
 
 
@@ -476,7 +476,7 @@ class RAGPipeline:
 def create_rag_pipeline(
     search_engine: SearchFusionEngine,
     config: RAGConfig | None = None,
-    llm_client: Any | None = None
+    llm_client: Any | None = None,
 ) -> RAGPipeline:
     """Create a RAG pipeline."""
     return RAGPipeline(search_engine, config, llm_client)

@@ -8,7 +8,6 @@ import json
 import logging
 from pathlib import Path
 
-
 from .archetype_indicator_config import AgentSpecs
 
 DEFAULT_SLEEP = 1.0

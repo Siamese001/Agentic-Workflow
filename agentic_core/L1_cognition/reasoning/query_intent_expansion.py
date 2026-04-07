@@ -101,7 +101,7 @@ class QueryIntentExpander:
         _emit_records_execution_trace(
             f"expand_{self._expansion_count}",
             LayerSegment.L1_COGNITION,
-            "QueryIntentExpander.expand"
+            "QueryIntentExpander.expand",
         )
 
         # Clean query
@@ -297,7 +297,7 @@ class QueryPreprocessor:
         _emit_records_execution_trace(
             f"preprocess_{self._process_count}",
             LayerSegment.L1_COGNITION,
-            "QueryPreprocessor.process"
+            "QueryPreprocessor.process",
         )
 
         intent = self.expander.expand(query)

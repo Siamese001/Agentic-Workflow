@@ -18,7 +18,7 @@ rows = list(
     JOIN nodes n2 ON e.dst_id = n2.id
     WHERE e.relation_type = 'violates'
     ORDER BY n1.layer, n1.resolved_path, e.line_no
-""")
+"""),
 )
 
 print(f"Total 'violates' edges: {len(rows)}\n")

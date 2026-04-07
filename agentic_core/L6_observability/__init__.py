@@ -16,6 +16,13 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+
+# P3/L6 Observability Dashboard exports
+from agentic_core.L6_observability.enforcement.mcp_drift_store import (
+    MCPDriftMonitor,
+    MCPL6ObservabilityStore,
+    MCPL6PersistenceConfig,
+)
 from agentic_core.L6_observability.utils.dashboard.dashboard_aggregate import (
     CRITICAL,
     DEGRADED,
@@ -79,11 +86,15 @@ from agentic_core.L6_observability.utils.engines.metrics_server import (
     stop_metrics_server,
 )
 
-# P3/L6 Observability Dashboard exports
-from agentic_core.L6_observability.enforcement.mcp_drift_store import (
-    MCPDriftMonitor,
-    MCPL6ObservabilityStore,
-    MCPL6PersistenceConfig,
+# Enhanced Observability System
+from agentic_core.L6_observability.utils.enhanced_observability import (
+    Alert,
+    AlertSeverity,
+    EnhancedObservability,
+    HealthCheck,
+    HealthStatus,
+    SystemHealth,
+    SystemMetric,
 )
 
 # Wave 0: Prometheus Metrics
@@ -113,17 +124,6 @@ from agentic_core.L6_observability.utils.performance.performance_registry import
     PerformanceRegistry,
     get_performance_registry,
     reset_performance_registry,
-)
-
-# Enhanced Observability System
-from agentic_core.L6_observability.utils.enhanced_observability import (
-    Alert,
-    AlertSeverity,
-    EnhancedObservability,
-    HealthCheck,
-    HealthStatus,
-    SystemHealth,
-    SystemMetric,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

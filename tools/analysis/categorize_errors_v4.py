@@ -141,7 +141,7 @@ def main():
                     et = result["error_type"]
                     categories[f"enhanced_{et}"] += 1
                     cat_samples.setdefault(f"enhanced_{et}", []).append(
-                        (fp, mod_path, result["msg"][:80])
+                        (fp, mod_path, result["msg"][:80]),
                     )
                     errors += 1
             else:
@@ -158,12 +158,12 @@ def main():
                     if "BATCH_SIZE" in msg or "BUFFER_SIZE" in msg or "MAX_RETRIES" in msg:
                         categories["missing_constant"] += 1
                         cat_samples.setdefault("missing_constant", []).append(
-                            (fp, mod_path, msg[:80])
+                            (fp, mod_path, msg[:80]),
                         )
                     else:
                         categories[f"direct_{et}"] += 1
                         cat_samples.setdefault(f"direct_{et}", []).append(
-                            (fp, mod_path, msg[:80])
+                            (fp, mod_path, msg[:80]),
                         )
                     any_failed = True
                     errors += 1

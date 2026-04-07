@@ -8,8 +8,8 @@ viols = list(
     conn.execute(
         "SELECT n1.adg_name as src, n2.adg_name as dst, e.edge_kind, e.source_file, e.line_no "
         "FROM edges e JOIN nodes n1 ON e.src_id=n1.id JOIN nodes n2 ON e.dst_id=n2.id "
-        "WHERE e.relation_type='violates'"
-    )
+        "WHERE e.relation_type='violates'",
+    ),
 )
 print(f"GV_violates: {len(viols)}")
 for v in viols:

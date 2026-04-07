@@ -7,7 +7,6 @@ from typing import Any
 
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchEngine,
-    HybridSearchResult,
 )
 
 Logger = logging.getLogger(__name__)
@@ -56,7 +55,7 @@ class RetrievalBenchmark:
         self.engine = engine
 
     def run_performance_benchmark(
-        self, queries: list[str], iterations: int = 10
+        self, queries: list[str], iterations: int = 10,
     ) -> BenchmarkMetrics:
         """Run performance benchmark.
 
@@ -99,7 +98,7 @@ class RetrievalBenchmark:
         return metrics
 
     def run_quality_benchmark(
-        self, queries: list[BenchmarkQuery], k: int = 10
+        self, queries: list[BenchmarkQuery], k: int = 10,
     ) -> RetrievalQualityMetrics:
         """Run retrieval quality benchmark.
 
@@ -159,7 +158,7 @@ class RetrievalBenchmark:
         return metrics
 
     def run_governance_benchmark(
-        self, queries: list[str], governance_filter: dict[str, Any]
+        self, queries: list[str], governance_filter: dict[str, Any],
     ) -> dict[str, Any]:
         """Benchmark governance filter effectiveness.
 

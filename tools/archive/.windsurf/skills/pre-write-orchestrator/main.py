@@ -173,7 +173,7 @@ class PreWriteOrchestrator:
         # Operation-specific skills
         if operation in ["write", "edit"]:
             relevant_skills.extend(
-                ["boundary-enforcement", "testing-framework", "dedup-guard", "script-sprawl-guard"]
+                ["boundary-enforcement", "testing-framework", "dedup-guard", "script-sprawl-guard"],
             )
 
             # Phase 2 critical gap skills
@@ -199,7 +199,7 @@ class PreWriteOrchestrator:
         return list(set(relevant_skills))  # Remove duplicates
 
     def validate_pre_write(
-        self, file_path: str, operation: str, context: str = ""
+        self, file_path: str, operation: str, context: str = "",
     ) -> tuple[bool, list[SkillResult]]:
         """Run comprehensive pre-write validation."""
         print(f"🚀 Starting pre-write validation for {operation} on {file_path}")

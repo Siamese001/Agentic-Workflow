@@ -42,7 +42,7 @@ class QwenInferenceWorker:
         prompt: str,
         app_name: str,
         prompt_config: QwenPromptConfig,
-        template_name: str | None = None
+        template_name: str | None = None,
     ) -> dict[str, Any]:
         """Perform inference with formatted prompt.
 
@@ -60,7 +60,7 @@ class QwenInferenceWorker:
         try:
             # Format prompt using template
             formatted_prompt = self._format_prompt(
-                prompt, prompt_config, template_name
+                prompt, prompt_config, template_name,
             )
 
             # TODO: Replace with actual vLLM API call
@@ -77,7 +77,7 @@ class QwenInferenceWorker:
                 "prompt_tokens": mock_response["prompt_tokens"],
                 "completion_tokens": mock_response["completion_tokens"],
                 "latency_ms": latency_ms,
-                "template_used": template_name or prompt_config.default_template
+                "template_used": template_name or prompt_config.default_template,
             }
 
             _emit_captures_execution_output(app_name, "inference_success", "apps_qwen_inference_worker")
@@ -98,14 +98,14 @@ class QwenInferenceWorker:
                 "prompt_tokens": 0,
                 "completion_tokens": 0,
                 "latency_ms": latency_ms,
-                "error_message": error_msg
+                "error_message": error_msg,
             }
 
     def _format_prompt(
         self,
         prompt: str,
         prompt_config: QwenPromptConfig,
-        template_name: str | None
+        template_name: str | None,
     ) -> str:
         """Format prompt using app-specific template.
 
@@ -194,7 +194,7 @@ class QwenInferenceWorker:
             "text": response_text,
             "confidence": confidence,
             "prompt_tokens": len(formatted_prompt.split()),
-            "completion_tokens": len(response_text.split())
+            "completion_tokens": len(response_text.split()),
         }
 
 

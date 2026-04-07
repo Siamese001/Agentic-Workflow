@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -285,7 +284,7 @@ def safe_execute(
     """
     if not isinstance(args, list):
         raise TypeError(
-            f"safe_execute requires args as List[str], got {type(args).__name__}. This prevents accidental shell injection via string commands."
+            f"safe_execute requires args as List[str], got {type(args).__name__}. This prevents accidental shell injection via string commands.",
         )
     if not args:
         raise ValueError("safe_execute requires non-empty args list")
@@ -295,7 +294,7 @@ def safe_execute(
         if _is_shell_injection_risk(arg):
             truncated = arg[:100] + "..." if len(arg) > 100 else arg
             raise SecurityViolationError(
-                f"Shell injection pattern detected in argument {i}: '{truncated}'\nBlocked patterns: | && || ` $( > /path < /path & (at end)\nThis is a security violation. Use safe alternatives or file-based I/O."
+                f"Shell injection pattern detected in argument {i}: '{truncated}'\nBlocked patterns: | && || ` $( > /path < /path & (at end)\nThis is a security violation. Use safe alternatives or file-based I/O.",
             )
     if cwd is not None:
         cwd_path = Path(cwd)
@@ -324,7 +323,7 @@ def safe_execute(
         return result
     except subprocess.CalledProcessError as e:
         Logger.error(
-            f"[Security] Command failed: {cmd_str}\nExit code: {e.returncode}\nStderr: {(e.stderr[:500] if e.stderr else 'N/A')}"
+            f"[Security] Command failed: {cmd_str}\nExit code: {e.returncode}\nStderr: {(e.stderr[:500] if e.stderr else 'N/A')}",
         )
         raise
     except subprocess.TimeoutExpired:
@@ -426,7 +425,7 @@ def validate_command_whitelist(args: list[str], allowed_commands: list[str]) -> 
 
 # guardian: allow-magic-config
 def safe_git_execute(
-    git_args: list[str], repo_root: str | Path | None = None, timeout: int = 30
+    git_args: list[str], repo_root: str | Path | None = None, timeout: int = 30,
 ) -> subprocess.CompletedProcess:
     """
     Convenience wrapper for safe git command execution.

@@ -28,7 +28,7 @@ def main():
         "command": "python",
         "args": ["-m", "tools.adg.mcp.server"],
         "cwd": r"C:\Git\Agentic-Workflow",
-        "disabled": False
+        "disabled": False,
     }
 
     # Disable old adg_redis if present

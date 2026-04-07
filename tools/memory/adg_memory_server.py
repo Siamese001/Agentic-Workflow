@@ -37,8 +37,14 @@ Wire in mcp_config.json as "memory" — disable marketplace "@modelcontextprotoc
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 from typing import Any
+
+# Add repo root to path so 'tools.memory' imports work when running standalone
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
 from mcp.server.fastmcp import FastMCP
 
@@ -113,21 +119,14 @@ _emit_applies_guardrail("p0", "adg_memory_server", "p0_governance")
 _emit_reads_policy_state("p0", "adg_memory_server", "policy_binding")
 _emit_snapshots_state("p0", "adg_memory_server", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -135,17 +134,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -246,11 +239,19 @@ _emit_reads_through("l4", "adg_memory_server", "urg_read_38")
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-_DEFAULT_DB = Path(r"C:\Git\Agentic-Workflow\artifacts\memory\knowledge_graph.sqlite")
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_DEFAULT_DB = _REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 _DB_PATH: Path = Path(os.environ.get("MEMORY_DB", str(_DEFAULT_DB)))
 _ADG_REDIS_URL: str = os.environ.get("ADG_REDIS_URL", "redis://localhost:6379/0")
 
-_PROTECTED_TYPES = ("ArchitectureLayer", "ProjectContext", "ConstitutionalRule")
+_PROTECTED_TYPES = (
+    "ArchitectureLayer",
+    "ProjectContext",
+    "ConstitutionalRule",
+    "EpisodicEvent",
+    "ProceduralPattern",
+    "ArchitecturalDecision",
+)
 
 _store = SqliteMemoryStore(_DB_PATH)
 
@@ -339,8 +340,18 @@ def delete_entities(entityNames: list[str]) -> dict[str, Any]:
 
     Args:
         entityNames: List of entity names to remove.
+
+    Protected entity types (ArchitectureLayer, ProjectContext, ConstitutionalRule,
+    EpisodicEvent, ProceduralPattern) are never deleted regardless of request.
     """
-    return _store.delete_entities(entityNames)
+    protected = _store.get_entities_by_type(_PROTECTED_TYPES)
+    protected_names = {e["name"] for e in protected}
+    blocked = [n for n in entityNames if n in protected_names]
+    allowed = [n for n in entityNames if n not in protected_names]
+    result = _store.delete_entities(allowed)
+    if blocked:
+        result["blocked_protected"] = blocked
+    return result
 
 
 @mcp.tool()

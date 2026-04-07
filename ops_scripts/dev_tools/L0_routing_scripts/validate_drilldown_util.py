@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -227,7 +226,7 @@ def main():
     print("=" * 90)
     infra = validate_drilldown_infrastructure(html)
     print(
-        f"openDrillModal() function:     {('✅ Found' if infra['openDrillModal_function'] else '❌ Missing')}"
+        f"openDrillModal() function:     {('✅ Found' if infra['openDrillModal_function'] else '❌ Missing')}",
     )
     print(f"drillModal DOM element:        {('✅ Found' if infra['drillModal_element'] else '❌ Missing')}")
     print(f"onclick template reference:    {('✅ Found' if infra['template_has_onclick'] else '❌ Missing')}")
@@ -307,7 +306,7 @@ def main():
         if not (has_onclick and has_cursor):
             all_pass = False
         print(
-            f"{territory:<35} {sub:<20} {('✅' if has_onclick else '❌'):<10} {('✅' if has_cursor else '❌'):<10} {status}"
+            f"{territory:<35} {sub:<20} {('✅' if has_onclick else '❌'):<10} {('✅' if has_cursor else '❌'):<10} {status}",
         )
     print("-" * 90)
     print(f"\n✅ ALL {len(validated_rows)} TERRITORY ROWS HAVE WORKING DRILL-DOWN CAPABILITY")

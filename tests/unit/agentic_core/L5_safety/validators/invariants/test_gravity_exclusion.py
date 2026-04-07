@@ -50,7 +50,7 @@ def test_structure_config_has_excluded_paths():
                         return
     raise AssertionError(
         "excluded_paths field not found in StructureConfig — "
-        "GravityLeakRepairAgent cannot exclude ops_scripts/ and scripts/"
+        "GravityLeakRepairAgent cannot exclude ops_scripts/ and scripts/",
     )
 
 

@@ -222,12 +222,12 @@ def check_file(path: Path) -> list[str]:
             if module.startswith(pat):
                 violations.append(
                     f"SEALED_IMPL_BYPASS: {rel} imports '{module}' "
-                    f"(sealed implementation modules are forbidden in apps_*)"
+                    f"(sealed implementation modules are forbidden in apps_*)",
                 )
         for prefix in FORBIDDEN_LAYER_PREFIXES:
             if module.startswith(prefix):
                 violations.append(
-                    f"DIRECT_LAYER_IMPORT: {rel} imports '{module}' (use agentic_core.interfaces.* instead)"
+                    f"DIRECT_LAYER_IMPORT: {rel} imports '{module}' (use agentic_core.interfaces.* instead)",
                 )
 
     return violations

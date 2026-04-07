@@ -91,7 +91,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             model_version="1.0",
             model_type="unified_orchestrator",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize Phase 4 models
@@ -105,14 +105,14 @@ class UnifiedInferenceEngine(BaseMLModel):
             "confidence_threshold": 0.6,
             "consensus_threshold": 0.7,
             "governance_enforcement": True,
-            "deterministic_order": True
+            "deterministic_order": True,
         }
 
         # Model weights for coordination
         self.model_weights = {
             "routing": 0.4,
             "reranking": 0.3,
-            "anomaly": 0.3
+            "anomaly": 0.3,
         }
 
         # Initialize models if available
@@ -167,8 +167,8 @@ class UnifiedInferenceEngine(BaseMLModel):
                 'model_version': self.model_version,
                 'model_type': self.model_type,
                 'prediction_type': self.prediction_type.value,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -180,7 +180,7 @@ class UnifiedInferenceEngine(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict using unified inference engine.
@@ -202,12 +202,12 @@ class UnifiedInferenceEngine(BaseMLModel):
             decision_mode=decision_mode,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
     def execute_unified_inference(
         self,
-        request: UnifiedInferenceRequest
+        request: UnifiedInferenceRequest,
     ) -> UnifiedInferenceResult:
         """
         Execute unified inference across all Phase 4 models.
@@ -228,7 +228,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             timestamp=start_time,
             models_executed=[],
             unified_recommendations=[],
-            coordination_rationale=[]
+            coordination_rationale=[],
         )
 
         # Execute individual models based on request
@@ -290,7 +290,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             context=request.routing_context,
             trace_id=request.trace_id,
             replay_key=request.replay_key,
-            policy_hash=request.policy_hash
+            policy_hash=request.policy_hash,
         )
 
         if not routing_features.success:
@@ -306,7 +306,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             trace_id=request.trace_id,
             replay_key=request.replay_key,
             policy_hash=request.policy_hash,
-            decision_mode=request.decision_mode
+            decision_mode=request.decision_mode,
         )
 
     def _execute_reranking_inference(self, request: UnifiedInferenceRequest) -> ModelPrediction:
@@ -319,7 +319,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             context=request.reranking_context,
             trace_id=request.trace_id,
             replay_key=request.replay_key,
-            policy_hash=request.policy_hash
+            policy_hash=request.policy_hash,
         )
 
         if not reranking_features.success:
@@ -335,7 +335,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             trace_id=request.trace_id,
             replay_key=request.replay_key,
             policy_hash=request.policy_hash,
-            decision_mode=request.decision_mode
+            decision_mode=request.decision_mode,
         )
 
     def _execute_anomaly_inference(self, request: UnifiedInferenceRequest) -> ModelPrediction:
@@ -348,7 +348,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             context=request.anomaly_context,
             trace_id=request.trace_id,
             replay_key=request.replay_key,
-            policy_hash=request.policy_hash
+            policy_hash=request.policy_hash,
         )
 
         if not anomaly_features.success:
@@ -364,7 +364,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             trace_id=request.trace_id,
             replay_key=request.replay_key,
             policy_hash=request.policy_hash,
-            decision_mode=request.decision_mode
+            decision_mode=request.decision_mode,
         )
 
     def _coordinate_inference_results(self, result: UnifiedInferenceResult) -> dict[str, Any]:
@@ -372,7 +372,7 @@ class UnifiedInferenceEngine(BaseMLModel):
         coordination = {
             'decision': 'Standard_Operation',
             'confidence': 0.0,
-            'rationale': []
+            'rationale': [],
         }
 
         # Collect model predictions
@@ -523,7 +523,7 @@ class UnifiedInferenceEngine(BaseMLModel):
 
     def get_comprehensive_analysis(
         self,
-        request: UnifiedInferenceRequest
+        request: UnifiedInferenceRequest,
     ) -> dict[str, Any]:
         """
         Get comprehensive analysis across all Phase 4 models.
@@ -544,7 +544,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 'timestamp': result.timestamp.isoformat(),
                 'models_executed': result.models_executed,
                 'inference_time_ms': result.inference_time_ms,
-                'governance_compliance': result.governance_compliance
+                'governance_compliance': result.governance_compliance,
             },
             'routing_analysis': None,
             'reranking_analysis': None,
@@ -552,10 +552,10 @@ class UnifiedInferenceEngine(BaseMLModel):
             'coordination_analysis': {
                 'decision': result.coordinated_decision,
                 'confidence': result.coordination_confidence,
-                'rationale': result.coordination_rationale
+                'rationale': result.coordination_rationale,
             },
             'unified_recommendations': result.unified_recommendations,
-            'implementation_priority': result.implementation_priority
+            'implementation_priority': result.implementation_priority,
         }
 
         # Detailed routing analysis
@@ -565,7 +565,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                     routing_context=request.routing_context,
                     trace_id=request.trace_id,
                     replay_key=request.replay_key,
-                    policy_hash=request.policy_hash
+                    policy_hash=request.policy_hash,
                 )
                 analysis['routing_analysis'] = routing_analysis
             except Exception:
@@ -578,7 +578,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                     reranking_context=request.reranking_context,
                     trace_id=request.trace_id,
                     replay_key=request.replay_key,
-                    policy_hash=request.policy_hash
+                    policy_hash=request.policy_hash,
                 )
                 analysis['reranking_analysis'] = reranking_analysis
             except Exception:
@@ -591,7 +591,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                     anomaly_context=request.anomaly_context,
                     trace_id=request.trace_id,
                     replay_key=request.replay_key,
-                    policy_hash=request.policy_hash
+                    policy_hash=request.policy_hash,
                 )
                 analysis['anomaly_analysis'] = anomaly_analysis
             except Exception:
@@ -605,7 +605,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             'is_valid': True,
             'issues': [],
             'recommendations': [],
-            'model_status': {}
+            'model_status': {},
         }
 
         # Check model availability
@@ -667,7 +667,7 @@ class UnifiedInferenceEngine(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the unified inference engine configuration.

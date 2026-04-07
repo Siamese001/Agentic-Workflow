@@ -36,7 +36,7 @@ class CircuitBreakerConfig:
 async def get_circuit_breaker_registry():
     """Stub registry."""
     return type('Registry', (), {
-        'get_circuit_breaker': lambda self, name, config: CircuitBreaker(name, config)
+        'get_circuit_breaker': lambda self, name, config: CircuitBreaker(name, config),
     })()
 
 
@@ -130,39 +130,25 @@ _emit_applies_guardrail("p0", "bulkhead_manager_util", "p0_governance")
 _emit_reads_policy_state("p0", "bulkhead_manager_util", "policy_binding")
 _emit_snapshots_state("p0", "bulkhead_manager_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -293,7 +279,7 @@ class Bulkhead:
         self.semaphore = asyncio.Semaphore(config.max_concurrency)
         self.queue = asyncio.Queue(maxsize=config.queue_size)
         self.metrics = BulkheadMetrics(
-            name=name, max_concurrency=config.max_concurrency, queue_size=config.queue_size
+            name=name, max_concurrency=config.max_concurrency, queue_size=config.queue_size,
         )
         self._active_tasks: set[asyncio.Task] = set()
         self._wait_times: deque = deque(maxlen=1000)
@@ -317,7 +303,7 @@ class Bulkhead:
         if self.circuit_breaker is None and hasattr(self, "_circuit_breaker_config"):
             registry = await get_circuit_breaker_registry()
             self.circuit_breaker = await registry.get_circuit_breaker(
-                f"bulkhead_{self.name}", self._circuit_breaker_config
+                f"bulkhead_{self.name}", self._circuit_breaker_config,
             )
         return self.circuit_breaker
 
@@ -349,7 +335,7 @@ class Bulkhead:
                 if circuit_breaker:
                     circuit_breaker.record_failure(ResourceExhaustedError(self.name, "Queue full"), 0)
                 raise ResourceExhaustedError(
-                    self.name, f"Queue full ({self.queue.qsize()}/{self.config.queue_size})"
+                    self.name, f"Queue full ({self.queue.qsize()}/{self.config.queue_size})",
                 )
             await self.queue.put(None)
             try:
@@ -360,7 +346,7 @@ class Bulkhead:
                 self.metrics.rejected_tasks = self._rejected_count
                 if circuit_breaker:
                     circuit_breaker.record_failure(
-                        asyncio.TimeoutError(f"Timeout acquiring semaphore after {timeout}s"), timeout * 1000
+                        asyncio.TimeoutError(f"Timeout acquiring semaphore after {timeout}s"), timeout * 1000,
                     )
                 raise ResourceExhaustedError(self.name, f"Timeout acquiring semaphore after {timeout}s")
             wait_time = (time.time() - start_time) * 1000
@@ -473,13 +459,13 @@ class BulkheadManager:
         self._default_configs = {
             "RESUME_GENERATION": BulkheadConfig(max_concurrency=5, priority=TaskPriority.HIGH, queue_size=50),
             "OUTREACH_GENERATION": BulkheadConfig(
-                max_concurrency=10, priority=TaskPriority.MEDIUM, queue_size=100
+                max_concurrency=10, priority=TaskPriority.MEDIUM, queue_size=100,
             ),
             "BACKGROUND_ANALYSIS": BulkheadConfig(
-                max_concurrency=2, priority=TaskPriority.LOW, queue_size=20
+                max_concurrency=2, priority=TaskPriority.LOW, queue_size=20,
             ),
             "CRITICAL_OPERATIONS": BulkheadConfig(
-                max_concurrency=3, priority=TaskPriority.CRITICAL, queue_size=10, timeout_seconds=60.0
+                max_concurrency=3, priority=TaskPriority.CRITICAL, queue_size=10, timeout_seconds=60.0,
             ),
         }
         for name, config in self._default_configs.items():
@@ -532,7 +518,7 @@ class BulkheadManager:
         return False
 
     async def execute(
-        self, bulkhead_name: str, coro: Callable, *args, timeout: float | None = None, **kwargs
+        self, bulkhead_name: str, coro: Callable, *args, timeout: float | None = None, **kwargs,
     ) -> Any:
         """Execute a coroutine in a specific bulkhead.
 
@@ -572,7 +558,7 @@ class BulkheadManager:
             return "OUTREACH_GENERATION"
 
     async def execute_for_engine(
-        self, engine_type: EngineType, coro: Callable, *args, timeout: float | None = None, **kwargs
+        self, engine_type: EngineType, coro: Callable, *args, timeout: float | None = None, **kwargs,
     ) -> Any:
         """Execute a coroutine for a specific engine.
 
@@ -614,7 +600,7 @@ class BulkheadManager:
         logger.info(f"Total Queued: {metrics['global']['total_queued_tasks']}")
         for name, bulkhead_metrics in metrics["bulkheads"].items():
             logger.info(
-                f"{name}: {bulkhead_metrics.active_tasks}/{bulkhead_metrics.config.max_concurrency} ({bulkhead_metrics.utilization_percent:.1f}%) Queue: {bulkhead_metrics.queued_tasks}/{bulkhead_metrics.config.queue_size}"
+                f"{name}: {bulkhead_metrics.active_tasks}/{bulkhead_metrics.config.max_concurrency} ({bulkhead_metrics.utilization_percent:.1f}%) Queue: {bulkhead_metrics.queued_tasks}/{bulkhead_metrics.config.queue_size}",
             )
 
     async def health_check(self) -> dict[str, Any]:

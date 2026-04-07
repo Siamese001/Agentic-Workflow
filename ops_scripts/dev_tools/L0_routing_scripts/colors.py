@@ -10,7 +10,9 @@ from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
 
 # Lazy import to avoid L0->L3 gravity violation
 def _get_registry():
-    from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
+    from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import (
+        get_agent_dispatch_registry,
+    )
     return get_agent_dispatch_registry()
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -176,7 +178,6 @@ except ImportError:  # guardian: allow-silent-swallow
         RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = DIM = ""
 
 
-from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
 
 try:
     from dotenv import load_dotenv
@@ -213,7 +214,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -317,7 +317,7 @@ def _save_runtime_state(project_root_path: Path):
 def _add_event(event_type: str, message: str):
     """Add timestamped event to runtime state."""
     _runtime_state["events"].append(
-        {"time": datetime.now().isoformat(), "type": event_type, "message": message}
+        {"time": datetime.now().isoformat(), "type": event_type, "message": message},
     )
 
 
@@ -334,7 +334,7 @@ def _update_meta_learning_state(experience_data: dict):
         ml["recent_experiences"] = ml["recent_experiences"][:10]
     if "pattern" in experience_data:
         ml["pattern_history"].append(
-            {"pattern": experience_data["pattern"], "timestamp": datetime.now().isoformat()}
+            {"pattern": experience_data["pattern"], "timestamp": datetime.now().isoformat()},
         )
 
 
@@ -353,7 +353,7 @@ def _update_redis_state(operation: str, key: str, hit: bool = None):
         total = redis["cache_hits"] + redis["cache_misses"]
         redis["hit_rate"] = redis["cache_hits"] / total if total > 0 else 0.0
     redis["recent_operations"].insert(
-        0, {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()}
+        0, {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()},
     )
     redis["recent_operations"] = redis["recent_operations"][:20]
 
@@ -397,7 +397,7 @@ def _update_agent_execution(agent_name: str, layer: str, start_time: float, end_
             "end": end_time,
             "duration": end_time - start_time,
             "success": success,
-        }
+        },
     )
 
 
@@ -456,24 +456,25 @@ def main():
     global _mission_executed
     parser = argparse.ArgumentParser(description="Canon Validator One-File Runner (Thin Wrapper)")
     parser.add_argument(
-        "--target", type=str, default=".", help="Target folder for validation (default: entire repo)"
+        "--target", type=str, default=".", help="Target folder for validation (default: entire repo)",
     )
     parser.add_argument("--reset", action="store_true", help="Reset sovereign state before validation")
     parser.add_argument(
-        "--heal", action="store_true", help="Run autonomous domain healing (dry-run by default)"
+        "--heal", action="store_true", help="Run autonomous domain healing (default: execute mode)",
     )
-    parser.add_argument("--execute-heal", action="store_true", help="Execute heal changes (use with --heal)")
+    parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no mutations)")
+    parser.add_argument("--execute-heal", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
         "--agent",
         type=str,
         help="Run a specific agent directly (e.g., 'naming', 'location', 'hierarchy', 'filesystem', 'governance', 'guardian')",
     )
     parser.add_argument(
-        "--execute", action="store_true", help="Execute changes (use with --agent, same as --execute-heal)"
+        "--execute", action="store_true", help="Execute changes (use with --agent, same as --execute-heal)",
     )
     parser.add_argument("--list-agents", action="store_true", help="List all discoverable agents")
     parser.add_argument(
-        "--yes", "-y", action="store_true", help="Automatic yes to all prompts (non-interactive mode)"
+        "--yes", "-y", action="store_true", help="Automatic yes to all prompts (non-interactive mode)",
     )
     parser.add_argument("--report", action="store_true", help="Run autonomy compliance report")
     parser.add_argument(
@@ -568,6 +569,7 @@ def main():
         print("\n[*] Running Autonomy Compliance Report...")
         try:
             from agentic_core.config.autonomy_targets import get_target
+
             from agentic_core.L0_routing.enforcement.safety_validators_seam import load_autonomy_guardian
 
             get_autonomy_guardian = load_autonomy_guardian().get_autonomy_guardian
@@ -581,7 +583,8 @@ def main():
         return
     if args.agent:
         print(f"\n[*] AGENT MODE - Direct invocation of {args.agent.upper()}")
-        execute = args.execute or args.execute_heal
+        report_only = args.report
+        execute = args.execute or args.execute_heal or not report_only
         mode_str = "EXECUTE" if execute else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
 
@@ -629,7 +632,7 @@ def main():
             if not hasattr(agent, method_name):
                 print(f"   [!] Method '{method_name}' not found on {agent.__class__.__name__}")
                 print(
-                    f"   Available methods: {[m for m in dir(agent) if not m.startswith('_') and callable(getattr(agent, m))]}"
+                    f"   Available methods: {[m for m in dir(agent) if not m.startswith('_') and callable(getattr(agent, m))]}",
                 )
                 sys.exit(1)
             print(f"   [AGENT] {agent.__class__.__name__}.{method_name}()\n")
@@ -669,7 +672,8 @@ def main():
 
         Orchestrator = _get_orchestrator_class()
         HealingStrategy = load_healing_strategy().HealingStrategy
-        execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False)
+        report_only = args.report
+        execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False) or not report_only
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
         if args.preflight_only:
             print("\n[*] PREFLIGHT MODE - Running mandatory checks only")
@@ -713,7 +717,8 @@ def main():
     if args.heal:
         print("\n[*] SOVEREIGN HEAL MODE - Autonomous Domain Healing")
         print("   [LAW] All healing via agent.heal_repository() — no external scripts")
-        execute_heal = getattr(args, "execute_heal", False)
+        report_only = args.report
+        execute_heal = getattr(args, "execute_heal", False) or not report_only
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
         try:
@@ -730,7 +735,7 @@ def main():
                     import importlib.util
 
                     spec = importlib.util.find_spec(
-                        "agentic_core.L6_observability.engines.PerformanceAnalystAgentSimple"
+                        "agentic_core.L6_observability.engines.PerformanceAnalystAgentSimple",
                     )
                     if spec:
                         perf_module = importlib.util.module_from_spec(spec)
@@ -747,7 +752,7 @@ def main():
             else:
                 print("\n   [TIER FILTER] Running ALL tiers (0-4)")
             orchestrator = Orchestrator(
-                strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator"
+                strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator",
             )
             checkpoint_manager = get_checkpoint_manager(project_root)
             performance_analyst = get_performance_analyst_safe(project_root)
@@ -783,7 +788,7 @@ def main():
                     "completed_agents": [],
                     "events": [],
                     "execution_timeline": [],
-                }
+                },
             )
             _add_event("info", f"Heal mode started ({mode_str}) - Unified Engine")
             _add_event("meta", f"Meta-learning {('ACTIVE' if gemini_active else 'INACTIVE')}")
@@ -800,7 +805,7 @@ def main():
                         "fixes": agent_result.get("violations_fixed", 0),
                         "violations": agent_result.get("violations_found", 0),
                         "duration_ms": agent_result.get("execution_time_ms", 0),
-                    }
+                    },
                 )
             _save_runtime_state(project_root)
             total_fixes = results.get("total_fixed", 0)
@@ -815,7 +820,7 @@ def main():
                     "compliance_score": 100
                     if total_fixes + total_violations == 0
                     else int((1 - total_violations / max(total_fixes + total_violations, 1)) * 100),
-                }
+                },
             ]
             if results.get("aborted"):
                 _add_event("warning", f"Mission aborted: {results.get('abort_reason', 'Unknown')}")
@@ -846,7 +851,7 @@ def report_consolidated_summary(results, gemini_active):
     print(mission_summary(total_agents, total_fixed, total_violations, total_errors, 0, success))
     print("\n" + "=" * 60)
     print(
-        f"{(Colors.BRIGHT_CYAN if COLORS_AVAILABLE else '')}FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT{(Colors.RESET if COLORS_AVAILABLE else '')}"
+        f"{(Colors.BRIGHT_CYAN if COLORS_AVAILABLE else '')}FINAL CONSOLIDATED SOVEREIGN HEALTH REPORT{(Colors.RESET if COLORS_AVAILABLE else '')}",
     )
     print("=" * 60)
     total_summary = {

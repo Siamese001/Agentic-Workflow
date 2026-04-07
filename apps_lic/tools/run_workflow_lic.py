@@ -111,11 +111,11 @@ def print_mission_summary(mission: OutreachMission):
     print(f"{'=' * 80}\n")
     print(f"Mission ID:   {mission.mission_id}")
     print(
-        f"Sender:       {mission.sender_profile.get('name', 'N/A')} - {mission.sender_profile.get('title', 'N/A')}"
+        f"Sender:       {mission.sender_profile.get('name', 'N/A')} - {mission.sender_profile.get('title', 'N/A')}",
     )
     print(f"Company:      {mission.sender_profile.get('company', 'N/A')}")
     print(
-        f"\nRecipient:    {mission.recipient_profile.get('name', 'N/A')} - {mission.recipient_profile.get('title', 'N/A')}"
+        f"\nRecipient:    {mission.recipient_profile.get('name', 'N/A')} - {mission.recipient_profile.get('title', 'N/A')}",
     )
     print(f"Company:      {mission.recipient_profile.get('company', 'N/A')}")
     print(f"Status:       {mission.connection_status}")

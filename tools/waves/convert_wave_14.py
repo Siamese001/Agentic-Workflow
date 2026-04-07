@@ -2,7 +2,6 @@
 """Batch convert Wave 14 placeholder tests."""
 
 import json
-import re
 from pathlib import Path
 
 # Load wave assignments
@@ -62,7 +61,7 @@ def convert_file(file_path):
         class_name=class_name,
         module_name=module_name,
         module_snake=module_snake,
-        import_path=import_path
+        import_path=import_path,
     )
 
     # Write new content
@@ -84,7 +83,7 @@ for file_path in wave_14_files:
         errors.append(f"{file_path}: {e}")
         print(f"ERROR: {file_path}: {e}")
 
-print(f"\nWave 14 Conversion Complete:")
+print("\nWave 14 Conversion Complete:")
 print(f"  - Converted: {converted}/{len(wave_14_files)} files")
 print(f"  - Errors: {len(errors)}")
 

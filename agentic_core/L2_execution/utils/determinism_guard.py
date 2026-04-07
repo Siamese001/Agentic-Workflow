@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -199,7 +198,7 @@ def assert_no_uuid4() -> Generator[None, None, None]:
 
     def tracking_uuid4() -> uuid.UUID:
         raise RuntimeError(
-            "uuid.uuid4() called in determinism-critical context. Use deterministic UUID generation instead."
+            "uuid.uuid4() called in determinism-critical context. Use deterministic UUID generation instead.",
         )
 
     uuid.uuid4 = tracking_uuid4
@@ -225,17 +224,17 @@ def assert_no_wallclock() -> Generator[None, None, None]:
 
     def tracking_time() -> float:
         raise RuntimeError(
-            "time.time() called in determinism-critical context. Use semantic clock ticks instead."
+            "time.time() called in determinism-critical context. Use semantic clock ticks instead.",
         )
 
     def tracking_sleep(seconds: float) -> None:
         raise RuntimeError(
-            "time.sleep() called in determinism-critical context. Use deterministic delay mechanisms instead."
+            "time.sleep() called in determinism-critical context. Use deterministic delay mechanisms instead.",
         )
 
     def tracking_monotonic() -> float:
         raise RuntimeError(
-            "time.monotonic() called in determinism-critical context. Use semantic clock ticks instead."
+            "time.monotonic() called in determinism-critical context. Use semantic clock ticks instead.",
         )
 
     time.time = tracking_time

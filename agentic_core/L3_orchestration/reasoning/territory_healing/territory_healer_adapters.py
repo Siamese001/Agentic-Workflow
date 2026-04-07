@@ -57,7 +57,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                 path=v.get("path", ""),
                 message=v.get("message", f"File at {territory} root"),
                 severity="ERROR",
-                details=v
+                details=v,
             ))
 
         # Convert forbidden folders
@@ -66,7 +66,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                 type="FORBIDDEN_FOLDER",
                 path=folder,
                 message=f"Forbidden folder at root: {folder}",
-                severity="ERROR"
+                severity="ERROR",
             ))
 
         # Convert archived files
@@ -75,14 +75,14 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                 type="ARCHIVED_FILE_AT_ROOT",
                 path=filename,
                 message=f"Archived file at root: {filename}",
-                severity="WARNING"
+                severity="WARNING",
             ))
 
         return ScanResult(
             territory=territory,
             violations_found=len(violations),
             violations=violations,
-            scan_metadata=scan_result
+            scan_metadata=scan_result,
         )
 
     def heal_territory(self, territory: str, context: HealingContext) -> HealingResult:
@@ -101,7 +101,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                 # Heal root violations with territory context
                 heal_result = agent.heal_root_violations(
                     dry_run=False,
-                    target_territory=territory
+                    target_territory=territory,
                 )
 
                 # Track actions
@@ -117,13 +117,13 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                 if territory == "tests":
                     mirror_result = agent.validate_test_structure_mirror(
                         dry_run=False,
-                        execute=True
+                        execute=True,
                     )
                     if mirror_result.get("folders_created", 0) > 0:
                         actions_taken.append({
                             "type": "TEST_MIRROR_FOLDERS_CREATED",
                             "count": mirror_result["folders_created"],
-                            "applied": True
+                            "applied": True,
                         })
                         violations_fixed += mirror_result.get("violations_found", 0)
 
@@ -139,7 +139,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
             actions_taken=actions_taken,
             errors=errors,
             success=len(errors) == 0,
-            dry_run=not context.heal
+            dry_run=not context.heal,
         )
 
 
@@ -187,14 +187,14 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
                     path=file_path,
                     message=v.get("reason", "Location violation"),
                     severity="ERROR",
-                    details=v
+                    details=v,
                 ))
 
         return ScanResult(
             territory=territory,
             violations_found=len(violations),
             violations=violations,
-            scan_metadata=scan_result
+            scan_metadata=scan_result,
         )
 
     def heal_territory(self, territory: str, context: HealingContext) -> HealingResult:
@@ -228,7 +228,7 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
             actions_taken=actions_taken,
             errors=errors,
             success=len(errors) == 0,
-            dry_run=not context.heal
+            dry_run=not context.heal,
         )
 
 
@@ -269,14 +269,14 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
                 path=v.get("file", ""),
                 message=v.get("message", "Layer inversion detected"),
                 severity="ERROR",
-                details=v
+                details=v,
             ))
 
         return ScanResult(
             territory=territory,
             violations_found=len(violations),
             violations=violations,
-            scan_metadata=scan_result
+            scan_metadata=scan_result,
         )
 
     def heal_territory(self, territory: str, context: HealingContext) -> HealingResult:
@@ -309,7 +309,7 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
             actions_taken=actions_taken,
             errors=errors,
             success=len(errors) == 0,
-            dry_run=not context.heal
+            dry_run=not context.heal,
         )
 
 
@@ -351,14 +351,14 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
                 path=v.get("path", ""),
                 message=v.get("message", "SSOT drift detected"),
                 severity="WARNING",
-                details=v
+                details=v,
             ))
 
         return ScanResult(
             territory=territory,
             violations_found=len(violations),
             violations=violations,
-            scan_metadata=scan_result
+            scan_metadata=scan_result,
         )
 
     def heal_territory(self, territory: str, context: HealingContext) -> HealingResult:
@@ -389,7 +389,7 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
             actions_taken=actions_taken,
             errors=errors,
             success=len(errors) == 0,
-            dry_run=not context.heal
+            dry_run=not context.heal,
         )
 
 

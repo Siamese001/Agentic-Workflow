@@ -90,7 +90,7 @@ class CleanADGDeployer:
                 # Update ADG generation command to use clean scanner
                 new_content = content.replace(
                     'python tools/generate_full_adg.py',
-                    'python tools/generate_static_adg.py'
+                    'python tools/generate_static_adg.py',
                 )
 
                 if new_content != content:
@@ -124,7 +124,7 @@ class CleanADGDeployer:
                     cwd=PROJECT_ROOT,
                     capture_output=True,
                     text=True,
-                    timeout=300
+                    timeout=300,
                 )
 
                 if result.returncode == 0:
@@ -155,7 +155,7 @@ class CleanADGDeployer:
                     cwd=PROJECT_ROOT,
                     capture_output=True,
                     text=True,
-                    timeout=300
+                    timeout=300,
                 )
 
                 if result.returncode == 0:
@@ -218,8 +218,8 @@ class CleanADGDeployer:
                 'Clean static scanner',
                 'Runtime scanner',
                 'CI configuration updates',
-                'Separated ADG generation'
-            ]
+                'Separated ADG generation',
+            ],
         }
 
         report_file = PROJECT_ROOT / "tools" / "adg_separation_deployment_report.json"

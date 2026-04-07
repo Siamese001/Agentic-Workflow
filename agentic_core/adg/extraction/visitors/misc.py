@@ -31,8 +31,8 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         """Extract test coverage edges from imports in test files."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         # Only process if this is a test file
         if not any(indicator in self._source_file for indicator in self._test_file_indicators):
@@ -51,14 +51,14 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=module,
-                )
+                ),
             )
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         """Extract test coverage edges from from-imports in test files."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         # Only process if this is a test file
         if not any(indicator in self._source_file for indicator in self._test_file_indicators):
@@ -77,7 +77,7 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=alias.name,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -120,8 +120,8 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Extract type annotation edges from function definitions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         # Return type annotation
         if node.returns:
@@ -135,7 +135,7 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=name,
-                    )
+                    ),
                 )
 
         # Argument annotations
@@ -151,15 +151,15 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
                             source_file=self._source_file,
                             line_no=node.lineno,
                             symbol=name,
-                        )
+                        ),
                     )
 
         self.generic_visit(node)
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
         """Extract type annotation edges from annotated assignments."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         if node.annotation:
             for name in self._extract_annotation_names(node.annotation):
@@ -172,7 +172,7 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=name,
-                    )
+                    ),
                 )
         self.generic_visit(node)
 
@@ -208,8 +208,8 @@ class _DecoratorVisitor(BaseStructuralVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Extract decorator edges from function definitions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         for decorator in node.decorator_list:
             name = self._get_decorator_name(decorator)
@@ -223,14 +223,14 @@ class _DecoratorVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=name,
-                    )
+                    ),
                 )
         self.generic_visit(node)
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract decorator edges from class definitions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         for decorator in node.decorator_list:
             name = self._get_decorator_name(decorator)
@@ -244,7 +244,7 @@ class _DecoratorVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=name,
-                    )
+                    ),
                 )
         self.generic_visit(node)
 
@@ -263,8 +263,8 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Extract exports for public functions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         if not node.name.startswith("_"):
             self.edges.append(
@@ -276,14 +276,14 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=node.name,
-                )
+                ),
             )
         self.generic_visit(node)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
         """Extract exports for public async functions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         if not node.name.startswith("_"):
             self.edges.append(
@@ -295,14 +295,14 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=node.name,
-                )
+                ),
             )
         self.generic_visit(node)
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract exports for public classes."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         if not node.name.startswith("_"):
             self.edges.append(
@@ -314,7 +314,7 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=node.name,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -355,8 +355,8 @@ class _UnusedImportVisitor(BaseStructuralVisitor):
 
     def extract_edges(self) -> list[Edge]:
         """Emit edges for unused imports."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         unused = set(self._imported_names.keys()) - self._used_names
         for name in unused:
@@ -369,6 +369,6 @@ class _UnusedImportVisitor(BaseStructuralVisitor):
                     source_file=self._source_file,
                     line_no=self._imported_names[name],
                     symbol=name,
-                )
+                ),
             )
         return self.edges

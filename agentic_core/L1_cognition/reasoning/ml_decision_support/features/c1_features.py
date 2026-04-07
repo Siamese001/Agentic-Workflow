@@ -44,78 +44,78 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Complexity score of the query",
                 provenance="query.complexity.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="execution_time_trend",
                 feature_type=FeatureType.NUMERIC,
                 description="Trend in query execution times",
                 provenance="query.execution.time_trend",
-                validation_rules={"min_value": -1.0, "max_value": 1.0}
+                validation_rules={"min_value": -1.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_intensity",
                 feature_type=FeatureType.NUMERIC,
                 description="Resource intensity of query execution",
                 provenance="query.resource.intensity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="index_utilization",
                 feature_type=FeatureType.NUMERIC,
                 description="Index utilization effectiveness",
                 provenance="query.index.utilization",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="cache_hit_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Cache hit rate for query results",
                 provenance="query.cache.hit_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="optimization_potential",
                 feature_type=FeatureType.NUMERIC,
                 description="Potential for query optimization",
                 provenance="query.optimization.potential",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="join_complexity",
                 feature_type=FeatureType.NUMERIC,
                 description="Complexity of join operations",
                 provenance="query.join.complexity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="data_volume_impact",
                 feature_type=FeatureType.NUMERIC,
                 description="Impact of data volume on performance",
                 provenance="query.data.volume_impact",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="concurrency_factor",
                 feature_type=FeatureType.NUMERIC,
                 description="Concurrency impact on query performance",
                 provenance="query.concurrency.factor",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="plan_stability",
                 feature_type=FeatureType.NUMERIC,
                 description="Stability of query execution plan",
                 provenance="query.plan.stability",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="c1_query_optimizer",
             schema_version="1.0",
             description="Features for C1 query optimization model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -146,7 +146,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
             "subquery_depth": 0.2,
             "where_conditions": 0.15,
             "aggregation_functions": 0.1,
-            "window_functions": 0.1
+            "window_functions": 0.1,
         }
 
         score = 0.0
@@ -321,7 +321,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
             "low_cache_hit_rate": 0.25,
             "poor_index_usage": 0.2,
             "resource_intensive": 0.15,
-            "unstable_plan": 0.1
+            "unstable_plan": 0.1,
         }
 
         potential_score = 0.0

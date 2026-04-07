@@ -10,14 +10,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
+    EmbeddingSovereignAgent as _EmbeddingSovereignAgent,
+)
 from agentic_core.L2_execution.types.l2_execution_contract import (
     L2ExecutionAgent,
     L2ExecutionContext,
     L2ExecutionPhase,
     L2PhaseResult,
-)
-from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
-    EmbeddingSovereignAgent as _EmbeddingSovereignAgent,
 )
 
 
@@ -84,7 +84,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             embedding = loop.run_until_complete(
-                self._gateway.get_embedding(content, provider, use_cache)
+                self._gateway.get_embedding(content, provider, use_cache),
             )
             loop.close()
 
@@ -135,7 +135,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
         fallback_providers = ["bge-m3", "gemini", "openai"]
         fallback = next(
             (p for p in fallback_providers if p != current_provider),
-            "bge-m3"
+            "bge-m3",
         )
         context.inputs["provider"] = fallback
 
@@ -188,7 +188,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
     # Convenience API
     # ========================================================================
     def get_embedding(
-        self, content: str, provider: str = "bge-m3", use_cache: bool = True
+        self, content: str, provider: str = "bge-m3", use_cache: bool = True,
     ) -> list[float] | None:
         """Synchronous wrapper for embedding generation."""
         result = self.run_l2_phases(

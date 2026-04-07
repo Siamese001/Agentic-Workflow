@@ -93,7 +93,7 @@ def main():
     if age_days is not None:
         print(f"Oldest entity age:  {age_days} days (threshold: {MAX_ENTITY_AGE_DAYS}) {'✓' if age_ok else '✗'}")
     else:
-        print(f"Oldest entity age:  N/A (no non-protected entities)")
+        print("Oldest entity age:  N/A (no non-protected entities)")
 
     print("\nEntity breakdown:")
     for etype, etype_count in sorted(breakdown.items(), key=lambda x: -x[1]):

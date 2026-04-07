@@ -45,7 +45,7 @@ for name, mcp in mcp_servers.items():
         'command': cmd,
         'args': args[:2] if args else [],
         'has_cwd': has_cwd,
-        'cwd': mcp.get('cwd', 'MISSING')
+        'cwd': mcp.get('cwd', 'MISSING'),
     }
 
     if is_local_python:

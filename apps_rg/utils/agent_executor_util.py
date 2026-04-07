@@ -84,39 +84,25 @@ _emit_stores_embedding("p4", "agent_executor_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "agent_executor_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "agent_executor_util", "exec_snapshot_link")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -383,7 +369,7 @@ class AgentExecutor:
         formatted_messages = self._format_messages(messages, system_prompt)
         model = self.config.model or self._get_default_model()
         gateway_response = self._try_execute_via_gateway(
-            formatted_messages, model, system_prompt, tools, **kwargs
+            formatted_messages, model, system_prompt, tools, **kwargs,
         )
         if gateway_response is not None:
             return gateway_response
@@ -425,7 +411,7 @@ class AgentExecutor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "AgentExecutor.execute_via_governed_pipeline"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AgentExecutor.execute_via_governed_pipeline",
         )
 
         # Import governed adapter
@@ -522,7 +508,7 @@ class AgentExecutor:
             return None
 
     def _format_messages(
-        self, messages: list[AgentMessage], system_prompt: str | None
+        self, messages: list[AgentMessage], system_prompt: str | None,
     ) -> list[dict[str, str]]:
         """Format messages for provider."""
         formatted = []
@@ -540,7 +526,7 @@ class AgentExecutor:
         return formatted
 
     def _execute_openai(
-        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs
+        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs,
     ) -> AgentResponse:
         """Execute using OpenAI client."""
         client = self._get_client()
@@ -568,7 +554,7 @@ class AgentExecutor:
         )
 
     def _execute_anthropic(
-        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs
+        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs,
     ) -> AgentResponse:
         """Execute using Anthropic client."""
         client = self._get_client()
@@ -599,7 +585,7 @@ class AgentExecutor:
                         "id": block.id,
                         "type": "function",
                         "function": {"name": block.name, "arguments": block.input},
-                    }
+                    },
                 )
         return AgentResponse(
             content=content,
@@ -625,7 +611,7 @@ class AgentExecutor:
         client = self._get_client()
         if hasattr(client, "interactions"):
             return self._execute_google_interactions(
-                client, messages, model, tools, previous_interaction_id, **kwargs
+                client, messages, model, tools, previous_interaction_id, **kwargs,
             )
         else:
             return self._execute_google_legacy(client, messages, model, **kwargs)
@@ -682,7 +668,7 @@ class AgentExecutor:
         return _execute_with_retry()
 
     def _execute_google_legacy(
-        self, genai_module, messages: list[dict[str, str]], model: str, **kwargs
+        self, genai_module, messages: list[dict[str, str]], model: str, **kwargs,
     ) -> AgentResponse:
         """Execute using legacy Google GenerativeAI SDK."""
         prompt = ""
@@ -703,7 +689,7 @@ class AgentExecutor:
         )
 
     def _execute_litellm(
-        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs
+        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs,
     ) -> AgentResponse:
         """Execute using LiteLLM."""
         params = {"temperature": self.config.temperature, "max_tokens": self.config.max_tokens, **kwargs}
@@ -730,7 +716,7 @@ class AgentExecutor:
         return get_default_model(self.config.provider)
 
     def execute_structured(
-        self, messages: list[AgentMessage], response_model: Any, system_prompt: str | None = None, **kwargs
+        self, messages: list[AgentMessage], response_model: Any, system_prompt: str | None = None, **kwargs,
     ) -> Any:
         """Execute agent with structured output using Instructor.
 
@@ -759,7 +745,7 @@ class AgentExecutor:
         return response
 
     def _execute_google_structured(
-        self, messages: list[AgentMessage], response_model: Any, system_prompt: str | None, **kwargs
+        self, messages: list[AgentMessage], response_model: Any, system_prompt: str | None, **kwargs,
     ) -> Any:
         """Execute Google GenAI with structured JSON output using Interactions API."""
         import json
@@ -829,7 +815,7 @@ class AgentExecutor:
 
 
 def create_agent_executor(
-    provider: Provider = Provider.OPENAI, model: str | None = None, temperature: float = 0.7, **kwargs
+    provider: Provider = Provider.OPENAI, model: str | None = None, temperature: float = 0.7, **kwargs,
 ) -> AgentExecutor:
     """Factory function to create agent executor.
 

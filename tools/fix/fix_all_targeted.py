@@ -99,7 +99,7 @@ c = read(rel)
 if "StateNamespaceError" not in c:
     c = c.replace(
         "    StateTransitionRecord,\n    StateVersionMissingError,",
-        "    StateNamespaceError,\n    StateTransitionRecord,\n    UnversionedStateError,\n    StateVersionMissingError,"
+        "    StateNamespaceError,\n    StateTransitionRecord,\n    UnversionedStateError,\n    StateVersionMissingError,",
     )
     write(rel, c)
     fixes_applied += 1
@@ -111,7 +111,7 @@ c = read(rel)
 if "get_credential_guard as credential_guard" in c:
     c = c.replace(
         "from agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard as credential_guard",
-        "from agentic_core.L5_safety.enforcement.credential_guard import CredentialGuard as credential_guard\nfrom agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard"
+        "from agentic_core.L5_safety.enforcement.credential_guard import CredentialGuard as credential_guard\nfrom agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard",
     )
     write(rel, c)
     fixes_applied += 1
@@ -123,7 +123,7 @@ c = read(rel)
 if "reset_reasoning_knowledge_registry" not in c:
     c = c.replace(
         "    get_reasoning_knowledge_registry,\n)",
-        "    get_reasoning_knowledge_registry,\n    reset_reasoning_knowledge_registry,\n)"
+        "    get_reasoning_knowledge_registry,\n    reset_reasoning_knowledge_registry,\n)",
     )
     write(rel, c)
     fixes_applied += 1
@@ -135,7 +135,7 @@ c = read(rel)
 if "reset_plan_registry" not in c:
     c = c.replace(
         "    get_plan_registry,\n)",
-        "    get_plan_registry,\n    reset_plan_registry,\n)"
+        "    get_plan_registry,\n    reset_plan_registry,\n)",
     )
     write(rel, c)
     fixes_applied += 1
@@ -150,7 +150,7 @@ for rel, marker in [
     if "_emit_writes_through" not in c:
         c = c.replace(
             marker + "\n)",
-            marker + "\n    _emit_writes_through,\n    _emit_pulls_context,\n    _emit_validated_by_safety_plane,\n)"
+            marker + "\n    _emit_writes_through,\n    _emit_pulls_context,\n    _emit_validated_by_safety_plane,\n)",
         )
         write(rel, c)
         fixes_applied += 1

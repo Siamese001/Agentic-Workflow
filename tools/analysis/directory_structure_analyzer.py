@@ -2,10 +2,9 @@
 """Analyze directory structure for root-level files and organization issues."""
 
 import ast
-import os
-from pathlib import Path
-from typing import Dict, List, Optional
 import json
+from pathlib import Path
+from typing import Dict, Optional
 
 
 def analyze_file_complexity(file_path: Path) -> Dict:
@@ -25,13 +24,13 @@ def analyze_file_complexity(file_path: Path) -> Dict:
             'classes': classes,
             'imports': imports,
             'lines': len(content.splitlines()),
-            'size': file_path.stat().st_size
+            'size': file_path.stat().st_size,
         }
     except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
         return {
             'error': str(e),
             'lines': 0,
-            'size': file_path.stat().st_size if file_path.exists() else 0
+            'size': file_path.stat().st_size if file_path.exists() else 0,
         }
 
 
@@ -43,7 +42,7 @@ def analyze_directory(root_dir: Path) -> Dict:
         'subdirs': {},
         'empty_subdirs': [],
         'low_signal_files': [],
-        'high_signal_root_files': []
+        'high_signal_root_files': [],
     }
 
     # Skip __pycache__
@@ -56,7 +55,7 @@ def analyze_directory(root_dir: Path) -> Dict:
             complexity = analyze_file_complexity(item)
             results['root_level_files'].append({
                 'file': str(item.relative_to(root_dir.parent)),
-                'complexity': complexity
+                'complexity': complexity,
             })
 
             # Classify as high-signal if it has significant content

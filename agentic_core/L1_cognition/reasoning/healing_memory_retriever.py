@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -307,7 +306,7 @@ class HealingMemoryRetriever:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryRetriever.retrieve_similar_incidents"
+            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryRetriever.retrieve_similar_incidents",
         )
 
         if not signal_text or not signal_text.strip():
@@ -343,13 +342,13 @@ class HealingMemoryRetriever:
                     similarity=score,
                     metadata={},
                     advisory_only=True,
-                )
+                ),
             )
         results.sort(key=lambda inc: (-inc.similarity, inc.content_hash, inc.trace_id or ""))
         for _inc in results:
             if not _inc.advisory_only:
                 raise SovereigntyError(
-                    f"advisory_only=False detected on incident {_inc.content_hash!r}; retrieval results MUST NOT be used to influence routing."
+                    f"advisory_only=False detected on incident {_inc.content_hash!r}; retrieval results MUST NOT be used to influence routing.",
                 )
         _sorted_ids = "|".join(sorted(inc.content_hash for inc in results))
         _scores_r6 = "|".join(
@@ -387,7 +386,7 @@ class HealingMemoryRetriever:
 
 
 def build_retriever(
-    base_path: Path | None = None, profile: Any | None = None, *, index_id: str = _INDEX_ID
+    base_path: Path | None = None, profile: Any | None = None, *, index_id: str = _INDEX_ID,
 ) -> HealingMemoryRetriever | NullHealingMemoryRetriever:
     """Factory: return a live HealingMemoryRetriever or NullHealingMemoryRetriever.
 

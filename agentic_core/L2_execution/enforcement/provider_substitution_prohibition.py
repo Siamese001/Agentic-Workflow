@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -217,12 +216,12 @@ def validate_provider_request(
         Logger.error(violation_msg)
         raise ProviderSubstitutionViolation(violation_msg)
     Logger.debug(
-        f"Provider request validated: agent '{original_request.agent_id}' using provider '{actual_provider}' with model '{actual_model}'"
+        f"Provider request validated: agent '{original_request.agent_id}' using provider '{actual_provider}' with model '{actual_model}'",
     )
 
 
 def enforce_fail_closed_on_failure(
-    original_request: ProviderRequest, error: Exception, attempted_substitution: dict[str, str] | None = None
+    original_request: ProviderRequest, error: Exception, attempted_substitution: dict[str, str] | None = None,
 ) -> None:
     """Ensure fail-closed behavior on provider failure (REQ-415).
 
@@ -258,12 +257,12 @@ class ProviderSubstitutionGuard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ProviderSubstitutionGuard.register_request"
+            _trace_id, LayerSegment.L2_EXECUTION, "ProviderSubstitutionGuard.register_request",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:ProviderSubstitutionGuard.register_request".encode()
+            f"{_trace_id}:ProviderSubstitutionGuard.register_request".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -283,13 +282,13 @@ class ProviderSubstitutionGuard:
         """
         if request_id not in self._active_requests:
             raise ProviderSubstitutionViolation(
-                f"Unknown request ID {request_id}. Cannot validate provider substitution."
+                f"Unknown request ID {request_id}. Cannot validate provider substitution.",
             )
         original_request = self._active_requests[request_id]
         validate_provider_request(original_request, actual_provider, actual_model)
 
     def handle_failure(
-        self, request_id: str, error: Exception, attempted_substitution: dict[str, str] | None = None
+        self, request_id: str, error: Exception, attempted_substitution: dict[str, str] | None = None,
     ) -> None:
         """Handle provider failure with fail-closed enforcement.
 
@@ -303,7 +302,7 @@ class ProviderSubstitutionGuard:
         """
         if request_id not in self._active_requests:
             raise ProviderSubstitutionViolation(
-                f"Unknown request ID {request_id}. Cannot enforce fail-closed."
+                f"Unknown request ID {request_id}. Cannot enforce fail-closed.",
             )
         original_request = self._active_requests[request_id]
         enforce_fail_closed_on_failure(original_request, error, attempted_substitution)
@@ -338,7 +337,7 @@ def test_provider_substitution_prohibition() -> bool:
     """
     try:
         test_request = ProviderRequest(
-            provider="openai", model="gpt-4", agent_id="test_agent", request_id="test_123"
+            provider="openai", model="gpt-4", agent_id="test_agent", request_id="test_123",
         )
         try:
             validate_provider_request(test_request, "anthropic", "claude-3-5-sonnet")

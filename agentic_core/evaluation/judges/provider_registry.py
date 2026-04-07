@@ -93,7 +93,7 @@ class GeminiJudgeProvider:
         except ImportError as exc:
             raise RuntimeError(
                 "GeminiJudgeProvider: google-genai package not installed. "
-                "Install with: pip install google-genai"
+                "Install with: pip install google-genai",
             ) from exc
 
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")

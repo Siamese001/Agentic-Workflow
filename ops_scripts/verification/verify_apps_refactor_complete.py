@@ -80,7 +80,7 @@ class AppsRefactorVerifier:
                     description="ADG artifact exists",
                     passed=False,
                     failure_reason=f"ADG file not found at {adg_path}",
-                )
+                ),
             )
             return
 
@@ -110,7 +110,7 @@ class AppsRefactorVerifier:
                     "total_entities": len(adg.get("entities", [])),
                 },
                 failure_reason="" if has_apps_entities else "No apps_* entities found in ADG",
-            )
+            ),
         )
 
     def verify_phase1_dead_imports(self) -> None:
@@ -144,7 +144,7 @@ class AppsRefactorVerifier:
                 passed=len(non_init) == 0,
                 evidence={"f401_count": len(non_init), "files_with_violations": len(set(v["filename"] for v in non_init))},
                 failure_reason="" if len(non_init) == 0 else f"{len(non_init)} F401 violations remain",
-            )
+            ),
         )
 
     def verify_phase2_shim_removal(self) -> None:
@@ -174,7 +174,7 @@ class AppsRefactorVerifier:
                 passed=not shim_exists,
                 evidence={"shim_path": str(shim_path)},
                 failure_reason="" if not shim_exists else "Shim file still exists",
-            )
+            ),
         )
 
         self.results.append(
@@ -185,7 +185,7 @@ class AppsRefactorVerifier:
                 passed=len(canonical_imports) == 2,
                 evidence={"files_with_canonical_import": canonical_imports},
                 failure_reason="" if len(canonical_imports) == 2 else f"Only {len(canonical_imports)}/2 test files updated",
-            )
+            ),
         )
 
     def verify_phase3_mcp_mixin_dedup(self) -> None:
@@ -204,7 +204,7 @@ class AppsRefactorVerifier:
                         description=f"Check {file_path.name} for duplicate stubs",
                         passed=False,
                         failure_reason=f"File not found: {file_path}",
-                    )
+                    ),
                 )
                 continue
 
@@ -238,7 +238,7 @@ class AppsRefactorVerifier:
                     passed=len(unconditional_dupes) == 0,
                     evidence={"duplicate_classes": unconditional_dupes, "all_classes": list(set(class_names))},
                     failure_reason="" if len(unconditional_dupes) == 0 else f"Unconditional duplicates: {unconditional_dupes}",
-                )
+                ),
             )
 
     def verify_phase4_constants_ssot(self) -> None:
@@ -253,7 +253,7 @@ class AppsRefactorVerifier:
                     description="pipeline_constants_config.py exists",
                     passed=False,
                     failure_reason=f"SSOT file not found at {ssot_path}",
-                )
+                ),
             )
             return
 
@@ -289,7 +289,7 @@ class AppsRefactorVerifier:
                 failure_reason=""
                 if expected_constants.issubset(defined_constants)
                 else f"Missing: {expected_constants - defined_constants}",
-            )
+            ),
         )
 
         # Verify no inline MAX_RETRIES = 3 definitions in apps_* (excluding SSOT itself)
@@ -311,7 +311,7 @@ class AppsRefactorVerifier:
                 passed=len(inline_violations) == 0,
                 evidence={"files_with_inline_defs": inline_violations},
                 failure_reason="" if len(inline_violations) == 0 else f"{len(inline_violations)} files still define inline",
-            )
+            ),
         )
 
     def verify_phase5_state_guards(self) -> None:
@@ -330,7 +330,7 @@ class AppsRefactorVerifier:
                     passed=has_field_factory,
                     evidence={"pattern_found": has_field_factory},
                     failure_reason="" if has_field_factory else "field(default_factory=dict) pattern not found",
-                )
+                ),
             )
 
         # Check ResumeEnhancementOrchestrator has _initialized guard
@@ -347,7 +347,7 @@ class AppsRefactorVerifier:
                     passed=has_initialized_guard,
                     evidence={"pattern_found": has_initialized_guard},
                     failure_reason="" if has_initialized_guard else "_initialized pattern not found",
-                )
+                ),
             )
 
     def verify_phase6_layer_violations(self) -> None:
@@ -364,7 +364,7 @@ class AppsRefactorVerifier:
                 passed=sl_bridge.exists(),
                 evidence={"path": str(sl_bridge)},
                 failure_reason="" if sl_bridge.exists() else f"File not found at {sl_bridge}",
-            )
+            ),
         )
 
         self.results.append(
@@ -375,7 +375,7 @@ class AppsRefactorVerifier:
                 passed=sl_operator.exists(),
                 evidence={"path": str(sl_operator)},
                 failure_reason="" if sl_operator.exists() else f"File not found at {sl_operator}",
-            )
+            ),
         )
 
         # Check backward-compat shims exist in apps_shared/scripts/
@@ -400,7 +400,7 @@ class AppsRefactorVerifier:
                     passed=is_shim,
                     evidence={"path": str(shim_path), "is_shim": is_shim},
                     failure_reason="" if is_shim else f"Shim not found or invalid at {shim_path}",
-                )
+                ),
             )
 
         # Check test imports updated
@@ -417,7 +417,7 @@ class AppsRefactorVerifier:
                     passed=uses_canonical,
                     evidence={"canonical_import_found": uses_canonical},
                     failure_reason="" if uses_canonical else "Test still imports from old location",
-                )
+                ),
             )
 
     def verify_phase7_entrypoints(self) -> None:
@@ -433,7 +433,7 @@ class AppsRefactorVerifier:
                         description=f"{app}/__main__.py exists",
                         passed=False,
                         failure_reason=f"File not found at {main_path}",
-                    )
+                    ),
                 )
                 continue
 
@@ -451,7 +451,7 @@ class AppsRefactorVerifier:
                     failure_reason=""
                     if (has_adg_bootstrap and has_graceful_degrade)
                     else "Missing ADG bootstrap or graceful degrade",
-                )
+                ),
             )
 
     def verify_phase8_file_relocations(self) -> None:
@@ -471,7 +471,7 @@ class AppsRefactorVerifier:
                 passed=len(misplaced_tests) == 0,
                 evidence={"misplaced_count": len(misplaced_tests), "files": [f.name for f in misplaced_tests]},
                 failure_reason="" if len(misplaced_tests) == 0 else f"{len(misplaced_tests)} test files still in apps_rg/scripts/",
-            )
+            ),
         )
 
         # Check test files exist in tests/apps_rg/scripts/
@@ -490,7 +490,7 @@ class AppsRefactorVerifier:
                 passed=len(relocated_tests) == 3,
                 evidence={"relocated_count": len(relocated_tests), "expected": 3},
                 failure_reason="" if len(relocated_tests) == 3 else f"Only {len(relocated_tests)}/3 test files relocated",
-            )
+            ),
         )
 
         # Check ops tools moved from apps_lic/tools/ to ops_scripts/general/
@@ -516,7 +516,7 @@ class AppsRefactorVerifier:
                 failure_reason=""
                 if (len(still_in_apps_lic) == 0 and len(in_ops_scripts) == 4)
                 else f"{len(still_in_apps_lic)} still in apps_lic, {len(in_ops_scripts)}/4 in ops_scripts",
-            )
+            ),
         )
 
     def verify_phase9_circuit_breaker(self) -> None:
@@ -535,7 +535,7 @@ class AppsRefactorVerifier:
                         description=f"{executor_path.name} exists",
                         passed=False,
                         failure_reason=f"File not found at {executor_path}",
-                    )
+                    ),
                 )
                 continue
 
@@ -561,7 +561,7 @@ class AppsRefactorVerifier:
                     passed=inherits_hardening,
                     evidence={"executor_classes": [c.name for c in executor_classes], "inherits_hardening": inherits_hardening},
                     failure_reason="" if inherits_hardening else "Does not inherit from HardeningMixin",
-                )
+                ),
             )
 
     def verify_phase10_architecture_migration(self) -> None:
@@ -581,7 +581,7 @@ class AppsRefactorVerifier:
                     passed=spec_count >= 4 and has_registry_tuple,
                     evidence={"spec_count": spec_count, "has_registry": has_registry_tuple},
                     failure_reason="" if (spec_count >= 4 and has_registry_tuple) else f"Only {spec_count} specs found",
-                )
+                ),
             )
         else:
             self.results.append(
@@ -591,7 +591,7 @@ class AppsRefactorVerifier:
                     description="AppGuardianSpec registry exists",
                     passed=False,
                     failure_reason=f"Registry not found at {registry_path}",
-                )
+                ),
             )
 
         # Check AppHealResult contract
@@ -609,7 +609,7 @@ class AppsRefactorVerifier:
                     passed=has_heal_result and has_heal_status,
                     evidence={"has_result": has_heal_result, "has_status": has_heal_status},
                     failure_reason="" if (has_heal_result and has_heal_status) else "Missing AppHealResult or AppHealStatus",
-                )
+                ),
             )
         else:
             self.results.append(
@@ -619,7 +619,7 @@ class AppsRefactorVerifier:
                     description="AppHealResult contract exists",
                     passed=False,
                     failure_reason=f"Contract not found at {contract_path}",
-                )
+                ),
             )
 
         # Check AppRemediationDispatcher
@@ -644,7 +644,7 @@ class AppsRefactorVerifier:
                     failure_reason=""
                     if (has_dispatch_func and has_run_spec and has_guardian_checks)
                     else "Missing dispatch() or guardian checks",
-                )
+                ),
             )
         else:
             self.results.append(
@@ -654,7 +654,7 @@ class AppsRefactorVerifier:
                     description="AppRemediationDispatcher exists",
                     passed=False,
                     failure_reason=f"Dispatcher not found at {dispatcher_path}",
-                )
+                ),
             )
 
     def generate_report(self, json_path: Path | None = None) -> None:

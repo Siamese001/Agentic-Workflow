@@ -167,7 +167,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -176,7 +175,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
@@ -596,7 +594,7 @@ class AntiPatternScanner:
             Action to take: "pass", "warn", "soft_block", "hard_block"
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "AntiPatternScanner.get_enforcement_action", "L5_POLICY"
+            str(uuid.uuid4()), "AntiPatternScanner.get_enforcement_action", "L5_POLICY",
         )
         if report.passed:
             return "pass"

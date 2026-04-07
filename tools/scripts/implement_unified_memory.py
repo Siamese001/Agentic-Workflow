@@ -215,7 +215,7 @@ class UnifiedMemoryManager:
             "CREATE INDEX IF NOT EXISTS idx_learning_experiences_timestamp ON learning_experiences(created_at)",
             "CREATE INDEX IF NOT EXISTS idx_performance_metrics_name ON performance_metrics(metric_name)",
             "CREATE INDEX IF NOT EXISTS idx_performance_metrics_timestamp ON performance_metrics(timestamp)",
-            "CREATE INDEX IF NOT EXISTS idx_application_state_expires ON application_state(expires_at)"
+            "CREATE INDEX IF NOT EXISTS idx_application_state_expires ON application_state(expires_at)",
         ]
 
         for index_sql in indexes:
@@ -227,7 +227,7 @@ class UnifiedMemoryManager:
             "CREATE TRIGGER IF NOT EXISTS update_learning_models_timestamp AFTER UPDATE ON learning_models BEGIN UPDATE learning_models SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END",
             "CREATE TRIGGER IF NOT EXISTS update_knowledge_graphs_timestamp AFTER UPDATE ON knowledge_graphs BEGIN UPDATE knowledge_graphs SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END",
             "CREATE TRIGGER IF NOT EXISTS update_application_state_timestamp AFTER UPDATE ON application_state BEGIN UPDATE application_state SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END",
-            "CREATE TRIGGER IF NOT EXISTS update_learning_config_timestamp AFTER UPDATE ON learning_config BEGIN UPDATE learning_config SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END"
+            "CREATE TRIGGER IF NOT EXISTS update_learning_config_timestamp AFTER UPDATE ON learning_config BEGIN UPDATE learning_config SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END",
         ]
 
         for trigger_sql in triggers:
@@ -255,7 +255,7 @@ class UnifiedMemoryManager:
                     checkpoint.model_type,
                     weights_blob,
                     metadata_json,
-                    metrics_json
+                    metrics_json,
                 ))
 
                 model_id = cursor.lastrowid
@@ -301,7 +301,7 @@ class UnifiedMemoryManager:
                 weights=weights,
                 metadata=metadata,
                 performance_metrics=performance_metrics,
-                created_at=datetime.fromisoformat(row['created_at'])
+                created_at=datetime.fromisoformat(row['created_at']),
             )
 
             logger.info(f"Loaded model checkpoint: {model_name} v{version}")
@@ -326,7 +326,7 @@ class UnifiedMemoryManager:
                 embedding.entity_type,
                 vector_blob,
                 embedding.model_version,
-                embedding.dimension
+                embedding.dimension,
             ))
 
             embedding_id = cursor.lastrowid
@@ -363,7 +363,7 @@ class UnifiedMemoryManager:
                 vector=vector,
                 model_version=row['model_version'],
                 dimension=row['dimension'],
-                created_at=datetime.fromisoformat(row['created_at'])
+                created_at=datetime.fromisoformat(row['created_at']),
             )
 
             logger.info(f"Loaded embedding: {entity_id} ({entity_type})")
@@ -391,7 +391,7 @@ class UnifiedMemoryManager:
                 loss_history_json,
                 hyperparameters_json,
                 session.start_time.isoformat(),
-                session.end_time.isoformat() if session.end_time else None
+                session.end_time.isoformat() if session.end_time else None,
             ))
 
             session_id = cursor.lastrowid
@@ -457,7 +457,7 @@ class UnifiedMemoryManager:
                 outcome_result_blob,
                 experience.lesson_learned,
                 experience.confidence_score,
-                metadata_json
+                metadata_json,
             ))
 
             experience_id = cursor.lastrowid
@@ -500,7 +500,7 @@ class UnifiedMemoryManager:
                     lesson_learned=row['lesson_learned'],
                     confidence_score=row['confidence_score'],
                     created_at=datetime.fromisoformat(row['created_at']),
-                    metadata=metadata
+                    metadata=metadata,
                 )
                 experiences.append(experience)
 
@@ -616,7 +616,7 @@ class UnifiedMemoryManager:
                     'unit': row['metric_unit'],
                     'context': context,
                     'component': row['component'],
-                    'timestamp': row['timestamp']
+                    'timestamp': row['timestamp'],
                 }
                 metrics.append(metric)
 
@@ -686,7 +686,7 @@ def main():
         weights={"layer1": [0.1, 0.2, 0.3], "layer2": [0.4, 0.5, 0.6]},
         metadata={"framework": "pytorch", "optimizer": "adam"},
         performance_metrics={"accuracy": 0.95, "loss": 0.05},
-        created_at=datetime.now()
+        created_at=datetime.now(),
     )
 
     model_id = memory_manager.store_model_checkpoint(checkpoint)
@@ -704,7 +704,7 @@ def main():
         vector=[0.1, 0.2, 0.3, 0.4, 0.5],
         model_version="embedding_v2",
         dimension=5,
-        created_at=datetime.now()
+        created_at=datetime.now(),
     )
 
     embedding_id = memory_manager.store_embedding(embedding)
@@ -723,7 +723,7 @@ def main():
         lesson_learned="Users prefer step-by-step debugging guidance",
         confidence_score=0.85,
         created_at=datetime.now(),
-        metadata={"session_id": "sess_123", "response_time_ms": 150}
+        metadata={"session_id": "sess_123", "response_time_ms": 150},
     )
 
     experience_id = memory_manager.store_learning_experience(experience)
@@ -734,7 +734,7 @@ def main():
     state_data = {
         "active_models": ["meta_learning_adapter", "confidence_engine"],
         "current_config": {"learning_rate": 0.001, "batch_size": 32},
-        "user_preferences": {"theme": "dark", "verbosity": "high"}
+        "user_preferences": {"theme": "dark", "verbosity": "high"},
     }
 
     memory_manager.store_application_state("system_config", state_data, "json")

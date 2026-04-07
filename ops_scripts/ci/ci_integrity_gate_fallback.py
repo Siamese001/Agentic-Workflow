@@ -36,7 +36,7 @@ def main() -> int:
             # Only check files that look like phase evidence (have a ## Scope section)
             if "## Scope" in content and "## FACT_CLASSIFICATION" not in content:
                 violations.append(
-                    f"C2: {f} has '## Scope' but missing '## FACT_CLASSIFICATION' section (§2.1.1)"
+                    f"C2: {f} has '## Scope' but missing '## FACT_CLASSIFICATION' section (§2.1.1)",
                 )
             if "## FACT_CLASSIFICATION" in content:
                 # Check for non-empty Unresolved list that isn't deferred
@@ -54,7 +54,7 @@ def main() -> int:
                     if unresolved_items:
                         warnings.append(
                             f"C2-WARN: {f} has {len(unresolved_items)} non-deferred UNRESOLVED item(s) "
-                            f"— phase cannot be declared complete (§2.1.1)"
+                            f"— phase cannot be declared complete (§2.1.1)",
                         )
 
     # ── Condition 3: Broad pytest runs detected in evidence ────────────────────
@@ -80,7 +80,7 @@ def main() -> int:
                 for pattern in BROAD_PYTEST_PATTERNS:
                     if re.search(pattern, content):
                         violations.append(
-                            f"C3: {f} contains broad pytest run ('{pattern}') in non-final phase evidence (§5.2.1, §7.2)"
+                            f"C3: {f} contains broad pytest run ('{pattern}') in non-final phase evidence (§5.2.1, §7.2)",
                         )
                         break
 
@@ -121,7 +121,7 @@ def main() -> int:
                         node_id = f"{rel}::{node.name}"
                         if node_id not in registered_ids:
                             violations.append(
-                                f"C4: Unregistered skip: {node_id} (§17.2, §1.12)"
+                                f"C4: Unregistered skip: {node_id} (§17.2, §1.12)",
                             )
 
     # ── Condition 8: Test strictness weakened (assert True pattern) ───────────
@@ -144,12 +144,12 @@ def main() -> int:
                         # assert True
                         if isinstance(test_node, ast.Constant) and test_node.value is True:
                             violations.append(
-                                f"C8: {f}:{child.lineno} — 'assert True' in {node.name} (fake-healthy test, §11.3)"
+                                f"C8: {f}:{child.lineno} — 'assert True' in {node.name} (fake-healthy test, §11.3)",
                             )
                         # assert True as Name (older AST)
                         if isinstance(test_node, ast.Name) and test_node.id == "True":
                             violations.append(
-                                f"C8: {f}:{child.lineno} — 'assert True' (Name) in {node.name} (§11.3)"
+                                f"C8: {f}:{child.lineno} — 'assert True' (Name) in {node.name} (§11.3)",
                             )
 
     # ── Condition 9: repair_class missing from repair commits ─────────────────
@@ -157,7 +157,7 @@ def main() -> int:
     try:
         result = subprocess.run(
             ["git", "log", "--oneline", "-20", "--format=%H %s"],
-            capture_output=True, text=True, timeout=15, check=False
+            capture_output=True, text=True, timeout=15, check=False,
         )
         if result.returncode == 0:
             production_dirs = {"agentic_core", "apps_rg", "apps_lic", "apps_shared", "system_learning"}
@@ -175,7 +175,7 @@ def main() -> int:
                         # Check if commit touches production dirs
                         diff_result = subprocess.run(
                             ["git", "diff-tree", "--no-commit-id", "-r", "--name-only", sha],
-                            capture_output=True, text=True, timeout=10, check=False
+                            capture_output=True, text=True, timeout=10, check=False,
                         )
                         if diff_result.returncode == 0:
                             touched = diff_result.stdout.strip().split("\n")
@@ -186,7 +186,7 @@ def main() -> int:
                             if touches_production:
                                 warnings.append(
                                     f"C9-WARN: Commit {sha[:8]} ('{msg[:60]}') touches production code "
-                                    f"but has no 'repair_class:' footer (§14.8, §22.1)"
+                                    f"but has no 'repair_class:' footer (§14.8, §22.1)",
                                 )
     except (subprocess.SubprocessError, OSError) as e:
         warnings.append(f"C9-WARN: Could not check commit messages: {e}")
@@ -213,7 +213,7 @@ def main() -> int:
                 if has_failure_mentions and not has_failures_section:
                     warnings.append(
                         f"C5-WARN: {f} is a repair-phase evidence file with failure mentions "
-                        f"but no '## FAILURE_CAPTURE' section (§14.6)"
+                        f"but no '## FAILURE_CAPTURE' section (§14.6)",
                     )
 
     # ── Report ─────────────────────────────────────────────────────────────────

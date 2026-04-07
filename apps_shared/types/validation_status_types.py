@@ -64,39 +64,25 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "validation_status_types", "p0_governance")
 _emit_snapshots_state("p0", "validation_status_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -264,7 +250,7 @@ try:
     from sklearn.metrics.pairwise import cosine_similarity
 except ImportError as _err:
     raise ImportError(
-        "scikit-learn is required for this module. Install with: pip install -e '.[infra]'"
+        "scikit-learn is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 logger = logging.getLogger(__name__)
 
@@ -382,7 +368,7 @@ class ValidationGateExecutor:
             )
         if gate.execution_point != execution_point:
             logger.warning(
-                f"Gate {gate_id} execution point mismatch: expected {gate.execution_point}, got {execution_point}"
+                f"Gate {gate_id} execution point mismatch: expected {gate.execution_point}, got {execution_point}",
             )
         failures = []
         for check in gate.checks:
@@ -419,7 +405,7 @@ class ValidationGateExecutor:
         )
 
     def execute_all_gates(
-        self, execution_point: str, content: str, k_node_id: str, context: dict[str, Any] | None = None
+        self, execution_point: str, content: str, k_node_id: str, context: dict[str, Any] | None = None,
     ) -> list[ValidationResult]:
         """Execute all gates for a specific execution point.
 
@@ -443,7 +429,7 @@ class ValidationGateExecutor:
         return results
 
     def _execute_check(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Execute a single validation check.
 
@@ -476,7 +462,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_word_count(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check word count with scope support.
 
@@ -523,7 +509,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_char_count(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check character count."""
         if "K.4" in k_node_id or "headline" in check.lower():
@@ -549,7 +535,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_differentiators(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check differentiator distribution or gap coverage."""
         if "gap_coverage" in check.lower():
@@ -600,7 +586,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_similarity(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check similarity/deduplication."""
         # guardian: allow-magic-config
@@ -654,7 +640,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_placeholders(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check for placeholders."""
         placeholder_patterns = [
@@ -684,7 +670,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_grounding(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check claim grounding and hallucination."""
         claims = [s.strip() for s in content.split(".") if s.strip()]
@@ -710,7 +696,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_variance(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check word count variance (for K.8 competencies)."""
         competencies = self._segment_competencies(content)
@@ -736,7 +722,7 @@ class ValidationGateExecutor:
         return None
 
     def _check_plausibility(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any]
+        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check plausibility (authentic vs synthetic)."""
         base_pool = context.get("Base_Competency_Pool", [])

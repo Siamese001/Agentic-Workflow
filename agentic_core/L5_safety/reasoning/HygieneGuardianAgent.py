@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -225,7 +224,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
     TEMP_EXTENSIONS = {".tmp", ".temp", ".swp", ".swo"}
     DEBUG_PRINT_PATTERN = re.compile("^\\s*print\\s*\\(", re.MULTILINE)
     COMMENTED_CODE_PATTERN = re.compile(
-        "^\\s*#\\s*(def|class|import|from|if|for|while|try)\\s+", re.MULTILINE
+        "^\\s*#\\s*(def|class|import|from|if|for|while|try)\\s+", re.MULTILINE,
     )
     COPY_PATTERNS = [
         re.compile("^Copy of (.+)$", re.IGNORECASE),
@@ -418,7 +417,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         message=f"Stale backup file: {item.suffix}",
                         severity=3,
                         auto_fixable=True,
-                    )
+                    ),
                 )
             if item.suffix in self.TEMP_EXTENSIONS or item.name.endswith("~"):
                 self.violations.append(
@@ -428,7 +427,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         message="Temporary file should be removed",
                         severity=4,
                         auto_fixable=True,
-                    )
+                    ),
                 )
             if item.suffix in self.PYTHON_EXTENSIONS:
                 if self._is_empty_file(item):
@@ -439,7 +438,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message="Empty Python file",
                             severity=5,
                             auto_fixable=True,
-                        )
+                        ),
                     )
                 if self._is_orphaned_init(item):
                     self.violations.append(
@@ -449,7 +448,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message="Orphaned __init__.py with no other Python files",
                             severity=4,
                             auto_fixable=True,
-                        )
+                        ),
                     )
                 debug_lines = self._has_debug_prints(item)
                 if debug_lines:
@@ -461,7 +460,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             line_number=debug_lines[0],
                             severity=2,
                             auto_fixable=False,
-                        )
+                        ),
                     )
                 has_commented, num_lines = self._has_commented_code(item)
                 if has_commented:
@@ -472,7 +471,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message=f"Large block of commented-out code ({num_lines} lines)",
                             severity=2,
                             auto_fixable=False,
-                        )
+                        ),
                     )
                 has_repeats, pattern = self._has_repeated_filename_parts(item.stem)
                 if has_repeats:
@@ -483,7 +482,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message=f'Repeated string in filename: "{pattern}"',
                             severity=4,
                             auto_fixable=True,
-                        )
+                        ),
                     )
                 is_copy, original = self._is_copy_pattern_filename(item.stem)
                 if is_copy:
@@ -494,7 +493,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                             message=f'Copy-pattern filename detected (original: "{original}")',
                             severity=5,
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
     def _fix_violations(self) -> int:

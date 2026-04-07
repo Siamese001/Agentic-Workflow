@@ -18,7 +18,7 @@ class GeneratedTest(unittest.TestCase):
         from agentic_core.L0_routing.enforcement import build_evidence_pack
         result = build_evidence_pack(
             "trace123", ("action1", "action2"), ("eval1", "eval2"),
-            risk_score=0.5, budget_breach_data={}, boundary_snapshot_hash="hash123"
+            risk_score=0.5, budget_breach_data={}, boundary_snapshot_hash="hash123",
         )
         self.assertIsNotNone(result)
 
@@ -27,7 +27,7 @@ class GeneratedTest(unittest.TestCase):
         from agentic_core.L0_routing.enforcement import build_evidence_pack, validate_evidence_pack
         pack = build_evidence_pack(
             "trace123", ("action1", "action2"), ("eval1", "eval2"),
-            risk_score=0.5, budget_breach_data={}, boundary_snapshot_hash="hash123"
+            risk_score=0.5, budget_breach_data={}, boundary_snapshot_hash="hash123",
         )
         result = validate_evidence_pack(pack)
         self.assertIsNotNone(result)
@@ -39,7 +39,7 @@ class GeneratedTest(unittest.TestCase):
         with self.assertRaises((EvidencePackError, ValueError, TypeError)):
             build_evidence_pack(
                 "trace123", ("action1",), ("eval1",),
-                risk_score=1.5, budget_breach_data={}, boundary_snapshot_hash="hash123"
+                risk_score=1.5, budget_breach_data={}, boundary_snapshot_hash="hash123",
             )
 
     def test_EvidencePackError_init(self):

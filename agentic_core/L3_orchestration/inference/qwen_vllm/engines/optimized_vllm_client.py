@@ -245,7 +245,7 @@ class OptimizedVLLMClient:
                     try:
                         request = await asyncio.wait_for(
                             self._batch_queue.get(),
-                            timeout=remaining if batch else None
+                            timeout=remaining if batch else None,
                         )
                         cache_key = self._compute_cache_key(request)
                         request_id = request.request_id or cache_key
@@ -267,7 +267,7 @@ class OptimizedVLLMClient:
     async def _execute_batch(
         self,
         requests: list[VLLMRequest],
-        request_ids: list[str]
+        request_ids: list[str],
     ) -> None:
         """Execute a batch of requests against vLLM."""
         if not self._session:
@@ -318,7 +318,7 @@ class OptimizedVLLMClient:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "user", "content": request.prompt}
+                {"role": "user", "content": request.prompt},
             ],
             "max_tokens": request.max_tokens,
             "temperature": request.temperature,

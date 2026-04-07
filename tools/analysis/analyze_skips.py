@@ -11,7 +11,7 @@ for test in data['tests']:
             'node_id': test['node_id'],
             'file_path': test['file_path'],
             'skip_reason': test['skip_reason'],
-            'line_number': test['line_number']
+            'line_number': test['line_number'],
         })
 
 print(f'Actual skipped tests from AST analysis: {len(skipped_tests)}')

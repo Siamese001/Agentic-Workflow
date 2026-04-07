@@ -19,7 +19,7 @@ eval_tests = [
 for test_file in eval_tests:
     r = subprocess.run(
         ["python", "-m", "pytest", test_file, "--co", "--tb=long", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=30
+        capture_output=True, text=True, cwd=ROOT, timeout=30,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout + "\n" + r.stderr)
 

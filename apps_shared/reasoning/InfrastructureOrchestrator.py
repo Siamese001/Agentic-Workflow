@@ -95,39 +95,25 @@ _emit_applies_guardrail("p0", "InfrastructureOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "InfrastructureOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "InfrastructureOrchestrator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -344,7 +330,7 @@ class InfrastructureOrchestrator:
                 sources = payload.get("sources", [])
                 if sources:
                     await self.provenance_tracker.record_generation(
-                        event.trace_id, artifact_id, output, model_version, payload.get("prompt")
+                        event.trace_id, artifact_id, output, model_version, payload.get("prompt"),
                     )
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -435,17 +421,17 @@ class InfrastructureOrchestrator:
             model_config = self.model_router.get_model_config(task_type, complexity_score)
             tier = self.model_router._select_model_for_tier(
                 self.model_router._determine_tier(
-                    self.model_router._task_profiles[task_type], complexity_score
-                )
+                    self.model_router._task_profiles[task_type], complexity_score,
+                ),
             )
             client = await self.model_router.get_client(tier)
             result = await self.bulkhead_manager.execute(
-                client.generate, prompt, bulkhead_name="model_generation", priority=priority
+                client.generate, prompt, bulkhead_name="model_generation", priority=priority,
             )
             if sources:
                 artifact_id = f"artifact_{int(time.time())}"
                 lineage = await self.provenance_tracker.record_generation(
-                    trace_id, artifact_id, result, model_config["model"], prompt
+                    trace_id, artifact_id, result, model_config["model"], prompt,
                 )
             await self.event_bus.publish(
                 "events.artifact_generated",
@@ -566,7 +552,7 @@ async def execute_task(
     """
     orchestrator = await get_infrastructure_orchestrator()
     return await orchestrator.execute_with_infrastructure(
-        task_type, prompt, sources, complexity_score, trace_id, priority
+        task_type, prompt, sources, complexity_score, trace_id, priority,
     )
 
 
@@ -581,7 +567,7 @@ async def get_system_status() -> dict[str, Any]:
 
 
 def with_infrastructure(
-    task_type: TaskType, complexity_score: int = 1, priority: TaskPriority = TaskPriority.MEDIUM
+    task_type: TaskType, complexity_score: int = 1, priority: TaskPriority = TaskPriority.MEDIUM,
 ):
     """Decorator to add infrastructure support to functions.
 

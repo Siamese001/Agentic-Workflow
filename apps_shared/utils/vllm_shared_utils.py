@@ -231,7 +231,7 @@ Ensure the analysis is objective, comprehensive, and actionable.
 
     @staticmethod
     def generation_prompt(
-        task: str, requirements: list[str], constraints: list[str] | None = None, style: str = "professional"
+        task: str, requirements: list[str], constraints: list[str] | None = None, style: str = "professional",
     ) -> str:
         """Generate content creation prompt template.
 
@@ -279,7 +279,7 @@ Focus on quality, clarity, and relevance.
 
     @staticmethod
     def comparison_prompt(
-        items: list[dict[str, Any]], criteria: list[str], comparison_type: str = "general"
+        items: list[dict[str, Any]], criteria: list[str], comparison_type: str = "general",
     ) -> str:
         """Generate comparison prompt template.
 

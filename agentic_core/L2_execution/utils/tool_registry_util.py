@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -218,7 +217,7 @@ class ToolRegistry:
         cls._tools = {}
 
     def register_tool(
-        self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str = ""
+        self, tool_name: str, tool_path: str, tool_func: Callable[..., Any], description: str = "",
     ) -> bool:
         """
         Registers a tool only after verifying its location is sovereign.
@@ -239,7 +238,7 @@ class ToolRegistry:
                     rel_path = path.relative_to(Path.cwd())
                 except ValueError:
                     Logger.error(
-                        f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside project root."
+                        f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside project root.",
                     )
                     return False
             else:
@@ -247,12 +246,12 @@ class ToolRegistry:
             path_parts = rel_path.parts
             if any(excl in path_parts for excl in GLOBAL_EXCLUDED_DIRS):
                 Logger.error(
-                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is in a globally excluded directory."
+                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is in a globally excluded directory.",
                 )
                 return False
             if not is_path_allowed(str(rel_path)):
                 Logger.error(
-                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside Sovereign Territory."
+                    f"[REGISTRY] REJECTED: Tool '{tool_name}' at {tool_path} is outside Sovereign Territory.",
                 )
                 return False
             self._tools[tool_name] = {
@@ -333,7 +332,7 @@ class ToolRegistry:
         return idx.get_files(pattern)
 
     def auto_register_from_pattern(
-        self, pattern: str = "*_tool.py", tool_loader: Callable[[Path], tuple] | None = None
+        self, pattern: str = "*_tool.py", tool_loader: Callable[[Path], tuple] | None = None,
     ) -> int:
         """
         Auto-discovers and registers tools matching a pattern.
@@ -362,7 +361,7 @@ class ToolRegistry:
                 if self.register_tool(tool_name, str(tool_path), lambda: None, f"Tool from {tool_path.name}"):
                     registered += 1
         Logger.info(
-            f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'"
+            f"[REGISTRY] Auto-registered {registered}/{len(discovered)} tools from pattern '{pattern}'",
         )
         return registered
 

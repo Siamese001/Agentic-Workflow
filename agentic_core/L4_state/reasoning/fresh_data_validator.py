@@ -105,7 +105,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -184,7 +183,7 @@ class StaleDataViolation(Exception):
         self.data_timestamp = data_timestamp
         self.policy_max_age = policy_max_age
         super().__init__(
-            f"Data with timestamp {data_timestamp} is stale. Policy requires data to be no older than {policy_max_age} seconds."
+            f"Data with timestamp {data_timestamp} is stale. Policy requires data to be no older than {policy_max_age} seconds.",
         )
 
 

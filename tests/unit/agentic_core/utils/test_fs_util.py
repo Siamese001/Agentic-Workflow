@@ -31,9 +31,9 @@ def test_get_python_files_fast_failure_path():
 
 def test_get_python_files_fast_edge_case():
     """get_python_files_fast must handle empty directory."""
-    from agentic_core.utils import fs_util
-
     import tempfile
+
+    from agentic_core.utils import fs_util
     with tempfile.TemporaryDirectory() as tmpdir:
         files = list(fs_util.get_python_files_fast(Path(tmpdir), exclude_dirs=[]))
         assert len(files) == 0

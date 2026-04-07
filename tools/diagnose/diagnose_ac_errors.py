@@ -8,7 +8,7 @@ root = r"C:\Git\Agentic-Workflow"
 r = subprocess.run(
     [sys.executable, "-m", "pytest", "tests/unit/agentic_core",
      "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
-    capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root
+    capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root,
 )
 out = r.stdout + r.stderr
 lines = out.splitlines()

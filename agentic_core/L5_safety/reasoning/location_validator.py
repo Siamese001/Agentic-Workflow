@@ -128,7 +128,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -240,7 +239,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         _emit_applies_guardrail(str(_uuid.uuid4()), "LocationValidatorAgent.heal", "p0_governance")
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationValidatorAgent.heal"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationValidatorAgent.heal",
         )
         return {
             "status": "skipped",
@@ -384,7 +383,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (True, "OK")
 
     def _validate_depth_requirements(
-        self, parts: tuple, root_folder: str, rel_path: Path
+        self, parts: tuple, root_folder: str, rel_path: Path,
     ) -> tuple[bool, str]:
         """Validate depth requirements from sovereign registry.
 
@@ -570,7 +569,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return None
 
     def _check_semantic_alignment(
-        self, tree: Any, current_territory: str, rel_path: Path
+        self, tree: Any, current_territory: str, rel_path: Path,
     ) -> tuple[bool, str]:
         """Check semantic alignment between file location and content.
 
@@ -589,7 +588,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             file_path = self.project_root / rel_path
             if file_path.exists():
                 fca = FileClassificationAgent(
-                    project_root=self.project_root, dry_run=True, validate_only=True
+                    project_root=self.project_root, dry_run=True, validate_only=True,
                 )
                 file_type = fca.classify_file(file_path)
                 correct_folder = fca._get_correct_folder_for_type(file_type)
@@ -633,7 +632,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (app_rg_score, app_lic_score, territory_scores)
 
     def _check_app_domain_violation(
-        self, app_rg_score: float, app_lic_score: float, rel_path: Path
+        self, app_rg_score: float, app_lic_score: float, rel_path: Path,
     ) -> tuple[bool, str]:
         """
         [HARDENED] Detects cross-contamination AND Global Candidates for apps_shared.
@@ -661,7 +660,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (True, "")
 
     def _check_territory_alignment(
-        self, current_territory: str, territory_scores: dict[str, float], rel_path: Path
+        self, current_territory: str, territory_scores: dict[str, float], rel_path: Path,
     ) -> tuple[bool, str]:
         """Check territory alignment between file location and content."""
         from agentic_core.L5_safety.config.structure_blueprint import (
@@ -687,7 +686,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (True, "OK")
 
     def _collect_ast_increments(
-        self, tree: Any, territory_keywords: dict[str, Any]
+        self, tree: Any, territory_keywords: dict[str, Any],
     ) -> list[tuple[str, float]]:
         """Collect AST-based scoring increments."""
         import ast
@@ -709,7 +708,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return scores
 
     def _recompute_ast_scores(
-        self, tree: Any, territory_keywords: dict[str, Any]
+        self, tree: Any, territory_keywords: dict[str, Any],
     ) -> tuple[float, float, dict[str, float]]:
         """Recompute AST scores (wrapper for _calculate_semantic_scores)."""
         return self._calculate_semantic_scores(tree)

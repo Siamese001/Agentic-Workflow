@@ -4,7 +4,6 @@ Regenerate proper Python headers for all test files.
 from pathlib import Path
 
 
-
 def regenerate_headers(project_root: Path):
     """Add proper Python headers to test files."""
     test_dir = project_root / TESTS_DIR / 'unit'

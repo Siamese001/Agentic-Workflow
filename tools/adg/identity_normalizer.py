@@ -1,8 +1,6 @@
 """ADG Identity Normalizer - Normalizes ADG node identities."""
 from __future__ import annotations
 
-from typing import Any
-
 
 class IdentityNormalizer:
     """Normalizes identities for ADG nodes."""

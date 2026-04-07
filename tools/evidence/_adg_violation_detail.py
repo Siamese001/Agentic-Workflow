@@ -9,7 +9,7 @@ conn.row_factory = sqlite3.Row
 
 # Layer of L6_observability
 rows = conn.execute(
-    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE 'agentic_core/L6_observability/%' LIMIT 5"
+    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE 'agentic_core/L6_observability/%' LIMIT 5",
 ).fetchall()
 print("L6 observability nodes:")
 for r in rows:
@@ -17,7 +17,7 @@ for r in rows:
 
 # Layer of adg.runtime
 rows2 = conn.execute(
-    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE 'agentic_core/adg/runtime/%' LIMIT 5"
+    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE 'agentic_core/adg/runtime/%' LIMIT 5",
 ).fetchall()
 print("\nadg.runtime nodes:")
 for r in rows2:
@@ -25,7 +25,7 @@ for r in rows2:
 
 # Layer of credential_access_guard itself
 rows3 = conn.execute(
-    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path = 'agentic_core/L5_safety/enforcement/security/credential_access_guard.py'"
+    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path = 'agentic_core/L5_safety/enforcement/security/credential_access_guard.py'",
 ).fetchall()
 print("\ncredential_access_guard:")
 for r in rows3:
@@ -33,7 +33,7 @@ for r in rows3:
 
 # Layer of elevator_shaft
 rows4 = conn.execute(
-    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path = 'agentic_core/L4_state/enforcement/elevator_shaft_consistency_enforcer.py'"
+    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path = 'agentic_core/L4_state/enforcement/elevator_shaft_consistency_enforcer.py'",
 ).fetchall()
 print("\nelevator_shaft:")
 for r in rows4:
@@ -41,7 +41,7 @@ for r in rows4:
 
 # semantic_clock_validator layer
 rows5 = conn.execute(
-    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE '%semantic_clock_validator%'"
+    "SELECT adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE '%semantic_clock_validator%'",
 ).fetchall()
 print("\nsemantic_clock_validator:")
 for r in rows5:

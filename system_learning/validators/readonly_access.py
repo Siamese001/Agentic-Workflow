@@ -13,7 +13,7 @@ from pathlib import Path
 
 _SL_ROOT = Path(__file__).parent.parent
 _WRITE_INDICATORS = frozenset(
-    {"write", "save", "persist", "commit", "update", "mutate", "set_", "put", "insert", "delete", "remove"}
+    {"write", "save", "persist", "commit", "update", "mutate", "set_", "put", "insert", "delete", "remove"},
 )
 
 
@@ -35,7 +35,7 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
                     self.violations.append(
                         f"Line {node.lineno}: Write to agentic_core attribute '{ast.unparse(target)}'"
                         if hasattr(ast, "unparse")
-                        else f"Line {node.lineno}: Write to agentic_core attribute"
+                        else f"Line {node.lineno}: Write to agentic_core attribute",
                     )
         self.generic_visit(node)
 
@@ -45,7 +45,7 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
             method = node.func.attr.lower()
             if AGENTIC_CORE_DIR in val and any(method.startswith(w) for w in _WRITE_INDICATORS):
                 self.violations.append(
-                    f"Line {node.lineno}: Potential write call '{node.func.attr}' on agentic_core object"
+                    f"Line {node.lineno}: Potential write call '{node.func.attr}' on agentic_core object",
                 )
         self.generic_visit(node)
 
@@ -82,4 +82,7 @@ if __name__ == "__main__":
     import sys
 
     sys.exit(0 if check_system_learning_readonly() else 1)
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)

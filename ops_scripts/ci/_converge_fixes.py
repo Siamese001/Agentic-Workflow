@@ -2,7 +2,6 @@
 import subprocess
 import sys
 
-
 for i in range(1, 11):
     print(f'Pass {i}:')
     result = subprocess.run([sys.executable, 'ops_scripts/ci/_fix_hardcoded_ssot_literals.py', '--dry-run'], capture_output=True, text=True, cwd='.')

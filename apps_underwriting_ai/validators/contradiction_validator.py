@@ -1,10 +1,10 @@
 """
 Contradiction Validator - Inspects reconciliation findings.
 """
-from typing import Dict, Any, List
 from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
-from ..engines.document_reconciliation_engine import ReconciliationResult, ContradictionSeverity
+from ..engines.document_reconciliation_engine import ContradictionSeverity, ReconciliationResult
 
 
 @dataclass
@@ -32,7 +32,7 @@ class ContradictionValidator:
 
     def validate(
         self,
-        reconciliation: ReconciliationResult
+        reconciliation: ReconciliationResult,
     ) -> ContradictionValidationResult:
         """
         Validate reconciliation results.
@@ -57,7 +57,7 @@ class ContradictionValidator:
                 "field": contradiction.field_name,
                 "variance_pct": contradiction.variance_pct,
                 "severity": contradiction.severity.value,
-                "explanation": contradiction.explanation
+                "explanation": contradiction.explanation,
             })
 
         # Determine acceptability

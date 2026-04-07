@@ -87,7 +87,7 @@ def test_classify_cleanup_safety():
             incoming_edges=[],
             outgoing_edges=[],
             incoming_count=0,
-            outgoing_count=0
+            outgoing_count=0,
         ),
         FileAnalysis(
             file_path="safe2.py",
@@ -98,7 +98,7 @@ def test_classify_cleanup_safety():
             incoming_edges=[],
             outgoing_edges=["os", "sys"],
             incoming_count=0,
-            outgoing_count=2
+            outgoing_count=2,
         ),
         FileAnalysis(
             file_path="unsafe.py",
@@ -109,8 +109,8 @@ def test_classify_cleanup_safety():
             incoming_edges=["other_module"],
             outgoing_edges=["os"],
             incoming_count=1,
-            outgoing_count=1
-        )
+            outgoing_count=1,
+        ),
     ]
 
     analyzer = HollowFileCleanupAnalyzer(Path("."))
@@ -139,8 +139,8 @@ def test_try_adg_enhancement_no_adg():
             incoming_edges=[],
             outgoing_edges=[],
             incoming_count=0,
-            outgoing_count=0
-        )
+            outgoing_count=0,
+        ),
     ]
 
     analyzer = HollowFileCleanupAnalyzer(Path("."))
@@ -167,7 +167,7 @@ def test_scan_repository(mock_analyze):
             incoming_edges=[],
             outgoing_edges=[],
             incoming_count=0,
-            outgoing_count=0
+            outgoing_count=0,
         ),
         FileAnalysis(
             file_path="hollow2.py",
@@ -178,8 +178,8 @@ def test_scan_repository(mock_analyze):
             incoming_edges=[],
             outgoing_edges=[],
             incoming_count=0,
-            outgoing_count=0
-        )
+            outgoing_count=0,
+        ),
     ]
 
     with patch('pathlib.Path.rglob') as mock_rglob:

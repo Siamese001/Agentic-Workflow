@@ -67,7 +67,7 @@ class QueryTagger:
         """
         trace_id = f"tag_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryTagger.tag"
+            trace_id, LayerSegment.L1_REASONING, "QueryTagger.tag",
         )
 
         query_lower = query.lower()

@@ -282,7 +282,7 @@ class EvalSpine:
         return batch
 
     def stage_proposal(
-        self, dpo_batch: DPOBatch, weight_deltas: dict[str, float] | None = None
+        self, dpo_batch: DPOBatch, weight_deltas: dict[str, float] | None = None,
     ) -> OptimizationProposal:
         proposal = OptimizationProposal(
             dpo_batch_id=dpo_batch.batch_id,

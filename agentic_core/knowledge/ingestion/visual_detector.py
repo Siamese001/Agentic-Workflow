@@ -20,7 +20,7 @@ class VisualDetector:
 
     def __init__(self):
         self.visual_extensions = {
-            '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg', '.tiff', '.webp'
+            '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg', '.tiff', '.webp',
         }
         self.table_indicators = [
             r'\|.*\|',  # Markdown tables
@@ -248,7 +248,7 @@ class VisualDetector:
         # Language keywords
         code_keywords = [
             'def ', 'class ', 'import ', 'from ', 'function ', 'var ', 'let ', 'const ',
-            'if ', 'else ', 'for ', 'while ', 'switch ', 'case ', 'try ', 'catch '
+            'if ', 'else ', 'for ', 'while ', 'switch ', 'case ', 'try ', 'catch ',
         ]
 
         content_lower = content.lower()

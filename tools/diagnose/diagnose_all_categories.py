@@ -9,7 +9,7 @@ ROOT = r"C:\Git\Agentic-Workflow"
 # Run pytest collect on all tests at once with --tb=line
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/", "--co", "--tb=line", "-p", "no:logging", "-q", "--no-header"],
-    capture_output=True, text=True, cwd=ROOT, timeout=180
+    capture_output=True, text=True, cwd=ROOT, timeout=180,
 )
 clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout + "\n" + r.stderr)
 

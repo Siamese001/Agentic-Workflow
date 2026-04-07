@@ -168,7 +168,7 @@ class OptimizedLayerBoundaryChecker:
 
         logger.info(
             f"Found {len(all_violations)} violations in {len(file_paths)} files "
-            f"({elapsed_ms:.1f}ms)"
+            f"({elapsed_ms:.1f}ms)",
         )
 
         return all_violations
@@ -304,7 +304,7 @@ class OptimizedRedisIngest:
 
         logger.info(
             f"Redis ingest: {metrics['nodes_ingested']} nodes, "
-            f"{metrics['edges_ingested']} edges in {elapsed_ms:.1f}ms"
+            f"{metrics['edges_ingested']} edges in {elapsed_ms:.1f}ms",
         )
 
         return metrics

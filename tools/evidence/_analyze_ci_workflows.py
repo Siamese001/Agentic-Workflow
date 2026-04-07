@@ -60,7 +60,7 @@ for fname, content in workflows.items():
             "pytest": pytest_calls,
             "ops_scripts": ops_scripts,
             "guardian": guardian_calls,
-        }
+        },
     )
 
 # ── Print summary table ──────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ for r in rows:
         f"{str(r['triggers']):<25} "
         f"{str(sorted(r['branches'])):<35} "
         f"{str(sorted(r['py_versions'])):<8} "
-        f"{'YES' if r['paths_filter'] else 'no'}"
+        f"{'YES' if r['paths_filter'] else 'no'}",
     )
 
 # ── Detect: old actions versions ────────────────────────────────────────────

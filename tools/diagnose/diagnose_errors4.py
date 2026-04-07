@@ -14,7 +14,7 @@ for d in ["evaluation", "guardian", "integration", "unit_min_deps", "agentic_cor
 
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "-q", "-p", "no:logging", "--tb=line"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60
+        capture_output=True, text=True, cwd=ROOT, timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout + "\n" + r.stderr)
 

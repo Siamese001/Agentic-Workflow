@@ -1,10 +1,8 @@
 """Tests for retrieval benchmarking."""
 
-import pytest
 
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchEngine,
-    HybridSearchResult,
 )
 from agentic_core.L3_orchestration.reasoning.engines.retrieval_benchmark import (
     BenchmarkMetrics,
@@ -81,7 +79,7 @@ def test_quality_benchmark():
         BenchmarkQuery(
             query="test query",
             expected_chunk_ids=["chunk1", "chunk2"],
-        )
+        ),
     ]
 
     # This will return metrics with zeros since ChromaDB is not available

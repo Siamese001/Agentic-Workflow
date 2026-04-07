@@ -31,8 +31,8 @@ def main() -> None:
             "AND resolved_path LIKE 'agentic_core/%' "
             "AND resolved_path NOT LIKE '%__pycache__%' "
             "AND resolved_path NOT LIKE '%/tests/%' "
-            "ORDER BY resolved_path"
-        )
+            "ORDER BY resolved_path",
+        ),
     )
     src_paths = {r["resolved_path"] for r in src_mods}
     print(f"agentic_core source modules: {len(src_paths)}")
@@ -45,8 +45,8 @@ def main() -> None:
             "SELECT id, adg_name, resolved_path FROM nodes "
             "WHERE entity_type='module' "
             "AND resolved_path LIKE 'tests/%' "
-            "ORDER BY resolved_path"
-        )
+            "ORDER BY resolved_path",
+        ),
     )
     print(f"test modules: {len(test_mods)}")
 
@@ -67,8 +67,8 @@ def main() -> None:
             "WHERE e.relation_type='imports' "
             "AND n1.resolved_path LIKE 'tests/%' "
             "AND n2.resolved_path LIKE 'agentic_core/%' "
-            "AND n2.resolved_path NOT LIKE '%__pycache__%' "
-        )
+            "AND n2.resolved_path NOT LIKE '%__pycache__%' ",
+        ),
     )
 
     test_to_covered: dict[str, set[str]] = defaultdict(set)

@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -304,7 +303,7 @@ class LLMReplayStrategy:
         raise NotImplementedError(
             "DETERMINISTIC_INFERENCE replay requires explicit "
             "dev/test wiring. This mode is NON_AUTHORITATIVE "
-            "and must not be used in production."
+            "and must not be used in production.",
         )
 
     @property
@@ -339,5 +338,5 @@ def validate_production_mode(mode: ReplayMode) -> None:
         raise ValueError(
             f"ReplayMode.{mode.name} is not allowed in "
             f"production. Only {PRODUCTION_ALLOWED_MODES} "
-            f"are permitted."
+            f"are permitted.",
         )

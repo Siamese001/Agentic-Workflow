@@ -59,39 +59,25 @@ _emit_applies_guardrail("p0", "etl_pipeline_util", "p0_governance")
 _emit_reads_policy_state("p0", "etl_pipeline_util", "policy_binding")
 _emit_snapshots_state("p0", "etl_pipeline_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -193,7 +179,7 @@ class ETLPipeline:
 
     # guardian: allow-magic-config
     def hydrate_cache(
-        self, min_success_count: int = 10, max_patterns: int = 50, project_filter: str | None = None
+        self, min_success_count: int = 10, max_patterns: int = 50, project_filter: str | None = None,
     ) -> dict[str, Any]:
         """
         Hydrate Redis cache with golden patterns from Pinecone.
@@ -212,7 +198,7 @@ class ETLPipeline:
 
         logger.info(f"Starting cache hydration with up to {max_patterns} golden patterns")
         golden_patterns = self._fetch_golden_patterns(
-            min_success_count=min_success_count, max_patterns=max_patterns, project_filter=project_filter
+            min_success_count=min_success_count, max_patterns=max_patterns, project_filter=project_filter,
         )
         loaded_count = self._load_to_redis(golden_patterns)
         stats = {
@@ -226,7 +212,7 @@ class ETLPipeline:
         return stats
 
     def _fetch_golden_patterns(
-        self, min_success_count: int, max_patterns: int, project_filter: str | None
+        self, min_success_count: int, max_patterns: int, project_filter: str | None,
     ) -> list[CanonEntry]:
         """Fetch golden patterns from Pinecone."""
         try:
@@ -235,7 +221,7 @@ class ETLPipeline:
             if project_filter:
                 filter_dict["project_context"] = project_filter
             results = index.query(
-                vector=[0.0] * 768, top_k=max_patterns, include_metadata=True, filter=filter_dict
+                vector=[0.0] * 768, top_k=max_patterns, include_metadata=True, filter=filter_dict,
             )
             patterns = []
             for match in results["matches"]:
@@ -281,8 +267,8 @@ class ETLPipeline:
                             "project_context": fields["project_context"],
                             "canon_rule_id": fields["canon_rule_id"],
                             "last_validated": fields["last_validated"],
-                        }
-                    ]
+                        },
+                    ],
                 )
                 loaded_count += 1
             pipe.execute()
@@ -295,7 +281,7 @@ class ETLPipeline:
 
     # guardian: allow-magic-config
     def backfill_from_code(
-        self, code_files: list[str], project_context: str = "backfill", batch_size: int = 100
+        self, code_files: list[str], project_context: str = "backfill", batch_size: int = 100,
     ) -> dict[str, Any]:
         """
         Backfill Pinecone with code files.

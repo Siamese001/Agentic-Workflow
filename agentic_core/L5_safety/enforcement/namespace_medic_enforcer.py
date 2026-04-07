@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -286,11 +285,11 @@ def main() -> Any:
     import argparse
 
     parser: Any = argparse.ArgumentParser(
-        description="Namespace Medic - Fix Missing standard library imports"
+        description="Namespace Medic - Fix Missing standard library imports",
     )
     parser.add_argument("--target", default=AGENTIC_CORE_DIR, help="Target directory to scan")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be fixed without modifying files"
+        "--dry-run", action="store_true", help="Show what would be fixed without modifying files",
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
     args: Any = parser.parse_args()

@@ -77,7 +77,7 @@ class CircuitBreaker:
         """
         trace_id = f"cb_{self.name}_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "CircuitBreaker.can_execute"
+            trace_id, LayerSegment.L1_REASONING, "CircuitBreaker.can_execute",
         )
 
         if self._state == CircuitState.CLOSED:
@@ -124,7 +124,7 @@ class CircuitBreaker:
         _emit_records_telemetry_event(
             trace_id,
             "CircuitBreaker",
-            f"{self.name}_failure_{self._state.value}"
+            f"{self.name}_failure_{self._state.value}",
         )
 
     def execute(self, fn: Callable, *args, **kwargs) -> Any:
@@ -164,7 +164,7 @@ class CircuitBreaker:
         _emit_records_telemetry_event(
             trace_id,
             "CircuitBreaker",
-            f"{self.name}_transition_{old_state.value}_to_{new_state.value}"
+            f"{self.name}_transition_{old_state.value}_to_{new_state.value}",
         )
 
     def _reset_counts(self) -> None:

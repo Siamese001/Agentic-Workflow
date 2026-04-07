@@ -1,12 +1,11 @@
 """Tests for apps_rfp reasoning components."""
 
-import pytest
 
-from apps_rfp.reasoning.RfpOrchestrator import (
-    RfpOrchestrator,
-)
 from apps_rfp.reasoning.RequirementAnalysisAgent import (
     RequirementAnalysisAgent,
+)
+from apps_rfp.reasoning.RfpOrchestrator import (
+    RfpOrchestrator,
 )
 
 

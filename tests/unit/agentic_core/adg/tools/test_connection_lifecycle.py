@@ -1,7 +1,8 @@
 """Connection lifecycle tests for ADG no-restart lock release tools."""
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from tools.adg.core.service import ADGService
 from tools.adg.core.sqlite_backend import SQLiteBackend

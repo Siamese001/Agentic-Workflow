@@ -20,7 +20,7 @@ class _StubClient:
     def interactions(self, *args: Any, **kwargs: Any) -> Any:
         raise ImportError(
             f"No real client available for provider {self._provider!r}. "
-            "Install the required SDK."
+            "Install the required SDK.",
         )
 
 

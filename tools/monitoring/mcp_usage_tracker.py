@@ -90,7 +90,7 @@ class MCPUsageTracker:
                 entry.response_time,
                 entry.token_count,
                 entry.user_query,
-                entry.session_id
+                entry.session_id,
             ))
             conn.commit()
 
@@ -106,7 +106,7 @@ class MCPUsageTracker:
             response_time=response_time,
             token_count=token_count,
             user_query=user_query,
-            session_id=session_id
+            session_id=session_id,
         )
         self.log_tool_usage(entry)
 
@@ -134,7 +134,7 @@ class MCPUsageTracker:
                 tool_name, usage_count, success_rate, avg_response_time, total_tokens, last_used = row
 
                 recommendation = self._get_recommendation(
-                    tool_name, usage_count, success_rate, avg_response_time
+                    tool_name, usage_count, success_rate, avg_response_time,
                 )
 
                 results[tool_name] = UsageSummary(
@@ -143,7 +143,7 @@ class MCPUsageTracker:
                     avg_response_time=avg_response_time or 0.0,
                     total_tokens=total_tokens or 0,
                     last_used=last_used or 0.0,
-                    recommendation=recommendation
+                    recommendation=recommendation,
                 )
 
         return results
@@ -187,7 +187,7 @@ class MCPUsageTracker:
                     'success_rate': success_rate or 0.0,
                     'avg_response_time': avg_response_time or 0.0,
                     'total_tokens': total_tokens or 0,
-                    'unique_sessions': unique_sessions or 0
+                    'unique_sessions': unique_sessions or 0,
                 }
 
         return {
@@ -195,7 +195,7 @@ class MCPUsageTracker:
             'success_rate': 0.0,
             'avg_response_time': 0.0,
             'total_tokens': 0,
-            'unique_sessions': 0
+            'unique_sessions': 0,
         }
 
     def generate_report(self, hours: int = 24) -> str:

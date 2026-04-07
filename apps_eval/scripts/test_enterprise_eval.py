@@ -71,7 +71,7 @@ def _assert_detailed_observability(result: object) -> None:
 
     _assert(
         len(complete_steps) >= 3,
-        f"Insufficient completed steps in execution log: {complete_steps}"
+        f"Insufficient completed steps in execution log: {complete_steps}",
     )
 
     # Check for step completion details
@@ -79,7 +79,7 @@ def _assert_detailed_observability(result: object) -> None:
         if entry.get("status") == "complete" and entry.get("details"):
             _assert(
                 isinstance(entry["details"], dict),
-                f"Step {entry.get('step')} has non-dict details"
+                f"Step {entry.get('step')} has non-dict details",
             )
 
 
@@ -95,14 +95,14 @@ def _assert_layer4_wiring(result: object) -> None:
 
     _assert(
         len(step_sequence) >= 3,
-        "Layer 4 wiring: insufficient orchestration steps"
+        "Layer 4 wiring: insufficient orchestration steps",
     )
 
     # Check for orchestrator-specific signals in repo_signals
     ci = repo_signals.get("ci", {})
     _assert(
         ci.get("workflow_count", 0) >= 30,
-        f"Layer 4 wiring: insufficient CI workflows ({ci.get('workflow_count', 0)} < 30)"
+        f"Layer 4 wiring: insufficient CI workflows ({ci.get('workflow_count', 0)} < 30)",
     )
 
     # Verify test infrastructure signals (L4 depends on test coverage)
@@ -110,7 +110,7 @@ def _assert_layer4_wiring(result: object) -> None:
     inventory_count = tests.get("inventory_entries", 0)
     _assert(
         inventory_count > 1000,
-        f"Layer 4 wiring: insufficient test inventory ({inventory_count} <= 1000)"
+        f"Layer 4 wiring: insufficient test inventory ({inventory_count} <= 1000)",
     )
 
 
@@ -124,16 +124,16 @@ def _assert_enhanced_system_learning(result: object) -> None:
     if release_readiness:
         _assert(
             "score" in release_readiness,
-            "System learning: release_readiness.score missing"
+            "System learning: release_readiness.score missing",
         )
         _assert(
             "verdict" in release_readiness,
-            "System learning: release_readiness.verdict missing"
+            "System learning: release_readiness.verdict missing",
         )
         verdict = release_readiness.get("verdict", "")
         _assert(
             verdict in ("ready", "needs_review", "hold"),
-            f"System learning: invalid release_readiness.verdict '{verdict}'"
+            f"System learning: invalid release_readiness.verdict '{verdict}'",
         )
 
     # Check for governance baseline (indicates learning state persistence) - optional
@@ -150,11 +150,11 @@ def _assert_enhanced_system_learning(result: object) -> None:
         edges_count = adg.get("edges_count", 0)
         _assert(
             nodes_count > 100000,
-            f"System learning: insufficient ADG nodes ({nodes_count} <= 100K)"
+            f"System learning: insufficient ADG nodes ({nodes_count} <= 100K)",
         )
         _assert(
             edges_count > 500000,
-            f"System learning: insufficient ADG edges ({edges_count} <= 500K)"
+            f"System learning: insufficient ADG edges ({edges_count} <= 500K)",
         )
 
 

@@ -108,7 +108,7 @@ def main():
         'signal_ratio': signal_ratio >= 0.90,
         'consistency_rate': consistency_rate >= 0.99,
         'synthetic_edges': synthetic_edges == 0,
-        'duplicate_ratio': duplicate_ratio == 0.0
+        'duplicate_ratio': duplicate_ratio == 0.0,
     }
 
     print("\n🎯 CRITERIA CHECK")

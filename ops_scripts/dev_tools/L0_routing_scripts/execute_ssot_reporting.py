@@ -26,7 +26,7 @@ class ExecutionReporter:
         entry = {
             "timestamp": time.time(),
             "level": level,
-            "message": message
+            "message": message,
         }
         self.logs.append(entry)
 
@@ -47,7 +47,7 @@ class ExecutionReporter:
             "phases_completed": list(phase_results.keys()),
             "total_phases": len(phase_results),
             "timestamp": time.time(),
-            "logs": self.logs
+            "logs": self.logs,
         }
         return summary
 
@@ -78,7 +78,7 @@ class ExecutionReporter:
             f"**Phases Completed:** {data.get('total_phases', 0)}",
             "",
             "## Phase Results",
-            ""
+            "",
         ]
 
         for phase, result in data.get('phase_results', {}).items():

@@ -1,23 +1,23 @@
 """
 Feature Derivation Engine - Computes all RiskFeatures deterministically.
 """
-from typing import Optional, List
+from typing import List, Optional
 
-from ..types import (
-    UnderwritingRequest,
-    RiskFeatures,
-    CapacityFeatures,
-    LiquidityFeatures,
-    CollateralFeatures,
-    CreditFeatures,
-    OperatingRiskFeatures,
-    RelationshipFeatures,
-    DocumentationFeatures,
-    PolicyFeatures,
-    CompositeFeatures,
-    FinancialPeriod,
-)
 from ..engines.document_reconciliation_engine import ReconciliationResult
+from ..types import (
+    CapacityFeatures,
+    CollateralFeatures,
+    CompositeFeatures,
+    CreditFeatures,
+    DocumentationFeatures,
+    FinancialPeriod,
+    LiquidityFeatures,
+    OperatingRiskFeatures,
+    PolicyFeatures,
+    RelationshipFeatures,
+    RiskFeatures,
+    UnderwritingRequest,
+)
 
 
 class FeatureDerivationEngine:
@@ -65,7 +65,7 @@ class FeatureDerivationEngine:
     def derive_features(
         self,
         request: UnderwritingRequest,
-        reconciliation: Optional[ReconciliationResult] = None
+        reconciliation: Optional[ReconciliationResult] = None,
     ) -> RiskFeatures:
         """
         Derive complete risk feature set from underwriting request.
@@ -99,7 +99,7 @@ class FeatureDerivationEngine:
 
         # Derive documentation features
         features.documentation = self._derive_documentation_features(
-            request, reconciliation
+            request, reconciliation,
         )
 
         # Derive policy features
@@ -107,7 +107,7 @@ class FeatureDerivationEngine:
 
         # Derive composite features
         features.composite = self._derive_composite_features(
-            features, reconciliation
+            features, reconciliation,
         )
 
         return features
@@ -316,7 +316,7 @@ class FeatureDerivationEngine:
     def _derive_documentation_features(
         self,
         request: UnderwritingRequest,
-        reconciliation: Optional[ReconciliationResult]
+        reconciliation: Optional[ReconciliationResult],
     ) -> DocumentationFeatures:
         """Derive documentation and data quality features."""
         features = DocumentationFeatures()
@@ -383,7 +383,7 @@ class FeatureDerivationEngine:
     def _derive_composite_features(
         self,
         features: RiskFeatures,
-        reconciliation: Optional[ReconciliationResult]
+        reconciliation: Optional[ReconciliationResult],
     ) -> CompositeFeatures:
         """Derive aggregated composite risk features."""
         composite = CompositeFeatures()

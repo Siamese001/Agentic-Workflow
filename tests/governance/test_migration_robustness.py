@@ -38,7 +38,7 @@ class TestTopLevelImportElimination:
         # Pattern to match top-level imports from target modules
         top_level_import_pattern = re.compile(
             r'^(from\s+agentic_core\.\S*|import\s+agentic_core\.\S+)',
-            re.MULTILINE
+            re.MULTILINE,
         )
 
         for test_file in test_files:
@@ -72,7 +72,7 @@ class TestTopLevelImportElimination:
 
         top_level_import_pattern = re.compile(
             r'^(from\s+apps_\S*|import\s+apps_\S+)',
-            re.MULTILINE
+            re.MULTILINE,
         )
 
         for test_file in test_files:
@@ -102,7 +102,7 @@ class TestTopLevelImportElimination:
 
         top_level_import_pattern = re.compile(
             r'^(from\s+system_learning\.\S*|import\s+system_learning\.\S+)',
-            re.MULTILINE
+            re.MULTILINE,
         )
 
         for test_file in test_files:
@@ -143,7 +143,7 @@ class TestImportPlacementCorrectness:
             # Check if file has any target imports
             has_target_imports = bool(re.search(
                 r'from\s+(agentic_core|apps_|system_learning)\.\S*|import\s+(agentic_core|apps_|system_learning)\.\S+',
-                content
+                content,
             ))
 
             if has_target_imports:
@@ -151,7 +151,7 @@ class TestImportPlacementCorrectness:
                 has_function_imports = bool(re.search(
                     r'def\s+test_\w+.*?\n\s+from\s+(agentic_core|apps_|system_learning)',
                     content,
-                    re.DOTALL
+                    re.DOTALL,
                 ))
 
                 if not has_function_imports:
@@ -204,7 +204,7 @@ class TestDuplicateImportElimination:
             test_functions = re.finditer(
                 r'(def\s+test_\w+\s*\([^)]*\).*?)(?=def\s+test_\w+|\Z)',
                 content,
-                re.DOTALL
+                re.DOTALL,
             )
 
             for func_match in test_functions:

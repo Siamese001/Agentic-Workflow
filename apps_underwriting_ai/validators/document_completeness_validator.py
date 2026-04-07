@@ -1,10 +1,10 @@
 """
 Document Completeness Validator - Verifies required documents are present.
 """
-from typing import List, Dict, Any
 from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
-from ..types import UnderwritingRequest, DocumentPackage
+from ..types import DocumentPackage, UnderwritingRequest
 
 
 @dataclass
@@ -79,7 +79,7 @@ class DocumentCompletenessValidator:
 
     def validate(
         self,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> CompletenessResult:
         """
         Validate document completeness.
@@ -108,14 +108,14 @@ class DocumentCompletenessValidator:
                     "document_type": doc_type,
                     "status": "missing",
                     "severity": "required",
-                    "message": f"Required document '{doc_type}' not present"
+                    "message": f"Required document '{doc_type}' not present",
                 })
             else:
                 result.findings.append({
                     "document_type": doc_type,
                     "status": "present",
                     "count": count,
-                    "severity": "info"
+                    "severity": "info",
                 })
 
         # Check document freshness
@@ -135,7 +135,7 @@ class DocumentCompletenessValidator:
     def _get_required_documents(
         self,
         product_type: str,
-        decision_type: str
+        decision_type: str,
     ) -> List[str]:
         """Get list of required documents for product/decision combination."""
         required = list(self.PRODUCT_REQUIRED_DOCS.get(product_type, []))
@@ -151,7 +151,7 @@ class DocumentCompletenessValidator:
     def _check_document_present(
         self,
         docs: DocumentPackage,
-        doc_type: str
+        doc_type: str,
     ) -> tuple[bool, int]:
         """Check if document type is present and return count."""
         doc_lists = {
@@ -172,7 +172,7 @@ class DocumentCompletenessValidator:
 
     def _check_document_freshness(
         self,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Check for stale documents."""
         stale = []
@@ -182,7 +182,7 @@ class DocumentCompletenessValidator:
         if request.collateral.appraisal_date:
             try:
                 appraisal_dt = datetime.fromisoformat(
-                    request.collateral.appraisal_date.replace('Z', '+00:00')
+                    request.collateral.appraisal_date.replace('Z', '+00:00'),
                 )
                 days_old = (datetime.now() - appraisal_dt).days
                 threshold = self.FRESHNESS_THRESHOLDS.get("appraisals", 365)
@@ -196,7 +196,7 @@ class DocumentCompletenessValidator:
         if request.collateral.field_exam_date:
             try:
                 exam_dt = datetime.fromisoformat(
-                    request.collateral.field_exam_date.replace('Z', '+00:00')
+                    request.collateral.field_exam_date.replace('Z', '+00:00'),
                 )
                 days_old = (datetime.now() - exam_dt).days
 

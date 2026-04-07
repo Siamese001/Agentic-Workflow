@@ -30,7 +30,7 @@ def get_baseline(conn):
     rows = conn.execute(
         "SELECT relation_type, COUNT(*) FROM edges "
         "WHERE relation_type IN ('reads_from','reads_through') "
-        "GROUP BY relation_type"
+        "GROUP BY relation_type",
     ).fetchall()
     return dict(rows)
 
@@ -184,7 +184,7 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
     new_calls = []
     for i in range(existing_calls + 1, existing_calls + needed + 1):
         new_calls.append(
-            f'_emit_reads_through("l4", "{short_name}", "urg_read_{i}")'
+            f'_emit_reads_through("l4", "{short_name}", "urg_read_{i}")',
         )
 
     # Insert at end of file — safest for module-level emit calls

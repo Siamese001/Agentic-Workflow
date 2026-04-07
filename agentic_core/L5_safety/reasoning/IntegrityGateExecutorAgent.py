@@ -96,7 +96,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 
@@ -176,7 +179,7 @@ class IntegrityGateResult:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"IntegrityGateResult.add_violation:{reason}"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"IntegrityGateResult.add_violation:{reason}",
         )
         self.passed = False
         self.violations.append(Violation(reason, message))
@@ -217,7 +220,7 @@ class KeyTechnology:
     """
 
     def __init__(
-        self, technology_name: str, implementation_details: str, source_citation: str | None = None
+        self, technology_name: str, implementation_details: str, source_citation: str | None = None,
     ) -> None:
         """
         Initialize key technology.
@@ -389,11 +392,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -533,7 +534,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         return RESULT
 
     def _check_unbound_metrics(
-        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult,
     ) -> None:
         for Metric in research_output.StrategicLayer.financial_proof_points:
             if not Metric.source_citation:
@@ -568,7 +569,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                         )
 
     def _check_orphaned_claims(
-        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult,
     ) -> None:
         INITIATIVES = research_output.StrategicLayer.strategic_initiatives
         TECHNOLOGIES = [t.technology_name for t in research_output.TechnicalLayer.key_technologies]
@@ -583,7 +584,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                 )
 
     def _check_citation_coverage(
-        self, research_output: DeepResearchOutput, result: IntegrityGateResult
+        self, research_output: DeepResearchOutput, result: IntegrityGateResult,
     ) -> None:
         if len(research_output.CitationMap.citations) < 3:
             result.add_violation(
@@ -598,11 +599,11 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         )
         if financial_citations == 0:
             result.add_violation(
-                ValidationRejectionReason.MISSING_CITATIONS, "No citations for financial metrics"
+                ValidationRejectionReason.MISSING_CITATIONS, "No citations for financial metrics",
             )
         if technical_citations == 0:
             result.add_violation(
-                ValidationRejectionReason.MISSING_CITATIONS, "No citations for technical implementations"
+                ValidationRejectionReason.MISSING_CITATIONS, "No citations for technical implementations",
             )
 
     def _calculate_depth_score(self, research_output: DeepResearchOutput) -> float:
@@ -743,7 +744,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                         self.logger.error(f"    Error processing {json_file}: {e}")
                         errors += 1
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors"
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed, {errors} errors",
             )
             return {
                 "violations_found": violations_found,
@@ -794,7 +795,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
 
 # guardian: allow-magic-config
 def validate_research_output(
-    research_output: DeepResearchOutput, min_depth_score: float = 0.7
+    research_output: DeepResearchOutput, min_depth_score: float = 0.7,
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
     _emit_applies_guardrail(str(uuid.uuid4()), "Module.validate_research_output", "L5_POLICY")

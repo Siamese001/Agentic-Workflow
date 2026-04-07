@@ -161,7 +161,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -169,7 +168,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
@@ -818,7 +816,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     )
                     result["error"] = "destination_exists_different_content"
                     Logger.warning(
-                        f"[LocationHealerAgent] Conflict: {src_path} -> {final_dst} (different content, not overwriting)"
+                        f"[LocationHealerAgent] Conflict: {src_path} -> {final_dst} (different content, not overwriting)",
                     )
                     return result
 
@@ -1641,7 +1639,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Analyze subfolder semantics for confidence scoring
             # [AST-PRIMARY] Pass file_path so agent files are blocked before regex/Jaccard
             confidence_score = self._calculate_subfolder_confidence(
-                unknown_subfolder, existing_subfolders, file_path=file_path
+                unknown_subfolder, existing_subfolders, file_path=file_path,
             )
 
             if confidence_score > 0.75:
@@ -1661,7 +1659,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
                 # [AST-PRIMARY] Pass file_path so agent files skip non-source subfolders
                 best_match = self._find_best_matching_subfolder(
-                    unknown_subfolder, existing_subfolders, file_path=file_path
+                    unknown_subfolder, existing_subfolders, file_path=file_path,
                 )
                 if best_match:
                     Logger.info(
@@ -1727,7 +1725,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 "testdata",
                 "test_data",
                 "resources",
-            }
+            },
         )
         if unknown_subfolder in _PRESERVED_SUBDIRS:
             return 0.9  # always create — never remap via Jaccard
@@ -1842,10 +1840,10 @@ class LocationHealerAgent(SovereignBaseAgent):
         # An agent file must never be routed to a non-source subfolder, even if that
         # subfolder name is in the preserved list (e.g. 'support').
         _NON_SOURCE_SUBFOLDERS: frozenset[str] = frozenset(
-            {"support", "fixtures", "helpers", "mocks", "stubs", "data", "docs"}
+            {"support", "fixtures", "helpers", "mocks", "stubs", "data", "docs"},
         )
         _SOURCE_SUBFOLDERS: frozenset[str] = frozenset(
-            {"reasoning", "engines", "enforcement", "config", "types", "validators", "utils"}
+            {"reasoning", "engines", "enforcement", "config", "types", "validators", "utils"},
         )
 
         is_agent_type = False
@@ -1893,7 +1891,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 "helpers",
                 "support",
                 "resources",
-            }
+            },
         )
         if not is_agent_type and unknown in _PRESERVED_SUBDIRS:
             if unknown in existing:
@@ -2086,7 +2084,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 Logger.error(
                     f"[LocationHealerAgent] DEPTH VIOLATION (SHALLOW): {rel_path} "
                     f"is at depth {current_depth}, expected {expected_depth}. "
-                    "Manual intervention required: place file in a semantically named subfolder."
+                    "Manual intervention required: place file in a semantically named subfolder.",
                 )
                 return {
                     "action_taken": "REPORTED: SHALLOW depth violation — manual placement required",

@@ -53,7 +53,7 @@ def validate_timeout_recovery_patterns(file_path: Path) -> list[str]:
                 "isolate_scope" in handler_context,
                 "adg" in handler_context.lower(),
                 "dependency_graph" in handler_context.lower(),
-            ]
+            ],
         )
 
         # Check if handler just re-raises without recovery attempt
@@ -66,7 +66,7 @@ def validate_timeout_recovery_patterns(file_path: Path) -> list[str]:
             if not has_reraise_with_msg:
                 violations.append(
                     f"{file_path}:{line_num}: TimeoutError caught without ADG-based recovery "
-                    f"(§9.6 requires automatic recovery with dependency graph analysis)"
+                    f"(§9.6 requires automatic recovery with dependency graph analysis)",
                 )
 
     return violations
@@ -91,13 +91,13 @@ def validate_evidence_timeout_recovery(evidence_path: Path) -> list[str]:
             # Check if it's just configuration, not actual timeout
             has_timeout_config = "## TIMEOUT_CONFIGURATION" in content
             has_actual_timeout = re.search(
-                r"timed?\s+out|timeout\s+(exceeded|triggered)", content, re.IGNORECASE
+                r"timed?\s+out|timeout\s+(exceeded|triggered)", content, re.IGNORECASE,
             )
 
             if has_actual_timeout and not has_timeout_config:
                 violations.append(
                     f"{evidence_path}: Timeout occurred but missing ## TIMEOUT_RECOVERY section "
-                    f"(§9.6 requires ADG analysis and recovery documentation)"
+                    f"(§9.6 requires ADG analysis and recovery documentation)",
                 )
         else:
             # Validate TIMEOUT_RECOVERY section has required fields
@@ -111,7 +111,7 @@ def validate_evidence_timeout_recovery(evidence_path: Path) -> list[str]:
                 for field in required_fields:
                     if field not in recovery_content:
                         violations.append(
-                            f"{evidence_path}: TIMEOUT_RECOVERY section missing '{field}' subsection"
+                            f"{evidence_path}: TIMEOUT_RECOVERY section missing '{field}' subsection",
                         )
 
     return violations
@@ -154,7 +154,7 @@ def validate_module_level_blocking_ops(repo_path: Path) -> list[str]:
                             if _is_blocking_op(op_name):
                                 warnings.append(
                                     f"WARNING: {test_file}:{node.lineno} - Module-level {op_name} "
-                                    f"(executes at collection time, may cause timeout)"
+                                    f"(executes at collection time, may cause timeout)",
                                 )
                                 break
 
@@ -164,7 +164,7 @@ def validate_module_level_blocking_ops(repo_path: Path) -> list[str]:
                     if _is_blocking_op(op_name):
                         warnings.append(
                             f"WARNING: {test_file}:{node.lineno} - Module-level {op_name} "
-                            f"(executes at collection time, may cause timeout)"
+                            f"(executes at collection time, may cause timeout)",
                         )
 
     return warnings

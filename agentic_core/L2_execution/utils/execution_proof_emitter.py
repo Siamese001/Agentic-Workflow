@@ -140,7 +140,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -245,7 +244,7 @@ class ExecutionProof:
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         expected = _compute_replay_key(
-            self.trace_id, self.run_id, self.module, self.operation, self.execution_input_hash
+            self.trace_id, self.run_id, self.module, self.operation, self.execution_input_hash,
         )
         return expected == self.replay_key
 

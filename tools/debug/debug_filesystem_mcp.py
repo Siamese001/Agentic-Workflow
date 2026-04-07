@@ -73,7 +73,7 @@ class FilesystemMCPDebugger:
                 ['node', package_path, '--help'],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             print(f'   Exit code: {result.returncode}')
@@ -92,7 +92,7 @@ class FilesystemMCPDebugger:
                 ['node', package_path, '--version'],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
             )
 
             print(f'   Version exit code: {version_result.returncode}')
@@ -106,7 +106,7 @@ class FilesystemMCPDebugger:
                 ['node', package_path, str(REPO_ROOT), '--help'],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             print(f'   Repo test exit code: {repo_result.returncode}')
@@ -125,7 +125,7 @@ class FilesystemMCPDebugger:
                 'has_stderr': bool(result.stderr.strip()),
                 'version_output': version_result.stdout.strip(),
                 'help_stderr': result.stderr.strip() if result.stderr else '',
-                'repo_stderr': repo_result.stderr.strip() if repo_result.stderr else ''
+                'repo_stderr': repo_result.stderr.strip() if repo_result.stderr else '',
             }
 
             return self.perform_root_cause_analysis(analysis)
@@ -178,21 +178,21 @@ class FilesystemMCPDebugger:
                 'status': 'healthy',
                 'issues': [],
                 'recommendations': ['No issues detected - server appears healthy'],
-                'analysis': analysis
+                'analysis': analysis,
             }
         elif len(issues) <= 2 and 'Error' not in analysis['help_stderr']:
             return {
                 'status': 'minor',
                 'issues': issues,
                 'recommendations': recommendations,
-                'analysis': analysis
+                'analysis': analysis,
             }
         else:
             return {
                 'status': 'needs_attention',
                 'issues': issues,
                 'recommendations': recommendations,
-                'analysis': analysis
+                'analysis': analysis,
             }
 
     def fix_filesystem_server(self, analysis_result):
@@ -215,7 +215,7 @@ class FilesystemMCPDebugger:
                     ['npm', 'install', '-g', '@modelcontextprotocol/server-filesystem'],
                     capture_output=True,
                     text=True,
-                    timeout=30
+                    timeout=30,
                 )
 
                 if result.returncode == 0:
@@ -241,8 +241,8 @@ class FilesystemMCPDebugger:
             "args": [fs_config.get('args', [''])[0], str(REPO_ROOT)],
             "disabled": False,
             "env": {
-                "NODE_ENV": "production"
-            }
+                "NODE_ENV": "production",
+            },
         }
 
         # Update configuration
@@ -291,7 +291,7 @@ class FilesystemMCPDebugger:
                 ['node', package_path, '--help'],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             end_time = time.time()
 
@@ -326,13 +326,13 @@ class FilesystemMCPDebugger:
                 'message': message,
                 'exit_code': result.returncode,
                 'has_output': bool(result.stdout.strip()),
-                'stderr_sample': result.stderr[:200] if result.stderr else ''
+                'stderr_sample': result.stderr[:200] if result.stderr else '',
             }
 
         except Exception as e:
             return {
                 'status': 'error',
-                'message': f'Test error: {str(e)}'
+                'message': f'Test error: {str(e)}',
             }
 
     def run_complete_debug_cycle(self):
@@ -352,7 +352,7 @@ class FilesystemMCPDebugger:
                     'overall_status': 'failed',
                     'debug_result': debug_result,
                     'fix_result': 'failed',
-                    'test_result': None
+                    'test_result': None,
                 }
 
         # Step 3: Test
@@ -365,7 +365,7 @@ class FilesystemMCPDebugger:
             'overall_status': overall_status,
             'debug_result': debug_result,
             'fix_result': 'completed' if debug_result['status'] != 'healthy' else 'not_needed',
-            'test_result': test_result
+            'test_result': test_result,
         }
 
 def main():

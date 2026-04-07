@@ -63,7 +63,7 @@ def main() -> int:
     for test_id in skipped_ids:
         if test_id not in registered_ids:
             violations.append(
-                f"UNREGISTERED SKIP: {test_id} — register in {REGISTRY_PATH.relative_to(REPO_ROOT)} per §17.2"
+                f"UNREGISTERED SKIP: {test_id} — register in {REGISTRY_PATH.relative_to(REPO_ROOT)} per §17.2",
             )
 
     # Rule 2: expired entries
@@ -74,11 +74,11 @@ def main() -> int:
                 expiry = date.fromisoformat(expiry_str)
                 if expiry < today:
                     violations.append(
-                        f"EXPIRED REGISTRY ENTRY: {entry.get('test_id')} expired {expiry_str}"
+                        f"EXPIRED REGISTRY ENTRY: {entry.get('test_id')} expired {expiry_str}",
                     )
             except ValueError:
                 violations.append(
-                    f"INVALID EXPIRY DATE: {entry.get('test_id')} has malformed expiry_date={expiry_str!r}"
+                    f"INVALID EXPIRY DATE: {entry.get('test_id')} has malformed expiry_date={expiry_str!r}",
                 )
 
     # Rule 3: empty resolution_plan
@@ -86,7 +86,7 @@ def main() -> int:
         plan = entry.get("resolution_plan", "").strip()
         if not plan or plan.lower() in {"will fix later", "tbd", "todo", ""}:
             violations.append(
-                f"EMPTY RESOLUTION PLAN: {entry.get('test_id')} — provide concrete resolution_plan per §17.2"
+                f"EMPTY RESOLUTION PLAN: {entry.get('test_id')} — provide concrete resolution_plan per §17.2",
             )
 
     if violations:

@@ -121,7 +121,7 @@ class CodeJanitor:
         return (len(violations) == 0, violations)
 
     def _check_line_indentation(
-        self, file_path: str, line_num: int, line: str, violations: list[str]
+        self, file_path: str, line_num: int, line: str, violations: list[str],
     ) -> None:
         """Check indentation for a single line."""
         if "\t" in line:
@@ -132,7 +132,7 @@ class CodeJanitor:
             leading_spaces = len(line) - len(stripped_line)
             if leading_spaces % 4 != 0:
                 violations.append(
-                    f"{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)"
+                    f"{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)",
                 )
 
     def validate_trailing_whitespace(self, file_path: str | None = None) -> tuple[bool, list[str]]:
@@ -188,19 +188,19 @@ class CodeJanitor:
         return (len(violations) == 0, violations)
 
     def _check_node_naming_convention(
-        self, file_path: str, node: ast.AST, violations: list[str]
+        self, file_path: str, node: ast.AST, violations: list[str],
     ) -> None:
         """Helper to check naming convention for a single AST node."""
         if isinstance(node, ast.ClassDef):
             if not re.match(r"^[A-Z][a-zA-Z0-9]*$", node.name):
                 violations.append(
-                    f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase"
+                    f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase",
                 )
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if not node.name.startswith("__") and not node.name.startswith("_"):
                 if not re.match(r"^[a-z_][a-z0-9_]*$", node.name):
                     violations.append(
-                        f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case"
+                        f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case",
                     )
 
     def validate_all(self, file_path: str | None = None) -> dict[str, Any]:
@@ -235,7 +235,7 @@ class CodeJanitor:
                         line_number=line_num,
                         key_id=key_id,
                         severity=5 if key_id == 10 else 3,
-                    )
+                    ),
                 )
 
         return {

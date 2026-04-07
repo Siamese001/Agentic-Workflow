@@ -5,54 +5,6 @@ for designated high-risk or ambiguous operations.
 """
 from enum import Enum
 
-# P3/L5 Human Safety Escalation exports
-from .escalation_orchestrator import (
-    GovernedAction,
-    SafetyContext,
-    TraceContext,
-    escalate_for_human_review,
-    escalates_to_human,
-    escalation_blocked,
-    execute_override,
-    get_human_escalation_registry,
-    override_executed,
-    query_human_escalation,
-    record_reviewer_outcome,
-    reviewer_outcome_recorded,
-)
-from .human_escalation import (
-    APPROVED,
-    DEFERRED,
-    DENIED,
-    DISPUTED_AUTHORIZATION,
-    ESCALATE_FURTHER,
-    # Enum values for ADG scanner detection
-    IRREVERSIBLE_DESTRUCTIVE,
-    MODIFIED,
-    POLICY_AMBIGUITY,
-    PRIVILEGED_ACTION,
-    SENSITIVE_REASONING,
-    UNKNOWN_SAFETY_RESULT,
-    EscalationTriggerType,
-    HumanEscalationError,
-    HumanEscalationRecord,
-    ReviewerOutcome,
-    action_class,
-    # Dataclass field exports for ADG scanner detection
-    escalation_id,
-    escalation_reason_hash,
-    escalation_trigger_type,
-    final_decision_hash,
-    get_human_escalation_registry,
-    override_flag,
-    policy_hash,
-    reset_human_escalation_registry,
-    reviewer_id,
-    reviewer_outcome,
-    reviewer_queue_id,
-    run_id,
-    trace_id,
-)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -116,6 +68,55 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+
+# P3/L5 Human Safety Escalation exports
+from .escalation_orchestrator import (
+    GovernedAction,
+    SafetyContext,
+    TraceContext,
+    escalate_for_human_review,
+    escalates_to_human,
+    escalation_blocked,
+    execute_override,
+    get_human_escalation_registry,
+    override_executed,
+    query_human_escalation,
+    record_reviewer_outcome,
+    reviewer_outcome_recorded,
+)
+from .human_escalation import (
+    APPROVED,
+    DEFERRED,
+    DENIED,
+    DISPUTED_AUTHORIZATION,
+    ESCALATE_FURTHER,
+    # Enum values for ADG scanner detection
+    IRREVERSIBLE_DESTRUCTIVE,
+    MODIFIED,
+    POLICY_AMBIGUITY,
+    PRIVILEGED_ACTION,
+    SENSITIVE_REASONING,
+    UNKNOWN_SAFETY_RESULT,
+    EscalationTriggerType,
+    HumanEscalationError,
+    HumanEscalationRecord,
+    ReviewerOutcome,
+    action_class,
+    # Dataclass field exports for ADG scanner detection
+    escalation_id,
+    escalation_reason_hash,
+    escalation_trigger_type,
+    final_decision_hash,
+    get_human_escalation_registry,
+    override_flag,
+    policy_hash,
+    reset_human_escalation_registry,
+    reviewer_id,
+    reviewer_outcome,
+    reviewer_queue_id,
+    run_id,
+    trace_id,
 )
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")

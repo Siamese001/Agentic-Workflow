@@ -23,7 +23,7 @@ def test_enhanced_filtering():
             repo_root=Path("."),
             include_tests=True,
             cache_path=cache_dir / "full_cache.json",
-            scan_mode="full"
+            scan_mode="full",
         )
 
         start_time = time.time()
@@ -40,7 +40,7 @@ def test_enhanced_filtering():
             repo_root=Path("."),
             include_tests=True,
             cache_path=cache_dir / "selective_cache.json",
-            scan_mode="selective"
+            scan_mode="selective",
         )
 
         start_time = time.time()
@@ -57,7 +57,7 @@ def test_enhanced_filtering():
             repo_root=Path("."),
             include_tests=False,
             cache_path=cache_dir / "prod_cache.json",
-            scan_mode="selective"
+            scan_mode="selective",
         )
 
         start_time = time.time()
@@ -123,7 +123,7 @@ def test_enhanced_filtering():
         # Verify critical edges preserved
         critical_runtime_types = {
             "applies_guardrail", "verifies_policy", "validated_by_safety_plane",
-            "execution_terminates_at_uwg", "records_execution_trace"
+            "execution_terminates_at_uwg", "records_execution_trace",
         }
 
         selective_critical = {rt for rt in selective_types.keys() if rt in critical_runtime_types}
@@ -145,7 +145,7 @@ def test_enhanced_filtering():
             "total_reduction_percent": total_reduction_percent,
             "runtime_filtering_improvement": runtime_filtering_improvement,
             "time_improvement": full_time - selective_time,
-            "critical_preserved": len(selective_critical) == len(critical_runtime_types)
+            "critical_preserved": len(selective_critical) == len(critical_runtime_types),
         }
 
     finally:

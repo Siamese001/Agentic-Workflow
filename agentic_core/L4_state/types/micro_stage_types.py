@@ -196,7 +196,7 @@ class RetryPolicy(BaseModel):
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
     retryable_stages: list[MicroStage] = Field(
-        default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE]
+        default=[MicroStage.THINK, MicroStage.ACT, MicroStage.CRITIQUE],
     )
 
 

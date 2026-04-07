@@ -23,7 +23,7 @@ class PrecisionValidator:
         precision_graphs: dict[str, Any],
         original_node_count: int,
         original_edge_count: int,
-        original_violation_count: int
+        original_violation_count: int,
     ) -> ValidationReport:
         """Comprehensive validation of precision hardening results"""
 
@@ -57,7 +57,7 @@ class PrecisionValidator:
 
             # 4. Validate non-regression (Section 14)
             non_regression_results = self._validate_non_regression(
-                precision_graphs, original_node_count, original_edge_count, original_violation_count
+                precision_graphs, original_node_count, original_edge_count, original_violation_count,
             )
             report.backward_compatibility_check = non_regression_results["backward_compatibility"]
             report.existing_queries_functional = non_regression_results["queries_functional"]
@@ -103,7 +103,7 @@ class PrecisionValidator:
         precision_graphs: dict[str, Any],
         original_node_count: int,
         original_edge_count: int,
-        original_violation_count: int
+        original_violation_count: int,
     ) -> dict[str, bool]:
         """Validate non-regression guarantees (Section 14)"""
 

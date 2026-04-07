@@ -56,7 +56,7 @@ def convert_file(file_path):
         class_name=class_name,
         module_name=module_name,
         module_snake=module_snake,
-        import_path=import_path
+        import_path=import_path,
     )
 
     with open(path, 'w', encoding='utf-8') as f:
@@ -76,7 +76,7 @@ for file_path in wave_16_files:
         errors.append(f"{file_path}: {e}")
         print(f"ERROR: {file_path}: {e}")
 
-print(f"\nWave 16 Conversion Complete:")
+print("\nWave 16 Conversion Complete:")
 print(f"  - Converted: {converted}/{len(wave_16_files)} files")
 print(f"  - Errors: {len(errors)}")
 

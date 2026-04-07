@@ -130,7 +130,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             "A",
             ok,
             f"records_execution_trace runtime sources={n} (required>{threshold})",
-        )
+        ),
     )
     return ok
 
@@ -149,7 +149,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"signs_execution_trace runtime sources={n} (required>{threshold})",
-        )
+        ),
     )
     return ok
 
@@ -168,7 +168,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             "C",
             ok,
             f"records_execution_trace layer spread={n} layers={sorted(layers)} (required≥{threshold})",
-        )
+        ),
     )
     return ok
 
@@ -186,7 +186,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             "D",
             ok,
             f"emits_replay_key={rk} emits_determinism_digest={dd} (both must be >0)",
-        )
+        ),
     )
     return ok
 
@@ -203,7 +203,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             "E",
             ok,
             f"transcripts_response runtime={n} (must be >0)",
-        )
+        ),
     )
     return ok
 
@@ -223,7 +223,7 @@ def gate_f(conn: sqlite3.Connection) -> bool:
             "F",
             ok,
             f"hard_fails_untranscripted runtime={n} (must be >0 — hard-fail path must be wired)",
-        )
+        ),
     )
     return ok
 

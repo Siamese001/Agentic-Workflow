@@ -145,7 +145,7 @@ class CIPlanValidator:
         # §10 TOKEN ESTIMATION VALIDATION — NOW MANDATORY
         if self.token_validator:
             token_result = self.token_validator.validate_plan_tokens(
-                Path(result.get("path", "unknown")), content
+                Path(result.get("path", "unknown")), content,
             )
         else:
             # Fallback if validator not available
@@ -169,7 +169,7 @@ class CIPlanValidator:
         if token_result["status"] == "red":
             result["issues"].append(
                 f"Token budget exceeded: {token_result['total_tokens']:,} tokens (RED status > 175K). "
-                "Plan must be split into smaller waves."
+                "Plan must be split into smaller waves.",
             )
 
         # Check wave table format (relaxed for both "Wave" and "Waves")

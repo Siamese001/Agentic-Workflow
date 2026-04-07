@@ -67,7 +67,7 @@ class ComputeBudgetManager:
         """
         trace_id = f"budget_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ComputeBudgetManager.allocate_budget"
+            trace_id, LayerSegment.L1_REASONING, "ComputeBudgetManager.allocate_budget",
         )
 
         # Check remaining budget

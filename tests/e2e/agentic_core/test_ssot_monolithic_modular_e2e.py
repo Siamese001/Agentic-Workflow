@@ -15,7 +15,7 @@ def run_monolithic():
         capture_output=True,
         text=True,
         timeout=120,
-        cwd='c:/Git/Agentic-Workflow'
+        cwd='c:/Git/Agentic-Workflow',
     )
     return result
 
@@ -27,7 +27,7 @@ def run_modular():
         capture_output=True,
         text=True,
         timeout=120,
-        cwd='c:/Git/Agentic-Workflow'
+        cwd='c:/Git/Agentic-Workflow',
     )
     return result
 

@@ -13,7 +13,7 @@ print("=== G4: dead_imports with __future__ ===")
 rows = cur.execute(
     "SELECT n1.adg_name, e.symbol, e.source_file, e.line_no "
     "FROM edges e JOIN nodes n1 ON n1.id=e.src_id "
-    "WHERE e.relation_type='dead_imports' AND e.symbol LIKE '%__future__%'"
+    "WHERE e.relation_type='dead_imports' AND e.symbol LIKE '%__future__%'",
 ).fetchall()
 for r in rows:
     print(f"  src={r[0]}")
@@ -25,7 +25,7 @@ for r in rows:
 print("=== G8: gateway node search ===")
 rows = cur.execute(
     "SELECT adg_name, entity_type, layer FROM nodes "
-    "WHERE adg_name LIKE '%Gateway%' OR adg_name LIKE '%gateway%' LIMIT 10"
+    "WHERE adg_name LIKE '%Gateway%' OR adg_name LIKE '%gateway%' LIMIT 10",
 ).fetchall()
 for r in rows:
     print(f"  {r[0]}  type={r[1]}  layer={r[2]}")
@@ -36,7 +36,7 @@ print("=== G8: writes_through / routes_through edge targets ===")
 rows = cur.execute(
     "SELECT n2.adg_name, n2.entity_type, e.relation_type "
     "FROM edges e JOIN nodes n2 ON n2.id=e.dst_id "
-    "WHERE e.relation_type IN ('writes_through','routes_through') LIMIT 10"
+    "WHERE e.relation_type IN ('writes_through','routes_through') LIMIT 10",
 ).fetchall()
 for r in rows:
     print(f"  {r[0]}  type={r[1]}  rel={r[2]}")

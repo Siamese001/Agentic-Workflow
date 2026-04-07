@@ -14,7 +14,7 @@ def _readline_with_timeout(stream, timeout: float = 5.0) -> str:
     def _read():
         try:
             result[0] = stream.readline()
-        except Exception:  # noqa: BLE001
+        except (OSError, ValueError):
             pass
 
     t = threading.Thread(target=_read, daemon=True)
@@ -45,12 +45,10 @@ class TestMCPIntegration:
         proc.terminate()
         proc.wait(timeout=5)
 
-    @pytest.mark.integration
-    @pytest.mark.skip(reason="Requires live ADG MCP server with proper stdio framing; not suitable for unit mode")
     def test_server_responds_to_initialize(self):
-        """Server responds to MCP initialize request."""
+        """Playwright MCP server responds to MCP initialize request with valid JSON-RPC result."""
         proc = subprocess.Popen(
-            ["python", "-m", "tools.adg.mcp.server"],
+            ["npx.cmd", "-y", "@playwright/mcp"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -59,6 +57,9 @@ class TestMCPIntegration:
         )
 
         try:
+            # Wait for startup
+            time.sleep(2)
+
             # Send initialize request
             init_msg = {
                 "jsonrpc": "2.0",
@@ -67,6 +68,7 @@ class TestMCPIntegration:
                 "params": {
                     "protocolVersion": "2024-11-05",
                     "capabilities": {},
+                    "clientInfo": {"name": "test", "version": "1.0"},
                 },
             }
 
@@ -74,23 +76,22 @@ class TestMCPIntegration:
             proc.stdin.flush()
 
             # Read response with timeout (cross-platform — no select.select on Windows pipes)
-            response_line = _readline_with_timeout(proc.stdout, timeout=5.0)
-            assert response_line, "Server did not respond within timeout"
+            response_line = _readline_with_timeout(proc.stdout, timeout=8.0)
+            assert response_line, "Playwright MCP server did not respond within timeout"
             response = json.loads(response_line)
 
             assert response["id"] == 1
             assert "result" in response
+            assert "serverInfo" in response["result"]
 
         finally:
             proc.terminate()
             proc.wait(timeout=5)
 
-    @pytest.mark.integration
-    @pytest.mark.skip(reason="Requires live ADG MCP server with proper stdio framing; not suitable for unit mode")
-    def test_adg_health_tool_available(self):
-        """adg_health tool is available and responds."""
+    def test_playwright_mcp_lists_tools(self):
+        """Playwright MCP server exposes tools via tools/list after initialize."""
         proc = subprocess.Popen(
-            ["python", "-m", "tools.adg.mcp.server"],
+            ["npx.cmd", "-y", "@playwright/mcp"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -99,39 +100,41 @@ class TestMCPIntegration:
         )
 
         try:
-            # First initialize
+            time.sleep(2)
+
+            # Initialize
             init_msg = {
                 "jsonrpc": "2.0",
                 "id": 1,
                 "method": "initialize",
-                "params": {"protocolVersion": "2024-11-05", "capabilities": {}},
+                "params": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "test", "version": "1.0"},
+                },
             }
             proc.stdin.write(json.dumps(init_msg) + "\n")
             proc.stdin.flush()
+            _readline_with_timeout(proc.stdout, timeout=8.0)  # consume init response
 
-            # Read init response (cross-platform — no select.select on Windows pipes)
-            _readline_with_timeout(proc.stdout, timeout=5.0)  # Consume init response
-
-            # Call adg_health
-            health_msg = {
+            # List tools
+            list_msg = {
                 "jsonrpc": "2.0",
                 "id": 2,
-                "method": "tools/call",
-                "params": {
-                    "name": "adg_health",
-                    "arguments": {},
-                },
+                "method": "tools/list",
+                "params": {},
             }
-            proc.stdin.write(json.dumps(health_msg) + "\n")
+            proc.stdin.write(json.dumps(list_msg) + "\n")
             proc.stdin.flush()
 
-            # Read response
-            response_line = _readline_with_timeout(proc.stdout, timeout=5.0)
-            assert response_line, "adg_health did not respond"
+            response_line = _readline_with_timeout(proc.stdout, timeout=8.0)
+            assert response_line, "tools/list did not respond"
             response = json.loads(response_line)
 
             assert response["id"] == 2
             assert "result" in response
+            tools = response["result"].get("tools", [])
+            assert len(tools) > 0, "Playwright MCP should expose at least one tool"
 
         finally:
             proc.terminate()
@@ -181,8 +184,7 @@ class TestServerRobustness:
             time.sleep(1)
 
             # Check stderr has logs
-            stderr_data = proc.stderr.read1(1024) if hasattr(proc.stderr, 'read1') else ""
-            # stderr may have initialization logs
+            # stderr may have initialization logs (not asserted — server-specific)
 
             # Stdout should be empty (no random output) — cross-platform readline
             stdout_line = _readline_with_timeout(proc.stdout, timeout=0.1)

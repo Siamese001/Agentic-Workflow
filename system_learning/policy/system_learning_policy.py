@@ -293,7 +293,7 @@ class SystemLearningPolicyValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningPolicyValidator._validate_operation"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningPolicyValidator._validate_operation",
         )
 
         self._metrics["validations_performed"] += 1
@@ -338,7 +338,7 @@ class SystemLearningPolicyValidator:
             if result.is_compliant:
                 self._metrics["compliant_operations"] += 1
                 _emit_records_learning_event(
-                    "p3lm", self.component_name, f"policy_compliant:{validation_type.value}"
+                    "p3lm", self.component_name, f"policy_compliant:{validation_type.value}",
                 )
             else:
                 self._metrics["non_compliant_operations"] += 1
@@ -348,10 +348,10 @@ class SystemLearningPolicyValidator:
                 )
 
                 _emit_captures_pattern(
-                    "p3lm", self.component_name, f"policy_violation:{validation_type.value}"
+                    "p3lm", self.component_name, f"policy_violation:{validation_type.value}",
                 )
                 _emit_triggers_alert(
-                    "p4obs", self.component_name, f"policy_violation:{validation_type.value}"
+                    "p4obs", self.component_name, f"policy_violation:{validation_type.value}",
                 )
 
             # Emit policy telemetry
@@ -362,7 +362,7 @@ class SystemLearningPolicyValidator:
         except Exception as e:
             logger.error(f"Policy validation failed: {e}")
             _emit_captures_runtime_anomaly(
-                "p4obs", self.component_name, f"policy_validation_error:{validation_type.value}"
+                "p4obs", self.component_name, f"policy_validation_error:{validation_type.value}",
             )
 
             return PolicyValidationResult(
@@ -442,7 +442,7 @@ class SystemLearningPolicyValidator:
             if avg_similarity < policy_context.min_similarity_threshold:
                 violations.append(
                     f"Average similarity {avg_similarity:.3f} below threshold "
-                    f"{policy_context.min_similarity_threshold}"
+                    f"{policy_context.min_similarity_threshold}",
                 )
                 score -= 0.4
 
@@ -460,7 +460,7 @@ class SystemLearningPolicyValidator:
         low_quality_count = sum(1 for score in similarity_scores if score < 0.5)
         if low_quality_count > len(similarity_scores) * 0.5:
             warnings.append(
-                f"High number of low-quality results: {low_quality_count}/{len(similarity_scores)}"
+                f"High number of low-quality results: {low_quality_count}/{len(similarity_scores)}",
             )
             score -= 0.2
 
@@ -503,7 +503,7 @@ class SystemLearningPolicyValidator:
             if embedding_dimension > policy_context.max_embedding_dimension:
                 violations.append(
                     f"Embedding dimension {embedding_dimension} exceeds limit "
-                    f"{policy_context.max_embedding_dimension}"
+                    f"{policy_context.max_embedding_dimension}",
                 )
                 score -= 0.5
 
@@ -654,7 +654,7 @@ class SystemLearningPolicyValidator:
         """Emit policy validation telemetry."""
         # Emit telemetry event
         _emit_records_telemetry_event(
-            "p4", self.component_name, f"policy_validation:{result.validation_type.value}"
+            "p4", self.component_name, f"policy_validation:{result.validation_type.value}",
         )
 
         # Update monitoring state

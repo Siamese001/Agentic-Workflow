@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -254,7 +253,7 @@ class ContextSession:
                 "key": key,
                 "old_value": old_value,
                 "new_value": value,
-            }
+            },
         )
 
     def delete(self, key: str) -> None:
@@ -267,7 +266,7 @@ class ContextSession:
                     "action": "delete",
                     "key": key,
                     "old_value": old_value,
-                }
+                },
             )
 
     def add_focus_file(self, file_path: str) -> None:
@@ -392,7 +391,7 @@ class ContextSessionManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ContextSessionManager.create_session"
+            _trace_id, LayerSegment.L5_POLICY, "ContextSessionManager.create_session",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -462,7 +461,7 @@ class ContextSessionManager:
             self.end_session(session.session_id)
 
     def get_or_create_session(
-        self, session_id: str | None = None, risk_level: RiskLevel = RiskLevel.MEDIUM
+        self, session_id: str | None = None, risk_level: RiskLevel = RiskLevel.MEDIUM,
     ) -> ContextSession:
         """Get existing session or create new one."""
         if session_id:

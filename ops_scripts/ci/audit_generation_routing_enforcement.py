@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 ALLOWLIST_MODULES = {'infrastructure/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway', 'agentic_core/config/core', 'ops_scripts/ci', TESTS_DIR}

@@ -105,7 +105,7 @@ class QueryPreprocessor:
         """
         trace_id = f"preprocess_{hash(str(query)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryPreprocessor.preprocess"
+            trace_id, LayerSegment.L1_REASONING, "QueryPreprocessor.preprocess",
         )
 
         # Extract raw text from various formats
@@ -138,7 +138,7 @@ class QueryPreprocessor:
         _emit_records_telemetry_event(
             trace_id,
             "QueryPreprocessor",
-            f"processed_{source_format.value}"
+            f"processed_{source_format.value}",
         )
 
         log.debug(f"Preprocessed query: {len(raw_text)} -> {len(normalized)} chars")

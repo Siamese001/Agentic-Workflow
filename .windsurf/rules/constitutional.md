@@ -104,13 +104,48 @@ User may explicitly override tier: "this is just a simple fix" → T1. "full ana
 
 All T2/T3 decisions MUST use ADG as primary evidence. Plain text search is FORBIDDEN as primary evidence (may be used for confirmation only).
 
+**MANDATORY ADG MCP TOOLS — use these, not grep:**
+
+| Query Need | Required Tool | FORBIDDEN Alternative |
+|------------|---------------|-----------------------|
+| Find nodes by layer | `mcp0_adg_nodes_by_layer` | `grep_search`, `find_by_name` |
+| Find nodes by file | `mcp0_adg_nodes_by_file` | `grep_search`, `read_file` scan |
+| Outgoing dependencies | `mcp0_adg_edge_fanout` | `grep_search` for imports |
+| Incoming dependents | `mcp0_adg_edge_fanin` | `grep_search` for references |
+| Node details | `mcp0_adg_node` | `grep_search` for class/def |
+| ADG health | `mcp0_adg_health` | any text fallback |
+
+`grep_search` is **CATEGORICALLY FORBIDDEN** for dependency analysis, import tracing, or call-site discovery. It may only be used for literal string confirmation of a fact already established by ADG.
+
 ### 2.2 Scope Determination
 
 Before any edit: query ADG for upstream/downstream. Declare exact file list with graph justification.
 
+Required sequence:
+1. `mcp0_adg_health` — confirm MCP is healthy
+2. `mcp0_adg_nodes_by_file` or `mcp0_adg_nodes_by_layer` — locate entry points
+3. `mcp0_adg_edge_fanout` / `mcp0_adg_edge_fanin` — trace blast radius
+4. Declare exact file list with node IDs as evidence
+
 ### 2.3 Fail-Closed Rule
 
-If ADG cannot be built: STOP, record errors, mark conclusions partial. **NEVER silently fall back to text search.**
+If ADG MCP returns an error or is unavailable:
+1. **STOP immediately** — do not proceed with the work
+2. Run `/mcp-failure-rca` workflow to diagnose and fix the MCP
+3. Record the MCP failure as UNRESOLVED in evidence
+4. **NEVER silently fall back to `grep_search` or text search**
+5. Wait for MCP to be healthy before continuing
+
+**The correct response to a broken MCP is to fix the MCP, not to use grep.**
+
+MCP-down escalation steps:
+```
+1. python ops_scripts/ci/mcp_health_monitor.py --probe
+2. Check ~/adg_mcp_server.log for errors
+3. Remove-Item -Recurse -Force tools/adg/core/__pycache__
+4. Restart ADG MCP server in Windsurf (Ctrl+Shift+P → Restart MCP)
+5. Re-run mcp0_adg_health to confirm recovery
+```
 
 ---
 

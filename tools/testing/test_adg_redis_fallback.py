@@ -42,7 +42,7 @@ def test_adg_mcp_server_direct() -> dict[str, Any]:
             "import_success": True,
             "server_created": hasattr(adg_mcp_server, 'mcp'),
             "tools_available": False,
-            "error": None
+            "error": None,
         }
 
         # Check if tools are registered
@@ -57,7 +57,7 @@ def test_adg_mcp_server_direct() -> dict[str, Any]:
             "import_success": False,
             "server_created": False,
             "tools_available": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -71,26 +71,26 @@ def test_adg_mcp_server_subprocess() -> dict[str, Any]:
             [sys.executable, str(server_path), "--help"],
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=10,
         )
 
         return {
             "subprocess_success": result.returncode == 0,
             "stdout": result.stdout[:500],  # First 500 chars
             "stderr": result.stderr[:500],  # First 500 chars
-            "returncode": result.returncode
+            "returncode": result.returncode,
         }
     except subprocess.TimeoutExpired:
         return {
             "subprocess_success": False,
             "error": "timeout",
-            "returncode": -1
+            "returncode": -1,
         }
     except Exception as e:
         return {
             "subprocess_success": False,
             "error": str(e),
-            "returncode": -1
+            "returncode": -1,
         }
 
 
@@ -114,12 +114,12 @@ def test_adg_status_with_redis_down() -> dict[str, Any]:
             "test_passed": result.get("status") == "error",
             "error_message": result.get("message", ""),
             "is_fresh": result.get("is_fresh", False),
-            "result": result
+            "result": result,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
     finally:
         # Restore original Redis URL
@@ -145,12 +145,12 @@ def test_adg_cache_meta_with_redis_down() -> dict[str, Any]:
         return {
             "test_passed": result.get("available") == False,
             "has_reason": "reason" in result,
-            "result": result
+            "result": result,
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
     finally:
         os.environ['ADG_REDIS_URL'] = 'redis://localhost:6379/0'
@@ -167,7 +167,7 @@ def test_adg_sqlite_fallback() -> dict[str, Any]:
         if not sqlite_files:
             return {
                 "test_passed": False,
-                "error": "No ADG SQLite files found"
+                "error": "No ADG SQLite files found",
             }
 
         latest_sqlite = max(sqlite_files, key=lambda p: p.stat().st_mtime)
@@ -191,12 +191,12 @@ def test_adg_sqlite_fallback() -> dict[str, Any]:
             "sqlite_file": str(latest_sqlite),
             "node_count": node_count,
             "edge_count": edge_count,
-            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2)
+            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2),
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -208,7 +208,7 @@ def test_ingest_script_fallback() -> dict[str, Any]:
         if not ingest_path.exists():
             return {
                 "test_passed": False,
-                "error": "Ingest script not found"
+                "error": "Ingest script not found",
             }
 
         # Test ingest script help
@@ -216,7 +216,7 @@ def test_ingest_script_fallback() -> dict[str, Any]:
             [sys.executable, str(ingest_path), "--help"],
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=10,
         )
 
         return {
@@ -224,12 +224,12 @@ def test_ingest_script_fallback() -> dict[str, Any]:
             "script_exists": True,
             "help_available": "--help" in result.stdout or "usage" in result.stdout.lower(),
             "stdout": result.stdout[:300],
-            "stderr": result.stderr[:300]
+            "stderr": result.stderr[:300],
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -241,7 +241,7 @@ def test_mcp_config_fallback() -> dict[str, Any]:
         if not mcp_config_path.exists():
             return {
                 "test_passed": False,
-                "error": "MCP config not found"
+                "error": "MCP config not found",
             }
 
         with open(mcp_config_path) as f:
@@ -263,12 +263,12 @@ def test_mcp_config_fallback() -> dict[str, Any]:
             "command": command,
             "args": args,
             "cwd": adg_redis_config.get("cwd", ""),
-            "env_vars": list(adg_redis_config.get("env", {}).keys())
+            "env_vars": list(adg_redis_config.get("env", {}).keys()),
         }
     except Exception as e:
         return {
             "test_passed": False,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -392,7 +392,7 @@ def run_comprehensive_test():
             "sqlite_fallback": sqlite_test,
             "ingest_script": ingest_test,
             "mcp_config": mcp_config_test,
-        }
+        },
     }
 
 

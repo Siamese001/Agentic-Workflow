@@ -29,7 +29,7 @@ def test_normal_enforcement():
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
 
         print("✅ Normal content passed:")
@@ -67,7 +67,7 @@ def test_compression_trigger():
             diffs=[{"path": "diff.py", "content": "diff content " * 100}],
             logs=[{"source": "app.log", "content": "log entry " * 200}] * 10,
             retrieved_context=[{"content": "context " * 100, "source": f"doc_{i}"} for i in range(5)],
-            prior_steps=["prior step " * 50] * 3
+            prior_steps=["prior step " * 50] * 3,
         )
 
         print("✅ Large content handled:")
@@ -110,12 +110,12 @@ def test_budget_exceeded():
                 user_prompt=massive_content,
                 files=[
                     {"path": "massive1.py", "content": massive_content},
-                    {"path": "massive2.py", "content": massive_content}
+                    {"path": "massive2.py", "content": massive_content},
                 ],
                 diffs=[{"path": "massive_diff.py", "content": massive_content}],
                 logs=[{"source": "massive.log", "content": massive_content}] * 10,
                 retrieved_context=[{"content": massive_content, "source": f"doc_{i}"} for i in range(10)],
-                prior_steps=[massive_content] * 10
+                prior_steps=[massive_content] * 10,
             )
 
             print("❌ Unexpected success - budget should have been exceeded")
@@ -155,7 +155,7 @@ def test_decorator_enforcement():
         result1 = sample_function(
             system_prompt="Normal test",
             user_prompt="User input",
-            files=[{"path": "test.py", "content": "test content"}]
+            files=[{"path": "test.py", "content": "test content"}],
         )
         print(f"✅ Decorator normal call: {result1}")
 
@@ -164,7 +164,7 @@ def test_decorator_enforcement():
         result2 = sample_function(
             system_prompt="Large test " * 50,
             user_prompt="User input " * 25,
-            files=[{"path": "large.py", "content": large_content}]
+            files=[{"path": "large.py", "content": large_content}],
         )
         print(f"✅ Decorator large call: {result2}")
 
@@ -174,7 +174,7 @@ def test_decorator_enforcement():
             result3 = sample_function(
                 system_prompt=massive_content,
                 user_prompt=massive_content,
-                files=[{"path": "massive.py", "content": massive_content}]
+                files=[{"path": "massive.py", "content": massive_content}],
             )
             print(f"❌ Decorator should have failed: {result3}")
         except TokenBudgetExceededError as e:
@@ -214,7 +214,7 @@ def test_edge_cases():
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
         print(f"✅ Empty content: {estimate1.total_projected_tokens} tokens")
 
@@ -228,7 +228,7 @@ def test_edge_cases():
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
         print(f"✅ Long prompts: {estimate2.total_projected_tokens:,} tokens")
 
@@ -242,7 +242,7 @@ def test_edge_cases():
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
         print(f"✅ Many files: {estimate3.total_projected_tokens:,} tokens")
 
@@ -256,7 +256,7 @@ def test_edge_cases():
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
         print(f"✅ Unicode content: {estimate4.total_projected_tokens:,} tokens")
 

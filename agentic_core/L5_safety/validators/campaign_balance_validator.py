@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -208,7 +207,7 @@ class CampaignBalanceValidator:
         self.thresholds = thresholds or {"max_leads_per_message": 100, "min_leads_per_message": 1}
 
     def validate_campaign_balance(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
     ) -> BalanceResult:
         """
         Validate campaign balance using purely deterministic logic.
@@ -225,12 +224,12 @@ class CampaignBalanceValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CampaignBalanceValidator.validate_campaign_balance"
+            _trace_id, LayerSegment.L5_POLICY, "CampaignBalanceValidator.validate_campaign_balance",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:CampaignBalanceValidator.validate_campaign_balance".encode()
+            f"{_trace_id}:CampaignBalanceValidator.validate_campaign_balance".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -242,7 +241,7 @@ class CampaignBalanceValidator:
         field_issues = self._validate_required_fields(campaign)
         issues.extend(field_issues)
         return BalanceResult(
-            passed=len(issues) == 0, issues=issues, ratio=ratio, metadata={"validation_type": "deterministic"}
+            passed=len(issues) == 0, issues=issues, ratio=ratio, metadata={"validation_type": "deterministic"},
         )
 
     def _calculate_lead_message_ratio(self, leads: list[Any], messages: list[Any]) -> float | None:
@@ -286,7 +285,7 @@ class CampaignBalanceValidator:
         return issues
 
     def calculate_balance_score(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
     ) -> float:
         """
         Calculate overall balance score using deterministic algorithm.
@@ -312,7 +311,7 @@ class CampaignBalanceValidator:
         return max(0.0, score)
 
     def suggest_improvements(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any]
+        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
     ) -> list[str]:
         """
         Generate deterministic improvement suggestions.

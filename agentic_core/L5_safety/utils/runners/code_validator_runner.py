@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -209,7 +208,7 @@ def validate_repository(project_root: Path) -> dict:
                 "column": v.column,
                 "error_message": v.error_message,
                 "severity": getattr(v, "severity", "error"),
-            }
+            },
         )
     return {"success": True, "total_violations": result.get("total_violations", 0), "violations": violations}
 
@@ -233,7 +232,7 @@ def validate_directory(project_root: Path, directory: str) -> dict:
                     "column": v.column,
                     "error_message": v.error_message,
                     "severity": getattr(v, "severity", "error"),
-                }
+                },
             )
     return {
         "success": True,
@@ -247,13 +246,13 @@ def main() -> int:
     """CLI entry point for subprocess invocation."""
     parser = argparse.ArgumentParser(description="CodeValidatorAgent Runner")
     parser.add_argument(
-        "--action", choices=["validate", "validate_directory"], required=True, help="Action to perform"
+        "--action", choices=["validate", "validate_directory"], required=True, help="Action to perform",
     )
     parser.add_argument(
-        "--directory", type=str, help="Directory to validate (required for validate_directory)"
+        "--directory", type=str, help="Directory to validate (required for validate_directory)",
     )
     parser.add_argument(
-        "--project-root", type=str, default=None, help="Project root path (defaults to auto-detect)"
+        "--project-root", type=str, default=None, help="Project root path (defaults to auto-detect)",
     )
     args = parser.parse_args()
     project_root = Path(args.project_root) if args.project_root else get_project_root()

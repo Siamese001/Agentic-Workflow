@@ -117,7 +117,7 @@ class FinalValidationOrchestrator:
                 'target_violations': target_violations,
                 'fixes_applied': fixes_applied,
                 'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL'
+                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
             }
         except Exception as e:
             self.total_errors += 1
@@ -127,7 +127,7 @@ class FinalValidationOrchestrator:
                 'fixes_applied': 0,
                 'errors': 1,
                 'status': 'FAILED',
-                'error': str(e)
+                'error': str(e),
             }
 
     def _run_phase_24(self):
@@ -147,7 +147,7 @@ class FinalValidationOrchestrator:
                 'target_violations': target_violations,
                 'fixes_applied': fixes_applied,
                 'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL'
+                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
             }
         except Exception as e:
             self.total_errors += 1
@@ -157,7 +157,7 @@ class FinalValidationOrchestrator:
                 'fixes_applied': 0,
                 'errors': 1,
                 'status': 'FAILED',
-                'error': str(e)
+                'error': str(e),
             }
 
     def _run_phase_22(self):
@@ -177,7 +177,7 @@ class FinalValidationOrchestrator:
                 'target_violations': target_violations,
                 'fixes_applied': fixes_applied,
                 'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL'
+                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
             }
         except Exception as e:
             self.total_errors += 1
@@ -187,7 +187,7 @@ class FinalValidationOrchestrator:
                 'fixes_applied': 0,
                 'errors': 1,
                 'status': 'FAILED',
-                'error': str(e)
+                'error': str(e),
             }
 
     def _run_phase_23(self):
@@ -207,7 +207,7 @@ class FinalValidationOrchestrator:
                 'target_violations': target_violations,
                 'fixes_applied': fixes_applied,
                 'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL'
+                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
             }
         except Exception as e:
             self.total_errors += 1
@@ -217,7 +217,7 @@ class FinalValidationOrchestrator:
                 'fixes_applied': 0,
                 'errors': 1,
                 'status': 'FAILED',
-                'error': str(e)
+                'error': str(e),
             }
 
     def _run_wave_30(self):
@@ -242,7 +242,7 @@ class FinalValidationOrchestrator:
                 'annotations_added': annotations_added,
                 'skipped_guarded': skipped_guarded,
                 'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL'
+                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
             }
         except Exception as e:
             self.total_errors += 1
@@ -253,7 +253,7 @@ class FinalValidationOrchestrator:
                 'skipped_guarded': 0,
                 'errors': 1,
                 'status': 'FAILED',
-                'error': str(e)
+                'error': str(e),
             }
 
     def _calculate_completion(self):
@@ -289,8 +289,8 @@ class FinalValidationOrchestrator:
                 if phase in self.results
             },
             'wave_coverage': {
-                '3.0': self.results.get('3.0', {})
-            } if '3.0' in self.results else {}
+                '3.0': self.results.get('3.0', {}),
+            } if '3.0' in self.results else {},
         }
 
     def generate_final_report(self):
@@ -308,8 +308,8 @@ class FinalValidationOrchestrator:
             'execution_summary': {
                 'phases_executed': len([k for k in self.results.keys() if k.startswith('2.')]),
                 'waves_executed': len([k for k in self.results.keys() if k.startswith('3.') or k.startswith('4.')]),
-                'total_phases_waves': len(self.results)
-            }
+                'total_phases_waves': len(self.results),
+            },
         }
 
         # Write report
@@ -332,7 +332,7 @@ class FinalValidationOrchestrator:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Wave 4.0: Final Validation & Regression Suite'
+        description='Wave 4.0: Final Validation & Regression Suite',
     )
     parser.add_argument('--wave40', action='store_true',
                         help='Run comprehensive validation across all phases/waves')

@@ -192,5 +192,5 @@ print(f"Agents with invocation: {sum(1 for a in agents if a.get('invocation') ==
 print(f"Open heal invocations: {len(open_invocations)}")
 print("\nExpected: Invocation count should equal Healing count")
 print(
-    f"Actual gap: {sum(1 for a in agents if a.get('invocation') == 'Yes') - sum(1 for a in agents if a.get('has_healing'))}"
+    f"Actual gap: {sum(1 for a in agents if a.get('invocation') == 'Yes') - sum(1 for a in agents if a.get('has_healing'))}",
 )

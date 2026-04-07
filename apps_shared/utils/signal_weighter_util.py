@@ -57,39 +57,25 @@ _emit_applies_guardrail("p0", "signal_weighter_util", "p0_governance")
 _emit_reads_policy_state("p0", "signal_weighter_util", "policy_binding")
 _emit_snapshots_state("p0", "signal_weighter_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -234,52 +220,52 @@ class SignalWeighter:
         self.default_weights = default_weights or SignalWeights()
         self._archetype_mappings = {
             "CTO": SignalWeights(
-                technical_depth=0.9, leadership_scope=0.7, business_impact=0.4, cultural_fit=0.3
+                technical_depth=0.9, leadership_scope=0.7, business_impact=0.4, cultural_fit=0.3,
             ),
             "VP Engineering": SignalWeights(
-                technical_depth=0.8, leadership_scope=0.8, business_impact=0.5, cultural_fit=0.4
+                technical_depth=0.8, leadership_scope=0.8, business_impact=0.5, cultural_fit=0.4,
             ),
             "Engineering Manager": SignalWeights(
-                technical_depth=0.6, leadership_scope=0.9, business_impact=0.4, cultural_fit=0.6
+                technical_depth=0.6, leadership_scope=0.9, business_impact=0.4, cultural_fit=0.6,
             ),
             "Staff Engineer": SignalWeights(
-                technical_depth=1.0, leadership_scope=0.4, business_impact=0.3, cultural_fit=0.5
+                technical_depth=1.0, leadership_scope=0.4, business_impact=0.3, cultural_fit=0.5,
             ),
             "Principal Engineer": SignalWeights(
-                technical_depth=1.0, leadership_scope=0.5, business_impact=0.4, cultural_fit=0.5
+                technical_depth=1.0, leadership_scope=0.5, business_impact=0.4, cultural_fit=0.5,
             ),
             "CEO": SignalWeights(
-                technical_depth=0.3, leadership_scope=0.8, business_impact=1.0, cultural_fit=0.7
+                technical_depth=0.3, leadership_scope=0.8, business_impact=1.0, cultural_fit=0.7,
             ),
             "Founder": SignalWeights(
-                technical_depth=0.4, leadership_scope=0.7, business_impact=1.0, cultural_fit=0.8
+                technical_depth=0.4, leadership_scope=0.7, business_impact=1.0, cultural_fit=0.8,
             ),
             "CFO": SignalWeights(
-                technical_depth=0.2, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.5
+                technical_depth=0.2, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.5,
             ),
             "CPO": SignalWeights(
-                technical_depth=0.5, leadership_scope=0.6, business_impact=0.7, cultural_fit=0.9
+                technical_depth=0.5, leadership_scope=0.6, business_impact=0.7, cultural_fit=0.9,
             ),
             "VP Product": SignalWeights(
-                technical_depth=0.4, leadership_scope=0.7, business_impact=0.8, cultural_fit=0.8
+                technical_depth=0.4, leadership_scope=0.7, business_impact=0.8, cultural_fit=0.8,
             ),
             "Product Manager": SignalWeights(
-                technical_depth=0.5, leadership_scope=0.5, business_impact=0.7, cultural_fit=0.8
+                technical_depth=0.5, leadership_scope=0.5, business_impact=0.7, cultural_fit=0.8,
             ),
             "Recruiter": SignalWeights(
-                technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9
+                technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9,
             ),
             "Talent Acquisition": SignalWeights(
-                technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9
+                technical_depth=0.5, leadership_scope=0.4, business_impact=0.5, cultural_fit=0.9,
             ),
             "HR Manager": SignalWeights(
-                technical_depth=0.3, leadership_scope=0.5, business_impact=0.6, cultural_fit=1.0
+                technical_depth=0.3, leadership_scope=0.5, business_impact=0.6, cultural_fit=1.0,
             ),
             "VP Sales": SignalWeights(
-                technical_depth=0.3, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.7
+                technical_depth=0.3, leadership_scope=0.6, business_impact=1.0, cultural_fit=0.7,
             ),
             "Account Executive": SignalWeights(
-                technical_depth=0.3, leadership_scope=0.4, business_impact=0.9, cultural_fit=0.8
+                technical_depth=0.3, leadership_scope=0.4, business_impact=0.9, cultural_fit=0.8,
             ),
         }
         self._industry_modifiers = {
@@ -346,18 +332,18 @@ class SignalWeighter:
                     try:
                         adjusted_weights = SignalWeights(
                             technical_depth=min(
-                                1.0, base_weights.technical_depth * modifiers["technical_depth"]
+                                1.0, base_weights.technical_depth * modifiers["technical_depth"],
                             ),
                             business_impact=min(
-                                1.0, base_weights.business_impact * modifiers["business_impact"]
+                                1.0, base_weights.business_impact * modifiers["business_impact"],
                             ),
                             leadership_scope=min(
-                                1.0, base_weights.leadership_scope * modifiers["leadership_scope"]
+                                1.0, base_weights.leadership_scope * modifiers["leadership_scope"],
                             ),
                             cultural_fit=min(1.0, base_weights.cultural_fit * modifiers["cultural_fit"]),
                         )
                         logger.debug(
-                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} -> {adjusted_weights.as_dict()}"
+                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} -> {adjusted_weights.as_dict()}",
                         )
                         return adjusted_weights
                     except Exception as e:
@@ -481,7 +467,7 @@ class SignalWeighter:
             return None
 
     def batch_reweight(
-        self, documents: list[dict[str, str | float]], archetype: str, industry: str | None = None
+        self, documents: list[dict[str, str | float]], archetype: str, industry: str | None = None,
     ) -> list[WeightingResult]:
         """Apply dynamic weighting to a batch of documents.
 
@@ -521,7 +507,7 @@ def create_signal_weighter(default_weights: SignalWeights | None = None) -> Sign
 
 
 def weight_results(
-    documents: list[dict[str, str | float]], archetype: str, industry: str | None = None
+    documents: list[dict[str, str | float]], archetype: str, industry: str | None = None,
 ) -> list[WeightingResult]:
     """Quickly weight a batch of results for an archetype.
 

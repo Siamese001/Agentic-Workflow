@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -245,7 +244,7 @@ class WebSearchTools:
         Logger.info(f"📍 Sovereign Local Search: '{query}' in {location or 'US'}")
         try:
             result: Any = await self.router.manager.call_tool(
-                tool_name="brave_local_search", args={"query": query, "count": config.BRAVE_SEARCH_COUNT}
+                tool_name="brave_local_search", args={"query": query, "count": config.BRAVE_SEARCH_COUNT},
             )
             return self._parse_mcp_response(result, "local")
         # guardian: allow-silent-swallow

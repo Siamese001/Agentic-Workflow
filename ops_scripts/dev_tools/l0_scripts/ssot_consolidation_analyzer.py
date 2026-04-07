@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 
 
-
 class SSOTConsolidationAnalyzer:
     """Analyzes and consolidates agent logic into base_agents SSOT."""
 

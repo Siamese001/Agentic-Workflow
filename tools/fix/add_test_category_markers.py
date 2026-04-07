@@ -105,7 +105,7 @@ class TestCategoryMarkerAdder:
             'total_test_files': len(self.test_files),
             'markers_added': self.markers_added,
             'errors': self.errors,
-            'files_processed': min(500, len(self.test_files))
+            'files_processed': min(500, len(self.test_files)),
         }
 
         report_file = PROJECT_ROOT / "tools" / "test_category_markers_report.json"

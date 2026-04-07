@@ -173,8 +173,8 @@ class LearningDataCollector:
                 "source": event.source_component,
                 "priority": event.priority,
                 "session_id": event.session_id,
-                "correlation_id": event.correlation_id
-            }
+                "correlation_id": event.correlation_id,
+            },
         )
 
         self.memory_manager.store_learning_experience(experience)
@@ -188,7 +188,7 @@ class LearningDataCollector:
             state_key,
             signal.payload,
             "pickle",
-            expires_at=signal.expires_at
+            expires_at=signal.expires_at,
         )
         logger.info(f"Stored learning signal: {signal.signal_type}")
 
@@ -206,7 +206,7 @@ class FileSystemLearningMonitor(FileSystemEventHandler):
             '.log': 'log_event',
             '.pkl': 'model_save',
             '.ckpt': 'checkpoint_save',
-            '.model': 'model_update'
+            '.model': 'model_update',
         }
 
     def start_monitoring(self):
@@ -252,9 +252,9 @@ class FileSystemLearningMonitor(FileSystemEventHandler):
                     "file_path": str(path),
                     "change_type": change_type,
                     "extension": extension,
-                    "size": path.stat().st_size if path.exists() else 0
+                    "size": path.stat().st_size if path.exists() else 0,
                 },
-                priority="MEDIUM"
+                priority="MEDIUM",
             )
 
             self.data_collector.emit_learning_event(event)
@@ -282,7 +282,7 @@ class ComponentLearningIntegrator:
         # Get methods that should be monitored
         learning_methods = [
             'train', 'predict', 'update', 'save', 'load',
-            'process', 'execute', 'run', 'analyze', 'evaluate'
+            'process', 'execute', 'run', 'analyze', 'evaluate',
         ]
 
         for attr_name in dir(component_instance):
@@ -291,7 +291,7 @@ class ComponentLearningIntegrator:
                 if callable(attr):
                     # Wrap with learning hook
                     wrapped_method = self._create_learning_wrapper(
-                        component_name, attr_name, attr
+                        component_name, attr_name, attr,
                     )
                     setattr(component_instance, attr_name, wrapped_method)
 
@@ -308,9 +308,9 @@ class ComponentLearningIntegrator:
                 data={
                     "method": method_name,
                     "args_count": len(args),
-                    "kwargs_keys": list(kwargs.keys())
+                    "kwargs_keys": list(kwargs.keys()),
                 },
-                priority="LOW"
+                priority="LOW",
             )
             self.data_collector.emit_learning_event(pre_event)
 
@@ -330,9 +330,9 @@ class ComponentLearningIntegrator:
                         "method": method_name,
                         "duration_seconds": duration,
                         "result_type": type(result).__name__,
-                        "success": True
+                        "success": True,
                     },
-                    priority="MEDIUM"
+                    priority="MEDIUM",
                 )
                 self.data_collector.emit_learning_event(success_event)
 
@@ -352,9 +352,9 @@ class ComponentLearningIntegrator:
                         "duration_seconds": duration,
                         "error_type": type(e).__name__,
                         "error_message": str(e),
-                        "success": False
+                        "success": False,
                     },
-                    priority="HIGH"
+                    priority="HIGH",
                 )
                 self.data_collector.emit_learning_event(error_event)
 
@@ -385,7 +385,7 @@ class AutomatedLearningPipeline:
             "enable_periodic_collection": True,
             "collection_interval_seconds": 30,
             "batch_size": 100,
-            "max_queue_size": 10000
+            "max_queue_size": 10000,
         }
 
         # Statistics
@@ -394,7 +394,7 @@ class AutomatedLearningPipeline:
             "signals_processed": 0,
             "errors_count": 0,
             "start_time": datetime.now(),
-            "last_activity": None
+            "last_activity": None,
         }
 
     def configure(self, **kwargs):
@@ -447,7 +447,7 @@ class AutomatedLearningPipeline:
             source_component=source,
             timestamp=datetime.now(),
             data=data,
-            priority=priority
+            priority=priority,
         )
         self.data_collector.emit_learning_event(event)
 
@@ -462,7 +462,7 @@ class AutomatedLearningPipeline:
             source=source,
             payload=payload,
             timestamp=datetime.now(),
-            expires_at=expires_at
+            expires_at=expires_at,
         )
         self.data_collector.emit_learning_signal(signal)
 
@@ -473,7 +473,7 @@ class AutomatedLearningPipeline:
             ROOT / "system_learning",
             ROOT / "agentic_core",
             ROOT / "tools",
-            ROOT / "artifacts" / "adg"
+            ROOT / "artifacts" / "adg",
         ]
 
         self.file_monitor = FileSystemLearningMonitor(self.data_collector, watch_directories)
@@ -515,7 +515,7 @@ class AutomatedLearningPipeline:
                 weights=data.get("weights", {}),
                 metadata=data.get("metadata", {}),
                 performance_metrics=data.get("performance_metrics", {}),
-                created_at=event.timestamp
+                created_at=event.timestamp,
             )
 
             self.memory_manager.store_model_checkpoint(checkpoint)
@@ -532,7 +532,7 @@ class AutomatedLearningPipeline:
                 vector=data.get("vector", []),
                 model_version=data.get("model_version", "1.0"),
                 dimension=data.get("dimension", 0),
-                created_at=event.timestamp
+                created_at=event.timestamp,
             )
 
             self.memory_manager.store_embedding(embedding)
@@ -546,7 +546,7 @@ class AutomatedLearningPipeline:
                 value=data.get("value", 0.0),
                 unit=data.get("unit"),
                 context=data.get("context"),
-                component=event.source_component
+                component=event.source_component,
             )
             logger.info(f"Stored performance metric: {data.get('metric_name')}")
 
@@ -569,9 +569,9 @@ class AutomatedLearningPipeline:
                     "memory_percent": memory_info.percent,
                     "memory_available_gb": memory_info.available / (1024**3),
                     "cpu_percent": psutil.cpu_percent(),
-                    "disk_usage_percent": psutil.disk_usage('/').percent
+                    "disk_usage_percent": psutil.disk_usage('/').percent,
                 },
-                priority="LOW"
+                priority="LOW",
             )
 
         # guardian: allow-silent-swallow - optional dependency
@@ -593,7 +593,7 @@ class AutomatedLearningPipeline:
                 event_type="learning_progress",
                 source="learning_pipeline",
                 data=stats,
-                priority="MEDIUM"
+                priority="MEDIUM",
             )
         except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error collecting learning progress: {e}")
@@ -624,8 +624,8 @@ class AutomatedLearningPipeline:
             "error_rate": self.stats["errors_count"] / max(1, self.stats["events_processed"]) * 100,
             "queue_sizes": {
                 "events": self.data_collector.event_queue.qsize(),
-                "signals": self.data_collector.signal_queue.qsize()
-            }
+                "signals": self.data_collector.signal_queue.qsize(),
+            },
         }
 
 
@@ -645,9 +645,9 @@ def learning_enabled(method_name: str = None, priority: str = "MEDIUM"):
                         data={
                             "method": method_name or func.__name__,
                             "args_count": len(args),
-                            "kwargs_keys": list(kwargs.keys())
+                            "kwargs_keys": list(kwargs.keys()),
                         },
-                        priority=priority
+                        priority=priority,
                     )
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in learning decorator: {e}")
@@ -684,7 +684,7 @@ def main():
     pipeline.configure(
         enable_file_monitoring=True,
         enable_component_integration=True,
-        collection_interval_seconds=5  # Shorter for demo
+        collection_interval_seconds=5,  # Shorter for demo
     )
 
     # Set as global pipeline
@@ -710,9 +710,9 @@ def main():
             "version": "1.0.0",
             "model_type": "neural_network",
             "weights": {"layer1": [0.1, 0.2, 0.3]},
-            "performance_metrics": {"accuracy": 0.95}
+            "performance_metrics": {"accuracy": 0.95},
         },
-        priority="HIGH"
+        priority="HIGH",
     )
 
     # Embedding update event
@@ -723,9 +723,9 @@ def main():
             "entity_id": "demo_entity",
             "entity_type": "demo_type",
             "vector": [0.1, 0.2, 0.3, 0.4, 0.5],
-            "dimension": 5
+            "dimension": 5,
         },
-        priority="MEDIUM"
+        priority="MEDIUM",
     )
 
     # Performance metric event
@@ -736,9 +736,9 @@ def main():
             "metric_name": "demo_metric",
             "value": 0.85,
             "unit": "%",
-            "context": {"epoch": 1}
+            "context": {"epoch": 1},
         },
-        priority="MEDIUM"
+        priority="MEDIUM",
     )
 
     # Learning signal
@@ -746,7 +746,7 @@ def main():
         signal_type="demo_signal",
         source="demo_component",
         payload={"message": "demo signal data"},
-        expires_in_seconds=10
+        expires_in_seconds=10,
     )
 
     # Let the pipeline run for a bit

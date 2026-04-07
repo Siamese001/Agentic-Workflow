@@ -222,7 +222,7 @@ def cmd_nodes_by_layer(args: list[str]) -> None:
     if not con:
         return
     rows = con.execute(
-        "SELECT id, adg_name, entity_type FROM nodes WHERE layer=? LIMIT ?", (layer, limit)
+        "SELECT id, adg_name, entity_type FROM nodes WHERE layer=? LIMIT ?", (layer, limit),
     ).fetchall()
     total = con.execute("SELECT COUNT(*) FROM nodes WHERE layer=?", (layer,)).fetchone()[0]
     print(f"SOURCE: SQLite | Total in layer: {total:,} | Showing: {len(rows)}")
@@ -254,7 +254,7 @@ def cmd_nodes_by_file(args: list[str]) -> None:
     if not con:
         return
     rows = con.execute(
-        "SELECT id, adg_name, entity_type FROM nodes WHERE resolved_path LIKE ?", (f"%{path}%",)
+        "SELECT id, adg_name, entity_type FROM nodes WHERE resolved_path LIKE ?", (f"%{path}%",),
     ).fetchall()
     print(f"SOURCE: SQLite | {len(rows)} nodes")
     for row in rows[:50]:
@@ -295,7 +295,7 @@ def cmd_edge_fanout(args: list[str]) -> None:
         (src_id, rel, limit),
     ).fetchall()
     total = con.execute(
-        "SELECT COUNT(*) FROM edges WHERE src_id=? AND relation_type=?", (src_id, rel)
+        "SELECT COUNT(*) FROM edges WHERE src_id=? AND relation_type=?", (src_id, rel),
     ).fetchone()[0]
     print(f"SOURCE: SQLite | Total: {total} | Showing: {len(rows)}")
     for row in rows:
@@ -336,7 +336,7 @@ def cmd_edge_fanin(args: list[str]) -> None:
         (tgt_id, rel, limit),
     ).fetchall()
     total = con.execute(
-        "SELECT COUNT(*) FROM edges WHERE dst_id=? AND relation_type=?", (tgt_id, rel)
+        "SELECT COUNT(*) FROM edges WHERE dst_id=? AND relation_type=?", (tgt_id, rel),
     ).fetchone()[0]
     print(f"SOURCE: SQLite | Total: {total} | Showing: {len(rows)}")
     for row in rows:
@@ -373,7 +373,7 @@ def cmd_violations(args: list[str]) -> None:
         return
     try:
         rows = con.execute(
-            "SELECT source_file, relation_type, symbol FROM edges WHERE relation_type='violates' LIMIT ?", (limit,)
+            "SELECT source_file, relation_type, symbol FROM edges WHERE relation_type='violates' LIMIT ?", (limit,),
         ).fetchall()
         print(f"SOURCE: SQLite (approximation via violates edges) | Showing: {len(rows)}")
         for row in rows:
@@ -421,7 +421,7 @@ def cmd_edge_counts(args: list[str]) -> None:
         print("ERROR: No SQLite file")
         return
     rows = con.execute(
-        f"SELECT relation_type, COUNT(*) as c FROM edges GROUP BY relation_type ORDER BY c DESC LIMIT {top_n}"
+        f"SELECT relation_type, COUNT(*) as c FROM edges GROUP BY relation_type ORDER BY c DESC LIMIT {top_n}",
     ).fetchall()
     total = con.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
     print(f"Total edges: {total:,}\n")
@@ -438,7 +438,7 @@ def cmd_layer_counts(args: list[str]) -> None:
         print("ERROR: No SQLite file")
         return
     rows = con.execute(
-        "SELECT layer, COUNT(*) as c FROM nodes GROUP BY layer ORDER BY layer"
+        "SELECT layer, COUNT(*) as c FROM nodes GROUP BY layer ORDER BY layer",
     ).fetchall()
     total = con.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
     print(f"Total nodes: {total:,}\n")

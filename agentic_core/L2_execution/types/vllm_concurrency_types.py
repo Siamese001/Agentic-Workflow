@@ -262,7 +262,7 @@ def run_stress_batch(
                 truncated=truncated,
                 unexpected_fallback=unexpected_fallback,
                 total_tokens_required=total_required,
-            )
+            ),
         )
     return results
 

@@ -152,5 +152,5 @@ class ResearchRunSummary(BaseModel):
                 "sections_generated": 5,
                 "sources_registered": 12,
                 "quality_score": 0.82,
-            }
+            },
         }

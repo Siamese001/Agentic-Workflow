@@ -52,6 +52,9 @@ from agentic_core.L5_safety.types.surgical_context_types import (
     SurgicalContext,
     ViolationConstraint,
 )
+from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
+from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -95,9 +98,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
-from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "CodeHealerAgent")
 emit_determinism_digest("p0", "CodeHealerAgent")
@@ -156,7 +156,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -257,7 +256,7 @@ class CodeHealingStrategy(HealingStrategy):
         """Execute code healing logic via unified strategy."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeHealingStrategy.execute"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "CodeHealingStrategy.execute",
         )
         agent.log_info("Executing code healing...")
 

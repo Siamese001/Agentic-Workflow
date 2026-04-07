@@ -6,7 +6,6 @@ Tests the migration from hardcoded constants to YAML-based SSOT for:
 - Territory loading via territories.py
 """
 
-import pytest
 from pathlib import Path
 
 
@@ -89,6 +88,7 @@ class TestSsotYamlLoading:
     def test_yaml_has_required_categories(self):
         """Test that excluded_paths.yaml has all required categories."""
         import yaml
+
         from agentic_core.L5_safety.config.structure_blueprint.ssot import (
             get_validated_project_root,
         )

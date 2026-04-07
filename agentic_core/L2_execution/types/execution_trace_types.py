@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -203,7 +202,7 @@ class ExecutionTrace:
             raise ValueError("trace_id required")
         if self.validation_decision not in ("PASS", "FAIL", "ESCALATE"):
             raise ValueError(
-                f"validation_decision must be PASS|FAIL|ESCALATE, got {self.validation_decision!r}"
+                f"validation_decision must be PASS|FAIL|ESCALATE, got {self.validation_decision!r}",
             )
         rk = _compute_replay_key(self.trace_id, self.policy_hash, self.transcript_hash)
         object.__setattr__(self, "replay_key", rk)
@@ -256,7 +255,7 @@ class ExecutionTrace:
         missing = [k for k, v in _required.items() if not v]
         if missing:
             raise ExecutionTraceIntegrityError(
-                f"ExecutionTrace missing required field(s): {missing}. Execution marked FAILED — trace is incomplete."
+                f"ExecutionTrace missing required field(s): {missing}. Execution marked FAILED — trace is incomplete.",
             )
 
 

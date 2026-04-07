@@ -11,7 +11,7 @@ from pathlib import Path
 # Get list of error files from pytest
 result = subprocess.run(
     [sys.executable, "-m", "pytest", "tests/unit/agentic_core/", "-q", "--tb=no", "--no-header"],
-    capture_output=True, text=True
+    capture_output=True, text=True,
 )
 
 # Parse ERROR lines

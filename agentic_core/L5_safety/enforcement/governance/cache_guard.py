@@ -208,7 +208,7 @@ def has_tracked_files(dir_path: Path, root_path: Path) -> bool:
     try:
         relative_path = dir_path.relative_to(root_path)
         result = subprocess.run(
-            ["git", "ls-files", str(relative_path)], capture_output=True, text=True, cwd=str(root_path)
+            ["git", "ls-files", str(relative_path)], capture_output=True, text=True, cwd=str(root_path),
         )
         return bool(result.stdout.strip())
     except (subprocess.SubprocessError, ValueError):
@@ -251,7 +251,7 @@ def scan_cache_directories(root_path: Path) -> dict[str, Any]:
                     "path": str(relative_path),
                     "type": "tracked_cache",
                     "detail": f"Cache directory contains tracked files: {relative_path}",
-                }
+                },
             )
         if is_forbidden_location(item_path, root_path):
             violations.append(
@@ -259,7 +259,7 @@ def scan_cache_directories(root_path: Path) -> dict[str, Any]:
                     "path": str(relative_path),
                     "type": "cache_in_core_or_apps",
                     "detail": f"Cache directory in forbidden location: {relative_path}",
-                }
+                },
             )
         inventory_item = {
             "path": str(relative_path),

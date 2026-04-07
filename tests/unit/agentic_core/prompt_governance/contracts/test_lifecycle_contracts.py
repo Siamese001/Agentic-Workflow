@@ -242,7 +242,7 @@ class TestCompiledPromptArtifact:
             "token_estimate": 100,
         })
         signature = hmac.new(
-            secret_key, canonical.encode("utf-8"), hashlib.sha256
+            secret_key, canonical.encode("utf-8"), hashlib.sha256,
         ).hexdigest()
         artifact = CompiledPromptArtifact(
             trace_id="trace-123",

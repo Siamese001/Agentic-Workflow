@@ -95,8 +95,11 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
@@ -256,7 +259,7 @@ STDLIB_MODULES = frozenset(
         "site",
         "code",
         "codeop",
-    }
+    },
 )
 ALLOWED_CROSS_CONTEXT_PATTERNS = frozenset({"contracts", "interfaces", "protocols", "base_agents", "mixins"})
 Logger = logging.getLogger(__name__)
@@ -406,7 +409,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
                                 target_context=ctx_name,
                                 imported_module=module,
                                 line_number=node.lineno,
-                            )
+                            ),
                         )
         return violations
 
@@ -442,7 +445,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
             file_violations = self._check_file_imports(filepath)
             self.violations.extend(file_violations)
         Logger.info(
-            f"[DDDAlignmentAgent] Checked {files_checked} files, found {len(self.violations)} violations"
+            f"[DDDAlignmentAgent] Checked {files_checked} files, found {len(self.violations)} violations",
         )
         return self.violations
 
@@ -571,11 +574,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,

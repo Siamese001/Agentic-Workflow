@@ -39,7 +39,7 @@ class SequentialThinkingPreProcessor:
             return {
                 'modified_prompt': prompt,
                 'tool_invocation_required': False,
-                'tool_call': None
+                'tool_call': None,
             }
 
         # Create the tool invocation instruction
@@ -83,7 +83,7 @@ Arguments: {{
             'modified_prompt': modified,
             'tool_invocation_required': True,
             'tool_call': tool_call,
-            'original_prompt': prompt
+            'original_prompt': prompt,
         }
 
     def _needs_sequential_thinking(self, prompt: str) -> bool:
@@ -96,7 +96,7 @@ Arguments: {{
             'refactor', 'migrate', 'debug', 'fix', 'troubleshoot',
             'optimize', 'improve', 'analyze', 'investigate',
             'strategy', 'approach', 'how should', 'what is the best',
-            'complex', 'difficult', 'multi-step'
+            'complex', 'difficult', 'multi-step',
         ]
 
         for word in trigger_words:
@@ -123,8 +123,8 @@ Arguments: {{
                 'revisesThought': None,
                 'branchFromThought': None,
                 'branchId': None,
-                'needsMoreThoughts': True
-            }
+                'needsMoreThoughts': True,
+            },
         }
 
 

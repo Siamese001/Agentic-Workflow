@@ -128,7 +128,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -194,7 +193,7 @@ _VISUALIZATION_LOG = logging.getLogger("adg.visualization_updater")
 
 
 def workflow_visualization_emitted(
-    record_id: str, run_id: str, workflow_id: str, stage: str, status: str
+    record_id: str, run_id: str, workflow_id: str, stage: str, status: str,
 ) -> None:
     """ADG edge emitter for workflow_visualization_emitted."""
     import hashlib as _hashlib  # noqa: PLC0415
@@ -345,7 +344,7 @@ def update_workflow_visualization(
     import uuid  # noqa: PLC0415
 
     _emit_observes_runtime_state(
-        str(uuid.uuid4()), "Module.update_workflow_visualization", "L3_ORCHESTRATION"
+        str(uuid.uuid4()), "Module.update_workflow_visualization", "L3_ORCHESTRATION",
     )
     _registry = registry or get_workflow_visualization_registry()
 
@@ -386,7 +385,7 @@ def update_workflow_visualization(
 
     # Explicit ADG edge emission for static scanner detection
     def workflow_visualization_emitted(
-        record_id: str, run_id: str, workflow_id: str, stage: str, status: str
+        record_id: str, run_id: str, workflow_id: str, stage: str, status: str,
     ) -> None:
         """ADG edge emitter for workflow_visualization_emitted."""
         pass

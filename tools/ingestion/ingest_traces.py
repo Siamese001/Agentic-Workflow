@@ -124,7 +124,7 @@ class TraceChunker:
             'content_hash': content_hash,
             'trace_type': trace_type,
             'line_number': line_num,
-            'chunk_type': 'trace'
+            'chunk_type': 'trace',
         }
 
         # Add additional metadata if available
@@ -139,7 +139,7 @@ class TraceChunker:
 
         return {
             'content': content,
-            'metadata': metadata
+            'metadata': metadata,
         }
 
     def _determine_trace_type(self, trace_data: dict, content: str) -> str:
@@ -184,7 +184,7 @@ class EmbeddingGenerator:
                 raise ValueError(
                     "OPENAI_API_KEY environment variable not set. "
                     "Please set it with: export OPENAI_API_KEY=your_key_here "
-                    "or use --mock-embeddings for testing"
+                    "or use --mock-embeddings for testing",
                 )
 
             self.client = OpenAI(api_key=api_key)
@@ -208,7 +208,7 @@ class EmbeddingGenerator:
             try:
                 response = self.client.embeddings.create(
                     model=self.model,
-                    input=batch
+                    input=batch,
                 )
                 batch_embeddings = [item.embedding for item in response.data]
                 embeddings.extend(batch_embeddings)
@@ -279,7 +279,7 @@ class VectorDBIngestor:
                     ids=batch_ids,
                     documents=batch_documents,
                     metadatas=batch_metadatas,
-                    embeddings=batch_embeddings
+                    embeddings=batch_embeddings,
                 )
                 batch_count = len(batch_ids)
                 total_ingested += batch_count
@@ -299,7 +299,7 @@ class VectorDBIngestor:
                 "collection_name": self.collection_name,
                 "total_chunks": count,
                 "vector_dimensions": self.config.VECTOR_DIMENSIONS,
-                "vector_metric": self.config.VECTOR_METRIC
+                "vector_metric": self.config.VECTOR_METRIC,
             }
         except Exception as e:
             Logger.error(f"Failed to get collection stats: {e}")

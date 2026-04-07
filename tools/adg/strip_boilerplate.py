@@ -75,12 +75,12 @@ class BoilerplateStripper(ast.NodeTransformer):
                 for alias in stmt.names:
                     if any(name in alias.name for name in [
                         'uuid', 'hashlib', 'json', 'logging',
-                        'dataclasses', 'typing', 'pathlib'
+                        'dataclasses', 'typing', 'pathlib',
                     ]):
                         return True
             elif isinstance(stmt, ast.ImportFrom):
                 if stmt.module and any(pattern in stmt.module for pattern in [
-                    'typing', 'dataclasses', 'pathlib'
+                    'typing', 'dataclasses', 'pathlib',
                 ]):
                     return True
 
@@ -145,7 +145,7 @@ class SafeBoilerplateStripper:
                 lines_removed=stripper.removed_count,
                 emit_calls_removed=stripper.emit_calls_removed,
                 imports_removed=stripper.imports_removed,
-                became_hollow=True
+                became_hollow=True,
             )
 
         if stripper.removed_count == 0:
@@ -176,7 +176,7 @@ class SafeBoilerplateStripper:
             lines_removed=stripper.removed_count,
             emit_calls_removed=stripper.emit_calls_removed,
             imports_removed=stripper.imports_removed,
-            became_hollow=False
+            became_hollow=False,
         )
 
     def strip_directory(self, directory: Path, dry_run: bool = True, recursive: bool = True) -> list[StripResult]:
@@ -221,7 +221,7 @@ class SafeBoilerplateStripper:
             "total_lines_removed": sum(r.lines_removed for r in results),
             "total_emit_calls_removed": sum(r.emit_calls_removed for r in results),
             "total_imports_removed": sum(r.imports_removed for r in results),
-            "files_became_hollow": sum(1 for r in results if r.became_hollow)
+            "files_became_hollow": sum(1 for r in results if r.became_hollow),
         }
 
         return summary
@@ -231,20 +231,18 @@ def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Strip boilerplate from Python files")
     parser.add_argument("paths", nargs="+", type=Path, help="Files or directories to process")
-    parser.add_argument("--dry-run", action="store_true", default=True, help="Dry run (don't modify files)")
-    parser.add_argument("--write", action="store_true", help="Actually modify files (disables dry-run)")
-    parser.add_argument("--recursive", "-r", action="store_true", default=True, help="Process directories recursively")
+    parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
+    parser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
+    parser.add_argument("--write", action="store_true", help=argparse.SUPPRESS)  # Deprecated, default is now execute
+    parser.add_argument("--recursive", "-R", action="store_true", default=True, help="Process directories recursively")
     parser.add_argument("--no-recursive", action="store_true", help="Don't process directories recursively")
-    parser.add_argument("--report", type=Path, help="Write report to JSON file")
+    parser.add_argument("--report-file", type=Path, help="Write detailed report to JSON file")
     parser.add_argument("--repo", type=Path, default=Path("."), help="Repository root")
 
     args = parser.parse_args()
 
-    # Handle dry-run vs write
-    if args.write:
-        dry_run = False
-    else:
-        dry_run = args.dry_run
+    # Default to execute mode, report mode only if --report flag is set
+    dry_run = args.report
 
     # Handle recursive flag
     if args.no_recursive:
@@ -281,10 +279,10 @@ def main():
     print(f"  Imports removed: {summary['total_imports_removed']}")
 
     if dry_run:
-        print("\n💡 This was a dry run. Use --write to actually modify files.")
+        print("\n💡 This was a report run. Omit --report to actually modify files.")
 
-    # Write report
-    if args.report:
+    # Write report file
+    if args.report_file:
         report_data = {
             "dry_run": dry_run,
             "summary": summary,
@@ -295,15 +293,15 @@ def main():
                     "lines_removed": r.lines_removed,
                     "emit_calls_removed": r.emit_calls_removed,
                     "imports_removed": r.imports_removed,
-                    "became_hollow": r.became_hollow
+                    "became_hollow": r.became_hollow,
                 }
                 for r in all_results
-            ]
+            ],
         }
 
-        args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(report_data, indent=2))
-        print(f"\n📄 Report written to {args.report}")
+        args.report_file.parent.mkdir(parents=True, exist_ok=True)
+        args.report_file.write_text(json.dumps(report_data, indent=2))
+        print(f"\n📄 Report written to {args.report_file}")
 
     # Exit with error if files would be deleted
     if summary['deleted'] > 0 and dry_run:

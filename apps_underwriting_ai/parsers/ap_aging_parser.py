@@ -1,10 +1,10 @@
 """
 AP Aging Parser - Parses accounts payable aging schedules.
 """
-from typing import Optional, List
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
-import re
+from typing import List, Optional
 
 
 @dataclass

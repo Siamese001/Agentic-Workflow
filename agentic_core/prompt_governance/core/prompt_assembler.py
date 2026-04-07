@@ -83,45 +83,6 @@ from typing import Any
 from pydantic import BaseModel
 
 from agentic_core.L4_state.utils.memory.runtime_models import InjectionMatch
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 from agentic_core.prompt_governance.contracts.slot_contracts import (
     SLOT_ORDER,
     SlotC0,
@@ -140,6 +101,32 @@ from agentic_core.prompt_governance.security.validators.output_schema_validator 
     validate_against_schema,
     validate_context_contract,
     validate_healer_reentry,
+)
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
+    _emit_emits_metric_event,
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
+    _emit_links_incident_trace,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
+    _emit_reads_runtime_state,
+    _emit_records_execution_trace,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
+    _emit_triggers_alert,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_through,
 )
 
 _emit_emits_metric_event("prompt_assembler", "p4obs", "metric_1")
@@ -347,7 +334,7 @@ class PromptAssembler:
                 ET.fromstring(f"<root>{template_content}</root>")
                 template_name = file_path.stem
                 self.templates[template_name] = PromptTemplate(
-                    name=template_name, template=template_content, description="Custom template"
+                    name=template_name, template=template_content, description="Custom template",
                 )
                 Logger.debug(f"Loaded template: {template_name}")
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -556,7 +543,7 @@ class PromptAssembler:
         and ``parse_response(schema=...)``.
         """
         prompt_text = self.assemble(
-            role=role, objective=objective, context_data=context_data, injections=injections, **kwargs
+            role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
         )
         return AssembledPrompt(
             text=prompt_text,
@@ -579,7 +566,7 @@ class PromptAssembler:
         """Format injection patterns as directives."""
         lines = []
         sorted_injections = sorted(
-            injections, key=lambda x: (x.injection.priority, x.relevance_score), reverse=True
+            injections, key=lambda x: (x.injection.priority, x.relevance_score), reverse=True,
         )
         for match in sorted_injections:
             template = match.injection.template
@@ -706,7 +693,7 @@ def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
 
 
 def assemble_prompt(
-    role: str, objective: str, context_data: dict[str, Any] | str, injections: list[InjectionMatch], **kwargs
+    role: str, objective: str, context_data: dict[str, Any] | str, injections: list[InjectionMatch], **kwargs,
 ) -> str:
     """Assemble a prompt using the global assembler.
 
@@ -722,12 +709,12 @@ def assemble_prompt(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble(
-        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs
+        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
     )
 
 
 def assemble_prompt_with_schema(
-    role: str, objective: str, context_data: dict[str, Any] | str, injections: list[InjectionMatch], **kwargs
+    role: str, objective: str, context_data: dict[str, Any] | str, injections: list[InjectionMatch], **kwargs,
 ) -> AssembledPrompt:
     """Assemble a prompt with schema binding using the global assembler.
 
@@ -736,7 +723,7 @@ def assemble_prompt_with_schema(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble_with_schema(
-        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs
+        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
     )
 
 
@@ -777,5 +764,5 @@ def enhance_prompt_with_fencing(
     if context is None:
         context = {"original_prompt": base_prompt}
     return assemble_prompt(
-        role=role, objective=objective, context_data=context, injections=injections, legacy_mode=True
+        role=role, objective=objective, context_data=context, injections=injections, legacy_mode=True,
     )

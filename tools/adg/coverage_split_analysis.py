@@ -48,7 +48,7 @@ def main() -> None:
             "SELECT resolved_path FROM nodes "
             "WHERE entity_type='module' "
             "AND resolved_path LIKE 'agentic_core/%' "
-            "AND resolved_path NOT LIKE '%__pycache__%' "
+            "AND resolved_path NOT LIKE '%__pycache__%' ",
         )
     }
     print(f"Total agentic_core source modules: {len(src_mods)}")
@@ -65,8 +65,8 @@ def main() -> None:
             "WHERE e.relation_type='imports' "
             "AND n1.resolved_path LIKE 'tests/%' "
             "AND n2.resolved_path LIKE 'agentic_core/%' "
-            "AND n2.resolved_path NOT LIKE '%__pycache__%' "
-        )
+            "AND n2.resolved_path NOT LIKE '%__pycache__%' ",
+        ),
     )
 
     # Map: test_file -> set of src modules (strip ::ClassName suffixes)
@@ -119,7 +119,7 @@ def main() -> None:
     print("\n=== ADG stub analysis ===")
     print(f"  Stub-only coverage (modules ONLY covered by _adg stubs): {len(stub_only)}")
     print(
-        f"  Also covered by behavioral tests:                        {len(stub_covered & non_stub_covered)}"
+        f"  Also covered by behavioral tests:                        {len(stub_covered & non_stub_covered)}",
     )
 
     # Are stubs redundant? (stub covers something already covered by behavioral)

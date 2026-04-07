@@ -93,7 +93,7 @@ try:
     import chromadb
 except ImportError as _err:
     raise ImportError(
-        "chromadb is required for this module. Install with: pip install -e '.[infra]'"
+        "chromadb is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -208,7 +207,7 @@ class InMemoryVectorCache:
         self.client = chromadb.Client()
         self.collection = self.client.get_or_create_collection(name=collection_name)
         Logger.info(
-            f"Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB"
+            f"Initialized InMemoryVectorCache: collection={collection_name}, max_memory={max_memory_gb}GB",
         )
 
     async def add_documents(
@@ -241,7 +240,7 @@ class InMemoryVectorCache:
         try:
             self.collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
             Logger.debug(
-                f"Added {len(documents)} documents to hot cache (collection: {self.collection_name})"
+                f"Added {len(documents)} documents to hot cache (collection: {self.collection_name})",
             )
             return True
         # guardian: allow-silent-swallow
@@ -277,7 +276,7 @@ class InMemoryVectorCache:
         """
         try:
             results: Any = self.collection.query(
-                query_embeddings=query_embeddings, n_results=top_k, where=where, where_document=where_document
+                query_embeddings=query_embeddings, n_results=top_k, where=where, where_document=where_document,
             )
             Logger.debug(f"In-memory search returned {len(results.get('ids', [[]])[0])} results")
             return results
@@ -360,12 +359,12 @@ class TieredVectorStore:
         self.hot_cache = hot_cache
         self.warm_store_url = warm_store_url
         Logger.info(
-            f"Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}"
+            f"Initialized TieredVectorStore: hot_cache={hot_cache.collection_name}, warm_store={warm_store_url}",
         )
 
     # guardian: allow-magic-config
     async def search(
-        self, query_embeddings: list[list[float]], top_k: int = 10, try_hot_first: bool = True
+        self, query_embeddings: list[list[float]], top_k: int = 10, try_hot_first: bool = True,
     ) -> dict[str, Any]:
         """Search with hot cache fallback to warm storage.
 
@@ -394,7 +393,7 @@ class TieredVectorStore:
 
 # guardian: allow-magic-config
 def create_memory_vector_cache(
-    collection_name: str = "hot_cache", max_memory_gb: int = 8
+    collection_name: str = "hot_cache", max_memory_gb: int = 8,
 ) -> InMemoryVectorCache:
     """Create an InMemoryVectorCache instance.
 
@@ -409,7 +408,7 @@ def create_memory_vector_cache(
 
 
 def create_tiered_vector_store(
-    hot_collection_name: str = "hot_cache", warm_store_url: str = "http://localhost:6333"
+    hot_collection_name: str = "hot_cache", warm_store_url: str = "http://localhost:6333",
 ) -> TieredVectorStore:
     """Create a TieredVectorStore instance.
 

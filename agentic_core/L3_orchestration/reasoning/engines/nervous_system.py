@@ -91,7 +91,6 @@ _emit_links_execution_to_snapshot("p4", "nervous_system", "exec_snapshot_link")
 from agentic_core.L3_orchestration.reasoning.engines.reflex_layer_pattern import ReflexLayer
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -176,7 +175,7 @@ class NervousSystem:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "NervousSystem.register_reflex"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "NervousSystem.register_reflex",
         )
 
         self.reflexes[trigger] = action

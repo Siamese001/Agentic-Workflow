@@ -66,39 +66,25 @@ _emit_applies_guardrail("p0", "health_check_types_util", "p0_governance")
 _emit_reads_policy_state("p0", "health_check_types_util", "policy_binding")
 _emit_snapshots_state("p0", "health_check_types_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -397,11 +383,11 @@ class CommonChecks:
             value = os.getenv(var_name)
             if value:
                 return CheckResult(
-                    name=f"env:{var_name}", status=HealthStatus.HEALTHY, message=f"{var_name} is set"
+                    name=f"env:{var_name}", status=HealthStatus.HEALTHY, message=f"{var_name} is set",
                 )
             elif required:
                 return CheckResult(
-                    name=f"env:{var_name}", status=HealthStatus.UNHEALTHY, message=f"{var_name} is not set"
+                    name=f"env:{var_name}", status=HealthStatus.UNHEALTHY, message=f"{var_name} is not set",
                 )
             else:
                 return CheckResult(
@@ -423,17 +409,17 @@ class CommonChecks:
                 client = redis.Redis(host=host, port=port, socket_timeout=DEFAULT_TIMEOUT)
                 client.ping()
                 return CheckResult(
-                    name="redis", status=HealthStatus.HEALTHY, message=f"Redis connected at {host}:{port}"
+                    name="redis", status=HealthStatus.HEALTHY, message=f"Redis connected at {host}:{port}",
                 )
             # guardian: allow-silent-swallow - optional dependency
             except ImportError:
                 return CheckResult(
-                    name="redis", status=HealthStatus.DEGRADED, message="Redis client not installed"
+                    name="redis", status=HealthStatus.DEGRADED, message="Redis client not installed",
                 )
             # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
-                    name="redis", status=HealthStatus.UNHEALTHY, message=f"Redis connection failed: {e}"
+                    name="redis", status=HealthStatus.UNHEALTHY, message=f"Redis connection failed: {e}",
                 )
 
         return check
@@ -465,7 +451,7 @@ class CommonChecks:
             # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
-                    name="disk_space", status=HealthStatus.UNKNOWN, message=f"Could not check disk space: {e}"
+                    name="disk_space", status=HealthStatus.UNKNOWN, message=f"Could not check disk space: {e}",
                 )
 
         return check
@@ -500,7 +486,7 @@ class CommonChecks:
             # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
-                    name="memory", status=HealthStatus.UNKNOWN, message=f"Could not check memory: {e}"
+                    name="memory", status=HealthStatus.UNKNOWN, message=f"Could not check memory: {e}",
                 )
 
         return check

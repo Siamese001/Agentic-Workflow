@@ -14,7 +14,7 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 # Pattern: CONST = something / CONST  (self-shadowing assignment)
 SHADOW_PATTERN = re.compile(
-    r'^(\s*)(\w+)\s*=\s*(\w+)\s*/\s*\2\s*$', re.MULTILINE
+    r'^(\s*)(\w+)\s*=\s*(\w+)\s*/\s*\2\s*$', re.MULTILINE,
 )
 
 def fix_file(filepath):

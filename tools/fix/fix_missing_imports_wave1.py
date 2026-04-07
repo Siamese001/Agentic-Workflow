@@ -19,7 +19,7 @@ TARGET_FUNCS = [
 
 IMPORT_PATTERN = re.compile(
     r'from\s+agentic_core\.L_CONTRACTS\.lifecycle_trace_contract\s+import\s*\(([^)]+)\)',
-    re.DOTALL
+    re.DOTALL,
 )
 
 

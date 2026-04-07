@@ -51,7 +51,7 @@ class SynthesisEngineService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "SynthesisEngineService.synthesize_findings"
+            _trace_id, LayerSegment.L2_EXECUTION, "SynthesisEngineService.synthesize_findings",
         )
         _emit_routes_to_capability("p2", "synthesis_engine", "insight_integration")
         _emit_stores_embedding("p4", "synthesis_engine", "synthesis_embedding")
@@ -105,7 +105,7 @@ class SynthesisEngineService:
             target_audience,
         )
         _emit_records_telemetry_event(
-            "p4", "synthesis_engine", f"synthesis_complete:{len(findings)}"
+            "p4", "synthesis_engine", f"synthesis_complete:{len(findings)}",
         )
 
         return synthesis

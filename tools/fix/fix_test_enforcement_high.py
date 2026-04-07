@@ -5,7 +5,6 @@ Target: 7,589 HIGH severity test violations.
 """
 
 import json
-import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -95,7 +94,7 @@ class TestEnforcementHighFixer:
                 self.errors += 1
                 print(f"    Error fixing structure in {file_path}: {e}")
 
-        print(f"  ✅ Fixed test structure violations")
+        print("  ✅ Fixed test structure violations")
 
     def _determine_test_category(self, file_path, test_line):
         """Determine appropriate test category marker."""
@@ -147,7 +146,7 @@ class TestEnforcementHighFixer:
             'total_high_severity_violations': len(self.violations),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining_violations': len(self.violations) - self.fixes_applied
+            'remaining_violations': len(self.violations) - self.fixes_applied,
         }
 
         report_file = PROJECT_ROOT / "tools" / "test_enforcement_high_fixes_report.json"

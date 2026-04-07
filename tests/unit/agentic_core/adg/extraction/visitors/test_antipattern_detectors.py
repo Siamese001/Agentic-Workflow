@@ -8,9 +8,7 @@ Tests:
 
 import ast
 
-import pytest
-
-from agentic_core.adg.extraction.visitors import _AntipatternVisitor, VisitorContext
+from agentic_core.adg.extraction.visitors import VisitorContext, _AntipatternVisitor
 
 
 def _parse_and_visit(code: str, source_file: str = "test.py") -> list[tuple[int, str, str]]:

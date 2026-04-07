@@ -63,39 +63,25 @@ _emit_applies_guardrail("p0", "operation_category_types", "p0_governance")
 _emit_reads_policy_state("p0", "operation_category_types", "policy_binding")
 _emit_snapshots_state("p0", "operation_category_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -394,7 +380,7 @@ class ObservabilityOperationAdapter:
         self.logger.info(f"Registered handler for operation: {operation_type}")
 
     def perform_operation(
-        self, context: OperationContext, parameters: OperationParameters
+        self, context: OperationContext, parameters: OperationParameters,
     ) -> OperationOutcome:
         """Perform observability operation.
 
@@ -432,7 +418,7 @@ class ObservabilityOperationAdapter:
             return self._create_error_outcome(context.operation_id, str(e), start_time)
 
     def perform_batch_operations(
-        self, contexts: list[OperationContext], parameters_list: list[OperationParameters]
+        self, contexts: list[OperationContext], parameters_list: list[OperationParameters],
     ) -> list[OperationOutcome]:
         """Perform multiple operations.
 
@@ -452,7 +438,7 @@ class ObservabilityOperationAdapter:
         return results
 
     def perform_aggregated_operation(
-        self, contexts: list[OperationContext], parameters: OperationParameters
+        self, contexts: list[OperationContext], parameters: OperationParameters,
     ) -> OperationOutcome:
         """Perform operation with aggregation across multiple contexts.
 
@@ -493,7 +479,7 @@ class ObservabilityOperationAdapter:
         return outcome
 
     def get_operation_history(
-        self, operation_id: str | None = None, time_range: tuple[datetime, datetime] | None = None
+        self, operation_id: str | None = None, time_range: tuple[datetime, datetime] | None = None,
     ) -> list[dict[str, Any]]:
         """Get history of operations.
 
@@ -528,7 +514,7 @@ class ObservabilityOperationAdapter:
         return len(to_remove)
 
     def _execute_with_retry(
-        self, handler: Callable, context: OperationContext, parameters: OperationParameters
+        self, handler: Callable, context: OperationContext, parameters: OperationParameters,
     ) -> OperationOutcome:
         """Execute operation with retry logic."""
         last_error = None
@@ -559,7 +545,7 @@ class ObservabilityOperationAdapter:
         return self._create_error_outcome(context.operation_id, last_error, time.time())
 
     def _get_from_cache(
-        self, context: OperationContext, parameters: OperationParameters
+        self, context: OperationContext, parameters: OperationParameters,
     ) -> OperationOutcome | None:
         """Get result from cache."""
         cache_key = self._generate_cache_key(context, parameters)
@@ -572,7 +558,7 @@ class ObservabilityOperationAdapter:
         return None
 
     def _store_in_cache(
-        self, context: OperationContext, parameters: OperationParameters, result: OperationOutcome
+        self, context: OperationContext, parameters: OperationParameters, result: OperationOutcome,
     ) -> None:
         """Store result in cache."""
         cache_key = self._generate_cache_key(context, parameters)
@@ -645,7 +631,7 @@ class ObservabilityOperationAdapter:
     def _create_error_outcome(self, operation_id: str, error: str, start_time: float) -> OperationOutcome:
         """Create error outcome."""
         return OperationOutcome(
-            operation_id=operation_id, success=False, error=error, execution_time=time.time() - start_time
+            operation_id=operation_id, success=False, error=error, execution_time=time.time() - start_time,
         )
 
     def _initialize_handlers(self) -> None:
@@ -712,11 +698,11 @@ class ObservabilityOperationAdapter:
 
 # guardian: allow-magic-config
 def create_observability_operation_adapter(
-    timeout: float = 30.0, retry_attempts: int = 3, enable_caching: bool = True, **kwargs: object
+    timeout: float = 30.0, retry_attempts: int = 3, enable_caching: bool = True, **kwargs: object,
 ) -> ObservabilityOperationAdapter:
     """Create a configured observability operation adapter."""
     config = OperationConfig(
-        timeout=timeout, retry_attempts=retry_attempts, enable_caching=enable_caching, **kwargs
+        timeout=timeout, retry_attempts=retry_attempts, enable_caching=enable_caching, **kwargs,
     )
     return ObservabilityOperationAdapter(config)
 

@@ -15,7 +15,7 @@ class SSOTDiscoveryValidator:
         """Register a SSOT source."""
         self._sources[name] = {
             "path": path,
-            "checksum": checksum
+            "checksum": checksum,
         }
 
     def validate_source(self, name: str, checksum: str) -> bool:

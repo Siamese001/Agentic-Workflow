@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"pattern_validated exported={validation_emitter} (>=1), "
             f"reuse_reasoning_pattern exported={reuse_function} (>=1), "
             f"validation_status exported={validation_status} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -147,7 +147,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"EvaluationResult exported={evaluation_result} (>=1), "
             f"pattern_stored exported={storage_emitter} (>=1), "
             f"capture_reasoning_pattern exported={capture_function} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -189,7 +189,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"pattern_versioned exported={version_emitter} (>=1), "
             f"capture_reasoning_pattern exported={capture_function} (>=1), "
             f"reasoning_pattern_id exported={pattern_id} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -231,7 +231,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"records_execution_trace sources={trace_edges} (>=1), "
             f"ReasoningTrace exported={reasoning_trace} (>=1), "
             f"capture_reasoning_pattern exported={capture_function} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -273,7 +273,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"reuse_reasoning_pattern exported={reuse_function} (>=1), "
             f"reuse_outcome_recorded exported={reuse_emitter} (>=1), "
             f"reasoning_pattern_reused exported={pattern_reuse_emitter} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -324,7 +324,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L1_cognition/knowledge%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

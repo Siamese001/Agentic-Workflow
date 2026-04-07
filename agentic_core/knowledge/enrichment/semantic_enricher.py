@@ -284,7 +284,7 @@ Respond with ONLY valid JSON."""
                     model=self.model,
                     messages=[
                         {"role": "system", "content": "You are a semantic enrichment engine. Output valid JSON only."},
-                        {"role": "user", "content": prompt}
+                        {"role": "user", "content": prompt},
                     ],
                     temperature=0.1,
                     response_format={"type": "json_object"},

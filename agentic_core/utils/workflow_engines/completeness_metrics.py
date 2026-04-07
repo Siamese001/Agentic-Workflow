@@ -79,39 +79,25 @@ _emit_applies_guardrail("p0", "completeness_metrics", "p0_governance")
 _emit_reads_policy_state("p0", "completeness_metrics", "policy_binding")
 _emit_snapshots_state("p0", "completeness_metrics", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -368,7 +354,7 @@ class EvaluationDeltaReport:
 
     @classmethod
     def from_reports(
-        cls, delta_report_id: str, baseline: EvaluationReport, candidate: EvaluationReport
+        cls, delta_report_id: str, baseline: EvaluationReport, candidate: EvaluationReport,
     ) -> EvaluationDeltaReport:
         """Compute a delta report from two EvaluationReport instances."""
         import uuid as _uuid  # noqa: PLC0415
@@ -392,21 +378,21 @@ class EvaluationDeltaReport:
             delta_ndcg=round(candidate.ndcg - baseline.ndcg, 6),
             delta_answer_correctness=round(candidate.answer_correctness - baseline.answer_correctness, 6),
             delta_context_completeness=round(
-                candidate.context_completeness_score - baseline.context_completeness_score, 6
+                candidate.context_completeness_score - baseline.context_completeness_score, 6,
             ),
             delta_support_score=round(candidate.support_score - baseline.support_score, 6),
             delta_high_similarity_wrong_answer_rate=round(
-                candidate.high_similarity_wrong_answer_rate - baseline.high_similarity_wrong_answer_rate, 6
+                candidate.high_similarity_wrong_answer_rate - baseline.high_similarity_wrong_answer_rate, 6,
             ),
             delta_parent_reconstruction_rate=round(
-                candidate.parent_reconstruction_applied_rate - baseline.parent_reconstruction_applied_rate, 6
+                candidate.parent_reconstruction_applied_rate - baseline.parent_reconstruction_applied_rate, 6,
             ),
             delta_classification_f1=round(candidate.classification_f1 - baseline.classification_f1, 6),
             delta_classification_precision=round(
-                candidate.classification_precision - baseline.classification_precision, 6
+                candidate.classification_precision - baseline.classification_precision, 6,
             ),
             delta_classification_recall=round(
-                candidate.classification_recall - baseline.classification_recall, 6
+                candidate.classification_recall - baseline.classification_recall, 6,
             ),
             candidate_is_better=better,
         )

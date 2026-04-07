@@ -117,7 +117,7 @@ class SkipPatternVisitor(ast.NodeVisitor):
                 start = dec.lineno - 1
                 end = min(dec.end_lineno or dec.lineno, len(self.source_lines))
                 source_line = " ".join(
-                    self.source_lines[start:end]
+                    self.source_lines[start:end],
                 ).strip()
 
             dep = self._extract_dependency_from_skipif(dec, source_line)

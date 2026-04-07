@@ -30,7 +30,7 @@ class PersistentMemoryAnalyzer:
             "training_data": {},
             "user_interactions": {},
             "system_logs": {},
-            "recommendations": []
+            "recommendations": [],
         }
 
     def scan_repository(self) -> dict:
@@ -79,7 +79,7 @@ class PersistentMemoryAnalyzer:
             r"embedding.*",
             r"vector.*",
             r"training.*",
-            r"inference.*"
+            r"inference.*",
         ]
 
         learning_dirs = [
@@ -89,7 +89,7 @@ class PersistentMemoryAnalyzer:
             "training",
             "inference",
             "ml",
-            "ai"
+            "ai",
         ]
 
         learning_files = []
@@ -120,7 +120,7 @@ class PersistentMemoryAnalyzer:
                     "has_embeddings": "embedding" in content or "vector" in content,
                     "has_weights": "weight" in content or "parameter" in content,
                     "has_metrics": "metric" in content or "accuracy" in content or "loss" in content,
-                    "file_size_kb": file_path.stat().st_size / 1024
+                    "file_size_kb": file_path.stat().st_size / 1024,
                 }
 
                 self.analysis["learning_artifacts"][str(file_path.relative_to(self.root))] = learning_indicators
@@ -142,7 +142,7 @@ class PersistentMemoryAnalyzer:
             "*.config",
             "*.yaml",
             "*.yml",
-            "*.toml"
+            "*.toml",
         ]
 
         state_files = []
@@ -158,7 +158,7 @@ class PersistentMemoryAnalyzer:
             "memory",
             "storage",
             "persist",
-            "checkpoint"
+            "checkpoint",
         ]
 
         python_files = list(self.root.rglob("*.py"))
@@ -179,7 +179,7 @@ class PersistentMemoryAnalyzer:
                     self.analysis["state_data"][str(file_path.relative_to(self.root))] = {
                         "stateful_score": stateful_score,
                         "file_size_kb": file_path.stat().st_size / 1024,
-                        "patterns_found": [p for p in stateful_patterns if p in content.lower()]
+                        "patterns_found": [p for p in stateful_patterns if p in content.lower()],
                     }
 
             except (ValueError, TypeError, RuntimeError):
@@ -201,7 +201,7 @@ class PersistentMemoryAnalyzer:
             "profiling*.json",
             "*.metrics",
             "*.stats",
-            "*.benchmark"
+            "*.benchmark",
         ]
 
         perf_files = []
@@ -224,18 +224,18 @@ class PersistentMemoryAnalyzer:
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "data_type": type(data).__name__,
                             "sample_keys": keys,
-                            "is_json": True
+                            "is_json": True,
                         }
                     else:
                         self.analysis["performance_data"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "data_type": type(data).__name__,
-                            "is_json": True
+                            "is_json": True,
                         }
                 except (ValueError, TypeError, RuntimeError):
                     self.analysis["performance_data"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
-                        "is_json": False
+                        "is_json": False,
                     }
 
                 except (ValueError, TypeError, RuntimeError):
@@ -257,7 +257,7 @@ class PersistentMemoryAnalyzer:
             "vector*.json",
             "network*.json",
             "ontology*.json",
-            "taxonomy*.json"
+            "taxonomy*.json",
         ]
 
         kg_files = []
@@ -286,18 +286,18 @@ class PersistentMemoryAnalyzer:
                             "has_edges": "edges" in data,
                             "node_count": node_count,
                             "edge_count": edge_count,
-                            "is_graph": node_count > 0 or edge_count > 0
+                            "is_graph": node_count > 0 or edge_count > 0,
                         }
                     else:
                         self.analysis["knowledge_graphs"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
-                            "is_graph": False
+                            "is_graph": False,
                         }
                 except (ValueError, TypeError, RuntimeError):
                     self.analysis["knowledge_graphs"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "is_graph": False,
-                        "parse_error": True
+                        "parse_error": True,
                     }
 
                 except (ValueError, TypeError, RuntimeError):
@@ -320,7 +320,7 @@ class PersistentMemoryAnalyzer:
             "*.pkl",
             "*.model",
             "*.ckpt",
-            "*.pth"
+            "*.pth",
         ]
 
         training_files = []
@@ -338,21 +338,21 @@ class PersistentMemoryAnalyzer:
                         self.analysis["training_data"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "data_type": "json",
-                            "keys": list(data.keys())[:5] if isinstance(data, dict) else None
+                            "keys": list(data.keys())[:5] if isinstance(data, dict) else None,
                         }
                     except (ValueError, TypeError, RuntimeError):
                         continue
                         self.analysis["training_data"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "data_type": "json",
-                            "parse_error": True
+                            "parse_error": True,
                         }
                 else:
                     # Binary files
                     self.analysis["training_data"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "data_type": "binary",
-                        "extension": file_path.suffix
+                        "extension": file_path.suffix,
                     }
 
 
@@ -371,7 +371,7 @@ class PersistentMemoryAnalyzer:
             "feedback*.json",
             "preference*.json",
             "history*.json",
-            "session*.json"
+            "session*.json",
         ]
 
         interaction_files = []
@@ -388,12 +388,12 @@ class PersistentMemoryAnalyzer:
                     self.analysis["user_interactions"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "record_count": len(data) if isinstance(data, list) else 1,
-                        "keys": list(data.keys())[:5] if isinstance(data, dict) else None
+                        "keys": list(data.keys())[:5] if isinstance(data, dict) else None,
                     }
                 except (ValueError, TypeError, RuntimeError):
                     self.analysis["user_interactions"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
-                        "parse_error": True
+                        "parse_error": True,
                     }
 
                 except (ValueError, TypeError, RuntimeError):
@@ -413,7 +413,7 @@ class PersistentMemoryAnalyzer:
             "telemetry*.json",
             "trace*.json",
             "audit*.json",
-            "event*.json"
+            "event*.json",
         ]
 
         log_files = []
@@ -432,12 +432,12 @@ class PersistentMemoryAnalyzer:
                         self.analysis["system_logs"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "entry_count": entry_count,
-                            "is_structured": True
+                            "is_structured": True,
                         }
                     except (ValueError, TypeError, RuntimeError):
                         self.analysis["system_logs"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
-                            "is_structured": False
+                            "is_structured": False,
                         }
                 else:
                     # Text logs
@@ -446,7 +446,7 @@ class PersistentMemoryAnalyzer:
                     self.analysis["system_logs"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "line_count": line_count,
-                        "is_structured": False
+                        "is_structured": False,
                     }
 
 
@@ -468,7 +468,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Implement persistent storage for model checkpoints, embeddings, and training progress",
                 "files_count": len(self.analysis["learning_artifacts"]),
                 "implementation": "SQLite tables: models, embeddings, training_sessions, checkpoints",
-                "benefits": "Resume training, model versioning, incremental learning"
+                "benefits": "Resume training, model versioning, incremental learning",
             })
 
         # State data recommendations
@@ -479,7 +479,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Centralize application state in persistent storage",
                 "files_count": len(self.analysis["state_data"]),
                 "implementation": "SQLite tables: application_state, user_sessions, cache_entries",
-                "benefits": "State recovery, session management, cache persistence"
+                "benefits": "State recovery, session management, cache persistence",
             })
 
         # Performance data recommendations
@@ -490,7 +490,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Store performance metrics and benchmarks for trend analysis",
                 "files_count": len(self.analysis["performance_data"]),
                 "implementation": "SQLite tables: metrics, benchmarks, performance_trends",
-                "benefits": "Performance tracking, regression detection, optimization insights"
+                "benefits": "Performance tracking, regression detection, optimization insights",
             })
 
         # Knowledge graphs recommendations
@@ -501,7 +501,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Persist knowledge graphs and embeddings for semantic search",
                 "files_count": len(self.analysis["knowledge_graphs"]),
                 "implementation": "SQLite tables: knowledge_graphs, embeddings, semantic_index",
-                "benefits": "Knowledge retention, semantic search, relationship mining"
+                "benefits": "Knowledge retention, semantic search, relationship mining",
             })
 
         # Training data recommendations
@@ -512,7 +512,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Organize and persist training datasets and model versions",
                 "files_count": len(self.analysis["training_data"]),
                 "implementation": "SQLite tables: datasets, model_versions, training_runs",
-                "benefits": "Data lineage, model versioning, experiment tracking"
+                "benefits": "Data lineage, model versioning, experiment tracking",
             })
 
         # User interaction recommendations
@@ -523,7 +523,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Store user interactions for personalization and analytics",
                 "files_count": len(self.analysis["user_interactions"]),
                 "implementation": "SQLite tables: user_interactions, preferences, feedback",
-                "benefits": "Personalization, user insights, interaction patterns"
+                "benefits": "Personalization, user insights, interaction patterns",
             })
 
         # System logs recommendations
@@ -534,7 +534,7 @@ class PersistentMemoryAnalyzer:
                 "description": "Consolidate logs and telemetry in structured storage",
                 "files_count": len(self.analysis["system_logs"]),
                 "implementation": "SQLite tables: system_logs, events, telemetry",
-                "benefits": "Centralized logging, queryable logs, system insights"
+                "benefits": "Centralized logging, queryable logs, system insights",
             })
 
         # Cross-cutting recommendations
@@ -544,22 +544,22 @@ class PersistentMemoryAnalyzer:
                 "priority": "CRITICAL",
                 "description": "Implement a unified persistent memory system across all components",
                 "implementation": "Central SQLite database with schema for all data types",
-                "benefits": "Unified access, data relationships, system-wide learning"
+                "benefits": "Unified access, data relationships, system-wide learning",
             },
             {
                 "category": "Memory-First Architecture",
                 "priority": "HIGH",
                 "description": "Design system with persistent memory as primary storage",
                 "implementation": "Memory-centric design patterns with SQLite as backbone",
-                "benefits": "Data persistence, system resilience, learning continuity"
+                "benefits": "Data persistence, system resilience, learning continuity",
             },
             {
                 "category": "Learning Loop Integration",
                 "priority": "HIGH",
                 "description": "Integrate persistent memory into continuous learning loops",
                 "implementation": "Feedback systems with SQLite-stored learning data",
-                "benefits": "Continuous improvement, adaptive behavior, knowledge accumulation"
-            }
+                "benefits": "Continuous improvement, adaptive behavior, knowledge accumulation",
+            },
         ])
 
         self.analysis["recommendations"] = recommendations
@@ -575,7 +575,7 @@ class PersistentMemoryAnalyzer:
             "dist",
             "build",
             ".venv",
-            "venv"
+            "venv",
         ]
 
         return any(pattern in str(file_path) for pattern in ignore_patterns)
@@ -907,7 +907,7 @@ CREATE TRIGGER IF NOT EXISTS cleanup_expired_sessions
             ("Knowledge Graphs", "knowledge_graphs"),
             ("Training Data", "training_data"),
             ("User Interactions", "user_interactions"),
-            ("System Logs", "system_logs")
+            ("System Logs", "system_logs"),
         ]
 
         for category_name, category_key in categories:

@@ -38,11 +38,11 @@ class SequentialThinkingMCPInvoker:
     def __init__(self):
         self.node_path = os.environ.get(
             'NODE_PATH',
-            r'C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node.exe'
+            r'C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node.exe',
         )
         self.server_path = os.environ.get(
             'SEQUENTIAL_THINKING_SERVER',
-            r'C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node_modules\@modelcontextprotocol\server-sequential-thinking\dist\index.js'
+            r'C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node_modules\@modelcontextprotocol\server-sequential-thinking\dist\index.js',
         )
         self.invocation_count = 0
         self.is_enabled = os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'false').lower() == 'true'
@@ -70,7 +70,7 @@ class SequentialThinkingMCPInvoker:
             thoughtNumber=thought_number,
             totalThoughts=25,
             nextThoughtNeeded=True,
-            needsMoreThoughts=True
+            needsMoreThoughts=True,
         )
 
         # Return the request payload for MCP invocation
@@ -105,7 +105,7 @@ Understanding the full scope of the request and identifying key components that 
         """Quick complexity assessment."""
         complexity_indicators = [
             'plan', 'design', 'architecture', 'implement', 'refactor',
-            'migrate', 'debug', 'optimize', 'analyze', 'test', 'validate'
+            'migrate', 'debug', 'optimize', 'analyze', 'test', 'validate',
         ]
 
         prompt_lower = prompt.lower()
@@ -132,7 +132,7 @@ Understanding the full scope of the request and identifying key components that 
         return {
             "tool": "mcp7_sequentialthinking",
             "name": "sequentialthinking",
-            "arguments": request
+            "arguments": request,
         }
 
 
@@ -198,7 +198,7 @@ Before answering, you MUST use the sequential thinking tool.
             'refactor', 'migrate', 'debug', 'troubleshoot', 'fix',
             'optimize', 'improve', 'analyze', 'investigate',
             'test', 'validate', 'verify', 'review', 'audit',
-            'strategy', 'approach', 'method', 'solution'
+            'strategy', 'approach', 'method', 'solution',
         ]
 
         prompt_lower = prompt.lower()
@@ -273,7 +273,7 @@ Type your request to begin.
                 'wrapped_prompt': wrapped,
                 'should_invoke': True,
                 'tool_call': tool_call,
-                'instruction': 'Use mcp7_sequentialthinking.sequentialthinking() before responding'
+                'instruction': 'Use mcp7_sequentialthinking.sequentialthinking() before responding',
             }
         else:
             return {
@@ -281,7 +281,7 @@ Type your request to begin.
                 'wrapped_prompt': prompt,
                 'should_invoke': False,
                 'tool_call': None,
-                'instruction': None
+                'instruction': None,
             }
 
     def get_tool_invocation_reminder(self) -> str:

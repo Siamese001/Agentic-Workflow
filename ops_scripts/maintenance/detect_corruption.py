@@ -24,7 +24,7 @@ def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
     """
     corrupted = []
     exclude_patterns = list(
-        GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+        GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES,
     )
 
     for py_file in project_root.rglob("*.py"):

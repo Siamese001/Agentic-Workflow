@@ -23,7 +23,6 @@ import ast
 import json
 import pathlib
 import sys
-from collections import defaultdict
 from typing import Any, Dict, List, Set, Tuple
 
 # Imports that should stay at module level (safe for collection)
@@ -155,7 +154,7 @@ class DelayedImportTransformer(ast.NodeTransformer):
                             names=[
                                 ast.alias(name=alias.name, asname=alias.asname)
                                 for alias in import_stmt.names
-                            ]
+                            ],
                         )
                     else:
                         continue
@@ -271,28 +270,28 @@ def find_python_files(paths: List[pathlib.Path]) -> List[pathlib.Path]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Convert test files to use delayed imports for collection safety"
+        description="Convert test files to use delayed imports for collection safety",
     )
     parser.add_argument(
         "paths",
         nargs="+",
         type=pathlib.Path,
-        help="Files or directories to convert"
+        help="Files or directories to convert",
     )
     parser.add_argument(
         "--validate",
         action="store_true",
-        help="Validate mode (dry run, don't modify files)"
+        help="Validate mode (dry run, don't modify files)",
     )
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Output results in JSON format"
+        help="Output results in JSON format",
     )
     parser.add_argument(
         "--summary",
         action="store_true",
-        help="Show summary statistics only"
+        help="Show summary statistics only",
     )
 
     args = parser.parse_args()
@@ -353,8 +352,8 @@ def main() -> None:
         print(json.dumps(output, indent=2))
     else:
         if args.summary:
-            print(f"Delayed Import Conversion Summary")
-            print(f"=================================")
+            print("Delayed Import Conversion Summary")
+            print("=================================")
             print(f"Total files: {summary['total_files']}")
             print(f"Files needing conversion: {summary['processed']}")
             print(f"Imports to delay: {summary['total_imports_delayed']}")

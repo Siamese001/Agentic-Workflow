@@ -18,7 +18,6 @@ import re
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent.parent.parent
 DRY_RUN = '--dry-run' in sys.argv
 report = json.loads((ROOT / 'artifacts' / 'ssot_violation_scan.json').read_text())

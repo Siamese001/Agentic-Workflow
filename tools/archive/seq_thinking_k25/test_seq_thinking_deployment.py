@@ -43,7 +43,7 @@ def test_mcp_configuration():
             "DISABLE_THOUGHT_LOGGING",
             "SEQUENTIAL_THINKING_PRIORITY",
             "SEQUENTIAL_THINKING_SWE_MODE",
-            "SEQUENTIAL_THINKING_AUTO_TRIGGER"
+            "SEQUENTIAL_THINKING_AUTO_TRIGGER",
         ]
 
         for var in required_vars:
@@ -71,7 +71,7 @@ def test_environment_variables():
         "SEQUENTIAL_THINKING_ENABLED",
         "SEQUENTIAL_THINKING_PRIORITY",
         "WINDSURF_TOOL_PREFERENCE",
-        "SWE15_SEQUENTIAL_THINKING"
+        "SWE15_SEQUENTIAL_THINKING",
     ]
 
     all_set = True
@@ -95,7 +95,7 @@ def test_tool_files():
         repo_root / "tools" / "monitoring" / "mcp_usage_tracker.py",
         repo_root / "agentic_core" / "planning" / "sequential_thinking_workflow.py",
         repo_root / "apps_shared" / "prompts" / "sequential_thinking_templates.py",
-        repo_root / "ops_scripts" / "environment" / "seq_thinking_env.py"
+        repo_root / "ops_scripts" / "environment" / "seq_thinking_env.py",
     ]
 
     all_exist = True
@@ -133,7 +133,7 @@ def test_sequential_thinking_booster():
         {"name": "filesystem", "description": "File system access"},
         {"name": "sequential-thinking", "description": "Sequential reasoning tool"},
         {"name": "memory", "description": "Memory management"},
-        {"name": "other-tool", "description": "Other functionality"}
+        {"name": "other-tool", "description": "Other functionality"},
     ]
 
     test_file = repo_root / "test_tools_input.json"
@@ -145,7 +145,7 @@ def test_sequential_thinking_booster():
 
         # Run booster
         result = subprocess.run([
-            sys.executable, str(booster_script), str(test_file), str(output_file)
+            sys.executable, str(booster_script), str(test_file), str(output_file),
         ], capture_output=True, text=True, cwd=repo_root)
 
         if result.returncode != 0:
@@ -199,7 +199,7 @@ def test_usage_tracker():
         # Test logging functionality
         result = subprocess.run([
             sys.executable, str(tracker_script),
-            "--log", "sequential-thinking", "test-context", "true", "1.5", "500"
+            "--log", "sequential-thinking", "test-context", "true", "1.5", "500",
         ], capture_output=True, text=True, cwd=repo_root)
 
         if result.returncode != 0:
@@ -208,7 +208,7 @@ def test_usage_tracker():
 
         # Test report generation
         result = subprocess.run([
-            sys.executable, str(tracker_script), "--report", "--hours", "1"
+            sys.executable, str(tracker_script), "--report", "--hours", "1",
         ], capture_output=True, text=True, cwd=repo_root)
 
         if result.returncode != 0:
@@ -254,7 +254,7 @@ print(f'Force sequential thinking: {{should_force}}')
 # Test template retrieval
 template = workflow._get_seq_thinking_template('analysis')
 print(f'Template retrieved: {{len(template)}} characters')
-"""
+""",
         ], capture_output=True, text=True, cwd=repo_root)
 
         if result.returncode != 0:
@@ -303,7 +303,7 @@ print(f'Template rendered: {{len(rendered)}} characters')
 # Test complexity filtering
 templates = get_template_for_complexity('high')
 print(f'Templates for high complexity: {{len(templates)}}')
-"""
+""",
         ], capture_output=True, text=True, cwd=repo_root)
 
         if result.returncode != 0:
@@ -335,7 +335,7 @@ def run_integration_test():
         ("Sequential Thinking Booster", test_sequential_thinking_booster),
         ("MCP Usage Tracker", test_usage_tracker),
         ("Sequential Thinking Workflow", test_sequential_thinking_workflow),
-        ("Prompt Templates", test_prompt_templates)
+        ("Prompt Templates", test_prompt_templates),
     ]
 
     results = {}

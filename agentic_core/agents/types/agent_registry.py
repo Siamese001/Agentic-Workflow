@@ -261,7 +261,7 @@ def get_profile(agent_id: str) -> AgentExecutionProfile:
         return AGENT_REGISTRY[agent_id]
     except KeyError as exc:
         raise KeyError(
-            f"Agent '{agent_id}' not found in registry. Available: {list(AGENT_REGISTRY.keys())}"
+            f"Agent '{agent_id}' not found in registry. Available: {list(AGENT_REGISTRY.keys())}",
         ) from exc
 
 

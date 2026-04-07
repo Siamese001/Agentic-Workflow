@@ -5,12 +5,6 @@ that expose system health, throughput, failures, and bottlenecks across layers.
 """
 
 # P3/L6 Observability Dashboard exports
-from agentic_core.L6_observability.utils.dashboard.dashboard_aggregate import (
-    DashboardAggregate,
-    DashboardAggregateError,
-    DashboardSnapshot,
-    HealthFlag,
-)
 from agentic_core.L6_observability.utils.dashboard.analytics_dashboard import (
     AnalyticsDashboard,
     ChartData,
@@ -21,6 +15,12 @@ from agentic_core.L6_observability.utils.dashboard.analytics_dashboard import (
     get_global_dashboard,
     start_analytics_dashboard,
     stop_analytics_dashboard,
+)
+from agentic_core.L6_observability.utils.dashboard.dashboard_aggregate import (
+    DashboardAggregate,
+    DashboardAggregateError,
+    DashboardSnapshot,
+    HealthFlag,
 )
 from agentic_core.L6_observability.utils.dashboard.dashboard_orchestrator import (
     DashboardPolicy,

@@ -106,7 +106,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -172,7 +171,7 @@ class SafetyProfile(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     safety_tier: str = Field(
-        default="standard", description="Safety tier: standard | strict | relaxed | debug"
+        default="standard", description="Safety tier: standard | strict | relaxed | debug",
     )
     pii_detection_enabled: bool = Field(default=True, description="PII detection toggle")
     policy_engine_enabled: bool = Field(default=True, description="Policy engine toggle")

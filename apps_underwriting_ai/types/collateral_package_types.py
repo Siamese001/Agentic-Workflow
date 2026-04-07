@@ -1,9 +1,9 @@
 """
 Collateral Package Types - Domain contracts for collateral information.
 """
-from typing import Literal, Optional, List
-from pydantic import BaseModel, Field
+from typing import List, Literal, Optional
 
+from pydantic import BaseModel, Field
 
 CollateralType = Literal[
     "ar",
@@ -11,14 +11,14 @@ CollateralType = Literal[
     "equipment",
     "real_estate",
     "mixed",
-    "unsecured"
+    "unsecured",
 ]
 
 LienPosition = Literal[
     "first",
     "second",
     "junior",
-    "none"
+    "none",
 ]
 
 
@@ -52,6 +52,6 @@ class CollateralPackage(BaseModel):
                 "lien_position": "first",
                 "appraisal_date": "2024-02-15",
                 "field_exam_date": "2024-01-20",
-                "collateral_quality_flags": []
-            }
+                "collateral_quality_flags": [],
+            },
         }

@@ -135,7 +135,7 @@ def search_nodes(query: str) -> str:
             "skills": ["Python", "JavaScript", "Machine Learning"],
             "projects": ["E-commerce Platform", "ML Pipeline"],
             "experience": "5 years",
-        }
+        },
     )
 
 
@@ -223,7 +223,7 @@ def get_variable_defs(node_id: str, version: str | None = None) -> str:
             "fonts": {"primary": "Arial", "secondary": "Helvetica"},
             "spacing": {"small": "8px", "medium": "16px", "large": "24px"},
             "version": version or "latest",
-        }
+        },
     )
 
 

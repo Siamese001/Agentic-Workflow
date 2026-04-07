@@ -163,7 +163,7 @@ def get_tier_enrichment(tier: str | EnrichmentTier) -> InstructionalEnrichment:
             tier = EnrichmentTier(tier.lower())
         except ValueError:
             raise ValueError(
-                f"Unknown reasoning tier: {tier!r}. Valid tiers: {[t.value for t in EnrichmentTier]}"
+                f"Unknown reasoning tier: {tier!r}. Valid tiers: {[t.value for t in EnrichmentTier]}",
             ) from None
     enrichment = TIER_ENRICHMENT_TABLE.get(tier)
     if enrichment is None:

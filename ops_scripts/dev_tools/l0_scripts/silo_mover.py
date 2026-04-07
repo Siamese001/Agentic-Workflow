@@ -7,7 +7,6 @@ import os
 import shutil
 from typing import Any
 
-
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         AGENTIC_CORE_DIR,

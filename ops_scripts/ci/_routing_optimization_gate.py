@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"historical_outcomes_analyzed exported={historical_emitter} (>=1), "
             f"optimization_window_start exported={window_start} (>=1), "
             f"optimization_window_end exported={window_end} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -140,7 +140,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"optimization_reason_hash exported={reason_hash} (>=1), "
             f"routing_policy_adapted exported={policy_emitter} (>=1), "
             f"PolicyContext exported={policy_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -182,7 +182,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"recommended_route_rank exported={route_rank} (>=1), "
             f"route_candidate_ranked exported={rank_emitter} (>=1), "
             f"PolicyContext exported={policy_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -224,7 +224,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"historical_success_rate exported={success_rate} (>=1), "
             f"historical_failure_rate exported={failure_rate} (>=1), "
             f"median_latency_ms exported={latency_ms} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -248,7 +248,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     optimize_function = _count_exported(conn, "optimize_routing_policy", "optimization_orchestrator")
     governance_emitter = _count_exported(conn, "routing_governance_approved", "optimization_orchestrator")
     governance_function = _count_exported(
-        conn, "apply_optimization_with_governance", "optimization_orchestrator"
+        conn, "apply_optimization_with_governance", "optimization_orchestrator",
     )
     policy_context = _count_exported(conn, "PolicyContext", "optimization_orchestrator")
 
@@ -268,7 +268,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"routing_governance_approved exported={governance_emitter} (>=1), "
             f"apply_optimization_with_governance exported={governance_function} (>=1), "
             f"PolicyContext exported={policy_context} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -322,7 +322,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L0_routing/optimization%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

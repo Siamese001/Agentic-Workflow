@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -232,7 +231,7 @@ class SovereignHealingEngine:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SovereignHealingEngine.execute_autonomous_cycle"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SovereignHealingEngine.execute_autonomous_cycle",
         )
         if not config.AUTONOMOUS_HEALING_ENABLED:
             Logger.info("[L0 HEALING] Autonomous mode disabled in config.")
@@ -418,10 +417,10 @@ class SovereignHealingEngine:
             if fix["new_client"] not in content:
                 content = f"{fix['import_path']}\n{content}"
             content = content.replace(
-                "open(", f"# TODO: Use {fix['new_client']}.read_text() or write_text()\n# open("
+                "open(", f"# TODO: Use {fix['new_client']}.read_text() or write_text()\n# open(",
             )
             content = content.replace(
-                "Path(", f"# TODO: Use {fix['new_client']} for file operations\n# Path("
+                "Path(", f"# TODO: Use {fix['new_client']} for file operations\n# Path(",
             )
             return await _wg.write_text(self.fs_client, file_path, content)
         except (RuntimeError, OSError) as e:
@@ -447,7 +446,7 @@ class SovereignHealingEngine:
                 "# Sovereign healing: Use get_fetch_client() from agentic_core.L2_execution.reasoning.fetch_mcp_client",
             )
             new_content = new_content.replace(
-                "requests.get(", "# await get_fetch_client().get_clean_content("
+                "requests.get(", "# await get_fetch_client().get_clean_content(",
             )
             new_content = new_content.replace("requests.post(", "# await get_fetch_client().fetch_url(")
         if "Redis" in message:
@@ -492,7 +491,7 @@ class SovereignHealingEngine:
             pr_title = f"{config.GITKRAKEN_PR_TITLE_PREFIX} Autonomous Sovereignty Restoration"
             pr_description = f"\n# Autonomous Sovereignty Restoration\n\nThis PR contains automated corrections for {self.applied_fixes} constitutional violations detected by the Sovereignty Auditor.\n\n## Healing Summary\n- **Fixes Applied:** {self.applied_fixes}\n- **Healing Mode:** Autonomous\n- **Transaction:** Committed with rollback safety\n\n## Review Notes\nAll fixes were applied using the Sovereign Healing Engine with:\n- Transactional safety (rollback on failure)\n- MCP-routed file operations (Filesystem MCP)\n- MCP-routed version control (GitKraken MCP)\n\nPlease review the changes to ensure they align with sovereignty requirements.\n"
             await self.git_client.create_pull_request(
-                title=pr_title, description=pr_description, branch=config.GITKRAKEN_HEALING_BRANCH
+                title=pr_title, description=pr_description, branch=config.GITKRAKEN_HEALING_BRANCH,
             )
             Logger.info("[L0 HEALING] Created healing PR for review")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller

@@ -52,7 +52,7 @@ def convert_file(file_path):
         class_name=class_name,
         module_name=module_name,
         module_snake=module_snake,
-        import_path=import_path
+        import_path=import_path,
     )
 
     with open(path, 'w', encoding='utf-8') as f:
@@ -72,10 +72,10 @@ for file_path in wave_30_files:
         errors.append(f"{file_path}: {e}")
         print(f"ERROR: {file_path}: {e}")
 
-print(f"\n🎉 WAVE 30 (FINAL) Conversion Complete:")
+print("\n🎉 WAVE 30 (FINAL) Conversion Complete:")
 print(f"  - Converted: {converted}/{len(wave_30_files)} files")
 print(f"  - Errors: {len(errors)}")
-print(f"\n✅ ALL 663 PLACEHOLDER TESTS CONVERTED!")
+print("\n✅ ALL 663 PLACEHOLDER TESTS CONVERTED!")
 
 if errors:
     print("\nErrors:")

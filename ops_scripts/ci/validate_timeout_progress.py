@@ -102,12 +102,12 @@ def validate_timeout_compliance(file_path: Path) -> list[str]:
                                 "progress" in loop_content.lower(),
                                 "pbar.update" in loop_content,
                                 "ProgressReporter" in loop_content,
-                            ]
+                            ],
                         )
                         if not has_progress:
                             violations.append(
                                 f"{file_path}:{node.lineno}: Long loop ({loop_length} lines) "
-                                f"without progress reporting"
+                                f"without progress reporting",
                             )
     except SyntaxError:
         # Skip AST parsing errors for non-Python or malformed files

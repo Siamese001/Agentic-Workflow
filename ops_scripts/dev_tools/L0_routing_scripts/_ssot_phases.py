@@ -33,12 +33,6 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from ops_scripts.dev_tools.L0_routing_scripts._ssot_routing import AutonomousDecisionEngine, SovereignDecisionEngine
-from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
-    ASTCodeQualityValidator,
-    HealContext,
-)
-from ops_scripts.dev_tools.L0_routing_scripts._ssot_validation_artifacts import _record_healing_action
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -47,22 +41,36 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
+    _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
@@ -72,55 +80,33 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
+    _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
+    _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_writes_via_uwg,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_routing import (
+    AutonomousDecisionEngine,
+    SovereignDecisionEngine,
+)
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
+    ASTCodeQualityValidator,
+    HealContext,
+)
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_validation_artifacts import _record_healing_action
 
 emit_determinism_digest("trace__ssot_phases", "_ssot_phases_dispatch_entry")
 emit_determinism_digest("trace__ssot_phases", "_ssot_phases_dispatch_exit")
@@ -255,7 +241,7 @@ class RuntimeStateManager:
                 "total_experiences": _prior_meta.get("total_experiences", 0),
                 "patterns_extracted": _prior_meta.get("patterns_extracted", 0),
                 "strategy_weights": _prior_meta.get(
-                    "strategy_weights", {"cot": 1.0, "tot": 1.0, "react": 1.0}
+                    "strategy_weights", {"cot": 1.0, "tot": 1.0, "react": 1.0},
                 ),
                 "recent_experiences": list(_prior_meta.get("recent_experiences", [])),
                 "recent_failure_vectors": list(_prior_meta.get("recent_failure_vectors", []))[-200:],
@@ -288,7 +274,7 @@ class RuntimeStateManager:
     def skip_agent(self, agent_name: str, reason: str):
         """Records agent as skipped — confidence gate or HITL rejected execution."""
         self.state["skipped_agents"].append(
-            {"agent": agent_name, "time": datetime.now().isoformat(), "reason": reason}
+            {"agent": agent_name, "time": datetime.now().isoformat(), "reason": reason},
         )
         self.add_event("agent_skip", f"SKIPPED {agent_name}: {reason}")
 
@@ -298,13 +284,13 @@ class RuntimeStateManager:
         Records agent completion but suppresses intermediate JSON console dumps.
         """
         self.state["completed_agents"].append(
-            {"agent": agent_name, "time": datetime.now().isoformat(), "success": success, "details": details}
+            {"agent": agent_name, "time": datetime.now().isoformat(), "success": success, "details": details},
         )
         self.add_event("agent_end", f"{('✓' if success else '❌')} Completed {agent_name}")
 
     def add_event(self, event_type: str, message: str):
         self.state["events"].append(
-            {"time": datetime.now().isoformat(), "type": event_type, "message": message}
+            {"time": datetime.now().isoformat(), "type": event_type, "message": message},
         )
         if event_type == "error":
             logger.error(message)
@@ -355,7 +341,7 @@ class RuntimeStateManager:
             if "MUTATION_PROHIBITED" in err_str:
                 self._persistence_disabled = True
                 logger.critical(
-                    f"[RuntimeStateManager] L0 mutation prohibition active — runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}"
+                    f"[RuntimeStateManager] L0 mutation prohibition active — runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}",
                 )
                 try:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                     if "temp_name" in locals() and os.path.exists(temp_name):
@@ -462,7 +448,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
             try:
                 temp_name = None
                 with tempfile.NamedTemporaryFile(
-                    "w", delete=False, dir=str(project_root), encoding="utf-8"
+                    "w", delete=False, dir=str(project_root), encoding="utf-8",
                 ) as tf:
                     assert_no_persistent_write("L0", "json.dump")
                     json.dump(discovery_data, tf, indent=2, ensure_ascii=False)
@@ -497,16 +483,16 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
 
 
 def execute_phase1_discovery(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None
+    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
 ):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
     return execute_phase1_discovery_impl(
-        agents, territory, decision_engine, state_mgr, ctx, repo_root=repo_root
+        agents, territory, decision_engine, state_mgr, ctx, repo_root=repo_root,
     )
 
 
 def execute_phase1_discovery_impl(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None
+    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
 ):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     REPO_ROOT = repo_root
@@ -534,7 +520,7 @@ def execute_phase1_discovery_impl(
             heal_result["cleanup"] = cleanup_result
             logger.info(
                 f"[FilesystemSSOTReconcilerAgent] root_heal={heal_result}, "
-                f"cleanup_applied={cleanup_result.get('actions_applied', 0)}"
+                f"cleanup_applied={cleanup_result.get('actions_applied', 0)}",
             )
     violations_count = _fs_check.get("violations_count", 0)
     _heal_applied = heal_result.get("applied", 0) or heal_result.get("cleanup", {}).get("actions_applied", 0)
@@ -563,7 +549,7 @@ def execute_phase1_discovery_impl(
     territory_path = (repo_root_resolved / territory).resolve()
     # Canonicalize L-layer territories: L0_routing → agentic_core/L0_routing
     if not territory_path.exists() and territory.startswith(
-        ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
+        ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_"),
     ):
         territory_path = (repo_root_resolved / AGENTIC_CORE_DIR / territory).resolve()
     if not territory_path.is_relative_to(repo_root_resolved):
@@ -588,21 +574,21 @@ def execute_phase1_discovery_impl(
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         cognitive_dispositions, enhanced_confidence = loop.run_until_complete(
-            decision_engine.analyze_violations_with_cognitive_disposition(violations, territory, state_mgr)
+            decision_engine.analyze_violations_with_cognitive_disposition(violations, territory, state_mgr),
         )
         state_mgr.state["cognitive_dispositions"] = [d.__dict__ for d in cognitive_dispositions]
         confidence = enhanced_confidence
         logger.info(f"🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
     else:
         confidence = decision_engine.calculate_healing_confidence(
-            len(violations), [str(v) for v in violations[:10]], territory, agent_name="location"
+            len(violations), [str(v) for v in violations[:10]], territory, agent_name="location",
         )
     state_mgr.state["compliance_scores"][territory] = confidence.value
     state_mgr.state["location_violations"] = violations
     state_mgr.state["location_scan_result"] = location_scan_result
     if len(violations) > 0:
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "LocationHealerAgent", territory=territory
+            confidence, "LocationHealerAgent", territory=territory,
         )
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
@@ -641,7 +627,7 @@ def execute_phase1_discovery_impl(
             location_validator._hitl_approval_fn = _w6_hitl_archive_gate
             if hasattr(location_validator, "heal_violations"):
                 heal_result = location_validator.heal_violations(
-                    violations, auto_approve=ctx.auto_approve if ctx else False
+                    violations, auto_approve=ctx.auto_approve if ctx else False,
                 )
                 healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
                 state_mgr.state["location_fixed"] = healed_count
@@ -664,7 +650,7 @@ def execute_phase1_discovery_impl(
                 )
             else:
                 logger.warning(
-                    "LocationHealerAgent has no heal_violations method - violations detected but not healed"
+                    "LocationHealerAgent has no heal_violations method - violations detected but not healed",
                 )
                 _record_healing_action(
                     state_mgr,
@@ -808,7 +794,7 @@ def execute_phase2_reconciliation(
             agent_cls = agents.get(agent_key)
             if agent_cls is None:
                 logging.warning(
-                    f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations"
+                    f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations",
                 )
                 failed_fixes.extend(
                     {"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"}
@@ -823,7 +809,7 @@ def execute_phase2_reconciliation(
                 agent_name=agent_key,
             )
             allowed, reason = decision_engine.should_proceed_with_healing(
-                confidence, agent_key, territory=territory
+                confidence, agent_key, territory=territory,
             )
             if not allowed:
                 logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
@@ -835,7 +821,7 @@ def execute_phase2_reconciliation(
             if ctx is None or not ctx.heal:
                 for v in agent_violations:
                     reconciliation_log.append(
-                        {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason}
+                        {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason},
                     )
                 pbar.update(1)
                 continue
@@ -849,7 +835,7 @@ def execute_phase2_reconciliation(
             try:
                 agent_instance = agent_cls(project_root=REPO_ROOT)
                 state_mgr.update_agent(
-                    agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations"
+                    agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations",
                 )
                 logging.warning(
                     "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
@@ -879,12 +865,12 @@ def execute_phase2_reconciliation(
                             _HEAL_TIMEOUT_S,
                         )
                         raise RuntimeError(
-                            f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
+                            f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}",
                         )
                     finally:
                         _uwg.revoke_write_permission(_territory_posix)
                         _uwg.record_mutation(
-                            path=_territory_posix, operation="heal_repository", permitted=True
+                            path=_territory_posix, operation="heal_repository", permitted=True,
                         )
                 if not isinstance(fix_result, dict):
                     fix_result = {"raw_output": str(fix_result)}
@@ -1013,16 +999,16 @@ def execute_phase3_validation(
 
 
 def execute_phase3_alignment(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None
+    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
 ):
     """PHASE 3: STRUCTURAL ALIGNMENT (Retriable)"""
     return execute_phase3_alignment_impl(
-        agents, territory, decision_engine, state_mgr, ctx, repo_root=repo_root
+        agents, territory, decision_engine, state_mgr, ctx, repo_root=repo_root,
     )
 
 
 def execute_phase3_alignment_impl(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None
+    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
 ):
     """PHASE 3: STRUCTURAL ALIGNMENT - Implementation"""
     REPO_ROOT = repo_root
@@ -1048,7 +1034,7 @@ def execute_phase3_alignment_impl(
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "HierarchyHealerAgent", territory=territory
+            confidence, "HierarchyHealerAgent", territory=territory,
         )
         state_mgr.add_event("decision", f"Hierarchy Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -1079,7 +1065,7 @@ def execute_phase3_alignment_impl(
                         reason=f"{violations} hierarchy violation(s) in territory '{territory}'",
                         territory=territory,
                         extra_context="Includes potential purge of orphaned files outside sovereign whitelist",
-                    )
+                    ),
                 )
                 if _hitl.choice == HitlChoice.YES:
                     _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
@@ -1214,13 +1200,13 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None, rep
                     "confidence": 0.9,
                     "violations_found": gravity_violations,
                     "violations_fixed": gravity_fixed,
-                }
+                },
             )
         state_mgr.state["gravity_violations"] = gravity_violation_list
         if gravity_violations > 0:
             status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
             state_mgr.complete_agent(
-                "GravityValidatorAgent", True, f"Scanned: {gravity_violations} gravity violation(s) found"
+                "GravityValidatorAgent", True, f"Scanned: {gravity_violations} gravity violation(s) found",
             )
             state_mgr.complete_agent("GravityLeakHealerAgent", True, status_msg)
             logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
@@ -1257,19 +1243,19 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None, rep
                 "severity": "high",
                 "recommended_action": "Fix gravity detection error",
                 "confidence": 0.5,
-            }
+            },
         ]
 
 
 def execute_phase4_architectural_validation(
-    agents, territory, state_mgr, ctx: "HealContext" = None, repo_root: Path = None
+    agents, territory, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
 ):
     """PHASE 4: ARCHITECTURAL VALIDATION (Retriable)"""
     return execute_phase4_validation_impl(agents, territory, state_mgr, ctx=ctx, repo_root=repo_root)
 
 
 def execute_phase4_validation_impl(
-    agents, territory, state_mgr, ctx: "HealContext" = None, repo_root: Path = None
+    agents, territory, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
 ):
     """PHASE 4: ARCHITECTURAL VALIDATION - Implementation"""
     REPO_ROOT = repo_root
@@ -1284,7 +1270,7 @@ def execute_phase4_validation_impl(
     else:
         target_territories = [territory]
     gov_report = arch_gov.comprehensive_territory_audit(
-        target_territories=target_territories, check_layer_boundaries=True, check_naming_conventions=True
+        target_territories=target_territories, check_layer_boundaries=True, check_naming_conventions=True,
     )
     if gov_report is None:
         state_mgr.complete_agent("ArchitectureGovernorAgent", False, "Returned None")
@@ -1327,7 +1313,7 @@ def execute_phase5_healing(
         logger.warning("Skipping healing: No governance report available.")
         return None
     return execute_phase5_healing_impl(
-        agents, territory, gov_report, decision_engine, state_mgr, ctx, repo_root=repo_root
+        agents, territory, gov_report, decision_engine, state_mgr, ctx, repo_root=repo_root,
     )
 
 
@@ -1355,7 +1341,7 @@ def execute_phase5_healing_impl(
         fixes = len(plan.get("naming_fixes", []))
         confidence = decision_engine.calculate_healing_confidence(fixes, ["NAMING"], territory)
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "ArchitectureGovernorAgent", territory=territory
+            confidence, "ArchitectureGovernorAgent", territory=territory,
         )
         state_mgr.add_event("decision", f"Arch Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -1455,7 +1441,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
         elif "Forbidden keyword 'import '" in message:
             violation_type = "IMPORT_IN_DOCS"
         violation_confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1, violation_types=[violation_type], territory=territory
+            violations_count=1, violation_types=[violation_type], territory=territory,
         ).value
         llm_decisions = [d for d in decision_engine.decisions_made if "LLM" in d.get("reason", "")]
         llm_was_triggered = decision_engine.enable_llm and len(llm_decisions) > 0
@@ -1480,7 +1466,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
                 "message": conv_violation.get("message", str(conv_violation)),
                 "severity": conv_violation.get("severity", "medium"),
                 "recommended_action": conv_violation.get(
-                    "recommended_action", "Review conversational pattern"
+                    "recommended_action", "Review conversational pattern",
                 ),
                 "llm_triggered": decision_engine.enable_llm,
                 "confidence": round(conv_violation.get("confidence", 0.5), 3),

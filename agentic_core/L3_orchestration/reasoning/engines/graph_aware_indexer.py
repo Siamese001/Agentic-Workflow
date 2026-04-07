@@ -152,13 +152,13 @@ class GraphAwareIndexer:
         if embeddings and len(embeddings) != len(chunks):
             Logger.warning(
                 f"Embeddings length ({len(embeddings)}) doesn't match chunks ({len(chunks)}). "
-                "Ignoring embeddings."
+                "Ignoring embeddings.",
             )
             embeddings = None
 
         _trace_id = f"graph_index_{doc_id}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "GraphAwareIndexer.index_document"
+            _trace_id, LayerSegment.L4_STATE, "GraphAwareIndexer.index_document",
         )
 
         results = {
@@ -233,7 +233,7 @@ class GraphAwareIndexer:
         results["adg_edges_bound"] = edges.to_dict()
 
         _emit_records_learning_event(
-            _trace_id, "document_indexed", f"chunks:{results['chunks_indexed']}"
+            _trace_id, "document_indexed", f"chunks:{results['chunks_indexed']}",
         )
 
         Logger.info(f"Indexed document {doc_id}: {results['chunks_indexed']} chunks")
@@ -256,7 +256,7 @@ class GraphAwareIndexer:
         fact_vec_hash = ""
         if embedding:
             fact_vec_hash = hashlib.sha256(
-                json.dumps(embedding, sort_keys=True).encode()
+                json.dumps(embedding, sort_keys=True).encode(),
             ).hexdigest()[:16]
 
         # Lazy import to avoid L3->L4 violation

@@ -74,7 +74,7 @@ class MetricsEmissionChokepoint:
         if trace_id in self._emitted_trace_ids:
             raise DuplicateEmissionError(
                 f"Duplicate metric emission for trace_id='{trace_id}' — "
-                "each trace_id may only emit once through the control spine"
+                "each trace_id may only emit once through the control spine",
             )
         artifact = MetricsArtifact(
             trace_id=trace_id,

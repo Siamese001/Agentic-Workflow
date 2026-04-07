@@ -22,7 +22,7 @@ class TestSectionRenderer:
         mock_section.model_dump.return_value = {
             "section_id": "sec_1",
             "heading": "Introduction",
-            "body": "Test content"
+            "body": "Test content",
         }
 
         renderer = SectionRenderer()

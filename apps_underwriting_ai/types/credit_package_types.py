@@ -1,7 +1,8 @@
 """
 Credit Package Types - Domain contracts for credit bureau and scoring data.
 """
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import BaseModel, Field, validator
 
 
@@ -49,6 +50,6 @@ class CreditPackage(BaseModel):
                 "bankruptcies_ever": 0,
                 "judgments_or_liens": 0,
                 "tradeline_utilization_pct": 23.5,
-                "credit_narrative_flags": []
-            }
+                "credit_narrative_flags": [],
+            },
         }

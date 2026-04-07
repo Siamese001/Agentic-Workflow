@@ -8,7 +8,6 @@ import asyncio
 import logging
 from typing import Any
 
-
 from .titanium_rag_pipeline import TitaniumRAGPipeline, create_titanium_pipeline
 
 DEFAULT_SLEEP = 1.0

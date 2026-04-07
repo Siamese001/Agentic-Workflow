@@ -166,16 +166,16 @@ EMBEDDING_GOVERNANCE_BOOL: dict[str, bool] = {
 
 EMBEDDING_GOVERNANCE_POINTER: dict[str, PointerConstraint] = {
     "active_embedder_id": PointerConstraint(
-        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small", "BAAI/bge-m3"})
+        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small", "BAAI/bge-m3"}),
     ),
     "vector_pack_hash": PointerConstraint(
-        allowlist=frozenset({"5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"})
+        allowlist=frozenset({"5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"}),
     ),  # sealed at deploy
     "normalized_pack_hash": PointerConstraint(
-        allowlist=frozenset({""})  # computed W1 init; placeholder
+        allowlist=frozenset({""}),  # computed W1 init; placeholder
     ),  # computed W1 init
     "retrieval_backend_mode": PointerConstraint(
-        allowlist=frozenset({"LOCAL_FIRST", "EXTERNAL_FIRST", "STRICT_EXTERNAL", "FAIL_CLOSED"})
+        allowlist=frozenset({"LOCAL_FIRST", "EXTERNAL_FIRST", "STRICT_EXTERNAL", "FAIL_CLOSED"}),
     ),
 }
 
@@ -234,7 +234,7 @@ FORBIDDEN_SURFACES: frozenset[str] = frozenset(
         "routing_bypass",
         "execution_shortcut",
         "sandbox_escape",
-    }
+    },
 )
 
 # =============================================================================
@@ -250,5 +250,5 @@ ALLOWED_SURFACES: frozenset[str] = frozenset(
     | set(EMBEDDING_GOVERNANCE_BOOL.keys())
     | set(EMBEDDING_GOVERNANCE_POINTER.keys())
     | set(EMBEDDING_GOVERNANCE_FLOAT.keys())
-    | set(EMBEDDING_GOVERNANCE_INT.keys())
+    | set(EMBEDDING_GOVERNANCE_INT.keys()),
 )

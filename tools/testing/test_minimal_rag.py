@@ -24,7 +24,7 @@ class MinimalRAGPipeline:
             self.embeddings[doc_id] = {
                 "content": chunk,
                 "embedding": embedding,
-                "metadata": {"source": str(file_path), "chunk": i}
+                "metadata": {"source": str(file_path), "chunk": i},
             }
             self.documents.append(doc_id)
 
@@ -57,7 +57,7 @@ class MinimalRAGPipeline:
                     "id": doc_id,
                     "content": doc["content"],
                     "score": score,
-                    "metadata": doc["metadata"]
+                    "metadata": doc["metadata"],
                 })
 
         # Sort by score and return top_k
@@ -89,7 +89,7 @@ async def test_minimal_rag():
         print("[TEST] Testing document retrieval...")
         results = await rag.retrieve(
             "Why did denied claims increase for Client ABC?",
-            top_k=3
+            top_k=3,
         )
 
         # Verify results

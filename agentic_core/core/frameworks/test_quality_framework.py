@@ -85,7 +85,7 @@ class TestQualityAnalyzer:
                             line_number=i,
                             current_strength=AssertionStrength.WEAK,
                             suggested_improvement=self._suggest_improvement(pattern),
-                        )
+                        ),
                     )
 
             # Track test function boundaries
@@ -124,7 +124,7 @@ class TestQualityAnalyzer:
                             line_number=i,
                             current_strength=AssertionStrength.WEAK,
                             suggested_improvement="Add pytest.raises() or specific exception validation",
-                        )
+                        ),
                     )
 
             # Check for behavioral validation opportunities
@@ -139,7 +139,7 @@ class TestQualityAnalyzer:
                             line_number=i,
                             current_strength=AssertionStrength.MEDIUM,
                             suggested_improvement="Add behavioral validation (method calls, state changes)",
-                        )
+                        ),
                     )
 
         return issues
@@ -257,7 +257,7 @@ class TestCoverageAnalyzer:
                 if not any(
                     "pytest.raises" in test_content
                     or "assert" in test_content
-                    and "error" in test_content.lower()
+                    and "error" in test_content.lower(),
                 ):
                     gaps.append("Missing error path testing")
 

@@ -110,7 +110,7 @@ class FixImportOrderRule(BaseRepairRule):
 
             # Reconstruct the file
             new_content = self._reconstruct_with_sorted_imports(
-                original_content, import_blocks, sorted_imports
+                original_content, import_blocks, sorted_imports,
             )
 
             path.write_text(new_content, encoding="utf-8")

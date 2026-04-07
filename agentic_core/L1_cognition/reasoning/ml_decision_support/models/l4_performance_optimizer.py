@@ -48,7 +48,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         3: "Tune_Configuration",
         4: "Add_Caching",
         5: "Load_Balance",
-        6: "No_Action"
+        6: "No_Action",
     }
 
     # Reverse mapping
@@ -63,7 +63,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             model_version="1.0",
             model_type="random_forest",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -79,7 +79,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         self.threshold_config = {
             "confidence_threshold": 0.6,
             "optimization_threshold": 0.5,
-            "action_threshold": 0.7
+            "action_threshold": 0.7,
         }
 
         if model_file_path and model_file_path.exists():
@@ -118,8 +118,8 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -131,7 +131,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict optimization action for performance improvement.
@@ -164,7 +164,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -199,8 +199,8 @@ class L4PerformanceOptimizer(BaseMLModel):
                     prediction=predicted_action,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -213,7 +213,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -225,7 +225,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'optimization_action': predicted_action,
-                'requires_implementation': predicted_action != "No_Action"
+                'requires_implementation': predicted_action != "No_Action",
             })
 
             # Log prediction
@@ -241,7 +241,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def optimize_performance(
@@ -249,7 +249,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         performance_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get comprehensive performance optimization recommendations.
@@ -268,7 +268,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             context=performance_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -276,7 +276,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'optimization_action': 'No_Action',
                 'confidence': 0.0,
                 'reason': 'Feature extraction failed',
-                'recommendations': ['Check performance data availability']
+                'recommendations': ['Check performance data availability'],
             }
 
         # Validate input
@@ -288,20 +288,20 @@ class L4PerformanceOptimizer(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate detailed recommendations
         recommendations = self._generate_optimization_recommendations(
             action=prediction.prediction,
             context=performance_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Calculate expected impact
         expected_impact = self._calculate_expected_impact(
             action=prediction.prediction,
-            context=performance_context
+            context=performance_context,
         )
 
         return {
@@ -313,7 +313,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             'expected_impact': expected_impact,
             'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
             'estimated_effort': self._estimate_implementation_effort(prediction.prediction),
-            'risk_level': self._assess_implementation_risk(prediction.prediction, performance_context)
+            'risk_level': self._assess_implementation_risk(prediction.prediction, performance_context),
         }
 
     def get_performance_insights(
@@ -321,7 +321,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         performance_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get detailed performance insights and analysis.
@@ -340,14 +340,14 @@ class L4PerformanceOptimizer(BaseMLModel):
             context=performance_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
             return {
                 'insights': [],
                 'analysis': 'Feature extraction failed',
-                'recommendations': []
+                'recommendations': [],
             }
 
         features = extraction_result.features
@@ -362,14 +362,14 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'type': 'performance_degradation',
                 'severity': 'high',
                 'description': 'Response times are increasing significantly',
-                'impact': 'User experience and SLA compliance'
+                'impact': 'User experience and SLA compliance',
             })
         elif response_trend < -0.2:
             insights.append({
                 'type': 'performance_improvement',
                 'severity': 'low',
                 'description': 'Response times are improving',
-                'impact': 'Positive trend in performance'
+                'impact': 'Positive trend in performance',
             })
 
         # Resource utilization insight
@@ -381,7 +381,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'type': 'resource_bottleneck',
                 'severity': 'high',
                 'description': f'High CPU utilization ({cpu_util:.1f}%)',
-                'impact': 'System performance and scalability'
+                'impact': 'System performance and scalability',
             })
 
         if memory_util > 80:
@@ -389,7 +389,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'type': 'resource_bottleneck',
                 'severity': 'high',
                 'description': f'High memory utilization ({memory_util:.1f}%)',
-                'impact': 'System stability and performance'
+                'impact': 'System stability and performance',
             })
 
         # SLA compliance insight
@@ -399,7 +399,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'type': 'sla_violation',
                 'severity': 'high' if sla_compliance < 0.9 else 'medium',
                 'description': f'SLA compliance rate is {sla_compliance:.1%}',
-                'impact': 'Service level agreement compliance'
+                'impact': 'Service level agreement compliance',
             })
 
         # Optimization potential insight
@@ -409,7 +409,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'type': 'optimization_opportunity',
                 'severity': 'medium',
                 'description': 'High optimization potential detected',
-                'impact': 'Significant performance improvements possible'
+                'impact': 'Significant performance improvements possible',
             })
 
         # Cost efficiency insight
@@ -419,7 +419,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'type': 'cost_inefficiency',
                 'severity': 'medium',
                 'description': 'Low cost efficiency detected',
-                'impact': 'Operational costs and resource utilization'
+                'impact': 'Operational costs and resource utilization',
             })
 
         # Generate analysis summary
@@ -434,16 +434,16 @@ class L4PerformanceOptimizer(BaseMLModel):
                 'memory_utilization': memory_util,
                 'sla_compliance': sla_compliance,
                 'optimization_potential': optimization_potential,
-                'cost_efficiency': cost_efficiency
+                'cost_efficiency': cost_efficiency,
             },
-            'recommendations': [insight['description'] for insight in insights if insight['severity'] in ['high', 'medium']]
+            'recommendations': [insight['description'] for insight in insights if insight['severity'] in ['high', 'medium']],
         }
 
     def _generate_optimization_recommendations(
         self,
         action: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> list[str]:
         """Generate action-specific optimization recommendations."""
         recommendations = []
@@ -453,49 +453,49 @@ class L4PerformanceOptimizer(BaseMLModel):
                 "Increase CPU and memory resources",
                 "Consider vertical scaling for better performance",
                 "Monitor resource utilization after scaling",
-                "Update capacity planning forecasts"
+                "Update capacity planning forecasts",
             ])
         elif action == "Scale_Down":
             recommendations.extend([
                 "Reduce allocated resources to save costs",
                 "Implement auto-scaling policies",
                 "Monitor performance after scaling down",
-                "Ensure SLA compliance is maintained"
+                "Ensure SLA compliance is maintained",
             ])
         elif action == "Optimize_Resources":
             recommendations.extend([
                 "Analyze resource utilization patterns",
                 "Implement resource pooling",
                 "Optimize container configurations",
-                "Consider right-sizing instances"
+                "Consider right-sizing instances",
             ])
         elif action == "Tune_Configuration":
             recommendations.extend([
                 "Review and optimize system configurations",
                 "Adjust timeout and retry policies",
                 "Optimize database connection pools",
-                "Fine-tune caching parameters"
+                "Fine-tune caching parameters",
             ])
         elif action == "Add_Caching":
             recommendations.extend([
                 "Implement application-level caching",
                 "Add CDN for static content",
                 "Optimize cache hit rates",
-                "Consider distributed caching"
+                "Consider distributed caching",
             ])
         elif action == "Load_Balance":
             recommendations.extend([
                 "Implement load balancing across instances",
                 "Configure health checks",
                 "Optimize load balancing algorithms",
-                "Consider geographic load distribution"
+                "Consider geographic load distribution",
             ])
         else:  # No_Action
             recommendations.extend([
                 "Current performance is optimal",
                 "Continue monitoring for changes",
                 "Maintain current configuration",
-                "Regular performance reviews recommended"
+                "Regular performance reviews recommended",
             ])
 
         # Add context-specific recommendations
@@ -508,7 +508,7 @@ class L4PerformanceOptimizer(BaseMLModel):
     def _calculate_expected_impact(
         self,
         action: str,
-        context: dict[str, Any]
+        context: dict[str, Any],
     ) -> dict[str, Any]:
         """Calculate expected impact of optimization action."""
         # Base impact estimates by action type
@@ -516,38 +516,38 @@ class L4PerformanceOptimizer(BaseMLModel):
             "Scale_Up": {
                 "performance_improvement": 0.4,
                 "cost_increase": 0.3,
-                "complexity_change": 0.2
+                "complexity_change": 0.2,
             },
             "Scale_Down": {
                 "performance_improvement": -0.1,
                 "cost_increase": -0.4,
-                "complexity_change": -0.1
+                "complexity_change": -0.1,
             },
             "Optimize_Resources": {
                 "performance_improvement": 0.3,
                 "cost_increase": 0.0,
-                "complexity_change": 0.1
+                "complexity_change": 0.1,
             },
             "Tune_Configuration": {
                 "performance_improvement": 0.2,
                 "cost_increase": 0.0,
-                "complexity_change": 0.1
+                "complexity_change": 0.1,
             },
             "Add_Caching": {
                 "performance_improvement": 0.5,
                 "cost_increase": 0.1,
-                "complexity_change": 0.2
+                "complexity_change": 0.2,
             },
             "Load_Balance": {
                 "performance_improvement": 0.3,
                 "cost_increase": 0.2,
-                "complexity_change": 0.3
+                "complexity_change": 0.3,
             },
             "No_Action": {
                 "performance_improvement": 0.0,
                 "cost_increase": 0.0,
-                "complexity_change": 0.0
-            }
+                "complexity_change": 0.0,
+            },
         }
 
         base_impact = impact_estimates.get(action, impact_estimates["No_Action"])
@@ -594,7 +594,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             "Tune_Configuration": "Medium",
             "Add_Caching": "High",
             "Load_Balance": "High",
-            "No_Action": "None"
+            "No_Action": "None",
         }
 
         return effort_estimates.get(action, "Medium")
@@ -609,7 +609,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             "Tune_Configuration": "Medium",
             "Add_Caching": "Low",
             "Load_Balance": "Medium",
-            "No_Action": "None"
+            "No_Action": "None",
         }
 
         base_risk = risk_levels.get(action, "Medium")
@@ -687,7 +687,7 @@ class L4PerformanceOptimizer(BaseMLModel):
                     'importance_score': float(importance),
                     'feature_value': model_input.features.get(name),
                     'rank': i + 1,
-                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0
+                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0,
                 })
 
             # Sort by importance
@@ -744,7 +744,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the Random Forest model.
@@ -788,8 +788,8 @@ class L4PerformanceOptimizer(BaseMLModel):
                 min_samples_split=5,
                 min_samples_leaf=2,
                 random_state=42,
-                n_jobs=-1
-            ))
+                n_jobs=-1,
+            )),
         ])
 
         # Train model

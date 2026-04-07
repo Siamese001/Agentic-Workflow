@@ -52,7 +52,7 @@ class ForbiddenKeyVisitor(ast.NodeVisitor):
             if key in FORBIDDEN_ADG_KEYS:
                 self.violations.append(
                     f"{self.filepath}:{node.lineno}: "
-                    f'forbidden ADG key "{key}" — use "{FORBIDDEN_ADG_KEYS[key]}" (§16.2)'
+                    f'forbidden ADG key "{key}" — use "{FORBIDDEN_ADG_KEYS[key]}" (§16.2)',
                 )
         self.generic_visit(node)
 
@@ -64,7 +64,7 @@ class ForbiddenKeyVisitor(ast.NodeVisitor):
                 if isinstance(key, str) and key in FORBIDDEN_ADG_KEYS:
                     self.violations.append(
                         f"{self.filepath}:{node.lineno}: "
-                        f'forbidden ADG key in .get("{key}") — use "{FORBIDDEN_ADG_KEYS[key]}" (§16.2)'
+                        f'forbidden ADG key in .get("{key}") — use "{FORBIDDEN_ADG_KEYS[key]}" (§16.2)',
                     )
         self.generic_visit(node)
 

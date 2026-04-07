@@ -386,10 +386,10 @@ def benchmark_f_edge_sort_key() -> BenchmarkResult:
         description="Sort 100k Edge objects: 5-field key tuple vs full dataclass comparison",
     )
 
-    from agentic_core.adg.extraction.static_scanner import Edge
-
     # Build 100k edges with varied data for realistic sorting
     import random
+
+    from agentic_core.adg.extraction.static_scanner import Edge
     random.seed(42)
     edges = []
     for i in range(100_000):
@@ -465,7 +465,6 @@ def benchmark_h_cpu_optimizer() -> BenchmarkResult:
         result.debug_note = f"Import error: {e}"
         return result
 
-    import psutil
     import concurrent.futures
 
     opt = AMDCPUOptimizer(CPUConfig(cpu_affinity=False))

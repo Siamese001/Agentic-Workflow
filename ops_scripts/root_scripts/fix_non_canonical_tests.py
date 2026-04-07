@@ -4,7 +4,6 @@ Move non-canonical tests to proper locations or remove duplicates.
 import pathlib
 
 
-
 def main():
     """Handle non-canonical tests."""
     test_root = pathlib.Path(TESTS_DIR)

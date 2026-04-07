@@ -150,7 +150,7 @@ class ReindexCoordinator:
         """
         trace_id = f"reindex_{Path(file_path).name}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "ReindexCoordinator.reindex_file"
+            trace_id, LayerSegment.L4_STATE, "ReindexCoordinator.reindex_file",
         )
 
         start_time = time.time()
@@ -164,7 +164,7 @@ class ReindexCoordinator:
             if ingestion_result.success:
                 _emit_records_telemetry_event(
                     "reindex",
-                    f"success_{Path(file_path).name}"
+                    f"success_{Path(file_path).name}",
                 )
 
                 return ReindexResult(
@@ -176,7 +176,7 @@ class ReindexCoordinator:
             else:
                 _emit_records_telemetry_event(
                     "reindex",
-                    f"failed_{Path(file_path).name}"
+                    f"failed_{Path(file_path).name}",
                 )
 
                 return ReindexResult(
@@ -213,7 +213,7 @@ class ReindexCoordinator:
         """
         trace_id = f"batch_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "ReindexCoordinator.reindex_batch"
+            trace_id, LayerSegment.L4_STATE, "ReindexCoordinator.reindex_batch",
         )
 
         results = []

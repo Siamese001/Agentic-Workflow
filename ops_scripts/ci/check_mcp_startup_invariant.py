@@ -49,7 +49,7 @@ def validate_startup_invariant(name: str, config: dict) -> list[str]:
     if not cwd:
         violations.append(
             f"{name}: MISSING_CWD - Local Python MCP must declare 'cwd' "
-            f"or 'startup_mode=portable'"
+            f"or 'startup_mode=portable'",
         )
         return violations
 
@@ -58,7 +58,7 @@ def validate_startup_invariant(name: str, config: dict) -> list[str]:
     if cwd_path != REPO_ROOT:
         violations.append(
             f"{name}: WRONG_CWD - Expected {REPO_ROOT}, got {cwd_path}. "
-            f"Local Python MCPs should run from repo root."
+            f"Local Python MCPs should run from repo root.",
         )
 
     # Check env vars include critical paths
@@ -68,7 +68,7 @@ def validate_startup_invariant(name: str, config: dict) -> list[str]:
     pythonpath = env.get("PYTHONPATH", "")
     if pythonpath and str(REPO_ROOT) not in pythonpath:
         violations.append(
-            f"{name}: PYTHONPATH_ISSUE - PYTHONPATH set but missing repo root"
+            f"{name}: PYTHONPATH_ISSUE - PYTHONPATH set but missing repo root",
         )
 
     return violations

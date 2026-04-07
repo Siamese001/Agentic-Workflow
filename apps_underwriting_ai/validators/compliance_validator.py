@@ -1,10 +1,10 @@
 """
 Compliance Validator - Validates product vs policy fit.
 """
-from typing import List, Dict, Any
 from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
-from ..types import UnderwritingRequest, RiskFeatures
+from ..types import RiskFeatures, UnderwritingRequest
 
 
 @dataclass
@@ -32,7 +32,7 @@ class ComplianceValidator:
     def validate(
         self,
         request: UnderwritingRequest,
-        features: RiskFeatures
+        features: RiskFeatures,
     ) -> ComplianceResult:
         """
         Perform full compliance validation.
@@ -76,7 +76,7 @@ class ComplianceValidator:
     def _check_industry(
         self,
         request: UnderwritingRequest,
-        result: ComplianceResult
+        result: ComplianceResult,
     ) -> None:
         """Check for restricted industries."""
         policy = request.policy_context
@@ -93,16 +93,16 @@ class ComplianceValidator:
                     "value": industry_code,
                     "threshold": restricted,
                     "severity": "blocking",
-                    "message": f"Industry code {industry_code} matches restricted category {restricted}"
+                    "message": f"Industry code {industry_code} matches restricted category {restricted}",
                 })
                 result.required_actions.append(
-                    "Policy exception required for restricted industry"
+                    "Policy exception required for restricted industry",
                 )
 
     def _check_jurisdiction(
         self,
         request: UnderwritingRequest,
-        result: ComplianceResult
+        result: ComplianceResult,
     ) -> None:
         """Check for prohibited jurisdictions."""
         policy = request.policy_context
@@ -119,14 +119,14 @@ class ComplianceValidator:
                     "value": state,
                     "threshold": None,
                     "severity": "blocking",
-                    "message": f"Operating state {state} is in prohibited jurisdictions list"
+                    "message": f"Operating state {state} is in prohibited jurisdictions list",
                 })
 
     def _check_dscr(
         self,
         request: UnderwritingRequest,
         features: RiskFeatures,
-        result: ComplianceResult
+        result: ComplianceResult,
     ) -> None:
         """Check minimum DSCR requirement."""
         policy = request.policy_context
@@ -141,17 +141,17 @@ class ComplianceValidator:
                 "value": features.capacity.dscr_ttm,
                 "threshold": policy.min_dscr,
                 "severity": "exception",
-                "message": f"DSCR of {features.capacity.dscr_ttm:.2f}x below policy minimum of {policy.min_dscr:.2f}x"
+                "message": f"DSCR of {features.capacity.dscr_ttm:.2f}x below policy minimum of {policy.min_dscr:.2f}x",
             })
             result.required_actions.append(
-                f"Exception required: DSCR below {policy.min_dscr:.2f}x minimum"
+                f"Exception required: DSCR below {policy.min_dscr:.2f}x minimum",
             )
 
     def _check_leverage(
         self,
         request: UnderwritingRequest,
         features: RiskFeatures,
-        result: ComplianceResult
+        result: ComplianceResult,
     ) -> None:
         """Check maximum leverage requirement."""
         policy = request.policy_context
@@ -166,17 +166,17 @@ class ComplianceValidator:
                 "value": features.capacity.debt_to_ebitda_ttm,
                 "threshold": policy.max_debt_to_ebitda,
                 "severity": "exception",
-                "message": f"Leverage of {features.capacity.debt_to_ebitda_ttm:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x"
+                "message": f"Leverage of {features.capacity.debt_to_ebitda_ttm:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x",
             })
             result.required_actions.append(
-                f"Exception required: Leverage above {policy.max_debt_to_ebitda:.2f}x maximum"
+                f"Exception required: Leverage above {policy.max_debt_to_ebitda:.2f}x maximum",
             )
 
     def _check_fico(
         self,
         request: UnderwritingRequest,
         features: RiskFeatures,
-        result: ComplianceResult
+        result: ComplianceResult,
     ) -> None:
         """Check minimum FICO requirement."""
         policy = request.policy_context
@@ -191,17 +191,17 @@ class ComplianceValidator:
                 "value": features.credit.personal_fico_min,
                 "threshold": policy.min_fico,
                 "severity": "exception",
-                "message": f"FICO of {features.credit.personal_fico_min} below policy minimum of {policy.min_fico}"
+                "message": f"FICO of {features.credit.personal_fico_min} below policy minimum of {policy.min_fico}",
             })
             result.required_actions.append(
-                f"Exception required: FICO below {policy.min_fico} minimum"
+                f"Exception required: FICO below {policy.min_fico} minimum",
             )
 
     def _check_collateral(
         self,
         request: UnderwritingRequest,
         features: RiskFeatures,
-        result: ComplianceResult
+        result: ComplianceResult,
     ) -> None:
         """Check collateral eligibility."""
         policy = request.policy_context
@@ -217,7 +217,7 @@ class ComplianceValidator:
                 "value": collateral.collateral_type,
                 "threshold": policy.collateral_rules.eligible_collateral,
                 "severity": "blocking",
-                "message": f"Collateral type '{collateral.collateral_type}' not in eligible list"
+                "message": f"Collateral type '{collateral.collateral_type}' not in eligible list",
             })
 
         # Check max LTV
@@ -229,5 +229,5 @@ class ComplianceValidator:
                     "value": features.collateral.ltv,
                     "threshold": policy.collateral_rules.max_ltv,
                     "severity": "exception",
-                    "message": f"LTV of {features.collateral.ltv:.1%} exceeds policy maximum of {policy.collateral_rules.max_ltv:.1%}"
+                    "message": f"LTV of {features.collateral.ltv:.1%} exceeds policy maximum of {policy.collateral_rules.max_ltv:.1%}",
                 })

@@ -28,7 +28,7 @@ def main():
     internal_packages = {
         "agentic_core", "apps_lic", "apps_rg", "apps_shared",
         "apps_exec", "apps_rfp", "apps_research", "apps_eval",
-        "tools", "tests", "ops_scripts", "infrastructure", "system_learning"
+        "tools", "tests", "ops_scripts", "infrastructure", "system_learning",
     }
 
     stdlib = set(sys.stdlib_module_names)

@@ -61,7 +61,7 @@ class RuntimeEvidenceIngestion:
             "artifacts/execution",
             "artifacts/traces",
             "logs",
-            "runtime_logs"
+            "runtime_logs",
         ]
 
         runtime_files = []
@@ -126,7 +126,7 @@ class RuntimeEvidenceIngestion:
                     "error_count": len(evidence_info["errors"]),
                     "metric_count": len(evidence_info["metrics"]),
                     "file_size": len(content),
-                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16],
                 }
 
                 # Only add non-empty list fields (flatten complex objects)
@@ -167,7 +167,7 @@ class RuntimeEvidenceIngestion:
                     collection_name="repo_runtime_evidence",
                     documents=batch_docs,
                     metadatas=batch_metas,
-                    ids=batch_ids
+                    ids=batch_ids,
                 )
                 logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} runtime files")
 
@@ -191,7 +191,7 @@ class RuntimeEvidenceIngestion:
                 "layers": ["L2", "L4", "L5"],
                 "status": "success",
                 "duration": 1250,
-                "operations": ["write", "validate", "commit"]
+                "operations": ["write", "validate", "commit"],
             },
             {
                 "name": "ADG scan trace",
@@ -199,7 +199,7 @@ class RuntimeEvidenceIngestion:
                 "layers": ["L4", "L6"],
                 "status": "success",
                 "duration": 5430,
-                "operations": ["scan", "index", "store"]
+                "operations": ["scan", "index", "store"],
             },
             {
                 "name": "L0 routing failure",
@@ -208,7 +208,7 @@ class RuntimeEvidenceIngestion:
                 "status": "failure",
                 "duration": 890,
                 "operations": ["route", "validate", "error"],
-                "errors": ["Policy validation failed", "Gateway timeout"]
+                "errors": ["Policy validation failed", "Gateway timeout"],
             },
             {
                 "name": "L1 cognition processing",
@@ -216,7 +216,7 @@ class RuntimeEvidenceIngestion:
                 "layers": ["L1", "L4", "L6"],
                 "status": "success",
                 "duration": 3400,
-                "operations": ["retrieve", "embed", "reason"]
+                "operations": ["retrieve", "embed", "reason"],
             },
             {
                 "name": "L3 orchestration workflow",
@@ -224,8 +224,8 @@ class RuntimeEvidenceIngestion:
                 "layers": ["L3", "L4"],
                 "status": "success",
                 "duration": 2100,
-                "operations": ["orchestrate", "coordinate", "persist"]
-            }
+                "operations": ["orchestrate", "coordinate", "persist"],
+            },
         ]
 
         for i, scenario in enumerate(synthetic_scenarios):
@@ -260,7 +260,7 @@ class RuntimeEvidenceIngestion:
                 "layers": scenario["layers"],
                 "operations": scenario["operations"],
                 "synthetic": True,
-                "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16]
+                "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16],
             }
 
             if scenario.get('errors'):
@@ -306,7 +306,7 @@ class RuntimeEvidenceIngestion:
                 "synthetic": True,
                 "variant": i,
                 "base_scenario": variation,
-                "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16]
+                "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16],
             }
 
             if status == "failure":
@@ -329,7 +329,7 @@ class RuntimeEvidenceIngestion:
                     collection_name="repo_runtime_evidence",
                     documents=batch_docs,
                     metadatas=batch_metas,
-                    ids=batch_ids
+                    ids=batch_ids,
                 )
                 logger.info(f"Added synthetic batch {i//batch_size + 1}: {len(batch_docs)} traces")
 
@@ -347,7 +347,7 @@ class RuntimeEvidenceIngestion:
             "components": [],
             "errors": [],
             "metrics": [],
-            "layers": []
+            "layers": [],
         }
 
         # Try to parse as JSON first
@@ -455,7 +455,7 @@ def main():
     # Run ingestion
     ingestion = RuntimeEvidenceIngestion(
         repo_root=args.repo_root,
-        chroma_persist_dir=args.chroma_dir
+        chroma_persist_dir=args.chroma_dir,
     )
 
     if args.dry_run:

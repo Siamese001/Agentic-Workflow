@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -211,7 +210,7 @@ class CapabilityChokepoint:
         """
         if self._frozen:
             raise PermissionError(
-                f"REQ-091: CapabilityChokepoint frozen — token issuance blocked (scope={scope})."
+                f"REQ-091: CapabilityChokepoint frozen — token issuance blocked (scope={scope}).",
             )
 
     def authorize_and_execute(
@@ -250,12 +249,12 @@ class CapabilityChokepoint:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "CapabilityChokepoint.authorize_and_execute"
+            _trace_id, LayerSegment.L2_EXECUTION, "CapabilityChokepoint.authorize_and_execute",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:CapabilityChokepoint.authorize_and_execute".encode()
+            f"{_trace_id}:CapabilityChokepoint.authorize_and_execute".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -301,7 +300,7 @@ class CapabilityChokepoint:
             )
             raise PermissionError(
                 f"CAPABILITY_CHOKEPOINT_FAIL_CLOSED: expected CapabilityTokenArtifact, "
-                f"got {type(token).__name__}"
+                f"got {type(token).__name__}",
             )
 
         # FAIL-CLOSED: invalid artifact_type field
@@ -317,7 +316,7 @@ class CapabilityChokepoint:
             )
             self._decisions.append(decision)
             raise PermissionError(
-                f"CAPABILITY_CHOKEPOINT_FAIL_CLOSED: artifact_type mismatch '{token.artifact_type}'"
+                f"CAPABILITY_CHOKEPOINT_FAIL_CLOSED: artifact_type mismatch '{token.artifact_type}'",
             )
 
         # Delegate to CapabilityEnforcer for permission/path/quota checks

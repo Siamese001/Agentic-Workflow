@@ -59,7 +59,7 @@ except ImportError:
                     'exception_type': 'ImportError',
                     'handler_body': ['pass'],
                     'context': 'import missing_dependency',
-                    'severity': 'HIGH'
+                    'severity': 'HIGH',
                 },
                 {
                     'file_path': str(optional_file),
@@ -67,7 +67,7 @@ except ImportError:
                     'exception_type': 'ImportError',
                     'handler_body': ['pass'],
                     'context': 'optional import fallback',
-                    'severity': 'HIGH'
+                    'severity': 'HIGH',
                 },
                 {
                     'file_path': str(required_test),
@@ -75,9 +75,9 @@ except ImportError:
                     'exception_type': 'ImportError',
                     'handler_body': ['pass'],
                     'context': 'import test_dependency',
-                    'severity': 'HIGH'
-                }
-            ]
+                    'severity': 'HIGH',
+                },
+            ],
         }
 
         # Create tools directory and violations file

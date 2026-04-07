@@ -69,13 +69,13 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
                     if _is_first_party(alias.name):
                         violations.append(
                             f"{rel}:{stmt.lineno}: First-party import '{alias.name}' "
-                            f"wrapped in try/except ImportError"
+                            f"wrapped in try/except ImportError",
                         )
             elif isinstance(stmt, ast.ImportFrom) and stmt.module:
                 if _is_first_party(stmt.module):
                     violations.append(
                         f"{rel}:{stmt.lineno}: First-party import '{stmt.module}' "
-                        f"wrapped in try/except ImportError"
+                        f"wrapped in try/except ImportError",
                     )
 
     # Rule 2: No pytest.skip() hiding import failures
@@ -94,7 +94,7 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
         if "import" in reason:
             violations.append(
                 f"{rel}:{node.lineno}: pytest.skip() hides import failure: "
-                f"'{reason[:80]}'"
+                f"'{reason[:80]}'",
             )
 
     # Rule 3: No pytest.importorskip in core tests without optional marker
@@ -109,7 +109,7 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
                     dep = str(node.args[0].value)
                 violations.append(
                     f"{rel}:{node.lineno}: pytest.importorskip('{dep}') in "
-                    f"unmarked test (add @pytest.mark.optional)"
+                    f"unmarked test (add @pytest.mark.optional)",
                 )
 
     # Strict mode: check for _AVAILABLE patterns
@@ -120,7 +120,7 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
                 if "_AVAILABLE" in stripped and not stripped.startswith("#"):
                     if "skipif" in stripped or "pytest.skip" in stripped:
                         violations.append(
-                            f"{rel}:{i}: Residual _AVAILABLE skip pattern"
+                            f"{rel}:{i}: Residual _AVAILABLE skip pattern",
                         )
 
     return violations

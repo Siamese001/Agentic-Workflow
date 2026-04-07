@@ -7,7 +7,7 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/", "--co", "-q", "-p", "no:logging", "--tb=short"],
-    capture_output=True, text=True, cwd=ROOT, timeout=120
+    capture_output=True, text=True, cwd=ROOT, timeout=120,
 )
 
 # Combine stdout + stderr and strip ANSI

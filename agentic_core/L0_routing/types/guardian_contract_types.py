@@ -31,8 +31,8 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
-# Import V15 exceptions from zero-dependency module (breaks circular import)
-from agentic_core.L0_routing.types.v15_exceptions import (
+# Import guardian enforcement exceptions from zero-dependency module (breaks circular import)
+from agentic_core.L0_routing.types.guardian_enforcement_exceptions import (
     V15EnforcementError,
     is_v15_enforced,
 )
@@ -135,7 +135,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -855,7 +854,7 @@ class GuardianResult:
         """Add a check entry and update top-level status."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardianContractResult.add_check:{check_id}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardianContractResult.add_check:{check_id}",
         )
         status_val = status.value if isinstance(status, CheckStatus) else status
         self.checks.append(

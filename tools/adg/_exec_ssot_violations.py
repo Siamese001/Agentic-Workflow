@@ -17,7 +17,7 @@ rows = list(
     AND n1.resolved_path LIKE '%execute_ssot.py'
     AND n2.layer NOT IN ('L0','L_SHARED','L_TOOLS','L_TEST','L_UNKNOWN','')
     ORDER BY e.line_no, n2.layer
-""")
+"""),
 )
 
 seen = set()

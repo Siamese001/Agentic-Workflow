@@ -1,5 +1,9 @@
 # Canonical definitions moved to agentic_core/mixins/state_validation_mixin.py
 # Re-export for backward compatibility
+from agentic_core.mixins.state_validation_mixin import (  # noqa: F401
+    StateValidationError,
+    StateValidationMixin,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -63,10 +67,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-)
-from agentic_core.mixins.state_validation_mixin import (  # noqa: F401
-    StateValidationError,
-    StateValidationMixin,
 )
 
 _emit_emits_metric_event("state_validation_types", "p4obs", "metric_1")

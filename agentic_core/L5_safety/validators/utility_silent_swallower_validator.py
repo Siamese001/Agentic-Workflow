@@ -128,7 +128,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -137,7 +136,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
@@ -224,18 +222,18 @@ class UtilityScriptClassifier:
     def classify_script(cls, file_path: Path) -> str:
         """Classify a script by its operational category."""
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "UtilityScriptClassifier.classify_script", "L5_POLICY"
+            str(uuid.uuid4()), "UtilityScriptClassifier.classify_script", "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "UtilityScriptClassifier.classify_script"
+            _trace_id, LayerSegment.L5_POLICY, "UtilityScriptClassifier.classify_script",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:UtilityScriptClassifier.classify_script".encode()
+            f"{_trace_id}:UtilityScriptClassifier.classify_script".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -311,12 +309,12 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "UtilitySilentSwallowerDetector.detect"
+            _trace_id, LayerSegment.L5_POLICY, "UtilitySilentSwallowerDetector.detect",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:UtilitySilentSwallowerDetector.detect".encode()
+            f"{_trace_id}:UtilitySilentSwallowerDetector.detect".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -344,7 +342,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
         return violations
 
     def _check_try_except(
-        self, node: ast.Try, file_path: Path, source_lines: list[str], script_category: str
+        self, node: ast.Try, file_path: Path, source_lines: list[str], script_category: str,
     ) -> AntiPatternViolation | None:
         """Check a try-except node for silent swallower violations."""
 
@@ -457,7 +455,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
         return False
 
     def _create_violation(
-        self, file_path: Path, handler: ast.ExceptHandler, message: str, enforcement_level: EnforcementLevel
+        self, file_path: Path, handler: ast.ExceptHandler, message: str, enforcement_level: EnforcementLevel,
     ) -> AntiPatternViolation:
         """Create an anti-pattern violation."""
         severity = "error" if enforcement_level == EnforcementLevel.HARD_BLOCK else "warning"

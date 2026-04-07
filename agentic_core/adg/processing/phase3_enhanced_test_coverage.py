@@ -114,7 +114,7 @@ class TestDiscoveryEngine:
                     for item in node.body:
                         if isinstance(item, ast.FunctionDef) and item.name.startswith("test"):
                             test_info = self._analyze_test_function(
-                                item, test_file, TestFramework.UNITTEST, file_imports
+                                item, test_file, TestFramework.UNITTEST, file_imports,
                             )
                             tests.append(test_info)
 
@@ -137,7 +137,7 @@ class TestDiscoveryEngine:
                         target_functions=[],
                         target_classes=[],
                         target_modules=[],
-                    )
+                    ),
                 )
             return tests
         except Exception as e:  # guardian: allow-silent-swallow -- fail-closed: AST analysis unavailable
@@ -302,13 +302,13 @@ class TestCoverageAnalyzer:
         violations = []
         for file_path, line_no, evidence, severity in cursor.fetchall():
             violations.append(
-                {"file_path": file_path, "line_no": line_no, "evidence": evidence, "severity": severity}
+                {"file_path": file_path, "line_no": line_no, "evidence": evidence, "severity": severity},
             )
 
         return violations
 
     def _analyze_single_violation_coverage(
-        self, violation: dict, all_tests: list[TestFunction]
+        self, violation: dict, all_tests: list[TestFunction],
     ) -> TestCoverageGap | None:
         """Analyze test coverage for a single violation."""
         violation_file = violation["file_path"]
@@ -487,7 +487,7 @@ class TestSkeletonGenerator:
         }
 
     def generate_test_skeleton(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str
+        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
     ) -> str:
         """Generate a test skeleton for a coverage gap."""
         test_type = gap.missing_test_types[0] if gap.missing_test_types else "unit"
@@ -495,7 +495,7 @@ class TestSkeletonGenerator:
         return template(gap, exception_type, remediation_strategy)
 
     def _unit_test_template(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str
+        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
     ) -> str:
         """Generate a unit test template."""
         function_name = gap.violation_function or "target_function"
@@ -522,7 +522,7 @@ class TestSkeletonGenerator:
         return template
 
     def _integration_test_template(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str
+        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
     ) -> str:
         """Generate an integration test template."""
         function_name = gap.violation_function or "target_function"
@@ -545,7 +545,7 @@ class TestSkeletonGenerator:
         return template
 
     def _property_test_template(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str
+        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
     ) -> str:
         """Generate a property-based test template."""
         function_name = gap.violation_function or "target_function"
@@ -599,7 +599,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 3:
         print(
-            "Usage: python phase3_enhanced_test_coverage.py <path_to_adg.sqlite> <test_dir1> [test_dir2 ...]"
+            "Usage: python phase3_enhanced_test_coverage.py <path_to_adg.sqlite> <test_dir1> [test_dir2 ...]",
         )
         sys.exit(1)
 
@@ -608,5 +608,5 @@ if __name__ == "__main__":
 
     results = run_phase3_enhanced_test_coverage(adg_path, test_dirs)
     print(
-        f"\nPhase 3.2 Analysis Complete: {results['coverage_gaps']} gaps found, {results['generated_skeletons']} test skeletons generated"
+        f"\nPhase 3.2 Analysis Complete: {results['coverage_gaps']} gaps found, {results['generated_skeletons']} test skeletons generated",
     )

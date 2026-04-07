@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -206,7 +205,7 @@ class ViolationEvent:
     def __post_init__(self) -> None:
         if self.schema_version != _SCHEMA_VERSION:
             raise ValueError(
-                f"ViolationEvent: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}"
+                f"ViolationEvent: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}",
             )
         if not self.mission_id:
             raise ValueError("ViolationEvent: mission_id must be non-empty")
@@ -214,11 +213,11 @@ class ViolationEvent:
             raise ValueError(f"ViolationEvent: commit_tick must be >= 0, got {self.commit_tick}")
         if self.guardian_decision not in _VALID_DECISIONS:
             raise ValueError(
-                f"ViolationEvent: guardian_decision must be one of {sorted(_VALID_DECISIONS)}, got {self.guardian_decision!r}"
+                f"ViolationEvent: guardian_decision must be one of {sorted(_VALID_DECISIONS)}, got {self.guardian_decision!r}",
             )
         if not 0.0 <= self.severity_score <= 1.0:
             raise ValueError(
-                f"ViolationEvent: severity_score must be in [0.0, 1.0], got {self.severity_score}"
+                f"ViolationEvent: severity_score must be in [0.0, 1.0], got {self.severity_score}",
             )
         if not isinstance(self.violation_codes, list):
             raise TypeError("ViolationEvent: violation_codes must be a list")

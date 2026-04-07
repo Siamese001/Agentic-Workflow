@@ -145,7 +145,7 @@ class EnhancedRagRetrievalCache:
             f"EnhancedRagRetrievalCache initialized: "
             f"semantic_matching={enable_semantic_matching}, "
             f"policy_aware={enable_policy_aware_caching}, "
-            f"embedding_enabled={self._embedding_client is not None}"
+            f"embedding_enabled={self._embedding_client is not None}",
         )
 
     def _get_default_embedding_client(self) -> EmbeddingClient | None:
@@ -203,12 +203,12 @@ class EnhancedRagRetrievalCache:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedRagRetrievalCache.get"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedRagRetrievalCache.get",
         )
 
         # Build cache key with policy awareness
         cache_key = self._build_enhanced_cache_key(
-            u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash
+            u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash,
         )
 
         # Try exact match first
@@ -311,7 +311,7 @@ class EnhancedRagRetrievalCache:
 
             # Build enhanced cache key
             cache_key = self._build_enhanced_cache_key(
-                u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash
+                u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash,
             )
 
             # Store in exact cache
@@ -403,7 +403,7 @@ class EnhancedRagRetrievalCache:
     ) -> None:
         """Invalidate cache entry."""
         cache_key = self._build_enhanced_cache_key(
-            u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash
+            u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash,
         )
         self._cache.delete(cache_key)
         _emit_records_healing_outcome("p3", "enhanced_rag_retrieval_cache", "cache_entry_invalidated")

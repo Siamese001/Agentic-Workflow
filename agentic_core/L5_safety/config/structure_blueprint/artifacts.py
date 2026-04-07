@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -282,7 +281,7 @@ def get_correct_app_path(filename: str) -> str | None:
 
 
 LAYER_PREFIX_FILENAME_ALLOWLIST: Final[frozenset[str]] = frozenset(
-    {"l2_phase_spec.py", "l4_registries.py", "l1_meta_adapter.py"}
+    {"l2_phase_spec.py", "l4_registries.py", "l1_meta_adapter.py"},
 )
 
 
@@ -419,7 +418,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
         "description": "Runtime debug logs, error dumps, and stack traces.",
         "file_extensions": [".log", ".err", ".out", ".txt"],
         "content_signals": {
-            "keywords": ["DEBUG", "ERROR", "Traceback (most recent call)", "Exception", "Stack trace"]
+            "keywords": ["DEBUG", "ERROR", "Traceback (most recent call)", "Exception", "Stack trace"],
         },
         "naming_patterns": [re.compile(".*debug.*"), re.compile(".*error.*"), re.compile(".*crash.*")],
         "forbidden_extensions": [".py", ".pyc", ".pyo"],
@@ -468,7 +467,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
         "description": "Structured data outputs and intermediate processing states.",
         "file_extensions": [".json", ".csv", ".parquet"],
         "content_signals": {
-            "json_keys": ["dataset_version", "record_count", "processed_at", "schema_version"]
+            "json_keys": ["dataset_version", "record_count", "processed_at", "schema_version"],
         },
         "naming_patterns": [
             re.compile(".*dataset.*"),
@@ -482,7 +481,7 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
 
 
 def validate_artifact_routing(
-    filename: str, content: str | None = None
+    filename: str, content: str | None = None,
 ) -> tuple[bool, str | None, str | None]:
     """
     Validate file against ARTIFACT_ROUTING_MAP negative logic.

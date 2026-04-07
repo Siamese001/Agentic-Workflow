@@ -61,19 +61,19 @@ def create_final_test():
                 "apps": str(repo_root / "apps"),
                 "tools": str(repo_root / "tools"),
                 "tests": str(repo_root / "tests"),
-                "docs": str(repo_root / "docs")
-            }
+                "docs": str(repo_root / "docs"),
+            },
         },
         "adg_system": {
             "scanner_path": str(repo_root / "agentic_core" / "adg" / "extraction" / "static_scanner.py"),
             "schema_path": str(repo_root / "agentic_core" / "adg" / "schema.py"),
-            "artifacts_dir": str(repo_root / "artifacts" / "adg")
+            "artifacts_dir": str(repo_root / "artifacts" / "adg"),
         },
         "mcp_integration": {
             "adg_redis_server": str(repo_root / "tools" / "adg" / "adg_mcp_server.py"),
             "memory_server": str(repo_root / "tools" / "memory" / "adg_memory_server.py"),
-            "config_file": str(config_path)
-        }
+            "config_file": str(config_path),
+        },
     }
 
     print("✅ Repository context gathered:")
@@ -93,7 +93,7 @@ def create_final_test():
         "revisesThought": None,
         "branchFromThought": None,
         "branchId": None,
-        "needsMoreThoughts": True
+        "needsMoreThoughts": True,
     }
 
     # Save the test scenario
@@ -115,7 +115,7 @@ def create_final_test():
         "config_valid": config_path.exists() and seq_config,
         "test_files_created": test_file.exists(),
         "repository_accessible": repo_root.exists(),
-        "context_gathered": bool(context)
+        "context_gathered": bool(context),
     }
 
     all_passed = all(checks.values())

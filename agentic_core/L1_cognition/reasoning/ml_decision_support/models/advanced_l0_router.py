@@ -48,7 +48,7 @@ class AdvancedL0Router(BaseMLModel):
         4: "Performance_Optimized",
         5: "Load_Balanced",
         6: "Cost_Efficient",
-        7: "Standard_Route"
+        7: "Standard_Route",
     }
 
     # Reverse mapping
@@ -63,7 +63,7 @@ class AdvancedL0Router(BaseMLModel):
             model_version="1.0",
             model_type="neural_network",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -82,7 +82,7 @@ class AdvancedL0Router(BaseMLModel):
             "solver": "adam",
             "learning_rate": "adaptive",
             "max_iter": 1000,
-            "random_state": 42
+            "random_state": 42,
         }
 
         # Default thresholds
@@ -90,7 +90,7 @@ class AdvancedL0Router(BaseMLModel):
             "confidence_threshold": 0.6,
             "semantic_threshold": 0.7,
             "context_threshold": 0.5,
-            "routing_threshold": 0.8
+            "routing_threshold": 0.8,
         }
 
         if model_file_path and model_file_path.exists():
@@ -131,8 +131,8 @@ class AdvancedL0Router(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -144,7 +144,7 @@ class AdvancedL0Router(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict advanced routing decision.
@@ -177,7 +177,7 @@ class AdvancedL0Router(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -212,8 +212,8 @@ class AdvancedL0Router(BaseMLModel):
                     prediction=predicted_routing,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -226,7 +226,7 @@ class AdvancedL0Router(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -238,7 +238,7 @@ class AdvancedL0Router(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'routing_strategy': predicted_routing,
-                'neural_network_config': self.network_config
+                'neural_network_config': self.network_config,
             })
 
             # Log prediction
@@ -254,7 +254,7 @@ class AdvancedL0Router(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def route_intelligently(
@@ -262,7 +262,7 @@ class AdvancedL0Router(BaseMLModel):
         routing_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get intelligent routing recommendation.
@@ -281,7 +281,7 @@ class AdvancedL0Router(BaseMLModel):
             context=routing_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -289,7 +289,7 @@ class AdvancedL0Router(BaseMLModel):
                 'routing_strategy': 'Standard_Route',
                 'confidence': 0.0,
                 'reason': 'Feature extraction failed',
-                'recommendations': ['Check routing data availability']
+                'recommendations': ['Check routing data availability'],
             }
 
         # Validate input
@@ -301,27 +301,27 @@ class AdvancedL0Router(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate detailed routing recommendations
         recommendations = self._generate_routing_recommendations(
             strategy=prediction.prediction,
             context=routing_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Analyze routing factors
         routing_analysis = self._analyze_routing_factors(
             context=routing_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Calculate expected performance
         performance_prediction = self._predict_routing_performance(
             strategy=prediction.prediction,
             context=routing_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         return {
@@ -333,7 +333,7 @@ class AdvancedL0Router(BaseMLModel):
             'routing_analysis': routing_analysis,
             'performance_prediction': performance_prediction,
             'alternative_strategies': self._get_alternative_strategies(prediction.probability_distribution),
-            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence)
+            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
         }
 
     def analyze_query_semantics(
@@ -341,7 +341,7 @@ class AdvancedL0Router(BaseMLModel):
         query_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Analyze query semantics for intelligent routing.
@@ -359,7 +359,7 @@ class AdvancedL0Router(BaseMLModel):
         semantic_features = {
             'semantic_similarity_score': query_context.get('semantic_similarity', 0.5),
             'intent_confidence': query_context.get('intent_confidence', 0.5),
-            'query_complexity': query_context.get('query_complexity', 0.5)
+            'query_complexity': query_context.get('query_complexity', 0.5),
         }
 
         # Analyze semantic patterns
@@ -367,7 +367,7 @@ class AdvancedL0Router(BaseMLModel):
             'query_intent': self._classify_query_intent(query_context),
             'semantic_complexity': self._assess_semantic_complexity(query_context),
             'context_relevance': self._evaluate_context_relevance(query_context),
-            'routing_implications': self._determine_semantic_routing_implications(query_context)
+            'routing_implications': self._determine_semantic_routing_implications(query_context),
         }
 
         # Generate semantic-based routing suggestions
@@ -392,7 +392,7 @@ class AdvancedL0Router(BaseMLModel):
             'semantic_features': semantic_features,
             'routing_suggestions': routing_suggestions,
             'confidence_score': query_context.get('semantic_confidence', 0.5),
-            'recommended_strategy': self._recommend_semantic_strategy(semantic_analysis)
+            'recommended_strategy': self._recommend_semantic_strategy(semantic_analysis),
         }
 
     def learn_user_preferences(
@@ -400,7 +400,7 @@ class AdvancedL0Router(BaseMLModel):
         user_interactions: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Learn and adapt to user preferences for routing.
@@ -417,7 +417,7 @@ class AdvancedL0Router(BaseMLModel):
         if not user_interactions:
             return {
                 'preference_analysis': 'No user interaction data available',
-                'adaptation_strategy': 'Use default routing preferences'
+                'adaptation_strategy': 'Use default routing preferences',
             }
 
         # Analyze user interaction patterns
@@ -433,7 +433,7 @@ class AdvancedL0Router(BaseMLModel):
         personalized_strategy = self._generate_personalized_strategy(
             preference_analysis,
             routing_preferences,
-            adaptation_factors
+            adaptation_factors,
         )
 
         return {
@@ -442,14 +442,14 @@ class AdvancedL0Router(BaseMLModel):
             'adaptation_factors': adaptation_factors,
             'personalized_strategy': personalized_strategy,
             'learning_confidence': self._calculate_learning_confidence(user_interactions),
-            'adaptation_recommendations': self._generate_adaptation_recommendations(preference_analysis)
+            'adaptation_recommendations': self._generate_adaptation_recommendations(preference_analysis),
         }
 
     def _generate_routing_recommendations(
         self,
         strategy: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> list[str]:
         """Generate strategy-specific routing recommendations."""
         recommendations = []
@@ -459,56 +459,56 @@ class AdvancedL0Router(BaseMLModel):
                 "Use neural network-based routing for optimal performance",
                 "Leverage semantic understanding for intelligent decisions",
                 "Monitor routing performance and adapt accordingly",
-                "Consider user behavior patterns in routing"
+                "Consider user behavior patterns in routing",
             ])
         elif strategy == "Semantic_Optimized":
             recommendations.extend([
                 "Optimize routing based on semantic query analysis",
                 "Use intent classification for routing decisions",
                 "Leverage context relevance for better routing",
-                "Monitor semantic accuracy and adjust"
+                "Monitor semantic accuracy and adjust",
             ])
         elif strategy == "Context_Aware":
             recommendations.extend([
                 "Consider current context in routing decisions",
                 "Adapt routing based on environmental factors",
                 "Use session continuity for routing optimization",
-                "Monitor context relevance and update"
+                "Monitor context relevance and update",
             ])
         elif strategy == "User_Personalized":
             recommendations.extend([
                 "Personalize routing based on user preferences",
                 "Learn from user interaction patterns",
                 "Adapt routing to user behavior",
-                "Monitor user satisfaction and adjust"
+                "Monitor user satisfaction and adjust",
             ])
         elif strategy == "Performance_Optimized":
             recommendations.extend([
                 "Optimize routing for maximum performance",
                 "Consider system load and resource availability",
                 "Balance performance with cost efficiency",
-                "Monitor performance metrics continuously"
+                "Monitor performance metrics continuously",
             ])
         elif strategy == "Load_Balanced":
             recommendations.extend([
                 "Use load balancing for optimal resource distribution",
                 "Consider current system load in routing",
                 "Balance across multiple routing options",
-                "Monitor load distribution and adjust"
+                "Monitor load distribution and adjust",
             ])
         elif strategy == "Cost_Efficient":
             recommendations.extend([
                 "Optimize routing for cost efficiency",
                 "Consider resource costs in routing decisions",
                 "Balance cost with performance requirements",
-                "Monitor cost metrics and optimize"
+                "Monitor cost metrics and optimize",
             ])
         else:  # Standard_Route
             recommendations.extend([
                 "Use standard routing for basic requests",
                 "Monitor standard routing performance",
                 "Consider upgrading to advanced routing if needed",
-                "Maintain standard routing reliability"
+                "Maintain standard routing reliability",
             ])
 
         # Add context-specific recommendations
@@ -525,13 +525,13 @@ class AdvancedL0Router(BaseMLModel):
     def _analyze_routing_factors(
         self,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Analyze routing factors and their impact."""
         factor_analysis = {
             'primary_factors': [],
             'secondary_factors': [],
-            'constraint_factors': []
+            'constraint_factors': [],
         }
 
         # Analyze semantic factors
@@ -541,14 +541,14 @@ class AdvancedL0Router(BaseMLModel):
                 'factor': 'semantic_similarity',
                 'score': semantic_score,
                 'impact': 'high',
-                'description': 'Strong semantic similarity influences routing'
+                'description': 'Strong semantic similarity influences routing',
             })
         elif semantic_score > 0.4:
             factor_analysis['secondary_factors'].append({
                 'factor': 'semantic_similarity',
                 'score': semantic_score,
                 'impact': 'medium',
-                'description': 'Moderate semantic similarity affects routing'
+                'description': 'Moderate semantic similarity affects routing',
             })
 
         # Analyze confidence factors
@@ -558,7 +558,7 @@ class AdvancedL0Router(BaseMLModel):
                 'factor': 'intent_confidence',
                 'score': intent_confidence,
                 'impact': 'high',
-                'description': 'High intent confidence enables advanced routing'
+                'description': 'High intent confidence enables advanced routing',
             })
 
         # Analyze resource factors
@@ -568,7 +568,7 @@ class AdvancedL0Router(BaseMLModel):
                 'factor': 'resource_availability',
                 'score': resource_availability,
                 'impact': 'constraint',
-                'description': 'Low resource availability limits routing options'
+                'description': 'Low resource availability limits routing options',
             })
 
         # Analyze performance factors
@@ -578,7 +578,7 @@ class AdvancedL0Router(BaseMLModel):
                 'factor': 'routing_efficiency',
                 'score': routing_efficiency,
                 'impact': 'high',
-                'description': 'High routing efficiency supports advanced strategies'
+                'description': 'High routing efficiency supports advanced strategies',
             })
 
         return factor_analysis
@@ -587,7 +587,7 @@ class AdvancedL0Router(BaseMLModel):
         self,
         strategy: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Predict routing performance for the chosen strategy."""
         # Base performance estimates by strategy
@@ -596,50 +596,50 @@ class AdvancedL0Router(BaseMLModel):
                 "response_time": 0.8,
                 "accuracy": 0.9,
                 "resource_usage": 0.7,
-                "scalability": 0.8
+                "scalability": 0.8,
             },
             "Semantic_Optimized": {
                 "response_time": 0.7,
                 "accuracy": 0.85,
                 "resource_usage": 0.6,
-                "scalability": 0.7
+                "scalability": 0.7,
             },
             "Context_Aware": {
                 "response_time": 0.6,
                 "accuracy": 0.8,
                 "resource_usage": 0.5,
-                "scalability": 0.6
+                "scalability": 0.6,
             },
             "User_Personalized": {
                 "response_time": 0.7,
                 "accuracy": 0.85,
                 "resource_usage": 0.6,
-                "scalability": 0.7
+                "scalability": 0.7,
             },
             "Performance_Optimized": {
                 "response_time": 0.9,
                 "accuracy": 0.75,
                 "resource_usage": 0.8,
-                "scalability": 0.9
+                "scalability": 0.9,
             },
             "Load_Balanced": {
                 "response_time": 0.7,
                 "accuracy": 0.8,
                 "resource_usage": 0.6,
-                "scalability": 0.9
+                "scalability": 0.9,
             },
             "Cost_Efficient": {
                 "response_time": 0.6,
                 "accuracy": 0.7,
                 "resource_usage": 0.4,
-                "scalability": 0.6
+                "scalability": 0.6,
             },
             "Standard_Route": {
                 "response_time": 0.5,
                 "accuracy": 0.6,
                 "resource_usage": 0.3,
-                "scalability": 0.5
-            }
+                "scalability": 0.5,
+            },
         }
 
         base_performance = performance_estimates.get(strategy, performance_estimates["Standard_Route"])
@@ -669,7 +669,7 @@ class AdvancedL0Router(BaseMLModel):
         sorted_strategies = sorted(
             probability_distribution.items(),
             key=lambda x: x[1],
-            reverse=True
+            reverse=True,
         )[1:4]  # Skip the primary strategy
 
         for strategy, probability in sorted_strategies:
@@ -678,7 +678,7 @@ class AdvancedL0Router(BaseMLModel):
                     'strategy': strategy,
                     'probability': probability,
                     'confidence': probability,
-                    'recommendation': f"Consider {strategy} as alternative"
+                    'recommendation': f"Consider {strategy} as alternative",
                 })
 
         return alternatives
@@ -773,7 +773,7 @@ class AdvancedL0Router(BaseMLModel):
         return {
             'preference_scores': preference_scores,
             'most_preferred': max(preference_scores.items(), key=lambda x: x[1])[0] if preference_scores else 'Standard_Route',
-            'total_interactions': total_interactions
+            'total_interactions': total_interactions,
         }
 
     def _identify_routing_preferences(self, user_interactions: list[dict[str, Any]]) -> dict[str, float]:
@@ -812,14 +812,14 @@ class AdvancedL0Router(BaseMLModel):
         return {
             'adaptation_factor': adaptation_factor,
             'interaction_count': len(recent_interactions),
-            'satisfaction_trend': 'improving' if avg_satisfaction > 0.7 else 'stable'
+            'satisfaction_trend': 'improving' if avg_satisfaction > 0.7 else 'stable',
         }
 
     def _generate_personalized_strategy(
         self,
         preference_analysis: dict[str, Any],
         routing_preferences: dict[str, float],
-        adaptation_factors: dict[str, float]
+        adaptation_factors: dict[str, float],
     ) -> str:
         """Generate personalized routing strategy."""
         most_preferred = preference_analysis.get('most_preferred', 'Standard_Route')
@@ -887,7 +887,7 @@ class AdvancedL0Router(BaseMLModel):
                 'routing_efficiency': 0.08,
                 'system_load_factor': 0.08,
                 'query_complexity': 0.10,
-                'routing_confidence': 0.07
+                'routing_confidence': 0.07,
             }
 
             feature_importance = []
@@ -897,7 +897,7 @@ class AdvancedL0Router(BaseMLModel):
                     'feature_name': feature_name,
                     'importance_score': importance,
                     'feature_value': model_input.features.get(feature_name),
-                    'rank': i + 1
+                    'rank': i + 1,
                 })
 
             # Sort by importance
@@ -953,7 +953,7 @@ class AdvancedL0Router(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the Neural Network model.
@@ -997,8 +997,8 @@ class AdvancedL0Router(BaseMLModel):
                 solver=self.network_config["solver"],
                 learning_rate=self.network_config["learning_rate"],
                 max_iter=self.network_config["max_iter"],
-                random_state=self.network_config["random_state"]
-            ))
+                random_state=self.network_config["random_state"],
+            )),
         ])
 
         # Train model

@@ -12,7 +12,6 @@ import pathlib
 import re
 import sys
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SSOT_IMPORT_LINES = ['from agentic_core.L5_safety.config.structure_blueprint.ssot import (', '    DISCOVERY_EXCLUDED_TERRITORIES,', '    GLOBAL_EXCLUDED_DIRS,', '    SOVEREIGN_EXCLUDED_FOLDERS,', ')']
 SSOT_IMPORT_PARTIAL_2 = ['from agentic_core.L5_safety.config.structure_blueprint.ssot import (', '    GLOBAL_EXCLUDED_DIRS,', '    SOVEREIGN_EXCLUDED_FOLDERS,', ')']

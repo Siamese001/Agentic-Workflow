@@ -153,7 +153,7 @@ def create_clean_static_adg() -> ADGArtifact:
     scanner = ADGStaticScanner(
         repo_root=PROJECT_ROOT,
         include_tests=True,  # Include tests for complete static view
-        cache_path=None  # No cache to ensure clean scan
+        cache_path=None,  # No cache to ensure clean scan
     )
 
     print("[STATIC] Scanning codebase...")

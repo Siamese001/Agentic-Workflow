@@ -9,7 +9,6 @@ import ast
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ENGINE_GLOBS = ['apps_rg/engines/*.py', 'apps_lic/engines/*.py']
 BASE_NAMES = {'BaseRGEngine'}

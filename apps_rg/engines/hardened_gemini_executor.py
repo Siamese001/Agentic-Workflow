@@ -77,39 +77,25 @@ _emit_stores_embedding("p4", "hardened_gemini_executor", "embedding_store")
 _emit_updates_meta_learning_state("p4", "hardened_gemini_executor", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "hardened_gemini_executor", "exec_snapshot_link")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -195,7 +181,7 @@ class HardenedGeminiExecutor:
             self._gateway = None
 
     def execute(
-        self, prompt: str, model: str | None = None, temperature: float = 0.7, max_tokens: int | None = None
+        self, prompt: str, model: str | None = None, temperature: float = 0.7, max_tokens: int | None = None,
     ) -> dict[str, Any]:
         """Execute a prompt via SovereignLLMGateway (Google/Gemini path).
 
@@ -212,7 +198,7 @@ class HardenedGeminiExecutor:
 
         effective_model = model or "gemini-2.5-pro"
         request = GenerationRequest(
-            agent_id=self.agent_id, provider="google", model=effective_model, prompt=prompt
+            agent_id=self.agent_id, provider="google", model=effective_model, prompt=prompt,
         )
         last_exc: Exception | None = None
         for attempt in range(1, self.max_retries + 1):
@@ -223,7 +209,7 @@ class HardenedGeminiExecutor:
                 finally:
                     loop.close()
                 logger.debug(
-                    "HardenedGeminiExecutor: success on attempt %d model=%s", attempt, effective_model
+                    "HardenedGeminiExecutor: success on attempt %d model=%s", attempt, effective_model,
                 )
                 return {
                     "content": response.content,
@@ -236,10 +222,10 @@ class HardenedGeminiExecutor:
             except Exception as exc:
                 last_exc = exc
                 logger.warning(
-                    "HardenedGeminiExecutor attempt %d/%d failed: %s", attempt, self.max_retries, exc
+                    "HardenedGeminiExecutor attempt %d/%d failed: %s", attempt, self.max_retries, exc,
                 )
         raise RuntimeError(
-            f"HardenedGeminiExecutor: all {self.max_retries} attempts failed. Last: {last_exc}"
+            f"HardenedGeminiExecutor: all {self.max_retries} attempts failed. Last: {last_exc}",
         )
 
     def is_available(self) -> bool:

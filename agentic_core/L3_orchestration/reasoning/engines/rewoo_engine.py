@@ -129,7 +129,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -224,7 +223,7 @@ class RewooPlanner:
                     tool_name=raw.get("tool_name", "noop"),
                     tool_input=raw.get("tool_input", {}),
                     depends_on=raw.get("depends_on", []),
-                )
+                ),
             )
         Logger.info("rewoo_plan_generated", extra={"goal": goal[:80], "num_tasks": len(task_list.tasks)})
         return task_list

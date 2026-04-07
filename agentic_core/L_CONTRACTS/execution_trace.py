@@ -19,7 +19,9 @@ _logger = logging.getLogger(__name__)
 
 def _bootstrap_determinism_digest() -> None:
     """Deferred bootstrap to avoid circular import with lifecycle_trace_contract."""
-    from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest  # noqa: PLC0415
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+        emit_determinism_digest,  # noqa: PLC0415
+    )
 
     emit_determinism_digest("execution_trace", "execution_trace_digest")
     _logger.debug("execution_trace determinism digest emitted")
@@ -45,7 +47,7 @@ class ExecutionTraceManager:
         self._lock = threading.RLock()
 
     def start_trace(
-        self, plan_hash: str, policy_hash: str, hierarchy_hash: str, metadata: dict[str, Any] | None = None
+        self, plan_hash: str, policy_hash: str, hierarchy_hash: str, metadata: dict[str, Any] | None = None,
     ) -> str:
         """Start a new execution trace and return its trace_id."""
         with self._lock:
@@ -93,7 +95,7 @@ def get_execution_trace_manager() -> ExecutionTraceManager:
 
 
 def start_execution_trace(
-    plan_hash: str, policy_hash: str, hierarchy_hash: str, metadata: dict[str, Any] | None = None
+    plan_hash: str, policy_hash: str, hierarchy_hash: str, metadata: dict[str, Any] | None = None,
 ) -> str:
     """Start a new execution trace and return its trace_id."""
     return _execution_trace_manager.start_trace(plan_hash, policy_hash, hierarchy_hash, metadata)

@@ -110,7 +110,7 @@ def scan_for_violations(scan_dirs: list[Path] | None = None) -> list[tuple[str, 
                             str(py_file),
                             node.lineno,
                             f"{node.name}() returns bare dict — wrap in ReasoningOutput",
-                        )
+                        ),
                     )
 
     return violations

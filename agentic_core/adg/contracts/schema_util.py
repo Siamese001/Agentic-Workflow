@@ -420,7 +420,7 @@ L1_WRITE_ALLOWLIST: frozenset[str] = frozenset(
         "copy.deepcopy",
         "self.guardrails._cache_sizes.copy",
         "visited.copy",
-    }
+    },
 )
 UWG_WRITE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -429,7 +429,7 @@ UWG_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "uwg.write_bytes",
         "write_gateway.write_text",
         "write_gateway.write_bytes",
-    }
+    },
 )
 
 # ── L4/UWG Wave 1 Ingress Gate Symbols ───────────────────────────────────
@@ -443,7 +443,7 @@ UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
         "verify_uwg_intent",
         "UWGIntentVerifier",
         "_emit_validates_uwg_intent",
-    }
+    },
 )
 UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -453,7 +453,7 @@ UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
         "PolicyHashValidator",
         "validate_active_policy",
         "_emit_checks_policy_hash_at_uwg",
-    }
+    },
 )
 UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -463,7 +463,7 @@ UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
         "UWGCapabilityValidator",
         "validate_capability_set",
         "_emit_checks_capability_set",
-    }
+    },
 )
 UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -473,7 +473,7 @@ UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
         "validate_mutation_scope",
         "check_rbac_at_uwg",
         "_emit_validates_blast_radius_at_uwg",
-    }
+    },
 )
 
 # ── L4/UWG Wave 2 Mutation Record Assembly Symbols ─────────────────────────
@@ -485,7 +485,7 @@ MUTATION_DIFF_SYMBOLS: frozenset[str] = frozenset(
         "RFC6902DiffGenerator",
         "diff_mutation_state",
         "_emit_generates_mutation_diff",
-    }
+    },
 )
 MUTATION_REPLAY_KEY_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -495,7 +495,7 @@ MUTATION_REPLAY_KEY_SYMBOLS: frozenset[str] = frozenset(
         "ReplayKeyComputer",
         "compute_replay_key",
         "_emit_computes_mutation_replay_key",
-    }
+    },
 )
 HMAC_SEAL_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -505,7 +505,7 @@ HMAC_SEAL_SYMBOLS: frozenset[str] = frozenset(
         "MutationHMACSealer",
         "apply_hmac",
         "_emit_applies_hmac_seal",
-    }
+    },
 )
 EXECUTION_TRACE_PACKAGE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -515,7 +515,7 @@ EXECUTION_TRACE_PACKAGE_SYMBOLS: frozenset[str] = frozenset(
         "TraceArtifactBuilder",
         "package_trace",
         "_emit_packages_execution_trace",
-    }
+    },
 )
 
 # ── Wave 3: Authoritative Commit + L4 Read Surface ─────────────────────────
@@ -527,7 +527,7 @@ CLAIMS_WRITE_LOCK_SYMBOLS: frozenset[str] = frozenset(
         "L4WriteLock",
         "acquire_write_lock",
         "_emit_claims_write_lock",
-    }
+    },
 )
 DURABLE_COMMIT_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -537,7 +537,7 @@ DURABLE_COMMIT_SYMBOLS: frozenset[str] = frozenset(
         "MutationCommit",
         "commit_to_ledger",
         "_emit_commits_mutation_durable",
-    }
+    },
 )
 HASH_CHAIN_APPEND_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -547,7 +547,7 @@ HASH_CHAIN_APPEND_SYMBOLS: frozenset[str] = frozenset(
         "LedgerHashChain",
         "append_to_chain",
         "_emit_appends_hash_chain",
-    }
+    },
 )
 ROLLBACK_HEAL_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -557,7 +557,7 @@ ROLLBACK_HEAL_SYMBOLS: frozenset[str] = frozenset(
         "RollbackFailureHandler",
         "handle_rollback_failure",
         "_emit_heals_on_rollback_failure",
-    }
+    },
 )
 MATERIALIZES_READ_VIEW_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -567,7 +567,7 @@ MATERIALIZES_READ_VIEW_SYMBOLS: frozenset[str] = frozenset(
         "L4ReadView",
         "generate_materialized_view",
         "_emit_materializes_read_view",
-    }
+    },
 )
 RETRIEVAL_SURFACE_REFRESH_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -577,7 +577,7 @@ RETRIEVAL_SURFACE_REFRESH_SYMBOLS: frozenset[str] = frozenset(
         "L4RetrievalSurface",
         "refresh_surface",
         "_emit_refreshes_retrieval_surface",
-    }
+    },
 )
 SWAPS_VERSION_ALIAS_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -587,7 +587,7 @@ SWAPS_VERSION_ALIAS_SYMBOLS: frozenset[str] = frozenset(
         "L4VersionAlias",
         "swap_alias",
         "_emit_swaps_version_alias",
-    }
+    },
 )
 L4_TELEMETRY_SYNC_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -597,7 +597,7 @@ L4_TELEMETRY_SYNC_SYMBOLS: frozenset[str] = frozenset(
         "TelemetryAuditor",
         "sync_audit_telemetry",
         "_emit_syncs_l4_telemetry",
-    }
+    },
 )
 
 # ── Wave 4: Outbound Read Bridges ──────────────────────────────────────────
@@ -609,7 +609,7 @@ READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
         "ContextBuilder",
         "build_context_from_l4",
         "_emit_reads_l4_surface",
-    }
+    },
 )
 L0_RECEIVES_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -619,7 +619,7 @@ L0_RECEIVES_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
         "L0PolicyHash",
         "get_active_policy_hash",
         "_emit_receives_policy_hash",
-    }
+    },
 )
 L5_READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -629,7 +629,7 @@ L5_READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
         "ConstitutionBoundaryChecker",
         "check_constitution_against_l4",
         "_emit_l5_reads_l4_surface",
-    }
+    },
 )
 L3_READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -639,7 +639,7 @@ L3_READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
         "DAGWorkflowRuleChecker",
         "check_dag_rules_against_l4",
         "_emit_l3_reads_l4_surface",
-    }
+    },
 )
 L6_INGESTS_L4_TRACE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -649,7 +649,7 @@ L6_INGESTS_L4_TRACE_SYMBOLS: frozenset[str] = frozenset(
         "ExecutionTraceConsumer",
         "consume_l4_execution_trace",
         "_emit_l6_ingests_l4_trace",
-    }
+    },
 )
 
 
@@ -958,7 +958,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         # L3 orchestration may reference L4 state and L5 safety.
         ("L3", "L4"),
         ("L3", "L5"),
-    }
+    },
 )
 
 
@@ -986,7 +986,7 @@ def module_path_to_layer(rel_path: str) -> str:
 
 SEAM_MODULE_PATTERNS: tuple[str, ...] = ("agentic_core/L0_routing/seams/", "agentic_core/seams/")
 WRITE_SIDE_EFFECT_EXCLUSIONS: frozenset[str] = frozenset(
-    {"asyncio.run", "copy.deepcopy", "deepcopy", "assert_no_persistent_write", "copy"}
+    {"asyncio.run", "copy.deepcopy", "deepcopy", "assert_no_persistent_write", "copy"},
 )
 RULE_ID_PREFIXES: dict[str, str] = {
     "LAYER_GRAVITY": "Layer gravity violation (upward import)",
@@ -1002,10 +1002,10 @@ HEALER_BASE_CLASSES: frozenset[str] = frozenset(
         "SovereignHealingAgent",
         "LicHealingOrchestrator",
         "RgHealingOrchestrator",
-    }
+    },
 )
 VALIDATOR_BASE_CLASSES: frozenset[str] = frozenset(
-    {"BaseValidator", "SovereignValidator", "HealerValidator", "ResolutionValidator", "ValidationAgent"}
+    {"BaseValidator", "SovereignValidator", "HealerValidator", "ResolutionValidator", "ValidationAgent"},
 )
 HEALER_METHOD_NAMES: frozenset[str] = frozenset(
     {
@@ -1014,7 +1014,7 @@ HEALER_METHOD_NAMES: frozenset[str] = frozenset(
         "orchestrate_healing_cycle",
         "_apply_healing_strategy",
         "run_healing_loop",
-    }
+    },
 )
 EMBEDDING_PIPELINE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1023,7 +1023,7 @@ EMBEDDING_PIPELINE_SYMBOLS: frozenset[str] = frozenset(
         "RecursiveCharacterTextSplitter",
         "CharacterTextSplitter",
         "TokenTextSplitter",
-    }
+    },
 )
 RETRIEVAL_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1034,7 +1034,7 @@ RETRIEVAL_SYMBOLS: frozenset[str] = frozenset(
         "retrieve",
         "vector_store.query",
         "vectorstore.query",
-    }
+    },
 )
 VECTOR_STORE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1048,10 +1048,10 @@ VECTOR_STORE_SYMBOLS: frozenset[str] = frozenset(
         "add_documents",
         "add_texts",
         "upsert",
-    }
+    },
 )
 CONFIDENCE_SCORING_CLASSES: frozenset[str] = frozenset(
-    {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine"}
+    {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine"},
 )
 HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
     {
@@ -1062,7 +1062,7 @@ HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
         "submit_for_review",
         "requires_human_review",
         "reenters_safety",
-    }
+    },
 )
 GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
     {
@@ -1079,7 +1079,7 @@ GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
         "authorize_and_execute",
         "ProcessGuard",
         "validate_citation_custody",
-    }
+    },
 )
 POLICY_HASH_METHODS: frozenset[str] = frozenset(
     {
@@ -1088,13 +1088,13 @@ POLICY_HASH_METHODS: frozenset[str] = frozenset(
         "check_policy_hash",
         "enforce_policy",
         "verify_hash",
-    }
+    },
 )
 SANDBOX_ENVELOPE_CLASSES: frozenset[str] = frozenset(
-    {"SandboxEnvelope", "WorkContract", "SandboxAirlock", "L5SandboxStamper", "SandboxSession"}
+    {"SandboxEnvelope", "WorkContract", "SandboxAirlock", "L5SandboxStamper", "SandboxSession"},
 )
 CAPABILITY_TOKEN_CLASSES: frozenset[str] = frozenset(
-    {"CapabilityToken", "ScopedCapabilityToken", "CapabilityGrant", "TokenizedCapability"}
+    {"CapabilityToken", "ScopedCapabilityToken", "CapabilityGrant", "TokenizedCapability"},
 )
 WORK_CONTRACT_METHODS: frozenset[str] = frozenset(
     {
@@ -1103,10 +1103,10 @@ WORK_CONTRACT_METHODS: frozenset[str] = frozenset(
         "enter_sandbox",
         "exit_sandbox",
         "bind_capability_token",
-    }
+    },
 )
 TOOL_BUDGET_CLASSES: frozenset[str] = frozenset(
-    {"ToolBudget", "ResourceGovernor", "CapabilityBudget", "ComputeBudget", "ExecutionQuota"}
+    {"ToolBudget", "ResourceGovernor", "CapabilityBudget", "ComputeBudget", "ExecutionQuota"},
 )
 BUDGET_EXCEEDED_EXCEPTIONS: frozenset[str] = frozenset(
     {
@@ -1115,7 +1115,7 @@ BUDGET_EXCEEDED_EXCEPTIONS: frozenset[str] = frozenset(
         "ComputeQuotaExceeded",
         "MemoryQuotaExceeded",
         "TokenBudgetExceeded",
-    }
+    },
 )
 JIT_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
@@ -1131,7 +1131,7 @@ JIT_CONTEXT_CLASSES: frozenset[str] = frozenset(
         "inject_key_source",
         "get_clock",
         "ClockProvider",
-    }
+    },
 )
 FREEZE_METHOD_NAMES: frozenset[str] = frozenset(
     {
@@ -1141,7 +1141,7 @@ FREEZE_METHOD_NAMES: frozenset[str] = frozenset(
         "freeze_environment",
         "snapshot_context",
         "unfreeze_context",
-    }
+    },
 )
 BOUNDARY_VERIFIER_CLASSES: frozenset[str] = frozenset(
     {
@@ -1150,13 +1150,13 @@ BOUNDARY_VERIFIER_CLASSES: frozenset[str] = frozenset(
         "ExecutionBoundaryCheck",
         "PacketValidator",
         "EnvelopeVerifier",
-    }
+    },
 )
 CAPABILITY_CHOKEPOINT_CLASSES: frozenset[str] = frozenset(
-    {"CapabilityChokepoint", "L5CertificationCheck", "BoundaryChokepoint", "PacketChokepoint"}
+    {"CapabilityChokepoint", "L5CertificationCheck", "BoundaryChokepoint", "PacketChokepoint"},
 )
 SEMANTIC_CLOCK_CLASSES: frozenset[str] = frozenset(
-    {"SemanticClock", "DeterministicClock", "ReplayClock", "FrozenClock"}
+    {"SemanticClock", "DeterministicClock", "ReplayClock", "FrozenClock"},
 )
 REPLAY_GUARD_CLASSES: frozenset[str] = frozenset(
     {
@@ -1167,7 +1167,7 @@ REPLAY_GUARD_CLASSES: frozenset[str] = frozenset(
         "DeterministicReplayGuard",
         "get_replay_guard",
         "verify_routing_replay",
-    }
+    },
 )
 DETERMINISM_PATCH_METHODS: frozenset[str] = frozenset(
     {
@@ -1179,7 +1179,7 @@ DETERMINISM_PATCH_METHODS: frozenset[str] = frozenset(
         "install_replay_patches",
         "stamp_decision",
         "emit_determinism_digest",
-    }
+    },
 )
 IO_INTERCEPT_CLASSES: frozenset[str] = frozenset(
     {
@@ -1188,7 +1188,7 @@ IO_INTERCEPT_CLASSES: frozenset[str] = frozenset(
         "ExternalCallInterceptor",
         "TranscriptedNetworkLayer",
         "ImmutableResponseCapture",
-    }
+    },
 )
 NETWORK_TRANSCRIPT_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1201,7 +1201,7 @@ NETWORK_TRANSCRIPT_SYMBOLS: frozenset[str] = frozenset(
         "hard_fails_untranscripted",
         "ReasoningTranscript",
         "reason_and_record",
-    }
+    },
 )
 MUTATION_TRANSPORT_CLASSES: frozenset[str] = frozenset(
     {
@@ -1218,7 +1218,7 @@ MUTATION_TRANSPORT_CLASSES: frozenset[str] = frozenset(
         "sign_artifact",
         "maybe_sign_result",
         "verify_signature",
-    }
+    },
 )
 RFC6902_DIFF_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1228,7 +1228,7 @@ RFC6902_DIFF_SYMBOLS: frozenset[str] = frozenset(
         "apply_json_patch",
         "validate_blast_radius",
         "check_blast_radius",
-    }
+    },
 )
 EXECUTION_TRACE_CLASSES: frozenset[str] = frozenset(
     {
@@ -1245,7 +1245,7 @@ EXECUTION_TRACE_CLASSES: frozenset[str] = frozenset(
         "generate_trace_id",
         "get_trace_context",
         "TraceFeatureExtractor",
-    }
+    },
 )
 REPLAY_KEY_METHODS: frozenset[str] = frozenset(
     {
@@ -1257,7 +1257,7 @@ REPLAY_KEY_METHODS: frozenset[str] = frozenset(
         "stamp_decision",
         "guards_replay",
         "verify_routing_replay",
-    }
+    },
 )
 PATH_CONTROL_CLASSES: frozenset[str] = frozenset(
     {
@@ -1272,7 +1272,7 @@ PATH_CONTROL_CLASSES: frozenset[str] = frozenset(
         "get_routing_gateway",
         "ReasoningPolicyEngine",
         "DeterministicReplayGuard",
-    }
+    },
 )
 P1_ROUTES_TO_AGENT_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1289,7 +1289,7 @@ P1_ROUTES_TO_AGENT_SYMBOLS: frozenset[str] = frozenset(
         "SendToAgent",
         "forward_to_agent",
         "ForwardToAgent",
-    }
+    },
 )
 P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1305,7 +1305,7 @@ P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS: frozenset[str] = frozenset(
         "submit_execution_plan",
         "SubmitExecutionPlan",
         "PlanSubmitter",
-    }
+    },
 )
 P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1322,7 +1322,7 @@ P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
         "AssertAgentCapability",
         "validate_capability",
         "ValidateCapability",
-    }
+    },
 )
 P1_CHECKS_AGENT_REGISTRY_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1340,7 +1340,7 @@ P1_CHECKS_AGENT_REGISTRY_SYMBOLS: frozenset[str] = frozenset(
         "RegistryQuery",
         "get_agent_from_registry",
         "GetAgentFromRegistry",
-    }
+    },
 )
 WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1351,7 +1351,7 @@ WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
         "CompletenessScorer",
         "EvalSpine",
         "OptimizationSpine",
-    }
+    },
 )
 PATH_REROUTE_METHODS: frozenset[str] = frozenset(
     {
@@ -1366,7 +1366,7 @@ PATH_REROUTE_METHODS: frozenset[str] = frozenset(
         "select_path",
         "compute_and_stamp",
         "reenters_safety",
-    }
+    },
 )
 EVAL_METRIC_CLASSES: frozenset[str] = frozenset(
     {
@@ -1377,10 +1377,10 @@ EVAL_METRIC_CLASSES: frozenset[str] = frozenset(
         "CompletenessScorer",
         "EvalSpine",
         "OptimizationSpine",
-    }
+    },
 )
 DPO_BATCH_CLASSES: frozenset[str] = frozenset(
-    {"DPOBatchBuilder", "DPOBatch", "PreferencePairBuilder", "OptimizationProposal"}
+    {"DPOBatchBuilder", "DPOBatch", "PreferencePairBuilder", "OptimizationProposal"},
 )
 DRIFT_ALERT_METHODS: frozenset[str] = frozenset(
     {
@@ -1390,7 +1390,7 @@ DRIFT_ALERT_METHODS: frozenset[str] = frozenset(
         "compute_ndcg",
         "build_dpo_batch",
         "commit_optimization",
-    }
+    },
 )
 SECRET_VAULT_CLASSES: frozenset[str] = frozenset(
     {
@@ -1401,7 +1401,7 @@ SECRET_VAULT_CLASSES: frozenset[str] = frozenset(
         "AzureKeyVault",
         "HashicorpVault",
         "SecretProvider",
-    }
+    },
 )
 SECRET_ACCESS_METHODS: frozenset[str] = frozenset(
     {
@@ -1413,10 +1413,10 @@ SECRET_ACCESS_METHODS: frozenset[str] = frozenset(
         "rotate_secret",
         "get_password",
         "get_api_key",
-    }
+    },
 )
 SECRET_ENV_PATTERNS: frozenset[str] = frozenset(
-    {"os.environ", "os.getenv", "environ.get", "getenv", "dotenv", "load_dotenv"}
+    {"os.environ", "os.getenv", "environ.get", "getenv", "dotenv", "load_dotenv"},
 )
 CONFIG_READER_CLASSES: frozenset[str] = frozenset(
     {
@@ -1428,7 +1428,7 @@ CONFIG_READER_CLASSES: frozenset[str] = frozenset(
         "HydraConfig",
         "PydanticSettings",
         "BaseSettings",
-    }
+    },
 )
 CONFIG_ACCESS_METHODS: frozenset[str] = frozenset(
     {
@@ -1439,7 +1439,7 @@ CONFIG_ACCESS_METHODS: frozenset[str] = frozenset(
         "cache_config",
         "refresh_config",
         "resolve_config",
-    }
+    },
 )
 DYNAMIC_EVAL_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1452,7 +1452,7 @@ DYNAMIC_EVAL_SYMBOLS: frozenset[str] = frozenset(
         "importlib.util.module_from_spec",
         "runpy.run_module",
         "runpy.run_path",
-    }
+    },
 )
 DYNAMIC_GETATTR_SYMBOLS: frozenset[str] = frozenset({"getattr", "setattr", "delattr"})
 POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
@@ -1479,7 +1479,7 @@ POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
         "GraphMemoryBridge",
         "compute_runtime_state_digest",
         "VLLMQueueState",
-    }
+    },
 )
 POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(
     {
@@ -1491,7 +1491,7 @@ POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(
         "probe_health",
         "read_governance_state",
         "observe_runtime_state",
-    }
+    },
 )
 ANTIPATTERN_REGISTRY_CLASSES: frozenset[str] = frozenset(
     {
@@ -1500,7 +1500,7 @@ ANTIPATTERN_REGISTRY_CLASSES: frozenset[str] = frozenset(
         "PatternClassifier",
         "AntipatternDetector",
         "ViolationClassifier",
-    }
+    },
 )
 ANTIPATTERN_CATEGORY_NAMES: frozenset[str] = frozenset(
     {
@@ -1515,7 +1515,7 @@ ANTIPATTERN_CATEGORY_NAMES: frozenset[str] = frozenset(
         "broad_exception_catch",
         "log_and_swallow",
         "return_none_swallow",
-    }
+    },
 )
 # --- Exception broadness classification ---
 # Exception types considered "broad" — catching these without re-raise is Col3 behavior.
@@ -1533,7 +1533,7 @@ LOGGING_METHOD_NAMES: frozenset[str] = frozenset(
         "warn",
         "log",
         "print",
-    }
+    },
 )
 HEALING_ORCHESTRATOR_CLASSES: frozenset[str] = frozenset(
     {
@@ -1542,7 +1542,7 @@ HEALING_ORCHESTRATOR_CLASSES: frozenset[str] = frozenset(
         "HealerDispatcher",
         "AutoRepairEngine",
         "SelfHealingController",
-    }
+    },
 )
 HEALING_DISPATCH_METHODS: frozenset[str] = frozenset(
     {
@@ -1553,7 +1553,7 @@ HEALING_DISPATCH_METHODS: frozenset[str] = frozenset(
         "abort_heal",
         "schedule_repair",
         "trigger_healing",
-    }
+    },
 )
 NONDETERMINISM_WALL_CLOCK_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1567,7 +1567,7 @@ NONDETERMINISM_WALL_CLOCK_SYMBOLS: frozenset[str] = frozenset(
         "time.localtime",
         "time.gmtime",
         "time.strftime",
-    }
+    },
 )
 NONDETERMINISM_RANDOM_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1587,10 +1587,10 @@ NONDETERMINISM_RANDOM_SYMBOLS: frozenset[str] = frozenset(
         "secrets.token_urlsafe",
         "secrets.choice",
         "secrets.randbelow",
-    }
+    },
 )
 NONDETERMINISM_UUID_SYMBOLS: frozenset[str] = frozenset(
-    {"uuid.uuid1", "uuid.uuid4", "uuid.uuid3", "uuid.uuid5", "uuid4", "uuid1", "UUID"}
+    {"uuid.uuid1", "uuid.uuid4", "uuid.uuid3", "uuid.uuid5", "uuid4", "uuid1", "UUID"},
 )
 EXTERNAL_HTTP_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1612,7 +1612,7 @@ EXTERNAL_HTTP_SYMBOLS: frozenset[str] = frozenset(
         "urllib.request.urlopen",
         "urllib.request.urlretrieve",
         "urllib.request.Request",
-    }
+    },
 )
 AGENT_DISPATCH_CLASSES: frozenset[str] = frozenset(
     {
@@ -1628,7 +1628,7 @@ AGENT_DISPATCH_CLASSES: frozenset[str] = frozenset(
         "HandoffDispatcher",
         "get_agent_dispatch_registry",
         "get_handoff_dispatcher",
-    }
+    },
 )
 AGENT_DISPATCH_METHODS: frozenset[str] = frozenset(
     {
@@ -1643,7 +1643,7 @@ AGENT_DISPATCH_METHODS: frozenset[str] = frozenset(
         # P0/L3 canonical dispatch method
         "dispatch",
         "emit_handoff",
-    }
+    },
 )
 AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
     {
@@ -1656,39 +1656,39 @@ AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
         "AgentCapabilityRegistry",
         "TypedAgentRegistry",
         "get_agent_capability_registry",
-    }
+    },
 )
 ORCHESTRATION_ROUTE_SYMBOLS: frozenset[str] = frozenset(
     {
         "route_to_agent",
         "route_agent",
-    }
+    },
 )
 WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
     {
         "orchestrate_workflow",
         "orchestrate",
-    }
+    },
 )
 EXECUTION_PLAN_DISPATCH_SYMBOLS: frozenset[str] = frozenset(
     {
         "dispatch_execution_plan",
         "dispatch_plan",
-    }
+    },
 )
 CAPABILITY_VALIDATION_SYMBOLS: frozenset[str] = frozenset(
     {
         "validate_agent_capability",
         "validate_capability",
         "resolve_agent_for_capability",
-    }
+    },
 )
 REGISTRY_CHECK_SYMBOLS: frozenset[str] = frozenset(
     {
         "check_agent_registry",
         "check_registry",
         "registry_lookup",
-    }
+    },
 )
 # ── P2 Execution Capability frozensets ────────────────────────────────────────
 AUTHORIZE_EXECUTE_SYMBOLS: frozenset[str] = frozenset(
@@ -1697,21 +1697,21 @@ AUTHORIZE_EXECUTE_SYMBOLS: frozenset[str] = frozenset(
         "authorize_execution",
         "CapabilityRouter",
         "ExecutionAuthorizationGate",
-    }
+    },
 )
 VALIDATES_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
     {
         "validates_capability",
         "validate_capability",
         "capability_check",
-    }
+    },
 )
 ROUTES_TO_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
     {
         "routes_to_capability",
         "route_capability",
         "resolve_capability",
-    }
+    },
 )
 WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1719,28 +1719,28 @@ WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
         "uwg_write",
         "commit_via_uwg",
         "UWGWriteEnforcer",
-    }
+    },
 )
 BLOCKS_DIRECT_WRITE_SYMBOLS: frozenset[str] = frozenset(
     {
         "blocks_direct_write",
         "block_direct_write",
         "SandboxMutationValidator",
-    }
+    },
 )
 RECORDS_TOOL_INVOCATION_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_tool_invocation",
         "record_tool_invocation",
         "ToolInvocationRecorder",
-    }
+    },
 )
 CAPTURES_EXECUTION_OUTPUT_SYMBOLS: frozenset[str] = frozenset(
     {
         "captures_execution_output",
         "capture_execution_output",
         "ExecutionOutputCapture",
-    }
+    },
 )
 
 # ── P3 Orchestration & Healing frozensets ─────────────────────────────────────
@@ -1749,41 +1749,41 @@ DISPATCHES_AGENT_SYMBOLS: frozenset[str] = frozenset(
         "dispatches_agent",
         "dispatch_agent",
         "AgentDispatchRecorder",
-    }
+    },
 )
 COORDINATES_AGENTS_SYMBOLS: frozenset[str] = frozenset(
     {
         "coordinates_agents",
         "coordinate_agents",
-    }
+    },
 )
 RECORDS_WORKFLOW_LINEAGE_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_workflow_lineage",
         "record_workflow_lineage",
         "WorkflowLineageEmitter",
-    }
+    },
 )
 RECORDS_HEALING_OUTCOME_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_healing_outcome",
         "record_healing_outcome",
         "HealingOutcomeRecorder",
-    }
+    },
 )
 ESCALATES_FAILURE_SYMBOLS: frozenset[str] = frozenset(
     {
         "escalates_failure",
         "escalate_failure",
         "FailureEscalationRouter",
-    }
+    },
 )
 INVOKES_EVALUATION_SYMBOLS: frozenset[str] = frozenset(
     {
         "invokes_evaluation",
         "invoke_evaluation",
         "EvaluationSignalEmitter",
-    }
+    },
 )
 
 # ── P4 State, Telemetry & Learning frozensets ────────────────────────────────
@@ -1792,35 +1792,35 @@ RECORDS_TELEMETRY_EVENT_SYMBOLS: frozenset[str] = frozenset(
         "records_telemetry_event",
         "record_telemetry_event",
         "TelemetryEventRecorder",
-    }
+    },
 )
 CAPTURES_EVALUATION_METRIC_SYMBOLS: frozenset[str] = frozenset(
     {
         "captures_evaluation_metric",
         "capture_evaluation_metric",
         "EvaluationMetricCapture",
-    }
+    },
 )
 STORES_EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
     {
         "stores_embedding",
         "store_embedding",
         "EmbeddingPersistenceWriter",
-    }
+    },
 )
 UPDATES_META_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
     {
         "updates_meta_learning_state",
         "update_meta_learning_state",
         "MetaLearningStateUpdater",
-    }
+    },
 )
 LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
     {
         "links_execution_to_snapshot",
         "link_execution_to_snapshot",
         "ExecutionSnapshotLinker",
-    }
+    },
 )
 
 CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
@@ -1828,49 +1828,49 @@ CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
         "captures_pattern",
         "capture_pattern",
         "PatternCapture",
-    }
+    },
 )
 RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_learning_event",
         "record_learning_event",
         "LearningEventRecorder",
-    }
+    },
 )
 WRITES_LEARNING_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
     {
         "writes_learning_snapshot",
         "write_learning_snapshot",
         "LearningSnapshotWriter",
-    }
+    },
 )
 FEEDS_META_LEARNING_SYMBOLS: frozenset[str] = frozenset(
     {
         "feeds_meta_learning",
         "feed_meta_learning",
         "MetaLearningFeeder",
-    }
+    },
 )
 UPDATES_ROUTING_STRATEGY_SYMBOLS: frozenset[str] = frozenset(
     {
         "updates_routing_strategy",
         "update_routing_strategy",
         "RoutingStrategyUpdater",
-    }
+    },
 )
 IMPROVES_AGENT_POLICY_SYMBOLS: frozenset[str] = frozenset(
     {
         "improves_agent_policy",
         "improve_agent_policy",
         "AgentPolicyImprover",
-    }
+    },
 )
 STORES_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
     {
         "stores_learning_state",
         "store_learning_state",
         "LearningStateStore",
-    }
+    },
 )
 EMITS_METRIC_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1887,49 +1887,49 @@ EMITS_METRIC_EVENT_SYMBOLS: frozenset[str] = frozenset(
         "F1Score",
         "MultiClassF1Metric",
         "BinaryClassificationMetric",
-    }
+    },
 )
 RECORDS_INCIDENT_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_incident_event",
         "record_incident_event",
         "IncidentEventRecorder",
-    }
+    },
 )
 CAPTURES_RUNTIME_ANOMALY_SYMBOLS: frozenset[str] = frozenset(
     {
         "captures_runtime_anomaly",
         "capture_runtime_anomaly",
         "RuntimeAnomalyCapture",
-    }
+    },
 )
 WRITES_OBSERVABILITY_LOG_SYMBOLS: frozenset[str] = frozenset(
     {
         "writes_observability_log",
         "write_observability_log",
         "ObservabilityLogWriter",
-    }
+    },
 )
 UPDATES_MONITORING_STATE_SYMBOLS: frozenset[str] = frozenset(
     {
         "updates_monitoring_state",
         "update_monitoring_state",
         "MonitoringStateUpdater",
-    }
+    },
 )
 TRIGGERS_ALERT_SYMBOLS: frozenset[str] = frozenset(
     {
         "triggers_alert",
         "trigger_alert",
         "AlertTrigger",
-    }
+    },
 )
 LINKS_INCIDENT_TRACE_SYMBOLS: frozenset[str] = frozenset(
     {
         "links_incident_trace",
         "link_incident_trace",
         "IncidentTraceLinker",
-    }
+    },
 )
 ORCHESTRATION_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
@@ -1938,7 +1938,7 @@ ORCHESTRATION_CONTEXT_CLASSES: frozenset[str] = frozenset(
         "HandoffContract",
         "RunScopedOrchestrationLedger",
         "OrchestrationLedger",
-    }
+    },
 )
 SAFETY_PLANE_CLASSES: frozenset[str] = frozenset(
     {
@@ -1964,7 +1964,7 @@ SAFETY_PLANE_CLASSES: frozenset[str] = frozenset(
         "ArchivalGatekeeper",
         "LocationHealerAgent",
         "ViolationConstraint",
-    }
+    },
 )
 UWG_TERMINATION_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1976,7 +1976,7 @@ UWG_TERMINATION_SYMBOLS: frozenset[str] = frozenset(
         "uwg_gate",
         "WriteGovernorMixin",
         "execution_terminates_at_uwg",
-    }
+    },
 )
 POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -1992,7 +1992,7 @@ POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
         "ReasoningContext",
         "ExecutionContext",
         "authorize_and_execute",
-    }
+    },
 )
 ROUTING_COMMIT_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2009,7 +2009,7 @@ ROUTING_COMMIT_SYMBOLS: frozenset[str] = frozenset(
         "apply_routing_proposal",
         "LearningPipelineCommitter",
         "commit_proposal",
-    }
+    },
 )
 PROMPT_TEMPLATE_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2020,7 +2020,7 @@ PROMPT_TEMPLATE_SYMBOLS: frozenset[str] = frozenset(
         "load_prompt_template",
         "get_prompt_template",
         "PromptBuilder",
-    }
+    },
 )
 PROMPT_INJECTION_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2041,7 +2041,7 @@ PROMPT_INJECTION_SYMBOLS: frozenset[str] = frozenset(
         "inject_u0",
         "PromptHijacker",
         "SlotOverride",
-    }
+    },
 )
 PREFERENCE_PAIR_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2051,7 +2051,7 @@ PREFERENCE_PAIR_SYMBOLS: frozenset[str] = frozenset(
         "PreferencePairRecorder",
         "record_dpo_pair",
         "DPODataset",
-    }
+    },
 )
 HUMAN_REVIEW_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2067,7 +2067,7 @@ HUMAN_REVIEW_SYMBOLS: frozenset[str] = frozenset(
         "load_human_review_adapter",
         "human_review_adapter",
         "human_review",
-    }
+    },
 )
 GATEWAY_ALLOWLIST: dict[str, str] = {
     "SovereignLLMGateway": "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
@@ -2086,7 +2086,7 @@ PROVIDER_SDK_SYMBOLS: frozenset[str] = frozenset(
         "aiohttp",
         "boto3",
         "botocore",
-    }
+    },
 )
 EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2099,7 +2099,7 @@ EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
         "EmbeddingSovereignAgent",
         "bmg_embed_text",
         "create_vertex_client",
-    }
+    },
 )
 WRITE_SIDE_EFFECT_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2121,7 +2121,7 @@ WRITE_SIDE_EFFECT_SYMBOLS: frozenset[str] = frozenset(
         "subprocess.check_output",
         # NOTE: _emit_writes_through was removed — it is an instrumentation helper
         # that inflated the writes_to denominator with synthetic edges.
-    }
+    },
 )
 NETWORK_SYMBOLS: frozenset[str] = frozenset(
     {
@@ -2139,7 +2139,7 @@ NETWORK_SYMBOLS: frozenset[str] = frozenset(
         "aiohttp.ClientSession",
         "urllib.request.urlopen",
         "urllib.request.urlretrieve",
-    }
+    },
 )
 SYMBOL_KINDS: frozenset[str] = frozenset({"function", "async_function", "class", "constant", "type_alias"})
 __all__ = [
@@ -2545,14 +2545,14 @@ CONFIG_READ_SYMBOLS: frozenset[str] = frozenset(
         "cfg.get",
         "CONFIG",
         "SETTINGS",
-    }
+    },
 )
 
 DYNAMIC_EXEC_SYMBOLS: frozenset[str] = frozenset(
     {
         "eval",
         "exec",
-    }
+    },
 )
 
 GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
@@ -2599,7 +2599,7 @@ GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "ExecutionContext",
         "SurgicalContext",
         "ViolationConstraint",
-    }
+    },
 )
 
 GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
@@ -2641,7 +2641,7 @@ GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
         "check_gateway_topology",
         "build_route_decision_key",
         "build_route_context_key",
-    }
+    },
 )
 
 GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
@@ -2759,5 +2759,5 @@ GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
         "ADGBehavioralIndex",
         "get_data_files",
         "ADGStaticScanner",
-    }
+    },
 )

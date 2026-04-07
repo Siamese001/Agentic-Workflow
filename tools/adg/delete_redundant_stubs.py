@@ -1,6 +1,9 @@
 """
 Delete redundant ADG stubs and generate stubs for uncovered modules.
 
+Default: Execute deletions (heal mode)
+Use --report for report-only mode (CI-friendly)
+
 Phase 1: Delete _adg stub files whose covered modules are ALL also covered
          by at least one non-_adg behavioral test.
 Phase 2: Report uncovered modules that need new stubs.
@@ -28,7 +31,7 @@ def main(dry_run: bool = True) -> None:
             "SELECT resolved_path FROM nodes "
             "WHERE entity_type='module' "
             "AND resolved_path LIKE 'agentic_core/%' "
-            "AND resolved_path NOT LIKE '%__pycache__%' "
+            "AND resolved_path NOT LIKE '%__pycache__%' ",
         )
     }
 
@@ -41,8 +44,8 @@ def main(dry_run: bool = True) -> None:
             "WHERE e.relation_type='imports' "
             "AND n1.resolved_path LIKE 'tests/%' "
             "AND n2.resolved_path LIKE 'agentic_core/%' "
-            "AND n2.resolved_path NOT LIKE '%__pycache__%' "
-        )
+            "AND n2.resolved_path NOT LIKE '%__pycache__%' ",
+        ),
     )
 
     test_to_covered: dict[str, set[str]] = defaultdict(set)
@@ -113,7 +116,7 @@ def main(dry_run: bool = True) -> None:
 
 
 if __name__ == "__main__":
-    dry = "--execute" not in sys.argv
-    main(dry_run=dry)
+    report_only = "--report" in sys.argv or "-r" in sys.argv
+    main(dry_run=report_only)
 def find_redundant():
     return []

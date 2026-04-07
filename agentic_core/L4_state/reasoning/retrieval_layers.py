@@ -82,7 +82,7 @@ class L1ExactCache:
             "hit_count": self.hit_count,
             "miss_count": self.miss_count,
             "hit_rate": self.get_hit_rate(),
-            "ttl_seconds": self.ttl_seconds
+            "ttl_seconds": self.ttl_seconds,
         }
 
 
@@ -121,7 +121,7 @@ class L2SemanticCache:
         try:
             response = self.embedding_client.embeddings.create(
                 model="text-embedding-ada-002",
-                input=text
+                input=text,
             )
             return response.data[0].embedding
         except Exception as e:
@@ -166,7 +166,7 @@ class L2SemanticCache:
         cache_data = {
             "embedding": query_embedding,
             "response": response,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
         self.cache.set(cache_key, json.dumps(cache_data).encode('utf-8'), ttl_seconds=self.ttl_seconds)
@@ -200,7 +200,7 @@ class L2SemanticCache:
             "miss_count": self.miss_count,
             "hit_rate": self.get_hit_rate(),
             "similarity_threshold": self.similarity_threshold,
-            "ttl_seconds": self.ttl_seconds
+            "ttl_seconds": self.ttl_seconds,
         }
 
 
@@ -254,7 +254,7 @@ class L3SemanticRAG:
         try:
             results = collection.query(
                 query_embeddings=[query_embedding],
-                n_results=n_results
+                n_results=n_results,
             )
 
             self.query_count += 1
@@ -268,7 +268,7 @@ class L3SemanticRAG:
                     "content": document,
                     "metadata": metadata,
                     "collection": collection_type,
-                    "rank": i + 1
+                    "rank": i + 1,
                 })
 
             return formatted_results
@@ -289,7 +289,7 @@ class L3SemanticRAG:
         try:
             response = self.embedding_client.embeddings.create(
                 model="text-embedding-ada-002",
-                input=text
+                input=text,
             )
             return response.data[0].embedding
         except Exception as e:
@@ -304,7 +304,7 @@ class L3SemanticRAG:
             "docs_count": self.docs_collection.count(),
             "traces_count": self.traces_collection.count(),
             "vector_dimensions": self.config.VECTOR_DIMENSIONS,
-            "vector_metric": self.config.VECTOR_METRIC
+            "vector_metric": self.config.VECTOR_METRIC,
         }
 
 
@@ -324,15 +324,15 @@ class L4AgenticActions:
                 "parameters": {
                     "query": {
                         "type": "string",
-                        "description": "Search query for documentation"
+                        "description": "Search query for documentation",
                     },
                     "n_results": {
                         "type": "integer",
                         "description": "Number of results to return",
-                        "default": 5
-                    }
+                        "default": 5,
+                    },
                 },
-                "required": ["query"]
+                "required": ["query"],
             },
             "find_similar_traces": {
                 "name": "find_similar_traces",
@@ -340,15 +340,15 @@ class L4AgenticActions:
                 "parameters": {
                     "trace_id": {
                         "type": "string",
-                        "description": "Reference trace ID"
+                        "description": "Reference trace ID",
                     },
                     "n_results": {
                         "type": "integer",
                         "description": "Number of similar traces to find",
-                        "default": 5
-                    }
+                        "default": 5,
+                    },
                 },
-                "required": ["trace_id"]
+                "required": ["trace_id"],
             },
             "get_architecture_info": {
                 "name": "get_architecture_info",
@@ -356,11 +356,11 @@ class L4AgenticActions:
                 "parameters": {
                     "component": {
                         "type": "string",
-                        "description": "Component name (e.g., ADG, L0, L1, etc.)"
-                    }
+                        "description": "Component name (e.g., ADG, L0, L1, etc.)",
+                    },
                 },
-                "required": ["component"]
-            }
+                "required": ["component"],
+            },
         }
 
     def validate_action(self, action_name: str, parameters: dict[str, Any]) -> bool:
@@ -400,7 +400,7 @@ class L4AgenticActions:
             "action_count": self.action_count,
             "validation_failures": self.validation_failures,
             "success_rate": 1.0 - (self.validation_failures / max(self.action_count, 1)),
-            "available_actions": len(self.tool_schemas)
+            "available_actions": len(self.tool_schemas),
         }
 
 
@@ -422,7 +422,7 @@ class RetrievalOrchestrator:
             "query": query,
             "layers_used": [],
             "results": [],
-            "stats": {}
+            "stats": {},
         }
 
         # L1: Exact Cache
@@ -432,7 +432,7 @@ class RetrievalOrchestrator:
             results["results"].append({
                 "layer": "L1_Exact_Cache",
                 "content": cached_result,
-                "metadata": {"cache_hit": True}
+                "metadata": {"cache_hit": True},
             })
             results["stats"]["l1"] = self.l1_cache.get_stats()
             return results
@@ -444,7 +444,7 @@ class RetrievalOrchestrator:
             results["results"].append({
                 "layer": "L2_Semantic_Cache",
                 "content": semantic_result,
-                "metadata": {"cache_hit": True}
+                "metadata": {"cache_hit": True},
             })
             results["stats"]["l2"] = self.l2_cache.get_stats()
             return results
@@ -471,7 +471,7 @@ class RetrievalOrchestrator:
                 results["results"].append({
                     "layer": "L4_Agentic_Actions",
                     "content": f"Action '{action_name}' validated successfully",
-                    "metadata": {"action": action_name, "parameters": params}
+                    "metadata": {"action": action_name, "parameters": params},
                 })
                 results["stats"]["l4"] = self.l4_actions.get_stats()
 
@@ -517,5 +517,5 @@ class RetrievalOrchestrator:
             "l1": self.l1_cache.get_stats(),
             "l2": self.l2_cache.get_stats(),
             "l3": self.l3_rag.get_stats(),
-            "l4": self.l4_actions.get_stats()
+            "l4": self.l4_actions.get_stats(),
         }

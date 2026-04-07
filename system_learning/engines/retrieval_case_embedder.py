@@ -101,39 +101,25 @@ _emit_applies_guardrail("p0", "retrieval_case_embedder", "p0_governance")
 _emit_reads_policy_state("p0", "retrieval_case_embedder", "policy_binding")
 _emit_snapshots_state("p0", "retrieval_case_embedder", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -355,11 +341,11 @@ class RetrievalCaseEmbedder:
         """
         if not (0.0 <= support_threshold <= 1.0):
             raise ValueError(
-                f"support_threshold must be in [0.0, 1.0], got {support_threshold}"
+                f"support_threshold must be in [0.0, 1.0], got {support_threshold}",
             )
         if not (0.0 <= completeness_threshold <= 1.0):
             raise ValueError(
-                f"completeness_threshold must be in [0.0, 1.0], got {completeness_threshold}"
+                f"completeness_threshold must be in [0.0, 1.0], got {completeness_threshold}",
             )
         limit = min(limit, 100)
         results: list[dict[str, Any]] = []
@@ -397,7 +383,7 @@ class RetrievalCaseEmbedder:
             }
         avg_sup = round(sum(m.get("support_score", 0.0) for m in metas) / n, 6)
         avg_comp = round(
-            sum(m.get("completeness_score", 0.0) for m in metas) / n, 6
+            sum(m.get("completeness_score", 0.0) for m in metas) / n, 6,
         )
         esc_rate = round(sum(1 for m in metas if m.get("escalation_flag")) / n, 6)
         heal_rate = round(sum(1 for m in metas if m.get("healer_invoked")) / n, 6)
@@ -563,11 +549,11 @@ class RetrievalCaseEmbedder:
                         case_id=meta.get("case_id", ""),
                         support_score=float(meta.get("support_score", 0.0)),
                         completeness_score=float(
-                            meta.get("completeness_score", 0.0)
+                            meta.get("completeness_score", 0.0),
                         ),
                         escalation_flag=bool(meta.get("escalation_flag", False)),
                         content_preview=r.content_preview,
-                    )
+                    ),
                 )
             return out
         # guardian: allow-silent-swallow
@@ -596,11 +582,11 @@ class RetrievalCaseEmbedder:
         """Convenience constructor that validates score ranges."""
         if not (0.0 <= support_score <= 1.0):
             raise ValueError(
-                f"support_score must be in [0.0, 1.0], got {support_score}"
+                f"support_score must be in [0.0, 1.0], got {support_score}",
             )
         if not (0.0 <= completeness_score <= 1.0):
             raise ValueError(
-                f"completeness_score must be in [0.0, 1.0], got {completeness_score}"
+                f"completeness_score must be in [0.0, 1.0], got {completeness_score}",
             )
         return RetrievalCaseRecord(
             case_id=case_id,

@@ -31,7 +31,7 @@ def test_mcp_server(name, server_config):
                 [command] + args + ['--help'],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=5,
             )
             end_time = time.time()
             startup_time = end_time - start_time
@@ -41,14 +41,14 @@ def test_mcp_server(name, server_config):
                     'status': 'success',
                     'time': startup_time,
                     'success': True,
-                    'message': 'Server starts successfully'
+                    'message': 'Server starts successfully',
                 }
             else:
                 return {
                     'status': 'warning',
                     'time': startup_time,
                     'success': False,
-                    'message': f'Exit code: {result.returncode}'
+                    'message': f'Exit code: {result.returncode}',
                 }
 
         elif command == 'python':
@@ -59,14 +59,14 @@ def test_mcp_server(name, server_config):
                     'status': 'python_ready',
                     'time': 0,
                     'success': True,
-                    'message': f'Python script found: {script_path}'
+                    'message': f'Python script found: {script_path}',
                 }
             else:
                 return {
                     'status': 'missing',
                     'time': 0,
                     'success': False,
-                    'message': f'Python script not found: {script_path}'
+                    'message': f'Python script not found: {script_path}',
                 }
 
         elif command == 'npx':
@@ -77,21 +77,21 @@ def test_mcp_server(name, server_config):
                     'status': 'npx_configured',
                     'time': 0,
                     'success': True,
-                    'message': f'NPX package: {package_name}'
+                    'message': f'NPX package: {package_name}',
                 }
             else:
                 return {
                     'status': 'invalid_npx',
                     'time': 0,
                     'success': False,
-                    'message': 'Invalid NPX configuration'
+                    'message': 'Invalid NPX configuration',
                 }
         else:
             return {
                 'status': 'unknown_command',
                 'time': 0,
                 'success': False,
-                'message': f'Unknown command: {command}'
+                'message': f'Unknown command: {command}',
             }
 
     except subprocess.TimeoutExpired:
@@ -99,14 +99,14 @@ def test_mcp_server(name, server_config):
             'status': 'timeout_success',
             'time': 5.0,
             'success': True,
-            'message': 'Server started (timeout expected)'
+            'message': 'Server started (timeout expected)',
         }
     except Exception as e:
         return {
             'status': 'error',
             'time': 0,
             'success': False,
-            'message': f'Error: {str(e)}'
+            'message': f'Error: {str(e)}',
         }
 
 def get_installed_mcp_packages():
@@ -150,7 +150,7 @@ def analyze_configuration_optimization(servers, installed_packages):
                             'current': 'NPX',
                             'recommended': 'Global npm',
                             'path': expected_path,
-                            'benefit': 'Faster startup, more reliable'
+                            'benefit': 'Faster startup, more reliable',
                         })
                     else:
                         recommendations.append({
@@ -159,7 +159,7 @@ def analyze_configuration_optimization(servers, installed_packages):
                             'current': 'NPX',
                             'recommended': 'Global npm',
                             'package': package_name,
-                            'benefit': 'Faster startup, more reliable'
+                            'benefit': 'Faster startup, more reliable',
                         })
                 else:
                     recommendations.append({
@@ -168,7 +168,7 @@ def analyze_configuration_optimization(servers, installed_packages):
                         'current': 'NPX',
                         'recommended': 'Global npm',
                         'package': package_name,
-                        'benefit': 'Faster startup, more reliable'
+                        'benefit': 'Faster startup, more reliable',
                     })
 
     return recommendations
@@ -216,7 +216,7 @@ def main():
             'missing': '❌',
             'invalid_npx': '❌',
             'unknown_command': '❌',
-            'error': '❌'
+            'error': '❌',
         }.get(result['status'], '❓')
 
         time_info = f' ({result["time"]:.3f}s)' if result['time'] > 0 else ''

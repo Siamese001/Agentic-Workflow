@@ -8,7 +8,6 @@ import json
 import re
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'artifacts' / 'adg' / 'ssot_fixes_applied.json'
 data: dict = json.loads(DATA.read_text(encoding='utf-8'))

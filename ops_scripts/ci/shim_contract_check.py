@@ -21,7 +21,6 @@ import json
 import sys
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _v3 = PROJECT_ROOT / 'artifacts' / 'consolidation' / 'target_manifest_v3.json'
 _manifest = json.loads(_v3.read_text(encoding='utf-8'))

@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai engines module."""
 
-import pytest
 
 
 class TestEnginesImportable:

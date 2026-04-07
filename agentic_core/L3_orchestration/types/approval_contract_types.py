@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -216,7 +215,7 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
 }
 BUNDLE_SCHEMA_KEYS: frozenset[str] = frozenset(CONTRACT_JSON_SCHEMA["properties"].keys())
 RECORD_SCHEMA_KEYS: frozenset[str] = frozenset(
-    CONTRACT_JSON_SCHEMA["properties"]["records"]["items"]["properties"].keys()
+    CONTRACT_JSON_SCHEMA["properties"]["records"]["items"]["properties"].keys(),
 )
 
 
@@ -335,7 +334,7 @@ def check_schema_compatibility(result_dict: dict[str, Any]) -> list[str]:
         record_keys = set(record.keys())
         if record_keys != RECORD_SCHEMA_KEYS:
             errors.append(
-                f"Record keys mismatch: expected {sorted(RECORD_SCHEMA_KEYS)}, got {sorted(record_keys)}"
+                f"Record keys mismatch: expected {sorted(RECORD_SCHEMA_KEYS)}, got {sorted(record_keys)}",
             )
     return errors
 
@@ -406,7 +405,7 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
                 if "minLength" in prop_schema and isinstance(val, str):
                     if len(val) < prop_schema["minLength"]:
                         errors.append(
-                            f"{field_path}: string length {len(val)} < minLength {prop_schema['minLength']}"
+                            f"{field_path}: string length {len(val)} < minLength {prop_schema['minLength']}",
                         )
                 if prop_schema.get("type") == "object" and isinstance(val, dict):
                     _validate_object(val, prop_schema, field_path)

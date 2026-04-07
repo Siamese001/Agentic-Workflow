@@ -14,7 +14,6 @@ import argparse
 import sys
 from pathlib import Path
 
-
 DEFAULT_EVIDENCE_GLOB = 'docs/reports/sub/**/*.md'
 REQUIRED_MARKERS = ['pre-commit run --all-files', 'pytest -q', 'git show --name-only', 'git status --porcelain=v1']
 

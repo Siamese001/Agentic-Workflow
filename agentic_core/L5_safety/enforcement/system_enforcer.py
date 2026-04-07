@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -383,7 +382,7 @@ class SystemValidator:
         for layer in sorted(layer_stats.keys()):
             stats = layer_stats[layer]
             Logger.info(
-                f"  {layer}: {stats['total']} agents | Testing: {stats['testing']} | Healing: {stats['healing']} | MCP: {stats['mcp']}"
+                f"  {layer}: {stats['total']} agents | Testing: {stats['testing']} | Healing: {stats['healing']} | MCP: {stats['mcp']}",
             )
         Logger.info("")
         Logger.info("=" * 60)

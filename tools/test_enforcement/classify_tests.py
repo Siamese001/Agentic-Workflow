@@ -137,12 +137,12 @@ class TestClassifier:
         # Check skip patterns and dependencies
         if skip_type != "none":
             category, justification, confidence = self._classify_by_skip_pattern(
-                skip_type, dependency, skip_reason, category, justification, confidence
+                skip_type, dependency, skip_reason, category, justification, confidence,
             )
 
         # Apply final rules and corrections
         category, justification, confidence = self._apply_final_rules(
-            test_data, category, justification, confidence
+            test_data, category, justification, confidence,
         )
 
         return TestClassification(
@@ -151,7 +151,7 @@ class TestClassifier:
             category=category,
             justification=justification,
             confidence=confidence,
-            markers=markers
+            markers=markers,
         )
 
     def _classify_by_path(self, file_path: str, current_category: str, current_justification: str, current_confidence: float) -> tuple:
@@ -266,7 +266,7 @@ class TestClassifier:
         # Check if test validates core agentic functionality
         core_keywords = [
             'agent', 'routing', 'policy', 'safety', 'guardrail', 'execution',
-            'adg', 'determinism', 'sovereignty', 'layer'
+            'adg', 'determinism', 'sovereignty', 'layer',
         ]
 
         if any(keyword in test_name.lower() for keyword in core_keywords):
@@ -284,7 +284,7 @@ class TestClassifier:
         optional_deps = [
             'torch', 'transformers', 'openai', 'anthropic', 'boto3', 'redis',
             'postgresql', 'mysql', 'mongodb', 'elasticsearch', 'chromadb',
-            'pinecone', 'weaviate', 'faiss', 'numpy', 'pandas', 'matplotlib'
+            'pinecone', 'weaviate', 'faiss', 'numpy', 'pandas', 'matplotlib',
         ]
         return any(dep in dependency.lower() for dep in optional_deps)
 
@@ -292,7 +292,7 @@ class TestClassifier:
         """Check if dependency is platform-specific."""
         platform_deps = [
             'torch.cuda', 'tensorflow', 'cupy', 'numba', 'windows', 'linux',
-            'macos', 'darwin', 'win32'
+            'macos', 'darwin', 'win32',
         ]
         return any(dep in dependency.lower() for dep in platform_deps)
 
@@ -300,7 +300,7 @@ class TestClassifier:
         """Check if dependency requires external services."""
         external_deps = [
             'requests', 'httpx', 'aiohttp', 'boto3', 'google-cloud', 'azure',
-            'aws', 'api', 'service', 'remote'
+            'aws', 'api', 'service', 'remote',
         ]
         return any(dep in dependency.lower() for dep in external_deps)
 
@@ -324,7 +324,7 @@ def classify_all_tests() -> dict[str, Any]:
             'category': classification.category,
             'justification': classification.justification,
             'confidence': classification.confidence,
-            'markers': classification.markers
+            'markers': classification.markers,
         })
 
     # Build classification result
@@ -332,9 +332,9 @@ def classify_all_tests() -> dict[str, Any]:
         "metadata": {
             "classification_timestamp": "2026-03-24T18:31:00Z",
             "total_tests_classified": len(classifications),
-            "classifier_version": "1.0"
+            "classifier_version": "1.0",
         },
-        "classifications": classifications
+        "classifications": classifications,
     }
 
     # Add summary statistics
@@ -356,7 +356,7 @@ def classify_all_tests() -> dict[str, Any]:
 
     result["summary"] = {
         "categories": category_counts,
-        "confidence_distribution": confidence_counts
+        "confidence_distribution": confidence_counts,
     }
 
     return result

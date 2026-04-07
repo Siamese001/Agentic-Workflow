@@ -90,39 +90,25 @@ _emit_applies_guardrail("p0", "RgResumeOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "RgResumeOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "RgResumeOrchestrator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -256,7 +242,7 @@ class RgResumeOrchestrator(RGAgentBase):
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgResumeOrchestrator.run"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgResumeOrchestrator.run",
         )
         if self.jd_enforcer:
             self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
@@ -290,7 +276,7 @@ class RgResumeOrchestrator(RGAgentBase):
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "status"})
 
     async def generate_resume_with_qwen(
-        self, job_description: str, candidate_profile: dict[str, Any]
+        self, job_description: str, candidate_profile: dict[str, Any],
     ) -> dict[str, Any]:
         """Generate resume content using Qwen vLLM inference.
 
@@ -364,7 +350,7 @@ class RgResumeOrchestrator(RGAgentBase):
             return {"success": False, "error": f"generation_failed: {str(e)}", "content": None}
 
     def _prepare_resume_generation_prompt(
-        self, job_description: str, candidate_profile: dict[str, Any]
+        self, job_description: str, candidate_profile: dict[str, Any],
     ) -> str:
         """Prepare prompt for resume generation using Qwen.
 
@@ -408,7 +394,7 @@ Focus on matching the candidate's experience to the job requirements and quantif
         if _call_path is None:
             _call_path = set()
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
         )
         agent_name = self.__class__.__name__
         if agent_name in _call_path:

@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -181,11 +180,11 @@ class RetryPolicy(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     max_retries: int = Field(default=3, ge=0, le=10, description="Maximum number of retry attempts")
     backoff_base: float = Field(
-        default=0.5, ge=0.1, le=5.0, description="Base multiplier for backoff calculation"
+        default=0.5, ge=0.1, le=5.0, description="Base multiplier for backoff calculation",
     )
     backoff_max: float = Field(default=30.0, ge=1.0, le=300.0, description="Maximum backoff delay in seconds")
     retry_on: list[str] = Field(
-        default_factory=lambda: ["timeout", "rate_limit"], description="Error types to retry on"
+        default_factory=lambda: ["timeout", "rate_limit"], description="Error types to retry on",
     )
 
     @field_validator("retry_on")

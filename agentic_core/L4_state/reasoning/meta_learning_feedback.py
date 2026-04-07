@@ -176,7 +176,7 @@ class EvaluationRunner:
         """
         _trace_id = f"eval_{self._eval_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationRunner.evaluate"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationRunner.evaluate",
         )
 
         metrics = EvaluationMetrics()
@@ -210,17 +210,17 @@ class EvaluationRunner:
             avg_groundedness = sum(groundedness_scores) / len(groundedness_scores)
             # F1 between groundedness and precision
             metrics.f1_groundedness = 2 * (avg_groundedness * metrics.precision_at_k) / max(
-                avg_groundedness + metrics.precision_at_k, 1e-10
+                avg_groundedness + metrics.precision_at_k, 1e-10,
             )
 
         _emit_captures_evaluation_metric(
-            _trace_id, "precision_at_k", metrics.precision_at_k
+            _trace_id, "precision_at_k", metrics.precision_at_k,
         )
         _emit_captures_evaluation_metric(
-            _trace_id, "recall_at_k", metrics.recall_at_k
+            _trace_id, "recall_at_k", metrics.recall_at_k,
         )
         _emit_captures_evaluation_metric(
-            _trace_id, "mrr", metrics.mrr
+            _trace_id, "mrr", metrics.mrr,
         )
 
         self._eval_count += 1
@@ -276,7 +276,7 @@ class CompletenessAnalyzer:
         """
         _trace_id = f"completeness_{self._analysis_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessAnalyzer.analyze"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessAnalyzer.analyze",
         )
 
         analysis = CompletenessAnalysis()
@@ -404,7 +404,7 @@ class CompletenessRAGProposer:
         """
         _trace_id = f"propose_{len(query_batch)}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessRAGProposer.analyze_and_propose"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessRAGProposer.analyze_and_propose",
         )
         _emit_feeds_meta_learning(_trace_id, "proposer", f"batch:{len(query_batch)}")
 
@@ -471,7 +471,7 @@ class CompletenessRAGProposer:
         )
 
         _emit_records_learning_event(
-            _trace_id, "proposals_generated", f"count:{len(proposals)}"
+            _trace_id, "proposals_generated", f"count:{len(proposals)}",
         )
 
         return change_package
@@ -504,7 +504,7 @@ class CompletenessRAGProposer:
                 )
                 proposals.append(proposal)
                 _emit_updates_routing_strategy(
-                    "completeness_proposer", "depth_increment", str(current_depth + 1)
+                    "completeness_proposer", "depth_increment", str(current_depth + 1),
                 )
 
         return proposals
@@ -536,7 +536,7 @@ class CompletenessRAGProposer:
             )
             proposals.append(proposal)
             _emit_improves_agent_policy(
-                "completeness_proposer", "enrichment_boost", "fragmentation_fix"
+                "completeness_proposer", "enrichment_boost", "fragmentation_fix",
             )
 
         return proposals
@@ -569,7 +569,7 @@ class CompletenessRAGProposer:
                 )
                 proposals.append(proposal)
                 _emit_updates_routing_strategy(
-                    "completeness_proposer", "hybrid_mode", "enabled"
+                    "completeness_proposer", "hybrid_mode", "enabled",
                 )
 
         return proposals
@@ -610,7 +610,7 @@ class CompletenessRAGProposer:
                 )
                 proposals.append(proposal)
                 _emit_updates_routing_strategy(
-                    "completeness_proposer", "lexical_weight", str(new_weight)
+                    "completeness_proposer", "lexical_weight", str(new_weight),
                 )
 
         return proposals

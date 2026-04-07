@@ -11,39 +11,7 @@ from typing import Any
 from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,
     _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
 )
@@ -89,7 +57,7 @@ class PromptBOMBuilder:
         PromptBOM = _get_prompt_bom()
         trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L0_ROUTING, "PromptBOMBuilder.build"
+            trace_id, LayerSegment.L0_ROUTING, "PromptBOMBuilder.build",
         )
         emit_replay_key(trace_id, f"bom:{packet.trace_id}")
         emit_determinism_digest(trace_id, f"path:{packet.path}")

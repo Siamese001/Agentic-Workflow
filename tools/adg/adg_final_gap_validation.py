@@ -90,7 +90,7 @@ class ADGFinalGapValidator:
             "edge_types_complete": set(edge_types.keys()) == set(edge_report.get("edge_distribution", {}).keys()),
             "layer_distribution_match": layer_dist == layer_report.get("layer_distribution", {}),
             "all_edge_types_accounted": len(edge_types) > 0,
-            "deterministic_sorting": self._check_report_sorting()
+            "deterministic_sorting": self._check_report_sorting(),
         }
 
         if not reconciliation["nodes_match"]:
@@ -163,7 +163,7 @@ class ADGFinalGapValidator:
             "critical_path_unresolved": critical_path_unresolved,
             "boundary_completeness": boundary_completeness,
             "zero_leak_achieved": critical_path_unresolved == 0,
-            "all_edges_classified": total_edges > 0
+            "all_edges_classified": total_edges > 0,
         }
 
         if critical_path_unresolved > 0:
@@ -185,7 +185,7 @@ class ADGFinalGapValidator:
             'snapshots_state': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('snapshots_state',))[0][0],
             'mutation_signature': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('mutation_signature',))[0][0],
             'references_policy_hash': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('references_policy_hash',))[0][0],
-            'parent_snapshot_hash': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('parent_snapshot_hash',))[0][0]
+            'parent_snapshot_hash': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('parent_snapshot_hash',))[0][0],
         }
 
         # Calculate graph hashes
@@ -203,11 +203,11 @@ class ADGFinalGapValidator:
             "graph_hashes": {
                 "nodes": node_hash,
                 "edges": edge_hash,
-                "mutation_lineage": mutation_hash
+                "mutation_lineage": mutation_hash,
             },
             "lineage_complete": lineage_complete,
             "determinism_score": self._calculate_determinism_score(determinism_edges),
-            "replay_ready": lineage_complete and determinism_edges['emits_determinism_digest'] > 0
+            "replay_ready": lineage_complete and determinism_edges['emits_determinism_digest'] > 0,
         }
 
         if not lineage_complete:
@@ -289,7 +289,7 @@ class ADGFinalGapValidator:
             "unknown_by_type": unknown_by_type,
             "remaining_unknown": len(remaining_unknown),
             "propagation_complete": len(violations) == 0,
-            "total_unknown": sum(unknown_by_type.values())
+            "total_unknown": sum(unknown_by_type.values()),
         }
 
         if len(violations) > 0:
@@ -307,7 +307,7 @@ class ADGFinalGapValidator:
         critical_edges = [
             'emits_determinism_digest',  # determinism
             'policy_verification',       # governance
-            'dispatches_execution_plan'  # execution
+            'dispatches_execution_plan',  # execution
         ]
 
         # Get core modules (L0, L2, L5)
@@ -336,7 +336,7 @@ class ADGFinalGapValidator:
                 "coverage": coverage,
                 "has_determinism": coverage.get('emits_determinism_digest', 0) > 0,
                 "has_governance": coverage.get('policy_verification', 0) > 0,
-                "has_execution": coverage.get('dispatches_execution_plan', 0) > 0
+                "has_execution": coverage.get('dispatches_execution_plan', 0) > 0,
             }
 
         # Calculate coverage metrics
@@ -352,13 +352,13 @@ class ADGFinalGapValidator:
             "coverage_metrics": {
                 "determinism_coverage": modules_with_determinism / total_modules if total_modules > 0 else 0,
                 "governance_coverage": modules_with_governance / total_modules if total_modules > 0 else 0,
-                "execution_coverage": modules_with_execution / total_modules if total_modules > 0 else 0
+                "execution_coverage": modules_with_execution / total_modules if total_modules > 0 else 0,
             },
             "minimum_achieved": all([
                 modules_with_determinism >= total_modules * 0.8,  # 80% threshold
                 modules_with_governance >= total_modules * 0.8,
-                modules_with_execution >= total_modules * 0.5   # 50% for execution (not all need it)
-            ])
+                modules_with_execution >= total_modules * 0.5,   # 50% for execution (not all need it)
+            ]),
         }
 
         if not distribution["minimum_achieved"]:
@@ -419,7 +419,7 @@ class ADGFinalGapValidator:
                 "layer": layer,
                 "test_case_links": test_case_links,
                 "validation_links": validation_links,
-                "has_test_linkage": test_case_links > 0 or validation_links > 0
+                "has_test_linkage": test_case_links > 0 or validation_links > 0,
             }
 
         # Calculate metrics
@@ -433,9 +433,9 @@ class ADGFinalGapValidator:
             "binding_metrics": {
                 "total_critical_modules": total_critical,
                 "modules_with_test_linkage": modules_with_tests,
-                "test_coverage_percentage": modules_with_tests / total_critical if total_critical > 0 else 0
+                "test_coverage_percentage": modules_with_tests / total_critical if total_critical > 0 else 0,
             },
-            "hard_binding_achieved": modules_with_tests >= total_critical * 0.9  # 90% threshold
+            "hard_binding_achieved": modules_with_tests >= total_critical * 0.9,  # 90% threshold
         }
 
         if not binding["hard_binding_achieved"]:
@@ -464,7 +464,7 @@ class ADGFinalGapValidator:
             replay["replay_ready"],
             propagation["propagation_complete"],
             distribution["minimum_achieved"],
-            binding["hard_binding_achieved"]
+            binding["hard_binding_achieved"],
         ]
 
         overall_score = sum(checks) / len(checks) * 100
@@ -478,7 +478,7 @@ class ADGFinalGapValidator:
                 "replay": replay,
                 "propagation": propagation,
                 "distribution": distribution,
-                "binding": binding
+                "binding": binding,
             },
             "overall_metrics": {
                 "checks_passed": sum(checks),
@@ -486,10 +486,10 @@ class ADGFinalGapValidator:
                 "overall_score": overall_score,
                 "system_locked": overall_score >= 90.0,  # 90% threshold
                 "validation_errors": len(self.validation_errors),
-                "validation_warnings": len(self.validation_warnings)
+                "validation_warnings": len(self.validation_warnings),
             },
             "validation_errors": self.validation_errors,
-            "validation_warnings": self.validation_warnings
+            "validation_warnings": self.validation_warnings,
         }
 
         return final_validation
@@ -542,7 +542,7 @@ class ADGFinalGapValidator:
                 "sqlite_file": new_sqlite.name,
                 "node_hash": node_hash,
                 "edge_hash": edge_hash,
-                "mutation_hash": mutation_hash
+                "mutation_hash": mutation_hash,
             })
 
         # Check hash consistency
@@ -556,10 +556,10 @@ class ADGFinalGapValidator:
                 "nodes_consistent": node_consistent,
                 "edges_consistent": edge_consistent,
                 "mutation_consistent": mutation_consistent,
-                "all_consistent": node_consistent and edge_consistent and mutation_consistent
+                "all_consistent": node_consistent and edge_consistent and mutation_consistent,
             },
             "hashes": hashes,
-            "deterministic_replay": node_consistent and edge_consistent and mutation_consistent
+            "deterministic_replay": node_consistent and edge_consistent and mutation_consistent,
         }
 
         if not triple_validation["hash_consistency"]["all_consistent"]:

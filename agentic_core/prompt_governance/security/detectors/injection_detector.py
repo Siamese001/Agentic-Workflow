@@ -5,6 +5,7 @@ import re
 import time
 from typing import Any
 
+from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -48,46 +49,31 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
 from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 
 _emit_applies_guardrail("p0", "injection_detector", "p0_governance")
 _emit_reads_policy_state("p0", "injection_detector", "policy_binding")
 _emit_snapshots_state("p0", "injection_detector", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -265,7 +251,7 @@ _REGEX_SIGNATURES: list[tuple[str, re.Pattern[str]]] = [
     (
         "RX_SYSTEM_PROMPT_LEAK",
         re.compile(
-            "(?:show|reveal|print|output|repeat|display|echo)\\s+(?:me\\s+)?(?:your|the)\\s+(?:system\\s+)?(?:prompt|instructions)"
+            "(?:show|reveal|print|output|repeat|display|echo)\\s+(?:me\\s+)?(?:your|the)\\s+(?:system\\s+)?(?:prompt|instructions)",
         ),
     ),
     ("RX_NOW_YOU_ARE", re.compile("(?:you\\s+are\\s+now|from\\s+now\\s+on\\s+you\\s+are)")),
@@ -461,7 +447,7 @@ class InjectionDetector:
                 gate_thresholds = RegressionThresholds(
                     max_attack_success_rate_increase=thresholds.get("max_attack_success_rate_increase", 0.05),
                     max_high_risk_count_increase_ratio=thresholds.get(
-                        "max_high_risk_count_increase_ratio", 0.2
+                        "max_high_risk_count_increase_ratio", 0.2,
                     ),
                 )
             evaluate_against_baseline(current_metrics, baseline_metrics, gate_thresholds)

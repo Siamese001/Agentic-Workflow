@@ -110,7 +110,7 @@ def load_classification(check_freshness: bool = True) -> dict:
         age = time.time() - CLASSIFICATION_PATH.stat().st_mtime
         if age > _MAX_ARTIFACT_AGE_S:
             print(
-                f"ERROR: classification artifact is {age / 3600:.1f}h old (limit 24h): {CLASSIFICATION_PATH}"
+                f"ERROR: classification artifact is {age / 3600:.1f}h old (limit 24h): {CLASSIFICATION_PATH}",
             )
             print("  Run: python tools/adg_test_classifier.py --refresh")
             sys.exit(2)
@@ -127,7 +127,7 @@ def get_files_for_lane(art: dict, lane: str) -> list[str]:
 
 
 def run_pytest(
-    test_files: list[str], extra_args: list[str], extra_env: dict | None = None
+    test_files: list[str], extra_args: list[str], extra_env: dict | None = None,
 ) -> tuple[int, str]:
     import os
 
@@ -190,7 +190,7 @@ def lane_unit_strict(art: dict) -> int:
         print(
             f"\nCONTRACT VIOLATION: unit_strict lane had {counts['skipped']} skipped test(s)."
             "\n  Skipped tests are not permitted in UNIT_STRICT."
-            "\n  Action: convert to pytest.xfail() with reason, or fix the test."
+            "\n  Action: convert to pytest.xfail() with reason, or fix the test.",
         )
 
     return rc
@@ -264,7 +264,7 @@ def lane_violations(art: dict) -> int:
 
 
 def _print_and_save(
-    lane: str, rc: int, output: str, files: list[str], extra_counts: dict | None = None
+    lane: str, rc: int, output: str, files: list[str], extra_counts: dict | None = None,
 ) -> None:
     # Print last N lines of pytest output
     lines = output.splitlines()
@@ -296,7 +296,7 @@ def _print_and_save(
         return _re.sub(r"in \d+\.\d+s", "in X.XXs", s)
 
     if not RESULT_PATH.exists() or _strip_timing(RESULT_PATH.read_text(encoding="utf-8")) != _strip_timing(
-        new_text
+        new_text,
     ):
         RESULT_PATH.write_text(new_text, encoding="utf-8")
     print(f"\n[{lane.upper()}] {'PASS' if rc == 0 else 'FAIL'}  {summary}")
@@ -341,7 +341,7 @@ def main() -> None:
         f"  UNIT_STRICT={art['summary']['unit_strict']}  "
         f"DEGRADED_PATH={art['summary']['degraded_path']}  "
         f"INTEGRATION_INFRA={art['summary']['integration_infra']}  "
-        f"violations={art['summary']['unit_violations']}"
+        f"violations={art['summary']['unit_violations']}",
     )
     print()
 

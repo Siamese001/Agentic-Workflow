@@ -92,7 +92,7 @@ class PowerShellBanChecker:
     # Directories to exclude
     EXCLUDE_DIRS = {
         '.git', '__pycache__', '.pytest_cache', '.mypy_cache',
-        'node_modules', '.venv', 'venv', '.vscode', '.idea'
+        'node_modules', '.venv', 'venv', '.vscode', '.idea',
     }
 
     def __init__(self):
@@ -174,7 +174,7 @@ class PowerShellBanChecker:
                         "line_content": line_content.strip(),
                         "message": f"PowerShell usage detected: {match.group()}",
                         "severity": "error",
-                        "suggestion": self._get_suggestion(match.group(), file_path)
+                        "suggestion": self._get_suggestion(match.group(), file_path),
                     }
 
                     self.violations.append(violation)
@@ -350,7 +350,7 @@ class PowerShellBanChecker:
             "by_pattern": by_pattern,
             "by_file": by_file,
             "most_common_pattern": max(by_pattern.items(), key=lambda x: x[1]) if by_pattern else None,
-            "most_affected_file": max(by_file.items(), key=lambda x: x[1]) if by_file else None
+            "most_affected_file": max(by_file.items(), key=lambda x: x[1]) if by_file else None,
         }
 
 
@@ -382,7 +382,7 @@ def main() -> int:
         print(json.dumps({
             "status": "failed" if violations else "passed",
             "violations": violations,
-            "statistics": checker.get_statistics()
+            "statistics": checker.get_statistics(),
         }, indent=2))
     else:
         checker.print_report(args.verbose)

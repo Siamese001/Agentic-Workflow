@@ -169,7 +169,7 @@ def main():
     # Simulate git mv commands and HITL prompts
     mv_commands = "\n".join([f"git mv old_path_{i}.py archive/" for i in range(90)])
     hitl_prompts = "\n\n".join(
-        [f"Batch {i + 1}: Please confirm these archive operations..." for i in range(5)]
+        [f"Batch {i + 1}: Please confirm these archive operations..." for i in range(5)],
     )
 
     p2_phase = build_legacy_phase(

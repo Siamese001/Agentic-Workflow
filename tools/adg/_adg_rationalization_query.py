@@ -59,7 +59,7 @@ for nid, row in all_nodes.items():
 fan_out = {}  # src_id -> count of outgoing import edges
 fan_in = {}  # dst_id -> count of incoming import edges
 import_edges = conn.execute(
-    "SELECT src_id, dst_id, relation_type, symbol FROM edges WHERE relation_type='imports'"
+    "SELECT src_id, dst_id, relation_type, symbol FROM edges WHERE relation_type='imports'",
 ).fetchall()
 for e in import_edges:
     fan_out[e["src_id"]] = fan_out.get(e["src_id"], 0) + 1
@@ -180,7 +180,7 @@ for fp in MISPLACED:
     d = found_data.get(fp)
     if d:
         print(
-            f"  STILL PRESENT: {fp}  layer={d['layer']}  fan-in={d['fan_in_total']}  fan-out={d['fan_out_total']}"
+            f"  STILL PRESENT: {fp}  layer={d['layer']}  fan-in={d['fan_in_total']}  fan-out={d['fan_out_total']}",
         )
     else:
         print(f"  MISSING FROM ADG: {fp}")

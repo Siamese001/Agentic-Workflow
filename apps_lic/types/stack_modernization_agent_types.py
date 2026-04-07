@@ -244,7 +244,7 @@ class StackModernizationAgent:
             return "Senior AI Engineer with modernization experience"
 
     def _create_thesis_from_playbook(
-        self, playbook: dict[str, str], diagnostic: LegacyDiagnostic
+        self, playbook: dict[str, str], diagnostic: LegacyDiagnostic,
     ) -> MigrationThesis:
         """Create thesis from transformation playbook.
 
@@ -260,7 +260,7 @@ class StackModernizationAgent:
             target = f"Modern {playbook['modern']} architecture"
             strategy = playbook["strategy"]
             return MigrationThesis(
-                current_state_diagnosis=current, target_state_vision=target, bridge_strategy=strategy
+                current_state_diagnosis=current, target_state_vision=target, bridge_strategy=strategy,
             )
         # guardian: allow-silent-swallow
         except Exception as e:

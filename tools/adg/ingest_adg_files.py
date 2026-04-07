@@ -16,7 +16,7 @@ adg_files = [
     "adg_final_gap_analysis.md",
     "adg_process_summary.md",
     "dependency_graph_adg_final_gap.md",
-    "dependency_graph_analysis.md"
+    "dependency_graph_analysis.md",
 ]
 
 def ingest_file(filepath):
@@ -26,7 +26,7 @@ def ingest_file(filepath):
         "--source-dir", ".",
         "--collection-name", "adg_artifacts",
         "--mock-embeddings",
-        "--include-pattern", filepath
+        "--include-pattern", filepath,
     ]
 
     try:

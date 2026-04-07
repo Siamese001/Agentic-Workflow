@@ -66,39 +66,25 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_reads_policy_state("p0", "unified_executor_util", "policy_binding")
 _emit_snapshots_state("p0", "unified_executor_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -339,7 +325,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
         """
         self.model_name = model_name
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
-            f"llm_{model_name}", failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT
+            f"llm_{model_name}", failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT,
         )
         self.rate_limiter = get_rate_limiter("llm_calls", "10/minute")
         self.resource_manager = get_resource_manager()
@@ -372,7 +358,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
                 "execution_time": time.time() - start_time,
             }
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED, data=result, context=context, metrics=metrics
+                status=ExecutionStatus.COMPLETED, data=result, context=context, metrics=metrics,
             )
         except CircuitOpenError:    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context
             return ExecutionResult(
@@ -462,7 +448,7 @@ class APIExecutionStrategy(ExecutionStrategy):
         self.api_endpoint = api_endpoint
         self.timeout = timeout
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
-            f"api_{api_endpoint}", failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT
+            f"api_{api_endpoint}", failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT,
         )
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
@@ -479,7 +465,7 @@ class APIExecutionStrategy(ExecutionStrategy):
             result = await self.circuit_breaker.call(self._execute_api, context)
             metrics = {"api_calls": 1, "response_time": time.time() - start_time}
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED, data=result, context=context, metrics=metrics
+                status=ExecutionStatus.COMPLETED, data=result, context=context, metrics=metrics,
             )
         except CircuitOpenError:    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context
             return ExecutionResult(
@@ -545,7 +531,7 @@ class BatchExecutionStrategy(ExecutionStrategy):
             for i in range(0, len(items), self.batch_size):
                 batch = items[i : i + self.batch_size]
                 batch_results = await asyncio.gather(
-                    *[self._process_item(item, context) for item in batch], return_exceptions=True
+                    *[self._process_item(item, context) for item in batch], return_exceptions=True,
                 )
                 results.extend(batch_results)
             metrics = {
@@ -554,7 +540,7 @@ class BatchExecutionStrategy(ExecutionStrategy):
                 "execution_time": time.time() - start_time,
             }
             return ExecutionResult(
-                status=ExecutionStatus.COMPLETED, data=results, context=context, metrics=metrics
+                status=ExecutionStatus.COMPLETED, data=results, context=context, metrics=metrics,
             )
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -690,7 +676,7 @@ class EngineExecutor:
         logger.info(f"Initialized {engine_type.value} executor")
 
     async def generate_content(
-        self, input_data: Any, content_type: str = "default", config: dict[str, Any] | None = None
+        self, input_data: Any, content_type: str = "default", config: dict[str, Any] | None = None,
     ) -> ExecutionResult:
         """Generate content using unified executor.
 
@@ -773,7 +759,7 @@ def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
 
 
 async def execute_resume_generation(
-    input_data: Any, content_type: str = "default", config: dict[str, Any] | None = None
+    input_data: Any, content_type: str = "default", config: dict[str, Any] | None = None,
 ) -> ExecutionResult:
     """Execute resume generation.
 
@@ -790,7 +776,7 @@ async def execute_resume_generation(
 
 
 async def execute_outreach_generation(
-    input_data: Any, content_type: str = "message", config: dict[str, Any] | None = None
+    input_data: Any, content_type: str = "message", config: dict[str, Any] | None = None,
 ) -> ExecutionResult:
     """Execute outreach generation.
 

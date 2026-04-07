@@ -96,10 +96,6 @@ _emit_links_execution_to_snapshot("p4", "builder", "exec_snapshot_link")
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 
-from agentic_core.adg.identity.normalizer import (
-    IdentityKind,
-    IdentityNormalizer,
-)
 from agentic_core.adg.contracts.schema import (
     GATEWAY_ALLOWLIST,
     PROVIDER_SDK_SYMBOLS,
@@ -107,23 +103,20 @@ from agentic_core.adg.contracts.schema import (
     canonical_name,
     module_path_to_layer,
 )
+from agentic_core.adg.identity.normalizer import (
+    IdentityKind,
+    IdentityNormalizer,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -131,17 +124,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -452,7 +439,7 @@ class ADGArtifactBuilder:
                     source_file=edge.source_file,
                     line_no=edge.line_no,
                     symbol=edge.symbol or "",
-                )
+                ),
             )
 
     def _populate_module_entities(self, result: ScanResult, artifact: ADGArtifact) -> None:
@@ -471,7 +458,7 @@ class ADGArtifactBuilder:
                     confidence="HIGH",
                     resolved_path=rel_path,
                     observations=[f"path:{rel_path}", f"layer:{layer}"],
-                )
+                ),
             )
             existing_adg.add(adg)
             # G12: emit belongs_to_layer relation for every module
@@ -486,7 +473,7 @@ class ADGArtifactBuilder:
                     line_no=0,
                     symbol=layer,
                     semantic_type="layer_membership",
-                )
+                ),
             )
 
     @staticmethod
@@ -530,7 +517,7 @@ class ADGArtifactBuilder:
                         confidence="HIGH",
                         resolved_path="",
                         observations=[f"layer:{layer_label}"],
-                    )
+                    ),
                 )
             elif adg_target.startswith(gateway_prefix):
                 # G8: materialize Gateway nodes
@@ -545,7 +532,7 @@ class ADGArtifactBuilder:
                         confidence="HIGH",
                         resolved_path=gw_path,
                         observations=[f"gateway:{gw_name}", f"path:{gw_path}"],
-                    )
+                    ),
                 )
             elif adg_target.startswith(prompt_slot_prefix):
                 # G2: PromptSlot nodes get entity_type=prompt_slot
@@ -559,7 +546,7 @@ class ADGArtifactBuilder:
                         confidence="HIGH",
                         resolved_path="",
                         observations=[f"slot:{slot_key}"],
-                    )
+                    ),
                 )
             elif adg_target.startswith(prompt_template_prefix):
                 # G2: PromptTemplate nodes get entity_type=prompt_template
@@ -573,7 +560,7 @@ class ADGArtifactBuilder:
                         confidence="HIGH",
                         resolved_path="",
                         observations=[f"template:{tmpl_key}"],
-                    )
+                    ),
                 )
             elif adg_target.startswith(symbol_prefix):
                 dot_name = adg_target[len(symbol_prefix) :]
@@ -589,7 +576,7 @@ class ADGArtifactBuilder:
                             confidence="HIGH",
                             resolved_path=gw_path,
                             observations=[f"gateway:{dot_name}", f"path:{gw_path}"],
-                        )
+                        ),
                     )
                     existing_adg.add(adg_target)
                 else:
@@ -603,7 +590,7 @@ class ADGArtifactBuilder:
                             confidence="HIGH",
                             resolved_path="",
                             observations=[f"external:{dot_name}"],
-                        )
+                        ),
                     )
                     existing_adg.add(adg_target)
                     continue
@@ -619,7 +606,7 @@ class ADGArtifactBuilder:
                             confidence="HIGH",
                             resolved_path="",
                             observations=[f"provider_sdk:{base}", f"raw_name:{dot_name}"],
-                        )
+                        ),
                     )
                 else:
                     rec = self._normalizer.normalize(dot_name)
@@ -637,7 +624,7 @@ class ADGArtifactBuilder:
                                 f"identity_kind:{rec.kind.value}",
                                 f"reason:{rec.reason}",
                             ],
-                        )
+                        ),
                     )
                     if rec.kind == IdentityKind.UNRESOLVED_IMPORT:
                         artifact.unresolved_imports.append(
@@ -646,7 +633,7 @@ class ADGArtifactBuilder:
                                 "adg_name": adg_target,
                                 "reason": rec.reason,
                                 "confidence": rec.confidence.value,
-                            }
+                            },
                         )
             elif adg_target.startswith(module_prefix):
                 rel_path = adg_target[len(module_prefix) :]
@@ -662,7 +649,7 @@ class ADGArtifactBuilder:
                         confidence="HIGH",
                         resolved_path=rel_path,
                         observations=[f"path:{rel_path}", f"layer:{layer}"],
-                    )
+                    ),
                 )
 
             existing_adg.add(adg_target)

@@ -47,7 +47,7 @@ def setup_seq_thinking_environment():
         'SEQUENTIAL_THINKING_CACHE_ENABLED': 'true',
         'SEQUENTIAL_THINKING_ASYNC_MODE': 'false',
         'SEQUENTIAL_THINKING_LOG_LEVEL': 'INFO',
-        'SEQUENTIAL_THINKING_AGGRESSIVE_MODE': 'enabled'
+        'SEQUENTIAL_THINKING_AGGRESSIVE_MODE': 'enabled',
     }
 
     print("Setting up sequential thinking environment variables...")
@@ -63,7 +63,7 @@ def setup_seq_thinking_environment():
         'WINDSURF_TOOL_PREFERENCE',
         'KIMI25_SEQUENTIAL_THINKING',
         'CASCADE_CHAT_FALLBACK',
-        'KIMI_K2_5_DOMINANCE'
+        'KIMI_K2_5_DOMINANCE',
     ]
 
     print("\nVerifying critical environment variables:")
@@ -93,7 +93,7 @@ def print_env_status():
         'SEQUENTIAL_THINKING_PRIORITY',
         'WINDSURF_TOOL_PREFERENCE',
         'KIMI25_SEQUENTIAL_THINKING',
-        'MCP_SEQUENTIAL_THINKING_BOOST'
+        'MCP_SEQUENTIAL_THINKING_BOOST',
     ]
 
     for var in key_vars:

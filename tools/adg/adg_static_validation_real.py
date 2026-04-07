@@ -135,7 +135,7 @@ def validate_semantic_correctness(conn):
                         "file": source_file,
                         "line_no": line_no,
                         "reason": f"line_no {line_no} > file length {len(lines)}",
-                    }
+                    },
                 )
                 continue
 
@@ -163,7 +163,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": f"import edge but line has no import: '{line_content.strip()[:80]}'",
-                        }
+                        },
                     )
 
             elif rel_type == "calls":
@@ -179,7 +179,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": f"call edge but line has no call: '{line_content.strip()[:80]}'",
-                        }
+                        },
                     )
 
             elif rel_type in ("flows_to", "controls_flow"):
@@ -195,7 +195,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": f"flow edge points to empty/comment line: '{stripped[:80]}'",
-                        }
+                        },
                     )
 
             elif rel_type == "reads_from":
@@ -222,7 +222,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": f"export edge but no def/class/assign: '{line_content.strip()[:80]}'",
-                        }
+                        },
                     )
 
             elif rel_type == "decorated_by":
@@ -237,7 +237,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": f"decorator edge but no @: '{line_content.strip()[:80]}'",
-                        }
+                        },
                     )
 
             elif rel_type == "resolves_callsite":
@@ -252,7 +252,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": f"callsite edge but no parens: '{line_content.strip()[:80]}'",
-                        }
+                        },
                     )
 
             elif rel_type == "emits_side_effect":
@@ -267,7 +267,7 @@ def validate_semantic_correctness(conn):
                             "file": source_file,
                             "line_no": line_no,
                             "reason": "side effect on empty line",
-                        }
+                        },
                     )
 
             else:
@@ -429,7 +429,7 @@ def validate_denominator_integrity(conn):
 
     print(
         f"  AST ground truth: {ast_files} files, {ast_top_level_defs} top-level defs, "
-        f"{ast_all_functions} all functions, {ast_classes} classes"
+        f"{ast_all_functions} all functions, {ast_classes} classes",
     )
 
     # B) ADG counts
@@ -837,7 +837,7 @@ def main():
         if not denom["func_pass"]:
             print(f"\n  FUNCTION RATIO FAILURE: {denom['function_ratio']:.4f} outside [0.95, 1.05]")
             print(
-                f"    AST functions: {denom['ast_functions']}, ADG function nodes: {denom['adg_function_nodes']}"
+                f"    AST functions: {denom['ast_functions']}, ADG function nodes: {denom['adg_function_nodes']}",
             )
             if denom["function_ratio"] < 0.95:
                 print("    ROOT CAUSE: ADG not tracking individual function nodes at required granularity")

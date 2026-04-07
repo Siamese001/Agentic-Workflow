@@ -29,10 +29,10 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
     """
 
     _ASSEMBLER_NAMES: frozenset[str] = frozenset(
-        {"AirlockAssembler", "GovernedPayload", "assemble", "build_payload"}
+        {"AirlockAssembler", "GovernedPayload", "assemble", "build_payload"},
     )
     _CONSUME_NAMES: frozenset[str] = frozenset(
-        {"get_prompt", "get_constitution", "load_prompt", "fetch_prompt"}
+        {"get_prompt", "get_constitution", "load_prompt", "fetch_prompt"},
     )
 
     def __init__(self, ctx: VisitorContext) -> None:
@@ -57,8 +57,8 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract prompt slot edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         func_sym = self._sym(node.func)
         func_tail = func_sym.split(".")[-1] if func_sym else ""
@@ -87,7 +87,7 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=f"{slot}:{kw.arg}",
-                    )
+                    ),
                 )
 
     def _handle_consume(self, node: ast.Call, _Edge, canonical_name) -> None:
@@ -109,7 +109,7 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
                 source_file=self._source_file,
                 line_no=node.lineno,
                 symbol=key,
-            )
+            ),
         )
 
     def extract_edges(self) -> list[Edge]:
@@ -132,7 +132,7 @@ class _ExecutionTraceVisitor(BaseRuntimeVisitor):
             "record_run",
             "emit_trace",
             "log_trace",
-        }
+        },
     )
     _TRACE_ID_KWARGS: frozenset[str] = frozenset({"trace_id", "run_id", "request_id", "execution_id"})
 
@@ -166,8 +166,8 @@ class _ExecutionTraceVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract execution trace edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         func_sym = self._sym(node.func)
         func_tail = func_sym.split(".")[-1] if func_sym else ""
@@ -184,7 +184,7 @@ class _ExecutionTraceVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=trace_id or "",
-                )
+                ),
             )
 
         self.generic_visit(node)
@@ -225,8 +225,12 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract healer/validator inheritance edges."""
+        from agentic_core.adg.contracts.schema_util import (
+            HEALER_BASE_CLASSES,
+            VALIDATOR_BASE_CLASSES,
+            canonical_name,
+        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.contracts.schema_util import HEALER_BASE_CLASSES, VALIDATOR_BASE_CLASSES, canonical_name
 
         for base in node.bases:
             base_name = self._sym(base)
@@ -242,7 +246,7 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=base_name or base_tail,
-                    )
+                    ),
                 )
             elif base_tail in VALIDATOR_BASE_CLASSES:
                 to_name = canonical_name("Symbol", base_name or base_tail)
@@ -255,14 +259,14 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
                         source_file=self._source_file,
                         line_no=node.lineno,
                         symbol=base_name or base_tail,
-                    )
+                    ),
                 )
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract healing orchestration edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import HEALER_METHOD_NAMES, canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -277,7 +281,7 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -328,12 +332,11 @@ class _EmbeddingPipelineVisitor(BaseRuntimeVisitor):
                 source_file=self._source_file,
                 line_no=line_no,
                 symbol=sym,
-            )
+            ),
         )
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract embedding pipeline edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             EMBEDDING_PIPELINE_SYMBOLS,
             EMBEDDING_SYMBOLS,
@@ -341,6 +344,7 @@ class _EmbeddingPipelineVisitor(BaseRuntimeVisitor):
             VECTOR_STORE_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -392,12 +396,12 @@ class _HITLVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract HITL confidence and escalation edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             CONFIDENCE_SCORING_CLASSES,
             HITL_ESCALATION_METHODS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -414,7 +418,7 @@ class _HITLVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in HITL_ESCALATION_METHODS:
             to_name = canonical_name("Symbol", sym or tail)
@@ -427,7 +431,7 @@ class _HITLVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
 
         self.generic_visit(node)

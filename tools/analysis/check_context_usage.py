@@ -69,7 +69,7 @@ class ContextChecker:
                 **result,
                 "timestamp": str(Path().cwd()),
                 "actual_usage_kb": None,  # Would be filled by actual measurement
-            }
+            },
         )
 
         self._save_tracking_data()

@@ -13,7 +13,7 @@ import sys
 # Target import patterns to migrate
 TARGET_IMPORT_RE = re.compile(
     r'^\s*(?:from\s+(agentic_core|apps_|system_learning|infrastructure)\S*\s+import|import\s+(agentic_core|apps_|system_learning|infrastructure)\S*)',
-    re.MULTILINE
+    re.MULTILINE,
 )
 
 # Imports that are safe at top level (bare module imports, no symbol resolution)

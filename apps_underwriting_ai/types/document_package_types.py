@@ -1,7 +1,8 @@
 """
 Document Package Types - Domain contracts for document references.
 """
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, Field
 
 
@@ -84,8 +85,8 @@ class DocumentPackage(BaseModel):
                         "hash": "abc123",
                         "extracted_text_available": True,
                         "parsed_structured_fields": {},
-                        "document_flags": []
-                    }
-                ]
-            }
+                        "document_flags": [],
+                    },
+                ],
+            },
         }

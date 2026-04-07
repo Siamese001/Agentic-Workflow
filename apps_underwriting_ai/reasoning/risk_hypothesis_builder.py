@@ -1,8 +1,8 @@
 """
 Risk Hypothesis Builder - Produces structured risk hypothesis from features and evidence.
 """
-from typing import List
 from dataclasses import dataclass, field
+from typing import List
 
 from ..types import RiskFeatures, UnderwritingRequest
 
@@ -31,7 +31,7 @@ class RiskHypothesisBuilder:
     def build_hypothesis(
         self,
         request: UnderwritingRequest,
-        features: RiskFeatures
+        features: RiskFeatures,
     ) -> RiskHypothesis:
         """
         Build risk hypothesis from features.
@@ -167,7 +167,7 @@ class RiskHypothesisBuilder:
     def _identify_open_questions(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """Identify open questions requiring resolution."""
         questions = []

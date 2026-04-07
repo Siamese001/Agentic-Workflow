@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -333,13 +332,13 @@ class ErrorSanitizer:
                 else:
                     context[key] = "<sanitized>"
         secure_error = error_type(
-            f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})", ErrorCode=ErrorCode, context=context
+            f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})", ErrorCode=ErrorCode, context=context,
         )
         return secure_error
 
 
 def secure_exception(
-    error_type: type[SecureError] = SecurityError, ErrorCode: str | None = None, sanitize_args: bool = True
+    error_type: type[SecureError] = SecurityError, ErrorCode: str | None = None, sanitize_args: bool = True,
 ):
     """Decorator to secure exceptions from functions.
 
@@ -415,7 +414,7 @@ class SecureErrorHandler:
         self.Logger = logging.getLogger(logger_name)
 
     def handle_error(
-        self, error: Exception, context: dict[str, Any] | None = None, include_stack: bool = False
+        self, error: Exception, context: dict[str, Any] | None = None, include_stack: bool = False,
     ) -> SecureError:
         """Handle an error securely.
 

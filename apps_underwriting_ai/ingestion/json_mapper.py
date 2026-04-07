@@ -1,27 +1,27 @@
 """
 JSON Mapper - Maps JSON payloads to UnderwritingRequest domain model.
 """
-from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
 
 from ..types import (
-    UnderwritingRequest,
+    BankingPackage,
     BorrowerProfile,
-    OwnerInfo,
-    FinancialPackage,
-    FinancialPeriod,
     CalculatedMetrics,
     CollateralPackage,
+    CollateralRules,
     CreditPackage,
-    BankingPackage,
+    DecisionConstraints,
     DocumentPackage,
     DocumentRef,
+    ExternalSignals,
+    FinancialPackage,
+    FinancialPeriod,
+    OwnerInfo,
     PolicyContext,
     RelationshipContext,
-    DecisionConstraints,
     RequestedStructure,
-    ExternalSignals,
-    CollateralRules,
+    UnderwritingRequest,
 )
 from .structured_ingestion import StructuredIngestion
 
@@ -44,7 +44,7 @@ class JSONMapper:
         self,
         data: Dict[str, Any],
         request_id: Optional[str] = None,
-        strict_mode: bool = False
+        strict_mode: bool = False,
     ) -> JSONMappingResult:
         """
         Map JSON data to UnderwritingRequest.
@@ -105,7 +105,7 @@ class JSONMapper:
                 policy_context=policy_context,
                 external_signals=external_signals,
                 relationship_context=relationship_context,
-                decision_constraints=decision_constraints
+                decision_constraints=decision_constraints,
             )
 
             result.request = request
@@ -124,7 +124,7 @@ class JSONMapper:
                 ownership_pct=owner_data.get('ownership_pct', 0),
                 role=owner_data.get('role', ''),
                 fico=owner_data.get('fico'),
-                guarantor=owner_data.get('guarantor', False)
+                guarantor=owner_data.get('guarantor', False),
             ))
 
         return BorrowerProfile(
@@ -138,7 +138,7 @@ class JSONMapper:
             employee_count=data.get('employee_count'),
             ownership=ownership,
             naics_risk_flags=data.get('naics_risk_flags', []),
-            sanctions_or_watchlist_hits=data.get('sanctions_or_watchlist_hits', [])
+            sanctions_or_watchlist_hits=data.get('sanctions_or_watchlist_hits', []),
         )
 
     def _map_financials(self, data: Dict[str, Any]) -> FinancialPackage:
@@ -161,7 +161,7 @@ class JSONMapper:
                 total_debt=period_data.get('total_debt'),
                 tangible_net_worth=period_data.get('tangible_net_worth'),
                 interest_expense=period_data.get('interest_expense'),
-                debt_service=period_data.get('debt_service')
+                debt_service=period_data.get('debt_service'),
             ))
 
         metrics_data = data.get('calculated_metrics', {})
@@ -172,13 +172,13 @@ class JSONMapper:
             dscr_ttm=metrics_data.get('dscr_ttm'),
             current_ratio=metrics_data.get('current_ratio'),
             quick_ratio=metrics_data.get('quick_ratio'),
-            debt_to_tnw=metrics_data.get('debt_to_tnw')
+            debt_to_tnw=metrics_data.get('debt_to_tnw'),
         )
 
         return FinancialPackage(
             periods=periods,
             calculated_metrics=calculated_metrics,
-            quality_flags=data.get('quality_flags', [])
+            quality_flags=data.get('quality_flags', []),
         )
 
     def _map_collateral(self, data: Dict[str, Any]) -> CollateralPackage:
@@ -191,7 +191,7 @@ class JSONMapper:
             lien_position=data.get('lien_position', 'none'),
             appraisal_date=data.get('appraisal_date'),
             field_exam_date=data.get('field_exam_date'),
-            collateral_quality_flags=data.get('collateral_quality_flags', [])
+            collateral_quality_flags=data.get('collateral_quality_flags', []),
         )
 
     def _map_credit(self, data: Dict[str, Any]) -> CreditPackage:
@@ -204,7 +204,7 @@ class JSONMapper:
             bankruptcies_ever=data.get('bankruptcies_ever', 0),
             judgments_or_liens=data.get('judgments_or_liens', 0),
             tradeline_utilization_pct=data.get('tradeline_utilization_pct'),
-            credit_narrative_flags=data.get('credit_narrative_flags', [])
+            credit_narrative_flags=data.get('credit_narrative_flags', []),
         )
 
     def _map_banking(self, data: Dict[str, Any]) -> BankingPackage:
@@ -216,7 +216,7 @@ class JSONMapper:
             overdraft_days_12m=data.get('overdraft_days_12m'),
             cash_volatility_score=data.get('cash_volatility_score'),
             deposit_trend=data.get('deposit_trend', 'unknown'),
-            bank_statement_flags=data.get('bank_statement_flags', [])
+            bank_statement_flags=data.get('bank_statement_flags', []),
         )
 
     def _map_documents(self, data: Dict[str, Any]) -> DocumentPackage:
@@ -230,7 +230,7 @@ class JSONMapper:
                     hash=d.get('hash', ''),
                     extracted_text_available=d.get('extracted_text_available', False),
                     parsed_structured_fields=d.get('parsed_structured_fields', {}),
-                    document_flags=d.get('document_flags', [])
+                    document_flags=d.get('document_flags', []),
                 )
                 for d in doc_list
             ]
@@ -245,7 +245,7 @@ class JSONMapper:
             entity_docs=map_doc_list(data.get('entity_docs', [])),
             insurance_certificates=map_doc_list(data.get('insurance_certificates', [])),
             appraisals=map_doc_list(data.get('appraisals', [])),
-            management_comments=map_doc_list(data.get('management_comments', []))
+            management_comments=map_doc_list(data.get('management_comments', [])),
         )
 
     def _map_policy_context(self, data: Dict[str, Any]) -> PolicyContext:
@@ -253,7 +253,7 @@ class JSONMapper:
         collateral_rules = CollateralRules(
             min_ltv=data.get('collateral_rules', {}).get('min_ltv'),
             max_ltv=data.get('collateral_rules', {}).get('max_ltv'),
-            eligible_collateral=data.get('collateral_rules', {}).get('eligible_collateral', [])
+            eligible_collateral=data.get('collateral_rules', {}).get('eligible_collateral', []),
         )
 
         return PolicyContext(
@@ -266,7 +266,7 @@ class JSONMapper:
             max_single_customer_concentration_pct=data.get('max_single_customer_concentration_pct'),
             collateral_rules=collateral_rules,
             exception_rules=data.get('exception_rules', []),
-            human_review_triggers=data.get('human_review_triggers', [])
+            human_review_triggers=data.get('human_review_triggers', []),
         )
 
     def _map_external_signals(self, data: Dict[str, Any]) -> ExternalSignals:
@@ -276,7 +276,7 @@ class JSONMapper:
             macro_flags=data.get('macro_flags', []),
             fraud_or_identity_signals=data.get('fraud_or_identity_signals', []),
             litigation_hits=data.get('litigation_hits', []),
-            news_reputation_flags=data.get('news_reputation_flags', [])
+            news_reputation_flags=data.get('news_reputation_flags', []),
         )
 
     def _map_relationship_context(self, data: Dict[str, Any]) -> RelationshipContext:
@@ -287,7 +287,7 @@ class JSONMapper:
             prior_exposure=data.get('prior_exposure'),
             deposit_relationship=data.get('deposit_relationship', False),
             historical_exceptions=data.get('historical_exceptions', []),
-            past_due_history=data.get('past_due_history', [])
+            past_due_history=data.get('past_due_history', []),
         )
 
     def _map_decision_constraints(self, data: Dict[str, Any]) -> DecisionConstraints:
@@ -297,7 +297,7 @@ class JSONMapper:
             max_auto_approval_amount=data.get('max_auto_approval_amount'),
             require_human_if_policy_exception=data.get('require_human_if_policy_exception', True),
             require_human_if_docs_missing=data.get('require_human_if_docs_missing', True),
-            require_human_if_risk_score_borderline=data.get('require_human_if_risk_score_borderline', True)
+            require_human_if_risk_score_borderline=data.get('require_human_if_risk_score_borderline', True),
         )
 
     def _map_requested_structure(self, data: Dict[str, Any]) -> RequestedStructure:
@@ -306,5 +306,5 @@ class JSONMapper:
             amortization_months=data.get('amortization_months'),
             interest_type=data.get('interest_type', 'floating'),
             collateral_required=data.get('collateral_required', False),
-            guarantor_required=data.get('guarantor_required', False)
+            guarantor_required=data.get('guarantor_required', False),
         )

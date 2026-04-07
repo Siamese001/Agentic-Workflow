@@ -33,7 +33,7 @@ class ADGRigorousGapClosure0617:
         self.results = {
             "phase1_data_integrity": {},
             "phase2_precision_lock": {},
-            "overall_success": False
+            "overall_success": False,
         }
 
     def connect(self):
@@ -106,7 +106,7 @@ class ADGRigorousGapClosure0617:
         for pattern, layer in module_updates:
             count = self.execute_update(
                 "UPDATE nodes SET layer = ? WHERE resolved_path LIKE ? AND layer = ''",
-                (layer, pattern)
+                (layer, pattern),
             )
             print(f"  {pattern} → {layer}: {count} nodes")
             total_updated += count
@@ -126,13 +126,13 @@ class ADGRigorousGapClosure0617:
                 # Find the module's layer
                 module_layer = self.execute_query(
                     "SELECT layer FROM nodes WHERE adg_name = ? AND entity_type = 'module' AND layer != ''",
-                    (module_name,)
+                    (module_name,),
                 )
                 if module_layer:
                     layer = module_layer[0]['layer']
                     updated = self.execute_update(
                         "UPDATE nodes SET layer = ? WHERE adg_name = ? AND entity_type = 'symbol'",
-                        (layer, symbol['adg_name'])
+                        (layer, symbol['adg_name']),
                     )
                     symbol_count += updated
 
@@ -141,14 +141,14 @@ class ADGRigorousGapClosure0617:
 
         # C) Unresolved modules ONLY (update empty strings directly)
         unknown_count = self.execute_update(
-            "UPDATE nodes SET layer = 'L_UNKNOWN' WHERE entity_type = 'module' AND layer = ''"
+            "UPDATE nodes SET layer = 'L_UNKNOWN' WHERE entity_type = 'module' AND layer = ''",
         )
         print(f"  Unresolved modules → L_UNKNOWN: {unknown_count} nodes")
         total_updated += unknown_count
 
         # D) Any remaining empty strings (fallback)
         fallback_count = self.execute_update(
-            "UPDATE nodes SET layer = 'L_UNKNOWN' WHERE layer = ''"
+            "UPDATE nodes SET layer = 'L_UNKNOWN' WHERE layer = ''",
         )
         print(f"  Fallback → L_UNKNOWN: {fallback_count} nodes")
         total_updated += fallback_count
@@ -192,10 +192,10 @@ class ADGRigorousGapClosure0617:
 
         # Module mapping
         repo_module_count = self.execute_update(
-            "UPDATE nodes SET identity_kind = 'repo_module' WHERE entity_type = 'module' AND resolved_path LIKE 'agentic_core/%' AND identity_kind = ''"
+            "UPDATE nodes SET identity_kind = 'repo_module' WHERE entity_type = 'module' AND resolved_path LIKE 'agentic_core/%' AND identity_kind = ''",
         )
         external_module_count = self.execute_update(
-            "UPDATE nodes SET identity_kind = 'external_module' WHERE entity_type = 'module' AND NOT resolved_path LIKE 'agentic_core/%' AND identity_kind = ''"
+            "UPDATE nodes SET identity_kind = 'external_module' WHERE entity_type = 'module' AND NOT resolved_path LIKE 'agentic_core/%' AND identity_kind = ''",
         )
 
         # Symbol mapping
@@ -214,7 +214,7 @@ class ADGRigorousGapClosure0617:
 
         # Unresolved imports
         unresolved_count = self.execute_update(
-            "UPDATE nodes SET identity_kind = 'unresolved_import' WHERE entity_type = 'unresolved_import' AND identity_kind = ''"
+            "UPDATE nodes SET identity_kind = 'unresolved_import' WHERE entity_type = 'unresolved_import' AND identity_kind = ''",
         )
 
         print(f"  repo_module: {repo_module_count}")
@@ -273,7 +273,7 @@ class ADGRigorousGapClosure0617:
         for identity_kind, confidence in confidence_mapping:
             count = self.execute_update(
                 "UPDATE nodes SET confidence = ? WHERE identity_kind = ? AND confidence = ''",
-                (confidence, identity_kind)
+                (confidence, identity_kind),
             )
             print(f"  {identity_kind} → {confidence}: {count} nodes")
             total_updated += count
@@ -342,11 +342,11 @@ class ADGRigorousGapClosure0617:
             "timestamp": self.timestamp,
             "sqlite_totals": {
                 "nodes": node_count,
-                "edges": edge_count
+                "edges": edge_count,
             },
             "edge_distribution": {row['relation_type']: row['count'] for row in edge_types},
             "layer_distribution": {row['layer']: row['count'] for row in layer_dist},
-            "parity_status": "EXACT"
+            "parity_status": "EXACT",
         }
 
         result["details"] = report
@@ -407,11 +407,11 @@ class ADGRigorousGapClosure0617:
                 "nodes": len(node_data),
                 "edges": len(edge_data),
                 "node_hash": node_hash[:20] + "...",
-                "edge_hash": edge_hash[:20] + "..."
+                "edge_hash": edge_hash[:20] + "...",
             },
             "mutation_coverage": mutation_coverage,
             "lineage_completeness": len(missing_edges) == 0,
-            "determinism_status": "PROVEN" if len(missing_edges) == 0 else "INCOMPLETE"
+            "determinism_status": "PROVEN" if len(missing_edges) == 0 else "INCOMPLETE",
         }
 
         result["details"] = report
@@ -461,7 +461,7 @@ class ADGRigorousGapClosure0617:
             "timestamp": self.timestamp,
             "critical_unresolved": critical_unresolved,
             "unclassified_edges": unclassified_edges,
-            "boundary_status": "INTACT" if critical_unresolved == 0 else "VIOLATED"
+            "boundary_status": "INTACT" if critical_unresolved == 0 else "VIOLATED",
         }
 
         result["details"] = report
@@ -514,7 +514,7 @@ class ADGRigorousGapClosure0617:
                 modules_without_coverage.append({
                     'module': module['adg_name'],
                     'layer': module['layer'],
-                    'missing_edges': missing_edges
+                    'missing_edges': missing_edges,
                 })
             else:
                 for edge in required_edges:
@@ -525,7 +525,7 @@ class ADGRigorousGapClosure0617:
             "core_modules": len(critical_modules),
             "coverage_statistics": coverage_stats,
             "modules_missing_coverage": modules_without_coverage,
-            "coverage_status": "COMPLETE" if len(modules_without_coverage) == 0 else "INCOMPLETE"
+            "coverage_status": "COMPLETE" if len(modules_without_coverage) == 0 else "INCOMPLETE",
         }
 
         result["details"] = report
@@ -571,7 +571,7 @@ class ADGRigorousGapClosure0617:
             'emits_test_result': 0,
             'links_to_execution_trace': 0,
             'gates_promotion': 0,
-            'detects_regression': 0
+            'detects_regression': 0,
         }
 
         for module in critical_modules:
@@ -606,9 +606,9 @@ class ADGRigorousGapClosure0617:
             "modules_without_tests": modules_without_tests,
             "critical_binding": {
                 "binding_complete": len(modules_without_tests) == 0,
-                "modules_without_tests": len(modules_without_tests)
+                "modules_without_tests": len(modules_without_tests),
             },
-            "test_status": "BOUND" if len(modules_without_tests) == 0 else "UNBOUND"
+            "test_status": "BOUND" if len(modules_without_tests) == 0 else "UNBOUND",
         }
 
         result["details"] = report
@@ -655,14 +655,14 @@ class ADGRigorousGapClosure0617:
             "final_state": {
                 "nodes": node_count,
                 "edges": edge_count,
-                "edge_types": edge_types
+                "edge_types": edge_types,
             },
             "data_integrity": {
                 "no_null_layers": blank_layers == 0,
                 "no_null_identities": blank_identity == 0,
-                "no_null_confidence": blank_confidence == 0
+                "no_null_confidence": blank_confidence == 0,
             },
-            "system_status": "LOCKED" if (blank_layers == 0 and blank_identity == 0 and blank_confidence == 0) else "UNSTABLE"
+            "system_status": "LOCKED" if (blank_layers == 0 and blank_identity == 0 and blank_confidence == 0) else "UNSTABLE",
         }
 
         result["details"] = report

@@ -94,39 +94,25 @@ _emit_stores_embedding("p4", "prompt_artifact_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "prompt_artifact_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "prompt_artifact_types", "exec_snapshot_link")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -203,7 +189,7 @@ _VALID_OUTCOME_CLASSES: frozenset[str] = frozenset(
         "ESCALATED",
         "REPLAY_FAILURE",
         "UNKNOWN",
-    }
+    },
 )
 
 # ---------------------------------------------------------------------------
@@ -217,7 +203,7 @@ _VALID_SLOTS: frozenset[str] = frozenset({"S0", "D0", "I0", "C0", "U0"})
 # ---------------------------------------------------------------------------
 
 _VALID_BUDGET_CLASSES: frozenset[str] = frozenset(
-    {"COMPACT", "STANDARD", "EXTENDED", "OVERFLOW"}
+    {"COMPACT", "STANDARD", "EXTENDED", "OVERFLOW"},
 )
 
 # ---------------------------------------------------------------------------
@@ -232,7 +218,7 @@ _VALID_FAILURE_SLOTS: frozenset[str] = frozenset(
         "C0",   # hallucination / context overflow
         "U0",   # misinterpreted task
         "NONE", # no slot failure identified
-    }
+    },
 )
 
 # ---------------------------------------------------------------------------
@@ -240,7 +226,7 @@ _VALID_FAILURE_SLOTS: frozenset[str] = frozenset(
 # ---------------------------------------------------------------------------
 
 _VALID_PREFERENCE_DECISIONS: frozenset[str] = frozenset(
-    {"ACCEPTED", "REJECTED", "MODIFIED", "DEFERRED"}
+    {"ACCEPTED", "REJECTED", "MODIFIED", "DEFERRED"},
 )
 
 # ---------------------------------------------------------------------------
@@ -255,7 +241,7 @@ _VALID_DRIFT_TYPES: frozenset[str] = frozenset(
         "GUARDRAIL_VIOLATION_INCREASE",
         "IMPROVEMENT_DETECTED",
         "REGRESSION_DETECTED",
-    }
+    },
 )
 
 
@@ -313,7 +299,7 @@ class PromptSlotManifest:
         if self.budget_class not in _VALID_BUDGET_CLASSES:
             raise ValueError(
                 f"budget_class must be one of {sorted(_VALID_BUDGET_CLASSES)}, "
-                f"got {self.budget_class!r}"
+                f"got {self.budget_class!r}",
             )
         for slot, tok in (
             ("s0_tokens", self.s0_tokens),
@@ -344,7 +330,7 @@ class PromptSlotManifest:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self.to_dict()).encode("utf-8")
+            deterministic_json(self.to_dict()).encode("utf-8"),
         ).hexdigest()
 
 
@@ -402,13 +388,13 @@ class CompiledPromptArtifact:
         if self.influence_class != "C0_INFORMATIONAL":
             raise ValueError(
                 "CompiledPromptArtifact.influence_class must be 'C0_INFORMATIONAL', "
-                f"got {self.influence_class!r}"
+                f"got {self.influence_class!r}",
             )
         if not self.prompt_hash:
             raise ValueError("prompt_hash must not be empty")
         if not self.adg_entity_name.startswith("ADG::"):
             raise ValueError(
-                f"adg_entity_name must start with 'ADG::', got {self.adg_entity_name!r}"
+                f"adg_entity_name must start with 'ADG::', got {self.adg_entity_name!r}",
             )
         if not self.model_target:
             raise ValueError("model_target must not be empty")
@@ -477,26 +463,26 @@ class PromptSafetyDecision:
     timestamp_utc: int
 
     _VALID_ADG_RELATIONS: frozenset[str] = frozenset(
-        {"compiled_prompt_allowed", "compiled_prompt_blocked"}
+        {"compiled_prompt_allowed", "compiled_prompt_blocked"},
     )
 
     def __post_init__(self) -> None:
         if self.adg_relation not in self._VALID_ADG_RELATIONS:
             raise ValueError(
                 f"adg_relation must be one of {sorted(self._VALID_ADG_RELATIONS)}, "
-                f"got {self.adg_relation!r}"
+                f"got {self.adg_relation!r}",
             )
         if self.allowed and self.denial_reasons:
             raise ValueError(
-                "denial_reasons must be empty when allowed=True"
+                "denial_reasons must be empty when allowed=True",
             )
         if not self.allowed and not self.denial_reasons:
             raise ValueError(
-                "denial_reasons must not be empty when allowed=False"
+                "denial_reasons must not be empty when allowed=False",
             )
         if self.budget_class not in _VALID_BUDGET_CLASSES:
             raise ValueError(
-                f"budget_class must be one of {sorted(_VALID_BUDGET_CLASSES)}"
+                f"budget_class must be one of {sorted(_VALID_BUDGET_CLASSES)}",
             )
 
     def to_dict(self) -> dict:
@@ -514,7 +500,7 @@ class PromptSafetyDecision:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self.to_dict()).encode("utf-8")
+            deterministic_json(self.to_dict()).encode("utf-8"),
         ).hexdigest()
 
 
@@ -590,7 +576,7 @@ class PromptExecutionRecord:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self.to_dict()).encode("utf-8")
+            deterministic_json(self.to_dict()).encode("utf-8"),
         ).hexdigest()
 
 
@@ -670,12 +656,12 @@ class PromptOutcomeRecord:
         if self.final_outcome not in _VALID_OUTCOME_CLASSES:
             raise ValueError(
                 f"final_outcome must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
-                f"got {self.final_outcome!r}"
+                f"got {self.final_outcome!r}",
             )
         if self.failure_slot not in _VALID_FAILURE_SLOTS:
             raise ValueError(
                 f"failure_slot must be one of {sorted(_VALID_FAILURE_SLOTS)}, "
-                f"got {self.failure_slot!r}"
+                f"got {self.failure_slot!r}",
             )
         for attr, val in (
             ("groundedness_score", self.groundedness_score),
@@ -690,7 +676,7 @@ class PromptOutcomeRecord:
             raise ValueError("trace_id must not be empty")
         if self.replay_status not in ("PASSED", "FAILED", "NOT_TESTED"):
             raise ValueError(
-                f"replay_status must be PASSED/FAILED/NOT_TESTED, got {self.replay_status!r}"
+                f"replay_status must be PASSED/FAILED/NOT_TESTED, got {self.replay_status!r}",
             )
 
     def to_dict(self) -> dict:
@@ -770,12 +756,12 @@ class PreferenceRecord:
         if self.decision not in _VALID_PREFERENCE_DECISIONS:
             raise ValueError(
                 f"decision must be one of {sorted(_VALID_PREFERENCE_DECISIONS)}, "
-                f"got {self.decision!r}"
+                f"got {self.decision!r}",
             )
         if self.outcome not in _VALID_OUTCOME_CLASSES:
             raise ValueError(
                 f"outcome must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
-                f"got {self.outcome!r}"
+                f"got {self.outcome!r}",
             )
         if not self.trace_id:
             raise ValueError("trace_id must not be empty")
@@ -783,7 +769,7 @@ class PreferenceRecord:
             raise ValueError("prompt_hash must not be empty")
         if self.decision == "MODIFIED" and self.human_patch is None:
             raise ValueError(
-                "human_patch must not be None when decision is MODIFIED"
+                "human_patch must not be None when decision is MODIFIED",
             )
 
     def to_dict(self) -> dict:
@@ -860,19 +846,19 @@ class PromptDriftSignal:
             "prompt_template_superseded",
             "prompt_prompt_regression_detected",
             "prompt_prompt_improvement_detected",
-        }
+        },
     )
 
     def __post_init__(self) -> None:
         if self.drift_type not in _VALID_DRIFT_TYPES:
             raise ValueError(
                 f"drift_type must be one of {sorted(_VALID_DRIFT_TYPES)}, "
-                f"got {self.drift_type!r}"
+                f"got {self.drift_type!r}",
             )
         if self.adg_relation not in self._VALID_ADG_RELATIONS:
             raise ValueError(
                 f"adg_relation must be one of {sorted(self._VALID_ADG_RELATIONS)}, "
-                f"got {self.adg_relation!r}"
+                f"got {self.adg_relation!r}",
             )
         if self.baseline_window_size < 0:
             raise ValueError("baseline_window_size must be >= 0")
@@ -880,7 +866,7 @@ class PromptDriftSignal:
             raise ValueError("current_window_size must be >= 1")
         if self.affected_slot is not None and self.affected_slot not in _VALID_FAILURE_SLOTS:
             raise ValueError(
-                f"affected_slot must be one of {sorted(_VALID_FAILURE_SLOTS)} or None"
+                f"affected_slot must be one of {sorted(_VALID_FAILURE_SLOTS)} or None",
             )
 
     def to_dict(self) -> dict:
@@ -899,7 +885,7 @@ class PromptDriftSignal:
 
     def stable_hash(self) -> str:
         return hashlib.sha256(
-            deterministic_json(self.to_dict()).encode("utf-8")
+            deterministic_json(self.to_dict()).encode("utf-8"),
         ).hexdigest()
 
 

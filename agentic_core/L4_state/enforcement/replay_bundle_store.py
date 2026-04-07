@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -202,7 +201,7 @@ class ReplayBundleStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ReplayBundleStore.store_replay_bundle"
+            _trace_id, LayerSegment.L4_STATE, "ReplayBundleStore.store_replay_bundle",
         )
 
         self._store[bundle.replay_hash] = bundle
@@ -232,7 +231,7 @@ class ReplayBundleStore:
     def mutate(self, bundle_id: str, updates: dict) -> None:
         """REQ-020: mutation of a sealed artifact is forbidden — always raises."""
         raise RuntimeError(
-            f"REQ-020: sealed artifact '{bundle_id}' is immutable; append-only store rejects mutation."
+            f"REQ-020: sealed artifact '{bundle_id}' is immutable; append-only store rejects mutation.",
         )
 
 
@@ -334,7 +333,7 @@ class ReplayVerifier:
         if known_citation_hashes is not None and bundle.retrieval_used:
             if bundle.citation_hash not in known_citation_hashes:
                 raise ReplayVerificationError(
-                    code="MISSING_CITATION_HASH", detail=f"citation_hash {bundle.citation_hash!r} not found"
+                    code="MISSING_CITATION_HASH", detail=f"citation_hash {bundle.citation_hash!r} not found",
                 )
             checks.append("citation_hash_present")
         if known_signal_hashes is not None and bundle.prior_detection_signal_hash:
@@ -348,21 +347,21 @@ class ReplayVerifier:
             for vh in bundle.prior_violation_event_hashes:
                 if vh not in known_violation_hashes:
                     raise ReplayVerificationError(
-                        code="MISSING_VIOLATION_HASH", detail=f"violation event_hash {vh!r} not found"
+                        code="MISSING_VIOLATION_HASH", detail=f"violation event_hash {vh!r} not found",
                     )
             checks.append("violation_hashes_present")
         if known_intent_hashes is not None:
             for ih in bundle.tool_intent_hashes:
                 if ih not in known_intent_hashes:
                     raise ReplayVerificationError(
-                        code="MISSING_INTENT_HASH", detail=f"tool intent_hash {ih!r} not found"
+                        code="MISSING_INTENT_HASH", detail=f"tool intent_hash {ih!r} not found",
                     )
             checks.append("intent_hashes_present")
         if known_result_hashes is not None:
             for rh in bundle.tool_result_hashes:
                 if rh not in known_result_hashes:
                     raise ReplayVerificationError(
-                        code="MISSING_RESULT_HASH", detail=f"tool result_hash {rh!r} not found"
+                        code="MISSING_RESULT_HASH", detail=f"tool result_hash {rh!r} not found",
                     )
             checks.append("result_hashes_present")
         if prior_signal_tick is not None and bundle.prior_detection_signal_hash:

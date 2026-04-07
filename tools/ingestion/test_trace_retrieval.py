@@ -39,7 +39,7 @@ def test_trace_retrieval():
     try:
         results = collection.query(
             query_embeddings=query_embedding,
-            n_results=5
+            n_results=5,
         )
 
         print(f"✅ Retrieved {len(results['ids'][0])} trace results")

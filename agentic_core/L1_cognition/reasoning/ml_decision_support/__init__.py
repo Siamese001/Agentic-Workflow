@@ -23,5 +23,5 @@ __all__ = [
     "BaseMLModel",
     "ShadowLogger",
     "ReplayHarness",
-    "DeterministicInferenceEngine"
+    "DeterministicInferenceEngine",
 ]

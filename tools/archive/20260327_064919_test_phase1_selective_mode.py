@@ -23,7 +23,7 @@ def test_selective_mode():
             repo_root=Path("."),
             include_tests=False,  # Production only for cleaner comparison
             cache_path=cache_dir / "full_cache.json",
-            scan_mode="full"
+            scan_mode="full",
         )
 
         start_time = time.time()
@@ -41,7 +41,7 @@ def test_selective_mode():
             repo_root=Path("."),
             include_tests=False,
             cache_path=cache_dir / "selective_cache.json",
-            scan_mode="selective"
+            scan_mode="selective",
         )
 
         start_time = time.time()
@@ -105,7 +105,7 @@ def test_selective_mode():
             "reduction_percent": reduction_percent,
             "time_improvement": time_improvement,
             "edge_types_full": len(edge_types_full),
-            "edge_types_selective": len(edge_types_selective)
+            "edge_types_selective": len(edge_types_selective),
         }
 
     finally:

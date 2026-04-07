@@ -109,7 +109,7 @@ class ModelRegistry:
                         file_path=Path(record_data['file_path']),
                         is_active=record_data['is_active'],
                         last_used=metadata.last_used,
-                        usage_count=record_data['usage_count']
+                        usage_count=record_data['usage_count'],
                     )
                     self._models[model_id] = record
 
@@ -125,7 +125,7 @@ class ModelRegistry:
                 'metadata': asdict(record.metadata),
                 'file_path': str(record.file_path),
                 'is_active': record.is_active,
-                'usage_count': record.usage_count
+                'usage_count': record.usage_count,
             }
 
         with open(self.models_file, 'w', encoding='utf-8') as f:
@@ -155,7 +155,7 @@ class ModelRegistry:
         thresholds: dict[str, float],
         created_by: str,
         validation_results: dict[str, Any] | None = None,
-        compliance_checks: dict[str, bool] | None = None
+        compliance_checks: dict[str, bool] | None = None,
     ) -> str:
         """
         Register a new model in the registry.
@@ -201,7 +201,7 @@ class ModelRegistry:
             promotion_history=[],
             rollback_history=[],
             validation_results=validation_results or {},
-            compliance_checks=compliance_checks or {}
+            compliance_checks=compliance_checks or {},
         )
 
         # Copy model to registry
@@ -215,7 +215,7 @@ class ModelRegistry:
             file_path=registry_model_path,
             is_active=False,
             last_used=None,
-            usage_count=0
+            usage_count=0,
         )
 
         self._models[model_id] = record
@@ -232,7 +232,7 @@ class ModelRegistry:
         target_status: ModelStatus,
         target_decision_mode: DecisionMode,
         promoted_by: str,
-        justification: str
+        justification: str,
     ) -> bool:
         """
         Promote a model to new status/decision mode.
@@ -270,7 +270,7 @@ class ModelRegistry:
             'from_mode': old_mode.value,
             'to_mode': target_decision_mode.value,
             'promoted_by': promoted_by,
-            'justification': justification
+            'justification': justification,
         }
         record.metadata.promotion_history.append(promotion_event)
 
@@ -281,7 +281,7 @@ class ModelRegistry:
 
         # Log promotion
         self._log_model_event("model_promoted", model_id, {
-            'promotion_event': promotion_event
+            'promotion_event': promotion_event,
         })
 
         return True
@@ -290,7 +290,7 @@ class ModelRegistry:
         self,
         model_id: str,
         rollback_reason: str,
-        rolled_back_by: str
+        rolled_back_by: str,
     ) -> bool:
         """
         Rollback a model to previous version.
@@ -323,7 +323,7 @@ class ModelRegistry:
             'from_status': old_status.value,
             'to_status': ModelStatus.ROLLED_BACK.value,
             'rollback_reason': rollback_reason,
-            'rolled_back_by': rolled_back_by
+            'rolled_back_by': rolled_back_by,
         }
         record.metadata.rollback_history.append(rollback_event)
 
@@ -331,7 +331,7 @@ class ModelRegistry:
 
         # Log rollback
         self._log_model_event("model_rolled_back", model_id, {
-            'rollback_event': rollback_event
+            'rollback_event': rollback_event,
         })
 
         return True
@@ -375,7 +375,7 @@ class ModelRegistry:
         old_status: ModelStatus,
         new_status: ModelStatus,
         old_mode: DecisionMode,
-        new_mode: DecisionMode
+        new_mode: DecisionMode,
     ) -> bool:
         """Validate promotion path follows governance rules."""
 
@@ -385,7 +385,7 @@ class ModelRegistry:
             ModelStatus.CANDIDATE: [ModelStatus.PRODUCTION, ModelStatus.DEPRECATED],
             ModelStatus.PRODUCTION: [ModelStatus.DEPRECATED, ModelStatus.ROLLED_BACK],
             ModelStatus.DEPRECATED: [],  # Terminal state
-            ModelStatus.ROLLED_BACK: [ModelStatus.DEVELOPMENT]  # Can restart development
+            ModelStatus.ROLLED_BACK: [ModelStatus.DEVELOPMENT],  # Can restart development
         }
 
         if new_status not in valid_status_transitions.get(old_status, []):
@@ -396,7 +396,7 @@ class ModelRegistry:
             DecisionMode.SHADOW_ONLY: [DecisionMode.ADVISORY],
             DecisionMode.ADVISORY: [DecisionMode.ADVISORY, DecisionMode.ESCALATED],
             DecisionMode.ESCALATED: [DecisionMode.BLOCKED],
-            DecisionMode.BLOCKED: []  # Terminal state
+            DecisionMode.BLOCKED: [],  # Terminal state
         }
 
         if new_mode not in valid_mode_transitions.get(old_mode, []):
@@ -411,7 +411,7 @@ class ModelRegistry:
                 'event_type': event_type,
                 'model_id': model_id,
                 'timestamp': datetime.now().isoformat(),
-                'data': data
+                'data': data,
             }
 
             # Store in L4 canonical state
@@ -429,7 +429,7 @@ class ModelRegistry:
             'active_models': len([r for r in self._models.values() if r.is_active]),
             'production_models': len(self.get_production_models()),
             'models_by_type': {},
-            'models_by_status': {}
+            'models_by_status': {},
         }
 
         for record in self._models.values():

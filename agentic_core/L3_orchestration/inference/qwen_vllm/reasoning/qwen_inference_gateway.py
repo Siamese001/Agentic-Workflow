@@ -128,7 +128,7 @@ class QwenInferenceGateway:
 
             if vllm_response.success:
                 _emit_captures_evaluation_metric(
-                    request.app_name, "apps_qwen_gateway", "inference_success"
+                    request.app_name, "apps_qwen_gateway", "inference_success",
                 )
 
                 return QwenInferenceResponse(
@@ -142,7 +142,7 @@ class QwenInferenceGateway:
                 )
             else:
                 _emit_records_telemetry_event(
-                    request.app_name, "apps_qwen_gateway", "inference_error"
+                    request.app_name, "apps_qwen_gateway", "inference_error",
                 )
 
                 return QwenInferenceResponse(
@@ -162,7 +162,7 @@ class QwenInferenceGateway:
             logger.error("[%s] Inference error: %s", request.app_name, error_msg)
 
             _emit_records_telemetry_event(
-                request.app_name, "apps_qwen_gateway", "inference_exception"
+                request.app_name, "apps_qwen_gateway", "inference_exception",
             )
 
             return QwenInferenceResponse(
@@ -179,7 +179,7 @@ class QwenInferenceGateway:
     def _calculate_confidence(
         self,
         vllm_response: VLLMResponse,
-        request: QwenInferenceRequest
+        request: QwenInferenceRequest,
     ) -> float:
         """Calculate confidence score based on response characteristics.
 
@@ -217,7 +217,7 @@ class QwenInferenceGateway:
 
     async def infer_batch(
         self,
-        requests: list[QwenInferenceRequest]
+        requests: list[QwenInferenceRequest],
     ) -> list[QwenInferenceResponse]:
         """Perform batch inference for multiple requests.
 

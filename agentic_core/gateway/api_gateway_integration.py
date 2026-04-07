@@ -283,7 +283,7 @@ class KongGatewayClient(GatewayClient):
                         "minute": config.get("minute", 100),
                         "hour": config.get("hour", 1000),
                         "policy": config.get("policy", "cluster"),
-                    }
+                    },
                 }
                 Logger.info(f"[GATEWAY] Applied rate limiting policy: {plugin_config}")
                 return True
@@ -297,7 +297,7 @@ class KongGatewayClient(GatewayClient):
                         "methods": config.get("methods", ["GET", "POST"]),
                         "headers": config.get("headers", ["Accept", "Content-Type"]),
                         "credentials": config.get("credentials", True),
-                    }
+                    },
                 }
                 Logger.info(f"[GATEWAY] Applied CORS policy: {plugin_config}")
                 return True

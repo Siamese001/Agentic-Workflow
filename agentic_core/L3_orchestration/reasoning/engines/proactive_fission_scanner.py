@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -242,7 +241,7 @@ class ProactiveFissionScanner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ProactiveFissionScanner.scan_repository"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ProactiveFissionScanner.scan_repository",
         )
 
         Logger.info(f"[SCAN] Scanning repository: {target_dir}")
@@ -260,7 +259,7 @@ class ProactiveFissionScanner:
                                 "line_count": line_count,
                                 "Severity": self._calculate_severity(line_count),
                                 "relative_path": os.path.relpath(path, target_dir),
-                            }
+                            },
                         )
                         Logger.info(f"   [ALERT] Bloat detected: {file} ({line_count} lines)")
         Logger.info(f"   [OK] Scan complete: {len(candidates)} candidates found")
@@ -300,7 +299,7 @@ class ProactiveFissionScanner:
         try:
             query: Any = f"best modular architecture for python {file_name}"
             design_patterns: Any = await self.router.call_mcp(
-                "brave_search", {"query": query, "purpose": "Find modular design patterns"}
+                "brave_search", {"query": query, "purpose": "Find modular design patterns"},
             )
             structural_twins: Any = await self.router.call_mcp(
                 "pinecone",

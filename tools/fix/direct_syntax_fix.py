@@ -21,7 +21,7 @@ class DirectSyntaxFixer:
             'syntax_errors_fixed': 0,
             'files_completely_cleaned': 0,
             'migration_artifacts_removed': 0,
-            'files_with_errors': 0
+            'files_with_errors': 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 

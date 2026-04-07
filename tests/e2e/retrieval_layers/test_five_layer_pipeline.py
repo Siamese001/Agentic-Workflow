@@ -34,7 +34,7 @@ class TestFiveLayerRetrievalE2E:
         cached_result = {
             "response": "cached response",
             "timestamp": time.time(),
-            "hash": expected_hash
+            "hash": expected_hash,
         }
 
         result = RetrievalResult(
@@ -42,7 +42,7 @@ class TestFiveLayerRetrievalE2E:
             hit=True,
             data=cached_result,
             latency_ms=0.5,
-            cache_key=expected_hash
+            cache_key=expected_hash,
         )
 
         assert result.hit is True
@@ -79,7 +79,7 @@ class TestFiveLayerRetrievalE2E:
             hit=False,
             data=None,
             latency_ms=0.3,
-            cache_key=""
+            cache_key="",
         )
 
         assert l1_result.hit is False
@@ -101,10 +101,10 @@ class TestFiveLayerRetrievalE2E:
             data={
                 "intent_vector": intent_vector,
                 "similarity": similarity,
-                "cached_response": "semantically similar response"
+                "cached_response": "semantically similar response",
             },
             latency_ms=15.0,  # BGE-M3 API call latency
-            cache_key="semantic_123"
+            cache_key="semantic_123",
         )
 
         assert l2_result.hit is True
@@ -118,7 +118,7 @@ class TestFiveLayerRetrievalE2E:
             hit=False,
             data=None,
             latency_ms=20.0,
-            cache_key=""
+            cache_key="",
         )
 
         assert l2_result.hit is False
@@ -129,7 +129,7 @@ class TestFiveLayerRetrievalE2E:
         # Simulate FAISS vector search (4a)
         faiss_results = [
             {"chunk_id": "chunk_1", "score": 0.89},
-            {"chunk_id": "chunk_2", "score": 0.85}
+            {"chunk_id": "chunk_2", "score": 0.85},
         ]
 
         # Simulate BM25 keyword search (4b)
@@ -155,10 +155,10 @@ class TestFiveLayerRetrievalE2E:
                 "faiss_results": faiss_results,
                 "bm25_results": bm25_results,
                 "adg_edges": adg_edges,
-                "final_chunks": final_chunks
+                "final_chunks": final_chunks,
             },
             latency_ms=150.0,  # Higher latency for RAG
-            cache_key="rag_query_hash"
+            cache_key="rag_query_hash",
         )
 
         assert l3_result.hit is True
@@ -173,7 +173,7 @@ class TestFiveLayerRetrievalE2E:
             hit=False,  # Low confidence in RAG results
             data={"final_chunks": []},
             latency_ms=100.0,
-            cache_key=""
+            cache_key="",
         )
 
         assert l3_result.hit is False
@@ -186,14 +186,14 @@ class TestFiveLayerRetrievalE2E:
             "tools": ["search_web", "query_database"],
             "steps": [
                 {"tool": "search_web", "input": "query"},
-                {"tool": "query_database", "input": "search_results"}
-            ]
+                {"tool": "query_database", "input": "search_results"},
+            ],
         }
 
         # Simulate tool execution
         tool_results = {
             "search_web": ["result1", "result2"],
-            "query_database": {"rows": 5, "data": []}
+            "query_database": {"rows": 5, "data": []},
         }
 
         l4_result = RetrievalResult(
@@ -204,11 +204,11 @@ class TestFiveLayerRetrievalE2E:
                 "tool_results": tool_results,
                 "telemetry": {
                     "steps_executed": 2,
-                    "sandbox_active": True
-                }
+                    "sandbox_active": True,
+                },
             },
             latency_ms=500.0,  # Higher latency for orchestration
-            cache_key="action_hash"
+            cache_key="action_hash",
         )
 
         assert l4_result.hit is True
@@ -223,7 +223,7 @@ class TestFiveLayerRetrievalE2E:
             hit=False,
             data=None,
             latency_ms=50.0,
-            cache_key=""
+            cache_key="",
         )
 
         assert l4_result.hit is False
@@ -236,7 +236,7 @@ class TestFiveLayerRetrievalE2E:
             "generated_text": "Based on my training data...",
             "model": "gpt-4",
             "tokens_used": 150,
-            "finish_reason": "stop"
+            "finish_reason": "stop",
         }
 
         l5_result = RetrievalResult(
@@ -244,7 +244,7 @@ class TestFiveLayerRetrievalE2E:
             hit=True,
             data=llm_response,
             latency_ms=2000.0,  # Highest latency
-            cache_key="llm_fallback"
+            cache_key="llm_fallback",
         )
 
         assert l5_result.hit is True
@@ -263,7 +263,7 @@ class TestFiveLayerRetrievalE2E:
             layer=1,
             hit=True,
             data={"hash": query_hash, "cached_at": time.time(), "ttl": 3600},
-            latency_ms=0.5
+            latency_ms=0.5,
         )
 
         assert result.hit is True, "Should be cache hit"
@@ -319,7 +319,7 @@ class TestFiveLayerRetrievalE2E:
             layer=1,
             hit=hit,
             data=data,
-            latency_ms=0.5
+            latency_ms=0.5,
         )
 
     def _execute_layer_2(self, query: str) -> RetrievalResult:
@@ -330,7 +330,7 @@ class TestFiveLayerRetrievalE2E:
             layer=2,
             hit=hit,
             data={"similarity": 0.97} if hit else None,
-            latency_ms=15.0
+            latency_ms=15.0,
         )
 
     def _execute_layer_3(self, query: str) -> RetrievalResult:
@@ -341,7 +341,7 @@ class TestFiveLayerRetrievalE2E:
             layer=3,
             hit=hit,
             data={"chunks": 3} if hit else None,
-            latency_ms=150.0
+            latency_ms=150.0,
         )
 
     def _execute_layer_4(self, query: str) -> RetrievalResult:
@@ -352,7 +352,7 @@ class TestFiveLayerRetrievalE2E:
             layer=4,
             hit=hit,
             data={"tools_used": 2} if hit else None,
-            latency_ms=500.0
+            latency_ms=500.0,
         )
 
     def _execute_layer_5(self, query: str) -> RetrievalResult:
@@ -361,5 +361,5 @@ class TestFiveLayerRetrievalE2E:
             layer=5,
             hit=True,
             data={"generated": True, "model": "gpt-4"},
-            latency_ms=2000.0
+            latency_ms=2000.0,
         )

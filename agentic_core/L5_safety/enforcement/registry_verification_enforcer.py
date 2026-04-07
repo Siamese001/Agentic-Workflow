@@ -139,7 +139,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -330,7 +329,7 @@ class RegistryVerifier:
         """Scan filesystem for all agent files."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegistryVerifier.scan_filesystem"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegistryVerifier.scan_filesystem",
         )
         agents: list[AgentInfo] = []
         for agent_file in self.project_root.rglob("*Agent.py"):
@@ -372,7 +371,7 @@ class RegistryVerifier:
                         "class_name": class_name,
                         "registry_path": reg_path,
                         "reason": "Class not found in filesystem",
-                    }
+                    },
                 )
             elif reg_path not in fs_by_path:
                 actual_agent = fs_by_class[class_name]
@@ -382,7 +381,7 @@ class RegistryVerifier:
                         "registry_path": reg_path,
                         "actual_path": actual_agent.relative_path.replace("\\", "/"),
                         "reason": "Path mismatch between registry and filesystem",
-                    }
+                    },
                 )
         for fs_agent in filesystem_agents:
             if fs_agent.class_name not in registry_by_class:
@@ -422,7 +421,7 @@ class RegistryVerifier:
                     "",
                     "| Class Name | Registry Path | Reason |",
                     "|------------|---------------|--------|",
-                ]
+                ],
             )
             for orphan in result.orphan_agents:
                 cls = orphan["class_name"]
@@ -437,7 +436,7 @@ class RegistryVerifier:
                     "",
                     "| Class Name | Registry Path | Actual Path |",
                     "|------------|---------------|-------------|",
-                ]
+                ],
             )
             for mismatch in result.path_mismatches:
                 cls = mismatch["class_name"]
@@ -452,7 +451,7 @@ class RegistryVerifier:
                     "",
                     "| Class Name | File Path | Layer |",
                     "|------------|-----------|-------|",
-                ]
+                ],
             )
             for agent in result.missing_agents[:50]:
                 lines.append(f"| {agent.class_name} | {agent.relative_path} | {agent.layer} |")

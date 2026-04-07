@@ -71,7 +71,7 @@ class RuntimeStateManager:
             "timestamp": time.time(),
             "phase": phase,
             "state": self.state.copy(),
-            "metadata": metadata or {}
+            "metadata": metadata or {},
         }
         self.checkpoints.append(checkpoint)
         return len(self.checkpoints) - 1
@@ -117,7 +117,7 @@ class RuntimeStateManager:
                 "state": self.state,
                 "checkpoints": self.checkpoints,
                 "current_phase": self.current_phase,
-                "start_time": self.start_time
+                "start_time": self.start_time,
             }
             with open(filepath, 'w') as f:
                 json.dump(data, f, indent=2)

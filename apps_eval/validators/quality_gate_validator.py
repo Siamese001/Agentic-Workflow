@@ -41,7 +41,7 @@ class QualityGateValidator:
         if total_scenarios < min_scenarios:
             self._violations.append(
                 f"QUALITY: Only {total_scenarios} scenarios executed, "
-                f"minimum {min_scenarios} required"
+                f"minimum {min_scenarios} required",
             )
 
         # Gate 2: Maximum latency
@@ -50,7 +50,7 @@ class QualityGateValidator:
             if suite.mean_latency_ms > max_latency:
                 self._violations.append(
                     f"QUALITY: Suite {suite.suite_id} latency {suite.mean_latency_ms:.0f}ms "
-                    f"exceeds maximum {max_latency}ms"
+                    f"exceeds maximum {max_latency}ms",
                 )
 
         # Gate 3: Regression detection
@@ -59,14 +59,14 @@ class QualityGateValidator:
                 if record.verdict == "REGRESSION":
                     self._violations.append(
                         f"QUALITY: Regression detected in {record.dimension_id}: "
-                        f"{record.baseline_score:.2f} → {record.current_score:.2f}"
+                        f"{record.baseline_score:.2f} → {record.current_score:.2f}",
                     )
 
         # Gate 4: Completeness check
         for suite in result.suite_results:
             if suite.error:
                 self._violations.append(
-                    f"QUALITY: Suite {suite.suite_id} incomplete: {suite.error}"
+                    f"QUALITY: Suite {suite.suite_id} incomplete: {suite.error}",
                 )
 
         passed = len(self._violations) == 0

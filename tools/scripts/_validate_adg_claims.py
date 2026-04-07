@@ -64,7 +64,7 @@ def analyze_uwg(data):
                     "name": name,
                     "layer": node.get("l", "UNKNOWN"),
                     "type": node.get("t", "UNKNOWN"),
-                }
+                },
             )
 
     print(f"\nFound {len(uwg_nodes)} UWG-related nodes:")
@@ -182,7 +182,7 @@ def analyze_hitl_dpo(data):
 
     total_learning_nodes = sum(len(set(paths)) for paths in learning_keywords.values())
     print(
-        f"\n✓ ChatGPT claim: Learning loop structure present - CONFIRMED ({total_learning_nodes} unique nodes)"
+        f"\n✓ ChatGPT claim: Learning loop structure present - CONFIRMED ({total_learning_nodes} unique nodes)",
     )
     return total_learning_nodes > 0
 
@@ -251,7 +251,7 @@ def main():
 
     all_confirmed = all(results.values())
     print(
-        f"\n{'✓' if all_confirmed else '✗'} Overall: ChatGPT claims are {'ACCURATE' if all_confirmed else 'PARTIALLY ACCURATE'}"
+        f"\n{'✓' if all_confirmed else '✗'} Overall: ChatGPT claims are {'ACCURATE' if all_confirmed else 'PARTIALLY ACCURATE'}",
     )
 
     print("\n" + "=" * 80)

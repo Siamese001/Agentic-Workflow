@@ -197,7 +197,7 @@ class TokenEnforcementArtifact:
             raise ValueError("TokenEnforcementArtifact: hard_limit must be >= 0")
         if not isinstance(self.outcome, TokenEnforcementOutcome):
             raise TypeError(
-                f"TokenEnforcementArtifact: outcome must be TokenEnforcementOutcome, got {type(self.outcome).__name__}"
+                f"TokenEnforcementArtifact: outcome must be TokenEnforcementOutcome, got {type(self.outcome).__name__}",
             )
         if self.enforcement_mode != "HARD":
             raise ValueError("TokenEnforcementArtifact: enforcement_mode must be 'HARD'")
@@ -224,7 +224,7 @@ class TokenBudgetExceeded(Exception):
         self.phase = phase
         self.artifact = artifact
         super().__init__(
-            f"TokenBudgetExceeded [{phase}]: trace_id={trace_id}, required={required}, remaining={remaining}"
+            f"TokenBudgetExceeded [{phase}]: trace_id={trace_id}, required={required}, remaining={remaining}",
         )
 
 
@@ -263,7 +263,7 @@ class TokenBudgetStore:
         with self._lock:
             if trace_id not in self._budgets:
                 self._budgets[trace_id] = TokenBudgetContext(
-                    trace_id=trace_id, initial_budget=initial_budget, remaining_budget=initial_budget
+                    trace_id=trace_id, initial_budget=initial_budget, remaining_budget=initial_budget,
                 )
             return self._budgets[trace_id]
 

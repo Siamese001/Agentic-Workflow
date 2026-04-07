@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -235,7 +234,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SystemArchitectAgent.execute"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SystemArchitectAgent.execute",
         )
         print()
         print(f"   [{self.name}] 🔍 Checking Architecture: Hierarchy & Headers...")
@@ -268,7 +267,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Checks for high-signal headers and specialized Test Protocols.
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "SystemArchitectAgent._check_file_headers", "L5_POLICY"
+            str(uuid.uuid4()), "SystemArchitectAgent._check_file_headers", "L5_POLICY",
         )
         violations = []
         for file_path in self.ctx.python_files:
@@ -330,7 +329,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         return (len(violations) == 0, violations)
 
     def _detect_circular_dependencies_via_graph_store(
-        self, target_path: str
+        self, target_path: str,
     ) -> list[str] | None:
         """Detect circular dependencies using SQLiteGraphStore (ADG import graph).
 
@@ -368,7 +367,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 # Traverse import graph to find cycles
                 # Use traverse with max_depth=10 to detect cycles
                 paths = graph_store.traverse(
-                    node.id, max_depth=10, relation_types=["imports"]
+                    node.id, max_depth=10, relation_types=["imports"],
                 )
 
                 # Check if any path leads back to the source (cycle)
@@ -380,7 +379,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
             if circular_deps:
                 Logger.info(
-                    f"SystemArchitect[Graph]: Found {len(circular_deps)} circular dependencies"
+                    f"SystemArchitect[Graph]: Found {len(circular_deps)} circular dependencies",
                 )
             else:
                 Logger.info("SystemArchitect[Graph]: No circular dependencies found")
@@ -415,7 +414,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         ]
         cache_key = tuple(sorted(str(r) for r in scan_roots))
         Logger.info(
-            f"SystemArchitect: Building dependency graph for {target_path} across {len(scan_roots)} territories"
+            f"SystemArchitect: Building dependency graph for {target_path} across {len(scan_roots)} territories",
         )
         if self._cached_scan_root == cache_key and self._cached_module_map is not None:
             Logger.info(f"SystemArchitect: Reusing cached dependency graph ({len(scan_roots)} territories)")
@@ -564,7 +563,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 required_depth: Any = DEPTH_RULES.get(root_folder, 2)
                 if depth != required_depth:
                     violations.append(
-                        f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}."
+                        f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.",
                     )
                 continue
         return (len(violations) == 0, violations)
@@ -604,7 +603,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             if folder_path.exists():
                 init_file = folder_path / "__init__.py"
                 _wg.open_write(
-                    init_file, f'''"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n'''
+                    init_file, f'''"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n''',
                 )
                 print(f"      [✓] {self.name}: INITIALIZED {folder_rel}/__init__.py")
         remaining_violations = [v for v in violations if "Missing __init__.py" not in v]
@@ -700,7 +699,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         _call_path.add(agent_name)
         try:
             super().heal_repository(
-                dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+                dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
             )
             print(f"[{agent_name}] L2 execution - healing chain invoked")
             return {"skipped": 1}

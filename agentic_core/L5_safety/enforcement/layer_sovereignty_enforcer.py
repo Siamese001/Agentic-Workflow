@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -207,7 +206,7 @@ ALLOWED_UPWARD_EXCEPTIONS: frozenset[tuple[str, str]] = frozenset(
         ("agentic_core.L2_execution", "agentic_core.interfaces"),
         ("agentic_core.L3_orchestration", "agentic_core.interfaces"),
         ("agentic_core.L4_state", "agentic_core.interfaces"),
-    }
+    },
 )
 
 SCAN_ROOTS_DEFAULT: tuple[str, ...] = (
@@ -366,7 +365,7 @@ class LayerSovereigntyEnforcer:
                     importer_layer=importer_layer,
                     imported_module=imported_module,
                     imported_layer=imported_layer,
-                )
+                ),
             )
 
     def _path_to_module(self, file_path: Path) -> str:
@@ -429,7 +428,7 @@ class LayerSovereigntyEnforcer:
         A violation occurs when ``imported_layer > importer_layer``.
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "LayerSovereigntyEnforcer.check_upward_mutation", "L5_POLICY"
+            str(uuid.uuid4()), "LayerSovereigntyEnforcer.check_upward_mutation", "L5_POLICY",
         )
         return imported_layer > importer_layer
 
@@ -465,7 +464,7 @@ class LayerSovereigntyEnforcer:
                     importer_layer=importer_layer,
                     imported_module=imported_module,
                     imported_layer=imported_layer,
-                )
+                ),
             )
         return violations
 

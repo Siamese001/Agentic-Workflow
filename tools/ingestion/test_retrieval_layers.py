@@ -215,7 +215,7 @@ def main():
         test_l2_semantic_cache,
         test_l3_semantic_rag,
         test_l4_agentic_actions,
-        test_retrieval_orchestrator
+        test_retrieval_orchestrator,
     ]
 
     passed = 0

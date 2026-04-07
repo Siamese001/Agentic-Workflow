@@ -36,7 +36,7 @@ class GeneratedTest(unittest.TestCase):
         from agentic_core.L0_routing.enforcement import PolicyHashValidationResult
         instance = PolicyHashValidationResult(
             passed=True, packet_id="packet123", policy_hash_present=True,
-            policy_hash_matches=True, active_root="root123", packet_hash="hash123"
+            policy_hash_matches=True, active_root="root123", packet_hash="hash123",
         )
         self.assertIsNotNone(instance)
 
@@ -45,7 +45,7 @@ class GeneratedTest(unittest.TestCase):
         from agentic_core.L0_routing.enforcement import PolicyHashValidationResult
         instance = PolicyHashValidationResult(
             passed=True, packet_id="packet123", policy_hash_present=True,
-            policy_hash_matches=True, active_root="root123", packet_hash="hash123"
+            policy_hash_matches=True, active_root="root123", packet_hash="hash123",
         )
         result = instance.format()
         self.assertIsNotNone(result)

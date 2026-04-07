@@ -19,7 +19,7 @@ def run_npx_command(command_args):
             capture_output=True,
             text=True,
             timeout=30,
-            cwd=Path(__file__).parent
+            cwd=Path(__file__).parent,
         )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
@@ -39,7 +39,7 @@ def test_sequential_thinking_package():
             capture_output=True,
             text=True,
             timeout=10,
-            cwd=Path(__file__).parent
+            cwd=Path(__file__).parent,
         )
 
         if result.returncode == 0 or "sequential-thinking" in result.stdout.lower() or "sequential-thinking" in result.stderr.lower():
@@ -69,11 +69,11 @@ def test_repository_context():
             "apps": str(repo_root / "apps"),
             "tools": str(repo_root / "tools"),
             "tests": str(repo_root / "tests"),
-            "docs": str(repo_root / "docs")
+            "docs": str(repo_root / "docs"),
         },
         "python_files_count": len(list(repo_root.rglob("*.py"))),
         "markdown_files_count": len(list(repo_root.rglob("*.md"))),
-        "total_modules": sum(1 for d in repo_root.rglob("*/") if (d / "__init__.py").exists())
+        "total_modules": sum(1 for d in repo_root.rglob("*/") if (d / "__init__.py").exists()),
     }
 
     print("📊 Repository context gathered:")

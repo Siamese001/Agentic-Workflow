@@ -43,78 +43,78 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Deviation from normal behavioral patterns",
                 provenance="anomaly.behavioral.deviation",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="system_metric_anomaly",
                 feature_type=FeatureType.NUMERIC,
                 description="Anomaly score from system metrics",
                 provenance="anomaly.system.metric_anomaly",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="temporal_pattern_break",
                 feature_type=FeatureType.NUMERIC,
                 description="Break in temporal patterns",
                 provenance="anomaly.temporal.pattern_break",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="reconstruction_error",
                 feature_type=FeatureType.NUMERIC,
                 description="Autoencoder reconstruction error",
                 provenance="anomaly.autoencoder.reconstruction_error",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="multivariate_anomaly",
                 feature_type=FeatureType.NUMERIC,
                 description="Multivariate anomaly detection score",
                 provenance="anomaly.multivariate.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="contextual_anomaly",
                 feature_type=FeatureType.NUMERIC,
                 description="Contextual anomaly detection score",
                 provenance="anomaly.contextual.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="performance_degradation",
                 feature_type=FeatureType.NUMERIC,
                 description="Performance degradation indicator",
                 provenance="anomaly.performance.degradation",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_anomaly",
                 feature_type=FeatureType.NUMERIC,
                 description="Resource usage anomaly score",
                 provenance="anomaly.resource.anomaly",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="security_anomaly",
                 feature_type=FeatureType.NUMERIC,
                 description="Security-related anomaly score",
                 provenance="anomaly.security.anomaly",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="anomaly_confidence",
                 feature_type=FeatureType.NUMERIC,
                 description="Overall confidence in anomaly detection",
                 provenance="anomaly.overall.confidence",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="advanced_l6_detector",
             schema_version="1.0",
             description="Enhanced features for L6 autoencoder anomaly detection model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -158,7 +158,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "error_patterns": 0.2,
             "resource_usage": 0.15,
             "timing_patterns": 0.1,
-            "interaction_patterns": 0.1
+            "interaction_patterns": 0.1,
         }
 
         total_deviation = 0.0
@@ -232,7 +232,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "memory_anomaly": 0.25,
             "disk_anomaly": 0.2,
             "network_anomaly": 0.15,
-            "process_anomaly": 0.15
+            "process_anomaly": 0.15,
         }
 
         total_anomaly = 0.0
@@ -302,7 +302,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "daily_pattern": 0.25,
             "weekly_pattern": 0.2,
             "seasonal_pattern": 0.15,
-            "trend_deviation": 0.1
+            "trend_deviation": 0.1,
         }
 
         total_break = 0.0
@@ -381,7 +381,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
         reconstruction_components = {
             "input_reconstruction": 0.4,
             "latent_reconstruction": 0.3,
-            "output_reconstruction": 0.3
+            "output_reconstruction": 0.3,
         }
 
         total_error = 0.0
@@ -440,7 +440,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "correlation_anomaly": 0.3,
             "covariance_anomaly": 0.25,
             "distribution_anomaly": 0.25,
-            "dimension_anomaly": 0.2
+            "dimension_anomaly": 0.2,
         }
 
         total_anomaly = 0.0
@@ -510,7 +510,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "environmental_anomaly": 0.3,
             "user_context_anomaly": 0.25,
             "system_context_anomaly": 0.25,
-            "temporal_context_anomaly": 0.2
+            "temporal_context_anomaly": 0.2,
         }
 
         total_anomaly = 0.0
@@ -556,7 +556,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "response_time_degradation": 0.3,
             "throughput_degradation": 0.25,
             "error_rate_increase": 0.25,
-            "latency_increase": 0.2
+            "latency_increase": 0.2,
         }
 
         total_degradation = 0.0
@@ -630,7 +630,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "memory_anomaly": 0.3,
             "cpu_anomaly": 0.3,
             "disk_anomaly": 0.2,
-            "network_anomaly": 0.2
+            "network_anomaly": 0.2,
         }
 
         total_anomaly = 0.0
@@ -700,7 +700,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "authentication_anomaly": 0.3,
             "authorization_anomaly": 0.25,
             "access_pattern_anomaly": 0.25,
-            "threat_indicators": 0.2
+            "threat_indicators": 0.2,
         }
 
         total_anomaly = 0.0
@@ -757,7 +757,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
             "contextual_anomaly": 0.1,
             "performance_degradation": 0.05,
             "resource_anomaly": 0.05,
-            "security_anomaly": 0.05
+            "security_anomaly": 0.05,
         }
 
         # Extract individual anomaly scores

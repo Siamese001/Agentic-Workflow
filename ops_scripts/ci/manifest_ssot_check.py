@@ -13,7 +13,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-
 LEGACY_FILENAMES = ['target_paths_v2.json', 'target_paths.json']
 SCAN_DIRS = ['ops_scripts/ci', '.github/workflows']
 SCAN_EXTENSIONS = {'.py', '.yml', '.yaml'}

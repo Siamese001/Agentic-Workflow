@@ -312,7 +312,7 @@ class TestLayerViolations:
     def test_layer_violations_specific_file(self, adg_integration):
         """Detect violations for a specific file."""
         result = adg_integration.get_layer_violations(
-            file_path="agentic_core/L3_orchestration/engines/dag_manager.py"
+            file_path="agentic_core/L3_orchestration/engines/dag_manager.py",
         )
 
         assert result["scope"] == "agentic_core/L3_orchestration/engines/dag_manager.py"

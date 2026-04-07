@@ -78,7 +78,7 @@ class ShadowEvaluationRunner(EvaluationRunner):
         """
         _trace_id = f"shadow_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ShadowEvaluationRunner.evaluate"
+            _trace_id, LayerSegment.L4_STATE, "ShadowEvaluationRunner.evaluate",
         )
 
         # Get ground truth if available
@@ -196,7 +196,7 @@ class ReplayEvaluationRunner(EvaluationRunner):
         """
         _trace_id = f"replay_batch_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ReplayEvaluationRunner.replay"
+            _trace_id, LayerSegment.L4_STATE, "ReplayEvaluationRunner.replay",
         )
 
         # Get historical queries
@@ -224,7 +224,7 @@ class ReplayEvaluationRunner(EvaluationRunner):
         """Evaluate in replay mode."""
         _trace_id = f"replay_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ReplayEvaluationRunner.evaluate"
+            _trace_id, LayerSegment.L4_STATE, "ReplayEvaluationRunner.evaluate",
         )
 
         # In replay, we compare against stored results

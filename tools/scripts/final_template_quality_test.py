@@ -31,36 +31,36 @@ def main():
             'type': 'adg_analysis',
             'complexity': 'high',
             'files': ['adg_indexed.sqlite'],
-            'expected_data': ['10,432', '681,161', '5,301', 'L0: 7,220']
+            'expected_data': ['10,432', '681,161', '5,301', 'L0: 7,220'],
         },
         {
             'name': 'Violation Remediation',
             'type': 'violation_remediation',
             'complexity': 'high',
             'files': ['violations.json'],
-            'expected_data': ['5,301', '1,200', '2,800', '1,301']
+            'expected_data': ['5,301', '1,200', '2,800', '1,301'],
         },
         {
             'name': 'Architectural Review',
             'type': 'architecture',
             'complexity': 'high',
             'files': ['system_design.md'],
-            'expected_data': ['156', 'Layered Architecture', 'Dependency Injection', 'Event-Driven']
+            'expected_data': ['156', 'Layered Architecture', 'Dependency Injection', 'Event-Driven'],
         },
         {
             'name': 'Dependency Graph Analysis',
             'type': 'implementation',
             'complexity': 'medium',
             'files': ['module1.py', 'module2.py', 'module3.py', 'module4.py', 'module5.py', 'module6.py'],
-            'expected_data': ['681,161', '0', '15', '42']
+            'expected_data': ['681,161', '0', '15', '42'],
         },
         {
             'name': 'System Restructuring',
             'type': 'refactoring',
             'complexity': 'critical',
             'files': ['legacy_system.py'],
-            'expected_data': ['Large-scale enterprise', 'Cyclomatic Complexity', 'layer violations']
-        }
+            'expected_data': ['Large-scale enterprise', 'Cyclomatic Complexity', 'layer violations'],
+        },
     ]
 
     results = []
@@ -79,7 +79,7 @@ def main():
                 'type': scenario['type'],
                 'complexity': scenario['complexity'],
                 'files': scenario['files'],
-                'description': f"High-quality test for {scenario['name']}"
+                'description': f"High-quality test for {scenario['name']}",
             }
 
             # Get rendered template
@@ -93,7 +93,7 @@ def main():
                 'template_length': len(template),
                 'has_adg_context': any(keyword in template for keyword in
                                       ['node_count', 'edge_count', 'violation_count', 'component_count',
-                                       'dependency_count', 'system_size'])
+                                       'dependency_count', 'system_size']),
             }
 
             # Calculate quality score
@@ -113,7 +113,7 @@ def main():
                 'checks': checks,
                 'data_found': [data for data in scenario['expected_data'] if data in template],
                 'template_length': checks['template_length'],
-                'success': True
+                'success': True,
             }
 
             results.append(result)
@@ -137,7 +137,7 @@ def main():
             results.append({
                 'scenario': scenario['name'],
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     # Final summary
@@ -182,7 +182,7 @@ def main():
             'type': best_template['type'],
             'complexity': 'high',
             'files': ['test.py'],
-            'description': 'Sample template'
+            'description': 'Sample template',
         }
 
         template_content = workflow._get_seq_thinking_template(best_template['type'], step_config)

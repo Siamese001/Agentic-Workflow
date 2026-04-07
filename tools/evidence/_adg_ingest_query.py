@@ -16,7 +16,7 @@ def node_name(nid):
 
 # 1. violates edges (critical)
 rows = conn.execute(
-    "SELECT src_id, dst_id, source_file, symbol FROM edges WHERE relation_type='violates' LIMIT 20"
+    "SELECT src_id, dst_id, source_file, symbol FROM edges WHERE relation_type='violates' LIMIT 20",
 ).fetchall()
 print(f"\n=== VIOLATIONS (GV) count={len(rows)} ===")
 for r in rows:
@@ -27,7 +27,7 @@ for r in rows:
 
 # 2. repair routes
 rows2 = conn.execute(
-    "SELECT src_id, dst_id, relation_type, source_file, symbol FROM edges WHERE relation_type IN ('repair_route','has_repair_route','suggests_repair','repair_action') LIMIT 30"
+    "SELECT src_id, dst_id, relation_type, source_file, symbol FROM edges WHERE relation_type IN ('repair_route','has_repair_route','suggests_repair','repair_action') LIMIT 30",
 ).fetchall()
 print(f"=== REPAIR ROUTES count={len(rows2)} ===")
 for r in rows2:
@@ -35,7 +35,7 @@ for r in rows2:
 
 # 3. antipatterns involving execute_ssot
 execute_ssot_node = conn.execute(
-    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/execute_ssot.py'"
+    "SELECT id FROM nodes WHERE adg_name='ADG::Module::agentic_core/L0_routing/scripts/execute_ssot.py'",
 ).fetchone()
 if execute_ssot_node:
     eid = execute_ssot_node["id"]
@@ -58,7 +58,7 @@ if execute_ssot_node:
 
     # 5. execute_ssot imports (fan-out)
     rows5 = conn.execute(
-        "SELECT dst_id FROM edges WHERE relation_type='imports' AND src_id=? LIMIT 60", (eid,)
+        "SELECT dst_id FROM edges WHERE relation_type='imports' AND src_id=? LIMIT 60", (eid,),
     ).fetchall()
     print(f"\n=== execute_ssot IMPORTS count={len(rows5)} ===")
     for r in rows5:
@@ -70,12 +70,12 @@ else:
 
 # 6. governance violations (GG plane)
 rows7 = conn.execute(
-    "SELECT src_id, dst_id, relation_type, source_file, symbol FROM edges WHERE relation_type IN ('governance_violation','layer_violation') LIMIT 20"
+    "SELECT src_id, dst_id, relation_type, source_file, symbol FROM edges WHERE relation_type IN ('governance_violation','layer_violation') LIMIT 20",
 ).fetchall()
 print(f"\n=== GOVERNANCE VIOLATIONS count={len(rows7)} ===")
 for r in rows7:
     print(
-        f"  {r['relation_type']}: {node_name(r['src_id'])} -> {node_name(r['dst_id'])} | file={r['source_file']}"
+        f"  {r['relation_type']}: {node_name(r['src_id'])} -> {node_name(r['dst_id'])} | file={r['source_file']}",
     )
 
 # 7. dead import hotspots (production files only, top 15)
@@ -85,7 +85,7 @@ rows8 = conn.execute(
        WHERE e.relation_type='dead_imports'
          AND n.resolved_path NOT LIKE 'tests/%'
          AND n.resolved_path NOT LIKE 'ops_scripts/%'
-       GROUP BY e.src_id ORDER BY cnt DESC LIMIT 15"""
+       GROUP BY e.src_id ORDER BY cnt DESC LIMIT 15""",
 ).fetchall()
 print("\n=== DEAD IMPORT HOTSPOTS (prod only) ===")
 for r in rows8:
@@ -106,7 +106,7 @@ rows9 = conn.execute(
            OR (n_src.layer='L3' AND n_dst.layer IN ('L0','L1','L2'))
            OR (n_src.layer='L2' AND n_dst.layer IN ('L0','L1'))
          )
-       LIMIT 20"""
+       LIMIT 20""",
 ).fetchall()
 print(f"\n=== UPWARD LAYER IMPORTS (gravity violations) count={len(rows9)} ===")
 for r in rows9:

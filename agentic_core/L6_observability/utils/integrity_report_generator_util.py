@@ -141,7 +141,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -243,7 +242,7 @@ class IntegrityReportResult:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "IntegrityReportResult.overall_health_score", "state_snapshot"
+            str(_uuid.uuid4()), "IntegrityReportResult.overall_health_score", "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -253,7 +252,7 @@ class IntegrityReportResult:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "IntegrityReportResult.overall_health_score", "p0_governance"
+            str(_uuid.uuid4()), "IntegrityReportResult.overall_health_score", "p0_governance",
         )
         scores = []
 
@@ -371,7 +370,7 @@ class AgentIntegrityReporter:
         """Validate 100% registry coverage."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "IntegrityReportGenerator.validate_registry_coverage"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "IntegrityReportGenerator.validate_registry_coverage",
         )
         if registry_result.total_filesystem_agents == 0:
             return False, "No agents found in filesystem"

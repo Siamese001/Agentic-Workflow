@@ -108,7 +108,7 @@ class SearchFusionEngine:
         fusion_config: FusionConfig | None = None,
         local_config: LocalSearchConfig | None = None,
         global_config: GlobalSearchConfig | None = None,
-        drift_config: DRIFTSearchConfig | None = None
+        drift_config: DRIFTSearchConfig | None = None,
     ) -> None:
         """Initialize the search fusion engine.
 
@@ -133,7 +133,7 @@ class SearchFusionEngine:
             "local": [],
             "global": [],
             "drift": [],
-            "fusion": []
+            "fusion": [],
         }
 
     async def search(self, query: SearchQuery) -> SearchResponse:
@@ -153,7 +153,7 @@ class SearchFusionEngine:
 
             # Step 2: Apply fusion method
             fused_response = await self._fuse_results(
-                local_response, global_response, drift_response, query
+                local_response, global_response, drift_response, query,
             )
 
             # Step 3: Apply diversification if enabled
@@ -173,7 +173,7 @@ class SearchFusionEngine:
 
             _emit_records_telemetry_event(
                 "search_fusion_engine",
-                f"fused_search_completed_{len(fused_response.results)}_results"
+                f"fused_search_completed_{len(fused_response.results)}_results",
             )
 
             return fused_response
@@ -190,11 +190,11 @@ class SearchFusionEngine:
                 min_relevance_score=0.0,
                 search_strategy="fusion",
                 fusion_method=self.fusion_config.fusion_method,
-                errors=[f"Fused search failed: {str(e)}"]
+                errors=[f"Fused search failed: {str(e)}"],
             )
 
     async def _execute_individual_searches(
-        self, query: SearchQuery
+        self, query: SearchQuery,
     ) -> tuple[SearchResponse, SearchResponse, SearchResponse]:
         """Execute individual search strategies in parallel."""
         import asyncio
@@ -207,7 +207,7 @@ class SearchFusionEngine:
             max_results=query.max_results,
             min_relevance_score=query.min_relevance_score,
             entity_types=query.entity_types,
-            relation_types=query.relation_types
+            relation_types=query.relation_types,
         )
 
         global_query = SearchQuery(
@@ -217,7 +217,7 @@ class SearchFusionEngine:
             max_results=query.max_results,
             min_relevance_score=query.min_relevance_score,
             entity_types=query.entity_types,
-            relation_types=query.relation_types
+            relation_types=query.relation_types,
         )
 
         drift_query = SearchQuery(
@@ -227,7 +227,7 @@ class SearchFusionEngine:
             max_results=query.max_results,
             min_relevance_score=query.min_relevance_score,
             entity_types=query.entity_types,
-            relation_types=query.relation_types
+            relation_types=query.relation_types,
         )
 
         # Execute searches in parallel
@@ -236,7 +236,7 @@ class SearchFusionEngine:
         drift_future = self.drift_engine.search(drift_query)
 
         local_response, global_response, drift_response = await asyncio.gather(
-            local_future, global_future, drift_future, return_exceptions=True
+            local_future, global_future, drift_future, return_exceptions=True,
         )
 
         # Handle exceptions
@@ -251,7 +251,7 @@ class SearchFusionEngine:
                 max_relevance_score=0.0,
                 min_relevance_score=0.0,
                 search_strategy="local",
-                errors=[f"Local search error: {str(local_response)}"]
+                errors=[f"Local search error: {str(local_response)}"],
             )
 
         if isinstance(global_response, Exception):
@@ -265,7 +265,7 @@ class SearchFusionEngine:
                 max_relevance_score=0.0,
                 min_relevance_score=0.0,
                 search_strategy="global",
-                errors=[f"Global search error: {str(global_response)}"]
+                errors=[f"Global search error: {str(global_response)}"],
             )
 
         if isinstance(drift_response, Exception):
@@ -279,7 +279,7 @@ class SearchFusionEngine:
                 max_relevance_score=0.0,
                 min_relevance_score=0.0,
                 search_strategy="drift",
-                errors=[f"DRIFT search error: {str(drift_response)}"]
+                errors=[f"DRIFT search error: {str(drift_response)}"],
             )
 
         # Update statistics
@@ -294,7 +294,7 @@ class SearchFusionEngine:
         local_response: SearchResponse,
         global_response: SearchResponse,
         drift_response: SearchResponse,
-        query: SearchQuery
+        query: SearchQuery,
     ) -> SearchResponse:
         """Fuse results from multiple search strategies."""
         if self.fusion_config.fusion_method == "weighted_average":
@@ -312,7 +312,7 @@ class SearchFusionEngine:
         local_response: SearchResponse,
         global_response: SearchResponse,
         drift_response: SearchResponse,
-        query: SearchQuery
+        query: SearchQuery,
     ) -> SearchResponse:
         """Fuse results using weighted average of scores."""
         # Collect all results
@@ -326,7 +326,7 @@ class SearchFusionEngine:
                     "result": result,
                     "local_score": result.relevance_score,
                     "global_score": 0.0,
-                    "drift_score": 0.0
+                    "drift_score": 0.0,
                 }
             else:
                 all_results[result_id]["local_score"] = result.relevance_score
@@ -339,7 +339,7 @@ class SearchFusionEngine:
                     "result": result,
                     "local_score": 0.0,
                     "global_score": result.relevance_score,
-                    "drift_score": 0.0
+                    "drift_score": 0.0,
                 }
             else:
                 all_results[result_id]["global_score"] = result.relevance_score
@@ -352,7 +352,7 @@ class SearchFusionEngine:
                     "result": result,
                     "local_score": 0.0,
                     "global_score": 0.0,
-                    "drift_score": result.relevance_score
+                    "drift_score": result.relevance_score,
                 }
             else:
                 all_results[result_id]["drift_score"] = result.relevance_score
@@ -386,8 +386,8 @@ class SearchFusionEngine:
                     "local_score": scores["local_score"],
                     "global_score": scores["global_score"],
                     "drift_score": scores["drift_score"],
-                    "fused_score": weighted_score
-                }
+                    "fused_score": weighted_score,
+                },
             )
             fused_results.append(fused_result)
 
@@ -416,9 +416,9 @@ class SearchFusionEngine:
                 "fusion_weights": {
                     "local": self.fusion_config.local_weight,
                     "global": self.fusion_config.global_weight,
-                    "drift": self.fusion_config.drift_weight
-                }
-            }
+                    "drift": self.fusion_config.drift_weight,
+                },
+            },
         )
 
     def _rank_fusion(
@@ -426,7 +426,7 @@ class SearchFusionEngine:
         local_response: SearchResponse,
         global_response: SearchResponse,
         drift_response: SearchResponse,
-        query: SearchQuery
+        query: SearchQuery,
     ) -> SearchResponse:
         """Fuse results using rank fusion."""
         # Collect rankings
@@ -497,8 +497,8 @@ class SearchFusionEngine:
                         "local_rank": local_rank,
                         "global_rank": global_rank,
                         "drift_rank": drift_rank,
-                        "rank_fusion_score": fused_score
-                    }
+                        "rank_fusion_score": fused_score,
+                    },
                 )
                 fused_results.append(fused_result)
 
@@ -519,7 +519,7 @@ class SearchFusionEngine:
             max_relevance_score=max(relevance_scores) if relevance_scores else 0.0,
             min_relevance_score=min(relevance_scores) if relevance_scores else 0.0,
             search_strategy="fusion",
-            fusion_method="rank_fusion"
+            fusion_method="rank_fusion",
         )
 
     def _reciprocal_rank_fusion(
@@ -527,7 +527,7 @@ class SearchFusionEngine:
         local_response: SearchResponse,
         global_response: SearchResponse,
         drift_response: SearchResponse,
-        query: SearchQuery
+        query: SearchQuery,
     ) -> SearchResponse:
         """Fuse results using reciprocal rank fusion."""
         # Similar to rank fusion but with RRF formula
@@ -598,8 +598,8 @@ class SearchFusionEngine:
                         "local_rank": local_rank,
                         "global_rank": global_rank,
                         "drift_rank": drift_rank,
-                        "rrf_score": rrf_score
-                    }
+                        "rrf_score": rrf_score,
+                    },
                 )
                 fused_results.append(fused_result)
 
@@ -620,7 +620,7 @@ class SearchFusionEngine:
             max_relevance_score=max(relevance_scores) if relevance_scores else 0.0,
             min_relevance_score=min(relevance_scores) if relevance_scores else 0.0,
             search_strategy="fusion",
-            fusion_method="reciprocal_rank"
+            fusion_method="reciprocal_rank",
         )
 
     def _normalize_score(self, score: float) -> float:
@@ -696,14 +696,14 @@ class SearchFusionEngine:
                     "avg_time_ms": sum(times) / len(times),
                     "min_time_ms": min(times),
                     "max_time_ms": max(times),
-                    "count": len(times)
+                    "count": len(times),
                 }
             else:
                 stats[strategy] = {
                     "avg_time_ms": 0.0,
                     "min_time_ms": 0.0,
                     "max_time_ms": 0.0,
-                    "count": 0
+                    "count": 0,
                 }
 
         return stats
@@ -715,11 +715,11 @@ def create_search_fusion_engine(
     fusion_config: FusionConfig | None = None,
     local_config: LocalSearchConfig | None = None,
     global_config: GlobalSearchConfig | None = None,
-    drift_config: DRIFTSearchConfig | None = None
+    drift_config: DRIFTSearchConfig | None = None,
 ) -> SearchFusionEngine:
     """Create a search fusion engine."""
     return SearchFusionEngine(
-        graph_store, fusion_config, local_config, global_config, drift_config
+        graph_store, fusion_config, local_config, global_config, drift_config,
     )
 
 

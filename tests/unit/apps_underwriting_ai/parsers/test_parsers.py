@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai parsers module."""
 
-import pytest
 
 
 class TestParsersImportable:

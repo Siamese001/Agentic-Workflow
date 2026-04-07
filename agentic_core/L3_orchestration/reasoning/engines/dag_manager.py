@@ -142,7 +142,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -208,7 +207,7 @@ except (ImportError, AttributeError):
 
 
 class DAGManager(
-    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
+    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin,
 ):
     """Manages the dynamic DAG with mutation capabilities.
 
@@ -262,7 +261,7 @@ class DAGManager(
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "DAGManager.register_function"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DAGManager.register_function",
         )
 
         self.function_registry[name] = function
@@ -416,12 +415,12 @@ class DAGManager(
                     "state": hop.state.value if hop else None,
                     "skipped": node_data.get("skipped", False),
                     "replaced": node_data.get("replaced", False),
-                }
+                },
             )
         for edge in self.graph.edges:
             edge_data = self.graph.edges[edge]
             edges.append(
-                {"source": edge[0], "target": edge[1], "bridge": edge_data.get("bridge_created", False)}
+                {"source": edge[0], "target": edge[1], "bridge": edge_data.get("bridge_created", False)},
             )
         return {"nodes": nodes, "edges": edges}
 

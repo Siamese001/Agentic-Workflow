@@ -17,7 +17,7 @@ for i in range(0, len(all_files), WAVE_SIZE):
     wave_files = all_files[i:i+WAVE_SIZE]
     waves[wave_num] = {
         'files': wave_files,
-        'count': len(wave_files)
+        'count': len(wave_files),
     }
     wave_num += 1
 

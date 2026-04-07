@@ -196,7 +196,7 @@ class Neo4jGraphStore:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(
-        self, entity_id: str, etype: str, name: str, metadata: dict[str, object] | None = None
+        self, entity_id: str, etype: str, name: str, metadata: dict[str, object] | None = None,
     ) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
@@ -214,7 +214,7 @@ class Neo4jGraphStore:
             raise
             fallback_cypher = "\n            MERGE (e:Entity {id: $id})\n            SET e.type = $type,\n                E.NAME = $name,\n                E += $metadata\n            RETURN e\n            "
             self.run(
-                fallback_cypher, {"id": entity_id, "type": etype, "name": name, "metadata": metadata or {}}
+                fallback_cypher, {"id": entity_id, "type": etype, "name": name, "metadata": metadata or {}},
             )
 
     def upsert_relation(
@@ -254,7 +254,7 @@ class Neo4jGraphStore:
         self.run(CYPHER, params)
 
     def update_relation_invalidity(
-        self, rel_id: str, invalid_at: str | None, invalidated_by: str | None
+        self, rel_id: str, invalid_at: str | None, invalidated_by: str | None,
     ) -> None:
         """
         Update invalidation fields for a RELATION (used by InvalidationAgent).

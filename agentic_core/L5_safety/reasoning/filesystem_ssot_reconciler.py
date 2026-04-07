@@ -109,9 +109,12 @@ except ImportError:  # guardian: allow-silent-swallow
 
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase as L0RoutingBaseAgent
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.autonomy_mixin import AutonomyMixin
 from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
 from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
@@ -146,11 +149,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -275,7 +276,7 @@ class ReconciliationViolation:
         """L0 maintenance agent - operational only."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository",
         )
         super().heal_repository()
         if _call_path is None:
@@ -433,7 +434,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
 
     # guardian: allow-type-erasure
     async def enforce_gospel(
-        self, auto_apply: bool = False, interactive: bool = True, target_territory: str | None = None
+        self, auto_apply: bool = False, interactive: bool = True, target_territory: str | None = None,
     ) -> dict[str, Any]:
         """Main entry point: Align filesystem to match the Gospel (blueprint)."""
         scope_msg = f"Targeting: {target_territory}" if target_territory else "Global Scan"
@@ -555,7 +556,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 raise
                 Logger.debug(f"Failed to parse {py_file}: {e}")
         Logger.info(
-            f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered"
+            f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered",
         )
 
     # guardian: allow-type-erasure
@@ -580,7 +581,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             "CANON_SIGNALS": getattr(module, "CANON_SIGNALS", set()),
         }
         Logger.info(
-            f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, {len(blueprint['core_subfolder_map'])} L1 folders, {len(blueprint['CANON_SIGNALS'])} signals"
+            f"Blueprint loaded: {len(blueprint['sovereign_registry'])} roots, {len(blueprint['core_subfolder_map'])} L1 folders, {len(blueprint['CANON_SIGNALS'])} signals",
         )
         return blueprint
 
@@ -602,7 +603,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         return drift
 
     def _check_registry_subfolders(
-        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]],
     ) -> None:
         """
         Check SOVEREIGN_REGISTRY subfolders.
@@ -624,13 +625,13 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "root": root,
                         "folders": sorted(missing),
                         "Severity": "medium",
-                    }
+                    },
                 )
                 Logger.warning(f"Orphaned subfolders in {root}: {missing}")
             extra = blueprint_subfolders - actual_subfolders
             if extra:
                 drift.append(
-                    {"type": "missing_subfolders", "root": root, "folders": sorted(extra), "Severity": "high"}
+                    {"type": "missing_subfolders", "root": root, "folders": sorted(extra), "Severity": "high"},
                 )
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
@@ -655,7 +656,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "l1_folder": l1_folder,
                         "folders": sorted(missing_l2),
                         "Severity": "medium",
-                    }
+                    },
                 )
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
 
@@ -670,12 +671,12 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         missing_signals = blueprint_signals - self.actual_signals
         if missing_signals:
             drift.append(
-                {"type": "missing_canon_signals", "signals": sorted(missing_signals), "Severity": "low"}
+                {"type": "missing_canon_signals", "signals": sorted(missing_signals), "Severity": "low"},
             )
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
     def _check_registry_subfolders(
-        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]
+        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]],
     ) -> None:
         """Check SOVEREIGN_REGISTRY subfolders for drift."""
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
@@ -691,13 +692,13 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "root": root,
                         "folders": sorted(missing),
                         "Severity": "medium",
-                    }
+                    },
                 )
                 Logger.warning(f"Orphaned subfolders in {root}: {missing}")
             extra = blueprint_subfolders - actual_subfolders
             if extra:
                 drift.append(
-                    {"type": "missing_subfolders", "root": root, "folders": sorted(extra), "Severity": "high"}
+                    {"type": "missing_subfolders", "root": root, "folders": sorted(extra), "Severity": "high"},
                 )
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
@@ -717,7 +718,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "l1_folder": l1_folder,
                         "folders": sorted(missing_l2),
                         "Severity": "medium",
-                    }
+                    },
                 )
                 Logger.warning(f"Orphaned L2 subfolders in {l1_folder}: {missing_l2}")
 
@@ -727,7 +728,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         missing_signals = blueprint_signals - self.actual_signals
         if missing_signals:
             drift.append(
-                {"type": "missing_canon_signals", "signals": sorted(missing_signals), "Severity": "low"}
+                {"type": "missing_canon_signals", "signals": sorted(missing_signals), "Severity": "low"},
             )
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
@@ -744,7 +745,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             "action": "CREATE_FOLDER",
                             "target": str(target),
                             "reason": f"Required by blueprint root '{drift_item['root']}'",
-                        }
+                        },
                     )
             elif drift_item["type"] == "orphaned_subfolders":
                 for folder in drift_item["folders"]:
@@ -762,7 +763,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             "source": str(source),
                             "target": str(archive_target),
                             "reason": "Unauthorized folder not found in Gospel",
-                        }
+                        },
                     )
         Logger.info(f"Generated {len(proposals)} filesystem alignment proposals")
         return proposals
@@ -780,7 +781,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         violations = []
         for prop in proposals:
             coord = ASTCoordinate(
-                line=1, column=0, node_id=f"filesystem_{prop['action']}", node_type="FilesystemOperation"
+                line=1, column=0, node_id=f"filesystem_{prop['action']}", node_type="FilesystemOperation",
             )
             violation = ViolationConstraint(
                 constraint_type="filesystem_drift",
@@ -814,7 +815,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 if source.exists():
                     _wg.ensure_dir(target.parent)
                     gk_result = self.gatekeeper.safe_move(
-                        source, target, self.agent_name, "Archive unauthorized folder"
+                        source, target, self.agent_name, "Archive unauthorized folder",
                     )
                     if gk_result.success:
                         applied_logs.append(f"ARCHIVED: {prop['source']} -> {prop['target']}")
@@ -849,7 +850,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             action = proposal["action"]
             if action == "add_to_sovereign_registry":
                 content = self._apply_sovereign_registry_update(
-                    content, proposal["root"], proposal["subfolders"]
+                    content, proposal["root"], proposal["subfolders"],
                 )
             elif action == "add_to_core_subfolder_map":
                 content = self._apply_core_map_update(content, proposal["l1_folder"], proposal["subfolders"])
@@ -857,7 +858,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 content = self._apply_signals_update(content, proposal["signals"])
             Logger.debug(f"Applied proposal: {action}")
         with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=self.blueprint_file.parent, delete=False, suffix=".py"
+            mode="w", encoding="utf-8", dir=self.blueprint_file.parent, delete=False, suffix=".py",
         ) as tmp:
             tmp.write(content)
             tmp_path = tmp.name
@@ -1104,7 +1105,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
 
     # guardian: allow-magic-config
     def cleanup_violations(
-        self, violations: list[ReconciliationViolation], dry_run: bool = True, max_actions: int = 50
+        self, violations: list[ReconciliationViolation], dry_run: bool = True, max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup reconciliation violations with blueprint updates.
@@ -1185,7 +1186,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                     file_path=Path(drift.get("path", "")) if drift.get("path") else None,
                     suggested_action=drift.get("action", ""),
                     severity=drift.get("severity", 5),
-                )
+                ),
             )
         cleanup_results = self.cleanup_violations(all_violations, dry_run=dry_run) if all_violations else []
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}
@@ -1246,7 +1247,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             if root_path.exists() and ssot_path.exists():
                 drift["root_drift_detected"] = True
                 drift["duplicate_folders"].append(
-                    {"name": folder_name, "root_path": str(root_path), "ssot_path": str(ssot_path)}
+                    {"name": folder_name, "root_path": str(root_path), "ssot_path": str(ssot_path)},
                 )
                 Logger.warning(f"   [DRIFT] Duplicate folder: {folder_name}/ at root AND SSOT location")
         return drift

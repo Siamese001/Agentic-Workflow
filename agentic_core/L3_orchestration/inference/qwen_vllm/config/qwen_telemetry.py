@@ -66,7 +66,7 @@ class QwenInferenceTelemetry:
         session = QwenSessionMetrics(
             session_id=session_id,
             app_name=app_name,
-            start_time=time.time()
+            start_time=time.time(),
         )
 
         self._sessions[session_id] = session
@@ -124,7 +124,7 @@ class QwenInferenceTelemetry:
             model_id=model_id,
             metric_name="request_start",
             value=1.0,
-            context={"session_id": session_id}
+            context={"session_id": session_id},
         )
 
         self._metrics.append(metric)
@@ -136,7 +136,7 @@ class QwenInferenceTelemetry:
         model_id: str,
         latency_ms: float,
         confidence: float,
-        tokens_used: int
+        tokens_used: int,
     ) -> None:
         """Record successful inference request.
 
@@ -164,7 +164,7 @@ class QwenInferenceTelemetry:
                 model_id=model_id,
                 metric_name="latency_ms",
                 value=latency_ms,
-                context={"session_id": session_id}
+                context={"session_id": session_id},
             ),
             QwenInferenceMetric(
                 timestamp=time.time(),
@@ -172,7 +172,7 @@ class QwenInferenceTelemetry:
                 model_id=model_id,
                 metric_name="confidence",
                 value=confidence,
-                context={"session_id": session_id}
+                context={"session_id": session_id},
             ),
             QwenInferenceMetric(
                 timestamp=time.time(),
@@ -180,8 +180,8 @@ class QwenInferenceTelemetry:
                 model_id=model_id,
                 metric_name="tokens_used",
                 value=float(tokens_used),
-                context={"session_id": session_id}
-            )
+                context={"session_id": session_id},
+            ),
         ]
 
         for metric in metrics:
@@ -197,7 +197,7 @@ class QwenInferenceTelemetry:
         session_id: str,
         app_name: str,
         model_id: str,
-        error_message: str
+        error_message: str,
     ) -> None:
         """Record failed inference request.
 
@@ -222,8 +222,8 @@ class QwenInferenceTelemetry:
             value=1.0,
             context={
                 "session_id": session_id,
-                "error": error_message
-            }
+                "error": error_message,
+            },
         )
 
         self._metrics.append(metric)
@@ -250,7 +250,7 @@ class QwenInferenceTelemetry:
                 "success_rate": 0.0,
                 "average_latency_ms": 0.0,
                 "average_confidence": 0.0,
-                "total_tokens": 0
+                "total_tokens": 0,
             }
 
         return {
@@ -258,7 +258,7 @@ class QwenInferenceTelemetry:
             "success_rate": session.successful_requests / session.total_requests,
             "average_latency_ms": session.total_latency_ms / session.successful_requests if session.successful_requests > 0 else 0.0,
             "average_confidence": session.average_confidence,
-            "total_tokens": session.tokens_used
+            "total_tokens": session.tokens_used,
         }
 
     def get_app_summary(self, app_name: str) -> dict[str, float]:
@@ -277,7 +277,7 @@ class QwenInferenceTelemetry:
                 "total_requests": 0,
                 "success_rate": 0.0,
                 "average_latency_ms": 0.0,
-                "average_confidence": 0.0
+                "average_confidence": 0.0,
             }
 
         # Calculate aggregates
@@ -291,7 +291,7 @@ class QwenInferenceTelemetry:
             "total_requests": total_requests,
             "success_rate": (total_requests - len(error_metrics)) / total_requests if total_requests > 0 else 0.0,
             "average_latency_ms": sum(m.value for m in latency_metrics) / len(latency_metrics) if latency_metrics else 0.0,
-            "average_confidence": sum(m.value for m in confidence_metrics) / len(confidence_metrics) if confidence_metrics else 0.0
+            "average_confidence": sum(m.value for m in confidence_metrics) / len(confidence_metrics) if confidence_metrics else 0.0,
         }
 
 

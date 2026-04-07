@@ -3,6 +3,7 @@ import os
 import pathlib
 import subprocess
 import sys
+from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
     DEFAULT_TIMEOUT,
@@ -27,7 +28,7 @@ env['SOVEREIGN_AUTO_APPROVE'] = '1'
 env['AGENTIC_BYPASS_LONGPATHS_CHECK'] = '1'
 env['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] = '1'
 env['PYTHONIOENCODING'] = 'utf-8'
-proc = subprocess.Popen([sys.executable, '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint', '--heal', '--territory', SYSTEM_LEARNING_DIR, '-vv'], cwd='c:\\Git\\Agentic-Workflow', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace', env=env)
+proc = subprocess.Popen([sys.executable, '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint', '--heal', '--territory', SYSTEM_LEARNING_DIR, '-vv'], cwd=str(REPO_ROOT), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace', env=env)
 try:
     out, err = proc.communicate(timeout=DEFAULT_TIMEOUT)
 except subprocess.TimeoutExpired:

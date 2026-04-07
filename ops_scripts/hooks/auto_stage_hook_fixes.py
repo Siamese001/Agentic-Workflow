@@ -20,7 +20,7 @@ def main():
             ["git", "status", "--porcelain"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
 
         unstaged_files = []

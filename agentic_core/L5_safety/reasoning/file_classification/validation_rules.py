@@ -9,12 +9,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
-
 from .models import Violation
 
 logger = logging.getLogger(__name__)

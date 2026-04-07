@@ -3,12 +3,11 @@ Full 3-tier smoke test for Sequential Thinking MCP server.
 Tests: handshake, single thought, multi-step chain, branch + revision.
 """
 
-import subprocess
 import json
-import time
-import threading
-import os
+import subprocess
 import sys
+import threading
+import time
 
 NODE = r"C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node.exe"
 SERVER = r"C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node_modules\@modelcontextprotocol\server-sequential-thinking\dist\index.js"
@@ -98,7 +97,7 @@ def main():
                 "capabilities": {},
                 "clientInfo": {"name": "smoke-test", "version": "1.0"},
             },
-        }
+        },
     )
     init_resp = read(5)
     check(
@@ -131,7 +130,7 @@ def main():
     )
     check("tools_list_returns", list_resp, lambda r: "_error" not in r)
     check(
-        "tool_sequentialthinking_present", tools, lambda t: "sequentialthinking" in t
+        "tool_sequentialthinking_present", tools, lambda t: "sequentialthinking" in t,
     )
 
     # ========== TIER 1: Single thought ==========
@@ -155,7 +154,7 @@ def main():
                     "totalThoughts": 1,
                 },
             },
-        }
+        },
     )
     t1 = read(5)
     t1_content = {}
@@ -198,7 +197,7 @@ def main():
                         "totalThoughts": 4,
                     },
                 },
-            }
+            },
         )
         resp = read(5)
         content = {}
@@ -245,7 +244,7 @@ def main():
                     "branchId": "floyd-alt",
                 },
             },
-        }
+        },
     )
     branch_resp = read(5)
     branch_content = {}
@@ -281,7 +280,7 @@ def main():
                     "revisesThought": 3,
                 },
             },
-        }
+        },
     )
     rev_resp = read(5)
     rev_content = {}
@@ -316,7 +315,7 @@ def main():
     stderr_out = proc.stderr.read().decode()[:300]
     if stderr_out.strip():
         print(
-            f"\nSTDERR (should be minimal with DISABLE_THOUGHT_LOGGING=true):\n  {stderr_out.strip()[:200]}"
+            f"\nSTDERR (should be minimal with DISABLE_THOUGHT_LOGGING=true):\n  {stderr_out.strip()[:200]}",
         )
 
     sys.exit(0 if FAIL == 0 else 1)

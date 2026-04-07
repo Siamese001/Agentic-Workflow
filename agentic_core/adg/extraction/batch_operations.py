@@ -175,7 +175,7 @@ class ADGSQLiteBatchInserter:
 
         logger.info(
             f"Final flush: {edges_flushed} edges, {nodes_flushed} nodes "
-            f"(total inserted: {self._total_inserted})"
+            f"(total inserted: {self._total_inserted})",
         )
 
         return edges_flushed, nodes_flushed
@@ -243,7 +243,7 @@ class ADGRedisBatchInserter:
         self._total_executed += self._pending
         logger.debug(
             f"Executed {self._pending} Redis ops in {elapsed:.1f}ms "
-            f"(total: {self._total_executed})"
+            f"(total: {self._total_executed})",
         )
 
         self._pipeline = self.redis.pipeline(transaction=False)

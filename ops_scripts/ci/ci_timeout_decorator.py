@@ -85,8 +85,8 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
                         "function": func.__name__,
                         "timeout_limit": seconds,
                         "args": str(args)[:200],
-                        "kwargs": str(kwargs)[:200]
-                    }
+                        "kwargs": str(kwargs)[:200],
+                    },
                 )
 
                 print(f"❌ {operation_name} TIMEOUT after {elapsed:.2f}s")
@@ -112,8 +112,8 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
                     context={
                         "function": func.__name__,
                         "args": str(args)[:200],
-                        "kwargs": str(kwargs)[:200]
-                    }
+                        "kwargs": str(kwargs)[:200],
+                    },
                 )
 
                 print(f"❌ {operation_name} FAILED after {elapsed:.2f}s")
@@ -136,7 +136,7 @@ def generate_rca(
     error_message: str,
     elapsed_time: float,
     traceback_info: str | None = None,
-    context: dict | None = None
+    context: dict | None = None,
 ) -> Path:
     """
     Generate RCA (Root Cause Analysis) report for CI failures.

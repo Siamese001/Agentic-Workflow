@@ -86,10 +86,10 @@ class FeatureSchema:
                     'validation_rules': f.validation_rules,
                     'provenance': f.provenance,
                     'extraction_function': f.extraction_function,
-                    'version': f.version
+                    'version': f.version,
                 }
                 for f in self.features
-            ]
+            ],
         }
 
         schema_str = json.dumps(schema_dict, sort_keys=True)
@@ -149,7 +149,7 @@ class FeatureSchema:
             FeatureType.TEXT: str,
             FeatureType.TIMESTAMP: (str, datetime),
             FeatureType.LIST: list,
-            FeatureType.DICT: dict
+            FeatureType.DICT: dict,
         }
 
         expected_types = type_map.get(feature_def.feature_type)
@@ -219,65 +219,65 @@ class FeatureSchemas:
                     feature_type=FeatureType.NUMERIC,
                     description="Number of tokens in request",
                     provenance="request.input.token_count",
-                    validation_rules={"min_value": 0, "max_value": 100000}
+                    validation_rules={"min_value": 0, "max_value": 100000},
                 ),
                 FeatureDefinition(
                     name="tool_complexity_score",
                     feature_type=FeatureType.NUMERIC,
                     description="Complexity score of required tools",
                     provenance="request.tools.complexity_score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="latency_budget_ms",
                     feature_type=FeatureType.NUMERIC,
                     description="Latency budget in milliseconds",
                     provenance="request.constraints.latency_budget_ms",
-                    validation_rules={"min_value": 0, "max_value": 300000}
+                    validation_rules={"min_value": 0, "max_value": 300000},
                 ),
                 FeatureDefinition(
                     name="user_confidence_score",
                     feature_type=FeatureType.NUMERIC,
                     description="User confidence in request",
                     provenance="request.user.confidence_score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="path_success_history",
                     feature_type=FeatureType.NUMERIC,
                     description="Historical success rate for paths",
                     provenance="history.path.success_rate",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="current_load_ratio",
                     feature_type=FeatureType.NUMERIC,
                     description="Current system load ratio",
                     provenance="system.load.current_ratio",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="semantic_similarity_score",
                     feature_type=FeatureType.NUMERIC,
                     description="Semantic similarity to historical requests",
                     provenance="request.semantic.similarity_score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="policy_hash_version",
                     feature_type=FeatureType.CATEGORICAL,
                     description="Version of policy hash",
                     provenance="policy.hash.version",
-                    validation_rules={"allowed_values": ["v1.0", "v1.1", "v2.0"]}
+                    validation_rules={"allowed_values": ["v1.0", "v1.1", "v2.0"]},
                 ),
                 FeatureDefinition(
                     name="trace_id_hash",
                     feature_type=FeatureType.TEXT,
                     description="Hash of trace ID for determinism",
                     provenance="trace.id.hash",
-                    validation_rules={"min_length": 32, "max_length": 64}
-                )
-            ]
+                    validation_rules={"min_length": 32, "max_length": 64},
+                ),
+            ],
         )
 
         # C0 Retrieval Reranker Schema
@@ -291,65 +291,65 @@ class FeatureSchemas:
                     feature_type=FeatureType.NUMERIC,
                     description="Query-document similarity score",
                     provenance="retrieval.similarity.query_doc",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="doc_authority_score",
                     feature_type=FeatureType.NUMERIC,
                     description="Document authority score",
                     provenance="document.authority.score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="recency_score",
                     feature_type=FeatureType.NUMERIC,
                     description="Document recency score",
                     provenance="document.recency.score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="usage_frequency",
                     feature_type=FeatureType.NUMERIC,
                     description="Historical usage frequency",
                     provenance="document.usage.frequency",
-                    validation_rules={"min_value": 0.0, "max_value": 1000.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1000.0},
                 ),
                 FeatureDefinition(
                     name="semantic_density",
                     feature_type=FeatureType.NUMERIC,
                     description="Semantic density of document",
                     provenance="document.semantic.density",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="source_reliability",
                     feature_type=FeatureType.NUMERIC,
                     description="Source reliability score",
                     provenance="source.reliability.score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="completeness_score",
                     feature_type=FeatureType.NUMERIC,
                     description="Document completeness score",
                     provenance="document.completeness.score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="query_complexity",
                     feature_type=FeatureType.NUMERIC,
                     description="Query complexity score",
                     provenance="query.complexity.score",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
                 ),
                 FeatureDefinition(
                     name="cache_hit_probability",
                     feature_type=FeatureType.NUMERIC,
                     description="Probability of cache hit",
                     provenance="cache.hit.probability",
-                    validation_rules={"min_value": 0.0, "max_value": 1.0}
-                )
-            ]
+                    validation_rules={"min_value": 0.0, "max_value": 1.0},
+                ),
+            ],
         )
 
         # L6 Anomaly Detector Schema
@@ -364,7 +364,7 @@ class FeatureSchemas:
                     description="Latency z-score",
                     provenance="metrics.latency.z_score",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0.0
+                    default_value=0.0,
                 ),
                 FeatureDefinition(
                     name="error_rate_spike",
@@ -372,7 +372,7 @@ class FeatureSchemas:
                     description="Error rate spike factor",
                     provenance="metrics.error_rate.spike",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=1.0
+                    default_value=1.0,
                 ),
                 FeatureDefinition(
                     name="token_deviation",
@@ -380,7 +380,7 @@ class FeatureSchemas:
                     description="Token count deviation from baseline",
                     provenance="metrics.tokens.deviation",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0.0
+                    default_value=0.0,
                 ),
                 FeatureDefinition(
                     name="path_divergence",
@@ -388,7 +388,7 @@ class FeatureSchemas:
                     description="Path selection divergence",
                     provenance="routing.path.divergence",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0.0
+                    default_value=0.0,
                 ),
                 FeatureDefinition(
                     name="policy_hash_changes",
@@ -396,7 +396,7 @@ class FeatureSchemas:
                     description="Number of policy hash changes",
                     provenance="policy.hash.changes.count",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0
+                    default_value=0,
                 ),
                 FeatureDefinition(
                     name="replay_mismatch_count",
@@ -404,7 +404,7 @@ class FeatureSchemas:
                     description="Replay mismatch count",
                     provenance="replay.mismatch.count",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0
+                    default_value=0,
                 ),
                 FeatureDefinition(
                     name="escalation_frequency",
@@ -412,7 +412,7 @@ class FeatureSchemas:
                     description="Escalation frequency",
                     provenance="escalation.frequency",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0.0
+                    default_value=0.0,
                 ),
                 FeatureDefinition(
                     name="healing_success_rate",
@@ -420,7 +420,7 @@ class FeatureSchemas:
                     description="Healing success rate",
                     provenance="healing.success.rate",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=1.0
+                    default_value=1.0,
                 ),
                 FeatureDefinition(
                     name="semantic_drift_score",
@@ -428,9 +428,9 @@ class FeatureSchemas:
                     description="Semantic drift score",
                     provenance="semantic.drift.score",
                     null_handling=NullHandling.DEFAULT_VALUE,
-                    default_value=0.0
-                )
-            ]
+                    default_value=0.0,
+                ),
+            ],
         )
 
         # Register schemas
@@ -469,7 +469,7 @@ class FeatureSchemas:
         self,
         schema_name: str,
         features: dict[str, Any],
-        version: str = "1.0"
+        version: str = "1.0",
     ) -> tuple[bool, list[str], dict[str, Any] | None]:
         """
         Validate features against a schema.
@@ -496,7 +496,7 @@ class FeatureSchemas:
     def _process_null_handling(
         self,
         features: dict[str, Any],
-        schema: FeatureSchema
+        schema: FeatureSchema,
     ) -> dict[str, Any]:
         """Process null values according to schema rules."""
         processed = {}

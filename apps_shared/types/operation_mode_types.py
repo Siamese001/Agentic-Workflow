@@ -62,39 +62,25 @@ _emit_applies_guardrail("p0", "operation_mode_types", "p0_governance")
 _emit_reads_policy_state("p0", "operation_mode_types", "policy_binding")
 _emit_snapshots_state("p0", "operation_mode_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -405,7 +391,7 @@ class ObservabilityOperationPerformer:
         self.logger.info(f"Registered operation: {operation_def.operation_id}")
 
     def perform_operation(
-        self, context: OperationExecutionContext, inputs: dict[str, Any]
+        self, context: OperationExecutionContext, inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Perform an observability operation.
 
@@ -473,7 +459,7 @@ class ObservabilityOperationPerformer:
         yield from handler(inputs, stream=True)
 
     def perform_operations_batch(
-        self, contexts: list[OperationExecutionContext], inputs_list: list[dict[str, Any]]
+        self, contexts: list[OperationExecutionContext], inputs_list: list[dict[str, Any]],
     ) -> list[OperationExecutionResult]:
         """Perform multiple operations.
 
@@ -545,7 +531,7 @@ class ObservabilityOperationPerformer:
         return self._active_executions.get(execution_id)
 
     def _execute_synchronous(
-        self, context: OperationExecutionContext, inputs: dict[str, Any]
+        self, context: OperationExecutionContext, inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation synchronously."""
         handler = self._operation_handlers[context.operation_id]
@@ -564,7 +550,7 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_asynchronous(
-        self, context: OperationExecutionContext, inputs: dict[str, Any]
+        self, context: OperationExecutionContext, inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation asynchronously."""
         handler = self._operation_handlers[context.operation_id]
@@ -578,7 +564,7 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_streaming(
-        self, context: OperationExecutionContext, inputs: dict[str, Any]
+        self, context: OperationExecutionContext, inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation in streaming mode."""
         return OperationExecutionResult(
@@ -590,7 +576,7 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_batch(
-        self, context: OperationExecutionContext, inputs: dict[str, Any]
+        self, context: OperationExecutionContext, inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation in batch mode."""
         batch_items = inputs.get("batch_items", [])
@@ -677,7 +663,7 @@ class ObservabilityOperationPerformer:
         }
 
     def _track_execution_complete(
-        self, context: OperationExecutionContext, result: OperationExecutionResult
+        self, context: OperationExecutionContext, result: OperationExecutionResult,
     ) -> None:
         """Track execution completion."""
         if context.execution_id in self._active_executions:
@@ -687,7 +673,7 @@ class ObservabilityOperationPerformer:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, operation_id: str, error: str, start_time: float
+        self, execution_id: str, operation_id: str, error: str, start_time: float,
     ) -> OperationExecutionResult:
         """Create error result."""
         return OperationExecutionResult(
@@ -795,7 +781,7 @@ class ObservabilityOperationPerformer:
 
 # guardian: allow-magic-config
 def create_observability_operation_performer(
-    default_timeout: float = 30.0, enable_tracing: bool = True, enable_metrics: bool = True, **kwargs: object
+    default_timeout: float = 30.0, enable_tracing: bool = True, enable_metrics: bool = True, **kwargs: object,
 ) -> ObservabilityOperationPerformer:
     """Create a configured observability operation performer."""
     config = OperationExecutionConfig(

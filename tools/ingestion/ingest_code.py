@@ -8,11 +8,12 @@ import argparse
 import ast
 import hashlib
 import logging
-from pathlib import Path
-from typing import Any
 
 # Import SovereignChromaClient for centralized ChromaDB access
 import sys
+from pathlib import Path
+from typing import Any
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
@@ -28,10 +29,10 @@ class CodeChunker:
     # Metadata schema for validation
     REQUIRED_METADATA_FIELDS = {
         "file_path", "module", "layer", "entity_type", "name",
-        "line_start", "line_end", "type"
+        "line_start", "line_end", "type",
     }
     OPTIONAL_METADATA_FIELDS = {
-        "args", "docstring", "methods", "adg_node_id", "embedding_model", "ingested_at", "parent_id"
+        "args", "docstring", "methods", "adg_node_id", "embedding_model", "ingested_at", "parent_id",
     }
 
     def __init__(self):
@@ -115,7 +116,7 @@ class CodeChunker:
                     if not node.args.args:
                         continue
                     chunk = self._create_function_chunk(
-                        node, content, file_path, module_name, layer, is_async=True
+                        node, content, file_path, module_name, layer, is_async=True,
                     )
 
                 if chunk:

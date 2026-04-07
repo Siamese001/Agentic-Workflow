@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -222,7 +221,7 @@ def _guarded_setattr(obj: object, name: str, value: object) -> None:
     mod = getattr(type(obj), "__module__", "") or ""
     if any(mod.startswith(p) for p in _CORE_PREFIXES):
         raise AttributeError(
-            f"REQ-417: runtime mutation of core layer object forbidden (type={type(obj).__name__}, attr={name}, module={mod})"
+            f"REQ-417: runtime mutation of core layer object forbidden (type={type(obj).__name__}, attr={name}, module={mod})",
         )
     object.__setattr__(obj, name, value)
 

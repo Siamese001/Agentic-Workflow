@@ -189,7 +189,7 @@ class EnterpriseLicOrchestrator:
                 "status": status,
                 "timestamp": datetime.now().isoformat(),
                 "details": details or {},
-            }
+            },
         )
 
 

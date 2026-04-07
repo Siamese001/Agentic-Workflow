@@ -8,7 +8,6 @@ import ast
 from pathlib import Path
 
 
-
 class AgentDispositionAnalyzer:
     """Analyzes agent files for functional DNA classification."""
 

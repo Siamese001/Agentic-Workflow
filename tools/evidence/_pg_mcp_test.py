@@ -32,8 +32,8 @@ req = json.dumps({
     "params": {
         "protocolVersion": "2024-11-05",
         "capabilities": {},
-        "clientInfo": {"name": "test", "version": "1.0"}
-    }
+        "clientInfo": {"name": "test", "version": "1.0"},
+    },
 }) + "\n"
 
 try:

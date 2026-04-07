@@ -83,7 +83,7 @@ def _enforcement_sources(conn: sqlite3.Connection) -> int:
     sources = {r[0] for r in c.fetchall()}
     # also validated_by_safety_plane sources (includes PolicyEnforcementPoint, authorize_and_execute)
     c.execute(
-        f"SELECT DISTINCT source_file FROM edges WHERE relation_type='validated_by_safety_plane' {NON_TEST}"
+        f"SELECT DISTINCT source_file FROM edges WHERE relation_type='validated_by_safety_plane' {NON_TEST}",
     )
     sources.update(r[0] for r in c.fetchall())
     return len(sources)
@@ -116,11 +116,11 @@ def run_gate() -> int:
     print(
         f"[Gate A] Policy Read→Enforcement: {status_a} "
         f"-- runtime guardrail={guardrail} / reads={reads} = {ratio_a:.3f} "
-        f"(need >={MIN_GUARDRAIL_TO_READS_RATIO:.2f})"
+        f"(need >={MIN_GUARDRAIL_TO_READS_RATIO:.2f})",
     )
     if not pass_a:
         failures.append(
-            f"Gate A: Policy Read→Enforcement -- ratio={ratio_a:.3f} (need >={MIN_GUARDRAIL_TO_READS_RATIO:.2f})"
+            f"Gate A: Policy Read→Enforcement -- ratio={ratio_a:.3f} (need >={MIN_GUARDRAIL_TO_READS_RATIO:.2f})",
         )
 
     # Gate B — Runtime Execution Policy Coverage
@@ -128,11 +128,11 @@ def run_gate() -> int:
     status_b = "PASS" if pass_b else "FAIL"
     print(
         f"[Gate B] Runtime Enforcement Coverage: {status_b} "
-        f"-- enforcement source files={enforcement_sources} (need >={MIN_ENFORCEMENT_SOURCES})"
+        f"-- enforcement source files={enforcement_sources} (need >={MIN_ENFORCEMENT_SOURCES})",
     )
     if not pass_b:
         failures.append(
-            f"Gate B: Runtime Enforcement Coverage -- sources={enforcement_sources} (need >={MIN_ENFORCEMENT_SOURCES})"
+            f"Gate B: Runtime Enforcement Coverage -- sources={enforcement_sources} (need >={MIN_ENFORCEMENT_SOURCES})",
         )
 
     # Gate C — Safety Plane Coverage
@@ -140,11 +140,11 @@ def run_gate() -> int:
     status_c = "PASS" if pass_c else "FAIL"
     print(
         f"[Gate C] Safety Plane Coverage: {status_c} "
-        f"-- runtime validated_by_safety_plane={safety_plane} (need >={MIN_SAFETY_PLANE})"
+        f"-- runtime validated_by_safety_plane={safety_plane} (need >={MIN_SAFETY_PLANE})",
     )
     if not pass_c:
         failures.append(
-            f"Gate C: Safety Plane Coverage -- validated_by_safety_plane={safety_plane} (need >={MIN_SAFETY_PLANE})"
+            f"Gate C: Safety Plane Coverage -- validated_by_safety_plane={safety_plane} (need >={MIN_SAFETY_PLANE})",
         )
 
     # Gate D — Fail-Closed Enforcement Presence
@@ -152,7 +152,7 @@ def run_gate() -> int:
     status_d = "PASS" if pass_d else "FAIL"
     print(
         f"[Gate D] Fail-Closed Enforcement Presence: {status_d} "
-        f"-- runtime guardrail+safety_plane={guardrail + safety_plane} (need >0)"
+        f"-- runtime guardrail+safety_plane={guardrail + safety_plane} (need >0)",
     )
     if not pass_d:
         failures.append("Gate D: Fail-Closed Enforcement Presence -- guardrail+safety_plane=0")
@@ -164,11 +164,11 @@ def run_gate() -> int:
     print(
         f"[Gate E] Decorative Governance: {status_e} "
         f"-- reads={reads} / (guardrail+safety_plane={guardrail + safety_plane}) "
-        f"= {ratio_e:.1f} (need <={MAX_DECORATION_RATIO:.0f})"
+        f"= {ratio_e:.1f} (need <={MAX_DECORATION_RATIO:.0f})",
     )
     if not pass_e:
         failures.append(
-            f"Gate E: Decorative Governance -- ratio={ratio_e:.1f} (need <={MAX_DECORATION_RATIO:.0f})"
+            f"Gate E: Decorative Governance -- ratio={ratio_e:.1f} (need <={MAX_DECORATION_RATIO:.0f})",
         )
 
     # Gate F — Human Review Enforcement
@@ -177,11 +177,11 @@ def run_gate() -> int:
     print(
         f"[Gate F] Human Review Enforcement: {status_f} "
         f"-- runtime requires_human_review={human_review} escalates_to_human={escalates} "
-        f"(need >={MIN_HUMAN_REVIEW} each)"
+        f"(need >={MIN_HUMAN_REVIEW} each)",
     )
     if not pass_f:
         failures.append(
-            f"Gate F: Human Review Enforcement -- requires_human_review={human_review} escalates_to_human={escalates}"
+            f"Gate F: Human Review Enforcement -- requires_human_review={human_review} escalates_to_human={escalates}",
         )
 
     print("=" * 60)

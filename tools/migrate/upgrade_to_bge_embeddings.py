@@ -41,7 +41,7 @@ def get_bge_embedding_function():
                     input_texts,
                     normalize_embeddings=True,  # Important for cosine similarity
                     batch_size=32,
-                    show_progress_bar=False
+                    show_progress_bar=False,
                 )
 
                 return embeddings.tolist()
@@ -118,12 +118,12 @@ def upgrade_collection_embeddings(collection_name):
         if ef_type == "bge":
             new_collection = client.create_collection(
                 name=collection_name,
-                metadata={"description": f"{collection_name} with BGE embeddings"}
+                metadata={"description": f"{collection_name} with BGE embeddings"},
             )
         else:
             new_collection = client.create_collection(
                 name=collection_name,
-                metadata={"description": f"{collection_name} with mock embeddings"}
+                metadata={"description": f"{collection_name} with mock embeddings"},
             )
 
         # Re-add data with new embeddings (handle batching)
@@ -145,7 +145,7 @@ def upgrade_collection_embeddings(collection_name):
                 ids=batch_ids,
                 documents=batch_docs,
                 metadatas=batch_metas,
-                embeddings=batch_embeddings
+                embeddings=batch_embeddings,
             )
 
             logger.info(f"  Ingested batch {i//batch_size + 1}/{(total_items-1)//batch_size + 1} ({end_idx-i} items)")

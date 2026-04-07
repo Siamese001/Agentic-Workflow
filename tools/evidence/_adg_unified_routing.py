@@ -112,7 +112,7 @@ for sym in THRESHOLD_SYMS:
 print("\n=== Q5: ALL IMPORTERS OF heal_policy_types ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%heal_policy_types%' "
-    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'"
+    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'",
 )
 hpt_ids = [r[0] for r in cur.fetchall()]
 if hpt_ids:
@@ -131,7 +131,7 @@ if hpt_ids:
 print("\n=== Q6: ALL IMPORTERS OF _ssot_routing ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%_ssot_routing%' "
-    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'"
+    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'",
 )
 sr_ids = [r[0] for r in cur.fetchall()]
 if sr_ids:
@@ -171,7 +171,7 @@ cur.execute(
     "SELECT e.symbol, n_src.resolved_path FROM edges e "
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "WHERE e.relation_type='reads_env' "
-    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%test%'"
+    "AND n_src.resolved_path NOT LIKE '%archive%' AND n_src.resolved_path NOT LIKE '%test%'",
 )
 envs = [r for r in cur.fetchall() if any(f in (r["resolved_path"] or "") for f in ROUTING_FRAGMENTS)]
 for r in envs:
@@ -182,7 +182,7 @@ print("\n=== Q9: ConfidenceScore PRODUCTION IMPORTERS ===")
 cur.execute(
     "SELECT id FROM nodes WHERE adg_name LIKE '%ConfidenceScore%' "
     "AND entity_type='symbol' AND resolved_path NOT LIKE '%archive%' "
-    "AND resolved_path LIKE '%_ssot_types%'"
+    "AND resolved_path LIKE '%_ssot_types%'",
 )
 cs_ids = [r[0] for r in cur.fetchall()]
 if cs_ids:
@@ -204,7 +204,7 @@ print("\n=== Q10: HealingInput PRODUCTION IMPORTERS ===")
 cur.execute(
     "SELECT id FROM nodes WHERE adg_name LIKE '%HealingInput%' "
     "AND entity_type='symbol' AND resolved_path NOT LIKE '%archive%' "
-    "AND resolved_path NOT LIKE '%test%'"
+    "AND resolved_path NOT LIKE '%test%'",
 )
 hi_ids = [r[0] for r in cur.fetchall()]
 if hi_ids:
@@ -225,7 +225,7 @@ if hi_ids:
 print("\n=== Q11: ANTIPATTERN EDGES TOTAL BREAKDOWN ===")
 cur.execute(
     "SELECT e.symbol, COUNT(*) cnt FROM edges e "
-    "WHERE e.edge_kind='antipattern' GROUP BY e.symbol ORDER BY cnt DESC LIMIT 30"
+    "WHERE e.edge_kind='antipattern' GROUP BY e.symbol ORDER BY cnt DESC LIMIT 30",
 )
 for r in cur.fetchall():
     print("  %-50s: %d" % (str(r[0] or "(null)")[:50], r[1]))
@@ -236,7 +236,7 @@ cur.execute(
     "SELECT e.symbol, n_src.resolved_path FROM edges e "
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "WHERE e.edge_kind='dead_import' "
-    "AND n_src.resolved_path NOT LIKE '%archive%'"
+    "AND n_src.resolved_path NOT LIKE '%archive%'",
 )
 dead = [r for r in cur.fetchall() if any(f in (r["resolved_path"] or "") for f in ROUTING_FRAGMENTS)]
 print("  count: %d" % len(dead))
@@ -247,7 +247,7 @@ for r in dead:
 print("\n=== Q13: healing_tier_dispatcher IMPORTS ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%healing_tier_dispatcher%' "
-    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'"
+    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'",
 )
 disp_ids = [r["id"] for r in cur.fetchall()]
 for nid in disp_ids:
@@ -266,7 +266,7 @@ for nid in disp_ids:
 print("\n=== Q14: SovereignBaseAgent ROUTING IMPORTS ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%SovereignBaseAgent%' "
-    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'"
+    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'",
 )
 sba_ids = [r["id"] for r in cur.fetchall()]
 for nid in sba_ids:
@@ -287,7 +287,7 @@ for nid in sba_ids:
 print("\n=== Q15: decorators_util ROUTING IMPORTS ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%decorators_util%' "
-    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'"
+    "AND entity_type='module' AND resolved_path NOT LIKE '%archive%'",
 )
 dec_ids = [r["id"] for r in cur.fetchall()]
 for nid in dec_ids:

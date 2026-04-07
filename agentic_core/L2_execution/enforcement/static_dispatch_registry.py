@@ -127,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -258,7 +257,7 @@ class StaticDispatchRegistry:
         if key not in self._registry:
             raise UnregisteredDispatchError(
                 f"[StaticDispatchRegistry] No module registered for key '{key}'. "
-                f"Registered keys: {sorted(self._registry)}"
+                f"Registered keys: {sorted(self._registry)}",
             )
         if key not in self._resolved:
             module_path = self._registry[key]
@@ -276,7 +275,7 @@ class StaticDispatchRegistry:
         mod = self.dispatch(key)
         if not hasattr(mod, attr):
             raise AttributeError(
-                f"[StaticDispatchRegistry] Module '{self._registry[key]}' has no attribute '{attr}'."
+                f"[StaticDispatchRegistry] Module '{self._registry[key]}' has no attribute '{attr}'.",
             )
         return getattr(mod, attr)
 
@@ -326,6 +325,6 @@ def get_guardian_registry() -> StaticDispatchRegistry:
                 "guardian.all": "agentic_core.L0_routing.scripts.run_all_guardians",
                 "seam.canonical_truth": "agentic_core.L0_routing.seams.canonical_truth_seam",
                 "meta.apply_ops": "agentic_core.L0_routing.meta_control.meta_apply_ops",
-            }
+            },
         )
     return _GUARDIAN_REGISTRY

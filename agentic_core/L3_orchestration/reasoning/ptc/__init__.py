@@ -27,6 +27,14 @@ Usage:
 
 from __future__ import annotations
 
+from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
+    ToolCall as L2ToolCall,
+)
+from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
+    ToolContractViolation,
+    ToolResult,
+)
+
 # L2 Execution Contracts
 from agentic_core.L2_execution.utils.ptc_contract import (
     PTC_STDOUT_BYTE_CAP,
@@ -35,13 +43,6 @@ from agentic_core.L2_execution.utils.ptc_contract import (
     PTCContractViolation,
     PTCUnsignedEnvelopeError,
     redact_output,
-)
-from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
-    ToolCall as L2ToolCall,
-)
-from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
-    ToolContractViolation,
-    ToolResult,
 )
 
 # Built-in Tools

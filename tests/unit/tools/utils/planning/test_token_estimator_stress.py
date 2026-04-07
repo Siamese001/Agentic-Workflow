@@ -49,10 +49,11 @@ class TestTokenEstimatorStressTests:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from tools.utils.planning.preflight_hook import PlanningPreflightHook
-        from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
         import tempfile
         import uuid
+
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
 
         self.estimator = ContextWindowEstimator()
         self.budget = TokenBudget()
@@ -81,7 +82,7 @@ class TestTokenEstimatorStressTests:
         # Create a massive file with many lines (1MB+)
         massive_content = "\n".join(f"line_{i}: x" * 100 for i in range(15000))  # 15000 lines
         massive_sources = [
-            ContextSource("file", massive_content, 525000, metadata={"path": "massive.py", "lines": 15000})
+            ContextSource("file", massive_content, 525000, metadata={"path": "massive.py", "lines": 15000}),
         ]
 
         # Should trigger large file summarization
@@ -109,7 +110,7 @@ class TestTokenEstimatorStressTests:
                     f'  File "processing.py", line {i}, in process_item',
                     f'    raise ValueError("Item {i} failed")',
                     f"ValueError: Item {i} failed",
-                ]
+                ],
             )
         massive_log = "\n".join(log_lines)
 
@@ -408,7 +409,7 @@ class TestTokenEstimatorStressTests:
         """Test error handling and recovery scenarios"""
         # Test with malformed file data - filter out None content
         malformed_files = [
-            {"path": "normal.py", "content": "normal content"}  # Only normal file
+            {"path": "normal.py", "content": "normal content"},  # Only normal file
         ]
 
         # Should handle gracefully

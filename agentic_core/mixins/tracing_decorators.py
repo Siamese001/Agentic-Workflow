@@ -139,7 +139,7 @@ def trace_cognitive(
             attributes["span_kind"] = "cognitive"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L1_COGNITION")), func.__name__
+                operation_name, str(getattr(LayerSegment, layer, "L1_COGNITION")), func.__name__,
             )
 
             try:
@@ -195,7 +195,7 @@ def trace_action(
             attributes["span_kind"] = "action"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__
+                operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__,
             )
 
             try:
@@ -251,7 +251,7 @@ def trace_tool(
             attributes["span_kind"] = "tool"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__
+                operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__,
             )
 
             try:
@@ -314,7 +314,7 @@ def trace_orchestrator(
             attributes["span_kind"] = "orchestrator"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L3_ORCHESTRATION")), func.__name__
+                operation_name, str(getattr(LayerSegment, layer, "L3_ORCHESTRATION")), func.__name__,
             )
 
             try:
@@ -377,7 +377,7 @@ def trace_router(
             attributes["span_kind"] = "router"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L0_ROUTING")), func.__name__
+                operation_name, str(getattr(LayerSegment, layer, "L0_ROUTING")), func.__name__,
             )
 
             try:

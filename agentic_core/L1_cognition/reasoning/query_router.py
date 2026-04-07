@@ -46,77 +46,77 @@ class QueryRouter:
             # Code knowledge collections
             QueryType.CODE_KNOWLEDGE: {
                 "primary": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
-                "secondary": []
+                "secondary": [],
             },
 
             # Structural analysis collections
             QueryType.STRUCTURAL_ANALYSIS: {
                 "primary": ["repo_adg_graph", "repo_symbols"],
-                "secondary": ["repo_code_chunks", "repo_tests_guardrails"]
+                "secondary": ["repo_code_chunks", "repo_tests_guardrails"],
             },
 
             # Execution intelligence collections
             QueryType.EXECUTION_INTELLIGENCE: {
                 "primary": ["repo_runtime_evidence"],
-                "secondary": ["repo_adg_graph", "repo_symbols"]
+                "secondary": ["repo_adg_graph", "repo_symbols"],
             },
 
             # Historical analysis collections
             QueryType.HISTORICAL_ANALYSIS: {
                 "primary": ["repo_git_history", "repo_incidents_rca"],
-                "secondary": ["repo_runtime_evidence"]
+                "secondary": ["repo_runtime_evidence"],
             },
 
             # Blast radius analysis collections
             QueryType.BLAST_RADIUS: {
                 "primary": ["repo_adg_graph", "repo_symbols"],
-                "secondary": ["repo_code_chunks", "repo_tests_guardrails", "repo_runtime_evidence"]
+                "secondary": ["repo_code_chunks", "repo_tests_guardrails", "repo_runtime_evidence"],
             },
 
             # Failure analysis collections
             QueryType.FAILURE_ANALYSIS: {
                 "primary": ["repo_incidents_rca", "repo_runtime_evidence"],
-                "secondary": ["repo_adg_graph", "repo_tests_guardrails"]
+                "secondary": ["repo_adg_graph", "repo_tests_guardrails"],
             },
 
             # General query collections
             QueryType.GENERAL_QUERY: {
                 "primary": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
-                "secondary": ["repo_adg_graph", "repo_tests_guardrails"]
-            }
+                "secondary": ["repo_adg_graph", "repo_tests_guardrails"],
+            },
         }
 
         # Keyword patterns for query type detection
         self.query_patterns = {
             QueryType.CODE_KNOWLEDGE: [
                 "what does", "how does", "explain", "describe", "what is", "implementation",
-                "function", "class", "method", "module", "code", "algorithm"
+                "function", "class", "method", "module", "code", "algorithm",
             ],
 
             QueryType.STRUCTURAL_ANALYSIS: [
                 "dependencies", "structure", "architecture", "design", "pattern", "relationship",
-                "graph", "coupling", "cohesion", "hierarchy", "components", "layers"
+                "graph", "coupling", "cohesion", "hierarchy", "components", "layers",
             ],
 
             QueryType.EXECUTION_INTELLIGENCE: [
                 "execution", "runtime", "performance", "trace", "execute", "run", "process",
-                "workflow", "pipeline", "operation", "activity", "behavior"
+                "workflow", "pipeline", "operation", "activity", "behavior",
             ],
 
             QueryType.HISTORICAL_ANALYSIS: [
                 "history", "when", "commit", "change", "evolution", "timeline", "previously",
-                "past", "version", "git", "incident", "rca", "root cause"
+                "past", "version", "git", "incident", "rca", "root cause",
             ],
 
             QueryType.BLAST_RADIUS: [
                 "impact", "affect", "blast radius", "depend", "require", "consequence",
-                "ripple", "cascade", "side effect", "influence", "scope", "reach"
+                "ripple", "cascade", "side effect", "influence", "scope", "reach",
             ],
 
             QueryType.FAILURE_ANALYSIS: [
                 "failure", "error", "bug", "issue", "problem", "crash", "exception",
-                "incident", "fault", "break", "fail", "malfunction", "defect"
-            ]
+                "incident", "fault", "break", "fail", "malfunction", "defect",
+            ],
         }
 
         # Layer-specific keywords
@@ -127,7 +127,7 @@ class QueryRouter:
             "L3": ["orchestration", "orchestrator", "coordination", "workflow"],
             "L4": ["state", "storage", "database", "memory", "persist"],
             "L5": ["safety", "guardrail", "validation", "security", "policy"],
-            "L6": ["observability", "monitoring", "metrics", "logging", "trace"]
+            "L6": ["observability", "monitoring", "metrics", "logging", "trace"],
         }
 
         # Component-specific keywords
@@ -137,7 +137,7 @@ class QueryRouter:
             "Scanner": ["scanner", "scan", "analyze", "inspect"],
             "Router": ["router", "routing", "dispatch", "route"],
             "ChromaDB": ["chroma", "vector", "embedding", "semantic"],
-            "Agent": ["agent", "ai", "llm", "model"]
+            "Agent": ["agent", "ai", "llm", "model"],
         }
 
     def route_query(self, query: str, available_collections: list[str]) -> RoutingDecision:
@@ -182,7 +182,7 @@ class QueryRouter:
             primary_collections=primary,
             secondary_collections=secondary,
             confidence=confidence,
-            reasoning=reasoning
+            reasoning=reasoning,
         )
 
     def _detect_query_type(self, query: str) -> QueryType:
@@ -274,7 +274,7 @@ class QueryRouter:
             },
             "pattern_count": sum(len(patterns) for patterns in self.query_patterns.values()),
             "layer_count": len(self.layer_keywords),
-            "component_count": len(self.component_keywords)
+            "component_count": len(self.component_keywords),
         }
 
 
@@ -289,13 +289,13 @@ def main():
         "Show me the blast radius for ADG scanner changes",
         "Find failures related to memory leaks in L1 cognition",
         "How does the routing between L0 and L2 work?",
-        "What were the recent commits affecting safety layer?"
+        "What were the recent commits affecting safety layer?",
     ]
 
     available_collections = [
         "repo_code_chunks", "repo_symbols", "repo_arch_docs",
         "repo_adg_graph", "repo_tests_guardrails",
-        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca"
+        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca",
     ]
 
     print("Query Router Test:")

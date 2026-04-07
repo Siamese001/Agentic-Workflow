@@ -202,7 +202,7 @@ class ContextRetrievalRequest:
             raise ValueError("ContextRetrievalRequest: query_hash must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"ContextRetrievalRequest: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"ContextRetrievalRequest: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
         if not self.read_only:
             raise ValueError("ContextRetrievalRequest: read_only must be True (L0→L4 is advisory-only)")
@@ -241,7 +241,7 @@ class BoundarySchemaDescriptor:
             raise ValueError("BoundarySchemaDescriptor: target_layer must be non-empty")
         if not isinstance(self.validation_status, SchemaValidationStatus):
             raise TypeError(
-                f"BoundarySchemaDescriptor: validation_status must be SchemaValidationStatus, got {type(self.validation_status).__name__}"
+                f"BoundarySchemaDescriptor: validation_status must be SchemaValidationStatus, got {type(self.validation_status).__name__}",
             )
 
 
@@ -268,7 +268,7 @@ class InvariantViolation:
             raise ValueError("InvariantViolation: invariant_id must be non-empty")
         if not isinstance(self.severity, InvariantSeverity):
             raise TypeError(
-                f"InvariantViolation: severity must be InvariantSeverity, got {type(self.severity).__name__}"
+                f"InvariantViolation: severity must be InvariantSeverity, got {type(self.severity).__name__}",
             )
         if not isinstance(self.evidence_paths, tuple):
             raise TypeError("InvariantViolation: evidence_paths must be a tuple")
@@ -315,7 +315,7 @@ class MetaInvariantReport:
             raise ValueError("MetaInvariantReport: run_id must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"MetaInvariantReport: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"MetaInvariantReport: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
         if not isinstance(self.checks, tuple):
             raise TypeError("MetaInvariantReport: checks must be a tuple")

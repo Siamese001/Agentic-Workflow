@@ -1,10 +1,10 @@
 """
 Authority Limit Validator - Compares request to delegated approval authority.
 """
-from typing import Optional
 from dataclasses import dataclass, field
+from typing import Optional
 
-from ..types import UnderwritingRequest, RiskFeatures
+from ..types import RiskFeatures, UnderwritingRequest
 
 
 @dataclass
@@ -45,7 +45,7 @@ class AuthorityLimitValidator:
     def validate(
         self,
         request: UnderwritingRequest,
-        features: RiskFeatures
+        features: RiskFeatures,
     ) -> AuthorityResult:
         """
         Validate against authority limits.
@@ -80,7 +80,7 @@ class AuthorityLimitValidator:
         if features.policy.policy_exception_count > 0:
             adjusted_limit *= 0.5  # 50% reduction with exceptions
             result.findings.append(
-                f"Authority reduced 50% due to {features.policy.policy_exception_count} policy exception(s)"
+                f"Authority reduced 50% due to {features.policy.policy_exception_count} policy exception(s)",
             )
 
         # Check if within authority
@@ -90,14 +90,14 @@ class AuthorityLimitValidator:
             result.human_review_required = True
             result.findings.append(
                 f"Requested amount ${request.requested_amount:,.0f} exceeds "
-                f"adjusted authority of ${adjusted_limit:,.0f}"
+                f"adjusted authority of ${adjusted_limit:,.0f}",
             )
 
         # Recommend approver
         result.recommended_approver = self._recommend_approver(
             request.requested_amount,
             risk_grade,
-            features.policy.policy_exception_count
+            features.policy.policy_exception_count,
         )
 
         return result
@@ -106,7 +106,7 @@ class AuthorityLimitValidator:
         self,
         amount: float,
         risk_grade: str,
-        exception_count: int
+        exception_count: int,
     ) -> Optional[str]:
         """Recommend approval authority level."""
         amount_millions = amount / 1_000_000

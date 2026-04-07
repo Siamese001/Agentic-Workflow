@@ -2,7 +2,6 @@
 import pathlib
 import re
 
-
 roots = [AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR, TOOLS_DIR]
 for root in roots:
     for fp in pathlib.Path(root).rglob('*.py'):

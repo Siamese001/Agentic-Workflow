@@ -14,7 +14,7 @@ ENFORCEMENT_RULES = {
         'architectural_review': 'SWE_ARCHITECTURAL_REVIEW',
         'anti_pattern_detection': 'SWE_ANTIPATTERN_DETECTION',
         'system_restructuring': 'SWE_SYSTEM_RESTRUCTURING',
-        'graph_traversal_optimization': 'SWE_GRAPH_TRAVERSAL_OPTIMIZATION'
+        'graph_traversal_optimization': 'SWE_GRAPH_TRAVERSAL_OPTIMIZATION',
     },
 
     # General SWE tasks - ENFORCED when relevant
@@ -25,7 +25,7 @@ ENFORCEMENT_RULES = {
         'refactoring': 'SWE_SYSTEM_RESTRUCTURING',
         'planning': 'SWE_ARCHITECTURAL_REVIEW',
         'testing': 'SWE_VIOLATION_REMEDIATION',
-        'integration': 'SWE_DEPENDENCY_GRAPH_ANALYSIS'
+        'integration': 'SWE_DEPENDENCY_GRAPH_ANALYSIS',
     },
 
     # Complexity-based enforcement - MANDATORY
@@ -39,15 +39,15 @@ ENFORCEMENT_RULES = {
             'refactoring': 'SWE_SYSTEM_RESTRUCTURING',
             'planning': 'SWE_ARCHITECTURAL_REVIEW',
             'testing': 'SWE_VIOLATION_REMEDIATION',
-            'integration': 'SWE_DEPENDENCY_GRAPH_ANALYSIS'
-        }
+            'integration': 'SWE_DEPENDENCY_GRAPH_ANALYSIS',
+        },
     },
 
     # File-based enforcement - MANDATORY
     'file_enforcement': {
         'multi_file_threshold': 5,  # Files > threshold MUST use ADG templates
-        'template': 'SWE_DEPENDENCY_GRAPH_ANALYSIS'
-    }
+        'template': 'SWE_DEPENDENCY_GRAPH_ANALYSIS',
+    },
 }
 
 # Enforcement Configuration
@@ -58,7 +58,7 @@ ENFORCEMENT_CONFIG = {
     'logging_level': 'INFO',
     'audit_trail': True,  # Track all enforcement decisions
     'auto_trigger': True,  # Auto-trigger for medium+ complexity
-    'real_time_adg_data': True  # Use real ADG Redis data when available
+    'real_time_adg_data': True,  # Use real ADG Redis data when available
 }
 
 # ADG Context Data (fallback when Redis not available)
@@ -94,24 +94,24 @@ ADG_FALLBACK_CONTEXT = {
     'current_traversal_time': '2.3s average',
     'graph_size': '681,161 edges',
     'traversal_frequency': '100+ queries/hour',
-    'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal'
+    'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal',
 }
 
 # Enforcement Validation Rules
 VALIDATION_RULES = {
     'must_contain_adg_context': [
-        'node_count', 'edge_count', 'violation_count', 'layer_info'
+        'node_count', 'edge_count', 'violation_count', 'layer_info',
     ],
     'must_contain_sequential_structure': [
         '### Thought 1:', '### Thought 2:', '### Thought 3:',
-        '### Thought 4:', '### Thought 5:', '### Thought 6:'
+        '### Thought 4:', '### Thought 5:', '### Thought 6:',
     ],
     'must_contain_real_data': [
-        '10,432', '681,161', '5,301'
+        '10,432', '681,161', '5,301',
     ],
     'forbidden_patterns': [
-        'fallback template', 'basic template', 'simple analysis'
-    ]
+        'fallback template', 'basic template', 'simple analysis',
+    ],
 }
 
 # Enforcement Metrics
@@ -122,7 +122,7 @@ ENFORCEMENT_METRICS = {
     'fallback_usage': 0,
     'template_types_used': {},
     'complexity_distribution': {},
-    'file_size_distribution': {}
+    'file_size_distribution': {},
 }
 
 def get_enforcement_template(step_type: str, step_config: dict = None) -> str:
@@ -188,7 +188,7 @@ def validate_enforcement_compliance(template_content: str, expected_template: st
         'compliant': True,
         'violations': [],
         'score': 0,
-        'total_checks': 0
+        'total_checks': 0,
     }
 
     # Template-specific validation rules
@@ -196,50 +196,50 @@ def validate_enforcement_compliance(template_content: str, expected_template: st
         'SWE_ADG_ANALYSIS': {
             'required_context': ['node_count', 'edge_count', 'layer_info', 'violation_count'],
             'required_data': ['10,432', '681,161', '5,301'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_VIOLATION_REMEDIATION': {
             'required_context': ['violation_count', 'high_severity_count', 'medium_severity_count', 'low_severity_count'],
             'required_data': ['5,301', '1,200', '2,800', '1,301'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_ARCHITECTURAL_REVIEW': {
             'required_context': ['component_count', 'patterns_used', 'integration_points', 'quality_attributes'],
             'required_data': ['156', 'Layered Architecture', 'Dependency Injection', 'Event-Driven'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_DEPENDENCY_GRAPH_ANALYSIS': {
             'required_context': ['dependency_count', 'circular_deps', 'longest_chain', 'hub_nodes'],
             'required_data': ['681,161', '0', '15', '42'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_LAYER_BOUNDARY_AUDIT': {
             'required_context': ['layer_count', 'layer_distribution', 'boundary_violations', 'gravity_violations'],
             'required_data': ['7', '69.2%', '41.8%', '17'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_ANTIPATTERN_DETECTION': {
             'required_context': ['antipattern_count', 'high_impact_count', 'common_categories', 'affected_files'],
             'required_data': ['5,301', '1,200', 'Exception Handling', '234'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_SYSTEM_RESTRUCTURING': {
             'required_context': ['system_size', 'complexity_metrics', 'identified_issues', 'restructuring_goals'],
             'required_data': ['Large-scale enterprise', 'Cyclomatic Complexity', 'layer violations', 'technical debt'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
         },
         'SWE_GRAPH_TRAVERSAL_OPTIMIZATION': {
             'required_context': ['current_traversal_time', 'graph_size', 'traversal_frequency', 'bottlenecks'],
             'required_data': ['2.3s', '681,161 edges', '100+ queries', 'Layer boundary'],
-            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
-        }
+            'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
+        },
     }
 
     # Get validation rules for this template
     rules = template_validation_rules.get(expected_template, {
         'required_context': [],
         'required_data': [],
-        'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:']
+        'required_structure': ['### Thought 1:', '### Thought 2:', '### Thought 3:', '### Thought 4:', '### Thought 5:', '### Thought 6:'],
     })
 
     # Check sequential structure (required for all templates)
@@ -293,5 +293,5 @@ __all__ = [
     'ENFORCEMENT_METRICS',
     'get_enforcement_template',
     'is_enforcement_required',
-    'validate_enforcement_compliance'
+    'validate_enforcement_compliance',
 ]

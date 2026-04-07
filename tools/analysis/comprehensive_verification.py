@@ -129,7 +129,7 @@ def comprehensive_verification():
         'syntactically_correct': syntactically_correct,
         'broken_files': broken_files,
         'placeholder_files': placeholder_files,
-        'waves_completed': len(waves)
+        'waves_completed': len(waves),
     }
 
 if __name__ == '__main__':

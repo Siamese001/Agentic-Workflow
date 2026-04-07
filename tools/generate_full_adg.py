@@ -16,6 +16,5 @@ if str(ROOT) not in sys.path:
 
 from tools.generate.generate_full_adg import main
 
-
 if __name__ == "__main__":
     main()

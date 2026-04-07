@@ -5,8 +5,6 @@ Tests for InvalidStubDetector
 import ast
 from pathlib import Path
 
-import pytest
-
 from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory
 from agentic_core.L5_safety.validators.invalid_stub_validator import InvalidStubDetector
 

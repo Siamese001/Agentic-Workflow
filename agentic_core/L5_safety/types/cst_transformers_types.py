@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -279,7 +278,7 @@ class SurgicalImportRemover(cst.CSTTransformer):
         return new_node
 
     def leave_SimpleStatementLine(
-        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine
+        self, original_node: cst.SimpleStatementLine, updated_node: cst.SimpleStatementLine,
     ) -> cst.SimpleStatementLine:
         """
         Handle SimpleStatementLine to remove empty import statements.
@@ -344,12 +343,12 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalDocstringInserter.leave_ClassDef"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalDocstringInserter.leave_ClassDef",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:SurgicalDocstringInserter.leave_ClassDef".encode()
+            f"{_trace_id}:SurgicalDocstringInserter.leave_ClassDef".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -367,7 +366,7 @@ class SurgicalDocstringInserter(cst.CSTTransformer):
         return updated_node.with_changes(body=new_body)
 
     def leave_FunctionDef(
-        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef,
     ) -> cst.FunctionDef:
         """Insert docstring into function if targeted by name."""
         func_name = updated_node.name.value
@@ -406,19 +405,19 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
         self.modifications_made = 0
 
     def leave_ExceptHandler(
-        self, original_node: cst.ExceptHandler, updated_node: cst.ExceptHandler
+        self, original_node: cst.ExceptHandler, updated_node: cst.ExceptHandler,
     ) -> cst.ExceptHandler:
         """Fix bare except clauses."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalBareExceptFixer.leave_ExceptHandler"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalBareExceptFixer.leave_ExceptHandler",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:SurgicalBareExceptFixer.leave_ExceptHandler".encode()
+            f"{_trace_id}:SurgicalBareExceptFixer.leave_ExceptHandler".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -427,7 +426,7 @@ class SurgicalBareExceptFixer(cst.CSTTransformer):
         if self.fix_all or (self.target_lines and self._should_fix(original_node)):
             exception_type = cst.Name(value="Exception")
             new_node = updated_node.with_changes(
-                type=exception_type, whitespace_after_except=cst.SimpleWhitespace(" ")
+                type=exception_type, whitespace_after_except=cst.SimpleWhitespace(" "),
             )
             self.modifications_made += 1
             return new_node
@@ -464,12 +463,12 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalFutureImportInserter.visit_ImportFrom"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalFutureImportInserter.visit_ImportFrom",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:SurgicalFutureImportInserter.visit_ImportFrom".encode()
+            f"{_trace_id}:SurgicalFutureImportInserter.visit_ImportFrom".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -498,7 +497,7 @@ class SurgicalFutureImportInserter(cst.CSTTransformer):
         future_import = cst.SimpleStatementLine(
             body=[cst.ImportFrom(module=cst.Name(value="__future__"), names=import_names)],
             trailing_whitespace=cst.TrailingWhitespace(
-                whitespace=cst.SimpleWhitespace(value=""), comment=None, newline=cst.Newline(value=None)
+                whitespace=cst.SimpleWhitespace(value=""), comment=None, newline=cst.Newline(value=None),
             ),
         )
         new_body = body[:insert_idx] + [future_import] + body[insert_idx:]
@@ -518,19 +517,19 @@ class SurgicalTrailingWhitespaceFixer(cst.CSTTransformer):
         self.modifications_made = 0
 
     def leave_TrailingWhitespace(
-        self, original_node: cst.TrailingWhitespace, updated_node: cst.TrailingWhitespace
+        self, original_node: cst.TrailingWhitespace, updated_node: cst.TrailingWhitespace,
     ) -> cst.TrailingWhitespace:
         """Remove trailing whitespace before newlines."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace".encode()
+            f"{_trace_id}:SurgicalTrailingWhitespaceFixer.leave_TrailingWhitespace".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -573,12 +572,12 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalBlankLineNormalizer.leave_Module"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalBlankLineNormalizer.leave_Module",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:SurgicalBlankLineNormalizer.leave_Module".encode()
+            f"{_trace_id}:SurgicalBlankLineNormalizer.leave_Module".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -644,19 +643,19 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
         self.modifications_made = 0
 
     def leave_FunctionDef(
-        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef,
     ) -> cst.FunctionDef:
         """Add type hints to function if targeted."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalTypeHintInserter.leave_FunctionDef"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalTypeHintInserter.leave_FunctionDef",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:SurgicalTypeHintInserter.leave_FunctionDef".encode()
+            f"{_trace_id}:SurgicalTypeHintInserter.leave_FunctionDef".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -769,7 +768,7 @@ def create_import_remover(violations) -> SurgicalImportRemover | None:
                 if violation.message and "Unused import:" in violation.message:
                     module_name = violation.message.split("Unused import:")[-1].strip()
                 target = ImportTarget(
-                    line_number=violation.target_coordinate.line, module_name=module_name, name=module_name
+                    line_number=violation.target_coordinate.line, module_name=module_name, name=module_name,
                 )
                 import_targets.append(target)
     if import_targets:
@@ -808,7 +807,7 @@ def create_docstring_inserter(violations) -> SurgicalDocstringInserter | None:
                         if match:
                             name = match.group(1)
                 target = DocstringTarget(
-                    line_number=violation.target_coordinate.line, name=name, node_type=node_type
+                    line_number=violation.target_coordinate.line, name=name, node_type=node_type,
                 )
                 docstring_targets.append(target)
     if docstring_targets:
@@ -838,7 +837,7 @@ def create_bare_except_fixer(violations) -> SurgicalBareExceptFixer | None:
 
 
 def create_future_import_inserter(
-    violations, future_imports: list[str] | None = None
+    violations, future_imports: list[str] | None = None,
 ) -> SurgicalFutureImportInserter | None:
     """
     Factory function to create future import inserter from violations.

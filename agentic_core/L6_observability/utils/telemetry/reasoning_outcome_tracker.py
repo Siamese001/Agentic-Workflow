@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -116,7 +116,7 @@ class ReasoningOutcomeTracker:
             f.write(json.dumps(asdict(outcome), default=str) + "\n")
 
     def get_aggregates(
-        self, window_seconds: float = 300.0, min_samples: int = 5
+        self, window_seconds: float = 300.0, min_samples: int = 5,
     ) -> list[OutcomeAggregate]:
         """
         Get aggregated outcomes for L0 calibration feedback.
@@ -163,7 +163,7 @@ class ReasoningOutcomeTracker:
                     error_rate=len(errors) / len(outcomes),
                     p95_latency_ms=p95_latency,
                     timestamp=time.time(),
-                )
+                ),
             )
 
         self._last_aggregate_time = time.time()

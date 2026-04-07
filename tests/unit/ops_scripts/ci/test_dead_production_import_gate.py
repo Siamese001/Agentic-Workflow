@@ -48,13 +48,13 @@ def temp_sqlite(tmp_path: Path) -> Path:
         "(2, 'agentic_core/L4_state/utils/memory/semantic_cache_manager.py', 'L4', 'module'),"
         "(3, 'agentic_core/L4_state/cache/__init__.py', 'L4', 'module'),"
         "(4, 'tests/test_cache.py', 'L_TEST', 'module'),"
-        "(5, 'ops_scripts/ci/test_gate.py', 'L_OPS', 'module')"
+        "(5, 'ops_scripts/ci/test_gate.py', 'L_OPS', 'module')",
     )
 
     # Insert test edges (semantic_cache_manager imports gptcache_client)
     cur.execute(
         "INSERT INTO edges (src_id, dst_id, relation_type) VALUES "
-        "(2, 1, 'imports')"
+        "(2, 1, 'imports')",
     )
 
     conn.commit()
@@ -100,7 +100,7 @@ def test_gate_fails_with_zero_fan_in(tmp_path: Path) -> None:
     cur.execute(
         "INSERT INTO nodes (id, resolved_path, layer, entity_type) VALUES "
         "(1, 'agentic_core/L4_state/cache/gptcache_client.py', 'L4', 'module'),"
-        "(2, 'tests/test_cache.py', 'L_TEST', 'module')"
+        "(2, 'tests/test_cache.py', 'L_TEST', 'module')",
     )
 
     # No edges from production to gptcache_client
@@ -116,7 +116,7 @@ def test_gate_fails_with_zero_fan_in(tmp_path: Path) -> None:
 def test_gate_handles_missing_file(tmp_path: Path) -> None:
     """Test that gate fails gracefully when SQLite file doesn't exist."""
     missing_path = tmp_path / "nonexistent.sqlite"
-    
+
     with patch.object(sys, 'exit') as mock_exit:
         run_gate(missing_path)
         # Should exit with code 2 (error)
@@ -153,7 +153,7 @@ def test_gate_filters_by_allowlist(tmp_path: Path) -> None:
     cur.execute(
         "INSERT INTO nodes (id, resolved_path, layer, entity_type) VALUES "
         "(1, 'agentic_core/L4_state/cache/gptcache_client.py', 'L4', 'module'),"
-        "(2, 'apps_shared/utils/test_util.py', 'L_APP', 'module')"
+        "(2, 'apps_shared/utils/test_util.py', 'L_APP', 'module')",
     )
 
     conn.commit()
@@ -198,7 +198,7 @@ def test_gate_ignores_test_ops_fan_in(tmp_path: Path) -> None:
         "INSERT INTO nodes (id, resolved_path, layer, entity_type) VALUES "
         "(1, 'agentic_core/L4_state/cache/gptcache_client.py', 'L4', 'module'),"
         "(2, 'tests/test_cache.py', 'L_TEST', 'module'),"
-        "(3, 'ops_scripts/ci/test_gate.py', 'L_OPS', 'module')"
+        "(3, 'ops_scripts/ci/test_gate.py', 'L_OPS', 'module')",
     )
 
     # Test imports gptcache_client (should be ignored)
@@ -245,7 +245,7 @@ def test_gate_targets_l4_state_cache_only(tmp_path: Path) -> None:
     cur.execute(
         "INSERT INTO nodes (id, resolved_path, layer, entity_type) VALUES "
         "(1, 'agentic_core/L4_state/utils/other_util.py', 'L4', 'module'),"
-        "(2, 'agentic_core/L4_state/cache/gptcache_client.py', 'L4', 'module')"
+        "(2, 'agentic_core/L4_state/cache/gptcache_client.py', 'L4', 'module')",
     )
 
     conn.commit()

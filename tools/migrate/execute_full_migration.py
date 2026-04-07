@@ -30,7 +30,7 @@ class FullMigrationExecutor:
             "failed_files": 0,
             "skipped_files": 0,
             "start_time": datetime.now(),
-            "categories": {}
+            "categories": {},
         }
         self.batch_size = 100
         self.max_workers = 4
@@ -53,7 +53,7 @@ class FullMigrationExecutor:
             ("performance_logs", self._migrate_performance_logs),
             ("user_interactions", self._migrate_user_interactions),
             ("knowledge_graphs", self._migrate_knowledge_graphs),
-            ("embeddings", self._migrate_embeddings)
+            ("embeddings", self._migrate_embeddings),
         ]
 
         # Execute migrations
@@ -69,7 +69,7 @@ class FullMigrationExecutor:
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in {category_name} migration: {e}")
                 self.migration_stats["categories"][category_name] = {
-                    "migrated": 0, "failed": 0, "skipped": 0
+                    "migrated": 0, "failed": 0, "skipped": 0,
                 }
 
         # Final summary
@@ -95,7 +95,7 @@ class FullMigrationExecutor:
         config_dirs = [
             ROOT / "system_learning" / "config",
             ROOT / "system_learning" / "stores",
-            ROOT / "system_learning" / "snapshots"
+            ROOT / "system_learning" / "snapshots",
         ]
 
         for config_dir in config_dirs:
@@ -154,7 +154,7 @@ class FullMigrationExecutor:
             self.memory_manager.store_application_state(
                 key=state_key,
                 value=content,
-                state_type="pickle" if file_path.suffix in ['.pkl', '.ckpt'] else "json"
+                state_type="pickle" if file_path.suffix in ['.pkl', '.ckpt'] else "json",
             )
 
             return True
@@ -174,7 +174,7 @@ class FullMigrationExecutor:
             "system_learning/snapshots/*.model",
             "**/checkpoints/*.pkl",
             "**/models/*.ckpt",
-            "**/models/*.pth"
+            "**/models/*.pth",
         ]
 
         checkpoint_files = []
@@ -226,7 +226,7 @@ class FullMigrationExecutor:
                 "original_path": str(file_path.relative_to(ROOT)),
                 "migration_timestamp": datetime.now().isoformat(),
                 "file_size": file_path.stat().st_size,
-                "original_format": file_path.suffix
+                "original_format": file_path.suffix,
             }
 
             # Extract performance metrics if available
@@ -248,7 +248,7 @@ class FullMigrationExecutor:
                 weights=checkpoint_data if not isinstance(checkpoint_data, dict) else checkpoint_data.get("weights", {}),
                 metadata=metadata,
                 performance_metrics=performance_metrics,
-                created_at=datetime.now()
+                created_at=datetime.now(),
             )
 
             self.memory_manager.store_model_checkpoint(checkpoint)
@@ -268,7 +268,7 @@ class FullMigrationExecutor:
             "system_learning/datasets/*.json",
             "**/training/*.json",
             "**/datasets/*.json",
-            "**/data/*.json"
+            "**/data/*.json",
         ]
 
         training_files = []
@@ -317,8 +317,8 @@ class FullMigrationExecutor:
                 created_at=datetime.now(),
                 metadata={
                     "file_type": "training_data",
-                    "migration_timestamp": datetime.now().isoformat()
-                }
+                    "migration_timestamp": datetime.now().isoformat(),
+                },
             )
 
             self.memory_manager.store_learning_experience(experience)
@@ -338,7 +338,7 @@ class FullMigrationExecutor:
             "system_learning/cache/*.json",
             "**/state/*.json",
             "**/cache/*.json",
-            "**/session/*.json"
+            "**/session/*.json",
         ]
 
         state_files = []
@@ -380,7 +380,7 @@ class FullMigrationExecutor:
             self.memory_manager.store_application_state(
                 key=state_key,
                 value=state_data,
-                state_type="json"
+                state_type="json",
             )
 
             return True
@@ -399,7 +399,7 @@ class FullMigrationExecutor:
             "**/logs/*.json",
             "**/metrics/*.json",
             "**/performance/*.json",
-            "**/telemetry/*.json"
+            "**/telemetry/*.json",
         ]
 
         log_files = []
@@ -448,7 +448,7 @@ class FullMigrationExecutor:
                                     name=key,
                                     value=value,
                                     context={"source": str(file_path.relative_to(ROOT))},
-                                    component="migrated_logs"
+                                    component="migrated_logs",
                                 )
             elif isinstance(log_data, dict):
                 # Single log entry
@@ -458,7 +458,7 @@ class FullMigrationExecutor:
                             name=key,
                             value=value,
                             context={"source": str(file_path.relative_to(ROOT))},
-                            component="migrated_logs"
+                            component="migrated_logs",
                         )
 
             return True
@@ -477,7 +477,7 @@ class FullMigrationExecutor:
             "**/conversation*.json",
             "**/interaction*.json",
             "**/user*.json",
-            "**/feedback*.json"
+            "**/feedback*.json",
         ]
 
         interaction_files = []
@@ -522,8 +522,8 @@ class FullMigrationExecutor:
                 created_at=datetime.now(),
                 metadata={
                     "file_type": "user_interaction",
-                    "migration_timestamp": datetime.now().isoformat()
-                }
+                    "migration_timestamp": datetime.now().isoformat(),
+                },
             )
 
             self.memory_manager.store_learning_experience(experience)
@@ -542,7 +542,7 @@ class FullMigrationExecutor:
             "**/graph*.json",
             "**/knowledge*.json",
             "**/network*.json",
-            "**/ontology*.json"
+            "**/ontology*.json",
         ]
 
         graph_files = []
@@ -599,8 +599,8 @@ class FullMigrationExecutor:
                 edges_blob,
                 json.dumps({
                     "original_path": str(file_path.relative_to(ROOT)),
-                    "migration_timestamp": datetime.now().isoformat()
-                })
+                    "migration_timestamp": datetime.now().isoformat(),
+                }),
             ))
 
             conn.commit()
@@ -620,7 +620,7 @@ class FullMigrationExecutor:
             "system_learning/embeddings/*.npy",
             "**/embeddings/*.pkl",
             "**/vectors/*.pkl",
-            "**/embeddings/*.json"
+            "**/embeddings/*.json",
         ]
 
         embedding_files = []
@@ -671,7 +671,7 @@ class FullMigrationExecutor:
                             vector=vector,
                             model_version="migrated_1.0",
                             dimension=len(vector),
-                            created_at=datetime.now()
+                            created_at=datetime.now(),
                         )
                         self.memory_manager.store_embedding(embedding)
             elif isinstance(embedding_data, list) and len(embedding_data) > 0:
@@ -683,7 +683,7 @@ class FullMigrationExecutor:
                     vector=embedding_data,
                     model_version="migrated_1.0",
                     dimension=len(embedding_data),
-                    created_at=datetime.now()
+                    created_at=datetime.now(),
                 )
                 self.memory_manager.store_embedding(embedding)
 

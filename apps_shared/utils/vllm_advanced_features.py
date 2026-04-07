@@ -170,7 +170,7 @@ class VLLMBatchProcessor:
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 errors.append(
-                    {"request_id": requests[i].id, "error": str(result), "metadata": requests[i].metadata}
+                    {"request_id": requests[i].id, "error": str(result), "metadata": requests[i].metadata},
                 )
             elif result.get("success", False):
                 successful_results.append(result)
@@ -180,7 +180,7 @@ class VLLMBatchProcessor:
                         "request_id": requests[i].id,
                         "error": result.get("error", "Unknown error"),
                         "metadata": requests[i].metadata,
-                    }
+                    },
                 )
 
         processing_time = time.time() - start_time
@@ -206,7 +206,7 @@ class VLLMBatchProcessor:
         )
 
         _log.info(
-            f"Batch processing completed: {successful_count}/{total_requests} successful in {processing_time:.2f}s"
+            f"Batch processing completed: {successful_count}/{total_requests} successful in {processing_time:.2f}s",
         )
 
         return batch_result

@@ -123,39 +123,25 @@ _emit_applies_guardrail("p0", "ExecOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "ExecOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "ExecOrchestrator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -316,7 +302,7 @@ class ExecOrchestrator:
         try:
             ingestion_result = self._ingestion.execute(request)
             self._record_hop(
-                "HOP-1-INGESTION", len(ingestion_result.documents) > 0 or bool(ingestion_result.skipped_paths)
+                "HOP-1-INGESTION", len(ingestion_result.documents) > 0 or bool(ingestion_result.skipped_paths),
             )
 
             extraction_result = self._extraction.execute(ingestion_result)
@@ -435,7 +421,7 @@ class ExecOrchestrator:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
 
     async def plan_execution_with_qwen(
-        self, objectives: list[str], constraints: dict[str, Any], planning_type: str = "strategic"
+        self, objectives: list[str], constraints: dict[str, Any], planning_type: str = "strategic",
     ) -> dict[str, Any]:
         """Generate execution plans using Qwen vLLM inference.
 
@@ -523,7 +509,7 @@ class ExecOrchestrator:
             return {"success": False, "error": f"execution_planning_failed: {str(e)}", "content": None}
 
     def _prepare_execution_planning_prompt(
-        self, objectives: list[str], constraints: dict[str, Any], planning_type: str
+        self, objectives: list[str], constraints: dict[str, Any], planning_type: str,
     ) -> str:
         """Prepare prompt for execution planning using Qwen.
 

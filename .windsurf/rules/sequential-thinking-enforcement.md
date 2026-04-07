@@ -1,21 +1,32 @@
-# Sequential Thinking Enforcement Rule
+---
+trigger: always_on
+---
+# Structured Reasoning & Task Management Enforcement Rule
 
-**Trigger**: always_on
 **Layer**: Windsurf (AI-time behavioral)
 **Type**: Behavioural
 **Priority**: High
 
----
-
-## §ST-0: Core Principle
-
-**For all T2/T3 tasks (multi-file, architecture, planning, debugging), Cascade MUST invoke `mcp7_sequentialthinking` before proceeding with the actual work.**
-
-Sequential thinking is a model-agnostic reasoning tool available to ALL models in Windsurf (Phoenix, SWE, and future models). This rule applies to any model — enforcement is based on task complexity, not model name.
+**NOTE**: This rule replaces the previous sequential-thinking enforcement. As of 2026-04-07, the sequential-thinking MCP has been replaced with concrete capability MCPs (Playwright, Task Manager) per architectural guidance. Cascade now uses its native reasoning capabilities combined with task management tools instead of a fragile meta-reasoning loop.
 
 ---
 
-## §ST-1: When Sequential Thinking is REQUIRED
+## §SR-0: Core Principle
+
+**For all T2/T3 tasks (multi-file, architecture, planning, debugging), Cascade MUST use structured reasoning and task management tools before proceeding with the actual work.**
+
+Structured reasoning is now provided by:
+- **Cascade native reasoning** - The model's inherent problem-solving capabilities
+- **Task Manager MCP (mcp10)** - For task decomposition, step tracking, and progress preservation
+- **Playwright MCP (mcp7)** - For browser automation and web interaction when needed
+- **Filesystem MCP (mcp5)** - For file operations and codebase navigation
+- **Git MCP (mcp0)** - For version control operations
+
+This approach is more reliable than a pure "reasoning MCP" because each server does one concrete job well, and Cascade's native reasoning is more robust than forcing all reasoning through a separate abstraction layer.
+
+---
+
+## §SR-1: When Structured Reasoning is REQUIRED
 
 **MANDATORY for T2/T3 tasks:**
 
@@ -33,7 +44,7 @@ Sequential thinking is a model-agnostic reasoning tool available to ALL models i
 
 ---
 
-## §ST-2: When Sequential Thinking is NOT Required
+## §SR-2: When Structured Reasoning is NOT Required
 
 **EXEMPT for T0/T1 tasks:**
 
@@ -50,47 +61,90 @@ Sequential thinking is a model-agnostic reasoning tool available to ALL models i
 
 ---
 
-## §ST-3: How to Invoke
+## §SR-3: How to Invoke Structured Reasoning
 
 **Required pattern at start of T2/T3 task:**
 
-```python
-mcp7_sequentialthinking(
-    thought="Initial problem decomposition and approach planning",
-    nextThoughtNeeded=True,
-    thoughtNumber=1,
-    totalThoughts=<estimated_thoughts_for_task>
+Use Task Manager MCP to create a structured task list:
+```
+mcp10_create_task(
+  description: "Clear task description",
+  metadata: {
+    "tier": "T2" or "T3",
+    "estimated_complexity": "simple/medium/complex",
+    "dependencies": ["task1", "task2"]
+  }
 )
 ```
 
-**Guidance for `totalThoughts`:**
-- Simple T2: 5–10 thoughts
-- Complex T2: 10–15 thoughts
-- T3 architectural: 15–25 thoughts
+Then use Cascade's native reasoning to break down the task systematically, updating the task list as you progress.
+
+**Guidance for task complexity:**
+- Simple T2: 3–5 subtasks
+- Complex T2: 5–10 subtasks
+- T3 architectural: 10–20 subtasks
+
+**HARD LIMITS — MANDATORY:**
+- **Max task depth**: 3 levels of nesting
+- **Max concurrent tasks**: 5 active tasks at once
+- **Task updates**: Must update task status after each significant step
+- **Task completion**: Mark tasks as complete when done, don't leave dangling tasks
 
 ---
 
-## §ST-4: Integration with Existing Rules
+## §SR-3.1: Tool Hang Recovery Protocol
+
+**Symptom:** Any MCP tool call hangs indefinitely or returns an error.
+
+**MANDATORY RESPONSE (in order):**
+
+1. **STOP** — do not retry the same call
+2. **Run `/mcp-failure-rca`** — appropriate step for the affected MCP
+3. **If MCP cannot be restored** — proceed WITHOUT that tool for this task, note this in your response as `[MCP UNAVAILABLE — proceeding without tool]`
+4. **NEVER** loop tool calls as a workaround for a hung call
+5. **NEVER** default to grep or text search as a substitute for failed ADG MCP
+
+**Tool hang ≠ permission to skip core requirements.** Use alternative approaches if a tool is unavailable.
+
+---
+
+## §SR-3.2: When NOT to Invoke (anti-patterns)
+
+**FORBIDDEN usage patterns:**
+- ❌ Creating tasks for trivial T0/T1 work
+- ❌ Using task management as a stall tactic before responding to simple questions
+- ❌ Creating excessive task nesting (>3 levels)
+- ❌ Leaving tasks in "in_progress" state indefinitely
+- ❌ Retrying a hung tool call in a loop
+
+---
+
+## §SR-4: Integration with Existing Rules
 
 This rule complements but does not replace:
 - **§0 DEFAULT ANALYSIS MODE** — still classify tier first, then apply this rule
-- **§1 TESTING FRAMEWORK** — still require tests, use sequential thinking for test strategy design
-- **§2 ADG FRAMEWORK** — still use ADG for scope, use sequential thinking for analysis approach
-- **§HITL-0 HITL Enforcement** — still present options for decisions, use sequential thinking to reason through options
+- **§1 TESTING FRAMEWORK** — still require tests, use task management for test strategy design
+- **§2 ADG FRAMEWORK** — still use ADG for scope, use task management for analysis approach
+- **§HITL-0 HITL Enforcement** — still present options for decisions, use task management to track decision outcomes
 
 ---
 
-## §ST-5: Enforcement
+## §SR-5: Enforcement
 
 This is a **behavioral rule** enforced during AI execution. No pre-commit hook can verify compliance.
 
-**Audit trail:** When sequential thinking is invoked, evidence files and plans should reference the sequential thinking output as part of the reasoning process.
+**Audit trail:** When task management is used, evidence files and plans should reference the task structure as part of the reasoning process.
+
+**CI Health Gate:** `mcp_health_monitor.py` includes probes for all MCPs. If any probe fails:
+1. Run `/mcp-failure-rca` — appropriate recovery step
+2. **BLOCKED** — do not proceed with T2/T3 work until probe returns healthy
+3. Document failure and recovery in `artifacts/adg/mcp_health_report.json`
 
 ---
 
-## §ST-6: Quick Reference
+## §SR-6: Quick Reference
 
-| Task Type | Tier | Sequential Thinking Required? |
+| Task Type | Tier | Task Management Required? |
 |---|---|---|
 | Explain code | T0 | ❌ NO |
 | Fix typo | T1 | ❌ NO |
@@ -105,6 +159,7 @@ This is a **behavioral rule** enforced during AI execution. No pre-commit hook c
 
 ## MAXIM
 
-- **Complexity triggers, not model names.** Use sequential thinking when the task requires it, regardless of which model is active.
-- **Think before act.** For T2/T3 work, always decompose the problem systematically before making changes.
-- **Model-agnostic benefit.** Phoenix, SWE, or future models — all get the same structured reasoning discipline.
+- **Concrete over abstract.** Use specific capability MCPs (Filesystem, Git, Playwright, Task Manager) instead of meta-reasoning tools.
+- **Cascade does the thinking.** Trust the model's native reasoning capabilities; use tools for concrete operations, not as a crutch.
+- **Track progress transparently.** Use task management to make multi-step work visible and trackable.
+- **Fail gracefully.** If a tool is unavailable, adapt and continue using alternative approaches.

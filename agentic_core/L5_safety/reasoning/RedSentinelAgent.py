@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -251,7 +250,7 @@ class RedSentinelAgent(SovereignBaseAgent):
             result: dict[str, Any] = await self._test_with_input(func_name, input_data)
             if result["crashed"]:
                 results["crashes"].append(
-                    {"input": input_data, "error": result["error"], "traceback": result["traceback"]}
+                    {"input": input_data, "error": result["error"], "traceback": result["traceback"]},
                 )
                 results["vulnerabilities"].append({"type": "crash", "input": input_data, "Severity": "HIGH"})
             elif result["unexpected_behavior"]:
@@ -261,7 +260,7 @@ class RedSentinelAgent(SovereignBaseAgent):
                         "input": input_data,
                         "behavior": result["behavior"],
                         "Severity": "MEDIUM",
-                    }
+                    },
                 )
         await self._log_fuzz_results(results)
         return {
@@ -428,7 +427,7 @@ class RedSentinelAgent(SovereignBaseAgent):
         This is an operational agent - no repository healing required.
         """
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path
+            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
         )
         if _call_path is None:
             _call_path = set()

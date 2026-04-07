@@ -1,9 +1,9 @@
 """
 Financial Package Types - Domain contracts for financial statement data.
 """
-from typing import Literal, Optional, List
-from pydantic import BaseModel, Field, validator
+from typing import List, Literal, Optional
 
+from pydantic import BaseModel, Field, validator
 
 FiscalType = Literal["annual", "quarterly", "ttm"]
 
@@ -68,21 +68,21 @@ class FinancialPackage(BaseModel):
                         "debt_service": 525000.0,
                         "cash": 850000.0,
                         "ar": 2100000.0,
-                        "ap": 950000.0
+                        "ap": 950000.0,
                     },
                     {
                         "period_end": "2022-12-31",
                         "fiscal_type": "annual",
                         "revenue": 11000000.0,
-                        "ebitda": 1540000.0
-                    }
+                        "ebitda": 1540000.0,
+                    },
                 ],
                 "calculated_metrics": {
                     "revenue_cagr_2y": 0.136,
                     "ebitda_margin_ttm": 0.15,
                     "debt_to_ebitda_ttm": 1.87,
-                    "dscr_ttm": 3.57
+                    "dscr_ttm": 3.57,
                 },
-                "quality_flags": []
-            }
+                "quality_flags": [],
+            },
         }

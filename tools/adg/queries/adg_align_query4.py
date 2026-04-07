@@ -52,7 +52,7 @@ for kw, label in absence_check.items():
     kw_clean = kw.strip()
     cur.execute(
         "SELECT COUNT(*) FROM nodes WHERE layer NOT IN ('L_TEST','L_UNKNOWN','') "
-        f"AND (LOWER(adg_name) LIKE '%{kw_clean}%' OR LOWER(resolved_path) LIKE '%{kw_clean}%')"
+        f"AND (LOWER(adg_name) LIKE '%{kw_clean}%' OR LOWER(resolved_path) LIKE '%{kw_clean}%')",
     )
     cnt = cur.fetchone()[0]
     if cnt == 0:
@@ -114,7 +114,7 @@ print("\n=== DDDAlignmentAgent (interesting name!) ===")
 cur.execute("SELECT * FROM nodes WHERE adg_name LIKE '%DDDAlignment%' OR adg_name LIKE '%Alignment%'")
 for n in cur.fetchall():
     print(
-        f"  [{dict(n)['layer']}] {dict(n)['adg_name']} | {dict(n)['entity_type']} | {dict(n)['resolved_path']}"
+        f"  [{dict(n)['layer']}] {dict(n)['adg_name']} | {dict(n)['entity_type']} | {dict(n)['resolved_path']}",
     )
 
 db.close()

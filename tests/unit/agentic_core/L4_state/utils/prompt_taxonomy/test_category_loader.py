@@ -2,7 +2,6 @@
 Tests for prompt category taxonomy.
 """
 
-from agentic_core.L2_execution.reasoning import AuthorityLevel
 from agentic_core.L4_state.prompt_taxonomy import (
     CategoryRegistryEntry,
     CategoryTemplate,
@@ -10,6 +9,8 @@ from agentic_core.L4_state.prompt_taxonomy import (
     PromptCategoryRegistry,
     get_default_template_path,
 )
+
+from agentic_core.L2_execution.reasoning import AuthorityLevel
 
 
 class TestPromptCategoryEnum:
@@ -197,7 +198,7 @@ class TestPromptCategoryRegistry:
             CategoryRegistryEntry(
                 category=PromptCategory.SYSTEM_STATE,
                 template=s0_template,
-            )
+            ),
         )
 
         # Register U0
@@ -210,7 +211,7 @@ class TestPromptCategoryRegistry:
             CategoryRegistryEntry(
                 category=PromptCategory.USER_PROMPT,
                 template=u0_template,
-            )
+            ),
         )
 
         s0_entries = registry.get_by_slot("S0")
@@ -232,7 +233,7 @@ class TestPromptCategoryRegistry:
             CategoryRegistryEntry(
                 category=PromptCategory.SYSTEM_STATE,
                 template=template,
-            )
+            ),
         )
 
         absolute = registry.get_by_authority(AuthorityLevel.ABSOLUTE)
@@ -253,7 +254,7 @@ class TestPromptCategoryRegistry:
             CategoryRegistryEntry(
                 category=PromptCategory.SYSTEM_STATE,
                 template=template,
-            )
+            ),
         )
 
         assert registry.is_registered(PromptCategory.SYSTEM_STATE)

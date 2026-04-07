@@ -33,7 +33,7 @@ def test_adg_template_enforcement():
             'files': ['adg_indexed.sqlite'],
             'expected_template': 'SWE_ADG_ANALYSIS',
             'enforced': True,
-            'reason': 'Direct ADG task type'
+            'reason': 'Direct ADG task type',
         },
         {
             'name': 'Violation Remediation',
@@ -42,7 +42,7 @@ def test_adg_template_enforcement():
             'files': ['violations.json'],
             'expected_template': 'SWE_VIOLATION_REMEDIATION',
             'enforced': True,
-            'reason': 'Direct violation remediation task'
+            'reason': 'Direct violation remediation task',
         },
         {
             'name': 'High Complexity Architecture',
@@ -51,7 +51,7 @@ def test_adg_template_enforcement():
             'files': ['system_design.md', 'components/'],
             'expected_template': 'SWE_ARCHITECTURAL_REVIEW',
             'enforced': True,
-            'reason': 'High complexity triggers ADG enforcement'
+            'reason': 'High complexity triggers ADG enforcement',
         },
         {
             'name': 'Critical System Restructuring',
@@ -60,7 +60,7 @@ def test_adg_template_enforcement():
             'files': ['legacy_module.py', 'new_module.py'],
             'expected_template': 'SWE_SYSTEM_RESTRUCTURING',
             'enforced': True,
-            'reason': 'Critical complexity forces system restructuring'
+            'reason': 'Critical complexity forces system restructuring',
         },
         {
             'name': 'Multi-file Implementation',
@@ -69,7 +69,7 @@ def test_adg_template_enforcement():
             'files': ['file1.py', 'file2.py', 'file3.py', 'file4.py', 'file5.py', 'file6.py'],
             'expected_template': 'SWE_DEPENDENCY_GRAPH_ANALYSIS',
             'enforced': True,
-            'reason': 'Multi-file operations enforce ADG templates'
+            'reason': 'Multi-file operations enforce ADG templates',
         },
         {
             'name': 'Debugging Task',
@@ -78,7 +78,7 @@ def test_adg_template_enforcement():
             'files': ['error.log'],
             'expected_template': 'SWE_VIOLATION_REMEDIATION',
             'enforced': True,
-            'reason': 'Debugging mapped to violation remediation'
+            'reason': 'Debugging mapped to violation remediation',
         },
         {
             'name': 'Simple Analysis',
@@ -87,8 +87,8 @@ def test_adg_template_enforcement():
             'files': ['single_file.py'],
             'expected_template': None,  # May use fallback
             'enforced': False,
-            'reason': 'Low complexity simple task'
-        }
+            'reason': 'Low complexity simple task',
+        },
     ]
 
     results = []
@@ -106,7 +106,7 @@ def test_adg_template_enforcement():
                 'type': scenario['type'],
                 'complexity': scenario['complexity'],
                 'files': scenario['files'],
-                'description': f"Test scenario for {scenario['name']}"
+                'description': f"Test scenario for {scenario['name']}",
             }
 
             # Get template (this triggers enforcement logic)
@@ -131,7 +131,7 @@ def test_adg_template_enforcement():
                 'actual_adg_template': is_adg_template,
                 'compliant': enforced_compliant,
                 'template_length': len(template),
-                'success': True
+                'success': True,
             }
 
             status = "✅ PASS" if enforced_compliant else "❌ FAIL"
@@ -151,7 +151,7 @@ def test_adg_template_enforcement():
             results.append({
                 'scenario': scenario['name'],
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     return results
@@ -185,7 +185,7 @@ def test_enforcement_statistics(results):
         'total_tests': len(results),
         'successful': len(successful),
         'compliant': len(compliant),
-        'enforcement_rate': len(enforced_compliant)/len(enforced_scenarios)*100 if enforced_scenarios else 100
+        'enforcement_rate': len(enforced_compliant)/len(enforced_scenarios)*100 if enforced_scenarios else 100,
     }
 
 def test_template_content_quality():
@@ -202,7 +202,7 @@ def test_template_content_quality():
         'type': 'architecture',
         'complexity': 'critical',
         'files': ['system.py', 'components/', 'config/'],
-        'description': 'Critical system architectural analysis'
+        'description': 'Critical system architectural analysis',
     }
 
     try:
@@ -215,7 +215,7 @@ def test_template_content_quality():
             'has_real_data': '10,432' in template or '681,161' in template,
             'has_violation_data': '5,301' in template or 'violation_count' in template,
             'has_layer_info': 'L0:' in template or 'layer_info' in template,
-            'has_system_metrics': 'component_count' in template or 'quality_attributes' in template
+            'has_system_metrics': 'component_count' in template or 'quality_attributes' in template,
         }
 
         passed_checks = sum(quality_checks.values())
@@ -240,7 +240,7 @@ def test_template_content_quality():
         return {
             'quality_score': passed_checks/total_checks*100,
             'template_length': len(template),
-            'checks_passed': passed_checks
+            'checks_passed': passed_checks,
         }
 
     except Exception as e:

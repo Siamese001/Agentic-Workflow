@@ -268,7 +268,7 @@ class TestADGQueryBridgeIntegration:
         # Run queries concurrently
         threads = [
             threading.Thread(target=query_files_calling),
-            threading.Thread(target=query_nodes_in_layer)
+            threading.Thread(target=query_nodes_in_layer),
         ]
 
         for thread in threads:
@@ -534,7 +534,7 @@ class TestADGQueryBridgeIntegration:
         # Run queries concurrently
         threads = [
             threading.Thread(target=query_files_calling),
-            threading.Thread(target=query_nodes_in_layer)
+            threading.Thread(target=query_nodes_in_layer),
         ]
 
         for thread in threads:

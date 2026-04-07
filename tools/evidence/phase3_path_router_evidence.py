@@ -92,7 +92,7 @@ def main():
         run_command(
             [sys.executable, "-m", "pytest", "-q", "tests/unit/L0_routing/test_path_router.py", "-m", "unit"],
             repo_root,
-        )
+        ),
     )
     sections.append("```\n\n")
 
@@ -101,7 +101,7 @@ def main():
     sections.append("# All L0 Routing Tests\n")
     sections.append("```")
     sections.append(
-        run_command([sys.executable, "-m", "pytest", "-q", "tests/unit/L0_routing", "-m", "unit"], repo_root)
+        run_command([sys.executable, "-m", "pytest", "-q", "tests/unit/L0_routing", "-m", "unit"], repo_root),
     )
     sections.append("```\n\n")
 

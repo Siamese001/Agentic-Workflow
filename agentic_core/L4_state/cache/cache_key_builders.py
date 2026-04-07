@@ -111,7 +111,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -197,7 +196,7 @@ def _require_safe_segment(name: str, value: str) -> None:
     _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "_require_safe_segment")
     if ":" in value:
         raise ValueError(
-            f"Key segment {name!r} contains illegal ':' character: {value!r}. Use a slug, version tag, or hex digest instead."
+            f"Key segment {name!r} contains illegal ':' character: {value!r}. Use a slug, version tag, or hex digest instead.",
         )
     if not value:
         raise ValueError(f"Key segment {name!r} must not be empty")
@@ -221,7 +220,7 @@ def _require_hash_segment(name: str, value: str) -> None:
 
         if not re.fullmatch("[0-9a-f]{64}", value):
             raise ValueError(
-                f"Hash segment {name!r} must be a 64-char lowercase SHA-256 hexdigest, got {value!r}. Set REDIS_CACHE_STRICT_HASH_VALIDATION=0 to disable this check in tests."
+                f"Hash segment {name!r} must be a 64-char lowercase SHA-256 hexdigest, got {value!r}. Set REDIS_CACHE_STRICT_HASH_VALIDATION=0 to disable this check in tests.",
             )
 
 
@@ -265,7 +264,7 @@ def build_cap_registry_key(cap_registry_hash: str) -> str:
 
 
 def build_compiled_prompt_key(
-    prompt_bom_hash: str, s0_hash: str, i0_hash: str, d0_hash: str, c0_hash: str
+    prompt_bom_hash: str, s0_hash: str, i0_hash: str, d0_hash: str, c0_hash: str,
 ) -> str:
     """Key for a ``CompiledPromptArtifact`` (final assembled strings + token
     estimate + allowed tool schema + signature).
@@ -366,7 +365,7 @@ def build_tool_result_key(tool_call_hash: str) -> str:
 
 
 def build_rag_topk_key(
-    u0_hash: str, embedder_version: str, seed_pack_manifest_hash: str, k: int, cutoff: float
+    u0_hash: str, embedder_version: str, seed_pack_manifest_hash: str, k: int, cutoff: float,
 ) -> str:
     """Key for a top-k retrieval result set (C0 informational payload only).
 

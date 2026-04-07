@@ -78,7 +78,7 @@ class IntakeClerk:
 
         trace_id = f"ingest_{file_path.stem}_{int(start_time)}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L3_ORCHESTRATION, "IntakeClerk.ingest_document"
+            trace_id, LayerSegment.L3_ORCHESTRATION, "IntakeClerk.ingest_document",
         )
 
         try:

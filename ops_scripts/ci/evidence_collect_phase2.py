@@ -21,7 +21,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-
 INVENTORY_REL = 'docs/reports/plans/v15_phase2_wave2_1_runtime_entrypoints.json'
 
 def compute_sha256(path: Path) -> str:

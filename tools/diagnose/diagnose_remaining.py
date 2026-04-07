@@ -10,7 +10,7 @@ dirs = ["evaluation", "guardian", "integration", "unit_min_deps", "agentic_core"
 for d in dirs:
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60
+        capture_output=True, text=True, cwd=ROOT, timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 

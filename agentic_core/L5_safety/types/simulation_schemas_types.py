@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -182,10 +181,10 @@ class SimScenario(BaseModel):
     id: str = Field(..., description="Unique identifier for the scenario")
     description: str = Field(..., description="Human-readable summary of the test case")
     initial_context: dict[str, Any] = Field(
-        default_factory=dict, description="Initial SignalContext state for the simulation"
+        default_factory=dict, description="Initial SignalContext state for the simulation",
     )
     execution_profile_name: str = Field(
-        ..., description="Target execution profile (e.g., 'standard', 'fast')"
+        ..., description="Target execution profile (e.g., 'standard', 'fast')",
     )
     run_count: int = Field(default=1, ge=1, description="Number of iterations to perform")
 

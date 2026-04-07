@@ -129,7 +129,7 @@ def build_librarian_mission_extraction_prompt(job_description: str, company_name
 
 
 def build_librarian_strategic_analysis_prompt(
-    job_description: str, rag_mission: "RAGMission", previous_context: str | None = None
+    job_description: str, rag_mission: "RAGMission", previous_context: str | None = None,
 ) -> str:
     """
     Builds prompt for Librarian to analyze strategic priorities and initiatives.
@@ -210,7 +210,7 @@ def build_phase1_prompt(
 
 
 def build_phase2_prompt(
-    job_description: str, mission: "RAGMission", industry: str, librarian_context: str | None = None
+    job_description: str, mission: "RAGMission", industry: str, librarian_context: str | None = None,
 ) -> str:
     """
     Build Phase 2 RAG prompt with enhanced signal extraction.
@@ -249,7 +249,7 @@ def build_phase3_prompt(
     template = _get_prompt_template("rag_phase_3")
     achievements_context = _format_resume_index_summary(master_resume_index)
     search_pattern_instruction = comp_config.search_pattern.format(
-        role_title=mission.precise_role_title, peer_company="<peer_company>"
+        role_title=mission.precise_role_title, peer_company="<peer_company>",
     )
     librarian_section = ""
     if librarian_context:
@@ -304,7 +304,7 @@ def build_phase4_prompt(mission: "RAGMission", librarian_context: str | None = N
 
 
 def build_macro_tot_generation_prompt(
-    base_prompt: str, draft_number: int, total_drafts: int, variation_instruction: str = ""
+    base_prompt: str, draft_number: int, total_drafts: int, variation_instruction: str = "",
 ) -> str:
     """
     Builds prompt for generating one draft in Macro ToT process.
@@ -345,7 +345,7 @@ def build_evaluator_scoring_prompt(drafts: list[str], criteria: dict[str, object
 
 
 def build_macro_tot_synthesis_prompt(
-    original_prompt: str, scored_drafts: list[tuple[str, float]], top_k: int = 2
+    original_prompt: str, scored_drafts: list[tuple[str, float]], top_k: int = 2,
 ) -> str:
     """
     Builds prompt for synthesizing the best elements from top-scoring drafts.
@@ -387,7 +387,7 @@ def build_narrative_prompt(
 
 
 def build_verbatim_bullet_selection_prompt(
-    master_bullets_text_list: list[str], verbatim_count: int, thematic_analysis: "ThematicAnalysis"
+    master_bullets_text_list: list[str], verbatim_count: int, thematic_analysis: "ThematicAnalysis",
 ) -> str:
     """Builds the prompt for selecting verbatim bullets."""
     template = _get_prompt_template("artist_verbatim_bullet_selection")
@@ -406,7 +406,7 @@ def build_verbatim_bullet_selection_prompt(
 
 
 def build_customized_bullet_prompt(
-    source_bullets_text: list[str], thematic_analysis: "ThematicAnalysis"
+    source_bullets_text: list[str], thematic_analysis: "ThematicAnalysis",
 ) -> str:
     """Builds the prompt for customizing bullets."""
     template = _get_prompt_template("artist_customized_bullet")
@@ -492,7 +492,7 @@ def build_bullet_reorder_prompt(
 
 
 def build_bullet_rewrite_prompt(
-    original_bullet: str, target_word_count_range: tuple[int, int], **kwargs: dict[str, any]
+    original_bullet: str, target_word_count_range: tuple[int, int], **kwargs: dict[str, any],
 ) -> str:
     """Builds the prompt for rewriting a single bullet to a word count."""
     template = _get_prompt_template("artist_bullet_rewrite_wc")
@@ -541,7 +541,7 @@ def build_overview_generation_prompt(
 
 
 def build_generation_prompt_with_reinforced_constraints(
-    base_prompt: str, constraints: dict[str, object], attempt_number: int
+    base_prompt: str, constraints: dict[str, object], attempt_number: int,
 ) -> str:
     """
     Reinforces constraints progressively across attempts.
@@ -570,7 +570,7 @@ def build_sc_synthesis_prompt(original_prompt: str, candidate_responses: list[st
 
 
 def build_validator_factual_check_prompt(
-    section_name: str, section_content: str, thematic_analysis: "ThematicAnalysis", job_description: str
+    section_name: str, section_content: str, thematic_analysis: "ThematicAnalysis", job_description: str,
 ) -> str:
     """
     Builds prompt for Validator to perform high-signal factual checks.

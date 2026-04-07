@@ -32,17 +32,12 @@ Design invariants
 from __future__ import annotations
 
 import logging
-import uuid
 from typing import Any
 
 from agentic_core.cache.redis_cache_client import (
-    CacheDB,
     DeterministicRedisCache,
-    canonical_json_bytes,
-    content_hash,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +67,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
     _emit_reads_runtime_state,
-    _emit_reads_through,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_incident_event,
@@ -218,7 +212,7 @@ class RedisCoordinationFabric:
         return self._cache.get_json(f"trace_ws:{trace_id_hash}", db=_DB_WORKSPACE)
 
     def set_trace_working_set(
-        self, trace_id_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None, replay_mode: bool = False
+        self, trace_id_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None, replay_mode: bool = False,
     ) -> None:
         """Store per-trace working set dict (JSON-serialisable only)."""
         if replay_mode:
@@ -270,7 +264,7 @@ class RedisCoordinationFabric:
         return self._cache.get_json(f"replay_frag:{replay_key_hash}", db=_DB_WORKSPACE)
 
     def set_replay_fragment(
-        self, replay_key_hash: str, fragment: dict[str, Any], *, ttl_seconds: int | None = None
+        self, replay_key_hash: str, fragment: dict[str, Any], *, ttl_seconds: int | None = None,
     ) -> None:
         """Store replay assist fragment."""
         ttl = min(ttl_seconds or _TTL_REPLAY_FRAG, _TTL_REPLAY_FRAG)
@@ -287,7 +281,7 @@ class RedisCoordinationFabric:
         return self._cache.get_json(f"novelty:{cluster_hash}", db=_DB_WORKSPACE)
 
     def set_novelty_cluster(
-        self, cluster_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None
+        self, cluster_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None,
     ) -> None:
         """Store novelty/cluster centroid."""
         ttl = min(ttl_seconds or _TTL_NOVELTY, _TTL_NOVELTY)

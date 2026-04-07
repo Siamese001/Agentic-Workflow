@@ -26,7 +26,7 @@ r = run(
         "5432",
         "-c",
         "ALTER USER postgres WITH PASSWORD 'postgres';",
-    ]
+    ],
 )
 print("set password rc:", r.returncode, r.stdout.strip(), r.stderr.strip())
 
@@ -54,7 +54,7 @@ r2 = run(
         "mcp_db",
         "-c",
         "SELECT current_database(), current_user;",
-    ]
+    ],
 )
 print("verify rc:", r2.returncode, r2.stdout[:200].strip(), r2.stderr.strip())
 

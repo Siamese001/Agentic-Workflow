@@ -65,39 +65,25 @@ _emit_applies_guardrail("p0", "feedback_loop_types", "p0_governance")
 _emit_reads_policy_state("p0", "feedback_loop_types", "policy_binding")
 _emit_snapshots_state("p0", "feedback_loop_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -304,7 +290,7 @@ class AdaptiveThresholds:
         self.max_thresholds = {"excellent": 0.95, "high": 0.85, "good": 0.7, "marginal": 0.55}
 
     def adjust_thresholds(
-        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75
+        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75,
     ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
@@ -336,10 +322,10 @@ class AdaptiveThresholds:
                 "acceptance_rate": acceptance_rate,
                 "adjustment_factor": adjustment_factor,
                 "new_thresholds": self.thresholds.copy(),
-            }
+            },
         )
         logger.info(
-            f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, adjustment={adjustment_factor:.3f}"
+            f"Adjusted thresholds: acceptance_rate={acceptance_rate:.2f}, adjustment={adjustment_factor:.3f}",
         )
         return self.thresholds
 
@@ -363,7 +349,7 @@ class FeedbackLoop:
         self._cache_timestamp = 0
         self._cache_ttl = 300
         self.adaptive_thresholds = AdaptiveThresholds(
-            {"excellent": 0.9, "high": 0.75, "good": 0.6, "marginal": 0.4}
+            {"excellent": 0.9, "high": 0.75, "good": 0.6, "marginal": 0.4},
         )
         self._lock = threading.Lock()
         logger.debug(f"Initialized FeedbackLoop: {name}")
@@ -525,36 +511,36 @@ class FeedbackLoop:
                 marginal_rate = dist.get("marginal", 0) / total
                 if poor_rate > 0.2:
                     recommendations.append(
-                        "High rate of poor quality outputs (>20%). Consider strengthening input validation and prompt engineering."
+                        "High rate of poor quality outputs (>20%). Consider strengthening input validation and prompt engineering.",
                     )
                 if marginal_rate > 0.3:
                     recommendations.append(
-                        "Many outputs are only marginal quality. Review factual accuracy requirements and add more specific guidelines."
+                        "Many outputs are only marginal quality. Review factual accuracy requirements and add more specific guidelines.",
                     )
         if "common_flags" in insights:
             flags = insights["common_flags"]
             if flags.get("LOW_QUALITY", 0) > 5:
                 recommendations.append(
-                    "Frequent LOW_QUALITY flags detected. Increase minimum quality thresholds or enhance training data."
+                    "Frequent LOW_QUALITY flags detected. Increase minimum quality thresholds or enhance training data.",
                 )
             if flags.get("HALLUCINATION_RISK", 0) > 3:
                 recommendations.append(
-                    "Hallucination risks detected. Add stronger fact-checking and source verification."
+                    "Hallucination risks detected. Add stronger fact-checking and source verification.",
                 )
             if flags.get("HIGHLY_REPETITIVE", 0) > 5:
                 recommendations.append(
-                    "High repetition in outputs. Implement diversity constraints and content variety checks."
+                    "High repetition in outputs. Implement diversity constraints and content variety checks.",
                 )
         if "trends" in insights:
             trends = insights["trends"]
             for metric, trend in trends.items():
                 if trend.trend_direction == "declining" and trend.confidence > 0.7:
                     recommendations.append(
-                        f"{metric.title()} quality is declining with high confidence. Review recent changes and consider targeted improvements."
+                        f"{metric.title()} quality is declining with high confidence. Review recent changes and consider targeted improvements.",
                     )
         if insights.get("high_hallucination_risk_rate", 0) > 0.15:
             recommendations.append(
-                "High hallucination risk rate (>15%). Implement stricter source verification and reduce speculative language."
+                "High hallucination risk rate (>15%). Implement stricter source verification and reduce speculative language.",
             )
         return recommendations
 

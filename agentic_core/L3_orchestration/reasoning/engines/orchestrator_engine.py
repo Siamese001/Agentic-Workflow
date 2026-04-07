@@ -39,7 +39,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -49,17 +48,17 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
+from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_agent_paths
 from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     OrchestrationResult,
     OrchestrationStrategy,
     UnifiedAgent,
 )
-from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
+from agentic_core.L3_orchestration.types.orchestration_handoff_contract import emit_agent_executes_agent
+from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -107,6 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from agentic_core.runtime.trace_context import get_trace_context
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_agent_paths
 
 _emit_authorize_and_execute("p2", "orchestrator_engine", "execution_auth")
 _emit_validates_capability("p2", "orchestrator_engine", "capability_check")
@@ -165,7 +165,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -286,11 +285,11 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
         _emit_agent_executes_agent(
-            str(uuid.uuid4()), "L3OrchestrationStrategy", "L3OrchestrationStrategy.execute"
+            str(uuid.uuid4()), "L3OrchestrationStrategy", "L3OrchestrationStrategy.execute",
         )
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}",
         )
 
         # Initialize runtime ADG tracing if available
@@ -331,7 +330,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
                 with tracer.trace_dag_node(
                     task_id=step_name,
                     task_type=step_type,
-                    metadata={"mode": self.mode, "step": step_name}
+                    metadata={"mode": self.mode, "step": step_name},
                 ):
                     if step_type == "validation":
                         signals.append("validation_completed")
@@ -577,7 +576,7 @@ class Orchestrator(SovereignBaseAgent):
                         errors=1,
                         status="CRITICAL_IMPORT_FAILURE",
                         message=f"Agent {agent_name} failed pre-flight import validation",
-                    )
+                    ),
                 )
                 total_errors += 1
                 continue
@@ -610,7 +609,7 @@ class Orchestrator(SovereignBaseAgent):
 
     @runtime_guard("A.run_agent.orchestrator_engine")
     def run_agent(
-        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None
+        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None,
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -627,7 +626,7 @@ class Orchestrator(SovereignBaseAgent):
             stage="run_agent",
         )
         get_run_state_authority().observe_runtime_state(
-            "run_agent_dispatch", stage=agent_name, actor_id="orchestrator_engine"
+            "run_agent_dispatch", stage=agent_name, actor_id="orchestrator_engine",
         )
         get_run_state_authority().snapshot_state(f"run_agent:{agent_name}", run_id="orchestrator_engine")
         try:
@@ -672,7 +671,7 @@ class Orchestrator(SovereignBaseAgent):
             return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
 
     def _run_compliance_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
     ) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
@@ -732,7 +731,7 @@ class Orchestrator(SovereignBaseAgent):
             )
 
     def _run_healing_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None
+        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
     ) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
         self.logger.info(f"[HEALING] Running {agent_name}")
@@ -807,7 +806,7 @@ class Orchestrator(SovereignBaseAgent):
                 agent_paths = get_agent_paths(project_root)
                 self._available_agents = [Path(p).stem for p in agent_paths]
                 self.logger.debug(
-                    f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery"
+                    f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery",
                 )
             # guardian: allow-silent-swallow
             except (RuntimeError, ValueError) as e:
@@ -867,7 +866,7 @@ class Orchestrator(SovereignBaseAgent):
                 return self._import_cache[module_path]
             if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
                 self.logger.critical(
-                    f"[GATE] SECURITY BLOCK: Agent '{agent_name}' ({module_path}) is outside allowed namespaces."
+                    f"[GATE] SECURITY BLOCK: Agent '{agent_name}' ({module_path}) is outside allowed namespaces.",
                 )
                 self._import_cache[module_path] = False
                 return False
@@ -880,7 +879,7 @@ class Orchestrator(SovereignBaseAgent):
             )
             if result.returncode != 0:
                 self.logger.error(
-                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}"
+                    f"[GATE] Import validation failed for {agent_name}: {result.stderr.strip()[:200]}",
                 )
                 self._import_cache[module_path] = False
                 return False
@@ -892,7 +891,7 @@ class Orchestrator(SovereignBaseAgent):
             return True
 
     def _v15_build_operation_manifest(
-        self, operation: str, target_layer: str = "L3"
+        self, operation: str, target_layer: str = "L3",
     ) -> SurgicalManifest | None:
         """§8.1a — Construct SurgicalManifest for orchestrator-level operation."""
         if not is_v15_enforced():

@@ -132,7 +132,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -199,7 +198,7 @@ _SNAPSHOT_LOG = logging.getLogger("adg.snapshots_state")
 
 
 def state_transition_committed(
-    transition_id: str, namespace: str, key: str, version: int, run_id: str, trace_id: str, actor_id: str
+    transition_id: str, namespace: str, key: str, version: int, run_id: str, trace_id: str, actor_id: str,
 ) -> None:
     """ADG edge emitter for state_transition_committed."""
     import hashlib as _hashlib  # noqa: PLC0415
@@ -324,12 +323,12 @@ def commit_versioned_state_transition(
     # Conflict detection (Gate D)
     if expected_previous_version >= 0:
         if _registry.detect_conflict(
-            state_context.state_namespace, state_context.key, expected_previous_version
+            state_context.state_namespace, state_context.key, expected_previous_version,
         ):
             raise StateConflictError(
                 f"commit_versioned_state_transition: conflict detected for "
                 f"namespace='{state_context.state_namespace}' key='{state_context.key}'. "
-                f"Expected version {expected_previous_version}, but current is {previous_version}."
+                f"Expected version {expected_previous_version}, but current is {previous_version}.",
             )
 
     # --- Step 3: compute mutation hash (handled by StateTransitionRecord.create) ---

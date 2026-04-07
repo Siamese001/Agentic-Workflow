@@ -67,39 +67,25 @@ _emit_applies_guardrail("p0", "meta_learning_bridge", "p0_governance")
 _emit_reads_policy_state("p0", "meta_learning_bridge", "policy_binding")
 _emit_snapshots_state("p0", "meta_learning_bridge", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -346,7 +332,7 @@ class CompletenessRAGProposer:
                     justification=f"mean_completeness={signals.mean_completeness_score:.3f} < {_LOW_COMPLETENESS_THRESHOLD}; parent_expansion_rate={signals.parent_reconstruction_applied_rate:.3f} < {_LOW_PARENT_EXPANSION_RATE}; increase expansion depth",
                     snapshot_id=signals.snapshot_id,
                     proposal_only=True,
-                )
+                ),
             )
         if signals.chunk_fragmentation_error_rate > _HIGH_FRAGMENTATION_THRESHOLD:
             proposals.append(
@@ -359,7 +345,7 @@ class CompletenessRAGProposer:
                     justification=f"chunk_fragmentation_error_rate={signals.chunk_fragmentation_error_rate:.3f} > {_HIGH_FRAGMENTATION_THRESHOLD}; switch to section-aware chunking",
                     snapshot_id=signals.snapshot_id,
                     proposal_only=True,
-                )
+                ),
             )
         if (
             signals.fully_supported_rate < _LOW_SUPPORT_THRESHOLD
@@ -375,7 +361,7 @@ class CompletenessRAGProposer:
                     justification=f"fully_supported_rate={signals.fully_supported_rate:.3f} < {_LOW_SUPPORT_THRESHOLD}; high_similarity_wrong_answer_rate={signals.high_similarity_wrong_answer_rate:.3f} > {_HIGH_SIM_WRONG_ANSWER_THRESHOLD}; enable hybrid retrieval",
                     snapshot_id=signals.snapshot_id,
                     proposal_only=True,
-                )
+                ),
             )
         if signals.missing_condition_rate > 0.3 or signals.missing_scope_rate > 0.3:
             proposals.append(
@@ -388,7 +374,7 @@ class CompletenessRAGProposer:
                     justification=f"missing_condition_rate={signals.missing_condition_rate:.3f}, missing_scope_rate={signals.missing_scope_rate:.3f}; raise lexical exact-match boost for codes/conditions/versions",
                     snapshot_id=signals.snapshot_id,
                     proposal_only=True,
-                )
+                ),
             )
         if signals.mean_completeness_score < _LOW_COMPLETENESS_THRESHOLD:
             proposals.append(
@@ -401,7 +387,7 @@ class CompletenessRAGProposer:
                     justification=f"mean_completeness={signals.mean_completeness_score:.3f} < {_LOW_COMPLETENESS_THRESHOLD}; increase reranker completeness weight over similarity",
                     snapshot_id=signals.snapshot_id,
                     proposal_only=True,
-                )
+                ),
             )
         if signals.parent_reconstruction_applied_rate < _LOW_PARENT_EXPANSION_RATE:
             proposals.append(
@@ -414,7 +400,7 @@ class CompletenessRAGProposer:
                     justification=f"parent_expansion_rate={signals.parent_reconstruction_applied_rate:.3f} < {_LOW_PARENT_EXPANSION_RATE}; increase neighbor window size",
                     snapshot_id=signals.snapshot_id,
                     proposal_only=True,
-                )
+                ),
             )
         return proposals
 

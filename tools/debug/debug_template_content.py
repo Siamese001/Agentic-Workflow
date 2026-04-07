@@ -28,7 +28,7 @@ def debug_template_content():
         'name': 'ADG Graph Analysis',
         'type': 'adg_analysis',
         'complexity': 'high',
-        'files': ['adg.sqlite']
+        'files': ['adg.sqlite'],
     }
 
     template_content = workflow._get_seq_thinking_template('adg_analysis', step_config)
@@ -54,7 +54,7 @@ def debug_template_content():
         'node_count',  # variable name
         'edge_count',  # variable name
         'violation_count',  # variable name
-        'layer_info'  # variable name
+        'layer_info',  # variable name
     ]
 
     for value in expected_values:

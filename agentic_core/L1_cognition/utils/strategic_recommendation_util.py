@@ -177,7 +177,7 @@ def generate_fallback_recommendations(dashboard_data: list[dict[str, Any]]) -> R
     return RecommendationResult(
         review=review,
         recommendations=recommendations,
-        source="fallback"
+        source="fallback",
     )
 
 
@@ -202,5 +202,5 @@ def analyze_dashboard(dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
         "metrics": {
             "territories_analyzed": len([r for r in dashboard_data if r.get("Territory") != "TOTAL"]),
             "has_llm_option": True,
-        }
+        },
     }

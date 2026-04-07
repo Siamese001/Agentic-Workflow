@@ -62,45 +62,31 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "reflection_config", "p0_governance")
 _emit_reads_policy_state("p0", "reflection_config", "policy_binding")
 _emit_snapshots_state("p0", "reflection_config", "state_snapshot")
+from agentic_core.config.constants_config import DEFAULT_SLEEP, DEFAULT_TIMEOUT, THRESHOLD
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.config.constants_config import DEFAULT_SLEEP, DEFAULT_TIMEOUT, THRESHOLD
 
 _emit_emits_metric_event("reflection_config", "p4obs", "metric_1")
 _emit_emits_metric_event("reflection_config", "p4obs", "metric_2")
@@ -325,7 +311,7 @@ class ReflectionEngine:
         self.circuit_breaker = CircuitBreakerFactory.get(
             "reflection_engine",
             CircuitBreakerConfig(
-                failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT, timeout=self.config.timeout
+                failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT, timeout=self.config.timeout,
             ),
         )
 
@@ -349,7 +335,7 @@ class ReflectionEngine:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfCritiqueEvaluator.evaluate"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfCritiqueEvaluator.evaluate",
         )
         start_time = time.time()
         self.stats["total_critiques"] += 1
@@ -387,7 +373,7 @@ class ReflectionEngine:
             has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
             logger.warning(
                 "Reflection Engine Circuit OPEN. "
-                f"Failing {'closed' if has_required else 'open'} (required={has_required})."
+                f"Failing {'closed' if has_required else 'open'} (required={has_required}).",
             )
             result = CritiqueResult(
                 is_valid=not has_required,

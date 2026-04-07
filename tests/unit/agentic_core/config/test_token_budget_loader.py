@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import pytest
+
 from agentic_core.config.token_budget_loader import (
+    DEFAULT_TOKEN_BUDGET,
     TokenBudgetConfig,
     load_token_budget,
-    DEFAULT_TOKEN_BUDGET,
 )
 
 

@@ -176,7 +176,7 @@ _emit_proposal_commits_routing("p1", "runtime_invariant_checker", "routing_commi
 logger = logging.getLogger(__name__)
 
 _C0_FORBIDDEN_FIELDS = frozenset(
-    {"route_mode", "execution_tier", "safety_threshold", "allowed_tools", "auth_token"}
+    {"route_mode", "execution_tier", "safety_threshold", "allowed_tools", "auth_token"},
 )
 
 
@@ -184,7 +184,7 @@ def assert_mutation_source_is_l2(mutation_source: str) -> None:
     """Invariant 1: L2 is the ONLY mutation executor."""
     if mutation_source != "L2_execution":
         raise MutationReplayIntegrityViolation(
-            f"Invariant 1 violated: mutation_source={mutation_source!r} — only 'L2_execution' allowed"
+            f"Invariant 1 violated: mutation_source={mutation_source!r} — only 'L2_execution' allowed",
         )
 
 
@@ -198,7 +198,7 @@ def assert_mutation_in_ledger(
         if entry.get("file_path") == file_path and entry.get("operation") == operation:
             return
     raise MutationReplayIntegrityViolation(
-        f"Invariant 2 violated: mutation not in ledger — file={file_path} op={operation}"
+        f"Invariant 2 violated: mutation not in ledger — file={file_path} op={operation}",
     )
 
 
@@ -206,7 +206,7 @@ def assert_state_read_source_is_l4(state_read_source: str) -> None:
     """Invariant 3: L4 is the sole state authority."""
     if state_read_source != "L4_state":
         raise MutationReplayIntegrityViolation(
-            f"Invariant 3 violated: state_read_source={state_read_source!r} — only 'L4_state' allowed"
+            f"Invariant 3 violated: state_read_source={state_read_source!r} — only 'L4_state' allowed",
         )
 
 
@@ -215,7 +215,7 @@ def assert_c0_no_authority_fields(c0_payload: dict[str, Any]) -> None:
     leak = _C0_FORBIDDEN_FIELDS & set(c0_payload.keys())
     if leak:
         raise C0AuthorityLeakError(
-            f"Invariant 4 violated: C0 payload contains authority fields: {sorted(leak)}"
+            f"Invariant 4 violated: C0 payload contains authority fields: {sorted(leak)}",
         )
 
 
@@ -228,7 +228,7 @@ def assert_telemetry_no_config_mutation(
         from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
 
         raise RuntimePolicyMutationViolation(
-            f"Invariant 5 violated: config mutated at meta-learning stage {current_stage} (must be S9)"
+            f"Invariant 5 violated: config mutated at meta-learning stage {current_stage} (must be S9)",
         )
 
 

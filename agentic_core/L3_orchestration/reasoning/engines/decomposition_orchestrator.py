@@ -190,7 +190,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "DecompositionOrchestrator._load_agent_registry", "p0_governance"
+            str(_uuid.uuid4()), "DecompositionOrchestrator._load_agent_registry", "p0_governance",
         )
         discovery_path = Path(__file__).resolve().parents[3] / "agent_discovery_full.json"
         if discovery_path.exists():
@@ -384,7 +384,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
             Execution results dictionary
         """
         _emit_agent_executes_agent(
-            str(uuid.uuid4()), "DecompositionOrchestrator", "DecompositionOrchestrator.execute"
+            str(uuid.uuid4()), "DecompositionOrchestrator", "DecompositionOrchestrator.execute",
         )
         with get_trace_context().run_frame(
             layer="L3",
@@ -541,7 +541,7 @@ class WorkerPool:
             task.status = "completed"
             _logger.info("worker_pool_done", extra={"task": task.task_id, "agent": task.target_agent})
             return WorkerResult(
-                task_id=task.task_id, worker_name=task.target_agent, output=output, success=True
+                task_id=task.task_id, worker_name=task.target_agent, output=output, success=True,
             )
         except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
             task.status = "failed"
@@ -690,7 +690,6 @@ if __name__ == "__main__":
     plan = orchestrator.decompose(prompt)
     results = orchestrator.execute(plan, dry_run=True)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -707,10 +706,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,

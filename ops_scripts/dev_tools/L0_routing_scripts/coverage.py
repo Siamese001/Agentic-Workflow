@@ -205,7 +205,7 @@ class CoverageValidator:
                     "target": self.target_coverage,
                     "impact_score": 50,
                     "audit_fail_count": 0,
-                }
+                },
             )
         return violations
 

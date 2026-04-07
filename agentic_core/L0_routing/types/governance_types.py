@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -266,11 +265,11 @@ class PolicyExceptionArtifact:
             raise ValueError("PolicyExceptionArtifact: nonce must be non-empty")
         if not isinstance(self.exception_scope, ExceptionScope):
             raise TypeError(
-                f"PolicyExceptionArtifact: exception_scope must be ExceptionScope, got {type(self.exception_scope).__name__}"
+                f"PolicyExceptionArtifact: exception_scope must be ExceptionScope, got {type(self.exception_scope).__name__}",
             )
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"PolicyExceptionArtifact: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"PolicyExceptionArtifact: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
         if not self.issuer_signature:
             raise ValueError("PolicyExceptionArtifact: issuer_signature must be non-empty")
@@ -285,7 +284,7 @@ class PolicyExceptionArtifact:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "PolicyExceptionArtifact.is_expired"
+            _trace_id, LayerSegment.L0_ROUTING, "PolicyExceptionArtifact.is_expired",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -385,11 +384,11 @@ class PolicyUpdateProposal:
             raise ValueError("PolicyUpdateProposal: originating_agent must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"PolicyUpdateProposal: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"PolicyUpdateProposal: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
         if not isinstance(self.status, ProposalStatus):
             raise TypeError(
-                f"PolicyUpdateProposal: status must be ProposalStatus, got {type(self.status).__name__}"
+                f"PolicyUpdateProposal: status must be ProposalStatus, got {type(self.status).__name__}",
             )
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError(f"PolicyUpdateProposal: confidence must be in [0.0, 1.0], got {self.confidence}")

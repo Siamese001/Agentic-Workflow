@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -333,7 +332,7 @@ def run_and_record(commands: list[ReplayCommand]) -> ReplayRecord:
         truncated_stdout, stdout_truncated = _truncate_if_needed(result.stdout, command.max_stdout_bytes)
         truncated_stderr, stderr_truncated = _truncate_if_needed(result.stderr, command.max_stderr_bytes)
         replay_result = ReplayResult(
-            exit_code=result.returncode, stdout=truncated_stdout, stderr=truncated_stderr
+            exit_code=result.returncode, stdout=truncated_stdout, stderr=truncated_stderr,
         )
         results.append(replay_result)
         per_command_bytes_out.append(len(replay_result.stdout.encode("utf-8")))
@@ -452,11 +451,11 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
                 timeout=command.timeout_s,
             )
             current_result = ReplayResult(
-                exit_code=result.returncode, stdout=result.stdout, stderr=result.stderr
+                exit_code=result.returncode, stdout=result.stdout, stderr=result.stderr,
             )
             if current_result.exit_code != original_result.exit_code:
                 mismatches.append(
-                    f"Command {i + 1}: Exit code mismatch (original={original_result.exit_code}, current={current_result.exit_code})"
+                    f"Command {i + 1}: Exit code mismatch (original={original_result.exit_code}, current={current_result.exit_code})",
                 )
             orig_stdout_norm = _normalize_output(original_result.stdout)
             curr_stdout_norm = _normalize_output(current_result.stdout)
@@ -472,7 +471,7 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
                                     f"First difference at line {j + 1}:",
                                     f"Original: {orig}",
                                     f"Current:  {curr}",
-                                ]
+                                ],
                             )
                             break
             orig_stderr_norm = _normalize_output(original_result.stderr)

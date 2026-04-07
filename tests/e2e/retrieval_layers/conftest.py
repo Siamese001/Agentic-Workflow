@@ -95,7 +95,7 @@ def mock_langgraph_orchestrator():
             return {
                 "steps_executed": len(plan.get("steps", [])),
                 "success": True,
-                "results": []
+                "results": [],
             }
 
     return MockLangGraph()
@@ -109,7 +109,7 @@ def mock_llm_client():
             return {
                 "generated_text": f"Response to: {prompt[:50]}...",
                 "tokens_used": 150,
-                "model": "gpt-4-mock"
+                "model": "gpt-4-mock",
             }
 
     return MockLLMClient()

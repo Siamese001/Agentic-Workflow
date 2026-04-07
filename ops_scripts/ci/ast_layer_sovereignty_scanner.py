@@ -364,7 +364,7 @@ def _scan_file_with_adg(file_path: Path, source_layer: str, tree: ast.AST) -> li
                     for forbidden_prefix in forbidden:
                         if target_layer == forbidden_prefix or target_layer.startswith(forbidden_prefix + "."):
                             violations.append(
-                                f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod} (target layer: {target_layer})"
+                                f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod} (target layer: {target_layer})",
                             )
 
                 # Check apps_* direct L* imports
@@ -373,7 +373,7 @@ def _scan_file_with_adg(file_path: Path, source_layer: str, tree: ast.AST) -> li
                         violations.append(
                             f"VIOLATION {file_path}:{lineno}: "
                             f"apps_* direct L* import — {source_layer} imports {mod} "
-                            f"(target layer: {target_layer}, use agentic_core.interfaces shims)"
+                            f"(target layer: {target_layer}, use agentic_core.interfaces shims)",
                         )
         else:
             # If no layer found in ADG, fall back to AST validation
@@ -414,7 +414,7 @@ def _validate_import_with_ast(file_path: Path, source_layer: str, lineno: int, m
         for forbidden_prefix in forbidden:
             if mod == forbidden_prefix or mod.startswith(forbidden_prefix + "."):
                 violations.append(
-                    f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod}"
+                    f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod}",
                 )
 
     # Check apps_* direct L* imports
@@ -423,7 +423,7 @@ def _validate_import_with_ast(file_path: Path, source_layer: str, lineno: int, m
             violations.append(
                 f"VIOLATION {file_path}:{lineno}: "
                 f"apps_* direct L* import — {source_layer} imports {mod} "
-                f"(use agentic_core.interfaces shims)"
+                f"(use agentic_core.interfaces shims)",
             )
 
     return violations
@@ -442,7 +442,7 @@ def _scan_file_with_ast(file_path: Path, source_layer: str, tree: ast.AST) -> li
             for forbidden_prefix in forbidden:
                 if mod == forbidden_prefix or mod.startswith(forbidden_prefix + "."):
                     violations.append(
-                        f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod}"
+                        f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod}",
                     )
 
     # Check apps_* direct numbered-layer imports (L0-L6 only; L_CONTRACTS etc. are allowed)
@@ -452,7 +452,7 @@ def _scan_file_with_ast(file_path: Path, source_layer: str, tree: ast.AST) -> li
                 violations.append(
                     f"VIOLATION {file_path}:{lineno}: "
                     f"apps_* direct L* import — {source_layer} imports {mod} "
-                    f"(use agentic_core.interfaces shims)"
+                    f"(use agentic_core.interfaces shims)",
                 )
 
     return violations

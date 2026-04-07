@@ -71,39 +71,25 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 _emit_applies_guardrail("p0", "system_learning_memory_bridge", "p0_governance")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -255,7 +241,7 @@ class SystemLearningMemoryBridge:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningMemoryBridge.get_instance"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningMemoryBridge.get_instance",
         )
 
         if cls._instance is None:
@@ -325,7 +311,7 @@ class SystemLearningMemoryBridge:
                 key=f"system_learning.active_version.{component}",
                 value={"component": component, "version_id": version_id, "ts": ts},
                 state_type="json",
-            )
+            ),
         )
 
     def persist_config_snapshot(
@@ -353,7 +339,7 @@ class SystemLearningMemoryBridge:
                 key=f"system_learning.config_snapshot.{surface_name}",
                 value={"surface_name": surface_name, "payload": payload, "source": source, "ts": ts},
                 state_type=state_type,
-            )
+            ),
         )
 
     def persist_telemetry_window(
@@ -378,7 +364,7 @@ class SystemLearningMemoryBridge:
                     "events": normalized,
                 },
                 state_type="json",
-            )
+            ),
         )
         if normalized:
             store.store_performance_metric(
@@ -406,7 +392,7 @@ class SystemLearningMemoryBridge:
                 key=f"system_learning.l1_drift.{payload['surface_name']}",
                 value=payload,
                 state_type="json",
-            )
+            ),
         )
         store.store_performance_metric(
             name="l1_drift_magnitude",
@@ -440,7 +426,7 @@ class SystemLearningMemoryBridge:
             True if persisted, False if MCP unavailable.
         """
         _emit_snapshots_state(
-            str(uuid.uuid4()), "SystemLearningMemoryBridge.persist_healing_success_rate", "L4_STATE"
+            str(uuid.uuid4()), "SystemLearningMemoryBridge.persist_healing_success_rate", "L4_STATE",
         )
         if not self._bridge:
             return False
@@ -791,7 +777,7 @@ class SystemLearningMemoryBridge:
             return False
 
     def query_policy_recommendations(
-        self, profile_id: str = "", *, applied_only: bool = False
+        self, profile_id: str = "", *, applied_only: bool = False,
     ) -> list[dict[str, Any]]:
         """Query persisted policy recommendations.
 

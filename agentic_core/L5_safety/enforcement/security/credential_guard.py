@@ -212,7 +212,7 @@ class CredentialGuard:
             if self._mode == "enforce":
                 from agentic_core.L5_safety.enforcement.credential_guard import CredentialAccessDeniedError
                 raise CredentialAccessDeniedError(
-                    f"Credential guard rate limit exceeded for {target}"
+                    f"Credential guard rate limit exceeded for {target}",
                 )
             return {"verdict": verdict, "timestamp": datetime.now(timezone.utc).isoformat()}
 
@@ -314,7 +314,7 @@ def scan_file(file_path: Path) -> list[dict[str, Any]]:
         for pattern in PATTERNS:
             if pattern["regex"].search(line):
                 violations.append(
-                    {"file": str(file_path), "line_number": line_num, "pattern": pattern["name"]}
+                    {"file": str(file_path), "line_number": line_num, "pattern": pattern["name"]},
                 )
     return violations
 

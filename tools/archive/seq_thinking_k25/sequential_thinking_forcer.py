@@ -31,7 +31,7 @@ def create_forced_sequential_thinking_prompt(user_request: str) -> str:
         "revisesThought": None,
         "branchFromThought": None,
         "branchId": None,
-        "needsMoreThoughts": True
+        "needsMoreThoughts": True,
     }
 
     wrapped = f"""🚫 STOP - MANDATORY SEQUENTIAL THINKING REQUIRED 🚫

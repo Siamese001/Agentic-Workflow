@@ -53,5 +53,5 @@ __all__ = [
     'AdvancedL0Router',
     'AdvancedC0Reranker',
     'AdvancedL6Detector',
-    'UnifiedInferenceEngine'
+    'UnifiedInferenceEngine',
 ]

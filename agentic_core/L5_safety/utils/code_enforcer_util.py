@@ -182,7 +182,7 @@ class CodeEnforcer:
                             message=f"Class '{class_name}' must end with 'Agent' suffix",
                             suggested_fix=f"class {class_name}Agent",
                             auto_fixable=True,
-                        )
+                        ),
                     )
 
         return violations
@@ -202,7 +202,7 @@ class CodeEnforcer:
                             enforcement_type=EnforcementType.PATTERN,
                             severity=ViolationSeverity.WARNING,
                             message=f"Forbidden pattern '{pattern_name}' detected",
-                        )
+                        ),
                     )
 
         return violations
@@ -226,7 +226,7 @@ class CodeEnforcer:
                             enforcement_type=EnforcementType.TYPE_HINTS,
                             severity=ViolationSeverity.INFO,
                             message=f"Function '{node.name}' missing return type hint",
-                        )
+                        ),
                     )
 
         return violations
@@ -255,7 +255,7 @@ class CodeEnforcer:
                             enforcement_type=EnforcementType.SOVEREIGNTY,
                             severity=ViolationSeverity.CRITICAL,
                             message=f"Sovereignty violation: {file_layer} importing from {import_layer}",
-                        )
+                        ),
                     )
 
         return violations
@@ -288,7 +288,7 @@ class CodeEnforcer:
         return False
 
     def check_sovereignty(
-        self, source_layer: str, target_file: Path, agent_id: str | None = None
+        self, source_layer: str, target_file: Path, agent_id: str | None = None,
     ) -> tuple[bool, str]:
         """Check if a layer can modify a target file.
 
@@ -399,7 +399,7 @@ def check_sovereignty(
         Tuple of (allowed, reason)
     """
     config = EnforcementConfig(
-        protected_layers=protected_layers or {"L5", "L6"}
+        protected_layers=protected_layers or {"L5", "L6"},
     )
     enforcer = CodeEnforcer(config=config)
     return enforcer.check_sovereignty(source_layer, Path(target_file))

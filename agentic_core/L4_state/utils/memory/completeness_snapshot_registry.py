@@ -259,7 +259,7 @@ class CompletenessSnapshotRegistry:
         """
         _trace_id = f"l4g_snap_{trace_id[:16]}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "CompletenessSnapshotRegistry.capture_snapshot"
+            _trace_id, LayerSegment.L4_STATE, "CompletenessSnapshotRegistry.capture_snapshot",
         )
 
         # Generate IDs
@@ -275,7 +275,7 @@ class CompletenessSnapshotRegistry:
         if metrics.context_completeness_score < metrics.completeness_threshold:
             triggered_actions.append("Depth++")
             _emit_writes_learning_snapshot(
-                _trace_id, "completeness", metrics.context_completeness_score
+                _trace_id, "completeness", metrics.context_completeness_score,
             )
 
         if "low_diversity" in metrics.missing_signals:
@@ -305,13 +305,13 @@ class CompletenessSnapshotRegistry:
         # Emit meta-learning signal
         if triggered_actions:
             _emit_feeds_meta_learning(
-                _trace_id, "CompletenessSnapshotRegistry", json.dumps(triggered_actions)
+                _trace_id, "CompletenessSnapshotRegistry", json.dumps(triggered_actions),
             )
 
         Logger.info(
             f"Captured completeness snapshot: {snap_id[:32]}... "
             f"(score={metrics.context_completeness_score:.2f}, "
-            f"triggers={triggered_actions})"
+            f"triggers={triggered_actions})",
         )
 
         return snapshot
@@ -573,5 +573,5 @@ def capture_completeness_snapshot(
 ) -> CompletenessSnapshot:
     """Convenience function to capture snapshot."""
     return get_global_snapshot_registry().capture_snapshot(
-        trace_id, query, retrieved_contexts
+        trace_id, query, retrieved_contexts,
     )

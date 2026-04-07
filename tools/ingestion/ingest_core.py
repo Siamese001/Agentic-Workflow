@@ -56,7 +56,7 @@ class CoreKnowledgeIngestion:
         self.collections = {
             "repo_code_chunks": "Code chunks and snippets",
             "repo_symbols": "Python symbols and classes",
-            "repo_arch_docs": "Architectural documentation"
+            "repo_arch_docs": "Architectural documentation",
         }
 
     def ingest_code_chunks(self):
@@ -91,7 +91,7 @@ class CoreKnowledgeIngestion:
                         "subsystem": self._infer_subsystem(rel_path),
                         "chunk_index": i,
                         "total_chunks": len(chunks),
-                        "canonical_digest": hashlib.sha256(chunk.encode()).hexdigest()[:16]
+                        "canonical_digest": hashlib.sha256(chunk.encode()).hexdigest()[:16],
                     }
 
                     documents.append(chunk)
@@ -113,7 +113,7 @@ class CoreKnowledgeIngestion:
                     collection_name="repo_code_chunks",
                     documents=batch_docs,
                     metadatas=batch_metas,
-                    ids=batch_ids
+                    ids=batch_ids,
                 )
                 logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} documents")
 
@@ -165,7 +165,7 @@ class CoreKnowledgeIngestion:
                     "confidence": confidence,
                     "file_path": resolved_path,
                     "symbol_name": adg_name,
-                    "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16],
                 }
 
                 documents.append(doc_content)
@@ -184,7 +184,7 @@ class CoreKnowledgeIngestion:
                         collection_name="repo_symbols",
                         documents=batch_docs,
                         metadatas=batch_metas,
-                        ids=batch_ids
+                        ids=batch_ids,
                     )
                     logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} symbols")
 
@@ -210,7 +210,7 @@ class CoreKnowledgeIngestion:
             "docs/**/*.md",
             "docs/**/*.rst",
             "agentic_core/**/*.md",
-            ".windsurf/**/*.md"
+            ".windsurf/**/*.md",
         ]
 
         for pattern in doc_patterns:
@@ -233,7 +233,7 @@ class CoreKnowledgeIngestion:
                         "layer": self._infer_layer(rel_path),
                         "subsystem": "documentation",
                         "doc_type": self._infer_doc_type(rel_path),
-                        "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16]
+                        "canonical_digest": hashlib.sha256(content.encode()).hexdigest()[:16],
                     }
 
                     documents.append(content)
@@ -255,7 +255,7 @@ class CoreKnowledgeIngestion:
                     collection_name="repo_arch_docs",
                     documents=batch_docs,
                     metadatas=batch_metas,
-                    ids=batch_ids
+                    ids=batch_ids,
                 )
                 logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} documents")
 
@@ -380,7 +380,7 @@ def main():
     ingestion = CoreKnowledgeIngestion(
         repo_root=args.repo_root,
         adg_db_path=args.adg_db or "",
-        chroma_persist_dir=args.chroma_dir
+        chroma_persist_dir=args.chroma_dir,
     )
 
     if args.dry_run:

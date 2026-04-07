@@ -69,7 +69,7 @@ for p, cnt in present:
 # --- L1 cognition layer ALL modules ---
 print("\n=== L1 COGNITION MODULES ===")
 cur.execute(
-    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L1' AND entity_type='module' ORDER BY adg_name"
+    "SELECT adg_name, resolved_path FROM nodes WHERE layer='L1' AND entity_type='module' ORDER BY adg_name",
 )
 for n in cur.fetchall():
     print(f"  {n['adg_name']} | {n['resolved_path']}")

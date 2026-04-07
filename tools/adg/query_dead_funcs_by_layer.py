@@ -69,7 +69,7 @@ def main():
     output = {
         'adg_database': str(adg_db),
         'layer': args.layer,
-        'dead_functions': dead_funcs
+        'dead_functions': dead_funcs,
     }
 
     with open(args.output, 'w', encoding='utf-8') as f:

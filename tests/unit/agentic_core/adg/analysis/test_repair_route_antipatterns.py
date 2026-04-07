@@ -15,7 +15,6 @@ from agentic_core.adg.analysis.RepairRoute import (
 )
 from agentic_core.adg.extraction.static_scanner import Edge
 
-
 _HIGH_ANTIPATTERN_KINDS = [
     "broad_exception_catch",
     "silent_exception_swallow",

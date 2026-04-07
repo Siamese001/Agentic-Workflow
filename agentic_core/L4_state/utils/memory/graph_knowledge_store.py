@@ -41,13 +41,13 @@ class SQLiteGraphStore(IGraphStore):
             sqlite3.OperationalError: If database is corrupted or invalid.
         """
         self.db_path = Path(db_path)
-        
+
         # Validate path exists and is a file
         if not self.db_path.exists():
             raise FileNotFoundError(f"Database file does not exist: {self.db_path}")
         if not self.db_path.is_file():
             raise FileNotFoundError(f"Database path is not a file: {self.db_path}")
-        
+
         self._conn: sqlite3.Connection | None = None
 
     def _get_connection(self) -> sqlite3.Connection:
@@ -111,7 +111,7 @@ class SQLiteGraphStore(IGraphStore):
         compatibility but will raise NotImplementedError.
         """
         raise NotImplementedError(
-            "ADG SQLite database is read-only. Cannot add entities."
+            "ADG SQLite database is read-only. Cannot add entities.",
         )
 
     def get_entity(self, entity_id: str) -> GraphEntity | None:
@@ -159,7 +159,7 @@ class SQLiteGraphStore(IGraphStore):
         )
 
     def get_relationships(
-        self, entity_id: str, direction: str = "both"
+        self, entity_id: str, direction: str = "both",
     ) -> list[GraphRelationship]:
         """Get relationships for an entity.
 
@@ -279,7 +279,7 @@ class SQLiteGraphStore(IGraphStore):
                         nodes=current_nodes.copy(),
                         relationships=current_rels.copy(),
                         cost=float(current_depth),
-                    )
+                    ),
                 )
                 continue
 
@@ -354,7 +354,7 @@ class SQLiteGraphStore(IGraphStore):
                 if next_id not in visited:
                     visited.add(next_id)
                     queue.append(
-                        (next_id, path_ids + [current_id], path_rels + [rel])
+                        (next_id, path_ids + [current_id], path_rels + [rel]),
                     )
 
         return None  # No path found
@@ -442,7 +442,7 @@ class SQLiteGraphStore(IGraphStore):
             conn = self._get_connection()
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT src_id, dst_id FROM edges WHERE relation_type = 'imports'"
+                "SELECT src_id, dst_id FROM edges WHERE relation_type = 'imports'",
             )
 
             G = nx.Graph()
@@ -462,13 +462,13 @@ class SQLiteGraphStore(IGraphStore):
                         description=f"Connected component with {len(entities)} entities",
                         entities=entities,
                         confidence=1.0,
-                    )
+                    ),
                 )
 
             return communities
         except ImportError:
             Logger.warning(
-                "networkx not installed, returning empty communities list"
+                "networkx not installed, returning empty communities list",
             )
             return []
 

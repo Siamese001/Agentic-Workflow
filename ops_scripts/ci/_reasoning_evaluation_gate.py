@@ -151,10 +151,10 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     orphan_guard = _count_exported(conn, "OrphanReasoningEvaluationError", "reasoning_evaluation")
     eval_step_exported = _count_exported(conn, "evaluate_reasoning_step", "reasoning_evaluation")
     eval_from_trace_exported = _count_exported(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_evaluation"
+        conn, "evaluate_reasoning_step_from_trace", "reasoning_evaluation",
     )
     eval_from_trace_in_chokepoint = _count_calls(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint"
+        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint",
     )
     eval_in_chokepoint = _count_in_file(conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint")
     total_wired = max(eval_from_trace_in_chokepoint, eval_in_chokepoint)
@@ -168,7 +168,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"evaluate_reasoning_step exported={eval_step_exported} (>=1), "
             f"evaluate_reasoning_step_from_trace exported={eval_from_trace_exported}, "
             f"wired in reasoning_chokepoint={total_wired} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -196,7 +196,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"ReasoningEvaluationRecord exported={record_exported} (>=1), "
             f"ReasoningEvaluationRubric in reasoning_chokepoint={rubric_in_chokepoint} (>=1), "
             f"ReasoningEvaluationContext exported={eval_context_exported}",
-        )
+        ),
     )
     return ok
 
@@ -215,7 +215,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
     outcome_exported = _count_exported(conn, "ReasoningEvaluationOutcome", "reasoning_evaluation")
     outcome_in_chokepoint = _count_in_file(conn, "ReasoningEvaluationOutcome", "reasoning_chokepoint")
     eval_from_trace_in_chokepoint = _count_in_file(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint"
+        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint",
     )
 
     ok = record_exported >= 1 and outcome_exported >= 1 and eval_from_trace_in_chokepoint >= 1
@@ -227,7 +227,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"ReasoningEvaluationOutcome exported={outcome_exported} (>=1), "
             f"ReasoningEvaluationOutcome in reasoning_chokepoint={outcome_in_chokepoint}, "
             f"evaluate_reasoning_step_from_trace in reasoning_chokepoint={eval_from_trace_in_chokepoint} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -254,7 +254,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"ComparativeReasoningEvaluation exported (has winning_reasoning_hash)={comparative_exported} (>=1), "
             f"evaluate_comparative_reasoning exported={compare_fn_exported} (>=1), "
             f"ReasoningEvaluationStore exported={store_exported}",
-        )
+        ),
     )
     return ok
 
@@ -271,13 +271,13 @@ def gate_e(conn: sqlite3.Connection) -> bool:
       (confirms L1 reasoning executes at runtime paths being evaluated)
     """
     eval_from_trace_in_chokepoint = _count_in_file(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint"
+        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint",
     )
     store_exported = _count_exported(conn, "ReasoningEvaluationStore", "reasoning_evaluation")
     get_store_exported = _count_exported(conn, "get_reasoning_evaluation_store", "reasoning_evaluation")
     l1_trace_sources = _count_distinct_sources(conn, "records_execution_trace", L1_FILTER)
     eval_step_callers = _count_symbol_sources(
-        conn, "evaluate_reasoning_step", "AND source_file LIKE '%L1%' " + NON_TEST
+        conn, "evaluate_reasoning_step", "AND source_file LIKE '%L1%' " + NON_TEST,
     )
 
     ok = eval_from_trace_in_chokepoint >= 1 and store_exported >= 1 and l1_trace_sources >= 1
@@ -290,7 +290,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"get_reasoning_evaluation_store exported={get_store_exported}, "
             f"records_execution_trace L1 non-test sources={l1_trace_sources} (>=1), "
             f"evaluate_reasoning_step symbol in L1 non-test sources={eval_step_callers}",
-        )
+        ),
     )
     return ok
 
@@ -341,7 +341,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     c.execute(
         f"SELECT COUNT(*) FROM edges "
         f"WHERE relation_type='records_execution_trace' "
-        f"AND source_file LIKE '%L1%' {NON_TEST}"
+        f"AND source_file LIKE '%L1%' {NON_TEST}",
     )
     print(f"  Runtime records_execution_trace L1 (edges, non-test): {c.fetchone()[0]}")
 
@@ -350,7 +350,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"SELECT DISTINCT source_file, symbol FROM edges "
         f"WHERE (symbol LIKE '%ReasoningEvaluation%' OR symbol LIKE '%evaluate_reasoning%' "
         f"OR symbol LIKE '%ComparativeReasoning%' OR symbol LIKE '%OrphanReasoning%') "
-        f"{NON_TEST} LIMIT 20"
+        f"{NON_TEST} LIMIT 20",
     )
     rows = c.fetchall()
     if rows:
@@ -363,7 +363,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     c.execute(
         f"SELECT DISTINCT source_file, relation_type, symbol FROM edges "
         f"WHERE (symbol LIKE '%evaluate_reasoning_step%' OR symbol LIKE '%ReasoningEvaluationRubric%') "
-        f"AND source_file LIKE '%reasoning_chokepoint%' {NON_TEST} LIMIT 10"
+        f"AND source_file LIKE '%reasoning_chokepoint%' {NON_TEST} LIMIT 10",
     )
     rows = c.fetchall()
     if rows:

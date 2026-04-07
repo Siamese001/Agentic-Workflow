@@ -178,7 +178,7 @@ class ExecutionProofRecorder:
     def start_trace(self, run_id: str = "", input_data: str = "") -> ExecutionTrace:
         trace = ExecutionTrace(run_id=run_id)
         trace.replay_key = ReplayKey.create(
-            trace_id=trace.trace_id, run_id=run_id, input_data=input_data
+            trace_id=trace.trace_id, run_id=run_id, input_data=input_data,
         )
         self._traces[trace.trace_id] = trace
         return trace

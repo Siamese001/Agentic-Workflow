@@ -59,7 +59,7 @@ def write_scorecard_csv(path: Path, scorecard_rows: list[Any]) -> str:
                     f"{row.weight:.1f}",
                     f"{row.weighted_score:.4f}",
                     row.verdict,
-                ]
+                ],
             )
     _log.debug("[eval_artifact_util] Wrote scorecard CSV %s", path)
     return str(path)

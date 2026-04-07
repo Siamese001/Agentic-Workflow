@@ -199,7 +199,7 @@ print("=== CRITICAL GAPS (>3 symbols, no tests) ===")
 for g in sorted(by_sev.get("CRITICAL", []), key=lambda x: x["path"]):
     cls = g.get("top_classes", [])
     print(
-        "  [" + g["target"] + "] " + g["path"] + "  cls=" + str(g["n_classes"]) + " fn=" + str(g["n_funcs"])
+        "  [" + g["target"] + "] " + g["path"] + "  cls=" + str(g["n_classes"]) + " fn=" + str(g["n_funcs"]),
     )
     if cls:
         print("    classes: " + str(cls))
@@ -209,7 +209,7 @@ print("=== HIGH GAPS (1-3 symbols, no tests) ===")
 for g in sorted(by_sev.get("HIGH", []), key=lambda x: x["path"]):
     cls = g.get("top_classes", [])
     print(
-        "  [" + g["target"] + "] " + g["path"] + "  cls=" + str(g["n_classes"]) + " fn=" + str(g["n_funcs"])
+        "  [" + g["target"] + "] " + g["path"] + "  cls=" + str(g["n_classes"]) + " fn=" + str(g["n_funcs"]),
     )
     if cls:
         print("    classes: " + str(cls))
@@ -234,7 +234,7 @@ for tgt, counts in sorted(target_gaps.items()):
         + " HIGH="
         + str(counts["HIGH"])
         + " LOW="
-        + str(counts["LOW"])
+        + str(counts["LOW"]),
     )
 
 # Guardian-specific check: does tests/guardian or tests/architecture exist?

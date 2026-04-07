@@ -112,7 +112,7 @@ class ASTComplianceChecker:
                     self.violations.append((
                         rel_path_str,
                         line_num,
-                        f"Forbidden pattern detected: {pattern}"
+                        f"Forbidden pattern detected: {pattern}",
                     ))
 
     def _check_subprocess_calls(self, file_path: Path, tree: ast.AST, source: str) -> None:
@@ -136,7 +136,7 @@ class ASTComplianceChecker:
                     self.violations.append((
                         rel_path_str,
                         line_num,
-                        "Subprocess call with grep detected"
+                        "Subprocess call with grep detected",
                     ))
 
     def _is_subprocess_call(self, node: ast.Call) -> bool:

@@ -25,7 +25,7 @@ class GeminiE2EJudge:
         return {
             "score": 0.85,
             "passed": True,
-            "feedback": "E2E evaluation passed"
+            "feedback": "E2E evaluation passed",
         }
 
 

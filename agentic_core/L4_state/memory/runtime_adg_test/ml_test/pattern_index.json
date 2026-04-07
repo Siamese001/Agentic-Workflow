@@ -1,0 +1,36 @@
+{
+  "runtime_adg_1775551281_41e829c9": {
+    "component_distribution": {
+      "TestOrchestrator": 5
+    },
+    "error_patterns": [
+      {
+        "component": "TestOrchestrator",
+        "layer": "L5",
+        "node_id": "span-l5-001"
+      }
+    ],
+    "extraction_metadata": {
+      "timestamp": 1775551281,
+      "total_nodes": 5
+    },
+    "layer_distribution": {
+      "L0": 1,
+      "L1": 1,
+      "L2": 1,
+      "L3": 1,
+      "L5": 1
+    },
+    "relation_patterns": {
+      "parent_child": 5,
+      "temporal_sequence": 4
+    },
+    "span_type_distribution": {
+      "orchestrator": 5
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  }
+}

@@ -414,8 +414,8 @@ class TestExecuteSsotIntegrationHardening:
                     "type": "RetrievalFix",
                     "outcome": "SUCCESS",
                     "retrieval_context": result,  # Link retrieval
-                }
-            ]
+                },
+            ],
         }
         mock_state.update_meta_learning = MagicMock()
 
@@ -501,7 +501,9 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_invalid_query_handling(self):
         """Invalid queries should not crash retrieval."""
-        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import _retrieve_execution_context
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
+            _retrieve_execution_context,
+        )
 
         invalid_queries = [
             None,

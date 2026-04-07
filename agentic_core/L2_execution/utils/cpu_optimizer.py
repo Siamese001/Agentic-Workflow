@@ -139,7 +139,7 @@ class AMD9950X3DOptimizer:
             self.config = replace(self.config, use_processes=use_procs)
             logger.info(
                 f"Auto-configured: workload={self.config.workload_class.value}, "
-                f"use_processes={use_procs}"
+                f"use_processes={use_procs}",
             )
 
     def _detect_amd(self) -> bool:
@@ -296,13 +296,13 @@ class AMD9950X3DOptimizer:
         if status == "critical":
             logger.error(
                 f"CPU temperature {temp:.1f}°C exceeds {SUSTAINED_TEMP_THRESHOLD_C}°C threshold. "
-                f"Stopping execution to prevent thermal damage."
+                f"Stopping execution to prevent thermal damage.",
             )
             return True
         elif status == "warning":
             logger.warning(
                 f"CPU temperature {temp:.1f}°C approaching threshold. "
-                f"Consider reducing worker count or improving cooling."
+                f"Consider reducing worker count or improving cooling.",
             )
         return False
 
@@ -394,7 +394,7 @@ class AMD9950X3DOptimizer:
                     for f in futures:
                         f.cancel()
                     raise RuntimeError(
-                        f"Execution stopped: CPU temperature exceeded {SUSTAINED_TEMP_THRESHOLD_C}°C"
+                        f"Execution stopped: CPU temperature exceeded {SUSTAINED_TEMP_THRESHOLD_C}°C",
                     )
 
                 try:

@@ -229,7 +229,7 @@ class DependencyManager:
             circuit_breaker["state"] = "open"
             dependency.status = DependencyStatus.CIRCUIT_OPEN
             Logger.warning(
-                f"Circuit breaker opened for {name} after {circuit_breaker['failure_count']} failures"
+                f"Circuit breaker opened for {name} after {circuit_breaker['failure_count']} failures",
             )
 
     def _get_suggestion(self, name: str) -> str:

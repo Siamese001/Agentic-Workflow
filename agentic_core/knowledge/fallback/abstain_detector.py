@@ -80,7 +80,7 @@ class AbstainDetector:
         """
         trace_id = f"abstain_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "AbstainDetector.evaluate"
+            trace_id, LayerSegment.L1_REASONING, "AbstainDetector.evaluate",
         )
 
         # Extract support score
@@ -127,7 +127,7 @@ class AbstainDetector:
 
         _emit_records_telemetry_event(
             "abstain_decision",
-            f"{action.value}_{'abstain' if should_abstain else 'proceed'}"
+            f"{action.value}_{'abstain' if should_abstain else 'proceed'}",
         )
 
         log.debug(f"Abstain decision: {action.value} (should_abstain={should_abstain})")

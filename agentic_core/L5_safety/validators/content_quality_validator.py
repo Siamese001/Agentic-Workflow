@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -214,7 +213,7 @@ class ContentQualityValidator:
             config: Configuration dictionary containing validation rules
         """
         self.placeholder_patterns = config.get(
-            "placeholder_patterns", ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$.*?\\$"]
+            "placeholder_patterns", ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$.*?\\$"],
         )
         self.quantified_patterns = config.get(
             "quantified_patterns",
@@ -229,7 +228,7 @@ class ContentQualityValidator:
         self.min_skill_matches = config.get("min_skill_matches", 3)
 
     def validate_content_quality(
-        self, resume: dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None,
     ) -> QualityValidationResult:
         """
         Validate content quality using purely deterministic logic.
@@ -245,12 +244,12 @@ class ContentQualityValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ContentQualityValidator.validate_content_quality"
+            _trace_id, LayerSegment.L5_POLICY, "ContentQualityValidator.validate_content_quality",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:ContentQualityValidator.validate_content_quality".encode()
+            f"{_trace_id}:ContentQualityValidator.validate_content_quality".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -303,7 +302,7 @@ class ContentQualityValidator:
         return issues
 
     def _validate_skills(
-        self, resume: dict[str, Any], job_desc: str | None = None
+        self, resume: dict[str, Any], job_desc: str | None = None,
     ) -> tuple[list[str], list[str]]:
         """
         Validate skills using deterministic rule-based logic.

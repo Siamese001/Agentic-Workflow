@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -299,7 +298,7 @@ class ConstitutionalAISystem:
                 Logger.debug(f"Removed constitutional rule: {rule_id}")
 
     def review_content(
-        self, content: str, context: dict[str, any] | None = None
+        self, content: str, context: dict[str, any] | None = None,
     ) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
 
@@ -363,7 +362,7 @@ class ConstitutionalAISystem:
         return violations
 
     def _check_rule(
-        self, content: str, rule: ConstitutionalRule, context: dict[str, any] | None = None
+        self, content: str, rule: ConstitutionalRule, context: dict[str, any] | None = None,
     ) -> list[ViolationReport]:
         """Check content against a specific rule.
 
@@ -432,11 +431,11 @@ class ConstitutionalAISystem:
             violation_by_type[v.Severity].append(v)
         if RuleSeverity.CRITICAL in violation_by_type:
             recommendations.append(
-                f"CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} critical violations immediately"
+                f"CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} critical violations immediately",
             )
         if RuleSeverity.HIGH in violation_by_type:
             recommendations.append(
-                f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-Severity violations"
+                f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-Severity violations",
             )
         unique_rules = {v.rule_id for v in violations}
         if len(unique_rules) <= 3:

@@ -52,7 +52,7 @@ class ComplianceCheckerService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ComplianceCheckerService.check_compliance"
+            _trace_id, LayerSegment.L2_EXECUTION, "ComplianceCheckerService.check_compliance",
         )
         _emit_routes_to_capability("p2", "compliance_checker", "requirement_matching")
         _emit_validates_capability("p2", "compliance_checker", "content_analysis")
@@ -118,7 +118,7 @@ class ComplianceCheckerService:
             mandatory_reqs,
         )
         _emit_records_telemetry_event(
-            "p4", "compliance_checker", f"check_complete:{compliance_rate:.2f}"
+            "p4", "compliance_checker", f"check_complete:{compliance_rate:.2f}",
         )
 
         return summary

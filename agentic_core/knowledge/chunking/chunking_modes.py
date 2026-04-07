@@ -74,7 +74,7 @@ class FixedTokenChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into fixed-size pieces."""
         _emit_records_execution_trace(
-            f"chunk_fixed_{doc_id}", LayerSegment.L2_EXECUTION, "FixedTokenChunker.chunk"
+            f"chunk_fixed_{doc_id}", LayerSegment.L2_EXECUTION, "FixedTokenChunker.chunk",
         )
 
         chunks = []
@@ -135,7 +135,7 @@ class OverlapWindowChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text using sliding windows."""
         _emit_records_execution_trace(
-            f"chunk_overlap_{doc_id}", LayerSegment.L2_EXECUTION, "OverlapWindowChunker.chunk"
+            f"chunk_overlap_{doc_id}", LayerSegment.L2_EXECUTION, "OverlapWindowChunker.chunk",
         )
 
         chunks = []
@@ -215,7 +215,7 @@ class SectionAwareChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text by sections."""
         _emit_records_execution_trace(
-            f"chunk_section_{doc_id}", LayerSegment.L2_EXECUTION, "SectionAwareChunker.chunk"
+            f"chunk_section_{doc_id}", LayerSegment.L2_EXECUTION, "SectionAwareChunker.chunk",
         )
 
         headings = self._find_headings(text)
@@ -358,7 +358,7 @@ class SemanticObjectChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into semantic objects."""
         _emit_records_execution_trace(
-            f"chunk_semantic_{doc_id}", LayerSegment.L2_EXECUTION, "SemanticObjectChunker.chunk"
+            f"chunk_semantic_{doc_id}", LayerSegment.L2_EXECUTION, "SemanticObjectChunker.chunk",
         )
 
         units = self._split_into_units(text)

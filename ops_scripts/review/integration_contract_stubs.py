@@ -49,10 +49,10 @@ class ResultEnvelope:
                         'code': f.code,
                         'severity': f.severity.value if isinstance(f.severity, FindingSeverity) else f.severity,
                         'message': f.message,
-                        'context': f.context
+                        'context': f.context,
                     }
                     for f in self.findings
                 ],
                 'inputs': self.inputs,
-                'outputs': self.outputs
+                'outputs': self.outputs,
             }, f, indent=2)

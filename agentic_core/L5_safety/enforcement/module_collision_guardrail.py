@@ -291,7 +291,7 @@ def detect_collisions(scans: dict[str, dict[str, list[Path]]]) -> dict[str, list
             for root_name, root_files in root_groups.items():
                 if len(root_files) > 1 and (not is_allowed_shim_pair(root_files)):
                     violations["case_insensitive_collisions"].append(
-                        (f"{root_name}:{case_key}", [(case_key, root_files)])
+                        (f"{root_name}:{case_key}", [(case_key, root_files)]),
                     )
     for logical_path, files in logical_paths_map.items():
         root_groups = defaultdict(list)
@@ -302,7 +302,7 @@ def detect_collisions(scans: dict[str, dict[str, list[Path]]]) -> dict[str, list
             has_package = any((f.name == "__init__.py" for _, f in root_files))
             if has_module and has_package and (not is_allowed_shim_pair(root_files)):
                 violations["module_package_dual_definitions"].append(
-                    (f"{root_name}:{logical_path}", root_files)
+                    (f"{root_name}:{logical_path}", root_files),
                 )
     return violations
 
@@ -348,7 +348,7 @@ def save_baseline(collisions: dict[str, list[tuple[str, list[Path]]]]) -> None:
             baseline["logical_import_path_collisions"][logical_lower] = paths
     baseline["filename_collisions"] = dict(sorted(baseline["filename_collisions"].items()))
     baseline["logical_import_path_collisions"] = dict(
-        sorted(baseline["logical_import_path_collisions"].items())
+        sorted(baseline["logical_import_path_collisions"].items()),
     )
     baseline_path = Path("artifacts/architecture/module_collision_baseline.json")
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
@@ -372,7 +372,7 @@ def check_against_baseline(collisions: dict[str, list[tuple[str, list[Path]]]], 
             baseline_paths = baseline["filename_collisions"][stem_lower]
             if set(paths) != set(baseline_paths):
                 violations.append(
-                    f"GROWTH in filename collision {stem_lower}: baseline={baseline_paths}, current={paths}"
+                    f"GROWTH in filename collision {stem_lower}: baseline={baseline_paths}, current={paths}",
                 )
     current_logical = {}
     if "duplicate_logical_paths" in collisions:
@@ -387,7 +387,7 @@ def check_against_baseline(collisions: dict[str, list[tuple[str, list[Path]]]], 
             baseline_paths = baseline["logical_import_path_collisions"][logical_lower]
             if set(paths) != set(baseline_paths):
                 violations.append(
-                    f"GROWTH in logical path collision {logical_lower}: baseline={baseline_paths}, current={paths}"
+                    f"GROWTH in logical path collision {logical_lower}: baseline={baseline_paths}, current={paths}",
                 )
     return violations
 
@@ -396,7 +396,7 @@ def get_repo_root() -> Path:
     """Determine repository root via git or fallback to .git search."""
     try:
         result = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True
+            ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True,
         )
         return Path(result.stdout.strip())
     except (subprocess.CalledProcessError, FileNotFoundError):    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
@@ -437,7 +437,7 @@ def main():
         collisions = detect_collisions(scans)
         save_baseline(collisions)
         print(
-            f"[OK] Baseline updated with {sum(len(items) for items in collisions.values())} collision groups"
+            f"[OK] Baseline updated with {sum(len(items) for items in collisions.values())} collision groups",
         )
         sys.exit(0)
     missing_roots = [name for name, path in roots_to_scan.items() if not path.exists()]

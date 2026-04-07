@@ -41,7 +41,7 @@ class L5RiskCalibrator(BaseMLModel):
         0: "Low",
         1: "Medium",
         2: "High",
-        3: "Critical"
+        3: "Critical",
     }
 
     # Reverse mapping
@@ -56,7 +56,7 @@ class L5RiskCalibrator(BaseMLModel):
             model_version="1.0",
             model_type="xgboost",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -73,7 +73,7 @@ class L5RiskCalibrator(BaseMLModel):
         self.threshold_config = {
             "confidence_threshold": 0.7,
             "high_risk_threshold": 0.8,
-            "critical_risk_threshold": 0.9
+            "critical_risk_threshold": 0.9,
         }
 
         if model_file_path and model_file_path.exists():
@@ -121,8 +121,8 @@ class L5RiskCalibrator(BaseMLModel):
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
                 'saved_at': datetime.now().isoformat(),
-                'xgboost_params': getattr(self.model, 'params', {})
-            }
+                'xgboost_params': getattr(self.model, 'params', {}),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -134,7 +134,7 @@ class L5RiskCalibrator(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict risk level for policy certification.
@@ -167,7 +167,7 @@ class L5RiskCalibrator(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -202,8 +202,8 @@ class L5RiskCalibrator(BaseMLModel):
                     prediction=predicted_risk,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Determine final decision mode based on risk level
@@ -223,7 +223,7 @@ class L5RiskCalibrator(BaseMLModel):
                 decision_mode=final_decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -235,7 +235,7 @@ class L5RiskCalibrator(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'risk_level': predicted_risk,
-                'requires_escalation': predicted_risk in ["High", "Critical"]
+                'requires_escalation': predicted_risk in ["High", "Critical"],
             })
 
             # Log prediction
@@ -251,7 +251,7 @@ class L5RiskCalibrator(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def calibrate_policy_risk(
@@ -260,7 +260,7 @@ class L5RiskCalibrator(BaseMLModel):
         context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> ModelPrediction:
         """
         Calibrate risk level for a specific policy.
@@ -281,7 +281,7 @@ class L5RiskCalibrator(BaseMLModel):
             "regulations": context.get("regulations", {}),
             "history": context.get("history", {}),
             "environment": context.get("environment", {}),
-            "trace_id": trace_id
+            "trace_id": trace_id,
         }
 
         # Extract features
@@ -289,7 +289,7 @@ class L5RiskCalibrator(BaseMLModel):
             context=evaluation_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -300,7 +300,7 @@ class L5RiskCalibrator(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         # Validate input
@@ -312,7 +312,7 @@ class L5RiskCalibrator(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
     def get_risk_recommendations(
@@ -321,7 +321,7 @@ class L5RiskCalibrator(BaseMLModel):
         context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get comprehensive risk recommendations for policy decisions.
@@ -342,7 +342,7 @@ class L5RiskCalibrator(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Extract features for analysis
@@ -351,21 +351,21 @@ class L5RiskCalibrator(BaseMLModel):
             "regulations": context.get("regulations", {}),
             "history": context.get("history", {}),
             "environment": context.get("environment", {}),
-            "trace_id": trace_id
+            "trace_id": trace_id,
         }
 
         extraction_result = self.feature_extractor.extract_features(
             context=evaluation_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate recommendations based on risk level and features
         recommendations = self._generate_risk_recommendations(
             prediction=prediction,
             features=extraction_result.features if extraction_result.success else {},
-            policy=policy
+            policy=policy,
         )
 
         return {
@@ -376,7 +376,7 @@ class L5RiskCalibrator(BaseMLModel):
             'recommendations': recommendations,
             'requires_additional_review': prediction.prediction in ["High", "Critical"],
             'escalation_required': prediction.decision_mode == DecisionMode.ESCALATED,
-            'prediction_metadata': prediction.model_metadata
+            'prediction_metadata': prediction.model_metadata,
         }
 
     def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
@@ -396,7 +396,7 @@ class L5RiskCalibrator(BaseMLModel):
                     'importance_score': float(importance),
                     'feature_value': model_input.features.get(name),
                     'rank': i + 1,
-                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0
+                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0,
                 })
 
             # Sort by importance
@@ -417,7 +417,7 @@ class L5RiskCalibrator(BaseMLModel):
         self,
         prediction: ModelPrediction,
         features: dict[str, Any],
-        policy: dict[str, Any]
+        policy: dict[str, Any],
     ) -> list[str]:
         """Generate risk-based recommendations."""
         recommendations = []
@@ -429,26 +429,26 @@ class L5RiskCalibrator(BaseMLModel):
                 "Immediate executive review required",
                 "Implement additional risk mitigations before approval",
                 "Consider policy redesign to reduce risk exposure",
-                "Document comprehensive risk assessment and mitigation plan"
+                "Document comprehensive risk assessment and mitigation plan",
             ])
         elif risk_level == "High":
             recommendations.extend([
                 "Senior management review required",
                 "Additional compliance checks needed",
                 "Implement monitoring and reporting requirements",
-                "Consider phased implementation approach"
+                "Consider phased implementation approach",
             ])
         elif risk_level == "Medium":
             recommendations.extend([
                 "Standard review process sufficient",
                 "Implement basic monitoring requirements",
-                "Document risk assessment findings"
+                "Document risk assessment findings",
             ])
         else:  # Low
             recommendations.extend([
                 "Standard approval process appropriate",
                 "Minimal additional controls required",
-                "Proceed with normal implementation"
+                "Proceed with normal implementation",
             ])
 
         # Feature-specific recommendations
@@ -521,7 +521,7 @@ class L5RiskCalibrator(BaseMLModel):
         training_data: list[dict[str, Any]],
         feature_names: list[str],
         training_data_digest: str = "",
-        xgb_params: dict[str, Any] | None = None
+        xgb_params: dict[str, Any] | None = None,
     ) -> None:
         """
         Train the XGBoost model.
@@ -569,7 +569,7 @@ class L5RiskCalibrator(BaseMLModel):
             'colsample_bytree': 0.8,
             'random_state': 42,
             'reg_alpha': 0.1,
-            'reg_lambda': 1.0
+            'reg_lambda': 1.0,
         }
 
         # Merge with provided parameters

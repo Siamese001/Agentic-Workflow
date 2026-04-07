@@ -85,7 +85,7 @@ class TestCapabilityExtractor:
             {"path": "test.py", "classification": "legitimate"},
             {"path": "phase_test.py", "classification": "phase_named"},
             {"path": "missing.py", "classification": "legitimate"},
-            {"path": "test.txt", "classification": "legitimate"}
+            {"path": "test.txt", "classification": "legitimate"},
         ]
 
         result = self.extractor.get_legitimate_python_files(manifest)
@@ -165,7 +165,7 @@ class TestClass:
         """Test identify_extraction_candidates with low scores."""
         analyses = [
             {"reusable_score": 1, "file_path": "test1.py"},
-            {"reusable_score": 2, "file_path": "test2.py"}
+            {"reusable_score": 2, "file_path": "test2.py"},
         ]
         result = self.extractor.identify_extraction_candidates(analyses)
         assert result == []
@@ -175,7 +175,7 @@ class TestClass:
         analyses = [
             {"reusable_score": 3, "file_path": "test1.py"},
             {"reusable_score": 5, "file_path": "test2.py"},
-            {"reusable_score": 4, "file_path": "test3.py"}
+            {"reusable_score": 4, "file_path": "test3.py"},
         ]
         result = self.extractor.identify_extraction_candidates(analyses)
         assert len(result) == 3
@@ -196,8 +196,8 @@ class TestClass:
             "file_path": "test.py",
             "capability_patterns": {
                 "validation": ["validate1", "validate2"],
-                "file_operations": ["read_file"]
-            }
+                "file_operations": ["read_file"],
+            },
         }
         result = self.extractor._determine_primary_capability(candidate)
         assert result == "validation"  # Should pick the one with most functions
@@ -226,7 +226,7 @@ def _private_func():
             "file_path": "test.py",
             "reusable_score": 0,
             "functions": [{"name": "_private_func", "is_private": True}],
-            "classes": []
+            "classes": [],
         }
 
         result = self.extractor.extract_capability(candidate)
@@ -252,7 +252,7 @@ class TestValidator:
             "file_path": "test.py",
             "reusable_score": 5,
             "functions": [{"name": "validate_input", "is_private": False}],
-            "classes": [{"name": "TestValidator", "is_private": False}]
+            "classes": [{"name": "TestValidator", "is_private": False}],
         }
 
         result = self.extractor.extract_capability(candidate)
@@ -284,8 +284,8 @@ class TestValidator:
                 "source_file": "test.py",
                 "target_module": "tools/adg/shared_modules/test.py",
                 "capability": "test",
-                "status": "extracted"
-            }
+                "status": "extracted",
+            },
         ]
 
         log_path = self.extractor.save_extraction_log("test_log.json")

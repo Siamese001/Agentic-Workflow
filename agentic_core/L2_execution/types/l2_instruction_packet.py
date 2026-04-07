@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -337,7 +336,7 @@ class InstructionPacket:
         expected = mac.hexdigest().lower()
         if not hmac.compare_digest(self.l5_signature, expected):
             raise SignatureVerificationError(
-                "InstructionPacket L5 signature mismatch -- certification tampered or wrong key"
+                "InstructionPacket L5 signature mismatch -- certification tampered or wrong key",
             )
         if self.expiration_timestamp:
             try:
@@ -357,7 +356,7 @@ class InstructionPacket:
         expected = mac.hexdigest().lower()
         if not hmac.compare_digest(self.signature, expected):
             raise SignatureVerificationError(
-                "InstructionPacket signature mismatch -- packet tampered or wrong key"
+                "InstructionPacket signature mismatch -- packet tampered or wrong key",
             )
 
     @property

@@ -99,21 +99,14 @@ if str(ROOT) not in sys.path:
 import redis
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -121,17 +114,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -277,7 +264,7 @@ class ADGTestSelector:
             for node in nodes:
                 # Get relationships of type 'covers' (incoming edges)
                 relationships = self._graph_store.get_relationships(
-                    node.id, direction="incoming"
+                    node.id, direction="incoming",
                 )
 
                 for rel in relationships:
@@ -285,7 +272,7 @@ class ADGTestSelector:
                         # Get the test node
                         test_node = self._graph_store.get_entity(rel.source_id)
                         if test_node and test_node.metadata.get("file_path", "").startswith(
-                            "tests/"
+                            "tests/",
                         ):
                             test_path = test_node.metadata.get("file_path")
                             if test_path:
@@ -294,22 +281,22 @@ class ADGTestSelector:
                                 # Calculate test priority score based on centrality
                                 try:
                                     centrality = self._graph_store.get_centrality(
-                                        test_node.id
+                                        test_node.id,
                                     )
                                     # Higher centrality = higher priority
                                     test_scores[test_path] = max(
-                                        test_scores.get(test_path, 0.0), centrality
+                                        test_scores.get(test_path, 0.0), centrality,
                                     )
                                 except Exception:
                                     pass
 
         # Sort by centrality score (descending) then by path
         sorted_tests = sorted(
-            test_paths, key=lambda x: (-test_scores.get(x, 0.0), x)
+            test_paths, key=lambda x: (-test_scores.get(x, 0.0), x),
         )
 
         Logger.info(
-            f"ADGTestSelector[Graph]: Selected {len(sorted_tests)} tests for {len(changed_files)} files"
+            f"ADGTestSelector[Graph]: Selected {len(sorted_tests)} tests for {len(changed_files)} files",
         )
         return sorted_tests
 

@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -184,7 +183,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
 
     debug_mode: bool = False
     enabled_rules: list[str] = field(
-        default_factory=lambda: ["pii_detection", "prompt_injection", "bias_detection", "format_validation"]
+        default_factory=lambda: ["pii_detection", "prompt_injection", "bias_detection", "format_validation"],
     )
 
     def __post_init__(self):
@@ -252,11 +251,11 @@ class InputValidationGuardrail(SovereignBaseAgent):
         violations = []
         if re.search("\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b", text):
             violations.append(
-                {"type": "pii_email", "severity": "high", "message": "Email address detected in input"}
+                {"type": "pii_email", "severity": "high", "message": "Email address detected in input"},
             )
         if re.search("\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b", text):
             violations.append(
-                {"type": "pii_phone", "severity": "high", "message": "Phone number detected in input"}
+                {"type": "pii_phone", "severity": "high", "message": "Phone number detected in input"},
             )
         if re.search("\\b\\d{3}-\\d{2}-\\d{4}\\b", text):
             violations.append(
@@ -264,7 +263,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                     "type": "pii_ssn",
                     "severity": "critical",
                     "message": "Social security number detected in input",
-                }
+                },
             )
         return {"valid": len(violations) == 0, "violations": violations}
 
@@ -286,7 +285,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                         "type": "prompt_injection",
                         "severity": "high",
                         "message": f"Potential prompt injection detected: {pattern}",
-                    }
+                    },
                 )
         return {"valid": len(violations) == 0, "violations": violations}
 
@@ -305,7 +304,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
                         "type": f"bias_{bias_type}",
                         "severity": "low",
                         "message": f"Potential bias detected: {bias_type}",
-                    }
+                    },
                 )
         return {"valid": len(violations) == 0, "violations": violations}
 
@@ -317,7 +316,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
             violations.append({"type": "empty_input", "severity": "medium", "message": "Input is empty"})
         if len(text) > 1000000:
             violations.append(
-                {"type": "oversized_input", "severity": "high", "message": "Input exceeds maximum length"}
+                {"type": "oversized_input", "severity": "high", "message": "Input exceeds maximum length"},
             )
         return {"valid": len(violations) == 0, "violations": violations}
 

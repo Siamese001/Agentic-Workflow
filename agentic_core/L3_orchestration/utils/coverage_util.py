@@ -118,7 +118,7 @@ def calculate_coverage_metrics(
     """
     default_layers = default_layers or [
         "L0_routing", "L1_cognition", "L2_execution",
-        "L3_orchestration", "L4_state", "L5_safety"
+        "L3_orchestration", "L4_state", "L5_safety",
     ]
 
     # Ensure all layers have counts
@@ -138,7 +138,7 @@ def calculate_coverage_metrics(
 
     # Find underrepresented layer
     underrepresented = None if is_balanced else find_underrepresented_layer(
-        proportions, priority_boost_layers
+        proportions, priority_boost_layers,
     )
 
     return CoverageMetrics(

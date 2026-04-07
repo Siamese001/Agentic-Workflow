@@ -77,7 +77,7 @@ class TestExceptionControlFlowBan:
                             if self._contains_iterator_operation(node.body):
                                 violations.append(
                                     f"Catches {handler.type.id} near line {handler.lineno} "
-                                    "(iterator control flow anti-pattern)"
+                                    "(iterator control flow anti-pattern)",
                                 )
                     elif isinstance(handler.type, ast.Tuple):
                         # Multiple exception types: except (StopIteration, X):
@@ -85,7 +85,7 @@ class TestExceptionControlFlowBan:
                             if isinstance(elt, ast.Name) and elt.id in banned:
                                 if self._contains_iterator_operation(node.body):
                                     violations.append(
-                                        f"Catches {elt.id} near line {handler.lineno}"
+                                        f"Catches {elt.id} near line {handler.lineno}",
                                     )
 
         return violations
@@ -99,7 +99,7 @@ class TestExceptionControlFlowBan:
                 for handler in child.handlers:
                     if isinstance(handler.type, ast.Name) and handler.type.id in banned:
                         violations.append(
-                            f"Line {handler.lineno}: catches {handler.type.id}"
+                            f"Line {handler.lineno}: catches {handler.type.id}",
                         )
 
         return violations
@@ -155,7 +155,7 @@ class TestNextWithDefaultPattern:
         if bare_next_calls:
             pytest.warns(
                 UserWarning,
-                message=f"Found {len(bare_next_calls)} bare next() calls without default at lines: {bare_next_calls[:5]}"
+                message=f"Found {len(bare_next_calls)} bare next() calls without default at lines: {bare_next_calls[:5]}",
             )
 
 
@@ -198,7 +198,7 @@ class TestExceptionHandlingDocumentation:
 
                     undocumented_exceptions.append({
                         'line': node.lineno,
-                        'exceptions': exc_types
+                        'exceptions': exc_types,
                     })
 
         # Filter to only critical exceptions (not ValueError, TypeError etc)

@@ -223,7 +223,7 @@ def generate(module_path: str, info: ModuleInfo, fan_in: int) -> str:
         lines += ["", skip, f"class Test{cn}Function:"]
         lines.extend(_indent([
             "def test_is_callable(self):",
-            f"    assert callable({fi_fn.name})"
+            f"    assert callable({fi_fn.name})",
         ]))
 
     for const_name, const_val in pub_consts:

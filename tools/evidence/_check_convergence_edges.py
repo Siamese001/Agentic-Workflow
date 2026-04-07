@@ -45,7 +45,7 @@ print("-" * 80)
 for module in BLOCKERS:
     rows = c.execute(
         "SELECT relation_type, COUNT(*) FROM edges WHERE source_file = ? GROUP BY relation_type",
-        (module,)
+        (module,),
     ).fetchall()
     rels = {r[0]: r[1] for r in rows}
     has_digest = "emits_determinism_digest" in rels

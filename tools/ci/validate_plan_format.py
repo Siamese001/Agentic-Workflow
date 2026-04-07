@@ -153,7 +153,7 @@ def validate_plan_format(plan_path: str) -> dict[str, Any]:
 
         if not wave_table_found:
             issues.append(
-                f"Wave table not found after '## Wave Structure' section (required for {plan_type})"
+                f"Wave table not found after '## Wave Structure' section (required for {plan_type})",
             )
             issues.append("Expected pattern: | Waves | Metric | Scope | Checkpoint | [Tokens |]")
 

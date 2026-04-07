@@ -114,7 +114,7 @@ def validate() -> int:
         actual_hash = sha256_file(module_path)
         if actual_hash != module["sha256"]:
             errors.append(
-                f"Module hash mismatch: {module['path']}\n  manifest: {module['sha256']}\n  actual:   {actual_hash}"
+                f"Module hash mismatch: {module['path']}\n  manifest: {module['sha256']}\n  actual:   {actual_hash}",
             )
     modules = sorted(manifest["modules"], key=lambda m: m["order"])
     assembly_ok = True
@@ -157,7 +157,7 @@ def validate() -> int:
         manifest_assembled_hash = manifest.get("assembled_sha256", "")
         if assembled_hash != manifest_assembled_hash:
             errors.append(
-                f"Assembled hash mismatch:\n  manifest: {manifest_assembled_hash}\n  actual:   {assembled_hash}"
+                f"Assembled hash mismatch:\n  manifest: {manifest_assembled_hash}\n  actual:   {assembled_hash}",
             )
         if canonical_rel:
             canonical_path = REPO_ROOT / canonical_rel
@@ -166,7 +166,7 @@ def validate() -> int:
                 if assembled != canonical_bytes:
                     canonical_hash = sha256_bytes(canonical_bytes)
                     errors.append(
-                        f"Assembled output differs from canonical artifact\n  canonical: {canonical_hash}\n  assembled: {assembled_hash}"
+                        f"Assembled output differs from canonical artifact\n  canonical: {canonical_hash}\n  assembled: {assembled_hash}",
                     )
     manifest_paths = {m["path"] for m in modules}
     for item in PROMPT_MODULES_DIR.iterdir():

@@ -137,21 +137,14 @@ from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
 )
 from agentic_core.L5_safety.validators.base_detector_validator import EnforcementLevel
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -159,17 +152,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -621,7 +608,7 @@ def run_gate() -> int:
             print()
             for rel_path, cat, allowed, actual in regressions[:25]:
                 print(
-                    f"  [FAIL] {rel_path}  [{cat}]  ceiling={allowed}  actual={actual}  excess=+{actual - allowed}"
+                    f"  [FAIL] {rel_path}  [{cat}]  ceiling={allowed}  actual={actual}  excess=+{actual - allowed}",
                 )
 
     if improved_slots > 0:
@@ -642,7 +629,7 @@ def run_gate() -> int:
     if violations:
         print(
             "[ACTION] Fix the violations above OR add "
-            "'# guardian: allow-<pattern>' to whitelist intentional exceptions."
+            "'# guardian: allow-<pattern>' to whitelist intentional exceptions.",
         )
         print("         Each file+category ceiling may only decrease between commits.\n")
 

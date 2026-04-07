@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -194,7 +193,7 @@ class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "AutonomousThreatEvolutionAgent.__init__", "p0_governance"
+            str(_uuid.uuid4()), "AutonomousThreatEvolutionAgent.__init__", "p0_governance",
         )
         self.safety: Any | None = SafetyEngine
         self.log_path: Path = Path("agentic_core/L6_observability/reasoning/threat_detections.json")

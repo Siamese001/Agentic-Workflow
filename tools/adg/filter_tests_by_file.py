@@ -19,7 +19,7 @@ def filter_by_file(input_path: str, output_path: str, file_pattern: str):
     output_data = {
         'adg_database': data.get('adg_database'),
         'directory': data.get('directory'),
-        'unused_tests': filtered
+        'unused_tests': filtered,
     }
 
     with open(output_path, 'w', encoding='utf-8') as f:

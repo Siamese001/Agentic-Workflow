@@ -26,7 +26,7 @@ test_files = [
 ]
 
 for filepath in test_files:
-    full_path = os.path.join('c:\\Git\\Agentic-Workflow', filepath)
+    full_path = os.path.join(str(REPO_ROOT), filepath)
     if not os.path.exists(full_path):
         print(f'Missing: {filepath}')
         continue

@@ -36,7 +36,7 @@ class TokenBudget:
             raise ValueError("HARD_MAX_CONTEXT must be > 0")
         if not (0 < self.WARNING_THRESHOLD <= self.SAFE_OPERATING_CAP <= self.HARD_MAX_CONTEXT):
             raise ValueError(
-                "Budget invariants violated: WARNING_THRESHOLD <= SAFE_OPERATING_CAP <= HARD_MAX_CONTEXT"
+                "Budget invariants violated: WARNING_THRESHOLD <= SAFE_OPERATING_CAP <= HARD_MAX_CONTEXT",
             )
         if self.DEFAULT_RESERVED_OUTPUT < 0 or self.DEFAULT_SAFETY_BUFFER < 0:
             raise ValueError("Reserved output and safety buffer must be >= 0")
@@ -88,7 +88,7 @@ class ContextWindowEstimator:
             'json': 0.33,  # ~3 chars per token for JSON
             'diff': 0.3,   # ~3.3 chars per token for diffs
             'log': 0.38,   # ~2.6 chars per token for logs
-            'system': 0.42  # ~2.4 chars per token for system prompts
+            'system': 0.42,  # ~2.4 chars per token for system prompts
         }
         self.min_tokens_by_type = {
             'system': 8,
@@ -110,13 +110,13 @@ class ContextWindowEstimator:
                 'trim_logs_to_errors',
                 'reduce_retrieval_chunks',
                 'diff_or_file_not_both',
-                'drop_low_relevance_files'
+                'drop_low_relevance_files',
             ],
             'max_log_lines': 50,
             'max_retry_history': 3,
             'max_retrieval_chunks': 10,
             'file_summary_threshold': 1000,  # lines
-            'duplicate_detection': True
+            'duplicate_detection': True,
         }
 
     def estimate_step_tokens(self,
@@ -178,7 +178,7 @@ class ContextWindowEstimator:
                 'system_prompt',
                 system_prompt,
                 self._estimate_source_tokens('system_prompt', system_prompt, 'system'),
-                metadata={'type': 'system'}
+                metadata={'type': 'system'},
             ))
 
         # Add user prompt
@@ -187,7 +187,7 @@ class ContextWindowEstimator:
                 'user_prompt',
                 user_prompt,
                 self._estimate_source_tokens('user_prompt', user_prompt, 'text'),
-                metadata={'type': 'prompt'}
+                metadata={'type': 'prompt'},
             ))
 
         # Add files
@@ -202,8 +202,8 @@ class ContextWindowEstimator:
                     'path': file_info.get('path', ''),
                     'type': file_type,
                     'size': len(content),
-                    'lines': len(content.splitlines())
-                }
+                    'lines': len(content.splitlines()),
+                },
             ))
 
         # Add diffs
@@ -217,8 +217,8 @@ class ContextWindowEstimator:
                     'path': diff_info.get('path', ''),
                     'lines_added': self._count_diff_lines(content, prefix='+'),
                     'lines_removed': self._count_diff_lines(content, prefix='-'),
-                    'hunks': content.count('@@')
-                }
+                    'hunks': content.count('@@'),
+                },
             ))
 
         # Add logs
@@ -231,8 +231,8 @@ class ContextWindowEstimator:
                 metadata={
                     'source': log_info.get('source', ''),
                     'lines': len(content.splitlines()),
-                    'has_errors': bool(self._error_pattern.search(content))
-                }
+                    'has_errors': bool(self._error_pattern.search(content)),
+                },
             ))
 
         # Add retrieved context
@@ -245,8 +245,8 @@ class ContextWindowEstimator:
                 metadata={
                     'source': ctx_info.get('source', ''),
                     'chunk_id': ctx_info.get('chunk_id', ''),
-                    'overlap': ctx_info.get('overlap', False)
-                }
+                    'overlap': ctx_info.get('overlap', False),
+                },
             ))
 
         # Add prior steps
@@ -256,7 +256,7 @@ class ContextWindowEstimator:
                     'prior_step',
                     step_content,
                     self._estimate_source_tokens('prior_step', step_content, 'text'),
-                    metadata={'step_index': i}
+                    metadata={'step_index': i},
                 ))
 
         # Calculate totals
@@ -271,7 +271,7 @@ class ContextWindowEstimator:
 
         # Generate recommendations
         recommended_reductions = self._generate_recommendations(
-            sources, status, total_projected
+            sources, status, total_projected,
         )
 
         # Create estimate
@@ -284,7 +284,7 @@ class ContextWindowEstimator:
             status=status,
             action=action,
             top_contributors=top_contributors,
-            recommended_reductions=recommended_reductions
+            recommended_reductions=recommended_reductions,
         )
 
         # Apply compression if needed
@@ -364,7 +364,7 @@ class ContextWindowEstimator:
         sorted_contributors = sorted(
             type_totals.items(),
             key=lambda x: x[1],
-            reverse=True
+            reverse=True,
         )
 
         # Return top contributors
@@ -490,7 +490,7 @@ class ContextWindowEstimator:
 
             # Update status and action
             estimate.status, estimate.action = self._determine_status_action(
-                estimate.total_projected_tokens
+                estimate.total_projected_tokens,
             )
 
         estimate.compression_applied = compression_applied
@@ -498,7 +498,7 @@ class ContextWindowEstimator:
         estimate.recommended_reductions = self._generate_recommendations(
             compressed_sources,
             estimate.status,
-            estimate.total_projected_tokens
+            estimate.total_projected_tokens,
         )
         return estimate
 
@@ -610,7 +610,7 @@ class ContextWindowEstimator:
             retrieval_sources,
             key=lambda s: (
                 float(s.metadata.get("score", 0.0)),
-                not bool(s.metadata.get("overlap", False))
+                not bool(s.metadata.get("overlap", False)),
             ),
             reverse=True,
         )
@@ -654,7 +654,7 @@ class ContextWindowEstimator:
         """Drop low relevance files (generated files, lock files, etc.)"""
         low_relevance_patterns = [
             '.lock', '.log', '.tmp', '.cache', '__pycache__',
-            'node_modules', '.git', 'package-lock.json', 'yarn.lock'
+            'node_modules', '.git', 'package-lock.json', 'yarn.lock',
         ]
 
         filtered_sources = []
@@ -686,7 +686,7 @@ class ContextWindowEstimator:
             'action': estimate.action,
             'top_contributors': estimate.top_contributors,
             'recommended_reductions': estimate.recommended_reductions,
-            'compression_applied': estimate.compression_applied
+            'compression_applied': estimate.compression_applied,
         }
 
     def print_report(self, estimate: TokenEstimate) -> None:
@@ -694,7 +694,7 @@ class ContextWindowEstimator:
         status_colors = {
             'green': '\033[92m',  # Bright green
             'yellow': '\033[93m', # Bright yellow
-            'red': '\033[91m'     # Bright red
+            'red': '\033[91m',     # Bright red
         }
         reset_color = '\033[0m'
 
@@ -773,22 +773,22 @@ def main() -> None:
 Examples:
   python -m agentic_core.planning.token_estimator --help
   python -m agentic_core.planning.token_estimator --demo
-        """
+        """,
     )
     parser.add_argument(
         "--demo",
         action="store_true",
-        help="Run a demo estimation"
+        help="Run a demo estimation",
     )
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Output demo results as JSON"
+        help="Output demo results as JSON",
     )
     parser.add_argument(
         "--budget",
         action="store_true",
-        help="Show default budget configuration"
+        help="Show default budget configuration",
     )
 
     args = parser.parse_args()
@@ -814,7 +814,7 @@ Examples:
             diffs=[],
             logs=[],
             retrieved_context=[],
-            prior_steps=[]
+            prior_steps=[],
         )
         if args.json:
             print(json.dumps(result, indent=2))
@@ -827,7 +827,7 @@ Examples:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             ))
         sys.exit(0)
 

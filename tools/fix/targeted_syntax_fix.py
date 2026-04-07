@@ -22,7 +22,7 @@ class TargetedSyntaxFixer:
             'legacy_comments_removed': 0,
             'unmatched_parens_removed': 0,
             'indentation_fixed': 0,
-            'files_with_errors': 0
+            'files_with_errors': 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 

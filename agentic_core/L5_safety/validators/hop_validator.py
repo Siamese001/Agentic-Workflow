@@ -127,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -136,7 +135,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
@@ -215,18 +213,18 @@ class HOP1ProfileDeterministic:
         Moved to Deterministic: Pure rule-based classification
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "HOP1ProfileDeterministic.classify_profile_heuristic", "L5_POLICY"
+            str(uuid.uuid4()), "HOP1ProfileDeterministic.classify_profile_heuristic", "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP1ProfileDeterministic.classify_profile_heuristic"
+            _trace_id, LayerSegment.L5_POLICY, "HOP1ProfileDeterministic.classify_profile_heuristic",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:HOP1ProfileDeterministic.classify_profile_heuristic".encode()
+            f"{_trace_id}:HOP1ProfileDeterministic.classify_profile_heuristic".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -297,12 +295,12 @@ class HOP3DataExtractionDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP3DataExtractionDeterministic.extract_grounded_entities"
+            _trace_id, LayerSegment.L5_POLICY, "HOP3DataExtractionDeterministic.extract_grounded_entities",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:HOP3DataExtractionDeterministic.extract_grounded_entities".encode()
+            f"{_trace_id}:HOP3DataExtractionDeterministic.extract_grounded_entities".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -311,7 +309,7 @@ class HOP3DataExtractionDeterministic:
         if not isinstance(json_data, dict):
             issues.append("Invalid JSON structure - expected dictionary")
             return HOPValidationResult(
-                passed=False, issues=issues, metadata={"hop": "HOP3", "validation_type": "deterministic"}
+                passed=False, issues=issues, metadata={"hop": "HOP3", "validation_type": "deterministic"},
             )
         for entity in self.required_entities:
             if entity in json_data:
@@ -356,12 +354,12 @@ class HOP4ConditionDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP4ConditionDeterministic.check_conditions"
+            _trace_id, LayerSegment.L5_POLICY, "HOP4ConditionDeterministic.check_conditions",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:HOP4ConditionDeterministic.check_conditions".encode()
+            f"{_trace_id}:HOP4ConditionDeterministic.check_conditions".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -412,7 +410,7 @@ class HOP6PlaceholderDeterministic:
     def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP6 placeholder patterns."""
         self.placeholder_patterns = config.get(
-            "placeholder_patterns", ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$\\{.*?\\}"]
+            "placeholder_patterns", ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$\\{.*?\\}"],
         )
 
     def validate_placeholders(self, content: str) -> HOPValidationResult:
@@ -425,12 +423,12 @@ class HOP6PlaceholderDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP6PlaceholderDeterministic.validate_placeholders"
+            _trace_id, LayerSegment.L5_POLICY, "HOP6PlaceholderDeterministic.validate_placeholders",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:HOP6PlaceholderDeterministic.validate_placeholders".encode()
+            f"{_trace_id}:HOP6PlaceholderDeterministic.validate_placeholders".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -468,12 +466,12 @@ class HOP7GateDecisionDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP7GateDecisionDeterministic.classify_gate_decision"
+            _trace_id, LayerSegment.L5_POLICY, "HOP7GateDecisionDeterministic.classify_gate_decision",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:HOP7GateDecisionDeterministic.classify_gate_decision".encode()
+            f"{_trace_id}:HOP7GateDecisionDeterministic.classify_gate_decision".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

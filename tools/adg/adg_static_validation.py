@@ -190,7 +190,7 @@ class ADGStaticValidator:
         adg_counts = {
             'files': query_engine.count_unique_files(),
             'functions': query_engine.count_nodes_by_type('function'),
-            'classes': query_engine.count_nodes_by_type('class')
+            'classes': query_engine.count_nodes_by_type('class'),
         }
 
         # Calculate ratios
@@ -206,7 +206,7 @@ class ADGStaticValidator:
             'file_ratio': file_ratio,
             'function_ratio': function_ratio,
             'class_ratio': class_ratio,
-            'within_tolerance': all(0.95 <= r <= 1.05 for r in [file_ratio, function_ratio, class_ratio])
+            'within_tolerance': all(0.95 <= r <= 1.05 for r in [file_ratio, function_ratio, class_ratio]),
         }
 
     def _independent_ast_walk(self) -> dict[str, int]:
@@ -242,7 +242,7 @@ class ADGStaticValidator:
         return {
             'files': file_count,
             'functions': function_count,
-            'classes': class_count
+            'classes': class_count,
         }
 
     def _validate_edge_precision(self, query_engine) -> float:
@@ -270,12 +270,12 @@ class ADGStaticValidator:
         # High signal edge types
         high_signal_types = {
             'imports', 'calls', 'flows_to', 'controls_flow',
-            'reads_from', 'writes_through', 'implements'
+            'reads_from', 'writes_through', 'implements',
         }
 
         # Low signal edge types
         low_signal_types = {
-            'belongs_to_layer', 'exports', 'decorated_by'
+            'belongs_to_layer', 'exports', 'decorated_by',
         }
 
         if relation_type in high_signal_types:
@@ -321,12 +321,12 @@ class ADGStaticValidator:
                 'file_ratio': 0.98,
                 'function_ratio': 1.02,
                 'class_ratio': 0.97,
-                'within_tolerance': True
+                'within_tolerance': True,
             },
             'signal_ratio': 0.92,
             'consistency_rate': 0.99,
             'synthetic_edge_count': 0,
-            'duplicate_edge_ratio': 0.0
+            'duplicate_edge_ratio': 0.0,
         }
 
     def generate_final_verdict(self) -> str:

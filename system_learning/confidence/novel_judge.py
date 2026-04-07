@@ -23,7 +23,7 @@ class NovelJudge:
             "novelty_score": 0.75,
             "is_novel": True,
             "similarity": 0.25,
-            "passed": True
+            "passed": True,
         }
 
     def score(self, content: str) -> float:

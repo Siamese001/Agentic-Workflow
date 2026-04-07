@@ -100,7 +100,7 @@ class ASTTestCollector:
             skip_reason=skip_reason,
             test_type=test_type,
             line_number=node.lineno,
-            has_logic=has_logic
+            has_logic=has_logic,
         )
 
     def _analyze_skip_decorators(self, node: ast.FunctionDef) -> tuple[bool, str]:
@@ -134,7 +134,7 @@ class ASTTestCollector:
         logic_indicators = [
             ast.Assert, ast.Raise, ast.Return, ast.Yield, ast.YieldFrom,
             ast.For, ast.While, ast.If, ast.Try, ast.With, ast.AsyncWith,
-            ast.Call, ast.Assign, ast.AnnAssign, ast.AugAssign, ast.NamedExpr
+            ast.Call, ast.Assign, ast.AnnAssign, ast.AugAssign, ast.NamedExpr,
         ]
 
         for child in ast.walk(node):
@@ -188,12 +188,12 @@ class ASTTestCollector:
             "by_type": {
                 "structural_only": 0,
                 "behavioral": 0,
-                "dynamic_only": 0
+                "dynamic_only": 0,
             },
             "skipped": 0,
             "active": 0,
             "target_files": set(),
-            "suspect_files": set()
+            "suspect_files": set(),
         }
 
         for node in reconciled_nodes:
@@ -238,21 +238,21 @@ def main() -> int:
 
     parser = argparse.ArgumentParser(
         prog="ast_test_collector",
-        description="AST-based test collection with ADG reconciliation"
+        description="AST-based test collection with ADG reconciliation",
     )
     parser.add_argument(
         "--adg-suspects",
         nargs="*",
-        help="ADG-identified suspect files for Phase 2 reconciliation"
+        help="ADG-identified suspect files for Phase 2 reconciliation",
     )
     parser.add_argument(
         "--json-output",
-        help="Write detailed results to JSON file"
+        help="Write detailed results to JSON file",
     )
     parser.add_argument(
         "--summary-only",
         action="store_true",
-        help="Print only summary, not individual test details"
+        help="Print only summary, not individual test details",
     )
 
     args = parser.parse_args()
@@ -298,10 +298,10 @@ def main() -> int:
                     "skip_reason": n.skip_reason,
                     "test_type": n.test_type.value,
                     "line_number": n.line_number,
-                    "has_logic": n.has_logic
+                    "has_logic": n.has_logic,
                 }
                 for n in reconciled_nodes
-            ]
+            ],
         }
 
         output_path = Path(args.json_output)

@@ -19,9 +19,26 @@ from agentic_core.L2_execution.reasoning.adaptation_orchestrator import (
     strategy_evaluated,
     unsafe_strategy_rejected,
 )
+from agentic_core.L2_execution.reasoning.authority_validator import (
+    AuthorityValidationError,
+    AuthorityValidator,
+)
+from agentic_core.L2_execution.reasoning.compiled_artifact import (
+    AuthorityLevel,
+    AuthoritySlot,
+    CompiledPromptArtifact,
+    InjectionScanResult,
+    PromptBOM,
+    RoutingDecision,
+    TemplateManifest,
+)
 from agentic_core.L2_execution.reasoning.execution_adaptation import (
     ExecutionAdaptationError,
     ExecutionAdaptationRecord,
+)
+from agentic_core.L2_execution.reasoning.slot_assembly_engine import (
+    AssemblyError,
+    SlotAssemblyEngine,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -90,6 +107,20 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 _emit_records_execution_trace("p0", "evidence", "__init__")
 __all__ = [
+    # Authority Validation
+    "AuthorityValidator",
+    "AuthorityValidationError",
+    # Compiled Prompt Artifacts
+    "AuthorityLevel",
+    "AuthoritySlot",
+    "CompiledPromptArtifact",
+    "InjectionScanResult",
+    "PromptBOM",
+    "RoutingDecision",
+    "TemplateManifest",
+    # Slot Assembly Engine
+    "SlotAssemblyEngine",
+    "AssemblyError",
     # Execution Adaptation Records
     "ExecutionAdaptationRecord",
     # Exception Classes

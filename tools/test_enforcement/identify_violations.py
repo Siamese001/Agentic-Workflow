@@ -42,7 +42,7 @@ class ViolationDetector:
         # First-party modules that should never be skipped
         self.first_party_modules = {
             'agentic_core', 'apps_', 'tools', 'ops_scripts', 'tests',
-            'system_learning', 'infrastructure', 'artifacts', 'data'
+            'system_learning', 'infrastructure', 'artifacts', 'data',
         }
 
     def detect_violations(self, inventory_file: str, classification_file: str) -> list[TestViolation]:
@@ -99,7 +99,7 @@ class ViolationDetector:
                 severity=SeverityLevel.HIGH.value,
                 description='Using try/except ImportError pattern instead of proper marker',
                 suggested_fix='Use direct import for core tests or pytest.importorskip with @pytest.mark.optional',
-                line_number=test_data['line_number']
+                line_number=test_data['line_number'],
             ))
 
         # VIOLATION: pytest.importorskip without optional marker
@@ -111,7 +111,7 @@ class ViolationDetector:
                 severity=SeverityLevel.HIGH.value,
                 description=f'Using pytest.importorskip for {dependency} without optional marker',
                 suggested_fix='Add @pytest.mark.optional or @pytest.mark.external marker',
-                line_number=test_data['line_number']
+                line_number=test_data['line_number'],
             ))
 
     def _check_core_violations(self, test_data: dict, cls_data: dict):
@@ -128,7 +128,7 @@ class ViolationDetector:
                 severity=SeverityLevel.HIGH.value,
                 description='Core test should not skip - validates required functionality',
                 suggested_fix='Remove skip logic or reclassify as OPTIONAL/EXTERNAL',
-                line_number=test_data['line_number']
+                line_number=test_data['line_number'],
             ))
 
         # VIOLATION: Core tests with low confidence classification
@@ -140,7 +140,7 @@ class ViolationDetector:
                 severity=SeverityLevel.MEDIUM.value,
                 description='Core test classification has low confidence',
                 suggested_fix='Add explicit @pytest.mark.core marker',
-                line_number=test_data['line_number']
+                line_number=test_data['line_number'],
             ))
 
     def _check_first_party_violations(self, test_data: dict, cls_data: dict):
@@ -159,7 +159,7 @@ class ViolationDetector:
                         severity=SeverityLevel.HIGH.value,
                         description=f'Skipping first-party module: {dependency}',
                         suggested_fix='Never skip first-party imports - ensure module is available',
-                        line_number=test_data['line_number']
+                        line_number=test_data['line_number'],
                     ))
                     break
 
@@ -178,7 +178,7 @@ class ViolationDetector:
                 severity=SeverityLevel.MEDIUM.value,
                 description=f'Test classification uncertain ({category}) - needs explicit marker',
                 suggested_fix=f'Add @pytest.mark.{category.lower()} marker',
-                line_number=test_data['line_number']
+                line_number=test_data['line_number'],
             ))
 
 
@@ -209,17 +209,17 @@ def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]
         "metadata": {
             "scan_timestamp": "2026-03-24T18:31:00Z",
             "total_violations": len(violations),
-            "detector_version": "1.0"
+            "detector_version": "1.0",
         },
         "summary": {
             "by_type": {vtype: len(vlist) for vtype, vlist in by_type.items()},
             "by_severity": {
                 "HIGH": len(by_severity['HIGH']),
                 "MEDIUM": len(by_severity['MEDIUM']),
-                "LOW": len(by_severity['LOW'])
-            }
+                "LOW": len(by_severity['LOW']),
+            },
         },
-        "violations": []
+        "violations": [],
     }
 
     # Add violation details
@@ -231,7 +231,7 @@ def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]
             "severity": violation.severity,
             "description": violation.description,
             "suggested_fix": violation.suggested_fix,
-            "line_number": violation.line_number
+            "line_number": violation.line_number,
         })
 
     return report

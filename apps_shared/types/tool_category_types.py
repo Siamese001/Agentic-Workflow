@@ -61,39 +61,25 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "tool_category_types", "p0_governance")
 _emit_snapshots_state("p0", "tool_category_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -446,11 +432,11 @@ class ObservabilityToolInvoker:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             self._record_failure(context.tool_id)
             return self._create_error_result(
-                context.invocation_id, context.tool_id, context.method, str(e), start_time
+                context.invocation_id, context.tool_id, context.method, str(e), start_time,
             )
 
     def invoke_tool_batch(
-        self, contexts: list[ToolInvocationContext], parameters_list: list[dict[str, Any]]
+        self, contexts: list[ToolInvocationContext], parameters_list: list[dict[str, Any]],
     ) -> list[ToolInvocationResult]:
         """Invoke multiple tools.
 
@@ -470,7 +456,7 @@ class ObservabilityToolInvoker:
         return results
 
     def invoke_tool_stream(
-        self, context: ToolInvocationContext, parameters: dict[str, Any]
+        self, context: ToolInvocationContext, parameters: dict[str, Any],
     ) -> dict[str, object]:
         """Invoke tool with streaming response.
 
@@ -522,7 +508,7 @@ class ObservabilityToolInvoker:
             self.logger.info(f"Reset circuit breaker for tool: {tool_id}")
 
     def _execute_with_retry(
-        self, context: ToolInvocationContext, parameters: dict[str, Any]
+        self, context: ToolInvocationContext, parameters: dict[str, Any],
     ) -> ToolInvocationResult:
         """Execute tool invocation with retry logic."""
         last_error = None
@@ -550,17 +536,17 @@ class ObservabilityToolInvoker:
                 if attempt < max_retries:
                     retry_delay = context.retry_policy.get("delay", 2**attempt)
                     self.logger.warning(
-                        f"Invocation attempt {attempt + 1} failed, retrying in {retry_delay}s: {last_error}"
+                        f"Invocation attempt {attempt + 1} failed, retrying in {retry_delay}s: {last_error}",
                     )
                     time.sleep(retry_delay)
                 else:
                     self.logger.error(f"Invocation failed after {attempt + 1} attempts: {last_error}")
         return self._create_error_result(
-            context.invocation_id, context.tool_id, context.method, last_error, time.time()
+            context.invocation_id, context.tool_id, context.method, last_error, time.time(),
         )
 
     def _simulate_invocation(
-        self, context: ToolInvocationContext, parameters: dict[str, Any]
+        self, context: ToolInvocationContext, parameters: dict[str, Any],
     ) -> ToolInvocationResult:
         """Simulate tool invocation."""
         tool_spec = self._registered_tools[context.tool_id]
@@ -575,14 +561,14 @@ class ObservabilityToolInvoker:
                 "metrics": [
                     {"name": "cpu_usage", "value": 45.2, "timestamp": datetime.utcnow().isoformat()},
                     {"name": "memory_usage", "value": 67.8, "timestamp": datetime.utcnow().isoformat()},
-                ]
+                ],
             }
         elif tool_spec.category == ToolCategory.LOGGING:
             response = {
                 "logs": [
                     {"message": f"Log entry for {context.method}", "level": "info"},
                     {"message": "Another log entry", "level": "warning"},
-                ]
+                ],
             }
         elif tool_spec.category == ToolCategory.MONITORING:
             response = {
@@ -603,7 +589,7 @@ class ObservabilityToolInvoker:
         )
 
     def _validate_parameters(
-        self, parameters: dict[str, Any], tool_spec: ToolSpecification, method: str
+        self, parameters: dict[str, Any], tool_spec: ToolSpecification, method: str,
     ) -> list[str]:
         """Validate tool parameters."""
         errors = []
@@ -667,7 +653,7 @@ class ObservabilityToolInvoker:
         pass
 
     def _create_error_result(
-        self, invocation_id: str, tool_id: str, method: str, error: str, start_time: float
+        self, invocation_id: str, tool_id: str, method: str, error: str, start_time: float,
     ) -> ToolInvocationResult:
         """Create error result."""
         return ToolInvocationResult(
@@ -739,7 +725,7 @@ class ObservabilityToolInvoker:
 
 # guardian: allow-magic-config
 def create_observability_tool_invoker(
-    default_timeout: float = 30.0, max_retries: int = 3, enable_circuit_breaker: bool = True, **kwargs: object
+    default_timeout: float = 30.0, max_retries: int = 3, enable_circuit_breaker: bool = True, **kwargs: object,
 ) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
     config = ToolInvocationConfig(

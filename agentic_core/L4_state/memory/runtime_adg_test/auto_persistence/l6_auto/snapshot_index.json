@@ -1,0 +1,11 @@
+{
+  "runtime_adg_1775551281_331c894a": {
+    "duration_ms": 0,
+    "edge_count": 5,
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\auto_persistence\\l6_auto\\runtime_adg_1775551281_331c894a.json",
+    "mission": "test-mission",
+    "node_count": 2,
+    "timestamp": 1775551281,
+    "trace_id": "46c55d815855927f458043c13aa6becc"
+  }
+}

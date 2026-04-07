@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -198,7 +197,7 @@ def validate_trace_id(trace_id: str) -> str:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "validate_trace_id")
     if not TRACE_ID_PATTERN.match(trace_id):
         raise ValueError(
-            f"FAIL (P4): Trace ID '{trace_id}' does not match required pattern ^CC3AL1-[0-9A-F]{{8}}$"
+            f"FAIL (P4): Trace ID '{trace_id}' does not match required pattern ^CC3AL1-[0-9A-F]{{8}}$",
         )
     return trace_id
 
@@ -225,7 +224,7 @@ class ErrorSignature:
         expected = compute_error_signature_hash(self.error_type, self.target_node_id, self.time_bucket)
         if self.signature_hash != expected:
             raise ValueError(
-                f"ErrorSignature: signature_hash mismatch. Expected {expected}, got {self.signature_hash}"
+                f"ErrorSignature: signature_hash mismatch. Expected {expected}, got {self.signature_hash}",
             )
 
 
@@ -253,7 +252,7 @@ class PolicyConfigPin:
             raise ValueError("PolicyConfigPin: policy_config_hash must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"PolicyConfigPin: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"PolicyConfigPin: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
 
 
@@ -279,7 +278,7 @@ class PlanProvenance:
             raise ValueError("PlanProvenance: policy_liaison_node must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"PlanProvenance: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"PlanProvenance: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
         if not self.plan_hash:
             raise ValueError("PlanProvenance: plan_hash must be non-empty")
@@ -303,13 +302,13 @@ class RetrievalQuery:
         expected = hashlib.sha256(self.query_text.encode("utf-8")).hexdigest()
         if self.query_hash != expected:
             raise ValueError(
-                f"RetrievalQuery: query_hash mismatch. Expected {expected}, got {self.query_hash}"
+                f"RetrievalQuery: query_hash mismatch. Expected {expected}, got {self.query_hash}",
             )
         if not self.source_agent:
             raise ValueError("RetrievalQuery: source_agent must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"RetrievalQuery: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"RetrievalQuery: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
 
 
@@ -334,7 +333,7 @@ class RetrievedChunk:
         expected = hashlib.sha256(self.content.encode("utf-8")).hexdigest()
         if self.content_hash != expected:
             raise ValueError(
-                f"RetrievedChunk: content_hash mismatch. Expected {expected}, got {self.content_hash}"
+                f"RetrievedChunk: content_hash mismatch. Expected {expected}, got {self.content_hash}",
             )
         if not self.location:
             raise ValueError("RetrievedChunk: location must be non-empty")
@@ -436,7 +435,7 @@ class CognitiveDiffBundle:
             raise ValueError("CognitiveDiffBundle: diff_summary must be non-empty")
         if self.semantic_clock_tick < 0:
             raise ValueError(
-                f"CognitiveDiffBundle: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}"
+                f"CognitiveDiffBundle: semantic_clock_tick must be >= 0, got {self.semantic_clock_tick}",
             )
 
 
@@ -465,7 +464,7 @@ class KnowledgeAdvisoryConstraint:
             raise ValueError("KnowledgeAdvisoryConstraint: source_layer must be non-empty")
         if not isinstance(self.directive_type, KnowledgeDirective):
             raise TypeError(
-                f"KnowledgeAdvisoryConstraint: directive_type must be KnowledgeDirective, got {type(self.directive_type).__name__}"
+                f"KnowledgeAdvisoryConstraint: directive_type must be KnowledgeDirective, got {type(self.directive_type).__name__}",
             )
         if not self.content:
             raise ValueError("KnowledgeAdvisoryConstraint: content must be non-empty")

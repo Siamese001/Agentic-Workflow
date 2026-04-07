@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -260,7 +259,7 @@ class ReasoningIntensityProfile:
         )
         if self.profile_hash != expected:
             raise ValueError(
-                f"ReasoningIntensityProfile: profile_hash mismatch. Expected {expected[:16]}..., got {self.profile_hash[:16]}..."
+                f"ReasoningIntensityProfile: profile_hash mismatch. Expected {expected[:16]}..., got {self.profile_hash[:16]}...",
             )
 
 
@@ -291,7 +290,7 @@ class SignedExecutionEnvelope:
         )
         if self.envelope_hash != expected:
             raise ValueError(
-                f"SignedExecutionEnvelope: envelope_hash mismatch. Expected {expected[:16]}..., got {self.envelope_hash[:16]}..."
+                f"SignedExecutionEnvelope: envelope_hash mismatch. Expected {expected[:16]}..., got {self.envelope_hash[:16]}...",
             )
 
 
@@ -440,7 +439,7 @@ def build_profile_hash(
 def build_envelope_hash(route_decision_trace_id: str, profile_hash: str, policy_hash: str) -> str:
     """Compute the envelope_hash for use before constructing SignedExecutionEnvelope."""
     return _compute_envelope_hash(
-        route_decision_trace_id=route_decision_trace_id, profile_hash=profile_hash, policy_hash=policy_hash
+        route_decision_trace_id=route_decision_trace_id, profile_hash=profile_hash, policy_hash=policy_hash,
     )
 
 

@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_METADATA
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -58,7 +59,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "NamingAgent")
 emit_determinism_digest("p0", "NamingAgent")
@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -129,7 +128,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
@@ -212,7 +210,7 @@ class NamingAgent(PromptRenderingMixin, SovereignBaseAgent):
 
     # guardian: allow-type-erasure -- return dict has dynamic keys for orchestration compatibility
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any
+        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any,
     ) -> dict[str, Any]:
         """Autonomous healing method (Canon Key 51 compliance)."""
         import uuid as _uuid  # noqa: PLC0415

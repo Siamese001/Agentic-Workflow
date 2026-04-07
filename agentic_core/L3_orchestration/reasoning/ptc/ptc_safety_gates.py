@@ -413,14 +413,14 @@ class PTCExecutionGate:
             _emit_hard_fails_untranscripted(trace_id, script_id)
             _emit_records_incident_event(trace_id, script_id, "unsigned_envelope")
             raise PTCSafetyGateViolation(
-                f"Script {script_id}: envelope unsigned (fail-closed)"
+                f"Script {script_id}: envelope unsigned (fail-closed)",
             )
 
         if not envelope_valid:
             _emit_hard_fails_untranscripted(trace_id, script_id)
             _emit_records_incident_event(trace_id, script_id, "invalid_envelope_signature")
             raise PTCSafetyGateViolation(
-                f"Script {script_id}: Envelope signature invalid (fail-closed)"
+                f"Script {script_id}: Envelope signature invalid (fail-closed)",
             )
 
         _emit_validated_by_safety_plane(trace_id, script_id, "pre_execution")
@@ -466,7 +466,7 @@ class PTCExecutionGate:
             _emit_hard_fails_untranscripted(trace_id, script_id)
             _emit_records_incident_event(trace_id, script_id, "byte_cap_exceeded")
             raise PTCSafetyGateViolation(
-                f"Script {script_id}: Output {stdout_bytes} bytes exceeds cap {self.MAX_STDOUT_BYTES} (fail-closed)"
+                f"Script {script_id}: Output {stdout_bytes} bytes exceeds cap {self.MAX_STDOUT_BYTES} (fail-closed)",
             )
 
         # Check transcripts complete
@@ -474,14 +474,14 @@ class PTCExecutionGate:
             _emit_hard_fails_untranscripted(trace_id, script_id)
             _emit_records_incident_event(trace_id, script_id, "untranscripted_io")
             raise PTCSafetyGateViolation(
-                f"Script {script_id}: Un-transcripted I/O detected (fail-closed)"
+                f"Script {script_id}: Un-transcripted I/O detected (fail-closed)",
             )
 
         # Check for stderr (should be empty or transcribed)
         if stderr and not transcripts_complete:
             _emit_hard_fails_untranscripted(trace_id, script_id)
             raise PTCSafetyGateViolation(
-                f"Script {script_id}: Un-transcripted stderr detected (fail-closed)"
+                f"Script {script_id}: Un-transcripted stderr detected (fail-closed)",
             )
 
         _emit_transcripts_response(trace_id, script_id, "execution_complete")
@@ -644,18 +644,18 @@ class PTCSafetyGateManager:
 
         # Confidence gate
         results["confidence"] = self.confidence_gate.evaluate(
-            script_id, confidence_score, risk_level
+            script_id, confidence_score, risk_level,
         )
 
         # Routing gate
         results["routing"] = self.routing_gate.evaluate(
-            script_id, policy_compliant, detected_patterns, "L2_SANDBOX"
+            script_id, policy_compliant, detected_patterns, "L2_SANDBOX",
         )
 
         # Execution gate (pre-execution check)
         try:
             results["execution"] = self.execution_gate.evaluate_pre_execution(
-                script_id, envelope_signed, envelope_valid
+                script_id, envelope_signed, envelope_valid,
             )
         except PTCSafetyGateViolation as e:
             # Create a failed result for execution gate
@@ -670,7 +670,7 @@ class PTCSafetyGateManager:
 
         # Validation gate
         results["validation"] = self.validation_gate.evaluate(
-            script_id, code, modified_by_human=False, l5_reclear_passed=None
+            script_id, code, modified_by_human=False, l5_reclear_passed=None,
         )
 
         # Store results
@@ -754,7 +754,7 @@ def evaluate_ptc_safety_gates(
     manager = get_ptc_safety_gate_manager()
     return manager.evaluate_all_gates(
         script_id, confidence_score, risk_level, policy_compliant,
-        detected_patterns, code, envelope_signed, envelope_valid
+        detected_patterns, code, envelope_signed, envelope_valid,
     )
 
 

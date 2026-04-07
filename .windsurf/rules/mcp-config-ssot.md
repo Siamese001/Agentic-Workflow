@@ -1,9 +1,18 @@
 ---
-description: MCP config SSOT — config/mcp_servers.yaml is source of truth, synced to global
-tags: [ssot, mcp, config]
+trigger:
+  - file_change
+  - pre_commit
 ---
-
 # MCP Config SSOT Rule
+
+## CI Integration
+
+When `config/mcp_servers.yaml` changes:
+1. Run validation: `python ops_scripts/ci/validate_mcp_yaml.py`
+2. If validation passes, sync to global: `python tools/adg/sync_yaml_to_global.py`
+3. CI gate enforces validation before merge
+
+Pre-commit hook triggers validation on commit.
 
 ## Source of Truth Location
 

@@ -166,7 +166,7 @@ class QueryDecomposer:
                     claim_types_expected=self._determine_claim_types(effective_type, evidence_req),
                     dependencies=self._determine_dependencies(components, idx),
                     search_keywords=self._generate_keywords(topic, section_name),
-                )
+                ),
             )
 
         # Determine execution order
@@ -211,7 +211,7 @@ class QueryDecomposer:
                         artifact_mode=mode,
                         target_audience=audience,
                         source_gaps=["decomposition_failed"],
-                    )
+                    ),
                 )
 
         return results

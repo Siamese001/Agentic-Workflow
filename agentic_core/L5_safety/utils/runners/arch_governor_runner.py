@@ -118,7 +118,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -231,16 +230,16 @@ def main() -> int:
     """CLI entry point for subprocess invocation."""
     parser = argparse.ArgumentParser(description="ArchitectureGovernorAgent Runner")
     parser.add_argument(
-        "--action", choices=["verify", "capture_baseline", "audit"], required=True, help="Action to perform"
+        "--action", choices=["verify", "capture_baseline", "audit"], required=True, help="Action to perform",
     )
     parser.add_argument(
-        "--project-root", type=str, default=None, help="Project root path (defaults to auto-detect)"
+        "--project-root", type=str, default=None, help="Project root path (defaults to auto-detect)",
     )
     parser.add_argument(
-        "--targets", type=str, default=None, help="Comma-separated target territories for audit"
+        "--targets", type=str, default=None, help="Comma-separated target territories for audit",
     )
     parser.add_argument(
-        "--auto-approve", action="store_true", default=True, help="Auto-approve mode (default: True)"
+        "--auto-approve", action="store_true", default=True, help="Auto-approve mode (default: True)",
     )
     args = parser.parse_args()
     project_root = Path(args.project_root) if args.project_root else get_project_root()

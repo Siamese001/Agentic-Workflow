@@ -24,38 +24,38 @@ def ingest_jsonl_traces():
             "path": "artifacts/healing/healing_events.jsonl",
             "trace_type": "healing_event",
             "namespace": "healing_contexts",
-            "description": "Healing event traces"
+            "description": "Healing event traces",
         },
         {
             "path": "artifacts/hitl/decisions.jsonl",
             "trace_type": "hitl_decision",
             "namespace": "human_in_loop",
-            "description": "Human-in-the-loop decision traces"
+            "description": "Human-in-the-loop decision traces",
         },
         {
             "path": "artifacts/outputs/classification_experience.jsonl",
             "trace_type": "classification_trace",
             "namespace": "classification",
-            "description": "Classification experience traces"
+            "description": "Classification experience traces",
         },
         {
             "path": "artifacts/outputs/healing_experience.jsonl",
             "trace_type": "healing_experience",
             "namespace": "healing_contexts",
-            "description": "Healing experience traces"
+            "description": "Healing experience traces",
         },
         {
             "path": "artifacts/outputs/prompt_injection_attacks_200.jsonl",
             "trace_type": "security_trace",
             "namespace": "security",
-            "description": "Prompt injection attack traces"
+            "description": "Prompt injection attack traces",
         },
         {
             "path": "artifacts/outputs/tool_use_ground_truth_1000.jsonl",
             "trace_type": "tool_usage",
             "namespace": "tool_execution",
-            "description": "Tool usage ground truth traces"
-        }
+            "description": "Tool usage ground truth traces",
+        },
     ]
 
     # Initialize ChromaDB
@@ -86,7 +86,7 @@ def ingest_jsonl_traces():
 
                         # Create unique ID
                         chunk_id = hashlib.sha256(
-                            f"{file_info['path']}:{line_num}:{content}".encode()
+                            f"{file_info['path']}:{line_num}:{content}".encode(),
                         ).hexdigest()
 
                         # Enhanced metadata
@@ -100,7 +100,7 @@ def ingest_jsonl_traces():
                             'trace_id': f"trace_{file_info['trace_type']}_{line_num:06d}",
                             'created_utc': int(datetime.now().timestamp()),
                             'chunk_type': 'expanded_trace',
-                            'file_size': len(content)
+                            'file_size': len(content),
                         }
 
                         # Add any additional fields from the data
@@ -112,7 +112,7 @@ def ingest_jsonl_traces():
                         chunk = {
                             'id': chunk_id,
                             'content': content,
-                            'metadata': metadata
+                            'metadata': metadata,
                         }
 
                         chunks.append(chunk)
@@ -134,7 +134,7 @@ def ingest_jsonl_traces():
                     ids=ids,
                     documents=documents,
                     metadatas=metadatas,
-                    embeddings=embeddings
+                    embeddings=embeddings,
                 )
 
                 logger.info(f"Ingested {len(chunks)} chunks from {file_info['path']}")
@@ -152,13 +152,13 @@ def ingest_log_traces():
         {
             "path": "artifacts/logs/_ssot_stderr.log",
             "trace_type": "error_log",
-            "namespace": "system_logs"
+            "namespace": "system_logs",
         },
         {
             "path": "artifacts/logs/_ssot_stderr_v2.log",
             "trace_type": "error_log_v2",
-            "namespace": "system_logs"
-        }
+            "namespace": "system_logs",
+        },
     ]
 
     client = chromadb.PersistentClient("artifacts/chromadb")
@@ -188,7 +188,7 @@ def ingest_log_traces():
                     continue
 
                 chunk_id = hashlib.sha256(
-                    f"{file_info['path']}:{i}:{chunk_content}".encode()
+                    f"{file_info['path']}:{i}:{chunk_content}".encode(),
                 ).hexdigest()
 
                 metadata = {
@@ -201,13 +201,13 @@ def ingest_log_traces():
                     'trace_id': f"trace_{file_info['trace_type']}_{i//100:06d}",
                     'created_utc': int(datetime.now().timestamp()),
                     'chunk_type': 'log_trace',
-                    'file_size': len(chunk_content)
+                    'file_size': len(chunk_content),
                 }
 
                 chunk = {
                     'id': chunk_id,
                     'content': chunk_content,
-                    'metadata': metadata
+                    'metadata': metadata,
                 }
 
                 chunks.append(chunk)
@@ -225,7 +225,7 @@ def ingest_log_traces():
                     ids=ids,
                     documents=documents,
                     metadatas=metadatas,
-                    embeddings=embeddings
+                    embeddings=embeddings,
                 )
 
                 logger.info(f"Ingested {len(chunks)} chunks from {file_info['path']}")

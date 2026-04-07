@@ -1,7 +1,6 @@
 """Verify L2 Execution data is now correct (user's specific example)."""
 import json
 
-
 agents = json.load(open('agent_discovery_full.json'))
 l2_agents = [a for a in agents if 'L2_execution' in a.get('path', '')]
 mcp_count = sum(1 for a in l2_agents if a.get('mcp_hardened'))

@@ -36,7 +36,7 @@ def demonstrate_layer_performance():
         ("Exact Match (L1)", "How does ADG work?"),
         ("Semantic Similar (L2)", "What is the architecture dependency graph?"),
         ("Complex RAG (L3)", "Find information about L4 state management"),
-        ("Action Query (L4)", "Search for architecture documentation")
+        ("Action Query (L4)", "Search for architecture documentation"),
     ]
 
     for scenario, query in test_queries:
@@ -105,7 +105,7 @@ def demonstrate_semantic_search():
         ("Original", "How does the architecture dependency graph work?"),
         ("Paraphrase 1", "Explain the ADG system architecture"),
         ("Paraphrase 2", "Describe the dependency graph architecture"),
-        ("Different terms", "What are the architectural dependencies in ADG?")
+        ("Different terms", "What are the architectural dependencies in ADG?"),
     ]
 
     for variation, query in semantic_queries:
@@ -133,7 +133,7 @@ def demonstrate_trace_retrieval():
         "Similar to trace_000042",
         "Find execution traces with errors",
         "Healing patterns for validation failures",
-        "Performance optimization traces"
+        "Performance optimization traces",
     ]
 
     for query in trace_queries:
@@ -168,7 +168,7 @@ def demonstrate_action_validation():
         ("Valid", "search_docs", {"query": "ADG architecture"}),
         ("Invalid - Missing Param", "search_docs", {}),
         ("Unknown", "unknown_action", {"param": "value"}),
-        ("Valid", "find_similar_traces", {"trace_id": "trace_000042"})
+        ("Valid", "find_similar_traces", {"trace_id": "trace_000042"}),
     ]
 
     for test_type, action_name, params in test_actions:
@@ -200,7 +200,7 @@ def demonstrate_performance_benchmark():
         "Explain the caching system",
         "Healing patterns",
         "Performance optimization",
-        "Validation rules"
+        "Validation rules",
     ]
 
     print(f"Running {len(benchmark_queries)} queries...")
@@ -275,7 +275,7 @@ def main():
         demonstrate_trace_retrieval,
         demonstrate_action_validation,
         demonstrate_performance_benchmark,
-        demonstrate_system_stats
+        demonstrate_system_stats,
     ]
 
     for demo in demonstrations:

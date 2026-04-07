@@ -88,7 +88,7 @@ class ParentChildExpander:
         """
         _trace_id = f"expand_{seed_chunk_id}_{self._expansion_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ParentChildExpander.expand"
+            _trace_id, LayerSegment.L4_STATE, "ParentChildExpander.expand",
         )
         _emit_pulls_context(_trace_id, "ParentChildExpander", seed_chunk_id)
 

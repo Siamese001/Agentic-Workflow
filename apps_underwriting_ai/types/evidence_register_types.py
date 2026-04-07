@@ -1,7 +1,8 @@
 """
 Evidence Register Types - Domain contracts for evidence tracking.
 """
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -41,6 +42,6 @@ class EvidenceRegister(BaseModel):
                 "request_id": "UW-2024-001234",
                 "entries": [],
                 "completeness_pct": 0.85,
-                "contradiction_count": 0
-            }
+                "contradiction_count": 0,
+            },
         }

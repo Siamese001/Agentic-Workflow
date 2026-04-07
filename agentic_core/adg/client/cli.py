@@ -69,21 +69,14 @@ _emit_records_execution_trace("p0", "evidence", "cli")
 _emit_applies_guardrail("p0", "cli", "p0_governance")
 _emit_snapshots_state("p0", "cli", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -91,17 +84,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -281,8 +268,9 @@ def _cmd_build_artifact(args: argparse.Namespace) -> int:
 def _cmd_impact(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.runtime.cache_loader import load_or_scan
     from tools.change_impact_engine import ChangeImpactEngine
+
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
     result = load_or_scan(repo_root=str(repo_root))
@@ -381,7 +369,7 @@ def _cmd_hotspots(args: argparse.Namespace) -> int:
         json.dumps(
             {"stats": idx.stats(), "hotspots": [h.to_dict() for h in hotspots]},
             indent=2,
-        )
+        ),
     )
     return 0
 
@@ -426,7 +414,7 @@ def _cmd_coupling(args: argparse.Namespace) -> int:
                 "most_unstable": unstable,
             },
             indent=2,
-        )
+        ),
     )
     return 0
 
@@ -676,7 +664,7 @@ def _cmd_incremental_scan(args: argparse.Namespace) -> int:
                 "edges_total": stats.edges_total,
             },
             indent=2,
-        )
+        ),
     )
     return 0
 
@@ -748,7 +736,7 @@ def main(argv: list[str] | None = None) -> int:
     hs_p = subparsers.add_parser("hotspots", help="Show fan-in/fan-out hotspot index (E14)")
     hs_p.add_argument("--top", type=int, default=20, help="Number of hotspots to show")
     hs_p.add_argument(
-        "--key", default="coupling", choices=["coupling", "fan_in", "fan_out", "instability"], help="Sort key"
+        "--key", default="coupling", choices=["coupling", "fan_in", "fan_out", "instability"], help="Sort key",
     )
 
     subparsers.add_parser("test-gaps", help="Detect modules with no test coverage signal (E15)")
@@ -758,7 +746,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # P6 prompt governance
     subparsers.add_parser(
-        "prompt-authority", help="Prompt authority DAG enforcement — slot hierarchy violations (E21)"
+        "prompt-authority", help="Prompt authority DAG enforcement — slot hierarchy violations (E21)",
     )
     subparsers.add_parser("prompt-lifecycle", help="Prompt lifecycle graph — generates/consumes edges (E20)")
     pi_p = subparsers.add_parser("prompt-impact", help="Prompt blast radius for changed files (E24)")
@@ -766,18 +754,18 @@ def main(argv: list[str] | None = None) -> int:
 
     # P3 runtime / authority / mutation / policy
     subparsers.add_parser(
-        "runtime-graph", help="Runtime execution graph — AgentAction/ToolInvocation/LayerTransition (E26)"
+        "runtime-graph", help="Runtime execution graph — AgentAction/ToolInvocation/LayerTransition (E26)",
     )
     subparsers.add_parser(
-        "layer-authority", help="Layer authority enforcement — behavioral contract violations (E27)"
+        "layer-authority", help="Layer authority enforcement — behavioral contract violations (E27)",
     )
     subparsers.add_parser("mutation-paths", help="Mutation path verification — UWG bypass detection (E28)")
     sl_p = subparsers.add_parser("state-lineage", help="State lineage query — who mutated this state? (E29)")
     sl_p.add_argument(
-        "--query", default="", metavar="STATE_KEY", help="State symbol key to trace mutations for"
+        "--query", default="", metavar="STATE_KEY", help="State symbol key to trace mutations for",
     )
     va_p = subparsers.add_parser(
-        "verify-architecture", help="Unified architecture verification across all planes (E30)"
+        "verify-architecture", help="Unified architecture verification across all planes (E30)",
     )
     va_p.add_argument(
         "--skip-planes",

@@ -338,7 +338,7 @@ class MCPDriftRecorder:
         # Emit runtime ADG edge: this recorder captures MCP state
         _trace_id = str(uuid.uuid4())
         _emit_records_telemetry_event(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.capture_snapshot"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.capture_snapshot",
         )
 
         if not config_file.exists():
@@ -460,7 +460,7 @@ class MCPDriftRecorder:
         """
         _trace_id = str(uuid.uuid4())
         _emit_records_telemetry_event(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.detect_drift"
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.detect_drift",
         )
 
         events: list[MCPDriftEvent] = []
@@ -477,7 +477,7 @@ class MCPDriftRecorder:
                         current_hash=current.config_hash,
                         details={"new_server": current.servers[name].to_dict()},
                         severity=MCPDriftSeverity.INFO,
-                    )
+                    ),
                 )
 
         # Detect removed servers
@@ -492,7 +492,7 @@ class MCPDriftRecorder:
                         current_hash=current.config_hash,
                         details={"removed_server": baseline.servers[name].to_dict()},
                         severity=MCPDriftSeverity.CRITICAL,
-                    )
+                    ),
                 )
 
         # Detect changes in existing servers
@@ -519,7 +519,7 @@ class MCPDriftRecorder:
                                 current_hash=current.config_hash,
                                 details=details,
                                 severity=MCPDriftSeverity.CRITICAL,
-                            )
+                            ),
                         )
 
                     if baseline_state.args != current_state.args:
@@ -536,7 +536,7 @@ class MCPDriftRecorder:
                                 current_hash=current.config_hash,
                                 details=details,
                                 severity=MCPDriftSeverity.WARNING,
-                            )
+                            ),
                         )
 
                     if baseline_state.env != current_state.env:
@@ -553,7 +553,7 @@ class MCPDriftRecorder:
                                 current_hash=current.config_hash,
                                 details=details,
                                 severity=MCPDriftSeverity.CRITICAL,
-                            )
+                            ),
                         )
 
                     if baseline_state.capabilities != current_state.capabilities:
@@ -570,7 +570,7 @@ class MCPDriftRecorder:
                                 current_hash=current.config_hash,
                                 details=details,
                                 severity=MCPDriftSeverity.WARNING,
-                            )
+                            ),
                         )
 
                     if baseline_state.target_layer != current_state.target_layer:
@@ -587,7 +587,7 @@ class MCPDriftRecorder:
                                 current_hash=current.config_hash,
                                 details=details,
                                 severity=MCPDriftSeverity.WARNING,
-                            )
+                            ),
                         )
 
         report = MCPDriftReport(

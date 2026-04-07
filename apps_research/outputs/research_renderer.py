@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Any
 
-from apps_research.types import ResearchResult, ResearchRunSummary, ResearchSection
+from apps_research.types import ResearchResult, ResearchRunSummary
 
 _log = logging.getLogger(__name__)
 

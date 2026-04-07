@@ -179,7 +179,11 @@ def get_python_files(directory):
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         AGENTIC_CORE_DIR as _acquired_core_dir,
+    )
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         APPS_SHARED_DIR as _acquired_shared_dir,
+    )
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         get_python_files as _acquired_get_files,
     )
     # Update if import succeeds

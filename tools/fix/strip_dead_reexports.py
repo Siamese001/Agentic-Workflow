@@ -28,7 +28,7 @@ def get_dead_imports(report_path: str, file_path: str) -> set[str]:
     if not p.exists():
         print(f"  WARNING: Report file not found: {report_path} — SKIPPING", file=sys.stderr)
         return set()
-    
+
     try:
         data = json.loads(p.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
@@ -37,7 +37,7 @@ def get_dead_imports(report_path: str, file_path: str) -> set[str]:
     except OSError as e:
         print(f"  ERROR: Failed to read {report_path}: {e} — SKIPPING", file=sys.stderr)
         return set()
-    
+
     for fdata in data["files"]:
         if fdata["path"].replace("\\", "/") == file_path.replace("\\", "/"):
             dead = set()
@@ -53,19 +53,19 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
     """Remove dead re-exports from an __init__.py file using AST-based parsing."""
     if not dead_imports:
         return False
-    
+
     try:
         src = pathlib.Path(init_path).read_text(encoding="utf-8")
     except OSError as e:
         print(f"  ERROR: Failed to read {init_path}: {e} — SKIPPING", file=sys.stderr)
         return False
-    
+
     try:
         tree = ast.parse(src)
     except SyntaxError as e:
         print(f"  SYNTAX ERROR in {init_path}: {e} — SKIPPING", file=sys.stderr)
         return False
-    
+
     # Find all ImportFrom nodes with their line numbers and symbols
     import_nodes: list[ImportNode] = []
     for node in ast.walk(tree):
@@ -80,34 +80,34 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
                     'module': node.module,
                     'all_symbols': symbols,
                     'dead_symbols': dead_symbols_in_import,
-                    'end_lineno': end_lineno
+                    'end_lineno': end_lineno,
                 })
-    
+
     if not import_nodes:
         return False
-    
+
     # Process the file to remove dead symbols
     lines = src.splitlines(keepends=True)
     skip_indices = set[int]()
     removed_any = False
-    
+
     # Process each import node
     for imp in import_nodes:
         start_line = imp['lineno'] - 1  # 0-indexed
         end_line = imp['end_lineno'] - 1
-        
+
         # For multi-line imports, use AST end_lineno (not paren heuristic)
         if start_line != end_line:
             # Parse the block to extract individual symbol lines
             kept_symbols = []
             removed_symbols = []
-            
+
             for symbol in imp['all_symbols']:
                 if symbol in imp['dead_symbols']:
                     removed_symbols.append(symbol)
                 else:
                     kept_symbols.append(symbol)
-            
+
             if not kept_symbols:
                 # All symbols removed - delete entire block
                 for i in range(start_line, end_line + 1):
@@ -136,13 +136,13 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
                     new_import = f"import {', '.join(kept_symbols)}\n"
                 lines[start_line] = new_import
                 removed_any = True
-    
+
     if not removed_any:
         return False
-    
+
     # Build final lines, skipping deleted indices
     final_lines = [l for i, l in enumerate(lines) if i not in skip_indices]
-    
+
     # Remove __all__ if we removed imports (track bracket depth for multi-line)
     final_output = []
     skip_all = False
@@ -162,7 +162,7 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
                 skip_all = False
             continue
         final_output.append(line)
-    
+
     # Validate syntax of the final output (after __all__ removal)
     new_src = "".join(final_output)
     try:
@@ -170,14 +170,14 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
     except SyntaxError as e:
         print(f"  SYNTAX ERROR after modification in {init_path}: {e} — SKIPPING", file=sys.stderr)
         return False
-    
+
     if not dry_run:
         try:
             pathlib.Path(init_path).write_text(new_src, encoding="utf-8")
         except OSError as e:
             print(f"  ERROR: Failed to write {init_path}: {e} — SKIPPING", file=sys.stderr)
             return False
-    
+
     return True
 
 
@@ -186,7 +186,7 @@ def main() -> int:
     parser.add_argument("--reports", nargs="+", required=True, help="ADG analysis JSON reports")
     parser.add_argument("--dry-run", action="store_true", help="Print what would be done without modifying files")
     args = parser.parse_args()
-    
+
     # Collect all __init__.py files with dead imports
     targets = []
     for rp in args.reports:
@@ -194,7 +194,7 @@ def main() -> int:
         if not p.exists():
             print(f"  WARNING: Report file not found: {rp} — SKIPPING", file=sys.stderr)
             continue
-        
+
         try:
             data = json.loads(p.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
@@ -206,9 +206,9 @@ def main() -> int:
         for fdata in data["files"]:
             if "__init__.py" in fdata["path"] and fdata.get("adg_dead_imports"):
                 targets.append((fdata["path"], rp))
-    
+
     print(f"Found {len(targets)} __init__.py files with dead re-exports")
-    
+
     changed = 0
     for filepath, report_path in sorted(targets):
         dead_imports = get_dead_imports(report_path, filepath)
@@ -216,7 +216,7 @@ def main() -> int:
             action = "DRY-RUN" if args.dry_run else "CHANGED"
             print(f"[{action}] {filepath}")
             changed += 1
-    
+
     print(f"\nSummary: {changed} changed")
     return 0
 

@@ -78,7 +78,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
             "expert": 0.9,
             "external": 0.7,
             "database": 0.5,
-            "api": 0.4
+            "api": 0.4,
         }
 
         total_complexity = 0.0
@@ -128,7 +128,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
             "complex_analysis": 10000,
             "batch_processing": 60000,
             "real_time": 500,
-            "general": 5000
+            "general": 5000,
         }
 
         return default_budgets.get(request_type, 5000)
@@ -150,7 +150,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
             "examples_provided": 0.1,
             "constraints_specified": 0.15,
             "domain_specific_terms": 0.1,
-            "follow_up_questions": 0.05
+            "follow_up_questions": 0.05,
         }
 
         score = 0.5  # Base confidence

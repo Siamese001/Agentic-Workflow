@@ -97,6 +97,7 @@ REPO = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(REPO))
 from agentic_core.base_agents.ssot_scanner import SSOTScanner
 from agentic_core.base_agents.unified_validator import UnifiedSSOTValidator
+
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -123,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -463,29 +463,29 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     scan_parser = subparsers.add_parser("scan", help="Scan and list all discovered agents")
     scan_parser.add_argument(
-        "--summary", action="store_true", help="Show summary by layer instead of full listing"
+        "--summary", action="store_true", help="Show summary by layer instead of full listing",
     )
     scan_parser.add_argument(
-        "--violations-only", action="store_true", help="Show only agents with gravity violations"
+        "--violations-only", action="store_true", help="Show only agents with gravity violations",
     )
     scan_parser.add_argument("--limit", type=int, help="Limit number of agents displayed")
     validate_parser = subparsers.add_parser("validate", help="Run comprehensive SSOT validation")
     validate_parser.add_argument(
-        "--summary", action="store_true", help="Show brief summary instead of full report"
+        "--summary", action="store_true", help="Show brief summary instead of full report",
     )
     validate_parser.add_argument("--markdown", action="store_true", help="Save report as Markdown file")
     validate_parser.add_argument("--json", action="store_true", help="Output report as JSON")
     validate_parser.add_argument("--output", type=str, help="Output file path for Markdown report")
     enforce_parser = subparsers.add_parser("enforce", help="Apply automated remediation")
     enforce_parser.add_argument(
-        "--execute", action="store_true", help="Execute enforcement (default is dry-run)"
+        "--execute", action="store_true", help="Execute enforcement (default is dry-run)",
     )
     enforce_parser.add_argument("--yes", "-y", action="store_true", help="Skip confirmation prompt")
     enforce_parser.add_argument("--gravity", action="store_true", help="Fix gravity violations only")
     enforce_parser.add_argument("--drift", action="store_true", help="Fix drift violations only")
     enforce_parser.add_argument("--hierarchy", action="store_true", help="Fix hierarchy violations only")
     enforce_parser.add_argument(
-        "--all", action="store_true", default=True, help="Fix all violations (default)"
+        "--all", action="store_true", default=True, help="Fix all violations (default)",
     )
     subparsers.add_parser("status", help="Show compliance dashboard")
     args = parser.parse_args()

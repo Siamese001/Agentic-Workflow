@@ -13,11 +13,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from system_learning.meta_learning.meta_apply import (
-    _atomic_write_json,
-    _config_path,
-    _rollback_path,
-)
 from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
@@ -64,6 +59,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+from system_learning.meta_learning.meta_apply import (
+    _atomic_write_json,
+    _config_path,
+    _rollback_path,
 )
 
 emit_replay_key("p0", "meta_apply_ops")
@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -238,7 +237,7 @@ def _check_no_schema_changes(base_dir: Path, target_component: str, policy_confi
 
 
 def _check_policy_hash_unchanged(
-    base_dir: Path, target_component: str, policy_config_hash: str | None
+    base_dir: Path, target_component: str, policy_config_hash: str | None,
 ) -> bool:
     """Assert policy_config_hash matches the one stored in config metadata.
 
@@ -250,7 +249,7 @@ def _check_policy_hash_unchanged(
 
 
 def _check_guardian_determinism_empty_diff(
-    base_dir: Path, target_component: str, policy_config_hash: str | None
+    base_dir: Path, target_component: str, policy_config_hash: str | None,
 ) -> bool:
     """Simulated guardian determinism check.
 

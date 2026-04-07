@@ -48,13 +48,13 @@ class _LegacyRuleBasedEnricher:
         "orchestration": ["orchestrat", "workflow", "pipeline", "coordination", "agent"],
         "evaluation": ["evaluat", "metric", "benchmark", "assessment", "performance"],
         "memory": ["memory", "storage", "cache", "persistence", "database"],
-        "safety_governance": ["safety", "governance", "guardrail", "policy", "compliance"]
+        "safety_governance": ["safety", "governance", "guardrail", "policy", "compliance"],
     }
 
     # Core concept indicators
     CONCEPT_INDICATORS = [
         "embedding", "vector", "semantic", "chunk", "document", "knowledge",
-        "reasoning", "inference", "generation", "prompt", "context", "grounding"
+        "reasoning", "inference", "generation", "prompt", "context", "grounding",
     ]
 
     # Query expansion synonyms
@@ -63,7 +63,7 @@ class _LegacyRuleBasedEnricher:
         "embedding": ["vector", "representation", "encoding"],
         "agent": ["assistant", "ai", "model", "system"],
         "orchestration": ["coordination", "workflow", "pipeline"],
-        "evaluation": ["assessment", "benchmark", "metric", "performance"]
+        "evaluation": ["assessment", "benchmark", "metric", "performance"],
     }
 
     def __init__(self):
@@ -192,7 +192,7 @@ class _LegacyRuleBasedEnricher:
             f"Agentic Patterns: {', '.join(agentic_patterns)}" if agentic_patterns else "",
             f"Execution Insight: {execution_insight}",
             f"Query Expansion: {', '.join(query_expansion)}" if query_expansion else "",
-            f"Source Context: {metadata.get('source_url', 'Unknown source')}"
+            f"Source Context: {metadata.get('source_url', 'Unknown source')}",
         ]
 
         enriched_text = '\n\n'.join(filter(None, enriched_parts))
@@ -208,7 +208,7 @@ class _LegacyRuleBasedEnricher:
             'agentic_patterns': agentic_patterns,
             'execution_insight': execution_insight,
             'query_expansion': query_expansion,
-            'enrichment_hash': enrichment_hash
+            'enrichment_hash': enrichment_hash,
         }
 
 
@@ -236,7 +236,7 @@ class SemanticPipeline:
             'enriched': 0,
             'skipped': 0,
             'stored': 0,
-            'errors': 0
+            'errors': 0,
         }
 
     def _reset_target_collection(self):
@@ -251,7 +251,7 @@ class SemanticPipeline:
         try:
             result = self.target_collection.get(
                 where={"enrichment_hash": enrichment_hash},
-                limit=1
+                limit=1,
             )
             return len(result['ids']) > 0
         except Exception:
@@ -288,14 +288,14 @@ class SemanticPipeline:
                 'enrichment_hash': enriched['enrichment_hash'],
                 'title': enriched['title'],
                 'key_concepts': enriched['key_concepts'] or ['general'],
-                'agentic_patterns': enriched['agentic_patterns'] or ['general']
+                'agentic_patterns': enriched['agentic_patterns'] or ['general'],
             })
 
             self.stats['enriched'] += 1
             return {
                 'id': f"semantic_{chunk_id}",
                 'text': enriched['enriched_text'],
-                'metadata': enriched_metadata
+                'metadata': enriched_metadata,
             }
 
         except Exception as e:
@@ -338,7 +338,7 @@ class SemanticPipeline:
         for chunk_id, chunk_text, metadata in tqdm(
             zip(chunk_ids, chunk_texts, chunk_metadatas),
             total=len(chunk_ids),
-            desc="Processing chunks"
+            desc="Processing chunks",
         ):
             self.stats['processed'] += 1
 
@@ -371,7 +371,7 @@ class SemanticPipeline:
             ids=ids,
             documents=enriched_texts,
             embeddings=embeddings,
-            metadatas=metadatas
+            metadatas=metadatas,
         )
 
         self.stats['stored'] = len(ids)
@@ -406,7 +406,7 @@ class SemanticPipeline:
         # Search
         results = self.target_collection.query(
             query_embeddings=query_embedding.tolist(),
-            n_results=n_results
+            n_results=n_results,
         )
 
         # Format results
@@ -416,7 +416,7 @@ class SemanticPipeline:
                 'id': results['ids'][0][i],
                 'document': results['documents'][0][i],
                 'metadata': results['metadatas'][0][i],
-                'distance': results['distances'][0][i] if 'distances' in results else None
+                'distance': results['distances'][0][i] if 'distances' in results else None,
             })
 
         return formatted_results

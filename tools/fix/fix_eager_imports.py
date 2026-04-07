@@ -4,10 +4,8 @@ This script converts eager agentic_core imports to lazy fixtures.
 Usage: python fix_eager_imports.py [--dry-run] [--file FILE]
 """
 
-import re
-import ast
-import sys
 import argparse
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -154,7 +152,7 @@ def main():
             print(f"{'[DRY-RUN]' if args.dry_run else ''} {file_path}: {fixes} import(s) to fix")
             if not args.dry_run and new_content:
                 full_path.write_text(new_content, encoding="utf-8")
-                print(f"  ✅ Fixed and saved")
+                print("  ✅ Fixed and saved")
             total_fixes += fixes
             files_changed += 1
         else:

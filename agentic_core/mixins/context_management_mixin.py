@@ -342,13 +342,13 @@ class ContextManagementMixin:
             if projected_total > self._context_config.max_context_tokens:
                 self._manage_context_overflow(token_count)
             item = ContextItem(
-                content=content, priority=priority, token_count=token_count, metadata=metadata or {}
+                content=content, priority=priority, token_count=token_count, metadata=metadata or {},
             )
             self._context_items.append(item)
             self._total_context_tokens += token_count
             self._check_context_thresholds()
         Logger.debug(
-            f"[CONTEXT] Added {token_count} tokens (priority={priority.name}). Total: {self._total_context_tokens}/{self._context_config.max_context_tokens}"
+            f"[CONTEXT] Added {token_count} tokens (priority={priority.name}). Total: {self._total_context_tokens}/{self._context_config.max_context_tokens}",
         )
         return item
 
@@ -378,7 +378,7 @@ class ContextManagementMixin:
             self._prune_by_priority(ContextPriority.HIGH, target_tokens=target)
         if self._total_context_tokens + required_tokens > self._context_config.max_context_tokens:
             raise ContextOverflowError(
-                self._total_context_tokens + required_tokens, self._context_config.max_context_tokens
+                self._total_context_tokens + required_tokens, self._context_config.max_context_tokens,
             )
 
     def _prune_low_priority_context(self, target_tokens: int | None = None) -> int:
@@ -419,7 +419,7 @@ class ContextManagementMixin:
             self._total_context_tokens -= item.token_count
         if tokens_freed > 0:
             Logger.info(
-                f"[CONTEXT] Pruned {tokens_freed} tokens (priority={priority.name}). Remaining: {self._total_context_tokens}"
+                f"[CONTEXT] Pruned {tokens_freed} tokens (priority={priority.name}). Remaining: {self._total_context_tokens}",
             )
         return tokens_freed
 
@@ -449,7 +449,7 @@ class ContextManagementMixin:
         self._summaries.append(summary_item)
         self._last_summarization_time = time.time()
         Logger.info(
-            f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens"
+            f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens",
         )
 
     def _create_summary(self, content: str) -> str:

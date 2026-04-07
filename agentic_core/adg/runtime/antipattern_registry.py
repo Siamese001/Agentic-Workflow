@@ -63,39 +63,25 @@ _emit_applies_guardrail("p0", "antipattern_registry", "p0_governance")
 _emit_reads_policy_state("p0", "antipattern_registry", "policy_binding")
 _emit_snapshots_state("p0", "antipattern_registry", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -197,6 +183,7 @@ class AntipatternCategory(str, Enum):
     MUTABLE_DEFAULT_ARG = "mutable_default_arg"
     STAR_IMPORT_USE = "star_import_use"
     HARDCODED_SECRET = "hardcoded_secret"
+    HARDCODED_PATH = "hardcoded_path"
     DEAD_CODE = "dead_code"
     OVERLY_BROAD_CATCH = "overly_broad_catch"
     BROAD_EXCEPTION_CATCH = "broad_exception_catch"
@@ -206,6 +193,7 @@ class AntipatternCategory(str, Enum):
 
 _SEVERITY_MAP: dict[AntipatternCategory, AntipatternSeverity] = {
     AntipatternCategory.HARDCODED_SECRET: AntipatternSeverity.CRITICAL,
+    AntipatternCategory.HARDCODED_PATH: AntipatternSeverity.HIGH,
     AntipatternCategory.GLOBAL_STATE_MUTATION: AntipatternSeverity.MEDIUM,
     AntipatternCategory.SILENT_EXCEPTION_SWALLOW: AntipatternSeverity.HIGH,
     AntipatternCategory.BLOCKING_CALL_IN_ASYNC: AntipatternSeverity.HIGH,
@@ -283,7 +271,7 @@ class AntipatternRegistryReport:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "AntipatternRegistryReport.by_category"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AntipatternRegistryReport.by_category",
         )
 
         result: dict[str, int] = {}
@@ -349,7 +337,7 @@ class AntipatternRegistry:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "AntipatternRegistry.register"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AntipatternRegistry.register",
         )
 
         resolved_severity = severity or _SEVERITY_MAP.get(category, AntipatternSeverity.MEDIUM)
@@ -378,7 +366,7 @@ class AntipatternRegistry:
         return None
 
     def register_from_edge_kind(
-        self, edge_kind: str, source_file: str = "", line_no: int = 0, symbol: str = ""
+        self, edge_kind: str, source_file: str = "", line_no: int = 0, symbol: str = "",
     ) -> AntipatternRecord | None:
         """Convenience: register an anti-pattern directly from an ADG edge kind string."""
         category = self.classify(edge_kind)

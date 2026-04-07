@@ -43,7 +43,7 @@ class CapabilityGap(BaseModel):
     failure_count: int = Field(..., ge=0, description="Number of failures observed")
     severity: float = Field(..., ge=0.0, le=1.0, description="Severity score (0.0 to 1.0)")
     evidence: list[str] = Field(
-        default_factory=list, description="Evidence supporting the gap identification"
+        default_factory=list, description="Evidence supporting the gap identification",
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -70,10 +70,10 @@ class Recommendation(BaseModel):
     addresses_gaps: list[str] = Field(..., description="List of gap IDs this recommendation addresses")
     priority: float = Field(..., ge=0.0, le=1.0, description="Priority score (0.0 to 1.0)")
     implementation_steps: list[str] = Field(
-        default_factory=list, description="Steps to implement the recommendation"
+        default_factory=list, description="Steps to implement the recommendation",
     )
     estimated_impact: float = Field(
-        default=0.0, ge=0.0, le=1.0, description="Estimated impact score (0.0 to 1.0)"
+        default=0.0, ge=0.0, le=1.0, description="Estimated impact score (0.0 to 1.0)",
     )
 
     def to_dict(self) -> dict[str, Any]:

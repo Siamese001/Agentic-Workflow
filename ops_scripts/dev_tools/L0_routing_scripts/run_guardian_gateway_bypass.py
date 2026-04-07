@@ -37,7 +37,6 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     normalize_repo_path,
     write_guardian_result,
 )
-from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -81,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 
 emit_replay_key("p0", "run_guardian_gateway_bypass")
 emit_determinism_digest("p0", "run_guardian_gateway_bypass")
@@ -139,7 +139,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -209,7 +208,7 @@ ALLOWED_SDK_FILES: frozenset[str] = frozenset(
     {
         "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
         "agentic_core/L2_execution/enforcement/EmbeddingServiceFactory.py",
-    }
+    },
 )
 
 FORBIDDEN_SDK_MODULES: frozenset[str] = frozenset(
@@ -217,7 +216,7 @@ FORBIDDEN_SDK_MODULES: frozenset[str] = frozenset(
         "openai",
         "anthropic",
         "google.generativeai",
-    }
+    },
 )
 
 FORBIDDEN_INSTANTIATION_NAMES: frozenset[str] = frozenset(
@@ -227,7 +226,7 @@ FORBIDDEN_INSTANTIATION_NAMES: frozenset[str] = frozenset(
         "Anthropic",
         "AsyncAnthropic",
         "GenerativeModel",
-    }
+    },
 )
 
 SKIP_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
@@ -289,7 +288,7 @@ def scan_provider_sdk_imports(
                                 "check_id": "provider_sdk_import",
                                 "line": node.lineno,
                                 "detail": f"import {alias.name}",
-                            }
+                            },
                         )
             elif isinstance(node, ast.ImportFrom):
                 mod = node.module or ""
@@ -300,7 +299,7 @@ def scan_provider_sdk_imports(
                             "check_id": "provider_sdk_import",
                             "line": node.lineno,
                             "detail": f"from {mod} import ...",
-                        }
+                        },
                     )
     return sorted(violations, key=lambda v: (v["path"], v["line"]))
 
@@ -337,7 +336,7 @@ def scan_direct_model_calls(
                             "check_id": "direct_model_call",
                             "line": node.lineno,
                             "detail": f"call to {name}()",
-                        }
+                        },
                     )
     return sorted(violations, key=lambda v: (v["path"], v["line"]))
 

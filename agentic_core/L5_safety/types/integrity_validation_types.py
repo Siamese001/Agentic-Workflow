@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -225,7 +224,7 @@ class IntegrityValidationGuardrail:
         self.gravity_violations = 0
 
     async def validate_integrity(
-        self, data: Any, expected_checksum: str | None = None, data_id: str | None = None
+        self, data: Any, expected_checksum: str | None = None, data_id: str | None = None,
     ) -> IntegrityResult:
         """
         Validate data integrity.
@@ -242,12 +241,12 @@ class IntegrityValidationGuardrail:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "IntegrityValidationGuardrail.validate_integrity"
+            _trace_id, LayerSegment.L5_POLICY, "IntegrityValidationGuardrail.validate_integrity",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:IntegrityValidationGuardrail.validate_integrity".encode()
+            f"{_trace_id}:IntegrityValidationGuardrail.validate_integrity".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -265,7 +264,7 @@ class IntegrityValidationGuardrail:
                         description="Checksum mismatch - data may be corrupted",
                         expected=expected_checksum,
                         actual=actual_checksum,
-                    )
+                    ),
                 )
             if data_id and data_id in self.checksums:
                 if self.checksums[data_id] != actual_checksum:
@@ -276,7 +275,7 @@ class IntegrityValidationGuardrail:
                             description="Data has changed since last validation",
                             expected=self.checksums[data_id],
                             actual=actual_checksum,
-                        )
+                        ),
                     )
         if data_id:
             self.checksums[data_id] = actual_checksum
@@ -289,7 +288,7 @@ class IntegrityValidationGuardrail:
         )
 
     async def validate_gravity(
-        self, source_layer: str, imported_layers: list[str], file_path: str | None = None
+        self, source_layer: str, imported_layers: list[str], file_path: str | None = None,
     ) -> IntegrityResult:
         """
         Validate gravity compliance (layer import rules).
@@ -307,7 +306,7 @@ class IntegrityValidationGuardrail:
         violations = []
         if "gravity_compliance" not in self.enabled_rules:
             return IntegrityResult(
-                valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000
+                valid=True, violations=[], validation_time_ms=(time.time() - start_time) * 1000,
             )
         allowed_imports = self.gravity_rules.get(source_layer, [])
         for imported in imported_layers:
@@ -320,7 +319,7 @@ class IntegrityValidationGuardrail:
                         expected=f"Allowed: {allowed_imports}",
                         actual=imported,
                         location=file_path,
-                    )
+                    ),
                 )
                 self.gravity_violations += 1
         self.violations_found += len(violations)

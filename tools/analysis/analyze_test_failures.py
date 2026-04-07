@@ -11,7 +11,7 @@ def analyze_test_failures():
         [sys.executable, '-m', 'pytest', 'tests/unit', '--tb=line', '-q', '--continue-on-collection-errors'],
         capture_output=True,
         text=True,
-        cwd=r'c:\Git\Agentic-Workflow'
+        cwd=r'c:\Git\Agentic-Workflow',
     )
 
     output = result.stdout + result.stderr

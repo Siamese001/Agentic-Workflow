@@ -1,12 +1,11 @@
 """Tests for apps_underwriting_ai parser components."""
 
-import pytest
 
-from apps_underwriting_ai.parsers.financial_statement_parser import (
-    FinancialStatementParser,
-)
 from apps_underwriting_ai.parsers.bank_statement_parser import (
     BankStatementParser,
+)
+from apps_underwriting_ai.parsers.financial_statement_parser import (
+    FinancialStatementParser,
 )
 
 

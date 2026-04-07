@@ -60,39 +60,25 @@ _emit_applies_guardrail("p0", "evidence_ranker_validator", "p0_governance")
 _emit_reads_policy_state("p0", "evidence_ranker_validator", "policy_binding")
 _emit_snapshots_state("p0", "evidence_ranker_validator", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -251,11 +237,11 @@ class EvidenceRanker:
             "\\b\\d+(?:,\\d{3})*(?:\\.\\d+)?%\\b",
         ]
         logger.info(
-            f"Initialized EvidenceRanker with weights: freshness={self.freshness_weight:.2f}, corroboration={self.corroboration_weight:.2f}, semantic={self.semantic_weight:.2f}"
+            f"Initialized EvidenceRanker with weights: freshness={self.freshness_weight:.2f}, corroboration={self.corroboration_weight:.2f}, semantic={self.semantic_weight:.2f}",
         )
 
     def rank_evidence(
-        self, signals: list[dict[str, Any]], current_year: int | None = None
+        self, signals: list[dict[str, Any]], current_year: int | None = None,
     ) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
@@ -291,7 +277,7 @@ class EvidenceRanker:
                         semantic_score = max(0.0, min(1.0, semantic_score))
                     freshness_score, year_detected = self._score_freshness(content, metadata)
                     corroboration_count, key_entities = self._count_corroboration(
-                        content, all_entities, signals
+                        content, all_entities, signals,
                     )
                     corroboration_normalized = min(1.0, corroboration_count / 3.0)
                     final_score = (
@@ -321,7 +307,7 @@ class EvidenceRanker:
                     continue
             ranked_signals.sort(key=lambda x: x.final_score, reverse=True)
             logger.info(
-                f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}"
+                f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}",
             )
             return ranked_signals
         # guardian: allow-silent-swallow
@@ -395,7 +381,7 @@ class EvidenceRanker:
             return None
 
     def _count_corroboration(
-        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]]
+        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]],
     ) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 
@@ -567,7 +553,7 @@ def create_evidence_ranker(
 
 
 def rank_evidence(
-    signals: list[dict[str, Any]], prioritize_freshness: bool = True, current_year: int | None = None
+    signals: list[dict[str, Any]], prioritize_freshness: bool = True, current_year: int | None = None,
 ) -> list[RankedEvidence]:
     """Quickly rank evidence by freshness and corroboration.
 

@@ -90,7 +90,7 @@ class JudgeOrchestrator:
         return self._registry
 
     def _collect_relations_for_rubrics(
-        self, rubric_ids: list[str]
+        self, rubric_ids: list[str],
     ) -> list[str]:
         """Collect all ADG relations needed across the selected rubrics."""
         relations: set[str] = set()
@@ -172,7 +172,7 @@ class JudgeOrchestrator:
                 if provider:
                     try:
                         verdict = await run_llm_judge(
-                            rid, bundle, provider, self._rubric_engine
+                            rid, bundle, provider, self._rubric_engine,
                         )
                     except Exception as exc:
                         _log.warning(
@@ -253,7 +253,7 @@ class JudgeOrchestrator:
         return reports
 
     def _build_scorecard(
-        self, verdicts: list[JudgeVerdict]
+        self, verdicts: list[JudgeVerdict],
     ) -> list[JudgeReportRow]:
         """Build scorecard rows from verdicts, grouped by dimension."""
         dim_data: dict[str, list[JudgeVerdict]] = {}
@@ -295,7 +295,7 @@ class JudgeOrchestrator:
                     severity=worst_sev.severity,
                     rubric_id=", ".join(rubric_ids_in_dim),
                     verdict_count=len(dim_verdicts),
-                )
+                ),
             )
 
         return sorted(rows, key=lambda r: r.score)

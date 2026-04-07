@@ -148,7 +148,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -305,7 +304,7 @@ class StructureHealerAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "StructureHealerAgent.heal_repository"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "StructureHealerAgent.heal_repository",
         )
         # Update config based on args
         self._agent_config.dry_run = dry_run

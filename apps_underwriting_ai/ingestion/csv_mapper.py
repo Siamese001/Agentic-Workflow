@@ -1,11 +1,11 @@
 """
 CSV Mapper - Maps CSV data to UnderwritingRequest domain model.
 """
-from typing import Dict, Any, Optional, Union
-from dataclasses import dataclass, field
-from pathlib import Path
 import csv
 import io
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 
 from ..types import UnderwritingRequest
 from .structured_ingestion import StructuredIngestion
@@ -29,7 +29,7 @@ class CSVMapper:
         self,
         data: Union[str, Path],
         mapping_config: Optional[Dict[str, str]] = None,
-        request_id: Optional[str] = None
+        request_id: Optional[str] = None,
     ) -> CSVMappingResult:
         """
         Map CSV data to UnderwritingRequest.
@@ -77,7 +77,7 @@ class CSVMapper:
             json_mapper = JSONMapper()
             json_result = json_mapper.map_to_request(
                 structured_data,
-                request_id=request_id
+                request_id=request_id,
             )
 
             result.request = json_result.request
@@ -98,7 +98,7 @@ class CSVMapper:
             'request_id', 'submission_ts', 'product_type', 'decision_type',
             'requested_amount', 'requested_term_months',
             'legal_name', 'entity_type', 'industry_code', 'industry_description',
-            'years_in_business', 'state_of_incorporation', 'employee_count'
+            'years_in_business', 'state_of_incorporation', 'employee_count',
         ]
 
         for field in direct_fields:
@@ -109,7 +109,7 @@ class CSVMapper:
         borrower_fields = [
             'legal_name', 'entity_type', 'industry_code', 'industry_description',
             'years_in_business', 'state_of_incorporation', 'employee_count',
-            'operating_states', 'naics_risk_flags', 'sanctions_or_watchlist_hits'
+            'operating_states', 'naics_risk_flags', 'sanctions_or_watchlist_hits',
         ]
         nested['borrower'] = {}
         for field in borrower_fields:
@@ -132,7 +132,7 @@ class CSVMapper:
         financial_fields = [
             'revenue', 'cogs', 'gross_profit', 'ebitda', 'net_income',
             'cash', 'ar', 'inventory', 'ap', 'total_assets', 'total_debt',
-            'tangible_net_worth', 'interest_expense', 'debt_service'
+            'tangible_net_worth', 'interest_expense', 'debt_service',
         ]
         if any(f in flat_data for f in financial_fields):
             nested['financials'] = {'periods': [{}]}
@@ -147,7 +147,7 @@ class CSVMapper:
         # Build collateral
         collateral_fields = [
             'collateral_type', 'estimated_value', 'advance_rate_pct',
-            'borrowing_base_value', 'lien_position', 'appraisal_date', 'field_exam_date'
+            'borrowing_base_value', 'lien_position', 'appraisal_date', 'field_exam_date',
         ]
         if any(f in flat_data for f in collateral_fields):
             nested['collateral'] = {}
@@ -159,7 +159,7 @@ class CSVMapper:
         credit_fields = [
             'business_bureau_score', 'personal_fico_scores', 'delinquencies_24m',
             'defaults_ever', 'bankruptcies_ever', 'judgments_or_liens',
-            'tradeline_utilization_pct'
+            'tradeline_utilization_pct',
         ]
         if any(f in flat_data for f in credit_fields):
             nested['credit'] = {}
@@ -170,7 +170,7 @@ class CSVMapper:
         # Build banking
         banking_fields = [
             'avg_monthly_deposits_12m', 'avg_ending_balance_12m', 'nsf_count_12m',
-            'overdraft_days_12m', 'cash_volatility_score', 'deposit_trend'
+            'overdraft_days_12m', 'cash_volatility_score', 'deposit_trend',
         ]
         if any(f in flat_data for f in banking_fields):
             nested['banking'] = {}

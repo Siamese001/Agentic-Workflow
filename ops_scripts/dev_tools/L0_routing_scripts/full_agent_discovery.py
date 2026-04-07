@@ -54,11 +54,6 @@ from agentic_core.L0_routing.enforcement.safety_kernel_seam import (
     get_classification_cache_context,
 )
 from agentic_core.L0_routing.utils.path_util import validate_path_within_project
-from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import (
-    get_healers,
-    invalidate_cache,
-    load_agent_discovery,
-)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -103,6 +98,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     # noqa: E402
     emit_replay_key,
+)
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import (
+    get_healers,
+    invalidate_cache,
+    load_agent_discovery,
 )
 
 emit_replay_key("p0", "full_agent_discovery")
@@ -193,7 +193,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -247,8 +246,17 @@ _emit_writes_through("p1", "full_agent_discovery", "write_through_2")
 _emit_validated_by_safety_plane("p1", "full_agent_discovery", "safety_validation")
 _emit_invokes_eval("p1", "full_agent_discovery", "eval_call")
 _emit_proposal_commits_routing("p1", "full_agent_discovery", "routing_commit")
+from agentic_core.config.constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
-from agentic_core.config.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_entry")
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_exit")

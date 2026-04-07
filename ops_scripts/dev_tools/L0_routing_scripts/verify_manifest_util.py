@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -226,7 +225,7 @@ def analyze_impact(report: dict[str, Any]) -> bool:
     safety_pass = True
     if blast_radius > 50:
         logging.warning(
-            f"🚨 HIGH BLAST RADIUS: {blast_radius} files would be modified. Manual review required."
+            f"🚨 HIGH BLAST RADIUS: {blast_radius} files would be modified. Manual review required.",
         )
         safety_pass = False
     budget_blocks = [f for f in failures if "blocked_by_safety" in str(f.get("status", ""))]

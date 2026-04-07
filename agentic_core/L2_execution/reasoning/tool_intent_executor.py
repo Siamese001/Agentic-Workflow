@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
@@ -236,7 +235,7 @@ class ToolResult:
     def __post_init__(self) -> None:
         if self.schema_version != _SCHEMA_VERSION:
             raise ValueError(
-                f"ToolResult: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}"
+                f"ToolResult: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}",
             )
         if not self.tool_name:
             raise ValueError("ToolResult: tool_name must be non-empty")

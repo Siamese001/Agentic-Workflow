@@ -54,7 +54,7 @@ def add_import(src: str, needed_consts: set[str]) -> str:
     """Insert or extend path_constants import block near top of file."""
     # Check if import block already exists
     existing_match = re.search(
-        r"from agentic_core\.L0_routing\.config\.path_constants import \(([^)]*)\)", src, re.DOTALL
+        r"from agentic_core\.L0_routing\.config\.path_constants import \(([^)]*)\)", src, re.DOTALL,
     )
     if existing_match:
         existing_body = existing_match.group(1)

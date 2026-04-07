@@ -30,25 +30,25 @@ def fix_broken_imports():
             content = re.sub(
                 r'from agentic_core\\\.L_CONTRACTS\\\.([^\s]+) import',
                 r'from agentic_core.L_CONTRACTS.\1 import',
-                content
+                content,
             )
 
             content = re.sub(
                 r'import agentic_core\\\.L_CONTRACTS\\\.([^\s]+)',
                 r'import agentic_core.L_CONTRACTS.\1',
-                content
+                content,
             )
 
             content = re.sub(
                 r'from agentic_core\\\.runtime\\\.([^\s]+) import',
                 r'from agentic_core.runtime.\1 import',
-                content
+                content,
             )
 
             content = re.sub(
                 r'import agentic_core\\\.runtime\\\.([^\s]+)',
                 r'import agentic_core.runtime.\1',
-                content
+                content,
             )
 
             # Write back if changed

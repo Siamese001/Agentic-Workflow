@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -246,7 +245,7 @@ class HandshakeStateMachine:
         """
         if self._current_state != HandshakeState.INIT:
             raise ValueError(
-                f"Cannot request preclear from {self._current_state.value}. Must be in INIT state."
+                f"Cannot request preclear from {self._current_state.value}. Must be in INIT state.",
             )
         self._transition_to(HandshakeState.PRECLEAR_REQUESTED, "L5 pre-clear requested")
 
@@ -258,7 +257,7 @@ class HandshakeStateMachine:
         """
         if self._current_state != HandshakeState.PRECLEAR_REQUESTED:
             raise ValueError(
-                f"Cannot certify from {self._current_state.value}. Must be in PRECLEAR_REQUESTED state."
+                f"Cannot certify from {self._current_state.value}. Must be in PRECLEAR_REQUESTED state.",
             )
         self._transition_to(HandshakeState.CERTIFIED, "L5 certification granted")
 
@@ -291,7 +290,7 @@ class HandshakeStateMachine:
         """
         if self._current_state != HandshakeState.CERTIFIED:
             raise ValueError(
-                f"Cannot modify_diff from {self._current_state.value}. Must be in CERTIFIED state."
+                f"Cannot modify_diff from {self._current_state.value}. Must be in CERTIFIED state.",
             )
         self._transition_to(HandshakeState.PRECLEAR_REQUESTED, "MODIFY_DIFF invalidated certification")
 

@@ -102,8 +102,6 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
-
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -128,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -142,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
 from agentic_core.utils.security_util import safe_execute
 
 _emit_emits_metric_event("deterministic_cleaner_util", "p4obs", "metric_1")
@@ -234,12 +232,12 @@ class DeterministicCleaner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DeterministicCleaner.deterministic_clean"
+            _trace_id, LayerSegment.L2_EXECUTION, "DeterministicCleaner.deterministic_clean",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:DeterministicCleaner.deterministic_clean".encode()
+            f"{_trace_id}:DeterministicCleaner.deterministic_clean".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -286,7 +284,7 @@ class DeterministicCleaner:
                 temp_file = f.name
             try:
                 safe_execute(
-                    ["isort", "--profile", "black", temp_file], capture_output=True, text=True, check=True
+                    ["isort", "--profile", "black", temp_file], capture_output=True, text=True, check=True,
                 )
                 with open(temp_file) as f:
                     return f.read()
@@ -300,7 +298,7 @@ class DeterministicCleaner:
         """Apply autopep8 for PEP8 formatting."""
         try:
             result = safe_execute(
-                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True
+                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True,
             )
             return result.stdout
         except subprocess.CalledProcessError as e:

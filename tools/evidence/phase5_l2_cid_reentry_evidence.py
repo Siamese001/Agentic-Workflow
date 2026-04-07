@@ -90,8 +90,8 @@ def main():
     sections.append("```")
     sections.append(
         run_command(
-            [sys.executable, "-m", "pytest", "-q", "tests/unit/L2_execution", "-m", "unit"], repo_root
-        )
+            [sys.executable, "-m", "pytest", "-q", "tests/unit/L2_execution", "-m", "unit"], repo_root,
+        ),
     )
     sections.append("```\n\n")
 

@@ -103,7 +103,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
         "WHERE relation_type='routes_path' "
         "AND source_file LIKE '%L0_routing/engines%' "
         "AND source_file NOT LIKE '%test%' "
-        "AND source_file NOT LIKE '%tests%'"
+        "AND source_file NOT LIKE '%tests%'",
     )
     routing_engines = c.fetchone()[0]
 
@@ -128,7 +128,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             "A",
             ok,
             f"proposal_commits_routing={committed} / routing_engines={routing_engines} = {ratio:.3f} (required>={threshold})",
-        )
+        ),
     )
     return ok
 
@@ -146,7 +146,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"references_policy_hash from routing sources={n} (required>={threshold})",
-        )
+        ),
     )
     return ok
 
@@ -163,7 +163,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             "C",
             ok,
             f"emits_replay_key from routing sources={n} (must be >0)",
-        )
+        ),
     )
     return ok
 
@@ -180,7 +180,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             "D",
             ok,
             f"emits_determinism_digest from routing sources={n} (must be >0)",
-        )
+        ),
     )
     return ok
 
@@ -197,7 +197,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             "E",
             ok,
             f"records_execution_trace from routing sources={n} (must be >0)",
-        )
+        ),
     )
     return ok
 
@@ -218,7 +218,7 @@ def gate_f(conn: sqlite3.Connection) -> bool:
         "AND e.source_file NOT LIKE '%tests%' "
         "AND e.source_file NOT LIKE '%spec%' "
         "AND e.source_file NOT LIKE '%fixture%' "
-        "AND e.source_file NOT LIKE '%mock%'"
+        "AND e.source_file NOT LIKE '%mock%'",
     )
     n = c.fetchone()[0]
     threshold = 4
@@ -228,7 +228,7 @@ def gate_f(conn: sqlite3.Connection) -> bool:
             "F",
             ok,
             f"routing engines importing routing_contract={n} (required>={threshold})",
-        )
+        ),
     )
     return ok
 

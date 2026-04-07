@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai additional validator components."""
 
-import pytest
 
 from apps_underwriting_ai.validators.authority_limit_validator import (
     AuthorityLimitValidator,

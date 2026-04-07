@@ -62,39 +62,25 @@ _emit_applies_guardrail("p0", "resume_analysis_plan_types", "p0_governance")
 _emit_reads_policy_state("p0", "resume_analysis_plan_types", "policy_binding")
 _emit_snapshots_state("p0", "resume_analysis_plan_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -431,7 +417,7 @@ class RGPlanner:
         job_analysis = self._analyze_job_requirements(job_input)
         resume_analysis = self._analyze_resume_structure(resume_input)
         processing_strategy = self._determine_processing_strategy(
-            job_analysis, resume_analysis, processing_options
+            job_analysis, resume_analysis, processing_options,
         )
         analysis_plan = self._create_analysis_plan(job_analysis, processing_strategy)
         section_configs = self._configure_section_processing(resume_analysis, processing_strategy)
@@ -488,7 +474,7 @@ class RGPlanner:
         }
 
     def _determine_processing_strategy(
-        self, job_analysis: dict[str, object], resume_analysis: dict[str, object], options: dict[str, object]
+        self, job_analysis: dict[str, object], resume_analysis: dict[str, object], options: dict[str, object],
     ) -> dict[str, object]:
         """Determine optimal processing strategy based on analysis."""
         job_complexity = job_analysis.get("complexity_score", 0.5)
@@ -518,7 +504,7 @@ class RGPlanner:
         }
 
     def _create_analysis_plan(
-        self, job_analysis: dict[str, object], strategy: dict[str, object]
+        self, job_analysis: dict[str, object], strategy: dict[str, object],
     ) -> ResumeAnalysisPlan:
         """Create detailed resume analysis plan."""
         return ResumeAnalysisPlan(
@@ -538,7 +524,7 @@ class RGPlanner:
         )
 
     def _configure_section_processing(
-        self, resume_analysis: dict[str, object], strategy: dict[str, object]
+        self, resume_analysis: dict[str, object], strategy: dict[str, object],
     ) -> list[ResumeSectionConfig]:
         """Configure processing for each resume section."""
         section_configs = []

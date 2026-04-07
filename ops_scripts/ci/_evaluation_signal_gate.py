@@ -153,7 +153,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"evaluate_and_attach exported in evaluation_record={eaa_exported} (>=1), "
             f"EvaluationRecord exported in evaluation_record={er_exported} (>=1), "
             f"evaluate_and_attach callers: integrator={eaa_calls_integrator} logger={eaa_calls_logger} total={total_callers} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -181,7 +181,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             f"EvaluationLinkage exported in evaluation_record={linkage_exported}, "
             f"evaluate_and_attach exported={eaa_exported} (>=1), "
             f"EvaluationRecord exported={er_exported}",
-        )
+        ),
     )
     return ok
 
@@ -214,7 +214,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"evaluate_and_attach exported (binds artifact)={eaa_exported} (>=1), "
             f"callers: logger={eaa_calls_logger} integrator={eaa_calls_integrator} total={total_callers} (>=1), "
             f"_sha256_any in record={sha_in_record}",
-        )
+        ),
     )
     return ok
 
@@ -243,7 +243,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"get_evaluation_index exported={get_index_exported} (>=1), "
             f"EvaluationRecord exported={er_exported}, "
             f"_record_evaluation in evaluation_record={record_fn}",
-        )
+        ),
     )
     return ok
 
@@ -275,7 +275,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"evaluate_and_attach exported={eaa_exported}, "
             f"EvaluationLinkage L6 sources={linkage_l6}, "
             f"attaches_evaluation total={attach_total}",
-        )
+        ),
     )
     return ok
 
@@ -335,7 +335,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         f"SELECT DISTINCT source_file, symbol FROM edges "
         f"WHERE (symbol LIKE '%evaluate_and_attach%' OR symbol LIKE '%EvaluationRecord%' "
         f"OR symbol LIKE '%EvaluationIndex%' OR symbol LIKE '%EvaluationLinkage%') "
-        f"{NON_TEST} LIMIT 20"
+        f"{NON_TEST} LIMIT 20",
     )
     rows = c.fetchall()
     if rows:
@@ -348,7 +348,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
     c.execute(
         f"SELECT DISTINCT source_file, relation_type FROM edges "
         f"WHERE relation_type IN ('attaches_evaluation','invokes_eval','evaluates_output') "
-        f"{L6_FILTER} LIMIT 15"
+        f"{L6_FILTER} LIMIT 15",
     )
     rows = c.fetchall()
     if rows:

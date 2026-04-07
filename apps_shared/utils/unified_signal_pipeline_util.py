@@ -98,39 +98,25 @@ _emit_applies_guardrail("p0", "unified_signal_pipeline_util", "p0_governance")
 _emit_reads_policy_state("p0", "unified_signal_pipeline_util", "policy_binding")
 _emit_snapshots_state("p0", "unified_signal_pipeline_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -409,14 +395,14 @@ class InputProcessingStage(PipelineStage):
             if cached:
                 self._update_payload_with_processed_data(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True}
+                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
                 )
                 return envelope
             processed = await self._process_content(content, envelope)
             self._update_payload_with_processed_data(envelope, processed)
             self.semantic_cache.set(cache_key, processed)
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
+                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
             )
             return envelope
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -464,7 +450,7 @@ class InputProcessingStage(PipelineStage):
         return result
 
     def _update_payload_with_processed_data(
-        self, envelope: SignalEnvelope, processed: dict[str, Any]
+        self, envelope: SignalEnvelope, processed: dict[str, Any],
     ) -> None:
         """Update payload with processed data.
 
@@ -518,11 +504,11 @@ class ContextEnrichmentStage(PipelineStage):
             if cached:
                 self._update_envelope_with_context(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True}
+                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
                 )
                 return envelope
             rag_results = self.rag_processor.retrieve_and_rerank(
-                expanded_query, top_k=10, filters={"engine": envelope.payload.payload_type.value}
+                expanded_query, top_k=10, filters={"engine": envelope.payload.payload_type.value},
             )
             kg_context = self.kg_injector.inject_context(expanded_query, envelope.payload.payload_type.value)
             enriched = {
@@ -533,7 +519,7 @@ class ContextEnrichmentStage(PipelineStage):
             self._update_envelope_with_context(envelope, enriched)
             self.semantic_cache.set(cache_key, enriched)
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
+                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
             )
             return envelope
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -625,14 +611,14 @@ class SignalAugmentationStage(PipelineStage):
             if cached:
                 self._update_envelope_with_augmented(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True}
+                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
                 )
                 return envelope
             augmented = await self._perform_augmentation(content, envelope)
             self._update_envelope_with_augmented(envelope, augmented)
             self.semantic_cache.set(cache_key, augmented)
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
+                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
             )
             return envelope
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -676,7 +662,7 @@ class SignalAugmentationStage(PipelineStage):
         augmented["claim_confidence"] = sum(c.confidence for c in claims) / len(claims) if claims else 0.5
         if envelope.payload.payload_type.value == "resume_data":
             optimized = optimize_prompt(
-                content, strategy="achievement_focused", constraints=["use_metrics", "action_verbs"]
+                content, strategy="achievement_focused", constraints=["use_metrics", "action_verbs"],
             )
         else:
             optimized = optimize_prompt(
@@ -765,7 +751,7 @@ class QualityValidationStage(PipelineStage):
                 return envelope
             content = self._extract_content_from_payload(envelope.payload)
             quality_result = self.signal_pipeline.process_signal(
-                content, envelope.payload.payload_type.value, self._get_enriched_context(envelope)
+                content, envelope.payload.payload_type.value, self._get_enriched_context(envelope),
             )
             validation = {
                 "passes_quality_gate": quality_result.is_pass,
@@ -1223,7 +1209,7 @@ class UnifiedSignalPipeline:
                 with self._lock:
                     self._stats["stage_failures"][stage_name] += 1
                 raise PipelineExecutionError(
-                    f"Pipeline failed at stage {stage_name}", envelope, stage_name, e
+                    f"Pipeline failed at stage {stage_name}", envelope, stage_name, e,
                 )
         return envelope
 
@@ -1321,7 +1307,7 @@ class PipelineExecutionError(Exception):
     """Error raised when pipeline execution fails."""
 
     def __init__(
-        self, message: str, envelope: SignalEnvelope, failed_stage: str, cause: Exception | None = None
+        self, message: str, envelope: SignalEnvelope, failed_stage: str, cause: Exception | None = None,
     ):
         """Initialize pipeline execution error.
 

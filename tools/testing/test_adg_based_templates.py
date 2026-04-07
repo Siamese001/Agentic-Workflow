@@ -59,7 +59,7 @@ def test_adg_template_system():
         'current_traversal_time': '2.3s average',
         'graph_size': '681,161 edges',
         'traversal_frequency': '100+ queries/hour',
-        'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal'
+        'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal',
     }
 
     # Test each ADG-based template
@@ -67,50 +67,50 @@ def test_adg_template_system():
         (SequentialThinkingTemplate.SWE_ADG_ANALYSIS, {
             'analysis_title': 'Current System ADG Health Analysis',
             'context': 'Comprehensive analysis of system architecture and dependency graph',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION, {
             'remediation_title': 'Critical Violation Remediation Strategy',
             'context': 'System has 5,301 violations requiring systematic remediation',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT, {
             'audit_title': 'Layer Boundary Compliance Audit',
             'context': 'Audit of layer boundary violations and gravity rule compliance',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS, {
             'analysis_title': 'Dependency Graph Structure Analysis',
             'context': 'Analysis of system dependency patterns and potential improvements',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW, {
             'review_title': 'System Architecture Review',
             'context': 'Comprehensive review of current system architecture and patterns',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION, {
             'detection_title': 'Anti-pattern Detection and Analysis',
             'context': 'Detection and categorization of system anti-patterns',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING, {
             'restructuring_title': 'System Restructuring Plan',
             'context': 'Comprehensive restructuring plan for architectural improvements',
-            **adg_data
+            **adg_data,
         }),
 
         (SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION, {
             'optimization_title': 'Graph Traversal Performance Optimization',
             'context': 'Optimization of ADG graph traversal for better performance',
-            **adg_data
-        })
+            **adg_data,
+        }),
     ]
 
     results = []
@@ -132,7 +132,7 @@ def test_adg_template_system():
                 'tokens': template.estimated_tokens,
                 'complexity': template.complexity_threshold,
                 'rendered_length': len(rendered),
-                'success': True
+                'success': True,
             })
 
             print(f"✅ {template.name}")
@@ -150,7 +150,7 @@ def test_adg_template_system():
             results.append({
                 'template': template_type.value,
                 'success': False,
-                'error': str(e)
+                'error': str(e),
             })
 
     return results

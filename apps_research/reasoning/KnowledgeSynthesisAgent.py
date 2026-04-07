@@ -50,14 +50,14 @@ class KnowledgeSynthesisAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "KnowledgeSynthesisAgent.synthesize"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "KnowledgeSynthesisAgent.synthesize",
         )
         _emit_orchestrates_workflow("p3", "knowledge_synthesis_agent", "synthesis_workflow")
         _emit_dispatches_agent("p3", "knowledge_synthesis_agent", "synthesis_dispatch")
         _emit_records_telemetry_event("p4", "knowledge_synthesis_agent", "synthesis_start")
 
         synthesis = self._synthesis_service.synthesize_findings(
-            insights, synthesis_mode, target_audience
+            insights, synthesis_mode, target_audience,
         )
 
         _log.info(
@@ -66,7 +66,7 @@ class KnowledgeSynthesisAgent:
             synthesis.get("theme_count", 0),
         )
         _emit_records_telemetry_event(
-            "p4", "knowledge_synthesis_agent", f"synthesis_complete:{synthesis.get('theme_count', 0)}"
+            "p4", "knowledge_synthesis_agent", f"synthesis_complete:{synthesis.get('theme_count', 0)}",
         )
 
         return {

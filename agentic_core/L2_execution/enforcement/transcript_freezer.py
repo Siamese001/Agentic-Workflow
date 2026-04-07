@@ -172,10 +172,10 @@ class FrozenTranscript(MutableSequence[Any]):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "FrozenTranscript._raise_violation"
+            _trace_id, LayerSegment.L2_EXECUTION, "FrozenTranscript._raise_violation",
         )
         raise TranscriptMutationViolation(
-            "Cannot mutate a frozen transcript. It has been sealed for digest computation."
+            "Cannot mutate a frozen transcript. It has been sealed for digest computation.",
         )
 
     __setitem__ = _raise_violation

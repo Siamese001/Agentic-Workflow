@@ -188,7 +188,7 @@ class ParallelADGScanner:
 
         logger.info(
             f"Parallel scan complete: {self.metrics.successful_scans}/{total} "
-            f"modules in {total_time:.1f}ms"
+            f"modules in {total_time:.1f}ms",
         )
 
         return results

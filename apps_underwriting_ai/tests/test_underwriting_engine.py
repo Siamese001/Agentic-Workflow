@@ -57,8 +57,8 @@ class TestUnderwritingEngine(unittest.TestCase):
                 employee_count=50,
                 ownership=[
                     OwnerInfo(
-                        owner_name="Test Owner", ownership_pct=100.0, role="CEO", fico=750, guarantor=True
-                    )
+                        owner_name="Test Owner", ownership_pct=100.0, role="CEO", fico=750, guarantor=True,
+                    ),
                 ],
                 naics_risk_flags=[],
                 sanctions_or_watchlist_hits=[],
@@ -75,7 +75,7 @@ class TestUnderwritingEngine(unittest.TestCase):
                         cash=500000.00,
                         ar=800000.00,
                         ap=300000.00,
-                    )
+                    ),
                 ],
                 calculated_metrics={"dscr_ttm": 3.33, "debt_to_ebitda_ttm": 1.50},
             ),
@@ -111,10 +111,10 @@ class TestUnderwritingEngine(unittest.TestCase):
             ),
             "external_signals": ExternalSignals(),
             "relationship_context": RelationshipContext(
-                existing_customer=True, tenure_years=3.0, deposit_relationship=True
+                existing_customer=True, tenure_years=3.0, deposit_relationship=True,
             ),
             "decision_constraints": DecisionConstraints(
-                turnaround_sla_hours=72, max_auto_approval_amount=2000000.00
+                turnaround_sla_hours=72, max_auto_approval_amount=2000000.00,
             ),
         }
 
@@ -160,12 +160,12 @@ class TestUnderwritingEngine(unittest.TestCase):
                     operating_states=["NV"],
                     ownership=[
                         OwnerInfo(
-                            owner_name="Owner", ownership_pct=100.0, role="CEO", fico=700, guarantor=True
-                        )
+                            owner_name="Owner", ownership_pct=100.0, role="CEO", fico=700, guarantor=True,
+                        ),
                     ],
                 ),
                 "policy_context": PolicyContext(policy_version="POL-2024-Q1", restricted_industries=["7132"]),
-            }
+            },
         )
 
         result = self.engine.run(request)

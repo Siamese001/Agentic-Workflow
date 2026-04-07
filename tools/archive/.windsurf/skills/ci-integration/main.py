@@ -79,7 +79,7 @@ class CIIntegration:
             if skill_compliance["syntax_valid"]:
                 try:
                     result = subprocess.run(
-                        ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=5
+                        ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=5,
                     )
                     # Consider it executable if it runs (even with wrong args)
                     skill_compliance["executable"] = True
@@ -110,7 +110,7 @@ class CIIntegration:
             else:
                 compliance_report["non_compliant_skills"].append(skill_name)
                 compliance_report["issues"].extend(
-                    [f"{skill_name}: {issue}" for issue in skill_compliance["issues"]]
+                    [f"{skill_name}: {issue}" for issue in skill_compliance["issues"]],
                 )
 
             compliance_report["skill_details"][skill_name] = skill_compliance
@@ -210,7 +210,7 @@ if __name__ == "__main__":
         report.append(
             f"- **Compliance Rate:** {(compliance['compliant_skills'] / compliance['total_skills'] * 100):.1f}%"
             if compliance["total_skills"] > 0
-            else "- **Compliance Rate:** N/A"
+            else "- **Compliance Rate:** N/A",
         )
         report.append("")
 
@@ -241,7 +241,7 @@ if __name__ == "__main__":
             )
 
             report.append(
-                f"| {skill_name} | {'✅' if details['has_main'] else '❌'} | {'✅' if details['has_config'] else '❌'} | {'✅' if details['syntax_valid'] else '❌'} | {'✅' if details['executable'] else '❌'} | {'✅' if details['has_guardian_exemptions'] else '❌'} | {status} |"
+                f"| {skill_name} | {'✅' if details['has_main'] else '❌'} | {'✅' if details['has_config'] else '❌'} | {'✅' if details['syntax_valid'] else '❌'} | {'✅' if details['executable'] else '❌'} | {'✅' if details['has_guardian_exemptions'] else '❌'} | {status} |",
             )
 
         return "\n".join(report)
@@ -269,7 +269,7 @@ if __name__ == "__main__":
             try:
                 skills = list(self.skills_dir.iterdir())
                 skills_health["skill_count"] = len(
-                    [s for s in skills if s.is_dir() and (s / "main.py").exists()]
+                    [s for s in skills if s.is_dir() and (s / "main.py").exists()],
                 )
                 skills_health["readable"] = True
 
@@ -371,7 +371,7 @@ if __name__ == "__main__":
         # Test 1: Syntax check
         try:
             result = subprocess.run(
-                ["python", "-m", "py_compile", str(main_script)], capture_output=True, text=True, timeout=10
+                ["python", "-m", "py_compile", str(main_script)], capture_output=True, text=True, timeout=10,
             )
             if result.returncode == 0:
                 test_result["tests_passed"] += 1
@@ -386,7 +386,7 @@ if __name__ == "__main__":
         # Test 2: Help command
         try:
             result = subprocess.run(
-                ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=5
+                ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=5,
             )
             test_result["tests_passed"] += 1
             test_result["details"].append("✅ Help command executed")
@@ -400,7 +400,7 @@ if __name__ == "__main__":
         # Test 3: Invalid args handling
         try:
             result = subprocess.run(
-                ["python", str(main_script), "invalid", "args"], capture_output=True, text=True, timeout=5
+                ["python", str(main_script), "invalid", "args"], capture_output=True, text=True, timeout=5,
             )
             test_result["tests_passed"] += 1
             test_result["details"].append("✅ Invalid args handled gracefully")

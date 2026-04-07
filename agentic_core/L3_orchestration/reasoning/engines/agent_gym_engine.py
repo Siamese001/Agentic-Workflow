@@ -117,7 +117,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -181,7 +180,7 @@ try:
     ScenarioType = OrchestrationTypes.ScenarioType
     TrainingScenario = OrchestrationTypes.TrainingScenario
     TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = type(
-        "Stub", (), {}
+        "Stub", (), {},
     )
 except ImportError:  # guardian: allow-silent-swallow
     BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = (
@@ -260,7 +259,7 @@ class AgentGym(SovereignBaseAgent):
             )
 
     async def run_benchmark(
-        self, scenario_id: str, agent_fn: Callable[[str, dict[str, Any]], Awaitable[dict[str, Any]]]
+        self, scenario_id: str, agent_fn: Callable[[str, dict[str, Any]], Awaitable[dict[str, Any]]],
     ) -> BenchmarkResult:
         """Run benchmark for a scenario.
 
@@ -273,7 +272,7 @@ class AgentGym(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"AgentGymEngine.run_benchmark:{scenario_id}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"AgentGymEngine.run_benchmark:{scenario_id}",
         )
         self._scenarios.get(scenario_id)
         if not scenario:
@@ -303,7 +302,7 @@ class AgentGym(SovereignBaseAgent):
         return outputs
 
     def _create_benchmark_result(
-        self, scenario_id: str, test_cases: list, reports: dict, start_time: float
+        self, scenario_id: str, test_cases: list, reports: dict, start_time: float,
     ) -> BenchmarkResult:
         """Create benchmark result from reports."""
         total_cases = len(test_cases)
@@ -479,7 +478,7 @@ class AgentGym(SovereignBaseAgent):
             return PerformanceLevel.CRITICAL
 
     def _generate_recommendations(
-        self, reports: dict[str, Any], PerformanceLevel: PerformanceLevel
+        self, reports: dict[str, Any], PerformanceLevel: PerformanceLevel,
     ) -> list[str]:
         """Generate improvement recommendations.
 

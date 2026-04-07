@@ -33,10 +33,10 @@ FORBIDDEN_IMPORT_PREFIXES: Final[frozenset] = frozenset(
         "agentic_core.L4_state",
         "agentic_core.L5_safety",
         "agentic_core.L6_observability",
-    }
+    },
 )
 ALLOWED_AGENTIC_CORE_PREFIXES: Final[frozenset] = frozenset(
-    {"agentic_core.types", "agentic_core.interfaces", "agentic_core.classification", "agentic_core.runtime"}
+    {"agentic_core.types", "agentic_core.interfaces", "agentic_core.classification", "agentic_core.runtime"},
 )
 STDLIB_PREFIXES: Final[frozenset] = frozenset(
     {
@@ -57,5 +57,5 @@ STDLIB_PREFIXES: Final[frozenset] = frozenset(
         "threading",
         "uuid",
         "__future__",
-    }
+    },
 )

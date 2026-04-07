@@ -24,6 +24,15 @@ from typing import Any, Generator
 
 _DEFAULT_DB = Path(r"C:\Git\Agentic-Workflow\artifacts\memory\knowledge_graph.sqlite")
 
+ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset({
+    "ArchitectureLayer",
+    "ProjectContext",
+    "ConstitutionalRule",
+    "EpisodicEvent",
+    "ProceduralPattern",
+    "ArchitecturalDecision",
+})
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS entities (
     name        TEXT PRIMARY KEY,
@@ -117,16 +126,25 @@ class SqliteMemoryStore:
     # ------------------------------------------------------------------
 
     def create_entities(self, entities: list[dict]) -> dict[str, Any]:
-        """Create entities; skip existing. Returns {created, skipped_existing}."""
+        """Create entities; skip existing. Returns {created, skipped_existing, rejected_type}.
+
+        entity_type must be one of ALLOWED_ENTITY_TYPES. Unknown types are rejected
+        with an entry in the 'rejected_type' list so callers get an explicit error.
+        """
         now = time.time()
         created: list[str] = []
         skipped: list[str] = []
+        rejected: list[dict] = []
         with self.connection() as conn:
             for e in entities:
                 name = (e.get("name") or "").strip()
                 if not name:
                     continue
                 etype = e.get("entityType") or "general"
+                if etype not in ALLOWED_ENTITY_TYPES:
+                    rejected.append({"name": name, "entity_type": etype,
+                                     "reason": f"entity_type '{etype}' not in ALLOWED_ENTITY_TYPES"})
+                    continue
                 obs_list: list[str] = e.get("observations") or []
                 exists = conn.execute("SELECT 1 FROM entities WHERE name = ?", (name,)).fetchone()
                 if exists:
@@ -140,7 +158,10 @@ class SqliteMemoryStore:
                     if obs:
                         self._add_obs(conn, name, obs, now)
                 created.append(name)
-        return {"created": created, "skipped_existing": skipped}
+        result: dict[str, Any] = {"created": created, "skipped_existing": skipped}
+        if rejected:
+            result["rejected_type"] = rejected
+        return result
 
     def add_observations(self, observations: list[dict]) -> dict[str, Any]:
         """Add observations to entities; create entity if missing. Idempotent.
@@ -226,7 +247,7 @@ class SqliteMemoryStore:
         """Read the complete graph — all entities, observations, and relations."""
         with self.connection() as conn:
             ent_rows = conn.execute(
-                "SELECT name, entity_type FROM entities ORDER BY entity_type, name"
+                "SELECT name, entity_type FROM entities ORDER BY entity_type, name",
             ).fetchall()
             entities = []
             for row in ent_rows:
@@ -241,7 +262,7 @@ class SqliteMemoryStore:
             rels = [
                 {"from": r["from_entity"], "relationType": r["relation_type"], "to": r["to_entity"]}
                 for r in conn.execute(
-                    "SELECT from_entity, relation_type, to_entity FROM relations ORDER BY from_entity"
+                    "SELECT from_entity, relation_type, to_entity FROM relations ORDER BY from_entity",
                 ).fetchall()
             ]
         return {"entities": entities, "relations": rels}
@@ -376,14 +397,14 @@ class SqliteMemoryStore:
             by_type = {
                 row["entity_type"]: row["cnt"]
                 for row in conn.execute(
-                    "SELECT entity_type, COUNT(*) AS cnt FROM entities GROUP BY entity_type ORDER BY cnt DESC"
+                    "SELECT entity_type, COUNT(*) AS cnt FROM entities GROUP BY entity_type ORDER BY cnt DESC",
                 ).fetchall()
             }
             top = [
                 {"name": row["entity_name"], "observation_count": row["cnt"]}
                 for row in conn.execute(
                     "SELECT entity_name, COUNT(*) AS cnt FROM observations "
-                    "GROUP BY entity_name ORDER BY cnt DESC LIMIT 10"
+                    "GROUP BY entity_name ORDER BY cnt DESC LIMIT 10",
                 ).fetchall()
             ]
             oldest = conn.execute("SELECT MIN(created_at) FROM entities").fetchone()[0]

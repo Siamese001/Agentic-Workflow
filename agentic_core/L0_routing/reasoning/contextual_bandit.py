@@ -56,7 +56,7 @@ class BanditContext:
             [self.user_history_score, self.user_success_rate],
             [self.current_load, self.time_of_day, self.day_of_week],
             [self.adg_territory_score],
-            list(self.confidence_tiers.values())
+            list(self.confidence_tiers.values()),
         ])
 
 @dataclass
@@ -105,7 +105,7 @@ class LinUCBBandit:
         context_dim: int = 50,
         alpha: float = 1.0,
         arms: list[str] | None = None,
-        decay_factor: float = 0.99
+        decay_factor: float = 0.99,
     ):
         """
         Initialize LinUCB bandit.
@@ -129,7 +129,7 @@ class LinUCBBandit:
                     agent_name=arm_id,
                     capability_match=1.0,
                     current_load=0.0,
-                    success_rate=0.5
+                    success_rate=0.5,
                 )
 
         # Learning state
@@ -145,7 +145,7 @@ class LinUCBBandit:
         _emit_stores_learning_state("linucb_bandit", "initialization", {
             "context_dim": context_dim,
             "alpha": alpha,
-            "arms_count": len(self.arms)
+            "arms_count": len(self.arms),
         })
 
     def add_arm(self, arm_id: str, agent_name: str, capability_match: float = 1.0):
@@ -157,13 +157,13 @@ class LinUCBBandit:
             current_load=0.0,
             success_rate=0.5,
             A=np.eye(self.context_dim),
-            b=np.zeros(self.context_dim)
+            b=np.zeros(self.context_dim),
         )
 
         _emit_records_learning_event("linucb_bandit", "arm_added", {
             "arm_id": arm_id,
             "agent_name": agent_name,
-            "capability_match": capability_match
+            "capability_match": capability_match,
         })
 
     def select_arm(self, context: BanditContext) -> BanditDecision:
@@ -212,7 +212,7 @@ class LinUCBBandit:
         # Calculate confidence and uncertainty
         confidence = 1.0 / (1.0 + np.exp(-arm_scores[selected_arm_id]))
         uncertainty = self.alpha * np.sqrt(
-            context_vector @ np.linalg.inv(selected_arm.A) @ context_vector
+            context_vector @ np.linalg.inv(selected_arm.A) @ context_vector,
         )
 
         decision = BanditDecision(
@@ -222,7 +222,7 @@ class LinUCBBandit:
             uncertainty=uncertainty,
             expected_reward=float(selected_arm.theta @ context_vector),
             context_used=context,
-            all_arm_scores=arm_scores
+            all_arm_scores=arm_scores,
         )
 
         # Record decision
@@ -234,13 +234,13 @@ class LinUCBBandit:
             "selected_arm": selected_arm_id,
             "confidence": confidence,
             "uncertainty": uncertainty,
-            "round": self.round_count
+            "round": self.round_count,
         })
 
         _emit_emits_metric_event("linucb_bandit", "decision", {
             "confidence": confidence,
             "uncertainty": uncertainty,
-            "exploration_rate": self.exploration_rate
+            "exploration_rate": self.exploration_rate,
         })
 
         return decision
@@ -285,19 +285,19 @@ class LinUCBBandit:
             "reward": reward,
             "cumulative_reward": self.total_reward,
             "regret": regret,
-            "round": self.round_count
+            "round": self.round_count,
         })
 
         _emit_feeds_meta_learning("linucb_bandit", "reward_update", {
             "arm_id": decision.selected_arm,
             "reward": reward,
-            "context_features": context_vector.tolist()[:10]  # First 10 features
+            "context_features": context_vector.tolist()[:10],  # First 10 features
         })
 
         _emit_updates_routing_strategy("linucb_bandit", "bandit_update", {
             "selected_arm": decision.selected_arm,
             "new_success_rate": reward,
-            "exploration_rate": self.exploration_rate
+            "exploration_rate": self.exploration_rate,
         })
 
     def get_arm_statistics(self) -> dict[str, dict[str, float]]:
@@ -316,7 +316,7 @@ class LinUCBBandit:
                 "confidence": confidence,
                 "current_load": arm.current_load,
                 "capability_match": arm.capability_match,
-                "samples_tracked": int(np.trace(arm.A) / self.decay_factor)
+                "samples_tracked": int(np.trace(arm.A) / self.decay_factor),
             }
 
         return stats
@@ -339,12 +339,12 @@ class LinUCBBandit:
                     "success_rate": arm.success_rate,
                     "A": arm.A.tolist(),
                     "b": arm.b.tolist(),
-                    "theta": arm.theta.tolist()
+                    "theta": arm.theta.tolist(),
                 }
                 for arm_id, arm in self.arms.items()
             },
             "reward_history": self.reward_history,
-            "regret_history": self.regret_history
+            "regret_history": self.regret_history,
         }
 
         with open(filepath, 'w') as f:
@@ -353,7 +353,7 @@ class LinUCBBandit:
         _emit_stores_learning_state("linucb_bandit", "state_saved", {
             "filepath": filepath,
             "round_count": self.round_count,
-            "total_reward": self.total_reward
+            "total_reward": self.total_reward,
         })
 
     def load_state(self, filepath: str):
@@ -378,7 +378,7 @@ class LinUCBBandit:
                 agent_name=arm_data["agent_name"],
                 capability_match=arm_data["capability_match"],
                 current_load=arm_data["current_load"],
-                success_rate=arm_data["success_rate"]
+                success_rate=arm_data["success_rate"],
             )
             arm.A = np.array(arm_data["A"])
             arm.b = np.array(arm_data["b"])
@@ -388,7 +388,7 @@ class LinUCBBandit:
         _emit_stores_learning_state("linucb_bandit", "state_loaded", {
             "filepath": filepath,
             "round_count": self.round_count,
-            "arms_count": len(self.arms)
+            "arms_count": len(self.arms),
         })
 
     def reset(self):
@@ -406,7 +406,7 @@ class LinUCBBandit:
         self.exploration_rate = 0.1
 
         _emit_stores_learning_state("linucb_bandit", "reset", {
-            "arms_reset": len(self.arms)
+            "arms_reset": len(self.arms),
         })
 
 # Utility functions for context creation
@@ -415,7 +415,7 @@ def create_bandit_context(
     intent_text: str,
     user_history: dict[str, Any],
     system_metrics: dict[str, Any],
-    adg_metrics: dict[str, Any]
+    adg_metrics: dict[str, Any],
 ) -> BanditContext:
     """Create bandit context from various inputs"""
 
@@ -435,7 +435,7 @@ def create_bandit_context(
     # ADG features
     adg_territory_score = adg_metrics.get("territory_score", 0.5)
     confidence_tiers = adg_metrics.get("confidence_tiers", {
-        "C0": 100, "C1": 200, "C2": 300, "C3": 400
+        "C0": 100, "C1": 200, "C2": 300, "C3": 400,
     })
 
     return BanditContext(
@@ -448,14 +448,14 @@ def create_bandit_context(
         time_of_day=time_of_day,
         day_of_week=day_of_week,
         adg_territory_score=adg_territory_score,
-        confidence_tiers=confidence_tiers
+        confidence_tiers=confidence_tiers,
     )
 
 def calculate_routing_reward(
     selected_agent: str,
     task_completed: bool,
     completion_time: float,
-    user_satisfaction: float | None = None
+    user_satisfaction: float | None = None,
 ) -> float:
     """Calculate reward for routing decision"""
 
@@ -481,5 +481,5 @@ __all__ = [
     "BanditArm",
     "BanditDecision",
     "create_bandit_context",
-    "calculate_routing_reward"
+    "calculate_routing_reward",
 ]

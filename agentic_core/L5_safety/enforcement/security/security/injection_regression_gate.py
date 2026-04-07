@@ -109,7 +109,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -237,7 +236,7 @@ def evaluate_against_baseline(
     success_rate_increase = current_metrics.attack_success_rate - baseline_metrics.attack_success_rate
     if success_rate_increase > thresholds.max_attack_success_rate_increase:
         raise InjectionRegressionError(
-            f"Attack success rate regression detected: baseline={baseline_metrics.attack_success_rate:.3f}, current={current_metrics.attack_success_rate:.3f}, increase={success_rate_increase:.3f} > threshold={thresholds.max_attack_success_rate_increase:.3f}"
+            f"Attack success rate regression detected: baseline={baseline_metrics.attack_success_rate:.3f}, current={current_metrics.attack_success_rate:.3f}, increase={success_rate_increase:.3f} > threshold={thresholds.max_attack_success_rate_increase:.3f}",
         )
     if baseline_metrics.high_risk_count > 0:
         high_risk_increase_ratio = (
@@ -245,11 +244,11 @@ def evaluate_against_baseline(
         ) / baseline_metrics.high_risk_count
         if high_risk_increase_ratio > thresholds.max_high_risk_count_increase_ratio:
             raise InjectionRegressionError(
-                f"High-risk count regression detected: baseline={baseline_metrics.high_risk_count}, current={current_metrics.high_risk_count}, increase_ratio={high_risk_increase_ratio:.3f} > threshold={thresholds.max_high_risk_count_increase_ratio:.3f}"
+                f"High-risk count regression detected: baseline={baseline_metrics.high_risk_count}, current={current_metrics.high_risk_count}, increase_ratio={high_risk_increase_ratio:.3f} > threshold={thresholds.max_high_risk_count_increase_ratio:.3f}",
             )
     elif current_metrics.high_risk_count > 0:
         raise InjectionRegressionError(
-            f"High-risk count regression detected: baseline={baseline_metrics.high_risk_count}, current={current_metrics.high_risk_count}, new high-risk patterns introduced with zero baseline"
+            f"High-risk count regression detected: baseline={baseline_metrics.high_risk_count}, current={current_metrics.high_risk_count}, new high-risk patterns introduced with zero baseline",
         )
 
 

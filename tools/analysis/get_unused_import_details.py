@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Get detailed unused import information from ADG."""
 
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
 
 
@@ -43,7 +43,7 @@ def get_unused_import_details(db_path: str, target_dir: str) -> dict:
             'line': line_no,
             'symbol': symbol,
             'import_name': dst_node[0] if dst_node else 'unknown',
-            'import_path': dst_node[1] if dst_node else 'unknown'
+            'import_path': dst_node[1] if dst_node else 'unknown',
         })
 
     conn.close()

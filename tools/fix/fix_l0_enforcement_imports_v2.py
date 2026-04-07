@@ -4,8 +4,9 @@ Fix imports for L0 routing enforcement module - Version 2.
 Adds missing exports to __init__.py files so tests can import them.
 """
 
-import pathlib
 import ast
+import pathlib
+
 
 def get_exports_from_file(filepath):
     """Extract class and function names from a Python file."""
@@ -106,7 +107,7 @@ def fix_init_file(init_path):
             "    emit_determinism_digest,  # noqa: E402",
             "    emit_replay_key,  # noqa: E402",
             ")",
-            ""
+            "",
         ]
 
         # Add module exports

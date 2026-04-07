@@ -1,6 +1,5 @@
 """Governance validation tests for hybrid search."""
 
-import pytest
 
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchEngine,
@@ -121,7 +120,7 @@ def test_governance_filter_combined():
 
     # Filter to L2 AND function
     filtered = engine._apply_governance_filters(
-        results, {"layers": ["L2"], "entity_types": ["function"]}
+        results, {"layers": ["L2"], "entity_types": ["function"]},
     )
     assert len(filtered) == 1
     assert filtered[0].chunk_id == "1"

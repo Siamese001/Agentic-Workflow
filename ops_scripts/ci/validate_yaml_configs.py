@@ -14,7 +14,7 @@ import yaml
 
 # Optional jsonschema import - fallback to basic validation if not available
 try:
-    from jsonschema import validate, ValidationError
+    from jsonschema import ValidationError, validate
     HAS_JSONSCHEMA = True
 except ImportError:
     HAS_JSONSCHEMA = False
@@ -129,9 +129,9 @@ def main() -> int:
         valid, errors = validate_file(yaml_path, schema_path)
 
         if valid:
-            print(f"  ✓ VALID")
+            print("  ✓ VALID")
         else:
-            print(f"  ✗ INVALID")
+            print("  ✗ INVALID")
             for error in errors:
                 print(f"    - {error}")
             all_valid = False

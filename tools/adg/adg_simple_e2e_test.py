@@ -30,7 +30,7 @@ class ADGSimpleE2ETest:
             "test_start": datetime.now().isoformat(),
             "timestamp": self.timestamp,
             "checks": {},
-            "overall_success": True
+            "overall_success": True,
         }
 
     def run_all_tests(self) -> dict[str, Any]:
@@ -86,7 +86,7 @@ class ADGSimpleE2ETest:
             "total_items": len(items),
             "files": len(files),
             "directories": len(dirs),
-            "sample_files": files[:10]  # First 10 files
+            "sample_files": files[:10],  # First 10 files
         }
 
         print("  ADG directory: ✅")
@@ -131,7 +131,7 @@ class ADGSimpleE2ETest:
                 "nodes": node_count,
                 "edges": edge_count,
                 "tables": tables,
-                "accessible": True
+                "accessible": True,
             }
 
             print("  Database access: ✅")
@@ -170,7 +170,7 @@ class ADGSimpleE2ETest:
             "graph_files": len(graph_files),
             "report_files": len(report_files),
             "snapshot_files": len(snapshot_files),
-            "total_artifacts": len(json_files) + len(sqlite_files) + len(zip_files)
+            "total_artifacts": len(json_files) + len(sqlite_files) + len(zip_files),
         }
 
         print("  Artifacts verification: ✅")
@@ -212,7 +212,7 @@ class ADGSimpleE2ETest:
                 "precision_success": precision_results.get("overall_success", False),
                 "database_used": str(db_path.name),
                 "checks_passed": sum(1 for check in precision_results.get("checks", {}).values() if check.get("success", False)),
-                "total_checks": len(precision_results.get("checks", {}))
+                "total_checks": len(precision_results.get("checks", {})),
             }
 
             print("  Precision pass: ✅" if result["details"]["precision_success"] else "❌")
@@ -251,7 +251,7 @@ class ADGSimpleE2ETest:
                 "edge_types": "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC LIMIT 5",
                 "entity_types": "SELECT entity_type, COUNT(*) FROM nodes GROUP BY entity_type ORDER BY COUNT(*) DESC",
                 "module_count": "SELECT COUNT(*) FROM nodes WHERE entity_type = 'module'",
-                "symbol_count": "SELECT COUNT(*) FROM nodes WHERE entity_type = 'symbol'"
+                "symbol_count": "SELECT COUNT(*) FROM nodes WHERE entity_type = 'symbol'",
             }
 
             query_results = {}
@@ -268,7 +268,7 @@ class ADGSimpleE2ETest:
                 "database_used": db_path.name,
                 "query_results": query_results,
                 "queries_successful": sum(1 for r in query_results.values() if not isinstance(r, str)),
-                "total_queries": len(queries)
+                "total_queries": len(queries),
             }
 
             print("  Basic queries: ✅")

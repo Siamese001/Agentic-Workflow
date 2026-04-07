@@ -108,7 +108,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -209,7 +208,7 @@ def main():
                 "documented_pct": agent.get("documented_pct", 0),
                 "schema_strictness": agent.get("schema_strictness", 0),
                 "quality_score": score,
-            }
+            },
         )
     agent_scores.sort(key=lambda x: x["quality_score"])
     needs_work = [
@@ -234,7 +233,7 @@ def main():
             print(f"\n{agent['name']}")
             print(f"  Path: {agent['path']}")
             print(
-                f"  Typed: {agent['typed_pct']:.0f}% | Doc: {agent['documented_pct']:.0f}% | schema: {agent['schema_strictness']:.0f}%"
+                f"  Typed: {agent['typed_pct']:.0f}% | Doc: {agent['documented_pct']:.0f}% | schema: {agent['schema_strictness']:.0f}%",
             )
             print(f"  Quality Score: {agent['quality_score']:.1f}%")
 

@@ -171,7 +171,7 @@ class FixMissingTypingRule(BaseRepairRule):
             return False
 
     def _find_functions_missing_types(
-        self, tree: ast.AST
+        self, tree: ast.AST,
     ) -> list[tuple[ast.FunctionDef, bool, bool]]:
         """Find functions missing type annotations.
 

@@ -114,7 +114,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -211,12 +210,12 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
 
                 _trace_id = str(_uuid.uuid4())
                 _emit_records_execution_trace(
-                    _trace_id, LayerSegment.L1_REASONING, "DarkReasoningVisitor.visit_Call"
+                    _trace_id, LayerSegment.L1_REASONING, "DarkReasoningVisitor.visit_Call",
                 )
 
                 if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
                     self.issues.append(
-                        f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}"
+                        f"Dark Reasoning Violation: Unobserved reasoning call '{node.func.attr}' at line {node.lineno}",
                     )
                 if isinstance(node.func, ast.Attribute) and node.func.attr in {
                     "chat",

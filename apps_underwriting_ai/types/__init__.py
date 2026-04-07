@@ -5,29 +5,17 @@ Exports all domain type contracts for credit underwriting.
 """
 
 # Underwriting request types
-from .underwriting_request_types import (
-    UnderwritingRequest,
-    RequestedStructure,
-    ExternalSignals,
-    ProductType,
-    DecisionType,
-    InterestType,
-    DecisionState,
+# Banking package types
+from .banking_package_types import (
+    BankingPackage,
+    DepositTrend,
 )
 
 # Borrower profile types
 from .borrower_profile_types import (
     BorrowerProfile,
-    OwnerInfo,
     EntityType,
-)
-
-# Financial package types
-from .financial_package_types import (
-    FinancialPackage,
-    FinancialPeriod,
-    CalculatedMetrics,
-    FiscalType,
+    OwnerInfo,
 )
 
 # Collateral package types
@@ -42,47 +30,9 @@ from .credit_package_types import (
     CreditPackage,
 )
 
-# Banking package types
-from .banking_package_types import (
-    BankingPackage,
-    DepositTrend,
-)
-
-# Document package types
-from .document_package_types import (
-    DocumentPackage,
-    DocumentRef,
-)
-
-# Policy context types
-from .policy_context_types import (
-    PolicyContext,
-    CollateralRules,
-)
-
-# Relationship context types
-from .relationship_context_types import (
-    RelationshipContext,
-)
-
 # Decision constraints types
 from .decision_constraints_types import (
     DecisionConstraints,
-)
-
-# Risk feature types
-from .risk_feature_types import (
-    RiskFeatures,
-    CapacityFeatures,
-    LiquidityFeatures,
-    CollateralFeatures,
-    CreditFeatures,
-    OperatingRiskFeatures,
-    RelationshipFeatures,
-    DocumentationFeatures,
-    PolicyFeatures,
-    CompositeFeatures,
-    RiskGrade,
 )
 
 # Decision memo types
@@ -91,16 +41,65 @@ from .decision_memo_types import (
     EvidenceItem,
 )
 
-# Evidence register types
-from .evidence_register_types import (
-    EvidenceRegister,
-    EvidenceEntry,
-)
-
 # Decision packet types
 from .decision_packet_types import (
-    DecisionPacket,
     AuditTrace,
+    DecisionPacket,
+)
+
+# Document package types
+from .document_package_types import (
+    DocumentPackage,
+    DocumentRef,
+)
+
+# Evidence register types
+from .evidence_register_types import (
+    EvidenceEntry,
+    EvidenceRegister,
+)
+
+# Financial package types
+from .financial_package_types import (
+    CalculatedMetrics,
+    FinancialPackage,
+    FinancialPeriod,
+    FiscalType,
+)
+
+# Policy context types
+from .policy_context_types import (
+    CollateralRules,
+    PolicyContext,
+)
+
+# Relationship context types
+from .relationship_context_types import (
+    RelationshipContext,
+)
+
+# Risk feature types
+from .risk_feature_types import (
+    CapacityFeatures,
+    CollateralFeatures,
+    CompositeFeatures,
+    CreditFeatures,
+    DocumentationFeatures,
+    LiquidityFeatures,
+    OperatingRiskFeatures,
+    PolicyFeatures,
+    RelationshipFeatures,
+    RiskFeatures,
+    RiskGrade,
+)
+from .underwriting_request_types import (
+    DecisionState,
+    DecisionType,
+    ExternalSignals,
+    InterestType,
+    ProductType,
+    RequestedStructure,
+    UnderwritingRequest,
 )
 
 __all__ = [

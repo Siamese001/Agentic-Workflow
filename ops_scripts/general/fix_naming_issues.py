@@ -7,7 +7,6 @@ import re
 from pathlib import Path
 
 
-
 def find_files_to_fix() -> list[Path]:
     """Find all Python files that need fixing."""
     patterns = ['agentic_core/**/*.py', 'apps_lic/**/*.py', 'apps_rg/**/*.py', 'apps_shared/**/*.py', 'tests/**/*.py', 'scripts/**/*.py']

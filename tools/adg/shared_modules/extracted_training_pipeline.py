@@ -301,7 +301,7 @@ class XGBoostModel(BaseMLModel):
             self.model.fit(
                 X_train, y_train,
                 eval_set=[(X_val, y_val)],
-                verbose=False
+                verbose=False,
             )
 
             # Make predictions
@@ -521,7 +521,7 @@ class MLTrainingPipeline:
                     "max_depth": 10,
                     "min_samples_split": 2,
                     "min_samples_leaf": 1,
-                }
+                },
             ),
             "xgboost": ModelConfig(
                 model_type=ModelType.XGBOOST,
@@ -530,7 +530,7 @@ class MLTrainingPipeline:
                     "max_depth": 6,
                     "learning_rate": 0.1,
                     "subsample": 1.0,
-                }
+                },
             ),
             "neural_network": ModelConfig(
                 model_type=ModelType.NEURAL_NETWORK,
@@ -539,7 +539,7 @@ class MLTrainingPipeline:
                     "activation": "relu",
                     "alpha": 0.0001,
                     "learning_rate": "constant",
-                }
+                },
             ),
         }
 
@@ -628,7 +628,7 @@ class MLTrainingPipeline:
             y = data[target_column].values
 
             X_train, X_val, y_train, y_val = train_test_split(
-                X, y, test_size=config.test_size, random_state=config.random_state, stratify=y
+                X, y, test_size=config.test_size, random_state=config.random_state, stratify=y,
             )
 
             # Create and train model
@@ -1037,7 +1037,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             self.model.fit(
                 X_train, y_train,
                 eval_set=[(X_val, y_val)],
-                verbose=False
+                verbose=False,
             )
 
             # Make predictions
@@ -1296,7 +1296,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             y = data[target_column].values
 
             X_train, X_val, y_train, y_val = train_test_split(
-                X, y, test_size=config.test_size, random_state=config.random_state, stratify=y
+                X, y, test_size=config.test_size, random_state=config.random_state, stratify=y,
             )
 
             # Create and train model

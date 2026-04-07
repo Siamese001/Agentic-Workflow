@@ -166,7 +166,7 @@ _emit_updates_meta_learning_state("p4", "determinism_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "determinism_util", "exec_snapshot_link")
 
 DETERMINISM_EXCLUDED_FIELDS: frozenset[str] = frozenset(
-    {"duration_ms", "timestamp", "trace_id", "cycle_counter", "telemetry", "created_at", "updated_at"}
+    {"duration_ms", "timestamp", "trace_id", "cycle_counter", "telemetry", "created_at", "updated_at"},
 )
 
 

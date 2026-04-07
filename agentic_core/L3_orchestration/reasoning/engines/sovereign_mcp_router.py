@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -203,7 +202,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
         """Async initialization with L5 shielding and immediate fail-fast"""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize",
         )
         try:
             if not self.config_path.exists():
@@ -257,7 +256,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             elif key_id in {21, 13}:
                 try:
                     memory_result: Any = await self.manager.call_tool(
-                        "search_nodes", {"query": f"Canon Key {key_id} healing pattern for {violation_desc}"}
+                        "search_nodes", {"query": f"Canon Key {key_id} healing pattern for {violation_desc}"},
                     )
                     return {
                         "status": "l4_memory_recall",
@@ -270,7 +269,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     raise
             elif key_id == 18:
                 redis_result: Any = await self.manager.call_tool(
-                    "redis_recover", {"key_prefix": "mission:state", "operation": "restore_last_good"}
+                    "redis_recover", {"key_prefix": "mission:state", "operation": "restore_last_good"},
                 )
                 return {
                     "status": "l3_recovery",
@@ -352,7 +351,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         )
                         steps_out.append(thought_text)
                         if isinstance(step_result, dict) and not step_result.get(
-                            "nextThoughtNeeded", not is_last
+                            "nextThoughtNeeded", not is_last,
                         ):
                             break
                     solution = steps_out[-1] if steps_out else violation_desc
@@ -405,7 +404,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             elif key_id in {40, 41, 42, 49}:
                 try:
                     structure: Any = await self.manager.call_tool(
-                        "read_wiki_structure", {"repo": "xai/grok-canon"}
+                        "read_wiki_structure", {"repo": "xai/grok-canon"},
                     )
                     relevant_topic: Any = next(
                         (t for t in structure.get("topics", []) if str(key_id) in t or "canon" in t.lower()),
@@ -413,7 +412,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     )
                     if relevant_topic:
                         content: Any = await self.manager.call_tool(
-                            "read_wiki_contents", {"repo": "xai/grok-canon", "topic": relevant_topic}
+                            "read_wiki_contents", {"repo": "xai/grok-canon", "topic": relevant_topic},
                         )
                         return {
                             "status": "l2_deepwiki_structure",
@@ -444,7 +443,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         return {"status": "fallback", "reason": str(search_e)}
             elif key_id == 42:
                 return await self.manager.call_tool(
-                    "fission_write", {"monolith_path": file_path, "files": {}}
+                    "fission_write", {"monolith_path": file_path, "files": {}},
                 )
             return {"status": "no_route", "key_id": key_id}
         except (RuntimeError, ValueError) as e:

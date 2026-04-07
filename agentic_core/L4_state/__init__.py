@@ -7,6 +7,8 @@ Only persistence contracts, state lifecycle, and governance are exported.
 """
 from enum import Enum
 
+from agentic_core.L4_state import cache as _cache  # noqa: F401  -- re-exports L4 cache sub-package
+
 # P3/L4 State Lifecycle Governance exports
 from agentic_core.L4_state.utils.lifecycle.lifecycle_policy_applier import (
     StateLifecycleContext,

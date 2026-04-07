@@ -105,7 +105,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -120,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
 )
 
 _emit_emits_metric_event("ghost_mutation_detector", "p4obs", "metric_1")
@@ -214,7 +212,7 @@ def _deep_diff(before: Any, after: Any, path: str = "") -> list[str]:
 
 
 def detect_ghost_mutations(
-    state_before: dict[str, Any], state_after: dict[str, Any], transcript: ExecutionTranscript
+    state_before: dict[str, Any], state_after: dict[str, Any], transcript: ExecutionTranscript,
 ) -> ReconciliationResult:
     """
     Detects hidden state mutations by comparing before/after snapshots against a transcript.
@@ -242,7 +240,7 @@ def detect_ghost_mutations(
     diff = _deep_diff(expected_state_after, state_after)
     if diff:
         violation = GhostMutationViolation(
-            "Ghost mutation detected: State changed in ways not recorded in the transcript.", diff=diff
+            "Ghost mutation detected: State changed in ways not recorded in the transcript.", diff=diff,
         )
         return ReconciliationResult(is_consistent=False, violation=violation)
     return ReconciliationResult(is_consistent=True)

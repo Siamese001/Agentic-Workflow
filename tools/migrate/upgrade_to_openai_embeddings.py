@@ -26,7 +26,7 @@ def get_embedding_function():
             # Use OpenAI embedding function
             openai_ef = embedding_functions.OpenAIEmbeddingFunction(
                 api_key=openai_api_key,
-                model_name="text-embedding-3-small"  # Cost-effective model
+                model_name="text-embedding-3-small",  # Cost-effective model
             )
             return openai_ef, "openai"
         except Exception as e:
@@ -83,12 +83,12 @@ def upgrade_collection_embeddings(collection_name):
             new_collection = client.create_collection(
                 name=collection_name,
                 embedding_function=ef_func,
-                metadata={"description": f"{collection_name} with OpenAI embeddings"}
+                metadata={"description": f"{collection_name} with OpenAI embeddings"},
             )
         else:
             new_collection = client.create_collection(
                 name=collection_name,
-                metadata={"description": f"{collection_name} with mock embeddings"}
+                metadata={"description": f"{collection_name} with mock embeddings"},
             )
 
         # Re-add data with new embeddings (handle batching)
@@ -110,7 +110,7 @@ def upgrade_collection_embeddings(collection_name):
                 ids=batch_ids,
                 documents=batch_docs,
                 metadatas=batch_metas,
-                embeddings=batch_embeddings
+                embeddings=batch_embeddings,
             )
 
             logger.info(f"  Ingested batch {i//batch_size + 1}/{(total_items-1)//batch_size + 1} ({end_idx-i} items)")

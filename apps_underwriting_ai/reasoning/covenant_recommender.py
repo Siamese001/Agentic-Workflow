@@ -16,7 +16,7 @@ class CovenantRecommender:
     def recommend_covenants(
         self,
         features: RiskFeatures,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> List[str]:
         """
         Recommend ongoing covenants.

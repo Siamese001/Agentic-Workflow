@@ -159,7 +159,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -249,7 +248,7 @@ _WRITE_EXACT: frozenset[str] = frozenset(
         "commit",
         "flush",
         "dump",
-    }
+    },
 )
 
 _WRITE_EXCLUDED_STDLIB: frozenset[str] = frozenset(
@@ -264,7 +263,7 @@ _WRITE_EXCLUDED_STDLIB: frozenset[str] = frozenset(
         "link",
         "rename",
         "replace",
-    }
+    },
 )
 
 _READ_PREFIXES: tuple[str, ...] = (
@@ -474,7 +473,7 @@ class TestQualityDetector(AntiPatternDetector):
 
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"TestQualityDetector.detect:{file_path.name}"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"TestQualityDetector.detect:{file_path.name}",
         )
         violations: list[AntiPatternViolation] = []
 

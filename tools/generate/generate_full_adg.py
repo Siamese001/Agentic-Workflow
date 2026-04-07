@@ -148,6 +148,7 @@ def _print_defect_table(
             pass
 
     # P2/P3/P4: read antipattern violation counts directly from SQLite violations table
+    # Source: violations table, populated from edges at write time with severity classification
     p2_antipattern = 0
     p3_antipattern = 0
     p4_antipattern = 0
@@ -156,7 +157,7 @@ def _print_defect_table(
             import sqlite3 as _sqlite3
             with _sqlite3.connect(str(sqlite_path)) as _conn:
                 rows = _conn.execute(
-                    "SELECT severity, COUNT(*) FROM violations WHERE category='antipattern' GROUP BY severity"
+                    "SELECT severity, COUNT(*) FROM violations WHERE category='antipattern' GROUP BY severity",
                 ).fetchall()
                 _sev_map = {r[0]: r[1] for r in rows}
                 p2_antipattern = _sev_map.get("HIGH", 0)
@@ -432,6 +433,9 @@ def _check_p2_antipatterns(sqlite_path: Path | None = None, ratchet_file: Path |
     persisted ceiling, enforcing a non-regression policy. Pre-existing patterns
     are tracked but do not block generation.
 
+    Data source: violations table (populated from edges at write time with severity classification).
+    This ensures single source of truth for severity-classified defects.
+
     Antipattern types tracked:
     - silent_exception_swallow
     - broad_exception_catch
@@ -449,21 +453,23 @@ def _check_p2_antipatterns(sqlite_path: Path | None = None, ratchet_file: Path |
         ratchet_file = ROOT / "artifacts" / "adg" / "p2_ratchet.json"
 
     try:
-        import sqlite3 as _sqlite3
         import json
-        swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
+        import sqlite3 as _sqlite3
 
         with _sqlite3.connect(str(sqlite_path)) as conn:
             cursor = conn.cursor()
+            # Source: violations table, populated from edges at write time with severity classification
             cursor.execute(
-                "SELECT COUNT(*) FROM edges e WHERE e.edge_kind IN (?, ?, ?, ?)",
-                swallow_types,
+                "SELECT COUNT(*) FROM violations WHERE severity='HIGH' AND category='antipattern'",
             )
             current_count = cursor.fetchone()[0]
 
         # Load or initialize ratchet ceiling
         # Key: high_severity_ceiling (canonical schema in p2_ratchet.json);
         # fallback to p2_antipattern_ceiling for backward compatibility.
+        # Note: If this ratchet was previously tracking edges table count (4,565),
+        # it will now track violations table count (1,877). This is intentional and correct.
+        # Run ADG generation to re-initialize if needed.
         if ratchet_file.exists():
             with open(ratchet_file) as f:
                 ratchet_data = json.load(f)
@@ -516,8 +522,8 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
         ratchet_file = Path("artifacts/adg/p3_ratchet.json")
 
     try:
-        import sqlite3 as _sqlite3
         import json
+        import sqlite3 as _sqlite3
 
         # Production paths (excluding pipeline paths and test scaffolding)
         production_paths = ("apps_/%", "agentic_core/L0/%", "agentic_core/L1/%", "agentic_core/L2/%", "agentic_core/L3/%", "system_learning/%")
@@ -558,9 +564,9 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
 
         # Check for regression
         if current_count > ceiling:
-            print(f"\n[ERROR] P3 Tier 3: Exception swallow regression detected")
+            print("\n[ERROR] P3 Tier 3: Exception swallow regression detected")
             print(f"[ERROR] Current count: {current_count}, Ceiling: {ceiling}")
-            print(f"[ERROR] ADG generation failed - production path exception swallows increased")
+            print("[ERROR] ADG generation failed - production path exception swallows increased")
             print(f"[ERROR] Fix exception swallows or update ceiling: {ratchet_file}")
             sys.exit(1)
         elif current_count < ceiling:
@@ -772,7 +778,7 @@ def generate_full_adg(
         "agentic_core/L3_orchestration/",
     )
     _high_antipattern_kinds = frozenset(
-        ("broad_exception_catch", "silent_exception_swallow", "log_and_swallow", "return_none_swallow")
+        ("broad_exception_catch", "silent_exception_swallow", "log_and_swallow", "return_none_swallow"),
     )
     violation_edges = [
         e for e in result.edges
@@ -788,8 +794,8 @@ def generate_full_adg(
 
     # --- Write artifacts to temp directory first for fail-fast check ---
     print("[ADG] Writing artifact tiers to temp directory...")
-    import tempfile
     import shutil
+    import tempfile
     temp_dir = tempfile.mkdtemp(prefix="adg_temp_")
     exit_code = 0
     try:

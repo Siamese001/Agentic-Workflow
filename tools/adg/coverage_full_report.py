@@ -21,7 +21,7 @@ def main() -> None:
             "SELECT resolved_path FROM nodes "
             "WHERE entity_type='module' "
             "AND resolved_path LIKE 'agentic_core/%' "
-            "AND resolved_path NOT LIKE '%__pycache__%' "
+            "AND resolved_path NOT LIKE '%__pycache__%' ",
         )
     }
 
@@ -34,8 +34,8 @@ def main() -> None:
             "WHERE e.relation_type='imports' "
             "AND n1.resolved_path LIKE 'tests/%' "
             "AND n2.resolved_path LIKE 'agentic_core/%' "
-            "AND n2.resolved_path NOT LIKE '%__pycache__%' "
-        )
+            "AND n2.resolved_path NOT LIKE '%__pycache__%' ",
+        ),
     )
 
     test_to_covered: dict[str, set[str]] = defaultdict(set)
@@ -85,16 +85,16 @@ def main() -> None:
     lines.append("| Metric | Count | % |\n|---|---|---|\n")
     lines.append(f"| Total source modules | {len(src_mods)} | 100% |\n")
     lines.append(
-        f"| Covered (any test) | {len(all_covered)} | {100 * len(all_covered) / len(src_mods):.1f}% |\n"
+        f"| Covered (any test) | {len(all_covered)} | {100 * len(all_covered) / len(src_mods):.1f}% |\n",
     )
     lines.append(
-        f"| Covered (behavioral only) | {len(non_stub_covered)} | {100 * len(non_stub_covered) / len(src_mods):.1f}% |\n"
+        f"| Covered (behavioral only) | {len(non_stub_covered)} | {100 * len(non_stub_covered) / len(src_mods):.1f}% |\n",
     )
     lines.append(
-        f"| Covered by ADG stubs only | {len(stub_only)} | {100 * len(stub_only) / len(src_mods):.1f}% |\n"
+        f"| Covered by ADG stubs only | {len(stub_only)} | {100 * len(stub_only) / len(src_mods):.1f}% |\n",
     )
     lines.append(
-        f"| Uncovered (no test) | {len(uncovered)} | {100 * len(uncovered) / len(src_mods):.1f}% |\n"
+        f"| Uncovered (no test) | {len(uncovered)} | {100 * len(uncovered) / len(src_mods):.1f}% |\n",
     )
 
     lines.append("\n## Test Category Breakdown\n")
@@ -147,7 +147,7 @@ def main() -> None:
     print(f"\nTotal src modules:        {len(src_mods)}")
     print(f"Covered (any):            {len(all_covered)} ({100 * len(all_covered) / len(src_mods):.1f}%)")
     print(
-        f"Covered behavioral only:  {len(non_stub_covered)} ({100 * len(non_stub_covered) / len(src_mods):.1f}%)"
+        f"Covered behavioral only:  {len(non_stub_covered)} ({100 * len(non_stub_covered) / len(src_mods):.1f}%)",
     )
     print(f"Stub-only:                {len(stub_only)}")
     print(f"Uncovered:                {len(uncovered)} ({100 * len(uncovered) / len(src_mods):.1f}%)")

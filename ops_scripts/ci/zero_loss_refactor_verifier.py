@@ -36,7 +36,7 @@ def git_show(commit_hash: str, file_path: Path) -> str:
             ["git", "show", f"{commit_hash}:{file_path}"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         return result.stdout
     except subprocess.CalledProcessError:
@@ -86,7 +86,7 @@ def get_modified_files_since(base_hash: str) -> list[Path]:
             ["git", "diff", "--name-only", "--diff-filter=ACMRT", f"{base_hash}...HEAD", "*.py"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         return [Path(f.strip()) for f in result.stdout.strip().split('\n') if f.strip()]
     except subprocess.CalledProcessError:
@@ -107,7 +107,7 @@ def check_files_neutered(files: list[Path], base_hash: str) -> dict[Path, dict]:
             "neutered": is_neutered,
             "before_behavioral": before_count,
             "after_behavioral": after_count,
-            "action": None
+            "action": None,
         }
 
         if is_neutered:
@@ -169,12 +169,12 @@ def main() -> int:
         "timestamp": subprocess.run(
             ["git", "log", "-1", "--format=%ct", "HEAD"],
             capture_output=True,
-            text=True
+            text=True,
         ).stdout.strip(),
         "files_checked": len(files_to_check),
         "neutered_files": len(neutered_files),
         "results": {str(k): v for k, v in results.items()},
-        "cleanup_commands": generate_cleanup_commands(neutered_files) if neutered_files else []
+        "cleanup_commands": generate_cleanup_commands(neutered_files) if neutered_files else [],
     }
 
     # Output results

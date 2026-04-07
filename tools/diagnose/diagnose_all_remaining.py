@@ -9,7 +9,7 @@ ROOT = r"C:\Git\Agentic-Workflow"
 for d in ["adg", "performance", "reasoning", "system_learning"]:
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60
+        capture_output=True, text=True, cwd=ROOT, timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 
@@ -44,7 +44,7 @@ for d in ["adg", "performance", "reasoning", "system_learning"]:
 print("\n=== Analyzing tests/unit/ errors ===")
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/", "--co", "--tb=no", "-p", "no:logging", "-q", "--no-header"],
-    capture_output=True, text=True, cwd=ROOT, timeout=120
+    capture_output=True, text=True, cwd=ROOT, timeout=120,
 )
 clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 with open(os.path.join(ROOT, "artifacts", "unit_errors_tbno.txt"), "w", encoding="utf-8") as f:

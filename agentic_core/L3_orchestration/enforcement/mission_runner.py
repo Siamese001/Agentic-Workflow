@@ -3,44 +3,13 @@ from __future__ import annotations
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
     _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
-    _emit_reads_policy_state,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    # noqa: E402
     _emit_routes_to_agent,
-    _emit_routes_to_capability,
     _emit_signs_execution_trace,
-    _emit_stores_embedding,
     _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
 )
 
 _emit_dispatches_execution_plan("p1", "mission_runner", "L3")
@@ -71,7 +40,6 @@ from agentic_core.L3_orchestration.types.orchestration_handoff_contract import e
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_transcripts_response,
     emit_determinism_digest,
     emit_replay_key,
 )
@@ -108,41 +76,9 @@ except ImportError:
     GITPYTHON_AVAILABLE = False
     Repo = None
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
 )
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")
@@ -402,7 +338,7 @@ def run_standard_mode():
         branch_name = f"healing/auto_{int(get_clock().now_epoch())}"
         try:
             safe_git_execute(
-                ["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=DEFAULT_TIMEOUT, check=False
+                ["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=DEFAULT_TIMEOUT, check=False,
             )
             print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
         # guardian: allow-silent-swallow
@@ -437,7 +373,7 @@ def run_standard_mode():
             agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlannerAgent, ReflectionAgent)
             final_agenda = _deduplicate_agenda(agenda)
             if await _check_intervention(
-                cycle, ctx, FASTAPI_AVAILABLE, start_intervention_server, approval_event
+                cycle, ctx, FASTAPI_AVAILABLE, start_intervention_server, approval_event,
             ):
                 break
             for agent in final_agenda:
@@ -565,7 +501,7 @@ def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent
                 impact_zone.update(deps)
             if impact_zone:
                 print(
-                    f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope."
+                    f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope.",
                 )
                 ctx.impact_zone = impact_zone
         if "SYNTAX_ERROR" in str(ctx.signals):
@@ -590,7 +526,7 @@ def _deduplicate_agenda(agenda: list) -> list:
 
 
 async def _check_intervention(
-    cycle: int, ctx, FASTAPI_AVAILABLE: bool, start_intervention_server, approval_event
+    cycle: int, ctx, FASTAPI_AVAILABLE: bool, start_intervention_server, approval_event,
 ) -> bool:
     """Check if human intervention is required and handle it."""
     high_risk = (

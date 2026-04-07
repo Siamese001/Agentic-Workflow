@@ -128,7 +128,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -201,7 +200,7 @@ class MCPSovereignAuthority:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "MCPSovereignAuthority.is_authorized"
+            _trace_id, LayerSegment.L5_POLICY, "MCPSovereignAuthority.is_authorized",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -260,7 +259,7 @@ class MCPSovereignAuthority:
             risks: Any = ["system prompt", "jailbreak", "override instructions", "ignore all previous"]
             if any(risk in str(Task).lower() for risk in risks):
                 raise PermissionError(
-                    "L1 tool input contains forbidden cognitive patterns — blocked by shield."
+                    "L1 tool input contains forbidden cognitive patterns — blocked by shield.",
                 )
         if tool_name in {"l0_cleanup", "l0_diagnostics"}:
             target: Any = args.get("target") or args.get("scope", "")

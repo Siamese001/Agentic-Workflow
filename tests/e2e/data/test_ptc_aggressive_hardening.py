@@ -17,6 +17,7 @@ import pytest
 # Check if PTC modules are available
 try:
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
     from agentic_core.L2_execution.utils.ptc_contract import (
         PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
@@ -24,8 +25,10 @@ try:
         PTCContractViolation,
         redact_output,
     )
-    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
-    from agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration import PTCHITLIntegration, PTCScriptRiskLevel
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration import (
+        PTCHITLIntegration,
+        PTCScriptRiskLevel,
+    )
     from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import ToolRegistry
     from agentic_core.L3_orchestration.reasoning.ptc.ptc_safety_gates import PTCSafetyGateManager
     from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
@@ -622,7 +625,7 @@ class TestPTCDeterminismStress:
                 if random.random() < 0.5:
                     current[key] = {
                         "nested": random.randint(1, 100),
-                        "value": ''.join(random.choices(string.ascii_letters, k=10))
+                        "value": ''.join(random.choices(string.ascii_letters, k=10)),
                     }
                 else:
                     current[key] = [random.randint(1, 100) for _ in range(random.randint(1, 5))]

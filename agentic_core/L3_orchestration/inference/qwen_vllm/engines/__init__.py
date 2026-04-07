@@ -1,11 +1,24 @@
 """Qwen vLLM Inference Engines."""
 
-from .optimized_vllm_client import OptimizedVLLMClient, VLLMRequest, VLLMResponse, get_vllm_client, close_vllm_client
-from .hardened_vllm_client import HardenedVLLMClient, CircuitBreaker, CircuitBreakerConfig, CircuitBreakerOpenError, CircuitState, RetryConfig, HardeningMetrics
-from .qwen_inference_worker import QwenInferenceWorker
+from .hardened_vllm_client import (
+    CircuitBreaker,
+    CircuitBreakerConfig,
+    CircuitBreakerOpenError,
+    CircuitState,
+    HardenedVLLMClient,
+    HardeningMetrics,
+    RetryConfig,
+)
+from .optimized_vllm_client import (
+    OptimizedVLLMClient,
+    VLLMRequest,
+    VLLMResponse,
+    close_vllm_client,
+    get_vllm_client,
+)
 
 # Backward compatibility re-exports
-from .qwen_inference_worker import AppsQwenInferenceWorker
+from .qwen_inference_worker import AppsQwenInferenceWorker, QwenInferenceWorker
 
 __all__ = [
     "OptimizedVLLMClient",

@@ -94,7 +94,7 @@ class ADGGraphIngestion:
                     src_name, src_type, src_layer,
                     relation_type, edge_kind,
                     dst_name, dst_type, dst_layer,
-                    source_file, line_no, symbol
+                    source_file, line_no, symbol,
                 )
 
                 # Create metadata
@@ -112,7 +112,7 @@ class ADGGraphIngestion:
                     "source_file": source_file,
                     "line_no": line_no,
                     "symbol": symbol,
-                    "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16]
+                    "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16],
                 }
 
                 documents.append(doc_content)
@@ -131,7 +131,7 @@ class ADGGraphIngestion:
                         collection_name="repo_adg_graph",
                         documents=batch_docs,
                         metadatas=batch_metas,
-                        ids=batch_ids
+                        ids=batch_ids,
                     )
                     logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} relationships")
 
@@ -193,7 +193,7 @@ class ADGGraphIngestion:
                         collection_name="repo_adg_graph",
                         documents=batch_docs,
                         metadatas=batch_metas,
-                        ids=batch_ids
+                        ids=batch_ids,
                     )
                     logger.info(f"Added pattern batch {i//batch_size + 1}: {len(batch_docs)} patterns")
 
@@ -210,7 +210,7 @@ class ADGGraphIngestion:
         self, src_name: str, src_type: str, src_layer: str,
         relation_type: str, edge_kind: str,
         dst_name: str, dst_type: str, dst_layer: str,
-        source_file: str, line_no: int, symbol: str
+        source_file: str, line_no: int, symbol: str,
     ) -> str:
         """Create natural language description of a relationship."""
 
@@ -225,7 +225,7 @@ class ADGGraphIngestion:
             "routes_to": "routes to",
             "validates": "validates",
             "authorizes": "authorizes",
-            "orchestrates": "orchestrates"
+            "orchestrates": "orchestrates",
         }
 
         verb = relation_verbs.get(relation_type, relation_type)
@@ -277,7 +277,7 @@ class ADGGraphIngestion:
                 "dst_layer": dst_layer,
                 "edge_count": edge_count,
                 "relation_types": relation_types.split(","),
-                "canonical_digest": hashlib.sha256(pattern_desc.encode()).hexdigest()[:16]
+                "canonical_digest": hashlib.sha256(pattern_desc.encode()).hexdigest()[:16],
             }
 
             patterns.append((pattern_desc, metadata))
@@ -319,7 +319,7 @@ class ADGGraphIngestion:
                 "layer": layer,
                 "out_degree": out_degree,
                 "relation_types": relation_types.split(","),
-                "canonical_digest": hashlib.sha256(pattern_desc.encode()).hexdigest()[:16]
+                "canonical_digest": hashlib.sha256(pattern_desc.encode()).hexdigest()[:16],
             }
 
             patterns.append((pattern_desc, metadata))
@@ -364,7 +364,7 @@ class ADGGraphIngestion:
                 "dst_type": dst_type,
                 "dst_layer": dst_layer,
                 "relation_type": relation_type,
-                "canonical_digest": hashlib.sha256(pattern_desc.encode()).hexdigest()[:16]
+                "canonical_digest": hashlib.sha256(pattern_desc.encode()).hexdigest()[:16],
             }
 
             patterns.append((pattern_desc, metadata))
@@ -416,7 +416,7 @@ def main():
     ingestion = ADGGraphIngestion(
         repo_root=args.repo_root,
         adg_db_path=args.adg_db,
-        chroma_persist_dir=args.chroma_dir
+        chroma_persist_dir=args.chroma_dir,
     )
 
     if args.dry_run:

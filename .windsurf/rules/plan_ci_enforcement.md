@@ -1,3 +1,7 @@
+---
+trigger:
+  - file_change
+---
 # Plan CI Enforcement Rules
 
 ## Rule: Plan CI Required
@@ -10,15 +14,17 @@ All plans must pass Windsurf CI validation before commit.
 4. Plans must include implementation details
 
 ### Enforcement:
-- Pre-commit hook: `windsurf-plan-ci`
-- CI validation: `tools/windsurf_ci.py`
+- Pre-commit hook: `windsurf-plan-ci` validates plan format
+- CI gate: `tools/ci/ci_validate_plans.py` validates plan structure
 - Manual check: `python ops_scripts/hooks/windsurf_plan_ci.py`
+
+CI triggers on any file in `.windsurf/plans/`.
 
 ### Failure Modes:
 - Missing wave table → Block commit
 - Missing required sections → Block commit
-- No token estimates → Warning
-- No implementation details → Warning
+- **No token estimates (T2/T3) → Block commit** (T0/T1: Warning)
+- **No implementation details (T2/T3) → Block commit** (T0/T1: Warning)
 
 ## Rule: Plan Location Standards
 Plans must be stored in the approved location only.
@@ -51,7 +57,7 @@ All plans must use the official Windsurf ContextWindowEstimator for token valida
 
 ### Required Tool:
 ```python
-from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
 
 estimator = ContextWindowEstimator()
 ```
@@ -80,7 +86,7 @@ assert estimate.status in ['green', 'yellow'], f"Token budget exceeded: {estimat
 ```
 
 ### Token Estimator Location:
-- **File:** `agentic_core/planning/token_estimator.py`
+- **File:** `tools/utils/planning/token_estimator.py`
 - **Class:** `ContextWindowEstimator`
 - **Method:** `estimate_step_tokens()`
 - **Configuration:** `TokenBudget` class with 262K context limits (Kimi K2.5)

@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Any
 
-from apps_exec.types import ExecBriefResult, RunSummary, BriefSection
+from apps_exec.types import ExecBriefResult, RunSummary
 
 _log = logging.getLogger(__name__)
 

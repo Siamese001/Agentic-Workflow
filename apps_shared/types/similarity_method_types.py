@@ -60,39 +60,25 @@ _emit_applies_guardrail("p0", "similarity_method_types", "p0_governance")
 _emit_reads_policy_state("p0", "similarity_method_types", "policy_binding")
 _emit_snapshots_state("p0", "similarity_method_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -362,10 +348,10 @@ class SchemaSimilarityConfig:
             "array": {"array", "list"},
             "object": {"object", "dict"},
             "null": {"null", "any"},
-        }
+        },
     )
     similarity_thresholds: dict[str, float] = field(
-        default_factory=lambda: {"identical": 0.95, "compatible": 0.7, "partially_compatible": 0.4}
+        default_factory=lambda: {"identical": 0.95, "compatible": 0.7, "partially_compatible": 0.4},
     )
 
 
@@ -429,7 +415,7 @@ class SchemaSimilarityRetriever:
                 },
             )
             self.logger.info(
-                f"schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})"
+                f"schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})",
             )
             return result
         # guardian: allow-silent-swallow
@@ -462,7 +448,7 @@ class SchemaSimilarityRetriever:
         method = method or self.config.default_method
         for target_schema in target_schemas:
             request = SchemaSimilarityRequest(
-                source_schema=source_schema, target_schema=target_schema, method=method
+                source_schema=source_schema, target_schema=target_schema, method=method,
             )
             result = self.retrieve_similarity(request)
             results.append(result)
@@ -495,7 +481,7 @@ class SchemaSimilarityRetriever:
         min_threshold = compatibility_order.index(min_compatibility)
         for schema_id, candidate_schema in schema_candidates:
             request = SchemaSimilarityRequest(
-                source_schema=schema, target_schema=candidate_schema, method=self.config.default_method
+                source_schema=schema, target_schema=candidate_schema, method=self.config.default_method,
             )
             result = self.retrieve_similarity(request)
             result_threshold = compatibility_order.index(result.compatibility_level)
@@ -549,7 +535,7 @@ class SchemaSimilarityRetriever:
         return fields
 
     def _compute_structural_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute structural similarity based on field hierarchy."""
         source_paths = set(source_fields.keys())
@@ -567,7 +553,7 @@ class SchemaSimilarityRetriever:
         return path_similarity * 0.6 + type_similarity * 0.4
 
     def _compute_semantic_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute semantic similarity based on field names."""
         source_names = {path.split(".")[-1] for path in source_fields.keys()}
@@ -579,7 +565,7 @@ class SchemaSimilarityRetriever:
         return len(intersection) / len(union)
 
     def _compute_field_overlap_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute similarity based on field overlap."""
         source_paths = set(source_fields.keys())
@@ -591,7 +577,7 @@ class SchemaSimilarityRetriever:
         return len(intersection) / min_size
 
     def _compute_type_compatibility_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> float:
         """Compute similarity based on type compatibility."""
         source_paths = set(source_fields.keys())
@@ -640,7 +626,7 @@ class SchemaSimilarityRetriever:
             return CompatibilityLevel.INCOMPATIBLE
 
     def _analyze_field_differences(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> dict[str, list[str]]:
         """Analyze differences between schemas."""
         source_paths = set(source_fields.keys())
@@ -655,7 +641,7 @@ class SchemaSimilarityRetriever:
         return {"missing": missing, "extra": extra, "conflicts": conflicts}
 
     def _create_field_matches(
-        self, source_fields: dict[str, str], target_fields: dict[str, str]
+        self, source_fields: dict[str, str], target_fields: dict[str, str],
     ) -> list[FieldMatch]:
         """Create detailed field match information."""
         matches = []
@@ -686,7 +672,7 @@ class SchemaSimilarityRetriever:
 
 
 def create_schema_similarity_retriever(
-    default_method: str = "hybrid", **kwargs: object
+    default_method: str = "hybrid", **kwargs: object,
 ) -> SchemaSimilarityRetriever:
     """Create a configured schema similarity retriever."""
     config = SchemaSimilarityConfig(default_method=SimilarityMethod(default_method), **kwargs)

@@ -124,7 +124,7 @@ _emit_links_execution_to_snapshot("p4", "guardian_exemption_gate", "exec_snapsho
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(
-        0, str(_REPO_ROOT)
+        0, str(_REPO_ROOT),
     )  # guardian: allow-global-mutation -- CI bootstrap requires sys.path setup before package imports
 
 from agentic_core.L0_routing.config.path_constants import (
@@ -132,21 +132,14 @@ from agentic_core.L0_routing.config.path_constants import (
     get_validated_project_root,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -154,17 +147,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -338,7 +325,7 @@ _GENERIC_TOKENS = frozenset(
         "stub",
         "hack",
         "workaround",
-    }
+    },
 )
 
 # Matches canonical guardian comment: # guardian: allow-<type> -- <justification>
@@ -654,7 +641,7 @@ def main() -> int:  # noqa: C901
         _write_ratchet(current_counts)
         print(
             f"[guardian-exemption-gate] INIT: ratchet written — "
-            f"{len(current_counts)} files, {total_exemptions} total exemptions"
+            f"{len(current_counts)} files, {total_exemptions} total exemptions",
         )
         return 0
 
@@ -683,7 +670,7 @@ def main() -> int:  # noqa: C901
                 rule1_failures.append((rel_path, lineno, raw_line.strip(), "missing -- <justification>"))
             elif _is_generic_justification(justification):
                 rule1_failures.append(
-                    (rel_path, lineno, raw_line.strip(), f"generic justification: '{justification}'")
+                    (rel_path, lineno, raw_line.strip(), f"generic justification: '{justification}'"),
                 )
 
     # ---------------------------------------------------------------------------
@@ -698,10 +685,10 @@ def main() -> int:  # noqa: C901
 
     staged_label = f"{len(staged_files)} staged" if staged_files else "no staged production"
     print(
-        f"[guardian-exemption-gate] Scanned {len(files)} production files ({staged_label} files checked for Rule 1)"
+        f"[guardian-exemption-gate] Scanned {len(files)} production files ({staged_label} files checked for Rule 1)",
     )
     print(
-        f"[guardian-exemption-gate] Total guardian exemptions: {total_exemptions} (ratchet ceiling: {_ratchet_total(ratchet)})"
+        f"[guardian-exemption-gate] Total guardian exemptions: {total_exemptions} (ratchet ceiling: {_ratchet_total(ratchet)})",
     )
 
     if rule1_failures:
@@ -717,10 +704,10 @@ def main() -> int:  # noqa: C901
             print()
         print("Fix: add a real justification, e.g.:")
         print(
-            "  # guardian: allow-magic-config -- DEFAULT_TIMEOUT is deploy-environment-specific, owner: infra"
+            "  # guardian: allow-magic-config -- DEFAULT_TIMEOUT is deploy-environment-specific, owner: infra",
         )
         print(
-            "  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above"
+            "  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above",
         )
         print()
 

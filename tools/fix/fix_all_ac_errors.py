@@ -5,11 +5,6 @@ Handles:
 2. Missing imports: add stubs or imports for undefined names
 3. Missing modules: add try/except guards
 """
-import ast
-import os
-import re
-import subprocess
-import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 fixed_total = 0

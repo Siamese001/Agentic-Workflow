@@ -124,7 +124,7 @@ class InMemoryEvaluationStore:
                     content_preview=json.dumps(data)[:500],
                     metadata=meta,
                     similarity_score=score,
-                )
+                ),
             )
 
         return results
@@ -148,7 +148,7 @@ class InMemoryEvaluationStore:
                         content_preview=json.dumps(data)[:500],
                         metadata=meta,
                         similarity_score=1.0,
-                    )
+                    ),
                 )
 
         return sorted(results, key=lambda x: x.timestamp, reverse=True)[:limit]
@@ -249,7 +249,7 @@ class EvaluationRetrievalEngine:
                         dimension_scores=data.get("dimension_scores", {}),
                         suite_results=data.get("suite_results", {}),
                         content_preview="",
-                    )
+                    ),
                 )
 
         if len(all_evals) < 3:

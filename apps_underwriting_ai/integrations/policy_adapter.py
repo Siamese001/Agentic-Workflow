@@ -1,8 +1,8 @@
 """
 Policy Adapter - Reads underwriting policy context and prepares compliance payload.
 """
-from typing import Dict, Any
 from dataclasses import dataclass, field
+from typing import Any, Dict
 
 from ..types import UnderwritingRequest
 
@@ -31,7 +31,7 @@ class PolicyAdapter:
 
     def prepare_policy_context(
         self,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> PolicyCompliancePayload:
         """
         Prepare policy context for governance.
@@ -67,7 +67,7 @@ class PolicyAdapter:
     def check_policy_exceptions(
         self,
         request: UnderwritingRequest,
-        features: Any
+        features: Any,
     ) -> Dict[str, Any]:
         """
         Check which policy exceptions apply.
@@ -82,7 +82,7 @@ class PolicyAdapter:
         exceptions = {
             "count": 0,
             "details": [],
-            "requires_approval": False
+            "requires_approval": False,
         }
 
         policy = request.policy_context
@@ -95,7 +95,7 @@ class PolicyAdapter:
                 "type": "dscr_below_minimum",
                 "value": metrics.dscr_ttm,
                 "threshold": policy.min_dscr,
-                "severity": "moderate"
+                "severity": "moderate",
             })
             exceptions["requires_approval"] = True
 
@@ -106,7 +106,7 @@ class PolicyAdapter:
                 "type": "leverage_above_maximum",
                 "value": metrics.debt_to_ebitda_ttm,
                 "threshold": policy.max_debt_to_ebitda,
-                "severity": "moderate"
+                "severity": "moderate",
             })
             exceptions["requires_approval"] = True
 
@@ -119,7 +119,7 @@ class PolicyAdapter:
                     "type": "fico_below_minimum",
                     "value": min_fico,
                     "threshold": policy.min_fico,
-                    "severity": "moderate"
+                    "severity": "moderate",
                 })
                 exceptions["requires_approval"] = True
 

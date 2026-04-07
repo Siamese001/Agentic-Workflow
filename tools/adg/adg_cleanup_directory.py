@@ -89,7 +89,7 @@ def cleanup_adg_directory():
         f"adg_file_graph_{latest_timestamp}.json",
         f"adg_symbol_graph_{latest_timestamp}.json",
         f"adg_governance_graph_{latest_timestamp}.json",
-        f"adg_snapshot_{latest_timestamp}.json"
+        f"adg_snapshot_{latest_timestamp}.json",
     ]
 
     for graph_file in graph_files:

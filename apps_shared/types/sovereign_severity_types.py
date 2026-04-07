@@ -395,15 +395,15 @@ class agent_thought_process(BaseModel):
     """
 
     reasoning_trace: list[str] = Field(
-        ..., description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
+        ..., description="Step-by-step logic leading to the decision. Each step should be clear and atomic.",
     )
     relevant_context_keys: list[str] = Field(...)
     tool_choice: Literal[SEARCH, CODE, ANSWER, DELEGATE, TERMINATE] = Field(
-        ..., description="The action type to take"
+        ..., description="The action type to take",
     )
     tool_arguments: dict[str, Any] = Field(default_factory=dict, description="Arguments for the chosen tool")
     confidence_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence in this decision (0.0 to 1.0)"
+        ..., ge=0.0, le=1.0, description="Confidence in this decision (0.0 to 1.0)",
     )
 
     @field_validator("tool_arguments")
@@ -429,7 +429,7 @@ class code_generation_result(BaseModel):
     dependencies: list[str] = Field(default_factory=list, description="Required pip packages")
     test_cases: list[str] = Field(default_factory=list, description="Test cases to verify the code")
     safety_notes: list[str] = Field(
-        default_factory=list, description="Potential safety concerns or limitations"
+        default_factory=list, description="Potential safety concerns or limitations",
     )
 
 CodeGenerationResult = code_generation_result
@@ -441,10 +441,10 @@ class research_result(BaseModel):
     sources: list[dict[str, str]] = Field(..., description="List of sources with 'url' and 'relevance' keys")
     key_findings: list[str] = Field(..., description="Main findings from the research")
     confidence_level: Literal[high, medium, low] = Field(
-        ..., description="Confidence in the research results"
+        ..., description="Confidence in the research results",
     )
     follow_up_questions: list[str] = Field(
-        default_factory=list, description="Suggested follow-up research questions"
+        default_factory=list, description="Suggested follow-up research questions",
     )
 
 ResearchResult = research_result
@@ -495,7 +495,7 @@ class style_profile(BaseModel):
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: float = Field(
-        default=0.7, ge=0.0, le=1.0, description="Formality level (0=Casual, 1=Academic)"
+        default=0.7, ge=0.0, le=1.0, description="Formality level (0=Casual, 1=Academic)",
     )
     emoji_frequency: float = Field(default=0.2, ge=0.0, le=1.0, description="Emoji usage frequency")
     sentence_length_avg: int = Field(default=15, ge=5, le=50, description="Target words per sentence")
@@ -554,7 +554,7 @@ class retry_policy(BaseModel):
     retry_delay: float = Field(default=1.0, ge=0.0)
     exponential_backoff: bool = Field(default=True)
     retryable_stages: list[micro_stage] = Field(
-        default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE]
+        default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE],
     )
 
 RetryPolicy = retry_policy
@@ -666,7 +666,7 @@ class hard_state:
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HardState.add_trace:{event}")
         new_trace = self.execution_trace + [
-            {"event": event, "timestamp": datetime.now(timezone.utc).isoformat(), "data": data}
+            {"event": event, "timestamp": datetime.now(timezone.utc).isoformat(), "data": data},
         ]
         return HardState(
             execution_id=self.execution_id,
@@ -712,7 +712,7 @@ class soft_state:
                 "old_value": old_value,
                 "new_value": new_value,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            },
         )
 
 SoftState = soft_state
@@ -738,10 +738,10 @@ class thermal_config:
                 "temperature": self.node_overrides[node_id].get("temperature", self.temperature),
                 "top_p": self.node_overrides[node_id].get("top_p", self.top_p),
                 "frequency_penalty": self.node_overrides[node_id].get(
-                    "frequency_penalty", self.frequency_penalty
+                    "frequency_penalty", self.frequency_penalty,
                 ),
                 "presence_penalty": self.node_overrides[node_id].get(
-                    "presence_penalty", self.presence_penalty
+                    "presence_penalty", self.presence_penalty,
                 ),
             }
         return {
@@ -802,7 +802,7 @@ class signal_context(BaseModel):
         self.last_modified = datetime.now(timezone.utc)
 
     def add_signed_claim(
-        self, claim: str, source: str, confidence: float, evidence: str | None = None
+        self, claim: str, source: str, confidence: float, evidence: str | None = None,
     ) -> None:
         """Add a signed claim to the context."""
         signed_claim = signed_claim(claim=claim, source=source, confidence=confidence, evidence=evidence)
@@ -814,7 +814,7 @@ class safety_profile_types(BaseModel):
     """Safety configuration profile used by execution profiles."""
 
     safety_tier: str = Field(
-        default="standard", description="Safety tier: standard | strict | relaxed | debug"
+        default="standard", description="Safety tier: standard | strict | relaxed | debug",
     )
     pii_detection_enabled: bool = True
     policy_engine_enabled: bool = True
@@ -947,7 +947,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "EvalResult": EvalResult,
         "GoldenCase": GoldenCase,
         "GoldenOutput": GoldenOutput,
-    }
+    },
 )
 
 
@@ -1111,7 +1111,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "ThematicAnalysis": ThematicAnalysis,
         "RAGState": RAGState,
         "CircuitState": CircuitState,
-    }
+    },
 )
 
 
@@ -1124,49 +1124,49 @@ class file_paths_config:
         / "config"
         / "P1_core"
         / "data"
-        / "master_resume.json"
+        / "master_resume.json",
     )
     hyphenation_rules: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "hyphenation_rules.json"
+        / "hyphenation_rules.json",
     )
     app_tracker_schema: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "app_tracker_schema.json"
+        / "app_tracker_schema.json",
     )
     artist_specs: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "artist_specs.json"
+        / "artist_specs.json",
     )
     artist_constraints: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "artist_constraints.json"
+        / "artist_constraints.json",
     )
     validator_rules: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "validator_rules.json"
+        / "validator_rules.json",
     )
     prompts: Path = field(
         default_factory=lambda: Path(__file__).parent.parent.parent
         / "config"
         / "P1_core"
         / "data"
-        / "prompts.json"
+        / "prompts.json",
     )
 
 FilePathsConfig = file_paths_config
@@ -1224,7 +1224,7 @@ class web_rag_config:
             "Retail/E-Commerce": ["Amazon", "Walmart", "Target", "Shopify", "eBay"],
             "Software/SaaS": ["Salesforce", "Oracle", "SAP", "Adobe", "Workday"],
             "Technology": ["Google", "Microsoft", "Meta", "Apple", "Amazon"],
-        }
+        },
     )
 
 WebRagConfig = web_rag_config
@@ -1245,7 +1245,7 @@ class enricher_config:
             "established": ["established", "establish", "establishing"],
             "managed": ["managed", "manage", "managing"],
             "developed": ["developed", "develop", "developing"],
-        }
+        },
     )
 
 EnricherConfig = enricher_config
@@ -1279,7 +1279,7 @@ class enforcement_rag_config:
             "SOURCE_PEER_JD": 0.8,
             "SOURCE_GENERIC_PROFILE": 0.5,
             "LOCAL_NLP": 0.2,
-        }
+        },
     )
 EnforcementRAGConfig = enforcement_rag_config
 
@@ -1383,7 +1383,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "SignalControlConfig": SignalControlConfig,
         "PromptAddendumConfig": PromptAddendumConfig,
         "AppConfig": AppConfig,
-    }
+    },
 )
 
 
@@ -1542,7 +1542,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "GeneratedMessage": GeneratedMessage,
         "EnforcementValidationResult": EnforcementValidationResult,
         "QAReport": QAReport,
-    }
+    },
 )
 
 
@@ -1759,7 +1759,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "DeepResearchOutput": DeepResearchOutput,
         "ResearchHopResult": ResearchHopResult,
         "IntegrityGateResult": IntegrityGateResult,
-    }
+    },
 )
 
 
@@ -1845,7 +1845,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "ArchetypeTemplate": ArchetypeTemplate,
         "SignatureTemplate": SignatureTemplate,
         "GreetingTemplate": GreetingTemplate,
-    }
+    },
 )
 
 
@@ -1893,7 +1893,7 @@ class immutable_staging_buffer:
 ImmutableStagingBuffer = immutable_staging_buffer
 
 CORE_CONTRACTS_REGISTRY.update(
-    {"APICallMetrics": APICallMetrics, "ImmutableStagingBuffer": ImmutableStagingBuffer}
+    {"APICallMetrics": APICallMetrics, "ImmutableStagingBuffer": ImmutableStagingBuffer},
 )
 
 
@@ -1965,7 +1965,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "RecipientArchetype": RecipientArchetype,
         "SignatureFormat": SignatureFormat,
         "CTAFormat": CTAFormat,
-    }
+    },
 )
 
 
@@ -2021,7 +2021,7 @@ class headline_brief:
     STRUCTURE: str = "Domain | Leadership | Value Prop"
     segment_word_limit: int = 3
     exclusions: list[str] = field(
-        default_factory=lambda: ["and", "a", "an", "the", "in", "on", "at", "for", "to", "of"]
+        default_factory=lambda: ["and", "a", "an", "the", "in", "on", "at", "for", "to", "of"],
     )
     GUIDANCE: str = "Must incorporate differentiator keywords from the Competitive Analysis."
 
@@ -2081,7 +2081,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "RetryPolicy": RetryPolicy,
         "HopSpec": HopSpec,
         "WorkflowSpec": WorkflowSpec,
-    }
+    },
 )
 
 
@@ -2091,12 +2091,12 @@ class experience_bullets_brief:
 
     provenance_strategy: ProvenanceStrategy = ProvenanceStrategy.JD_FIT_BASED
     provenance_map: dict[str, str] = field(
-        default_factory=lambda: {"Unify Consulting": "4V-3T-0S", "IBM": "4V-2T-0S"}
+        default_factory=lambda: {"Unify Consulting": "4V-3T-0S", "IBM": "4V-2T-0S"},
     )
     default_provenance_fallback: str = "10V-0A-0S"
     selection_logic: str = "Multi-factor scoring algorithm: (JD Keyword Overlap * 0.5) + (Metric Impact * 0.3) + (Uniqueness * 0.2)"
     overview_word_count: dict[str, WordCountConstraint] = field(
-        default_factory=lambda: {"k6": WordCountConstraint(25, 33), "k7": WordCountConstraint(22, 28)}
+        default_factory=lambda: {"k6": WordCountConstraint(25, 33), "k7": WordCountConstraint(22, 28)},
     )
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
@@ -2123,7 +2123,7 @@ class cover_letter_brief:
     word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85, 100))
     min_specific_details: int = 4
     forbidden_patterns: list[str] = field(
-        default_factory=lambda: ["At [COMPANY], I...", "During my time at..."]
+        default_factory=lambda: ["At [COMPANY], I...", "During my time at..."],
     )
     signature_generation_policy: str = "DYNAMIC_FROM_OWNER_CONTACT"
 
@@ -2159,7 +2159,7 @@ class executive_summary_brief:
     word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
     forbidden_patterns: list[str] = field(
-        default_factory=lambda: ["I have", "My expertise", "At [COMPANY],", "I"]
+        default_factory=lambda: ["I have", "My expertise", "At [COMPANY],", "I"],
     )
     GUIDANCE: str = "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."
 
@@ -2173,7 +2173,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "OptimizedSkillsBrief": OptimizedSkillsBrief,
         "RGCreativeBrief": RGCreativeBrief,
         "ExecutiveSummaryBrief": ExecutiveSummaryBrief,
-    }
+    },
 )
 
 
@@ -2243,44 +2243,30 @@ CORE_CONTRACTS_REGISTRY.update(
         "RouteConfig": RouteConfig,
         "ArchetoneConfig": ArchetoneConfig,
         "TemperatureConfig": TemperatureConfig,
-    }
+    },
 )
 import logging
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -3322,7 +3308,7 @@ class mission_plan(sovereign_base_model_types):
                 raise ValueError("At least one phase required")
             self._detect_dependency_cycles()
             logger.info(
-                f"[BUILDER] Constructing MissionPlan {self._mission_id} | Phases: {len(self._phases)} | Priority: {self._priority}"
+                f"[BUILDER] Constructing MissionPlan {self._mission_id} | Phases: {len(self._phases)} | Priority: {self._priority}",
             )
             return MissionPlan(
                 mission_id=self._mission_id,
@@ -3360,7 +3346,7 @@ class mission_plan(sovereign_base_model_types):
                 if phase_name not in visited:
                     if has_cycle(phase_name):
                         raise ValueError(
-                            f"Sovereignty Breach: Dependency cycle detected in MissionPlan {self._mission_id} involving phases: {list(rec_stack if rec_stack else graph.keys())}"
+                            f"Sovereignty Breach: Dependency cycle detected in MissionPlan {self._mission_id} involving phases: {list(rec_stack if rec_stack else graph.keys())}",
                         )
 
 MissionPlan = mission_plan
@@ -3534,7 +3520,7 @@ class constitutional_violation(sovereign_base_model_types):
             return self
 
         def at_location(
-            self, file_path: str, line_number: int | None = None
+            self, file_path: str, line_number: int | None = None,
         ) -> ConstitutionalViolation.Builder:
             self._file_path = file_path
             self._line_number = line_number
@@ -3567,7 +3553,7 @@ class constitutional_violation(sovereign_base_model_types):
             if not self._violation_id:
                 self._violation_id = f"violation-{uuid.uuid4().hex[:8]}"
             logger.warning(
-                f"[AUDIT] Violation Detected: {self._violation_id} | Severity: {self._severity} | Dimension: {self._dimension} | Loc: {self._file_path}:{self._line_number or 'N/A'}"
+                f"[AUDIT] Violation Detected: {self._violation_id} | Severity: {self._severity} | Dimension: {self._dimension} | Loc: {self._file_path}:{self._line_number or 'N/A'}",
             )
             return ConstitutionalViolation(
                 violation_id=self._violation_id,
@@ -3681,7 +3667,7 @@ class healing_action(sovereign_base_model_types):
                 self._action_id = f"healact-{uuid.uuid4().hex[:8]}"
             status = "SUCCESS" if self._success else "FAILED"
             logger.info(
-                f"[AUDIT] Healing Action Logged: {self._action_id} | Outcome: {status} | Strategy: {self._strategy} | Type: {self._action_type} | File: {self._target_file}"
+                f"[AUDIT] Healing Action Logged: {self._action_id} | Outcome: {status} | Strategy: {self._strategy} | Type: {self._action_type} | File: {self._target_file}",
             )
             return HealingAction(
                 action_id=self._action_id,
@@ -3771,7 +3757,7 @@ class healing_cycle(sovereign_base_model_types):
             persistent = len(self._actions) - healed
             status = "SOVEREIGN" if self._success else "PARTIAL"
             logger.info(
-                f"[AUDIT] Healing Cycle Concluded: {self._cycle_id} | Outcome: {status} | Delta: {self._trigger_score:.1f}% -> {self._target_score:.1f}% | Restored: {healed}/{len(self._actions)}"
+                f"[AUDIT] Healing Cycle Concluded: {self._cycle_id} | Outcome: {status} | Delta: {self._trigger_score:.1f}% -> {self._target_score:.1f}% | Restored: {healed}/{len(self._actions)}",
             )
             return HealingCycle(
                 cycle_id=self._cycle_id,
@@ -3864,7 +3850,7 @@ class healing_report(sovereign_base_model_types):
             if not self._report_id:
                 self._report_id = f"heal-{uuid.uuid4().hex[:8]}"
             logger.info(
-                f"[AUDIT] HealingReport Sealed: {self._report_id} | Outcome: {('SUCCESS' if self._success else 'PARTIAL')} | Remediation: {self._violations_fixed}/{self._violations_found}"
+                f"[AUDIT] HealingReport Sealed: {self._report_id} | Outcome: {('SUCCESS' if self._success else 'PARTIAL')} | Remediation: {self._violations_fixed}/{self._violations_found}",
             )
             return HealingReport(
                 report_id=self._report_id,
@@ -4052,7 +4038,7 @@ CORE_CONTRACTS_REGISTRY.update(
         "SovereignSeverity": SovereignSeverity,
         "SovereignEventType": SovereignEventType,
         "SovereignEvent": SovereignEvent,
-    }
+    },
 )
 if __name__ != "__main__":
     assert len(CORE_CONTRACTS_REGISTRY) == len(set(CORE_CONTRACTS_REGISTRY.values())), (

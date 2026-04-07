@@ -1,8 +1,5 @@
 """Analyze ADG file redundancy and size reduction opportunities."""
 
-import json
-import sqlite3
-from collections import defaultdict
 from pathlib import Path
 
 REPO = Path(r"c:\Git\Agentic-Workflow")

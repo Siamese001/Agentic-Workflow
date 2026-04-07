@@ -5,7 +5,6 @@ Removes broken headers and adds proper docstrings.
 from pathlib import Path
 
 
-
 def fix_single_test_file(test_file: Path) -> bool:
     """Fix a single test file's header."""
     try:

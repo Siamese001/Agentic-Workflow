@@ -46,7 +46,7 @@ def execute_phase1_discovery(project_root: str, targets: list[str]) -> dict[str,
                     "severity": "high" if violations_count > 5 else "medium",
                     "violations_count": violations_count,
                     "valid": True,
-                }
+                },
             )
     except Exception as e:
         logging.warning(f"FilesystemSSOTValidatorAgent failed: {e}")
@@ -75,7 +75,7 @@ def execute_phase1_discovery(project_root: str, targets: list[str]) -> dict[str,
                                 "valid": True,
                             }
                             for v in violations
-                        ]
+                        ],
                     )
     except Exception as e:
         logging.warning(f"LocationValidatorAgent failed: {e}")
@@ -101,7 +101,7 @@ def execute_phase1_discovery(project_root: str, targets: list[str]) -> dict[str,
                                 "valid": True,
                             }
                             for i in issues
-                        ]
+                        ],
                     )
     except Exception as e:
         logging.warning(f"FileClassificationAgent failed: {e}")
@@ -137,7 +137,7 @@ def execute_phase3_alignment(findings: list[dict], strategy: str = "auto") -> li
                     "healer": "FilesystemSSOTReconcilerAgent",
                     "priority": "high",
                     "estimated_time": 30,
-                }
+                },
             )
         elif "location" in issue_type or "Location" in agent:
             alignments.append(
@@ -147,7 +147,7 @@ def execute_phase3_alignment(findings: list[dict], strategy: str = "auto") -> li
                     "healer": "LocationHealerAgent",
                     "priority": "medium",
                     "estimated_time": 15,
-                }
+                },
             )
         elif "classification" in issue_type or "FileClassification" in agent:
             alignments.append(
@@ -157,7 +157,7 @@ def execute_phase3_alignment(findings: list[dict], strategy: str = "auto") -> li
                     "healer": "FileClassificationHealerAgent",
                     "priority": "medium",
                     "estimated_time": 10,
-                }
+                },
             )
         else:
             # Default: manual review
@@ -168,7 +168,7 @@ def execute_phase3_alignment(findings: list[dict], strategy: str = "auto") -> li
                     "healer": None,
                     "priority": "low",
                     "estimated_time": 5,
-                }
+                },
             )
 
     # Sort by priority
@@ -218,7 +218,7 @@ def execute_phase4_architectural_validation(findings: list[dict], alignments: li
 
 
 def execute_phase5_healing(
-    alignments: list[dict], project_root: str, dry_run: bool = False
+    alignments: list[dict], project_root: str, dry_run: bool = False,
 ) -> dict[str, Any]:
     """Execute Phase 5 healing actions.
 
@@ -335,7 +335,7 @@ def _get_retrieval_telemetry(query: str, tier: str) -> dict[str, Any]:
 
 
 def _multi_tier_retrieval(
-    query: str, project_root: str, tiers: list[str] | None = None
+    query: str, project_root: str, tiers: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Perform multi-tier retrieval across L0-L5.
 
@@ -573,7 +573,7 @@ class SovereignDecisionEngine:
                 )
 
                 fs_validator = FilesystemSSOTValidatorAgent(
-                    project_root=context.targets[0] if context.targets else "."
+                    project_root=context.targets[0] if context.targets else ".",
                 )
                 fs_check = fs_validator.to_check_dict()
                 drift_report = fs_check.get("evidence", {})
@@ -587,7 +587,7 @@ class SovereignDecisionEngine:
                             "violations_count": violations_count,
                             "drift_report": drift_report,
                             "valid": True,
-                        }
+                        },
                     )
                 print(f"[DISCOVERY] FilesystemSSOTValidatorAgent: {violations_count} violations found")
             except Exception as e:
@@ -618,10 +618,10 @@ class SovereignDecisionEngine:
                                         "valid": True,
                                     }
                                     for v in violations
-                                ]
+                                ],
                             )
                         print(
-                            f"[DISCOVERY] LocationValidatorAgent for {target}: {len(violations)} violations"
+                            f"[DISCOVERY] LocationValidatorAgent for {target}: {len(violations)} violations",
                         )
             except Exception as e:
                 self.logger.warning(f"LocationValidatorAgent failed: {e}")
@@ -648,7 +648,7 @@ class SovereignDecisionEngine:
                                         "valid": True,
                                     }
                                     for i in issues
-                                ]
+                                ],
                             )
                         print(f"[DISCOVERY] FileClassificationAgent for {target}: {len(issues)} issues")
             except Exception as e:
@@ -871,7 +871,7 @@ class SovereignDecisionEngine:
 
         # Phase 1: Discovery
         _emit_records_execution_trace(
-            str(id(self)), LayerSegment.L1_REASONING, "execute_ssot.phase.discovery.start"
+            str(id(self)), LayerSegment.L1_REASONING, "execute_ssot.phase.discovery.start",
         )
         try:
             success, findings = self.run_discovery_phase(self.heal_context)
@@ -896,7 +896,7 @@ class SovereignDecisionEngine:
 
         # Phase 2: Validation
         _emit_records_execution_trace(
-            str(id(self)), LayerSegment.L1_REASONING, "execute_ssot.phase.validation.start"
+            str(id(self)), LayerSegment.L1_REASONING, "execute_ssot.phase.validation.start",
         )
         try:
             success, validated = self.run_validation_phase(self.heal_context, findings)
@@ -921,7 +921,7 @@ class SovereignDecisionEngine:
 
         # Phase 3: Alignment
         _emit_records_execution_trace(
-            str(id(self)), LayerSegment.L3_ORCHESTRATION, "execute_ssot.phase.alignment.start"
+            str(id(self)), LayerSegment.L3_ORCHESTRATION, "execute_ssot.phase.alignment.start",
         )
         try:
             success, alignments = self.run_alignment_phase(self.heal_context, validated)
@@ -946,12 +946,12 @@ class SovereignDecisionEngine:
 
         # Phase 4: Healing
         _emit_records_execution_trace(
-            str(id(self)), LayerSegment.L2_EXECUTION, "execute_ssot.phase.healing.start"
+            str(id(self)), LayerSegment.L2_EXECUTION, "execute_ssot.phase.healing.start",
         )
         try:
             success, healing_results = self.run_healing_phase(self.heal_context, alignments)
             _emit_records_execution_trace(
-                str(id(self)), LayerSegment.L2_EXECUTION, f"execute_ssot.phase.healing.end:success={success}"
+                str(id(self)), LayerSegment.L2_EXECUTION, f"execute_ssot.phase.healing.end:success={success}",
             )
             if not success:
                 return False, {"phase": "healing", "error": "Healing failed", "context": self.heal_context}
@@ -965,12 +965,12 @@ class SovereignDecisionEngine:
 
         # Phase 5: Reporting
         _emit_records_execution_trace(
-            str(id(self)), LayerSegment.L4_STATE, "execute_ssot.phase.reporting.start"
+            str(id(self)), LayerSegment.L4_STATE, "execute_ssot.phase.reporting.start",
         )
         try:
             success, report = self.run_reporting_phase(self.heal_context, healing_results)
             _emit_records_execution_trace(
-                str(id(self)), LayerSegment.L4_STATE, f"execute_ssot.phase.reporting.end:success={success}"
+                str(id(self)), LayerSegment.L4_STATE, f"execute_ssot.phase.reporting.end:success={success}",
             )
             self.heal_context.record_phase_result("reporting", report)
         except Exception as e:
@@ -982,7 +982,7 @@ class SovereignDecisionEngine:
 
         # PTC: Workflow completion
         _emit_records_execution_trace(
-            str(id(self)), LayerSegment.L2_EXECUTION, "execute_ssot.workflow.complete"
+            str(id(self)), LayerSegment.L2_EXECUTION, "execute_ssot.workflow.complete",
         )
         return True, {
             "heal_context": self.heal_context,

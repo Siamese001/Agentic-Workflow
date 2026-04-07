@@ -127,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -245,7 +244,7 @@ class ToolCallStore:
 
     # guardian: allow-magic-config -- limit default is a pagination parameter for store queries
     def list_calls(
-        self, tool_id: str | None = None, limit: int = 100
+        self, tool_id: str | None = None, limit: int = 100,
     ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
         """List stored tool calls.
 
@@ -296,7 +295,7 @@ class ToolCallStore:
                         logical_id=call_id,
                         version=int(latest.stem[1:]),
                         path=str(latest),
-                    )
+                    ),
                 )
                 if artifact.payload["call"]["tool_id"] == tool_id:
                     return artifact.payload
@@ -370,7 +369,7 @@ def record_tool_call(
 
 # guardian: allow-magic-config -- limit default is a pagination parameter for module-level API
 def list_tool_calls(
-    tool_id: str | None = None, limit: int = 100
+    tool_id: str | None = None, limit: int = 100,
 ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
     """List tool calls from the global store.
 

@@ -146,7 +146,7 @@ d    context before export to backends.
         _emit_records_telemetry_event(
             "agentic_span_processor", "L4_STATE", "spans_processed",
             input_count=len(spans),
-            output_count=len(processed)
+            output_count=len(processed),
         )
 
         return processed

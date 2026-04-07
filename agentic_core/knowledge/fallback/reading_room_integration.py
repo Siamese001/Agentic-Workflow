@@ -70,7 +70,7 @@ class ReadingRoomIntegration:
         """
         trace_id = f"reading_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ReadingRoomIntegration.process"
+            trace_id, LayerSegment.L1_REASONING, "ReadingRoomIntegration.process",
         )
 
         # Manage context window
@@ -101,7 +101,7 @@ class ReadingRoomIntegration:
 
         _emit_records_telemetry_event(
             "reading_room",
-            f"processed_{reasoning_path}"
+            f"processed_{reasoning_path}",
         )
 
         log.debug(f"Reading room processed: {len(truncated_context.split())} tokens, safety={safety_passed}")

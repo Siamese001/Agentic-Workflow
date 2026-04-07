@@ -15,7 +15,7 @@ class RelationshipContext(BaseModel):
     prior_exposure: float | None = Field(None, ge=0, description="Prior credit exposure")
     deposit_relationship: bool = Field(False, description="Has deposit relationship")
     historical_exceptions: list[str] = Field(
-        default_factory=list, description="Historical exceptions granted"
+        default_factory=list, description="Historical exceptions granted",
     )
     past_due_history: list[str] = Field(default_factory=list, description="Past due incidents")
 
@@ -28,5 +28,5 @@ class RelationshipContext(BaseModel):
                 "deposit_relationship": True,
                 "historical_exceptions": [],
                 "past_due_history": [],
-            }
+            },
         }

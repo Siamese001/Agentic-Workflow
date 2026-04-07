@@ -199,6 +199,6 @@ LEGACY_MIRROR_PLAN: L2ExecutionPlan = L2ExecutionPlan(
         PhaseSpec(name="arch_validation"),
         PhaseSpec(name="healing"),
         PhaseSpec(name="certification"),
-    )
+    ),
 )
 __all__ = ["L2ExecutionPlan", "LEGACY_MIRROR_PLAN", "PhaseSpec"]

@@ -40,14 +40,14 @@ class TestFAISSVectorStore:
                 id="doc1",
                 vector=np.random.random(128),
                 content="test content 1",
-                metadata={"type": "test"}
+                metadata={"type": "test"},
             ),
             VectorDocument(
                 id="doc2",
                 vector=np.random.random(128),
                 content="test content 2",
-                metadata={"type": "test"}
-            )
+                metadata={"type": "test"},
+            ),
         ]
 
         self.store.add_documents(docs)
@@ -63,14 +63,14 @@ class TestFAISSVectorStore:
                 id="doc1",
                 vector=np.random.random(128),
                 content="similar content",
-                metadata={"type": "test"}
+                metadata={"type": "test"},
             ),
             VectorDocument(
                 id="doc2",
                 vector=np.random.random(128),
                 content="different content",
-                metadata={"type": "test"}
-            )
+                metadata={"type": "test"},
+            ),
         ]
 
         self.store.add_documents(docs)
@@ -89,7 +89,7 @@ class TestFAISSVectorStore:
             id="doc1",
             vector=np.random.random(128),
             content="test content",
-            metadata={}
+            metadata={},
         )
 
         self.store.add_documents([doc])
@@ -104,7 +104,7 @@ class TestFAISSVectorStore:
             id="doc1",
             vector=np.random.random(128),
             content="test content",
-            metadata={"type": "test"}
+            metadata={"type": "test"},
         )
 
         self.store.add_documents([doc])
@@ -121,7 +121,7 @@ class TestFAISSVectorStore:
             id="doc1",
             vector=np.random.random(128),
             content="test content",
-            metadata={}
+            metadata={},
         )
 
         self.store.add_documents([doc])

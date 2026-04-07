@@ -44,8 +44,8 @@ _logger = logging.getLogger(__name__)
 
 from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
-from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
 from agentic_core.adg.contracts.schema_util import module_path_to_layer
+from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
 
 # Constants
 DEFAULT_MAX_DEPTH = 4
@@ -139,7 +139,7 @@ class ADGIndex:
                 self.imported_by[to].add(frm)
 
     def transitive_importers(
-        self, module_path: str, max_depth: int = DEFAULT_MAX_DEPTH
+        self, module_path: str, max_depth: int = DEFAULT_MAX_DEPTH,
     ) -> set[str]:
         """Return all modules that (transitively) import module_path.
 
@@ -322,7 +322,7 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> int:
             e.source_file.replace("\\", "/")
             for e in idx.result.edges
             if "tests/" in e.source_file.replace("\\", "/")
-        }
+        },
     )
 
     if not test_files:
@@ -416,7 +416,7 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> int:
                 "triage_category": triage_category,
                 "issues": issues,
                 "imports_count": len(imported_modules),
-            }
+            },
         )
 
     # Build final report
@@ -492,7 +492,7 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> int:
             e.source_file.replace("\\", "/")
             for e in idx.result.edges
             if "tests/" in e.source_file.replace("\\", "/")
-        }
+        },
     )
 
     if not all_test_files:
@@ -562,7 +562,7 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> int:
             e.source_file.replace("\\", "/")
             for e in idx.result.edges
             if "tests/" in e.source_file.replace("\\", "/")
-        }
+        },
     )
     layer_counts: dict[str, int] = defaultdict(int)
     for tf in all_test_files:
@@ -618,7 +618,7 @@ def _build_parser() -> argparse.ArgumentParser:
     # scope
     scope = sub.add_parser("scope", help="Emit test files covering changed modules")
     scope.add_argument(
-        "--changed", nargs="*", default=[], metavar="FILE", help="Changed file paths (relative to repo root)"
+        "--changed", nargs="*", default=[], metavar="FILE", help="Changed file paths (relative to repo root)",
     )
     scope.add_argument("--stdin", action="store_true", help="Read changed files from stdin (one per line)")
     scope.add_argument("--format", choices=["lines", "pytest", "json"], default="lines")
@@ -662,7 +662,7 @@ def main() -> int:
 
     _logger.info(
         f"Scan done in {time.time() - t0:.1f}s — "
-        f"{len(result.modules)} modules, {len(result.edges)} edges"
+        f"{len(result.modules)} modules, {len(result.edges)} edges",
     )
 
     idx = ADGIndex(result)

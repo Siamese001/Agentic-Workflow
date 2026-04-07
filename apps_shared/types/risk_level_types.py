@@ -62,39 +62,25 @@ _emit_applies_guardrail("p0", "risk_level_types", "p0_governance")
 _emit_reads_policy_state("p0", "risk_level_types", "policy_binding")
 _emit_snapshots_state("p0", "risk_level_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -362,7 +348,7 @@ class MicroHookGenerator:
             if company_news and isinstance(company_news, str) and (len(company_news) > 10):
                 topic = company_news[:50] + "..." if len(company_news) > 50 else company_news
                 hook = MicroHook(
-                    phrase=f"I saw the news about {topic}", trigger_type="company_news", relevance=0.9
+                    phrase=f"I saw the news about {topic}", trigger_type="company_news", relevance=0.9,
                 )
                 hooks.append(hook)
             if recent_posts and isinstance(recent_posts, list) and (len(recent_posts) > 0):
@@ -415,7 +401,7 @@ class MicroHookGenerator:
                     phrase="I came across your profile and was impressed...",
                     trigger_type="fallback",
                     relevance=0.2,
-                )
+                ),
             ]
 
 
@@ -485,7 +471,7 @@ class SentimentAnalyzer:
         try:
             if not text_samples or not isinstance(text_samples, list):
                 return SentimentProfile(
-                    mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=[]
+                    mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=[],
                 )
             combined_text = " ".join(str(s) for s in text_samples if s).lower()
             words = re.findall("\\b\\w+\\b", combined_text)
@@ -517,7 +503,7 @@ class SentimentAnalyzer:
         except Exception as e:
             logger.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
-                mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=["error"]
+                mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=["error"],
             )
 
 
@@ -542,7 +528,7 @@ class WarmthManager:
         logger.info("Initialized WarmthManager with formality mappings")
 
     def determine_warmth(
-        self, archetype: str, relationship_stage: str, sentiment: SentimentMood
+        self, archetype: str, relationship_stage: str, sentiment: SentimentMood,
     ) -> WarmthSetting:
         """Determine warmth settings based on context.
 
@@ -580,7 +566,7 @@ class WarmthManager:
                 strategy = "Professional Connect"
                 max_emojis = 1
             warmth = WarmthSetting(
-                formality_level=base_formality, strategy_name=strategy, max_emojis=max_emojis
+                formality_level=base_formality, strategy_name=strategy, max_emojis=max_emojis,
             )
             logger.debug(f"Determined warmth: {strategy} (formality: {base_formality:.2f})")
             return warmth
@@ -623,7 +609,7 @@ class TemperatureEngine:
             sentiment_profile = self.sentiment_analyzer.assess_sentiment(text_samples)
             if sentiment_profile.risk_level == RiskLevel.CRITICAL:
                 logger.warning(
-                    f"Hostile sentiment detected for {profile.get('name', 'Unknown')}, aborting further analysis"
+                    f"Hostile sentiment detected for {profile.get('name', 'Unknown')}, aborting further analysis",
                 )
                 return {
                     "depth_score": {
@@ -640,7 +626,7 @@ class TemperatureEngine:
             depth_score = self.depth_scorer.calculate_depth(profile)
             hooks = self.hook_generator.generate_hooks(profile)
             warmth_setting = self.warmth_manager.determine_warmth(
-                archetype, relationship_stage, sentiment_profile.mood
+                archetype, relationship_stage, sentiment_profile.mood,
             )
             results = {
                 "depth_score": depth_score.dict(),
@@ -648,7 +634,7 @@ class TemperatureEngine:
                 "sentiment": sentiment_profile.dict(),
                 "warmth": warmth_setting.dict(),
                 "recommendations": self._generate_recommendations(
-                    depth_score, sentiment_profile, warmth_setting
+                    depth_score, sentiment_profile, warmth_setting,
                 ),
                 "abort": False,
             }
@@ -668,7 +654,7 @@ class TemperatureEngine:
             }
 
     def _generate_recommendations(
-        self, depth: DepthScore, sentiment: SentimentProfile, warmth: WarmthSetting
+        self, depth: DepthScore, sentiment: SentimentProfile, warmth: WarmthSetting,
     ) -> list[str]:
         """Generate recommendations based on analysis.
 
@@ -699,7 +685,7 @@ class TemperatureEngine:
 
 
 def create_temperature_engine(
-    target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None
+    target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None,
 ) -> TemperatureEngine:
     """Create a TemperatureEngine instance."""
     return TemperatureEngine(target_keywords, my_education)

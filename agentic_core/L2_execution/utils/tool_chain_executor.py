@@ -122,7 +122,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -233,7 +232,7 @@ class ToolsUseATool:
             raise ValueError(f"Missing required config keys: {Missing}")
 
     def process(
-        self, payload: str | int | float | bool | list | dict, context: dict[str, Any] | None = None
+        self, payload: str | int | float | bool | list | dict, context: dict[str, Any] | None = None,
     ) -> ProcessingResult:
         """
         Main processing method with comprehensive error handling.
@@ -255,7 +254,7 @@ class ToolsUseATool:
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         exec_ctx: Any = ExecutionContext(
-            operation_id=self.config.get("operation_id", "default"), METADATA=context or {}
+            operation_id=self.config.get("operation_id", "default"), METADATA=context or {},
         )
         _ectx = _make_execution_context(str(payload), "tool_chain_executor.process")
         _invoke_authorize_and_execute(
@@ -285,7 +284,7 @@ class ToolsUseATool:
             return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 
     def _execute_core(
-        self, data: str | int | float | bool | list | dict, context: dict[str, Any] | None
+        self, data: str | int | float | bool | list | dict, context: dict[str, Any] | None,
     ) -> str | int | float | bool | list | dict:
         """Core execution logic to be overridden by subclasses."""
         return data

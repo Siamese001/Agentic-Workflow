@@ -18,14 +18,14 @@ def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> dict:
         result = subprocess.run(
             cmd, shell=True, cwd=cwd,
             capture_output=True, text=True,
-            timeout=timeout
+            timeout=timeout,
         )
         return {
             "success": result.returncode == 0,
             "stdout": result.stdout,
             "stderr": result.stderr,
             "returncode": result.returncode,
-            "timed_out": False
+            "timed_out": False,
         }
     except subprocess.TimeoutExpired:
         # Kill the process group
@@ -35,7 +35,7 @@ def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> dict:
             "stdout": "",
             "stderr": f"Command timed out after {timeout}s",
             "returncode": -1,
-            "timed_out": True
+            "timed_out": True,
         }
     except Exception as e:
         return {
@@ -43,7 +43,7 @@ def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> dict:
             "stdout": "",
             "stderr": f"Unexpected error: {str(e)}",
             "returncode": -2,
-            "timed_out": False
+            "timed_out": False,
         }
 
 def test_redis_connection():
@@ -220,37 +220,37 @@ def generate_redis_fixes():
                 "Redis batch operations taking too long for MCP timeouts",
                 "No progress reporting during long operations",
                 "Memory issues with large ADG datasets",
-                "Redis server configuration not optimized for large datasets"
+                "Redis server configuration not optimized for large datasets",
             ],
             "recommended_fixes": [
                 {
                     "fix": "Increase MCP tool timeouts",
                     "description": "Extend timeouts for Redis operations to 5-10 minutes",
-                    "implementation": "Configure MCP server with longer timeout values"
+                    "implementation": "Configure MCP server with longer timeout values",
                 },
                 {
                     "fix": "Implement batch processing with progress reporting",
                     "description": "Break large ingestion into smaller batches with progress updates",
-                    "implementation": "Modify adg_redis_ingest.py to process in chunks"
+                    "implementation": "Modify adg_redis_ingest.py to process in chunks",
                 },
                 {
                     "fix": "Add Redis memory optimization",
                     "description": "Configure Redis for large dataset operations",
-                    "implementation": "Set maxmemory and optimize Redis config"
+                    "implementation": "Set maxmemory and optimize Redis config",
                 },
                 {
                     "fix": "Implement async Redis operations",
                     "description": "Use async Redis operations to prevent blocking",
-                    "implementation": "Use redis-py async or implement background processing"
+                    "implementation": "Use redis-py async or implement background processing",
                 },
                 {
                     "fix": "Add operation cancellation support",
                     "description": "Allow cancellation of long-running operations",
-                    "implementation": "Implement graceful shutdown and cleanup"
-                }
+                    "implementation": "Implement graceful shutdown and cleanup",
+                },
             ],
-            "workaround": "Use direct Python scripts instead of MCP for large Redis operations"
-        }
+            "workaround": "Use direct Python scripts instead of MCP for large Redis operations",
+        },
     }
 
     return fixes

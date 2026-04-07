@@ -58,7 +58,7 @@ print(f"Total nodes: {total_nodes}")
 
 # --- All relation types for context ---
 all_types = conn.execute(
-    "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC"
+    "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC",
 ).fetchall()
 print("\n=== ALL RELATION TYPES ===")
 for rt, cnt in all_types:

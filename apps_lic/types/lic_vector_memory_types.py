@@ -56,39 +56,25 @@ _emit_applies_guardrail("p0", "lic_vector_memory_types", "p0_governance")
 _emit_reads_policy_state("p0", "lic_vector_memory_types", "policy_binding")
 _emit_snapshots_state("p0", "lic_vector_memory_types", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -286,7 +272,7 @@ class LICVectorMemory:
     """
 
     def __init__(
-        self, collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db"
+        self, collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db",
     ) -> None:
         """
         Initialize vector memory store.
@@ -312,7 +298,7 @@ class LICVectorMemory:
             import chromadb
 
             self._client = chromadb.PersistentClient(
-                path=self.persist_directory, settings=Settings(anonymized_telemetry=False, allow_reset=True)
+                path=self.persist_directory, settings=Settings(anonymized_telemetry=False, allow_reset=True),
             )
             self._collection = self._client.get_or_create_collection(
                 name=self.collection_name,
@@ -350,14 +336,14 @@ class LICVectorMemory:
         if self._initialized and self._collection is not None:
             if embedding is not None:
                 self._collection.add(
-                    embeddings=[embedding], documents=[text], metadatas=[metadata], ids=[document_id]
+                    embeddings=[embedding], documents=[text], metadatas=[metadata], ids=[document_id],
                 )
             else:
                 self._collection.add(documents=[text], metadatas=[metadata], ids=[document_id])
         return document_id
 
     def query_memory(
-        self, query_text: str, n_results: int = 20, filter_metadata: dict[str, object] | None = None
+        self, query_text: str, n_results: int = 20, filter_metadata: dict[str, object] | None = None,
     ) -> QueryResult:
         """
         Query the vector store for relevant documents.
@@ -400,13 +386,13 @@ class LICVectorMemory:
     def query_by_company(self, company_name: str, query_text: str, n_results: int = 20) -> QueryResult:
         """Query documents filtered by company name."""
         return self.query_memory(
-            query_text=query_text, n_results=n_results, filter_metadata={"company_name": company_name}
+            query_text=query_text, n_results=n_results, filter_metadata={"company_name": company_name},
         )
 
     def query_by_executive(self, executive_name: str, query_text: str, n_results: int = 10) -> QueryResult:
         """Query documents filtered by executive name."""
         return self.query_memory(
-            query_text=query_text, n_results=n_results, filter_metadata={"executive_name": executive_name}
+            query_text=query_text, n_results=n_results, filter_metadata={"executive_name": executive_name},
         )
 
     # guardian: allow-magic-config
@@ -458,7 +444,7 @@ class MockVectorMemory(LICVectorMemory):
     """Mock implementation for testing without ChromaDB."""
 
     def __init__(
-        self, collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db"
+        self, collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db",
     ) -> None:
         """Initialize mock vector memory."""
         super().__init__(collection_name, persist_directory)
@@ -486,12 +472,12 @@ class MockVectorMemory(LICVectorMemory):
             id_string = f"{metadata.get('source_url', '')}_{metadata.get('extracted_at', '')}"
             document_id = hashlib.md5(id_string.encode()).hexdigest()
         self._documents[document_id] = VectorDocument(
-            id=document_id, text=text, metadata=metadata, embedding=embedding
+            id=document_id, text=text, metadata=metadata, embedding=embedding,
         )
         return document_id
 
     def query_memory(
-        self, query_text: str, n_results: int = 20, filter_metadata: dict[str, object] | None = None
+        self, query_text: str, n_results: int = 20, filter_metadata: dict[str, object] | None = None,
     ) -> QueryResult:
         """Query mock store with simple text matching."""
         import time
@@ -510,7 +496,7 @@ class MockVectorMemory(LICVectorMemory):
                 break
         query_time_ms = (time.time() - start_time) * 1000
         return QueryResult(
-            documents=results, total_count=len(results), query_text=query_text, query_time_ms=query_time_ms
+            documents=results, total_count=len(results), query_text=query_text, query_time_ms=query_time_ms,
         )
 
     def get_stats(self) -> MemoryStats:
@@ -535,7 +521,7 @@ class MockVectorMemory(LICVectorMemory):
 
 
 def create_vector_memory(
-    collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db", use_mock: bool = False
+    collection_name: str = "lic_intelligence", persist_directory: str = "./chroma_db", use_mock: bool = False,
 ) -> LICVectorMemory:
     """
     builder function to create a vector memory store.

@@ -143,7 +143,7 @@ class FourLayerContractGuard:
             expected_next = self._TRANSITIONS.get(layers[i])
             if expected_next and layers[i + 1] != expected_next:
                 raise FourLayerContractError(
-                    f"invalid layer transition {layers[i].value}->{layers[i + 1].value}"
+                    f"invalid layer transition {layers[i].value}->{layers[i + 1].value}",
                 )
 
     def enforce_l4_rate_limit(self, user_id: str, now_ts: float | None = None) -> None:
@@ -155,7 +155,7 @@ class FourLayerContractGuard:
         events = [t for t in self._l4_window.get(user_id, []) if t >= cutoff]
         if len(events) >= self.l4_rate_limit_per_minute:
             raise FourLayerContractError(
-                f"layer4 rate limit exceeded for user {user_id} ({self.l4_rate_limit_per_minute}/min)"
+                f"layer4 rate limit exceeded for user {user_id} ({self.l4_rate_limit_per_minute}/min)",
             )
         events.append(now)
         self._l4_window[user_id] = events

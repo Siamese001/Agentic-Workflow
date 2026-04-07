@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING, Any
 
 from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_X as _CONF_X,
+)
+from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -274,7 +276,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> "Path | Non
                     "drift_count": metrics.get("drift_count", 0),
                     "agents_run": metrics.get("agents_run", 0),
                     "timestamp": meta.get("timestamp", ""),
-                }
+                },
             )
             for agent in t_data.get("agents_executed", []):
                 agents_seen.add(agent)
@@ -358,12 +360,12 @@ def _collect_llm_call_trace(state_mgr: Any, decision_engine: Any) -> dict:
                     "http_status": llm_ev.get("http_status"),
                     "proof": {
                         "request_hash": llm_ev.get(
-                            "proof_hash", "sha256:" + hashlib.sha256(req_payload.encode()).hexdigest()
+                            "proof_hash", "sha256:" + hashlib.sha256(req_payload.encode()).hexdigest(),
                         ),
                         "response_hash": llm_ev.get("response_hash", ""),
                         "gateway_call_stack": llm_ev.get("gateway_call_stack", ""),
                     },
-                }
+                },
             )
         else:
             blocked_calls.append(
@@ -375,7 +377,7 @@ def _collect_llm_call_trace(state_mgr: Any, decision_engine: Any) -> dict:
                     "blocker": llm_ev.get("blocker", action.get("skip_reason", "not_recorded")),
                     "fallback_tier": llm_ev.get("fallback_tier", "DETERMINISTIC"),
                     "llm_call_made": False,
-                }
+                },
             )
     llm_disabled = not getattr(decision_engine, "enable_llm", True)
     seen_agents = {e["agent"] for e in call_trace} | {e["agent"] for e in blocked_calls}
@@ -396,7 +398,7 @@ def _collect_llm_call_trace(state_mgr: Any, decision_engine: Any) -> dict:
                     else "LLM call expected but not recorded",
                     "fallback_tier": "DETERMINISTIC",
                     "llm_call_made": False,
-                }
+                },
             )
     all_llm_agents: set = set()
     for a in healing_actions:
@@ -448,7 +450,7 @@ def _collect_blocker_scan(state_mgr: Any) -> list:
                 "stack_trace_hash": trace_hash,
                 "last_successful_run": rec.get("last_successful_run", ""),
                 "remediation": rec.get("remediation", ""),
-            }
+            },
         )
     return result
 
@@ -463,7 +465,7 @@ def _build_coverage_proof(state_mgr: Any, decision_engine: Any) -> dict:
     elif isinstance(_ca, (list, tuple)):
         completed = list(
             {a["agent"] for a in _ca if isinstance(a, dict) and a.get("agent")}
-            | {a for a in _ca if isinstance(a, str)}
+            | {a for a in _ca if isinstance(a, str)},
         )
     else:
         completed = []
@@ -644,7 +646,7 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
             "outcomes": {"success": len(successful), "fail": len(failed_acts), "plan_only": len(plan_only)},
             "patterns_stored": dict(Counter(a.get("agent", "?") for a in successful).most_common(10)),
             "failure_prior_agents": dict(
-                Counter(a.get("agent", "unknown") for a in failed_acts).most_common(10)
+                Counter(a.get("agent", "unknown") for a in failed_acts).most_common(10),
             ),
             "confidence": {
                 "min": round(min(conf_vals), 4) if conf_vals else None,
@@ -695,7 +697,7 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
         print(f"\nTable 1: Agent Routing Heatmap\n  Embedding model: {_bge_model}")
         if not _llm_active:
             print(
-                "  AUDIT NOTE: Zero LLM invocations this run. All violations resolved within DETERMINISTIC threshold."
+                "  AUDIT NOTE: Zero LLM invocations this run. All violations resolved within DETERMINISTIC threshold.",
             )
         print("\n| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total | BGE Calls |")
         print("|----------------|:---:|:---:|:---:|:---:|:---:|")
@@ -721,7 +723,7 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
                 _partial_agents.append(_ag)
         _tot_all = sum(_hm_totals.values())
         print(
-            f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** | **{_hm_totals['QWEN_VLLM']}** | **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** | **{_bge_total}** |"
+            f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** | **{_hm_totals['QWEN_VLLM']}** | **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** | **{_bge_total}** |",
         )
         _sr = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else "N/A"
         _partial_count = sum(1 for _a in healing_actions if _a.get("outcome") == "PARTIAL")
@@ -801,7 +803,7 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
         import subprocess as _sp
 
         _r = _sp.run(
-            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT
+            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT,
         )
         git_commit = _r.stdout.strip()
     # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
@@ -1184,7 +1186,7 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
         _uri = out_path.as_uri()
         print(f"\n{'=' * 60}\nMANDATORY JSON OUTPUT (heal_run_complete.json)\n  {_uri}\n{'=' * 60}\n")
         print(
-            "Table 4: Gate Criteria Summary\n\n| # | Gate Criterion | Target | Actual | Status | Audit Note |"
+            "Table 4: Gate Criteria Summary\n\n| # | Gate Criterion | Target | Actual | Status | Audit Note |",
         )
         print("|---|----------------|--------|--------|--------|------------|")
         for _gi, g in enumerate(gate_criteria, 1):
@@ -1193,11 +1195,11 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
             _blocker = g.get("blocker") or ""
             _note = _blocker[:60] + "..." if len(_blocker) > 60 else _blocker
             print(
-                f"| {_gi} | {g.get('criterion', '')[:35]} | {g.get('target', '')[:10]} | {_act_str} | {g.get('status', '?')} | {_note} |"
+                f"| {_gi} | {g.get('criterion', '')[:35]} | {g.get('target', '')[:10]} | {_act_str} | {g.get('status', '?')} | {_note} |",
             )
         _sig_note = f"⚠ LOW SIGNAL: {n_na} gates N/A" if _low_signal_warning else ""
         print(
-            f"| | **OVERALL** | **{len(gate_criteria)} gates** | **PASS={n_pass} N/A={n_na} FAIL={n_fail}** | **{overall_status}** | {_sig_note} |"
+            f"| | **OVERALL** | **{len(gate_criteria)} gates** | **PASS={n_pass} N/A={n_na} FAIL={n_fail}** | **{overall_status}** | {_sig_note} |",
         )
         print("")
     except (OSError, TypeError, ValueError) as _e:
@@ -1252,7 +1254,7 @@ def _write_failure_forensics(state_mgr: Any, decision_engine: Any) -> None:
                     "blocker_check_location": llm_ev.get("blocker_check_location", ""),
                     "blocker_proof_hash": "sha256:"
                     + hashlib.sha256(
-                        json.dumps({"agent": agent, "blocker": llm_ev.get("blocker", "")}).encode()
+                        json.dumps({"agent": agent, "blocker": llm_ev.get("blocker", "")}).encode(),
                     ).hexdigest()
                     if llm_ev.get("blocker")
                     else "",
@@ -1261,7 +1263,7 @@ def _write_failure_forensics(state_mgr: Any, decision_engine: Any) -> None:
                 "error": action.get("error", ""),
                 "fix_summary": action.get("fix_summary", ""),
                 "remediation": action.get("remediation", ""),
-            }
+            },
         )
     misrouted_agents = []
     for action in healing_actions:
@@ -1291,7 +1293,7 @@ def _write_failure_forensics(state_mgr: Any, decision_engine: Any) -> None:
                     "calibration_error": calib_det.get("calibration_error"),
                 },
                 "remediation": "Lower DETERMINISTIC threshold or add agent-specific calibration",
-            }
+            },
         )
     run_ts = _dt.datetime.now().isoformat()
     output = {
@@ -1373,13 +1375,13 @@ def _print_healing_heatmap(state_mgr: Any, decision_engine: Any) -> None:
             for t in TIER_COLS:
                 col_totals[t] += row_vals[t]
             print(
-                f"{agent:<{AGEN_W}} | {_bar(row_vals['DETERMINISTIC']) + ' ' + str(row_vals['DETERMINISTIC']):^{COL_W}} | {_bar(row_vals['QWEN_VLLM']) + ' ' + str(row_vals['QWEN_VLLM']):^{COL_W}} | {_bar(row_vals['GEMINI_2_5_PRO']) + ' ' + str(row_vals['GEMINI_2_5_PRO']):^{COL_W}} | {total}"
+                f"{agent:<{AGEN_W}} | {_bar(row_vals['DETERMINISTIC']) + ' ' + str(row_vals['DETERMINISTIC']):^{COL_W}} | {_bar(row_vals['QWEN_VLLM']) + ' ' + str(row_vals['QWEN_VLLM']):^{COL_W}} | {_bar(row_vals['GEMINI_2_5_PRO']) + ' ' + str(row_vals['GEMINI_2_5_PRO']):^{COL_W}} | {total}",
             )
     else:
         print(f"{'(no healing events this run)':<{AGEN_W}}")
     grand = sum(col_totals.values())
     print(
-        f"{sep}\n{'TOTAL':<{AGEN_W}} | {str(col_totals['DETERMINISTIC']):^{COL_W}} | {str(col_totals['QWEN_VLLM']):^{COL_W}} | {str(col_totals['GEMINI_2_5_PRO']):^{COL_W}} | {grand}\n{sep}"
+        f"{sep}\n{'TOTAL':<{AGEN_W}} | {str(col_totals['DETERMINISTIC']):^{COL_W}} | {str(col_totals['QWEN_VLLM']):^{COL_W}} | {str(col_totals['GEMINI_2_5_PRO']):^{COL_W}} | {grand}\n{sep}",
     )
 
 
@@ -1420,7 +1422,7 @@ def _print_meta_learning_summary(state_mgr: Any, decision_engine: Any) -> None:
     if failure_agents:
         print(f"\n  FAILURE PRIORS UPDATED\n  {'-' * (_W - 2)}")
         print(
-            f"  {'failure_prior++ :':<30} {', '.join(f'{ag}({ct})' for ag, ct in failure_agents.most_common(5))}"
+            f"  {'failure_prior++ :':<30} {', '.join(f'{ag}({ct})' for ag, ct in failure_agents.most_common(5))}",
         )
     _prior_vecs = ml.get("recent_failure_vectors", [])
     print(f"\n  {'=' * _W}")
@@ -1474,7 +1476,7 @@ def _print_run_manifest(state_mgr: Any, targets: list[str]) -> int:
                     territory_crashed.add(t)
     gaps = 0
     print(
-        f"\n{'=' * _W}\n  RUN MANIFEST — AGENT & PHASE COVERAGE\n  Zero-tolerance: every expected agent/phase must appear below as RAN\n{'=' * _W}\n\n  GLOBAL AGENTS (run once, repo-wide)\n  {'-' * 40}"
+        f"\n{'=' * _W}\n  RUN MANIFEST — AGENT & PHASE COVERAGE\n  Zero-tolerance: every expected agent/phase must appear below as RAN\n{'=' * _W}\n\n  GLOBAL AGENTS (run once, repo-wide)\n  {'-' * 40}",
     )
     for agent in GLOBAL_AGENTS:
         errs = error_msgs.get("__global__", [])
@@ -1556,7 +1558,7 @@ def _print_executive_summary(complete_output: dict) -> None:
     ts = meta.get("timestamp", "")
     print(f"\n{'=' * _W}\nHEALING RUN EXECUTIVE SUMMARY\nRun ID: {run_id} | Git: {git} | {ts}\n{'=' * _W}")
     print(
-        "\nTable 6: Executive Gate Criteria (Full Detail)\n\n| Gate Criterion | Target | Actual | Status | Blocker |"
+        "\nTable 6: Executive Gate Criteria (Full Detail)\n\n| Gate Criterion | Target | Actual | Status | Blocker |",
     )
     print("|----------------|--------|--------|--------|---------|")
     for g in gate_criteria:
@@ -1576,7 +1578,7 @@ def _print_executive_summary(complete_output: dict) -> None:
     _low_sig = es.get("low_signal_warning", False)
     _sig_note = f"⚠ LOW SIGNAL: {n_na} gates N/A" if _low_sig else "Signal sufficient"
     print(
-        f"| **OVERALL** | **{len(gate_criteria)} gates** | **PASS={n_pass} N/A={n_na} FAIL={n_fail}/{len(gate_criteria)}** | **{overall}** | {_sig_note} |"
+        f"| **OVERALL** | **{len(gate_criteria)} gates** | **PASS={n_pass} N/A={n_na} FAIL={n_fail}/{len(gate_criteria)}** | **{overall}** | {_sig_note} |",
     )
     all_blockers = blockers_sec.get("blocked_agents", [])
     if all_blockers:
@@ -1597,10 +1599,10 @@ def _print_executive_summary(complete_output: dict) -> None:
     all_blockers_doc = all(bool(b.get("blocker_type")) for b in all_blockers)
     print(f"\nPROOF INTEGRITY\n{sep}")
     print(
-        f"  {'All hashes present':<40} {('OK' if proven_calls == total_calls else 'MISSING')} ({proven_calls}/{total_calls})"
+        f"  {'All hashes present':<40} {('OK' if proven_calls == total_calls else 'MISSING')} ({proven_calls}/{total_calls})",
     )
     print(
-        f"  {'All blockers documented':<40} {('OK' if all_blockers_doc else 'MISSING')} ({len(all_blockers)} blockers)"
+        f"  {'All blockers documented':<40} {('OK' if all_blockers_doc else 'MISSING')} ({len(all_blockers)} blockers)",
     )
     print(f"  {'Agent coverage proof':<40} OK ({exec_count}/{exp_count} agents, ratio={cov_ratio:.4f})")
     run_cmp = learning.get("run_comparison", {})
@@ -1612,7 +1614,7 @@ def _print_executive_summary(complete_output: dict) -> None:
     if prev_sr is not None and cur_sr is not None:
         _arrow = "▲" if (delta or 0) > 0 else "▼" if (delta or 0) < 0 else "—"
         print(
-            f"  Previous run : {prev_sr:.4f}\n  This run     : {cur_sr:.4f}  ({_arrow} {abs(delta or 0):.4f})\n  Trend        : {trend}"
+            f"  Previous run : {prev_sr:.4f}\n  This run     : {cur_sr:.4f}  ({_arrow} {abs(delta or 0):.4f})\n  Trend        : {trend}",
         )
     elif cur_sr is not None:
         print(f"  This run     : {cur_sr:.4f}  (no prior baseline — first recorded run)")
@@ -1625,7 +1627,7 @@ def _print_executive_summary(complete_output: dict) -> None:
         print(f"\nNEXT RUN PREDICTION (if blockers resolved)\n{sep}")
         predicted_coverage = min(round(cov_ratio + skipped_count / max(exp_count, 1), 4), 1.0)
         print(
-            f"  Agent coverage  : {cov_ratio:.4f} -> {predicted_coverage:.4f} (+{predicted_coverage - cov_ratio:.4f})"
+            f"  Agent coverage  : {cov_ratio:.4f} -> {predicted_coverage:.4f} (+{predicted_coverage - cov_ratio:.4f})",
         )
         print(f"  LLM call rate   : {llm_stats.get('execution_rate', 0.0):.4f} -> 1.0000")
     try:

@@ -1,6 +1,5 @@
 """Tests for apps_research reasoning components."""
 
-import pytest
 
 from apps_research.reasoning.ResearchOrchestrator import (
     ResearchOrchestrator,

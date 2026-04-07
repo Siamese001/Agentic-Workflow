@@ -1,0 +1,32 @@
+{
+  "runtime_adg_1775551281_a32c7125": {
+    "component_distribution": {
+      "FileTool": 1,
+      "TestAgent": 1,
+      "TestOrchestrator": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1775551281,
+      "total_nodes": 3
+    },
+    "layer_distribution": {
+      "L1": 1,
+      "L2": 1,
+      "L3": 1
+    },
+    "relation_patterns": {
+      "parent_child": 3,
+      "temporal_sequence": 2
+    },
+    "span_type_distribution": {
+      "cognitive": 1,
+      "orchestrator": 1,
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  }
+}

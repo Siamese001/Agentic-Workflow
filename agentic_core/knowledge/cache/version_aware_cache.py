@@ -94,7 +94,7 @@ class VersionAwareCache:
         """
         trace_id = f"cache_lookup_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "VersionAwareCache.lookup"
+            trace_id, LayerSegment.L1_REASONING, "VersionAwareCache.lookup",
         )
 
         # Generate cache key
@@ -126,7 +126,7 @@ class VersionAwareCache:
                 _emit_records_telemetry_event(
                     trace_id,
                     "VersionAwareCache",
-                    "cache_hit_exact"
+                    "cache_hit_exact",
                 )
                 entry.access_count += 1
                 return CacheLookupResult(
@@ -147,14 +147,14 @@ class VersionAwareCache:
                 _emit_records_telemetry_event(
                     trace_id,
                     "VersionAwareCache",
-                    "cache_hit_semantic"
+                    "cache_hit_semantic",
                 )
                 return semantic_result
 
         _emit_records_telemetry_event(
             trace_id,
             "VersionAwareCache",
-            "cache_miss"
+            "cache_miss",
         )
         return CacheLookupResult(found=False)
 

@@ -80,7 +80,7 @@ def start_metrics_server(
     if not PROMETHEUS_AVAILABLE:
         logger.warning(
             "prometheus_client not available, metrics server not started. "
-            "Install with: pip install prometheus-client"
+            "Install with: pip install prometheus-client",
         )
         return None
 
@@ -110,7 +110,7 @@ def start_metrics_server(
         )
 
         _emit_records_execution_trace(
-            "metrics_server_start", "L6_OBSERVABILITY", "metrics_server"
+            "metrics_server_start", "L6_OBSERVABILITY", "metrics_server",
         )
 
         return httpd
@@ -149,7 +149,7 @@ def stop_metrics_server(server: Any) -> bool:
 
         logger.info("metrics_server_stopped")
         _emit_records_execution_trace(
-            "metrics_server_stop", "L6_OBSERVABILITY", "metrics_server"
+            "metrics_server_stop", "L6_OBSERVABILITY", "metrics_server",
         )
 
         return True

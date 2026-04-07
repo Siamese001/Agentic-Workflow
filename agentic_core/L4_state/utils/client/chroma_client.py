@@ -52,7 +52,7 @@ class SovereignChromaClient:
         if name not in self._collections:
             self._collections[name] = self.client.get_or_create_collection(
                 name=name,
-                metadata={"description": f"Semantic collection for {name}"}
+                metadata={"description": f"Semantic collection for {name}"},
             )
         return self._collections[name]
 
@@ -93,7 +93,7 @@ class SovereignChromaClient:
         collection_name: str,
         documents: list[str],
         metadatas: list[dict[str, Any]],
-        ids: list[str] | None = None
+        ids: list[str] | None = None,
     ):
         """
         Add documents to a ChromaDB collection.
@@ -121,7 +121,7 @@ class SovereignChromaClient:
             documents=documents,
             metadatas=metadatas,
             embeddings=embeddings,
-            ids=ids or [f"doc_{i}" for i in range(len(documents))]
+            ids=ids or [f"doc_{i}" for i in range(len(documents))],
         )
 
         logger.info(f"Added {len(documents)} documents to collection '{collection_name}'")
@@ -132,7 +132,7 @@ class SovereignChromaClient:
         query_texts: list[str],
         n_results: int = 10,
         where: dict[str, Any] | None = None,
-        where_document: dict[str, Any] | None = None
+        where_document: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Query a ChromaDB collection.
@@ -158,7 +158,7 @@ class SovereignChromaClient:
             query_embeddings=query_embeddings,
             n_results=n_results,
             where=where,
-            where_document=where_document
+            where_document=where_document,
         )
 
         logger.info(f"Queried collection '{collection_name}' with {len(query_texts)} queries, returned {len(results['ids'][0])} results")
@@ -180,7 +180,7 @@ class SovereignChromaClient:
         return {
             "name": collection_name,
             "document_count": count,
-            "persist_dir": str(self.persist_dir)
+            "persist_dir": str(self.persist_dir),
         }
 
     def list_collections(self) -> list[str]:

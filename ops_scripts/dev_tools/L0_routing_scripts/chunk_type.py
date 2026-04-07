@@ -120,7 +120,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -263,7 +262,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                 text=module_doc,
                 start_line=1,
                 end_line=doc_lines,
-            )
+            ),
         )
     import_nodes = [n for n in ast.iter_child_nodes(tree) if isinstance(n, ast.Import | ast.ImportFrom)]
     if import_nodes:
@@ -276,7 +275,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                 text=_get_source_segment(lines, start, end),
                 start_line=start,
                 end_line=end,
-            )
+            ),
         )
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
@@ -289,7 +288,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                     start_line=node.lineno,
                     end_line=end_line,
                     docstring=_extract_docstring(node),
-                )
+                ),
             )
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             parent_class = None
@@ -309,7 +308,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                     end_line=end_line,
                     parent=parent_class,
                     docstring=_extract_docstring(node),
-                )
+                ),
             )
     return chunks
 
@@ -330,7 +329,7 @@ def chunk_text_fallback(text: str, file_path: Path) -> list[SemanticChunk]:
                     text=chunk_text,
                     start_line=i + 1,
                     end_line=min(i + chunk_size, len(lines)),
-                )
+                ),
             )
     return chunks
 

@@ -51,14 +51,6 @@ try:
         create_human_review_draft,
         create_rejection_artifact,
     )
-    from agentic_core.L5_safety.enforcement.hitl_gate import (
-        HitlChoice,
-        HitlDecision,
-        HitlRequest,
-        HitlRequiredError,
-        get_hitl_gate,
-        prompt_for_hitl,
-    )
     from agentic_core.L5_safety.enforcement.hitl.decision_logger import (
         HITLDecision,
         HITLDecisionLogger,
@@ -71,7 +63,18 @@ try:
         get_hitl_escalation_activator,
         reset_hitl_escalation_activator,
     )
-    from agentic_core.L5_safety.enforcement.hitl.patch_validator import HumanPatchValidationError, validate_patch
+    from agentic_core.L5_safety.enforcement.hitl.patch_validator import (
+        HumanPatchValidationError,
+        validate_patch,
+    )
+    from agentic_core.L5_safety.enforcement.hitl_gate import (
+        HitlChoice,
+        HitlDecision,
+        HitlRequest,
+        HitlRequiredError,
+        get_hitl_gate,
+        prompt_for_hitl,
+    )
     from agentic_core.L5_safety.types.human_decision_artifact_types import (
         HumanDecisionArtifact as L5HumanDecisionArtifact,
     )
@@ -243,8 +246,8 @@ class TestHITLFullLifecycle:
                     "chosen": {"threshold": 0.8},
                     "rejected": {"threshold": 0.6},
                     "surface": "test_surface",
-                }
-            ]
+                },
+            ],
         }
 
         proposal = rlhf_optimizer.propose_from_dpo(
@@ -330,7 +333,7 @@ class TestHITLFullLifecycle:
             "steps": [
                 {"tool": "file_edit", "params": {"path": "test.py"}},
                 {"tool": "move_file", "params": {"src": "a.py", "dst": "b.py"}},
-            ]
+            ],
         }
 
         artifact.apply_modify_diff(
@@ -514,7 +517,7 @@ class TestHITLFullLifecycle:
                 {"chosen": {"threshold": 0.85}, "rejected": {"threshold": 0.45}, "surface": "routing_min_confidence"},
                 {"chosen": {"threshold": 0.88}, "rejected": {"threshold": 0.48}, "surface": "routing_min_confidence"},
                 {"chosen": {"threshold": 0.87}, "rejected": {"threshold": 0.47}, "surface": "routing_min_confidence"},
-            ]
+            ],
         }
 
         proposal = rlhf_optimizer.propose_from_dpo(
@@ -760,7 +763,7 @@ class TestHITLFullLifecycle:
                 {"chosen": {"threshold": 0.5}, "rejected": {"threshold": 0.5}, "surface": "test"},
                 {"chosen": {"threshold": 0.5}, "rejected": {"threshold": 0.5}, "surface": "test"},
                 {"chosen": {"threshold": 0.5}, "rejected": {"threshold": 0.5}, "surface": "test"},
-            ]
+            ],
         }
 
         proposal = optimizer.propose_from_dpo(
@@ -995,8 +998,8 @@ class TestHITLIntegration:
                     "chosen": {"threshold": 0.8, "tools": ["safe_edit"]},
                     "rejected": {"threshold": 0.6, "tools": ["all_tools"]},
                     "surface": "healing_proposal_validation",
-                }
-            ]
+                },
+            ],
         }
 
         # Add more pairs for threshold

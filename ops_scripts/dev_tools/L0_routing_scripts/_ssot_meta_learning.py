@@ -110,7 +110,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -219,13 +218,15 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
         try:
             from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
-            from agentic_core.L3_orchestration.healers.failure_signal_normalizer import normalize_failure_signal
+            from agentic_core.L3_orchestration.healers.failure_signal_normalizer import (
+                normalize_failure_signal,
+            )
 
             _bmg_embed = bmg_embed_text
             _normalizer = normalize_failure_signal
         except ImportError as e:
             raise ImportError(
-                "BGE embeddings are required for meta-learning. Install sentence-transformers: pip install sentence-transformers"
+                "BGE embeddings are required for meta-learning. Install sentence-transformers: pip install sentence-transformers",
             ) from e
         new_vectors: list[list[float]] = []
         _faiss_vectors: list[list[float]] = []
@@ -291,7 +292,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                         "territory": territory_str,
                         "outcome": action.get("outcome", "UNKNOWN"),
                         "vector_source": _vec_source,
-                    }
+                    },
                 )
             aggregator.ingest(
                 HealingOutcomeEvent(
@@ -306,7 +307,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                     novelty_flag=novelty_flag,
                     cluster_id=action.get("cluster_id"),
                     files_touched=tuple(action.get("files_touched") or []),
-                )
+                ),
             )
         _routing_decisions = state_mgr.state.get("routing_decisions", []) if state_mgr is not None else []
         for _dec in _routing_decisions:
@@ -319,7 +320,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             _hc_bge = _ghc_bge()
             _cs = _hc_bge.get_stats()
             _bge_arch_counts["semantic_cache"] = _cs.get(
-                "embed_calls", _cs.get("hits", 0) + _cs.get("misses", 0)
+                "embed_calls", _cs.get("hits", 0) + _cs.get("misses", 0),
             )
         except (ImportError, AttributeError, KeyError):
             pass
@@ -372,6 +373,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             from system_learning.meta_learning_bus import (
                 get_process_bus as _get_proc_bus,
             )
+
             from system_learning.engines.bus_consumer import drain_and_apply as _drain_apply
             from system_learning.engines.healing_success_rate_store import get_default_store as _get_bus_store
 
@@ -426,7 +428,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                             },
                             separators=(",", ":"),
                             sort_keys=True,
-                        )
+                        ),
                     )
                 with open(_corpus_path, "a", encoding="utf-8") as _cf:
                     _cf.write("\n".join(_new_lines) + "\n")
@@ -470,7 +472,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                                         failure_type=_ftype4,
                                         success=True,
                                         timestamp_utc=now_utc,
-                                    )
+                                    ),
                                 )
                             for _ in range(int(_s.get("failure_count", 0))):
                                 aggregator.ingest(
@@ -480,7 +482,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                                         failure_type=_ftype4,
                                         success=False,
                                         timestamp_utc=now_utc,
-                                    )
+                                    ),
                                 )
                     except (KeyError, ValueError, TypeError):
                         continue
@@ -543,7 +545,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                     embedding_model_checksum=_vec_source_str,
                 )
                 _faiss_writer.persist_to_disk(
-                    _faiss_idx, _faiss_disk_dir, embedder_id=_vec_source_str, model_version=_model_ver
+                    _faiss_idx, _faiss_disk_dir, embedder_id=_vec_source_str, model_version=_model_ver,
                 )
                 logging.debug(
                     "[MetaLearning] FAISS persist: %d new + %d prior = %d total -> %s",
@@ -572,10 +574,10 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 "experience": f"intake: {store.count()} healing records persisted",
                 "backup_archival_total": _backup_total,
                 "backup_archival_by_category": _backup_by_cat,
-            }
+            },
         )
         logging.info(
-            "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.", store.count()
+            "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.", store.count(),
         )
     except ImportError:  # guardian: allow-silent-swallow
         logging.debug("[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.")
@@ -617,7 +619,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                                 sort_keys=True,
                                 separators=(",", ":"),
                             )
-                            + "\n"
+                            + "\n",
                         )
             except (OSError, TypeError) as _prop_err:
                 logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)

@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -246,7 +245,7 @@ class ChaosEngineeringAgent(SovereignBaseAgent):
                         "failure_detected": test_result.get("failure_detected", False),
                         "recovery_time_ms": test_result.get("recovery_time_ms", 0),
                         "severity": test_result.get("severity", "medium"),
-                    }
+                    },
                 )
             recovery_times = [s.get("recovery_time_ms", 0) for s in results["scenarios_tested"]]
             if recovery_times:

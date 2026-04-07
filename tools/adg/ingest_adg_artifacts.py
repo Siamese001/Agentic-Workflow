@@ -27,7 +27,7 @@ def ingest_adg_files():
         "adg_final_gap_analysis.md",
         "adg_process_summary.md",
         "dependency_graph_adg_final_gap.md",
-        "dependency_graph_analysis.md"
+        "dependency_graph_analysis.md",
     ]
 
     # Initialize ChromaDB
@@ -40,7 +40,7 @@ def ingest_adg_files():
     except Exception:
         collection = client.create_collection(
             name="adg_artifacts",
-            metadata={"description": "ADG artifact reports and analyses"}
+            metadata={"description": "ADG artifact reports and analyses"},
         )
         logger.info("Created new collection: adg_artifacts")
 
@@ -68,8 +68,8 @@ def ingest_adg_files():
                     'file_path': str(file_path),
                     'filename': file_path.name,
                     'artifact_type': 'adg_report',
-                    'type': 'adg_artifact'
-                }
+                    'type': 'adg_artifact',
+                },
             }
 
             chunks.append(chunk)
@@ -100,7 +100,7 @@ def ingest_adg_files():
         ids=ids,
         documents=documents,
         metadatas=metadatas,
-        embeddings=embeddings
+        embeddings=embeddings,
     )
 
     logger.info(f"Successfully ingested {len(chunks)} chunks into ChromaDB")
@@ -110,7 +110,7 @@ def ingest_adg_files():
         "collection_name": "adg_artifacts",
         "total_chunks": collection.count(),
         "vector_dimensions": 1536,
-        "vector_metric": "cosine"
+        "vector_metric": "cosine",
     }
 
     logger.info(f"Collection stats: {stats}")

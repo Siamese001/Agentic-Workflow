@@ -8,7 +8,7 @@ DB = "artifacts/adg/adg_indexed_03122026.sqlite"
 conn = sqlite3.connect(DB)
 conn.row_factory = sqlite3.Row
 uncovered = conn.execute(
-    "\n    SELECT n.resolved_path\n    FROM nodes n\n    WHERE n.resolved_path LIKE '%/types/%'\n      AND n.resolved_path NOT LIKE '%__init__%'\n      AND n.resolved_path NOT LIKE 'tests/%'\n      AND n.entity_type = 'module'\n      AND NOT EXISTS (\n          SELECT 1 FROM edges e2\n          JOIN nodes src ON src.id = e2.src_id\n          WHERE e2.dst_id = n.id\n            AND e2.relation_type = 'covers'\n      )\n    ORDER BY n.resolved_path\n"
+    "\n    SELECT n.resolved_path\n    FROM nodes n\n    WHERE n.resolved_path LIKE '%/types/%'\n      AND n.resolved_path NOT LIKE '%__init__%'\n      AND n.resolved_path NOT LIKE 'tests/%'\n      AND n.entity_type = 'module'\n      AND NOT EXISTS (\n          SELECT 1 FROM edges e2\n          JOIN nodes src ON src.id = e2.src_id\n          WHERE e2.dst_id = n.id\n            AND e2.relation_type = 'covers'\n      )\n    ORDER BY n.resolved_path\n",
 ).fetchall()
 conn.close()
 existing_tests = set()

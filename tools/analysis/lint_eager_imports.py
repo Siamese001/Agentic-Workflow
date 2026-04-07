@@ -81,7 +81,7 @@ class EagerImportLinter:
                 rule_id="SYNTAX_ERROR",
                 import_name=None,
                 reason=f"Syntax error: {e.msg}",
-                remediation="Fix syntax error before linting"
+                remediation="Fix syntax error before linting",
             ))
             return violations
         except Exception as e:
@@ -92,7 +92,7 @@ class EagerImportLinter:
                 rule_id="READ_ERROR",
                 import_name=None,
                 reason=f"Failed to read file: {e}",
-                remediation="Check file permissions and encoding"
+                remediation="Check file permissions and encoding",
             ))
             return violations
 
@@ -115,7 +115,7 @@ class EagerImportLinter:
                     rule_id="RISKY_EAGER_IMPORT",
                     import_name=f"{module}.{names}" if module else names,
                     reason=f"Eager import from risky module '{module}' at module scope",
-                    remediation="Move import inside a pytest fixture or test function"
+                    remediation="Move import inside a pytest fixture or test function",
                 )
 
         elif isinstance(node, ast.Import):
@@ -128,7 +128,7 @@ class EagerImportLinter:
                         rule_id="RISKY_EAGER_IMPORT",
                         import_name=alias.name,
                         reason=f"Eager import from risky module '{alias.name}' at module scope",
-                        remediation="Move import inside a pytest fixture or test function"
+                        remediation="Move import inside a pytest fixture or test function",
                     )
 
         # Check for module-scope calls (registry mutation, client creation, etc.)
@@ -141,7 +141,7 @@ class EagerImportLinter:
                 rule_id="MODULE_SCOPE_CALL",
                 import_name=func_name,
                 reason=f"Module-scope function call '{func_name}' may have side effects",
-                remediation="Move call inside a fixture, test function, or if __name__ == '__main__' block"
+                remediation="Move call inside a fixture, test function, or if __name__ == '__main__' block",
             )
 
         # Check for module-scope assignments that call functions
@@ -157,7 +157,7 @@ class EagerImportLinter:
                     rule_id="MODULE_SCOPE_ASSIGNMENT_CALL",
                     import_name=func_name,
                     reason=f"Module-scope assignment '{targets}' calls '{func_name}' - may trigger initialization",
-                    remediation="Move initialization inside a fixture or lazy property"
+                    remediation="Move initialization inside a fixture or lazy property",
                 )
 
         # Check for decorator applications that might import risky modules
@@ -174,7 +174,7 @@ class EagerImportLinter:
                             rule_id="RISKY_DECORATOR_CALL",
                             import_name=func_name,
                             reason=f"Decorator call '{func_name}' may trigger side effects",
-                            remediation="Ensure decorator is idempotent or move logic inside fixture"
+                            remediation="Ensure decorator is idempotent or move logic inside fixture",
                         )
 
     def _get_call_name(self, func: ast.expr) -> str:
@@ -262,7 +262,7 @@ Examples:
   python tools/lint_eager_imports.py tests --json out.json
   python tools/lint_eager_imports.py tests --config config/eager_import_risk.yml
   python tools/lint_eager_imports.py tests --strict  # fail on any violation
-        """
+        """,
     )
     parser.add_argument("paths", nargs="+", help="Paths to lint")
     parser.add_argument("--config", type=Path, help="Path to risk config YAML")

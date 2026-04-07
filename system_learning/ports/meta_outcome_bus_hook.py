@@ -86,9 +86,10 @@ _emit_updates_meta_learning_state("p4", "meta_outcome_bus_hook", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "meta_outcome_bus_hook", "exec_snapshot_link")
 
 if TYPE_CHECKING:
-    from system_learning.meta_learning.meta_learning_bus import MetaLearningBus
     from agentic_core.L3_orchestration.healers.healing_tier_dispatcher import InvocationRecord
     from agentic_core.L3_orchestration.healers.healing_tier_types import HealingDecision, HealingInput
+
+    from system_learning.meta_learning.meta_learning_bus import MetaLearningBus
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -104,7 +105,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_reads_runtime_state,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
     _emit_stores_learning_state,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,

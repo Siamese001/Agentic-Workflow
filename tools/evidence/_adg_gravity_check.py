@@ -10,7 +10,7 @@ conn.row_factory = sqlite3.Row
 # Check gravity rules: which layer combos are actually forbidden
 # The governance graph edges (GG plane)
 rows = conn.execute(
-    "SELECT src_id, dst_id, relation_type, source_file, symbol, line_no FROM edges WHERE relation_type IN ('governance_violation','layer_violation','violates') LIMIT 20"
+    "SELECT src_id, dst_id, relation_type, source_file, symbol, line_no FROM edges WHERE relation_type IN ('governance_violation','layer_violation','violates') LIMIT 20",
 ).fetchall()
 
 
@@ -31,7 +31,7 @@ for r in rows:
 
 # Check what GG (governance) edges exist
 rows2 = conn.execute(
-    "SELECT relation_type, COUNT(*) as cnt FROM edges WHERE relation_type LIKE '%govern%' OR relation_type LIKE '%violat%' OR relation_type LIKE '%gravity%' GROUP BY relation_type ORDER BY cnt DESC"
+    "SELECT relation_type, COUNT(*) as cnt FROM edges WHERE relation_type LIKE '%govern%' OR relation_type LIKE '%violat%' OR relation_type LIKE '%gravity%' GROUP BY relation_type ORDER BY cnt DESC",
 ).fetchall()
 print("GG-type edge counts:")
 for r in rows2:

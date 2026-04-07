@@ -45,78 +45,78 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
                 feature_type=FeatureType.NUMERIC,
                 description="Compatibility score of healer with error type",
                 provenance="healer.compatibility.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="historical_success_rate",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical success rate for this healer",
                 provenance="healer.history.success_rate",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="resource_availability",
                 feature_type=FeatureType.NUMERIC,
                 description="Resource availability for healer execution",
                 provenance="healer.resources.availability",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="error_severity_score",
                 feature_type=FeatureType.NUMERIC,
                 description="Severity score of the error to be healed",
                 provenance="error.severity.score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="healing_complexity",
                 feature_type=FeatureType.NUMERIC,
                 description="Complexity of the healing operation",
                 provenance="healing.operation.complexity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="escalation_history",
                 feature_type=FeatureType.NUMERIC,
                 description="Historical escalation patterns for similar errors",
                 provenance="history.escalation.pattern_score",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="retry_probability",
                 feature_type=FeatureType.NUMERIC,
                 description="Probability that retry will be needed",
                 provenance="healing.retry.probability",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="rollback_likelihood",
                 feature_type=FeatureType.NUMERIC,
                 description="Likelihood that rollback will be required",
                 provenance="healing.rollback.likelihood",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="system_load_factor",
                 feature_type=FeatureType.NUMERIC,
                 description="Current system load affecting healing",
                 provenance="system.load.factor",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
             ),
             FeatureDefinition(
                 name="time_sensitivity",
                 feature_type=FeatureType.NUMERIC,
                 description="Time sensitivity of the healing operation",
                 provenance="healing.time.sensitivity",
-                validation_rules={"min_value": 0.0, "max_value": 1.0}
-            )
+                validation_rules={"min_value": 0.0, "max_value": 1.0},
+            ),
         ]
 
         return FeatureSchema(
             schema_name="l2_healer_selector",
             schema_version="1.0",
             description="Features for L2 healer selection model",
-            features=features
+            features=features,
         )
 
     def _register_extraction_functions(self) -> None:
@@ -293,7 +293,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
             "impact_scope": 0.25,
             "user_impact": 0.2,
             "system_impact": 0.15,
-            "data_impact": 0.1
+            "data_impact": 0.1,
         }
 
         score = 0.0
@@ -347,7 +347,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
             "dependencies": 0.2,
             "rollback_complexity": 0.2,
             "data_recovery": 0.15,
-            "coordination": 0.15
+            "coordination": 0.15,
         }
 
         score = 0.0

@@ -111,11 +111,11 @@ class QueryRouter:
 
             # Get chunks for this node
             chunks = self.engine.get_chunks_by_adg_node(node_id)
-            
+
             # Apply governance filter if provided
             if governance_filter and chunks:
                 chunks = self.engine._apply_governance_filters(chunks, governance_filter)
-            
+
             return chunks
 
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller

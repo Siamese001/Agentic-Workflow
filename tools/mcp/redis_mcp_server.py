@@ -34,9 +34,10 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(__file__).replace("\\tools\\mcp\\redis_mcp_server.py", "").replace("/tools/mcp/redis_mcp_server.py", ""))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 try:
     import redis as redis_lib
@@ -347,17 +348,17 @@ def redis_stats() -> dict[str, Any]:
         "server": {k: info[k] for k in ("redis_version", "uptime_in_seconds", "tcp_port", "os", "hz") if k in info},
         "memory": {k: info[k] for k in (
             "used_memory_human", "used_memory_peak_human", "used_memory_rss_human",
-            "mem_fragmentation_ratio", "maxmemory_human", "maxmemory_policy"
+            "mem_fragmentation_ratio", "maxmemory_human", "maxmemory_policy",
         ) if k in info},
         "persistence": {k: info[k] for k in (
             "rdb_last_save_time", "rdb_last_bgsave_status",
-            "aof_enabled", "loading"
+            "aof_enabled", "loading",
         ) if k in info},
         "replication": {k: info[k] for k in ("role", "connected_slaves", "master_replid") if k in info},
         "clients": {k: info[k] for k in ("connected_clients", "blocked_clients", "tracking_clients") if k in info},
         "stats": {k: info[k] for k in (
             "total_commands_processed", "total_connections_received",
-            "keyspace_hits", "keyspace_misses", "evicted_keys", "expired_keys"
+            "keyspace_hits", "keyspace_misses", "evicted_keys", "expired_keys",
         ) if k in info},
         "keyspace": {k: v for k, v in info.items() if k.startswith("db")},
     }

@@ -22,7 +22,6 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract healing orchestrator edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             HEALING_DECISION_SYMBOLS,
             HEALING_ORCHESTRATOR_SYMBOLS,
@@ -30,6 +29,7 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
             HEALING_VALIDATION_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -45,7 +45,7 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in HEALING_TRIGGER_SYMBOLS or base in HEALING_TRIGGER_SYMBOLS:
             self.edges.append(
@@ -57,7 +57,7 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in HEALING_DECISION_SYMBOLS or base in HEALING_DECISION_SYMBOLS:
             self.edges.append(
@@ -69,7 +69,7 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in HEALING_VALIDATION_SYMBOLS or base in HEALING_VALIDATION_SYMBOLS:
             self.edges.append(
@@ -81,7 +81,7 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -99,11 +99,11 @@ class _P1OrchestrationVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P1 orchestration edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             P1_ORCHESTRATION_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -119,7 +119,7 @@ class _P1OrchestrationVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -137,11 +137,11 @@ class _P2ExecutionCapabilityVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P2 execution capability edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             P2_EXECUTION_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -157,7 +157,7 @@ class _P2ExecutionCapabilityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -175,12 +175,12 @@ class _P3OrchestrationHealingVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P3 orchestration & healing edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             P3_HEALING_SYMBOLS,
             P3_ORCHESTRATION_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -196,7 +196,7 @@ class _P3OrchestrationHealingVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in P3_HEALING_SYMBOLS or base in P3_HEALING_SYMBOLS:
             self.edges.append(
@@ -208,7 +208,7 @@ class _P3OrchestrationHealingVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 

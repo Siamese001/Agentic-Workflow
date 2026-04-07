@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -380,7 +379,7 @@ class ForwardRollingConfig:
                 enable_monitoring=self._config.enable_monitoring,
                 fallback_on_error=self._config.fallback_on_error,
                 sticky_routing=self._config.sticky_routing,
-            )
+            ),
         )
         self._config.stage = stage
         fr_flag = self._feature_flags.get("forward_rolling_enabled")
@@ -463,7 +462,7 @@ class ForwardRollingConfig:
             )
             self._feature_flags[name] = flag
         Logger.info(
-            f"[ForwardRollingConfig] Feature flag '{name}' set to enabled={enabled}, rollout={rollout_percentage}%"
+            f"[ForwardRollingConfig] Feature flag '{name}' set to enabled={enabled}, rollout={rollout_percentage}%",
         )
         return flag
 

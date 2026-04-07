@@ -132,7 +132,7 @@ class ToolCapability(str, Enum):
 
 
 _MUTATING_CAPABILITIES: frozenset[ToolCapability] = frozenset(
-    {ToolCapability.MUTATING_EXTERNAL, ToolCapability.MUTATING_FS, ToolCapability.MUTATING_STATEBUS}
+    {ToolCapability.MUTATING_EXTERNAL, ToolCapability.MUTATING_FS, ToolCapability.MUTATING_STATEBUS},
 )
 
 
@@ -205,7 +205,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -311,19 +310,19 @@ class ToolIntent:
     def __post_init__(self) -> None:
         if self.schema_version != _SCHEMA_VERSION:
             raise ValueError(
-                f"ToolIntent: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}"
+                f"ToolIntent: schema_version must be {_SCHEMA_VERSION}, got {self.schema_version!r}",
             )
         if not self.tool_name:
             raise ValueError("ToolIntent: tool_name must be non-empty")
         if not isinstance(self.capability, ToolCapability):
             raise TypeError(
-                f"ToolIntent: capability must be ToolCapability, got {type(self.capability).__name__}"
+                f"ToolIntent: capability must be ToolCapability, got {type(self.capability).__name__}",
             )
         if not isinstance(self.args, dict):
             raise TypeError("ToolIntent: args must be a dict")
         if is_mutating(self.capability) and (not self.requires_commit):
             raise ValueError(
-                f"ToolIntent: requires_commit must be True for capability {self.capability.value}"
+                f"ToolIntent: requires_commit must be True for capability {self.capability.value}",
             )
         if not self.args_hash:
             self.args_hash = _sha256(json.dumps(self.args, sort_keys=True, separators=(",", ":")).encode())

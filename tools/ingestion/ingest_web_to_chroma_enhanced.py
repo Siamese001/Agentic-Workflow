@@ -52,7 +52,7 @@ class EnhancedWebRAGIngestionPipeline:
 
         # Default categorization
         "python.langchain.com": "framework",
-        "paulgraham.com": "blog"
+        "paulgraham.com": "blog",
     }
 
     def __init__(self,
@@ -89,7 +89,7 @@ class EnhancedWebRAGIngestionPipeline:
             "urls_failed": 0,
             "chunks_stored": 0,
             "chunks_skipped": 0,
-            "source_types": {}
+            "source_types": {},
         }
 
     def initialize(self):
@@ -100,7 +100,7 @@ class EnhancedWebRAGIngestionPipeline:
         logger.info(f"Initializing ChromaDB at: {self.chroma_path}")
         self.chroma_client = chromadb.PersistentClient(
             path=str(self.chroma_path),
-            settings=Settings(anonymized_telemetry=False)
+            settings=Settings(anonymized_telemetry=False),
         )
 
         # Get or create collection
@@ -164,7 +164,7 @@ class EnhancedWebRAGIngestionPipeline:
                     # Extract additional metadata from comments if present
                     metadata = {
                         "source_type": source_type,
-                        "line_number": line_num
+                        "line_number": line_num,
                     }
 
                     url_entries.append((url, metadata))
@@ -184,7 +184,7 @@ class EnhancedWebRAGIngestionPipeline:
             HTML content or None if failed
         """
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         }
 
         try:
@@ -342,7 +342,7 @@ class EnhancedWebRAGIngestionPipeline:
             # Check if chunk already exists
             existing = self.collection.get(
                 where={"content_hash": content_hash},
-                limit=1
+                limit=1,
             )
 
             if existing['ids']:
@@ -360,7 +360,7 @@ class EnhancedWebRAGIngestionPipeline:
                 "fetched_at": fetched_at,
                 "content_hash": content_hash,
                 "source_type": source_type,
-                "line_number": url_metadata.get('line_number', 0)
+                "line_number": url_metadata.get('line_number', 0),
             }
 
             # Add to batch
@@ -376,7 +376,7 @@ class EnhancedWebRAGIngestionPipeline:
                 documents=documents,
                 embeddings=embeddings_list,
                 metadatas=metadatas,
-                ids=ids
+                ids=ids,
             )
             logger.info(f"Stored {stored_count} chunks from {url}")
 
@@ -408,7 +408,7 @@ class EnhancedWebRAGIngestionPipeline:
                     pbar.set_postfix({
                         "Success": self.stats["urls_successful"],
                         "Failed": self.stats["urls_failed"],
-                        "Chunks": self.stats["chunks_stored"]
+                        "Chunks": self.stats["chunks_stored"],
                     })
 
                 except Exception as e:
@@ -463,7 +463,7 @@ class EnhancedWebRAGIngestionPipeline:
         results = self.collection.query(
             query_embeddings=query_embedding.tolist(),
             n_results=n_results,
-            where=where_clause
+            where=where_clause,
         )
 
         # Display results

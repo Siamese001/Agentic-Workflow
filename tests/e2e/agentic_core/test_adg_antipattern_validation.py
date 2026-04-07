@@ -28,7 +28,7 @@ def scan_for_bare_excepts(file_path: Path) -> list[dict]:
                         "file": str(file_path.relative_to(REPO_ROOT)),
                         "line": node.lineno,
                         "type": "bare_except",
-                        "message": "Bare except clause found"
+                        "message": "Bare except clause found",
                     })
     except Exception as e:
         print(f"Warning: Could not parse {file_path}: {e}")
@@ -62,7 +62,7 @@ def scan_for_broad_exceptions(file_path: Path) -> list[dict]:
                                 "file": str(file_path.relative_to(REPO_ROOT)),
                                 "line": node.lineno,
                                 "type": "broad_exception_no_log",
-                                "message": "Broad Exception catch without logging"
+                                "message": "Broad Exception catch without logging",
                             })
     except Exception as e:
         print(f"Warning: Could not parse {file_path}: {e}")

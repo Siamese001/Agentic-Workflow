@@ -91,7 +91,7 @@ class EvidenceAssembler:
         return row["id"] if row else None
 
     def _get_module_metadata(
-        self, conn: sqlite3.Connection, node_id: int
+        self, conn: sqlite3.Connection, node_id: int,
     ) -> dict[str, Any]:
         """Get module metadata from the nodes table."""
         row = conn.execute(
@@ -144,7 +144,7 @@ class EvidenceAssembler:
                         "target_name": r["target_name"],
                         "target_layer": r["target_layer"],
                         "target_path": r["target_path"],
-                    }
+                    },
                 )
 
         if direction in ("incoming", "both"):
@@ -168,7 +168,7 @@ class EvidenceAssembler:
                         "source_name": r["source_name"],
                         "source_layer": r["source_layer"],
                         "source_path": r["source_path"],
-                    }
+                    },
                 )
 
         return results
@@ -194,7 +194,7 @@ class EvidenceAssembler:
                 seen.add(key)
 
                 snippet = self._retriever.get_context(
-                    file_path, line_no, window=5
+                    file_path, line_no, window=5,
                 )
                 if snippet:
                     snippets.append(snippet)
@@ -239,7 +239,7 @@ class EvidenceAssembler:
             node_id = self._get_module_node_id(conn, module_path)
             if node_id is None:
                 _log.warning(
-                    "[EvidenceAssembler] Module not found in ADG: %s", module_path
+                    "[EvidenceAssembler] Module not found in ADG: %s", module_path,
                 )
                 return EvidenceBundle(target=module_path, adg_digest=adg_digest)
 

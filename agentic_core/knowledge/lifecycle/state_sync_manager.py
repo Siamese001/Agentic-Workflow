@@ -146,7 +146,7 @@ class StateSyncManager:
 
         trace_id = f"check_{hashlib.sha256(path_str.encode()).hexdigest()[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "StateSyncManager.check_for_changes"
+            trace_id, LayerSegment.L4_STATE, "StateSyncManager.check_for_changes",
         )
 
         try:
@@ -205,7 +205,7 @@ class StateSyncManager:
 
             _emit_records_telemetry_event(
                 "state_sync",
-                f"file_{action}_{path.name}"
+                f"file_{action}_{path.name}",
             )
 
             return result
@@ -227,7 +227,7 @@ class StateSyncManager:
         """
         trace_id = f"sync_all_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "StateSyncManager.sync_all"
+            trace_id, LayerSegment.L4_STATE, "StateSyncManager.sync_all",
         )
 
         results = []

@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -231,12 +230,12 @@ class CriticalDualEnforcementAuditor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CriticalDualEnforcementAuditor.parse_requirements_metadata"
+            _trace_id, LayerSegment.L5_POLICY, "CriticalDualEnforcementAuditor.parse_requirements_metadata",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:CriticalDualEnforcementAuditor.parse_requirements_metadata".encode()
+            f"{_trace_id}:CriticalDualEnforcementAuditor.parse_requirements_metadata".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -309,21 +308,21 @@ class CriticalDualEnforcementAuditor:
                 has_ci_or_ast = any(layer in ["CI", "AST"] for layer in metadata.enforcement_layers)
                 if not has_ci_or_ast:
                     violations.append(
-                        f"{req_id}: STRUCTURAL class requires at least 1 CI or AST layer, found: {metadata.enforcement_layers}"
+                        f"{req_id}: STRUCTURAL class requires at least 1 CI or AST layer, found: {metadata.enforcement_layers}",
                     )
                 elif layer_count < MIN_STRUCTURAL_LAYERS:
                     warnings.append(
-                        f"{req_id}: STRUCTURAL class has only {layer_count} enforcement layer(s), recommended minimum: {MIN_STRUCTURAL_LAYERS}"
+                        f"{req_id}: STRUCTURAL class has only {layer_count} enforcement layer(s), recommended minimum: {MIN_STRUCTURAL_LAYERS}",
                     )
             else:
                 has_runtime = "Runtime" in metadata.enforcement_layers
                 if layer_count < MIN_ENFORCEMENT_LAYERS:
                     violations.append(
-                        f"{req_id}: CRITICAL requires >=2 enforcement layers, found {layer_count}: {metadata.enforcement_layers}"
+                        f"{req_id}: CRITICAL requires >=2 enforcement layers, found {layer_count}: {metadata.enforcement_layers}",
                     )
                 elif not has_runtime:
                     violations.append(
-                        f"{req_id}: CRITICAL requires at least 1 Runtime enforcement layer, found: {metadata.enforcement_layers}"
+                        f"{req_id}: CRITICAL requires at least 1 Runtime enforcement layer, found: {metadata.enforcement_layers}",
                     )
         return {"violations": violations, "warnings": warnings}
 

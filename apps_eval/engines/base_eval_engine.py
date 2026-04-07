@@ -108,14 +108,14 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             return {
                 "success": False,
                 "error": "Qwen gateway not available",
-                "response": None
+                "response": None,
             }
 
         if apps_qwen_telemetry is None or self._qwen_session_id is None:
             return {
                 "success": False,
                 "error": "Qwen session not initialized",
-                "response": None
+                "response": None,
             }
 
         try:
@@ -124,7 +124,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
                 prompt=prompt,
                 confidence_threshold=0.7,
                 max_tokens=1536,
-                temperature=0.05
+                temperature=0.05,
             )
 
             apps_qwen_telemetry.record_request_start(
@@ -161,7 +161,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
                 "confidence": response.confidence,
                 "model_used": response.model_used,
                 "latency_ms": response.latency_ms,
-                "error_message": response.error_message
+                "error_message": response.error_message,
             }
 
         except Exception as e:
@@ -169,7 +169,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             return {
                 "success": False,
                 "error": str(e),
-                "response": None
+                "response": None,
             }
 
     def record_fail(self, message: str, *, signal: str = "", data: dict | None = None) -> None:

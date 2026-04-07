@@ -1,7 +1,9 @@
 """Full scanner violation dump for all buckets."""
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.static_checks.system_invariant_scanner import scan_repository_for_bypasses
+from agentic_core.L5_safety.validators.static_checks.system_invariant_scanner import (
+    scan_repository_for_bypasses,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

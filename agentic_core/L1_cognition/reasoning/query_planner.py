@@ -152,7 +152,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -245,7 +244,7 @@ class query_planner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "query_planner.multi_query_generation"
+            _trace_id, LayerSegment.L1_REASONING, "query_planner.multi_query_generation",
         )
 
         cache_key: Any = f"mq_expand:{hash(original_query)}"
@@ -295,7 +294,7 @@ class query_planner:
         """
         prompt: Any = '\nYou are a semantic query expansion specialist. Given a user query, generate 5-8 expanded queries that capture:\n- Core intent\n- Specific technical terms\n- Broader context\n- Related concepts\n\nOutput format: {"queries": ["query1", "query2", ...]}\n'
         response: Any = await self.engine.resilient_mutation(
-            prompt=prompt, temperature=self.expansion_temperature, response_format={"type": "json_object"}
+            prompt=prompt, temperature=self.expansion_temperature, response_format={"type": "json_object"},
         )
         try:
             result: Any = json.loads(self._clean_json_response(response))
@@ -311,7 +310,7 @@ class query_planner:
         """
         prompt: Any = f'\nGenerate 2-3 factual, technical passages about the following query topic.\n\nQuery: "{query}"\n\nMake them detailed, factual, and in the style of canon documentation.\nOutput format: {{"passages": ["passage1", "passage2", ...]}}\n'
         response: Any = await self.engine.resilient_mutation(
-            prompt=prompt, temperature=0.5, response_format={"type": "json_object"}
+            prompt=prompt, temperature=0.5, response_format={"type": "json_object"},
         )
         try:
             result: Any = json.loads(self._clean_json_response(response))

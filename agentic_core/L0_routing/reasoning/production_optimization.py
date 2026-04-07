@@ -131,7 +131,7 @@ class QuantizationCompressor(ModelCompressor):
             accuracy_degradation=accuracy_degradation,
             memory_usage_before=original_memory,
             memory_usage_after=optimized_memory,
-            memory_savings=memory_savings
+            memory_savings=memory_savings,
         )
 
         compression_time = time.time() - start_time
@@ -140,7 +140,7 @@ class QuantizationCompressor(ModelCompressor):
             "compression_ratio": compression_ratio,
             "latency_improvement": latency_improvement,
             "accuracy_degradation": accuracy_degradation,
-            "compression_time": compression_time
+            "compression_time": compression_time,
         })
 
         return compressed_model, metrics
@@ -241,7 +241,7 @@ class PruningCompressor(ModelCompressor):
             accuracy_degradation=accuracy_degradation,
             memory_usage_before=original_memory,
             memory_usage_after=optimized_memory,
-            memory_savings=memory_savings
+            memory_savings=memory_savings,
         )
 
         compression_time = time.time() - start_time
@@ -250,7 +250,7 @@ class PruningCompressor(ModelCompressor):
             "compression_ratio": compression_ratio,
             "latency_improvement": latency_improvement,
             "accuracy_degradation": accuracy_degradation,
-            "compression_time": compression_time
+            "compression_time": compression_time,
         })
 
         return compressed_model, metrics
@@ -366,7 +366,7 @@ class LRUCache:
                 value=value,
                 timestamp=time.time(),
                 ttl=ttl,
-                size_bytes=size_bytes
+                size_bytes=size_bytes,
             )
 
             self.cache[key] = entry
@@ -407,7 +407,7 @@ class LRUCache:
                 evictions=self.evictions,
                 current_size=len(self.cache),
                 max_size=self.max_size,
-                memory_usage_mb=memory_usage
+                memory_usage_mb=memory_usage,
             )
 
 class DistributedCache:
@@ -477,7 +477,7 @@ class PerformanceOptimizer:
         self,
         compressors: list[ModelCompressor] | None = None,
         cache: LRUCache | DistributedCache | None = None,
-        optimization_target: str = "latency"  # latency, memory, balanced
+        optimization_target: str = "latency",  # latency, memory, balanced
     ):
         """
         Initialize performance optimizer.
@@ -501,7 +501,7 @@ class PerformanceOptimizer:
         _emit_stores_learning_state("performance_optimizer", "initialization", {
             "compressors": [type(c).__name__ for c in self.compressors],
             "cache_type": type(self.cache).__name__,
-            "optimization_target": optimization_target
+            "optimization_target": optimization_target,
         })
 
     def optimize_model(self, model_id: str, model: Any) -> dict[str, OptimizationMetrics]:
@@ -521,7 +521,7 @@ class PerformanceOptimizer:
                     "model_id": model_id,
                     "compressor": compressor_name,
                     "compression_ratio": metrics.compression_ratio,
-                    "latency_improvement": metrics.latency_improvement
+                    "latency_improvement": metrics.latency_improvement,
                 })
 
             except (ValueError, TypeError, RuntimeError) as e:
@@ -531,7 +531,7 @@ class PerformanceOptimizer:
         self.optimization_history.append({
             "model_id": model_id,
             "timestamp": time.time(),
-            "results": optimization_results
+            "results": optimization_results,
         })
 
         return optimization_results
@@ -583,7 +583,7 @@ class PerformanceOptimizer:
 
         _emit_emits_metric_event("performance_optimizer", "cache_write", {
             "cache_key": cache_key,
-            "ttl": ttl
+            "ttl": ttl,
         })
 
     def get_cached_prediction(self, cache_key: str) -> Any | None:
@@ -592,11 +592,11 @@ class PerformanceOptimizer:
 
         if prediction is not None:
             _emit_emits_metric_event("performance_optimizer", "cache_hit", {
-                "cache_key": cache_key
+                "cache_key": cache_key,
             })
         else:
             _emit_emits_metric_event("performance_optimizer", "cache_miss", {
-                "cache_key": cache_key
+                "cache_key": cache_key,
             })
 
         return prediction
@@ -608,7 +608,7 @@ class PerformanceOptimizer:
             "total_optimizations": len(self.optimization_history),
             "compressed_models": len(self.compressed_models),
             "cache_stats": self.cache.get_stats() if hasattr(self.cache, 'get_stats') else {},
-            "compressor_performance": {}
+            "compressor_performance": {},
         }
 
         # Aggregate compressor performance
@@ -627,7 +627,7 @@ class PerformanceOptimizer:
                     "avg_compression_ratio": avg_compression,
                     "avg_latency_improvement": avg_latency_improvement,
                     "avg_accuracy_degradation": avg_accuracy_degradation,
-                    "optimizations_count": len(metrics_list)
+                    "optimizations_count": len(metrics_list),
                 }
 
         return report
@@ -641,11 +641,11 @@ class PerformanceOptimizer:
                 key: {
                     "compression_ratio": metrics.compression_ratio,
                     "latency_improvement": metrics.latency_improvement,
-                    "accuracy_degradation": metrics.accuracy_degradation
+                    "accuracy_degradation": metrics.accuracy_degradation,
                 }
                 for key, (_, metrics) in self.compressed_models.items()
             },
-            "cache_stats": self.cache.get_stats() if hasattr(self.cache, 'get_stats') else {}
+            "cache_stats": self.cache.get_stats() if hasattr(self.cache, 'get_stats') else {},
         }
 
         with open(filepath, 'w') as f:
@@ -653,7 +653,7 @@ class PerformanceOptimizer:
 
         _emit_stores_learning_state("performance_optimizer", "state_saved", {
             "filepath": filepath,
-            "compressed_models": len(self.compressed_models)
+            "compressed_models": len(self.compressed_models),
         })
 
     def shutdown(self):
@@ -666,7 +666,7 @@ def create_default_optimizer() -> PerformanceOptimizer:
 
     compressors = [
         QuantizationCompressor(bits=8),
-        PruningCompressor(pruning_ratio=0.3)
+        PruningCompressor(pruning_ratio=0.3),
     ]
 
     cache = LRUCache(max_size=1000, default_ttl=3600.0)
@@ -674,7 +674,7 @@ def create_default_optimizer() -> PerformanceOptimizer:
     return PerformanceOptimizer(
         compressors=compressors,
         cache=cache,
-        optimization_target="balanced"
+        optimization_target="balanced",
     )
 
 def create_distributed_optimizer(nodes: list[str]) -> PerformanceOptimizer:
@@ -682,7 +682,7 @@ def create_distributed_optimizer(nodes: list[str]) -> PerformanceOptimizer:
 
     compressors = [
         QuantizationCompressor(bits=8),
-        PruningCompressor(pruning_ratio=0.3)
+        PruningCompressor(pruning_ratio=0.3),
     ]
 
     cache = DistributedCache(nodes, replication_factor=2)
@@ -690,7 +690,7 @@ def create_distributed_optimizer(nodes: list[str]) -> PerformanceOptimizer:
     return PerformanceOptimizer(
         compressors=compressors,
         cache=cache,
-        optimization_target="latency"
+        optimization_target="latency",
     )
 
 __all__ = [
@@ -704,5 +704,5 @@ __all__ = [
     "CacheEntry",
     "CacheStats",
     "create_default_optimizer",
-    "create_distributed_optimizer"
+    "create_distributed_optimizer",
 ]

@@ -70,7 +70,7 @@ sovereign_edges = conn.execute(
     "FROM edges e "
     "JOIN nodes n_src ON e.src_id=n_src.id "
     "JOIN nodes n_dst ON e.dst_id=n_dst.id "
-    "WHERE e.symbol LIKE '%SOVEREIGN_TERRITORIES%' AND e.relation_type='imports'"
+    "WHERE e.symbol LIKE '%SOVEREIGN_TERRITORIES%' AND e.relation_type='imports'",
 ).fetchall()
 
 print(f"  Found {len(sovereign_edges)} import edges with SOVEREIGN_TERRITORIES in symbol")
@@ -85,7 +85,7 @@ for edge in sovereign_edges:
         {
             "dst_path": edge["dst_path"],
             "symbol": edge["symbol"],
-        }
+        },
     )
 
 # Sort by number of imports

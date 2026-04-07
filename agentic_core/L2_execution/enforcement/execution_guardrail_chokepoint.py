@@ -45,10 +45,9 @@ import logging
 import uuid
 from typing import Any, Callable
 
-from agentic_core.L4_state.utils.context.execution_context import (
-    ActionClass,
-    ExecutionContext,
-    GuardrailOutcome,
+from agentic_core.L2_execution.enforcement.execution_proof_contract import (
+    DeterminismViolation,
+    emit_execution_proof,
 )
 from agentic_core.L2_execution.types.typed_tool_contract import (
     ToolContract,
@@ -59,9 +58,14 @@ from agentic_core.L2_execution.types.typed_tool_contract import (
     get_typed_tool_registry,
     invoke_typed_tool,
 )
-from agentic_core.L2_execution.enforcement.execution_proof_contract import (
-    DeterminismViolation,
-    emit_execution_proof,
+from agentic_core.L4_state.utils.context.execution_context import (
+    ActionClass,
+    ExecutionContext,
+    GuardrailOutcome,
+)
+from agentic_core.L5_safety.audit.safety_audit_emitter import (
+    SafetyAuditMissingError,
+    emit_guardrail_audit,
 )
 from agentic_core.L6_observability.execution.observability_recorder import (
     ExecutionContext as ObservabilityExecutionContext,
@@ -73,10 +77,6 @@ from agentic_core.L6_observability.execution.observability_recorder import (
     record_execution_failure,
     record_execution_observability,
     record_policy_block,
-)
-from agentic_core.L5_safety.audit.safety_audit_emitter import (
-    SafetyAuditMissingError,
-    emit_guardrail_audit,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -240,7 +240,6 @@ _emit_writes_through("p1", "execution_guardrail_chokepoint", "write_through_2")
 _emit_validated_by_safety_plane("p1", "execution_guardrail_chokepoint", "safety_validation")
 _emit_invokes_eval("p1", "execution_guardrail_chokepoint", "eval_call")
 _emit_proposal_commits_routing("p1", "execution_guardrail_chokepoint", "routing_commit")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_entry")
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_exit")
@@ -517,19 +516,19 @@ def authorize_and_execute(
     if not capability_token:
         _emit_reenters_safety(execution_context, "MISSING_CAPABILITY_TOKEN")
         raise MissingCapabilityToken(
-            f"authorize_and_execute: no capability token for req={execution_context.execution_request_id}"
+            f"authorize_and_execute: no capability token for req={execution_context.execution_request_id}",
         )
     if capability_token != execution_context.capability_token:
         _emit_reenters_safety(execution_context, "TOKEN_MISMATCH")
         raise MissingCapabilityToken(
-            f"authorize_and_execute: capability token mismatch for req={execution_context.execution_request_id}"
+            f"authorize_and_execute: capability token mismatch for req={execution_context.execution_request_id}",
         )
 
     # 3. Resolve and bind policy hash
     if not execution_context.policy_hash:
         _emit_reenters_safety(execution_context, "MISSING_POLICY_HASH")
         raise MissingPolicyHash(
-            f"authorize_and_execute: no policy hash on context req={execution_context.execution_request_id}"
+            f"authorize_and_execute: no policy hash on context req={execution_context.execution_request_id}",
         )
     _emit_references_policy_hash(execution_context)
 
@@ -571,7 +570,7 @@ def authorize_and_execute(
             _emit_reenters_safety(execution_context, "HUMAN_REVIEW_REQUIRED")
             raise HumanReviewRequired(
                 f"authorize_and_execute: HUMAN_GATED action requires human approval "
-                f"req={execution_context.execution_request_id}"
+                f"req={execution_context.execution_request_id}",
             )
 
     # 6 + 7. Guardrail evaluation + safety plane binding
@@ -661,7 +660,7 @@ def authorize_and_execute(
         _emit_reenters_safety(bound_ctx, f"GUARDRAIL_{outcome.value}")
         raise GuardrailDenied(
             f"authorize_and_execute: guardrail {outcome.value} for "
-            f"req={bound_ctx.execution_request_id} target={_tgt}"
+            f"req={bound_ctx.execution_request_id} target={_tgt}",
         )
 
     # 10. Pre-execution trace stub
@@ -692,7 +691,7 @@ def authorize_and_execute(
                 allowed_callers=["*"],
                 policy_requirements=[],
                 callable=None,
-            )
+            ),
         )
 
     _tool_contract = ToolContract.create(
@@ -791,7 +790,7 @@ def authorize_and_execute(
         _emit_reenters_safety(bound_ctx, f"PROOF_EMISSION_FAILED:{type(_proof_exc).__name__}")
         raise RuntimeError(
             f"authorize_and_execute: execution proof emission failed for "
-            f"req={bound_ctx.execution_request_id}: {_proof_exc}"
+            f"req={bound_ctx.execution_request_id}: {_proof_exc}",
         ) from _proof_exc
 
     # 13b. Post-execution signed trace

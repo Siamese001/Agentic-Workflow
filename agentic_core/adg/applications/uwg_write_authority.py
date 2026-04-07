@@ -89,21 +89,14 @@ _emit_links_execution_to_snapshot("p4", "uwg_write_authority", "exec_snapshot_li
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -111,17 +104,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -200,7 +187,7 @@ _SIDE_EFFECT_ENDPOINTS: dict[str, frozenset[str]] = {
             "pathlib.Path.write_bytes",
             "write_text",
             "write_bytes",
-        }
+        },
     ),
     "subprocess_exec": frozenset(
         {
@@ -209,7 +196,7 @@ _SIDE_EFFECT_ENDPOINTS: dict[str, frozenset[str]] = {
             "subprocess.call",
             "subprocess.check_call",
             "subprocess.check_output",
-        }
+        },
     ),
     "network_call": frozenset(
         {
@@ -224,7 +211,7 @@ _SIDE_EFFECT_ENDPOINTS: dict[str, frozenset[str]] = {
             "httpx.AsyncClient",
             "aiohttp.ClientSession",
             "urllib.request.urlopen",
-        }
+        },
     ),
     "database_write": frozenset(
         {
@@ -235,7 +222,7 @@ _SIDE_EFFECT_ENDPOINTS: dict[str, frozenset[str]] = {
             "collection.update",
             "redis.set",
             "redis.hset",
-        }
+        },
     ),
 }
 
@@ -245,7 +232,7 @@ _ALLOWED_WRITE_MODULES: frozenset[str] = frozenset(
         "agentic_core/L2_execution/audit/hash_chain_audit_log.py",
         "tools/capture_evidence.py",
         "ops_scripts/ci/",
-    }
+    },
 )
 
 
@@ -333,7 +320,7 @@ def check_uwg_write_authority(
                 endpoint_type=endpoint_type,
                 source_file=edge.source_file,
                 line_no=edge.line_no,
-            )
+            ),
         )
 
     proof_digest = _compute_proof_digest(result, violations)

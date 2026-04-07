@@ -277,7 +277,7 @@ def backfill_protected_root_blocks(
                 fh.write(line + "\n")
 
     logger.info(
-        "[Backfill] Wrote %d protected_root_block records to corpus (dry_run=%s).", len(new_lines), dry_run
+        "[Backfill] Wrote %d protected_root_block records to corpus (dry_run=%s).", len(new_lines), dry_run,
     )
     return len(new_lines)
 
@@ -396,7 +396,7 @@ def run_backfill(
         sentinel.parent.mkdir(parents=True, exist_ok=True)
         sentinel.write_text(
             json.dumps(
-                {"corpus_records_added": corpus_added, "territories_seeded": list(territories.keys())}
+                {"corpus_records_added": corpus_added, "territories_seeded": list(territories.keys())},
             ),
             encoding="utf-8",
         )

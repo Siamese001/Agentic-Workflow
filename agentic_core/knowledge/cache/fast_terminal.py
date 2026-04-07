@@ -71,7 +71,7 @@ class FastTerminal:
         """
         trace_id = f"lookup_{key[:16]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "FastTerminal.lookup"
+            trace_id, LayerSegment.L1_REASONING, "FastTerminal.lookup",
         )
 
         start_time = time.time()

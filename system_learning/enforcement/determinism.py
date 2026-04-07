@@ -80,5 +80,5 @@ def assert_no_nondeterminism(source_text: str, *, filepath: str = "<unknown>") -
                 match.start(),
             )
             raise PermissionError(
-                f"L7_DETERMINISM_VIOLATION:FORBIDDEN_CALL|pattern={pattern}|filepath={filepath}|offset={match.start()}"
+                f"L7_DETERMINISM_VIOLATION:FORBIDDEN_CALL|pattern={pattern}|filepath={filepath}|offset={match.start()}",
             )

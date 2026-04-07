@@ -197,6 +197,11 @@ except ImportError:  # guardian: allow-silent-swallow
 
 
 # Import extracted functions from file_classification subpackage
+# Safety Gates (WAVE 1.1–3.2): collision prevention, blast radius, mass action, wave execution
+# Logger for healing operations
+import logging
+import uuid
+
 from agentic_core.L5_safety.reasoning.file_classification.classification_core import (
     _detect_filename_tag_conflicts,
     _detect_script_patterns,
@@ -210,13 +215,6 @@ from agentic_core.L5_safety.reasoning.file_classification.validation_rules impor
     check_domain_root_purity,
     check_fake_config,
 )
-
-
-# Safety Gates (WAVE 1.1–3.2): collision prevention, blast radius, mass action, wave execution
-# Logger for healing operations
-import logging
-import uuid
-
 from agentic_core.L5_safety.utils.fca_safety_gates_util import (
     NestedLCDPolicy,
     SafetyGateResult,
@@ -250,7 +248,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -555,18 +552,18 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             New target path if file should be moved, None if file is correctly placed.
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "FileClassificationHealerAgent.enforce_kernel_structure", "L5_POLICY"
+            str(uuid.uuid4()), "FileClassificationHealerAgent.enforce_kernel_structure", "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "FileClassificationHealerAgent.enforce_kernel_structure"
+            _trace_id, LayerSegment.L5_POLICY, "FileClassificationHealerAgent.enforce_kernel_structure",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:FileClassificationHealerAgent.enforce_kernel_structure".encode()
+            f"{_trace_id}:FileClassificationHealerAgent.enforce_kernel_structure".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
@@ -1192,7 +1189,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             filename = path.name
 
             if parent_folder == "config" or filename.endswith(
-                ("_config.py", "_settings.py", "_blueprint.py")
+                ("_config.py", "_settings.py", "_blueprint.py"),
             ):
                 return "CONFIG"
             if parent_folder == "validators" or filename.endswith("_validator.py"):
@@ -1353,7 +1350,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 "_enforcer",
                 "_guard",
                 "_guardrail",
-            )
+            ),
         )
         if is_enforcer:
             # Behavioral backstop: require BOTH control outcome AND policy semantics
@@ -1548,7 +1545,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
     # ========================================================================
 
     def _detect_orchestrator_patterns(
-        self, tree: ast.AST, path: Path, content: str, primary_name: str
+        self, tree: ast.AST, path: Path, content: str, primary_name: str,
     ) -> bool:
         """
         Distinguish between L0 routers and L3 orchestrators based on behavioral patterns.
@@ -3632,7 +3629,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     # Continue without the extra stats
                 warnings.append(
                     f"HITL_FLAGGED: top-2 delta={delta:.3f}<0.15; "
-                    f"top3={[(n, round(s / total, 3)) for n, s in top3]}"
+                    f"top3={[(n, round(s / total, 3)) for n, s in top3]}",
                 )
 
         return ClassificationResult(

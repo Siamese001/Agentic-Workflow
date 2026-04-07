@@ -24,5 +24,5 @@ class DecisionConstraints(BaseModel):
                 "require_human_if_policy_exception": True,
                 "require_human_if_docs_missing": True,
                 "require_human_if_risk_score_borderline": True,
-            }
+            },
         }

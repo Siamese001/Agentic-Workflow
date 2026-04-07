@@ -43,7 +43,7 @@ def assert_isolation() -> None:
     violations = get_forbidden_loaded_modules()
     if violations:
         raise RuntimeError(
-            f"system_learning isolation violated: forbidden modules loaded: {violations[:10]}{('...' if len(violations) > 10 else '')}"
+            f"system_learning isolation violated: forbidden modules loaded: {violations[:10]}{('...' if len(violations) > 10 else '')}",
         )
 
 

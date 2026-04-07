@@ -3,10 +3,6 @@
 Strategy: For each file with a NameError at module level, add the missing
 import/definition BEFORE the line that uses it.
 """
-import ast
-import os
-import re
-import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

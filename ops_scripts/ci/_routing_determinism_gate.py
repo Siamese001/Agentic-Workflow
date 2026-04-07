@@ -134,12 +134,12 @@ def run_gate(db_path: str) -> int:
         if replay_coverage < THRESHOLD:
             failures.append(
                 f"replay_key coverage {replay_coverage:.2%} < {THRESHOLD:.0%} "
-                f"({replay_keys}/{routing_decisions})"
+                f"({replay_keys}/{routing_decisions})",
             )
         if digest_coverage < THRESHOLD:
             failures.append(
                 f"determinism_digest coverage {digest_coverage:.2%} < {THRESHOLD:.0%} "
-                f"({determinism_digests}/{routing_decisions})"
+                f"({determinism_digests}/{routing_decisions})",
             )
     else:
         print("[GATE] WARN: No routing_decisions found — coverage gates skipped")
@@ -149,7 +149,7 @@ def run_gate(db_path: str) -> int:
 
     if getattr_dynamic_l0_routing > 0:
         failures.append(
-            f"invokes_getattr_dynamic in L0 routing engines = {getattr_dynamic_l0_routing} (must be 0)"
+            f"invokes_getattr_dynamic in L0 routing engines = {getattr_dynamic_l0_routing} (must be 0)",
         )
 
     if records_trace_l0 == 0:

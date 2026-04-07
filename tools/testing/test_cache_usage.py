@@ -20,7 +20,7 @@ def test_cache_usage():
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     scanner = ADGStaticScanner(
         repo_root=Path("C:/Git/Agentic-Workflow"),
-        cache_path=cache_file
+        cache_path=cache_file,
     )
 
     # Test just the first 50 files to see cache behavior

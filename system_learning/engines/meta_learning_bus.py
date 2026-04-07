@@ -115,21 +115,14 @@ from typing import Any, Sequence
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -137,17 +130,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -324,7 +311,7 @@ def _build_commit_id(
             "proposal_id": proposal_id,
             "timestamp_utc": timestamp_utc,
             "validation_result_id": validation_result_id,
-        }
+        },
     )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -338,7 +325,7 @@ def _build_optimization_commit(
     change_spec_dict = dict(proposal.change_spec)
 
     affected_rules: tuple[str, ...] = tuple(
-        sorted(v for k, v in proposal.change_spec if k in ("routing_rule", "rule_id", "rule_ref"))
+        sorted(v for k, v in proposal.change_spec if k in ("routing_rule", "rule_id", "rule_ref")),
     ) or (f"rule:{proposal.proposed_change_type}",)
 
     affected_routes: tuple[str, ...] = (
@@ -349,7 +336,7 @@ def _build_optimization_commit(
         tuple(
             sorted(
                 v for k, v in proposal.change_spec if k in ("dominant_retrieval_pattern", "retrieval_policy")
-            )
+            ),
         )
         or ()
     )
@@ -486,7 +473,7 @@ class MetaLearningBus:
 
         _trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces",
         )
         adg_relations: list[tuple[str, str, str]] = []
 
@@ -543,7 +530,7 @@ class MetaLearningBus:
 
         # Stage 6 — Validation
         validation_results, commits, rejected_validation = self._stage_validate_and_commit(
-            proposals_scored, clusters, timestamp_utc, adg_relations
+            proposals_scored, clusters, timestamp_utc, adg_relations,
         )
 
         all_rejected = rejected_low_reward + rejected_validation
@@ -612,7 +599,7 @@ class MetaLearningBus:
                         bundle.adg_entity_name,
                         _ADG_TRIGGERED_TELEMETRY,
                         f"ADG::TraceFeatureRecord::{record.record_id[:12]}",
-                    )
+                    ),
                 )
             except Exception as exc:  # guardian: allow-silent-swallow
                 logger.warning(
@@ -638,7 +625,7 @@ class MetaLearningBus:
                             f"ADG::TraceFeatureRecord::{trace_id[:12]}",
                             _ADG_CHUNKS_INTO,
                             cluster.adg_cluster_node,
-                        )
+                        ),
                     )
                 # Emit: cluster → stores_embedding → cluster node
                 adg_relations.append(
@@ -646,7 +633,7 @@ class MetaLearningBus:
                         cluster.adg_cluster_node,
                         _ADG_STORES_EMBEDDING,
                         cluster.adg_cluster_node,
-                    )
+                    ),
                 )
             return clusters
         except Exception as exc:  # guardian: allow-silent-swallow
@@ -704,7 +691,7 @@ class MetaLearningBus:
                     f"ADG::Proposal::{proposal.proposal_id[:12]}",
                     _ADG_SCORED_BY_REWARD,
                     f"ADG::RewardScore::{gs.score_id[:12]}",
-                )
+                ),
             )
             if gs.aggregate_score >= self._config.reward_threshold:
                 passing.append(proposal)
@@ -745,7 +732,7 @@ class MetaLearningBus:
                 hitl_rates[proposal.proposal_id] = cluster.hitl_escalation_rate
 
         validation_results = self._validation_engine.validate_batch(
-            proposals, timestamp_utc, hitl_rates=hitl_rates
+            proposals, timestamp_utc, hitl_rates=hitl_rates,
         )
 
         commits: list[OptimizationCommit] = []
@@ -773,7 +760,7 @@ class MetaLearningBus:
                             f"ADG::Proposal::{proposal.proposal_id[:12]}",
                             _ADG_PROPOSAL_COMMITS,
                             f"ADG::OptimizationCommit::{commit.commit_id[:12]}",
-                        )
+                        ),
                     )
                     logger.info(
                         "meta_learning_bus: optimization commit produced",
@@ -831,8 +818,8 @@ class MetaLearningBus:
                     {
                         "trace_id": bundle.trace_id,
                         "timestamp_utc": timestamp_utc,
-                    }
-                ).encode("utf-8")
+                    },
+                ).encode("utf-8"),
             ).hexdigest()
 
             try:
@@ -847,7 +834,7 @@ class MetaLearningBus:
                         mutation_correctness=mut_correct,
                         human_approval=human_approval,
                         timestamp_utc=timestamp_utc,
-                    )
+                    ),
                 )
             except Exception as exc:  # guardian: allow-silent-swallow
                 logger.warning(

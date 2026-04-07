@@ -58,21 +58,14 @@ _emit_applies_guardrail("p0", "audit_agent_registry_enforcement", "p0_governance
 _emit_reads_policy_state("p0", "audit_agent_registry_enforcement", "policy_binding")
 _emit_snapshots_state("p0", "audit_agent_registry_enforcement", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -80,17 +73,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -245,7 +232,7 @@ class AgentRegistryEnforcementScanner(ast.NodeVisitor):
                                 node.lineno,
                                 "UNREGISTERED_AGENT",
                                 f"Gateway call uses unregistered agent_id '{agent_id}'",
-                            )
+                            ),
                         )
                 break
 
@@ -256,7 +243,7 @@ class AgentRegistryEnforcementScanner(ast.NodeVisitor):
                     node.lineno,
                     "MISSING_AGENT_ID",
                     "Gateway call missing required agent_id parameter",
-                )
+                ),
             )
 
     def _check_agent_instantiation(self, node: ast.Call):
@@ -268,7 +255,7 @@ class AgentRegistryEnforcementScanner(ast.NodeVisitor):
                 node.lineno,
                 "DIRECT_AGENT_INSTANTIATION",
                 f"Direct instantiation of agent '{agent_class}' - use registry instead",
-            )
+            ),
         )
 
 
@@ -292,14 +279,14 @@ def scan_file(file_path: Path) -> list[AgentUsageViolation]:
                 e.lineno or 0,
                 "SYNTAX_ERROR",
                 f"Unable to parse file: {e}",
-            )
+            ),
         )
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         violations.append(
             AgentUsageViolation(
-                str(file_path.relative_to(Path.cwd())), 0, "SCAN_ERROR", f"Error scanning file: {e}"
-            )
+                str(file_path.relative_to(Path.cwd())), 0, "SCAN_ERROR", f"Error scanning file: {e}",
+            ),
         )
 
     return violations
@@ -369,7 +356,7 @@ def main():
                 999,
                 "TAMPER_VIOLATION",
                 "Synthetic violation for negative control testing",
-            )
+            ),
         )
 
     # Print results

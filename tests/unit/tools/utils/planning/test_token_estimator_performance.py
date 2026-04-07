@@ -32,9 +32,10 @@ class TestTokenEstimatorPerformance:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
+
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         # Use unique temp directory per test to avoid parallel execution conflicts
         self.temp_dir = Path(tempfile.gettempdir()) / f"test_performance_{uuid.uuid4().hex[:8]}"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -71,7 +72,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             end_time = time.time()
@@ -111,7 +112,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[],
                 logs=[],
                 retrieved_context=[{"content": f"Context {i} " * 100}],
-                prior_steps=[f"Prior step {i} " * 50]
+                prior_steps=[f"Prior step {i} " * 50],
             )
 
             end_time = time.time()
@@ -150,7 +151,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[{"path": f"diff_{i}.md", "content": f"Diff content {i} " * 1000}],
                 logs=[{"source": f"log_{i}.log", "content": f"Log content {i} " * 500}],
                 retrieved_context=[{"content": f"Context {i} " * 300} for _ in range(5)],
-                prior_steps=[f"Prior step {i} " * 200 for _ in range(3)]
+                prior_steps=[f"Prior step {i} " * 200 for _ in range(3)],
             )
 
             end_time = time.time()
@@ -192,7 +193,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             # Measure memory after
@@ -219,7 +220,7 @@ class TestTokenEstimatorPerformance:
         large_sources = [
             ContextSource('file', 'x' * 50000, 17500, metadata={'path': 'large.py', 'lines': 5000}),
             ContextSource('log', 'ERROR: Error\n' * 1000, 5000, metadata={'source': 'large.log'}),
-            ContextSource('retrieval', ''.join(f'chunk_{i}' * 1000 for i in range(30)), 15000, metadata={'chunk_id': 'chunk_0'})
+            ContextSource('retrieval', ''.join(f'chunk_{i}' * 1000 for i in range(30)), 15000, metadata={'chunk_id': 'chunk_0'}),
         ]
 
         estimate = TokenEstimate(
@@ -231,7 +232,7 @@ class TestTokenEstimatorPerformance:
             status='yellow',
             action='compress',
             top_contributors=[],
-            recommended_reductions=[]
+            recommended_reductions=[],
         )
 
         # Test compression performance
@@ -267,7 +268,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             end_time = time.time()
@@ -318,7 +319,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[],
                 logs=[],
                 retrieved_context=[{"content": f"Context {i}"}],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             end_time = time.time()
@@ -352,7 +353,7 @@ class TestTokenEstimatorPerformance:
             ("small_code", "def hello():\n    return 'world'", "code"),
             ("medium_text", "This is a medium text " * 100, "text"),
             ("large_json", '{"key": "' + 'value' * 1000 + '"}', "json"),
-            ("mixed_content", "Code: def test()\nText: " + "text " * 500 + "\nJSON: {\"data\": " + "x" * 200 + "}", "auto")
+            ("mixed_content", "Code: def test()\nText: " + "text " * 500 + "\nJSON: {\"data\": " + "x" * 200 + "}", "auto"),
         ]
 
         times = []
@@ -394,7 +395,7 @@ class TestTokenEstimatorPerformance:
                 diffs=[],
                 logs=[],
                 retrieved_context=[],
-                prior_steps=[]
+                prior_steps=[],
             )
 
             end_time = time.time()
@@ -434,7 +435,7 @@ class TestTokenEstimatorPerformance:
                     diffs=[],
                     logs=[],
                     retrieved_context=[],
-                    prior_steps=[]
+                    prior_steps=[],
                 )
 
             # Measure memory after each batch

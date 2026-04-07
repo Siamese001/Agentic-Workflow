@@ -17,7 +17,7 @@ from pathlib import Path
 
 INVENTORY_PATH = Path("artifacts/adg_analysis/w2_return_none_swallow_classified.json")
 TEARDOWN_KEYWORDS = frozenset(
-    ["teardown", "cleanup", "close", "exit", "destroy", "dispose", "finalize", "__del__", "__exit__"]
+    ["teardown", "cleanup", "close", "exit", "destroy", "dispose", "finalize", "__del__", "__exit__"],
 )
 
 

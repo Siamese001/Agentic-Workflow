@@ -161,7 +161,7 @@ class ComplianceValidator:
 
         # Calculate quality score
         quality_score = self._calculate_quality_score(
-            violations, claim_verifications, regulatory_gaps
+            violations, claim_verifications, regulatory_gaps,
         )
 
         # Determine pass/fail
@@ -242,7 +242,7 @@ class ComplianceValidator:
                             severity=ViolationSeverity.WARNING,
                             message=f"Potentially unsupportable claim: {description}",
                             suggestion="Quantify with specific metrics or add qualifying language",
-                        )
+                        ),
                     )
 
         return violations
@@ -273,7 +273,7 @@ class ComplianceValidator:
                         severity=ViolationSeverity.WARNING,
                         message=f"Numeric claims ({len(numeric_claims)} found) without evidence citations",
                         suggestion="Add evidence anchors or source references for quantified claims",
-                    )
+                    ),
                 )
 
         return violations
@@ -309,7 +309,7 @@ class ComplianceValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Missing regulatory alignment: {req_display}",
                         suggestion=f"Add section addressing {req_display} compliance requirements",
-                    )
+                    ),
                 )
 
         return violations
@@ -343,7 +343,7 @@ class ComplianceValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Required section missing: {req}",
                         suggestion=f"Add {req} section to proposal",
-                    )
+                    ),
                 )
 
         return violations
@@ -379,7 +379,7 @@ class ComplianceValidator:
                                 severity=ViolationSeverity.WARNING,
                                 message=f"Security claim '{keyword}' without specific backing",
                                 suggestion="Add specific implementation details or standards references",
-                            )
+                            ),
                         )
                     break  # One violation per section is enough
 
@@ -399,7 +399,7 @@ class ComplianceValidator:
                 # Check if it's a claim (has metrics, outcomes, or strong assertions)
                 if any(pattern in sent.lower() for pattern in [
                     "will", "delivers", "achieves", "reduces", "improves",
-                    "guarantees", "ensures", "provides", "%", "$", "percent"
+                    "guarantees", "ensures", "provides", "%", "$", "percent",
                 ]):
                     claims.append({
                         "claim_id": f"C{idx+1:03d}",

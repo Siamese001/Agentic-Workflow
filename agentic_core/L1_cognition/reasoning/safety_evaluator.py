@@ -101,7 +101,7 @@ class SafetyEvaluator:
         self,
         config: GuardrailConfig | None = None,
         constitutional_engine: ConstitutionalRulesEngine | None = None,
-        content_filter: ContentFilterEngine | None = None
+        content_filter: ContentFilterEngine | None = None,
     ) -> None:
         """Initialize the safety evaluator.
 
@@ -121,7 +121,7 @@ class SafetyEvaluator:
         self._evaluation_stats: dict[str, list[float]] = {
             "evaluation_time": [],
             "safety_scores": [],
-            "risk_levels": {}
+            "risk_levels": {},
         }
 
     async def evaluate_safety(
@@ -130,7 +130,7 @@ class SafetyEvaluator:
         content_id: str,
         content_type: str = "generation",
         context: str | None = None,
-        additional_metadata: dict[str, Any] | None = None
+        additional_metadata: dict[str, Any] | None = None,
     ) -> SafetyEvaluation:
         """Evaluate the safety of content.
 
@@ -150,32 +150,32 @@ class SafetyEvaluator:
         try:
             # Step 1: Run constitutional rules evaluation
             constitutional_report = self.constitutional_engine.evaluate_content(
-                content, content_id, content_type, context
+                content, content_id, content_type, context,
             )
 
             # Step 2: Run content filtering
             content_filter_report = self.content_filter.filter_content(
-                content, content_id, content_type, context
+                content, content_id, content_type, context,
             )
 
             # Step 3: Combine results and calculate overall safety
             safety_scores = self._calculate_safety_scores(
-                constitutional_report, content_filter_report
+                constitutional_report, content_filter_report,
             )
 
             # Step 4: Determine risk level
             risk_level = self._determine_risk_level(
-                constitutional_report, content_filter_report, safety_scores
+                constitutional_report, content_filter_report, safety_scores,
             )
 
             # Step 5: Generate recommendations
             recommendations = self._generate_recommendations(
-                constitutional_report, content_filter_report, risk_level
+                constitutional_report, content_filter_report, risk_level,
             )
 
             # Step 6: Determine if safe to proceed
             safe_to_proceed = self._is_safe_to_proceed(
-                constitutional_report, content_filter_report, risk_level
+                constitutional_report, content_filter_report, risk_level,
             )
 
             # Create evaluation
@@ -188,12 +188,12 @@ class SafetyEvaluator:
                 category_scores=safety_scores["categories"],
                 risk_level=risk_level,
                 risk_factors=self._extract_risk_factors(
-                    constitutional_report, content_filter_report
+                    constitutional_report, content_filter_report,
                 ),
                 safe_to_proceed=safe_to_proceed,
                 recommended_actions=recommendations,
                 evaluation_time_ms=evaluation_time,
-                evaluator_version="1.0.0"
+                evaluator_version="1.0.0",
             )
 
             # Update statistics
@@ -208,7 +208,7 @@ class SafetyEvaluator:
             _emit_records_telemetry_event(
                 "safety_evaluator",
                 f"safety_evaluated_{evaluation.overall_safety_score:.2f}_{risk_level.value}",
-                "safety_evaluated"
+                "safety_evaluated",
             )
 
             return evaluation
@@ -225,13 +225,13 @@ class SafetyEvaluator:
                 safe_to_proceed=False,
                 recommended_actions=["escalate_to_human", "review_error"],
                 evaluation_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
-                evaluator_version="1.0.0"
+                evaluator_version="1.0.0",
             )
 
     def _calculate_safety_scores(
         self,
         constitutional_report: GuardrailReport,
-        content_filter_report: GuardrailReport
+        content_filter_report: GuardrailReport,
     ) -> dict[str, float]:
         """Calculate safety scores from reports."""
         scores = {
@@ -242,8 +242,8 @@ class SafetyEvaluator:
                 "helpfulness": 0.0,
                 "safety": 0.0,
                 "privacy": 0.0,
-                "fairness": 0.0
-            }
+                "fairness": 0.0,
+            },
         }
 
         # Constitutional score
@@ -293,7 +293,7 @@ class SafetyEvaluator:
         self,
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport,
-        safety_scores: dict[str, float]
+        safety_scores: dict[str, float],
     ) -> GuardrailSeverity:
         """Determine overall risk level."""
         # Check for critical violations
@@ -330,7 +330,7 @@ class SafetyEvaluator:
         self,
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport,
-        risk_level: GuardrailSeverity
+        risk_level: GuardrailSeverity,
     ) -> list[str]:
         """Generate safety recommendations."""
         recommendations = []
@@ -340,25 +340,25 @@ class SafetyEvaluator:
             recommendations.extend([
                 "Immediately block this content",
                 "Escalate to human reviewer",
-                "Review safety protocols"
+                "Review safety protocols",
             ])
         elif risk_level == GuardrailSeverity.HIGH:
             recommendations.extend([
                 "Consider blocking this content",
                 "Apply additional filtering",
-                "Review with safety team"
+                "Review with safety team",
             ])
         elif risk_level == GuardrailSeverity.MEDIUM:
             recommendations.extend([
                 "Apply content modifications if needed",
                 "Add warning labels",
-                "Monitor for similar patterns"
+                "Monitor for similar patterns",
             ])
         elif risk_level == GuardrailSeverity.LOW:
             recommendations.extend([
                 "Content appears safe",
                 "Continue with standard processing",
-                "Log for future reference"
+                "Log for future reference",
             ])
 
         # Based on specific violations
@@ -377,7 +377,7 @@ class SafetyEvaluator:
     def _extract_risk_factors(
         self,
         constitutional_report: GuardrailReport,
-        content_filter_report: GuardrailReport
+        content_filter_report: GuardrailReport,
     ) -> list[str]:
         """Extract risk factors from reports."""
         risk_factors = []
@@ -399,7 +399,7 @@ class SafetyEvaluator:
         self,
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport,
-        risk_level: GuardrailSeverity
+        risk_level: GuardrailSeverity,
     ) -> bool:
         """Determine if content is safe to proceed."""
         # Check for critical violations
@@ -456,12 +456,12 @@ class SafetyEvaluator:
         self._evaluation_stats = {
             "evaluation_time": [],
             "safety_scores": [],
-            "risk_levels": {}
+            "risk_levels": {},
         }
 
         _emit_records_telemetry_event(
             "safety_evaluator",
-            "stats_reset"
+            "stats_reset",
         )
 
 
@@ -469,7 +469,7 @@ class SafetyEvaluator:
 def create_safety_evaluator(
     config: GuardrailConfig | None = None,
     constitutional_engine: ConstitutionalRulesEngine | None = None,
-    content_filter: ContentFilterEngine | None = None
+    content_filter: ContentFilterEngine | None = None,
 ) -> SafetyEvaluator:
     """Create a safety evaluator."""
     return SafetyEvaluator(config, constitutional_engine, content_filter)

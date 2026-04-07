@@ -234,7 +234,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PreCommitSovereignAgent.heal_repository"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PreCommitSovereignAgent.heal_repository",
         )
         super().heal_repository(**kwargs)
         if hasattr(self, "validate_staged_files"):
@@ -321,7 +321,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
                             import_statement=violation.import_statement,
                             source_layer=violation.source_layer,
                             target_layer=violation.target_layer,
-                        )
+                        ),
                     )
                     break
         return staged_violations
@@ -339,7 +339,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             Dictionary with validation results.
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "PreCommitSovereignAgent.validate_staged_files", "L5_POLICY"
+            str(uuid.uuid4()), "PreCommitSovereignAgent.validate_staged_files", "L5_POLICY",
         )
         print("SOVEREIGN PRE-FLIGHT: Purging temporary artifacts...")
         purge_repository_cache(target_path=self.root)
@@ -499,7 +499,7 @@ def main() -> Any:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Pre-Commit Sovereign Agent - Git hook for architectural compliance"
+        description="Pre-Commit Sovereign Agent - Git hook for architectural compliance",
     )
     parser.add_argument("--install", action="store_true", help="Install as git pre-commit hook")
     parser.add_argument("--uninstall", action="store_true", help="Remove git pre-commit hook")

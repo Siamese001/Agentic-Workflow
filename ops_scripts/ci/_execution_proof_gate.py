@@ -67,7 +67,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     c.execute(
         "SELECT COUNT(*) FROM edges "
         "WHERE symbol LIKE '%emit_execution_proof%' "
-        "AND source_file LIKE '%execution_guardrail_chokepoint%'"
+        "AND source_file LIKE '%execution_guardrail_chokepoint%'",
     )
     n = c.fetchone()[0]
     ok = n >= 1
@@ -76,7 +76,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             "A",
             ok,
             f"authorize_and_execute uses emit_execution_proof={n} (required>=1)",
-        )
+        ),
     )
     return ok
 
@@ -98,7 +98,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"emits_replay_key={replay_sources} / governed_sources={governed_sources} = {ratio:.3f} (required>=0.80)",
-        )
+        ),
     )
     return ok
 
@@ -115,7 +115,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             "C",
             ok,
             f"emits_determinism_digest={digest_sources} / governed_sources={governed_sources} = {ratio:.3f} (required>=0.80)",
-        )
+        ),
     )
     return ok
 
@@ -132,7 +132,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             "D",
             ok,
             f"signs_execution_trace={signed_sources} / governed_sources={governed_sources} = {ratio:.3f} (required>=0.80)",
-        )
+        ),
     )
     return ok
 
@@ -151,7 +151,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             "E",
             ok,
             f"compares_proof sources={n}, DeterminismViolation sources={dv} (required: n>=1 or dv>=1)",
-        )
+        ),
     )
     return ok
 

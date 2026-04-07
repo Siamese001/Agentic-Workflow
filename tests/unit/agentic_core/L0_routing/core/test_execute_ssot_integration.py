@@ -14,7 +14,6 @@ Fixes applied (Tier 3):
 from __future__ import annotations
 
 import logging
-import tempfile
 
 import pytest
 
@@ -173,11 +172,9 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
     def test_modular_imports_work(self):
         """Verify all modular imports work correctly."""
-        from pathlib import Path
 
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             MetaLearningResult,
-            _fire_meta_learning_intake_required,
         )
 
         # GAP FIX: Add functional tests beyond import check
@@ -212,7 +209,6 @@ class TestExecuteSsotMetaLearningIntakeReal:
         """Verify _fire_meta_learning_intake_required rejects invalid timestamp (GAP FIX G1)."""
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             _fire_meta_learning_intake_required,
-            MetaLearningError,
         )
 
         class MockState:
@@ -231,7 +227,6 @@ class TestExecuteSsotMetaLearningIntakeReal:
         """Verify _fire_meta_learning_intake_required handles non-dict actions gracefully (GAP FIX G5)."""
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             _fire_meta_learning_intake_required,
-            MetaLearningResult,
         )
 
         class MockState:
@@ -243,7 +238,7 @@ class TestExecuteSsotMetaLearningIntakeReal:
             MockState(),
             1234567890,
             __import__('pathlib').Path('/tmp'),
-            healing_actions=["not a dict", 123, None, {'type': 'valid_action'}]
+            healing_actions=["not a dict", 123, None, {'type': 'valid_action'}],
         )
 
         # Only the valid dict action should be processed
@@ -306,9 +301,9 @@ class TestExecuteSsotRetrievalHooks:
     def test_cache_entry_negative_age_treated_as_expired(self):
         """Verify negative age (clock skew) is treated as expired (GAP FIX G1)."""
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
+            _L1_EXACT_CACHE,
             _is_cache_entry_valid,
             _store_in_retrieval_cache,
-            _L1_EXACT_CACHE,
         )
 
         # Clear cache
@@ -330,9 +325,9 @@ class TestExecuteSsotRetrievalHooks:
     def test_store_in_retrieval_cache_valid_types_work(self):
         """Verify valid cache_type values work correctly."""
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
-            _store_in_retrieval_cache,
             _L1_EXACT_CACHE,
             _L2_SEMANTIC_CACHE,
+            _store_in_retrieval_cache,
         )
 
         # Clear caches first
@@ -349,12 +344,13 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_cache_enforces_max_size_boundary(self):
         """Verify cache enforces MAX_CACHE_SIZE boundary (GAP FIX G10)."""
+        import hashlib
+
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
-            _store_in_retrieval_cache,
             _L1_EXACT_CACHE,
             MAX_CACHE_SIZE,
+            _store_in_retrieval_cache,
         )
-        import hashlib
 
         # Clear cache
         _L1_EXACT_CACHE.clear()
@@ -381,10 +377,10 @@ class TestExecuteSsotRetrievalHooks:
     def test_clear_retrieval_cache_clears_all(self):
         """Verify _clear_retrieval_cache clears both L1 and L2 caches (GAP FIX G2)."""
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
-            _store_in_retrieval_cache,
-            _clear_retrieval_cache,
             _L1_EXACT_CACHE,
             _L2_SEMANTIC_CACHE,
+            _clear_retrieval_cache,
+            _store_in_retrieval_cache,
         )
 
         # Clear and populate both caches
@@ -408,11 +404,9 @@ class TestExecuteSsotRetrievalHooks:
     def test_get_cache_stats_returns_correct_counts(self):
         """Verify _get_cache_stats returns correct L1 and L2 counts (GAP FIX G3)."""
         from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
-            _store_in_retrieval_cache,
-            _get_cache_stats,
             _clear_retrieval_cache,
-            _L1_EXACT_CACHE,
-            _L2_SEMANTIC_CACHE,
+            _get_cache_stats,
+            _store_in_retrieval_cache,
         )
 
         # Clear caches first
@@ -456,7 +450,7 @@ class TestExecuteSsotRetrievalHooks:
         # Check for retrieval-related patterns
         retrieval_patterns = [
             'retrieval', 'Retrieval', 'semantic', 'Semantic',
-            'cache', 'Cache', 'profile', 'Profile'
+            'cache', 'Cache', 'profile', 'Profile',
         ]
 
         has_retrieval = any(pattern in src for pattern in retrieval_patterns)

@@ -111,7 +111,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -205,7 +204,7 @@ class ToolEnforcementArtifact:
             raise ValueError("ToolEnforcementArtifact: tool_name must be non-empty")
         if not isinstance(self.outcome, LawSlotOutcome):
             raise TypeError(
-                f"ToolEnforcementArtifact: outcome must be LawSlotOutcome, got {type(self.outcome).__name__}"
+                f"ToolEnforcementArtifact: outcome must be LawSlotOutcome, got {type(self.outcome).__name__}",
             )
         if not self.original_args_hash:
             raise ValueError("ToolEnforcementArtifact: original_args_hash must be non-empty")

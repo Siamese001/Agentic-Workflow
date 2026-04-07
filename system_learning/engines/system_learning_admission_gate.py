@@ -157,7 +157,7 @@ class SystemLearningCacheAdmissionGate:
             f"SystemLearningCacheAdmissionGate initialized: "
             f"support_threshold={support_threshold}, "
             f"learning_quality_threshold={learning_quality_threshold}, "
-            f"drift_tolerance={drift_tolerance}"
+            f"drift_tolerance={drift_tolerance}",
         )
 
     async def evaluate_admission(
@@ -182,7 +182,7 @@ class SystemLearningCacheAdmissionGate:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "SystemLearningCacheAdmissionGate.evaluate_admission"
+            _trace_id, LayerSegment.L4_STATE, "SystemLearningCacheAdmissionGate.evaluate_admission",
         )
 
         self._metrics["total_evaluations"] += 1
@@ -204,7 +204,7 @@ class SystemLearningCacheAdmissionGate:
 
             # Combine decisions
             final_decision = self._combine_admission_decisions(
-                base_decision, learning_result, drift_result, telemetry_result, context
+                base_decision, learning_result, drift_result, telemetry_result, context,
             )
 
             # Record decision
@@ -223,7 +223,7 @@ class SystemLearningCacheAdmissionGate:
         except Exception as e:
             logger.error(f"Admission evaluation failed: {e}")
             _emit_captures_runtime_anomaly(
-                "p4obs", "system_learning_admission_gate", "admission_evaluation_failure"
+                "p4obs", "system_learning_admission_gate", "admission_evaluation_failure",
             )
 
             # Fail closed on errors
@@ -424,21 +424,21 @@ class SystemLearningCacheAdmissionGate:
             denial_reasons.append("learning_quality")
             explanation_parts.append(
                 f"Learning quality {learning_result['quality_score']:.2f} "
-                f"below threshold {context.confidence_threshold}"
+                f"below threshold {context.confidence_threshold}",
             )
 
         if drift_result["has_drift"]:
             admitted = False
             denial_reasons.append("drift_detected")
             explanation_parts.append(
-                f"Drift score {drift_result['drift_score']:.2f} exceeds tolerance {context.drift_tolerance}"
+                f"Drift score {drift_result['drift_score']:.2f} exceeds tolerance {context.drift_tolerance}",
             )
 
         if not telemetry_result["correlates"]:
             admitted = False
             denial_reasons.append("telemetry_mismatch")
             explanation_parts.append(
-                f"Telemetry correlation {telemetry_result['correlation_score']:.2f} below threshold"
+                f"Telemetry correlation {telemetry_result['correlation_score']:.2f} below threshold",
             )
 
         # Build final explanation

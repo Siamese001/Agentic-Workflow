@@ -16,11 +16,11 @@ class _L5ValidationProofVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract L5 validation proof edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             L5_VALIDATION_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -36,7 +36,7 @@ class _L5ValidationProofVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -54,12 +54,12 @@ class _LearningProvenanceVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract learning provenance edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             LEARNING_PIPELINE_SYMBOLS,
             PROMPT_PROVENANCE_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -75,7 +75,7 @@ class _LearningProvenanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in PROMPT_PROVENANCE_SYMBOLS or base in PROMPT_PROVENANCE_SYMBOLS:
             self.edges.append(
@@ -87,7 +87,7 @@ class _LearningProvenanceVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 
@@ -105,7 +105,6 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P3 learning maturity edges."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             CAPTURES_PATTERN_SYMBOLS,
             FEEDS_META_LEARNING_SYMBOLS,
@@ -116,6 +115,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
             WRITES_LEARNING_SNAPSHOT_SYMBOLS,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -131,7 +131,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in RECORDS_LEARNING_EVENT_SYMBOLS or base in RECORDS_LEARNING_EVENT_SYMBOLS:
             self.edges.append(
@@ -143,7 +143,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in WRITES_LEARNING_SNAPSHOT_SYMBOLS or base in WRITES_LEARNING_SNAPSHOT_SYMBOLS:
             self.edges.append(
@@ -155,7 +155,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in FEEDS_META_LEARNING_SYMBOLS or base in FEEDS_META_LEARNING_SYMBOLS:
             self.edges.append(
@@ -167,7 +167,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in UPDATES_ROUTING_STRATEGY_SYMBOLS or base in UPDATES_ROUTING_STRATEGY_SYMBOLS:
             self.edges.append(
@@ -179,7 +179,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in IMPROVES_AGENT_POLICY_SYMBOLS or base in IMPROVES_AGENT_POLICY_SYMBOLS:
             self.edges.append(
@@ -191,7 +191,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         if tail in STORES_LEARNING_STATE_SYMBOLS or base in STORES_LEARNING_STATE_SYMBOLS:
             self.edges.append(
@@ -203,7 +203,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
                     source_file=self.ctx.source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 

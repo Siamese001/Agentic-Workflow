@@ -315,7 +315,7 @@ class TitaniumRAGPipeline:
 
         _trace_id = f"titanium_{self._query_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "TitaniumRAGPipeline.retrieve"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TitaniumRAGPipeline.retrieve",
         )
 
         # Step 1: Query Decomposition (if enabled)
@@ -363,7 +363,7 @@ class TitaniumRAGPipeline:
         self._query_count += 1
 
         _emit_captures_evaluation_metric(
-            _trace_id, "titanium", "retrieval_time_ms", elapsed_ms
+            _trace_id, "titanium", "retrieval_time_ms", elapsed_ms,
         )
 
         return {

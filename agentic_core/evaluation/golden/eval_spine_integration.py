@@ -15,7 +15,7 @@ from agentic_core.evaluation.golden.golden_evaluator import (
     GoldenEvalResult,
     get_evaluator,
 )
-from agentic_core.runtime.eval_spine import EvalSpine
+from agentic_core.runtime.engine.eval_spine import EvalSpine
 
 Logger = logging.getLogger(__name__)
 

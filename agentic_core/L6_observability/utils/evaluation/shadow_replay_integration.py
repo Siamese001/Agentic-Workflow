@@ -163,7 +163,7 @@ class ShadowEvaluationIntegrator:
             latency_regression_pct = (shadow_latency - prod_latency) / prod_latency * 100.0
             if latency_regression_pct > thresholds["max_latency_regression_pct"]:
                 violations.append(
-                    f"LATENCY_REGRESSION: {latency_regression_pct:.2f}% > {thresholds['max_latency_regression_pct']:.2f}%"
+                    f"LATENCY_REGRESSION: {latency_regression_pct:.2f}% > {thresholds['max_latency_regression_pct']:.2f}%",
                 )
                 regression_scores.append(latency_regression_pct / 100.0)
 
@@ -173,7 +173,7 @@ class ShadowEvaluationIntegrator:
         error_regression = shadow_error - prod_error
         if error_regression > thresholds["max_error_rate_regression_abs"]:
             violations.append(
-                f"ERROR_RATE_REGRESSION: +{error_regression:.4f} > {thresholds['max_error_rate_regression_abs']:.4f}"
+                f"ERROR_RATE_REGRESSION: +{error_regression:.4f} > {thresholds['max_error_rate_regression_abs']:.4f}",
             )
             regression_scores.append(error_regression * 10.0)  # Scale to [0, 1]
 
@@ -184,7 +184,7 @@ class ShadowEvaluationIntegrator:
             cpu_regression_pct = (shadow_cpu - prod_cpu) / prod_cpu * 100.0
             if cpu_regression_pct > thresholds["max_cpu_regression_pct"]:
                 violations.append(
-                    f"CPU_REGRESSION: {cpu_regression_pct:.2f}% > {thresholds['max_cpu_regression_pct']:.2f}%"
+                    f"CPU_REGRESSION: {cpu_regression_pct:.2f}% > {thresholds['max_cpu_regression_pct']:.2f}%",
                 )
                 regression_scores.append(cpu_regression_pct / 100.0)
 
@@ -195,7 +195,7 @@ class ShadowEvaluationIntegrator:
             mem_regression_pct = (shadow_mem - prod_mem) / prod_mem * 100.0
             if mem_regression_pct > thresholds["max_mem_regression_pct"]:
                 violations.append(
-                    f"MEM_REGRESSION: {mem_regression_pct:.2f}% > {thresholds['max_mem_regression_pct']:.2f}%"
+                    f"MEM_REGRESSION: {mem_regression_pct:.2f}% > {thresholds['max_mem_regression_pct']:.2f}%",
                 )
                 regression_scores.append(mem_regression_pct / 100.0)
 

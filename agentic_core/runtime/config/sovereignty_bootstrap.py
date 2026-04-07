@@ -69,7 +69,7 @@ class SovereigntyBootstrap:
         """Execute the 7-step bootstrap sequence. May only be called once."""
         if self._bootstrapped:
             raise RuntimeError(
-                "SovereigntyBootstrap.bootstrap() may only be called once per instance"
+                "SovereigntyBootstrap.bootstrap() may only be called once per instance",
             )
         self._bootstrapped = True
 
@@ -110,7 +110,7 @@ class SovereigntyBootstrap:
         """Seal the bootstrap state. Must be called after bootstrap()."""
         if not self._bootstrapped:
             raise RuntimeError(
-                "seal_and_finalize() requires bootstrap() to have been called first"
+                "seal_and_finalize() requires bootstrap() to have been called first",
             )
         if self._sealed:
             raise RuntimeError("Already sealed")

@@ -264,7 +264,7 @@ class EnterpriseResearchOrchestrator:
             result.execution_log = self._execution_log
 
             _log.info(
-                f"[EnterpriseResearchOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms"
+                f"[EnterpriseResearchOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms",
             )
             _emit_captures_pattern("enterprise", "EnterpriseResearchOrchestrator", "process_complete")
 
@@ -285,7 +285,7 @@ class EnterpriseResearchOrchestrator:
         _emit_dispatches_agent("enterprise", "step_decompose", "L1")
 
         decomposition, summary = self.decomposition_agent.analyze_research_query(
-            topic, artifact_mode, target_audience
+            topic, artifact_mode, target_audience,
         )
         exec_plan = self.decomposition_agent.get_research_execution_plan(decomposition)
 
@@ -315,7 +315,7 @@ class EnterpriseResearchOrchestrator:
                     "mode": art.artifact_mode,
                     "quality_score": art.quality_score,
                     "similarity": art.similarity_score,
-                }
+                },
             )
 
         # Get quality benchmark
@@ -356,7 +356,7 @@ class EnterpriseResearchOrchestrator:
         required_sections = self._get_required_sections(artifact_mode)
 
         validation, gates = self.validation_agent.validate_research(
-            mock_content, mock_sources, required_sections
+            mock_content, mock_sources, required_sections,
         )
 
         return [asdict(validation)], [gates]
@@ -478,7 +478,7 @@ Assuming continued momentum, {topic} represents a key opportunity.
         lines.append(f"- **Quality Score:** {result.generation_results.get('quality_score', 0):.0%}")
         lines.append(f"- **Sources Count:** {result.generation_results.get('sources_count', 0)}")
         lines.append(
-            f"- **Validation Passed:** {'✅' if result.generation_results.get('validation_passed') else '❌'}"
+            f"- **Validation Passed:** {'✅' if result.generation_results.get('validation_passed') else '❌'}",
         )
         lines.append("")
 
@@ -504,14 +504,14 @@ Assuming continued momentum, {topic} represents a key opportunity.
 
             lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
             lines.append(
-                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
+                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}",
             )
             lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
             lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
             lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
             lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
             lines.append(
-                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
             )
             lines.append("")
 

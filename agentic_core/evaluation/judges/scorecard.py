@@ -101,7 +101,7 @@ class JudgeScorecard:
                             "score": verdict.score,
                             "severity": verdict.severity,
                             "reasoning": verdict.reasoning[:200],
-                        }
+                        },
                     )
 
         # Compute dimension averages
@@ -162,7 +162,7 @@ class JudgeScorecard:
         lines.append(f"  Overall Score: {result['overall_score']:.4f}")
         lines.append(f"  Status: {'PASS' if result.get('passed') else 'FAIL'}")
         lines.append(
-            f"  Modules: {result['total_modules']}  |  Verdicts: {result['total_verdicts']}"
+            f"  Modules: {result['total_modules']}  |  Verdicts: {result['total_verdicts']}",
         )
         lines.append("-" * 60)
 
@@ -177,7 +177,7 @@ class JudgeScorecard:
             )
             lines.append(
                 f"  [{icon}] {dim:<25} {data['average_score']:.4f}  "
-                f"(w={data['weight']:.1f}, n={data['verdict_count']})"
+                f"(w={data['weight']:.1f}, n={data['verdict_count']})",
             )
 
         if result.get("fail_summary"):
@@ -186,7 +186,7 @@ class JudgeScorecard:
             for f in result["fail_summary"][:10]:
                 lines.append(
                     f"    [{f['severity']}] {f['rubric_id']} @ {f['target']}: "
-                    f"{f['reasoning'][:80]}"
+                    f"{f['reasoning'][:80]}",
                 )
 
         lines.append("=" * 60)
@@ -252,7 +252,7 @@ class RegressionAnalyzer:
                         "current_score": curr.score,
                         "previous_score": prev.score,
                         "delta": round(delta, 4),
-                    }
+                    },
                 )
             elif abs(delta) <= self._threshold:
                 stable += 1
@@ -289,7 +289,7 @@ class RegressionAnalyzer:
         lines.append(
             f"  Regressions: {result['regression_count']}  |  "
             f"Improvements: {result['improvement_count']}  |  "
-            f"Stable: {result['stable_count']}"
+            f"Stable: {result['stable_count']}",
         )
 
         if result["regressions"]:
@@ -299,7 +299,7 @@ class RegressionAnalyzer:
                 lines.append(
                     f"    {r['rubric_id']} @ {r['target']}: "
                     f"{r['previous_score']:.4f} -> {r['current_score']:.4f} "
-                    f"(delta={r['delta']:+.4f})"
+                    f"(delta={r['delta']:+.4f})",
                 )
 
         if result["new_failures"]:
@@ -308,7 +308,7 @@ class RegressionAnalyzer:
             for f in result["new_failures"]:
                 lines.append(
                     f"    {f['rubric_id']} @ {f['target']}: "
-                    f"{f['previous_outcome']} -> {f['current_outcome']}"
+                    f"{f['previous_outcome']} -> {f['current_outcome']}",
                 )
 
         if result["improvements"]:
@@ -318,7 +318,7 @@ class RegressionAnalyzer:
                 lines.append(
                     f"    {i['rubric_id']} @ {i['target']}: "
                     f"{i['previous_score']:.4f} -> {i['current_score']:.4f} "
-                    f"(delta={i['delta']:+.4f})"
+                    f"(delta={i['delta']:+.4f})",
                 )
 
         lines.append("=" * 60)

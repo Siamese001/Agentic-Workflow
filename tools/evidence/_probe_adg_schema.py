@@ -28,7 +28,7 @@ print("\nNODE COLUMNS:", node_cols)
 print("\n--- SAMPLE NODE (FileClassificationAgent) ---")
 # find the right path-like column
 path_col = next(
-    (c for c in node_cols if "path" in c.lower() or "file" in c.lower() or "name" in c.lower()), node_cols[0]
+    (c for c in node_cols if "path" in c.lower() or "file" in c.lower() or "name" in c.lower()), node_cols[0],
 )
 cur.execute(f"SELECT * FROM nodes WHERE {path_col} LIKE '%FileClassificationAgent%' LIMIT 1")
 row = cur.fetchone()

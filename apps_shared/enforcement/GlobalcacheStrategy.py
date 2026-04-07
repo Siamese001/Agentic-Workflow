@@ -90,21 +90,14 @@ from pydantic import BaseModel, Field
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -112,17 +105,11 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -391,7 +378,7 @@ class L2VectorStore:
 
     # guardian: allow-magic-config
     def search(
-        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5
+        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5,
     ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
 
@@ -527,7 +514,7 @@ class GlobalCache:
         self._hive: Any = None
         self._stats = {"total_requests": 0, "l1_hits": 0, "l2_hits": 0, "total_misses": 0}
         logger.info(
-            f"Initialized GlobalCache (L1: {l1_size}, L2: SSOT-backed, threshold: {semantic_threshold})"
+            f"Initialized GlobalCache (L1: {l1_size}, L2: SSOT-backed, threshold: {semantic_threshold})",
         )
 
     def get_hive_mind(self):
@@ -568,7 +555,7 @@ class GlobalCache:
         return None
 
     def get_semantic(
-        self, query_text: str, threshold: float | None = None, max_results: int = 1
+        self, query_text: str, threshold: float | None = None, max_results: int = 1,
     ) -> list[Any]:
         """Get values by semantic similarity.
 
@@ -633,7 +620,7 @@ class GlobalCache:
         if text_for_embedding:
             embedding = self.embedder.embed(text_for_embedding)
         entry = CacheEntry(
-            key_hash=key_hash, value=value, embedding=embedding, ttl=ttl, source_engine=source_engine
+            key_hash=key_hash, value=value, embedding=embedding, ttl=ttl, source_engine=source_engine,
         )
         self.l1.put(key_hash, entry)
         if embedding:

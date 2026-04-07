@@ -12,7 +12,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-
 from fix_high_severity_silent_swallowers import HighSeveritySilentSwallowerFixer
 
 
@@ -127,7 +126,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
                 "handler_body": ["pass"],
                 "severity": "HIGH",
                 # Missing file_path
-            }
+            },
         )
 
         tools_dir = temp_workspace / "tools"
@@ -219,7 +218,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
                 "exception_type": "ImportError",
                 "handler_body": ["pass"],
                 "severity": "HIGH",
-            }
+            },
         )
 
         tools_dir = temp_workspace / "tools"

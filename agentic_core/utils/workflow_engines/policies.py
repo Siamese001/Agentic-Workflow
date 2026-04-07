@@ -58,39 +58,25 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "policies", "p0_governance")
 _emit_snapshots_state("p0", "policies", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -291,7 +277,7 @@ class FixedTokenChunkPolicy(ChunkPolicy):
                     start_char=len(" ".join(words[:start])),
                     end_char=len(" ".join(words[: start + len(word_slice)])),
                     metadata={"policy": self.name, "chunk_size": self.chunk_size},
-                )
+                ),
             )
         return chunks
 
@@ -337,7 +323,7 @@ class OverlapWindowChunkPolicy(ChunkPolicy):
                     start_char=start,
                     end_char=start + len(word_slice),
                     metadata={"policy": self.name, "chunk_size": self.chunk_size, "overlap": self.overlap},
-                )
+                ),
             )
             start += step
             idx += 1
@@ -382,7 +368,7 @@ class SectionAwareChunkPolicy(ChunkPolicy):
                     end_char=char_offset + len(section),
                     parent_section=section[:80].replace("\n", " "),
                     metadata={"policy": self.name, "max_section_tokens": self.max_section_tokens},
-                )
+                ),
             )
             char_offset += len(section) + 1
         return chunks
@@ -442,7 +428,7 @@ class SemanticChunkPolicy(ChunkPolicy):
                     start_char=char_offset,
                     end_char=char_offset + len(content),
                     metadata={"policy": self.name, "target_size": self.target_size},
-                )
+                ),
             )
             char_offset += len(content) + 1
         return chunks

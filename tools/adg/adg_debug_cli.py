@@ -129,7 +129,7 @@ def cmd_explain_violation(args: argparse.Namespace) -> int:
         if not violation:
             print(json.dumps({
                 "error": f"Edge {args.edge_id} not found in unresolved imports",
-                "hint": "Use find-unresolved to list all unresolved imports"
+                "hint": "Use find-unresolved to list all unresolved imports",
             }, indent=2))
             return 1
 

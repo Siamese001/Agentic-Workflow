@@ -38,7 +38,7 @@ def main() -> int:
         # Get test selection from ADG
         selector_cmd = [
             sys.executable, "-m", "tools.adg.adg_test_selector",
-            "--from-diff"
+            "--from-diff",
         ]
 
         if dry_run:
@@ -51,7 +51,7 @@ def main() -> int:
             selector_cmd,
             cwd=REPO_ROOT,
             capture_output=True,
-            text=True
+            text=True,
         )
 
         if result.returncode != 0:
@@ -68,7 +68,7 @@ def main() -> int:
     # Build pytest command
     pytest_cmd = [
         sys.executable, "-m", "pytest",
-        "-c", str(PYTEST_FAST_INI)
+        "-c", str(PYTEST_FAST_INI),
     ]
 
     # Add verbosity if requested

@@ -53,7 +53,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -105,7 +105,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"capacity_aware_routing exported={emitter_function} (>=1), "
             f"routes_path sources={routing_edges} (>=1), "
             f"proposal_commits_routing sources={contract_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -132,7 +132,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"CapacitySnapshot exported={capacity_snapshot} (>=1), routes_path sources={routing_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -164,7 +164,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"UNAVAILABLE exported={unavailable_enum} (>=1), "
             f"CapacitySnapshot exported={capacity_snapshot} (>=1), "
             f"routes_path sources={routing_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -194,7 +194,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"CapacityDecisionReason exported={decision_reason} (>=1), "
             f"DEGRADED exported={degraded_enum} (>=1), "
             f"CapacitySnapshot exported={capacity_snapshot} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -236,7 +236,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"choose_route_with_capacity exported={choose_function} (>=1), "
             f"capacity_snapshot_emitted exported={snapshot_emitter} (>=1), "
             f"routes_path sources={routing_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -290,7 +290,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L0_routing/capacity%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

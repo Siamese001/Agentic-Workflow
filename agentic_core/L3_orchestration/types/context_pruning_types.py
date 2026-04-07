@@ -123,7 +123,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -181,7 +180,7 @@ _emit_proposal_commits_routing("p1", "context_pruning_types", "routing_commit")
 
 Logger = logging.getLogger(__name__)
 CRITICAL_DNA_KEYS: frozenset[str] = frozenset(
-    {"original_goal", "dataset", "mission_params", "task_dna", "mission_id", "user_intent"}
+    {"original_goal", "dataset", "mission_params", "task_dna", "mission_id", "user_intent"},
 )
 DEFAULT_MAX_CONTEXT_SIZE = 1024 * 1024
 DEFAULT_PRUNE_RATIO = 0.3
@@ -263,7 +262,7 @@ class ContextPruningStrategy:
         self._access_timestamps: dict[str, str] = {}
         self._priority_scores: dict[str, int] = {}
         Logger.info(
-            f"[ContextPruning] Initialized with strategy={strategy}, max_size={max_context_size}, prune_ratio={prune_ratio}"
+            f"[ContextPruning] Initialized with strategy={strategy}, max_size={max_context_size}, prune_ratio={prune_ratio}",
         )
 
     def should_prune(self, context: dict[str, Any]) -> bool:
@@ -278,7 +277,7 @@ class ContextPruningStrategy:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextPruner.should_prune"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextPruner.should_prune",
         )
         current_size = self._estimate_context_size(context)
         return current_size > self.max_context_size
@@ -326,7 +325,7 @@ class ContextPruningStrategy:
         self._metrics.dna_preservations += len(preserved_keys)
         self._metrics.last_prune_timestamp = datetime.now().isoformat()
         Logger.info(
-            f"[ContextPruning] Pruned {len(pruned_keys)} entries, freed {bytes_freed} bytes, preserved {len(preserved_keys)} DNA keys"
+            f"[ContextPruning] Pruned {len(pruned_keys)} entries, freed {bytes_freed} bytes, preserved {len(preserved_keys)} DNA keys",
         )
         return PruningResult(
             success=True,
@@ -459,7 +458,7 @@ class AdaptiveDepthManager:
 
     # guardian: allow-magic-config
     def __init__(
-        self, base_limit: int = 50, max_limit: int = 200, min_limit: int = 10, enable_adaptive: bool = True
+        self, base_limit: int = 50, max_limit: int = 200, min_limit: int = 10, enable_adaptive: bool = True,
     ):
         """
         Initialize adaptive depth manager.
@@ -477,11 +476,11 @@ class AdaptiveDepthManager:
         self._complexity_history: list[float] = []
         self._depth_history: list[int] = []
         Logger.info(
-            f"[AdaptiveDepth] Initialized with base={base_limit}, max={max_limit}, adaptive={enable_adaptive}"
+            f"[AdaptiveDepth] Initialized with base={base_limit}, max={max_limit}, adaptive={enable_adaptive}",
         )
 
     def calculate_adaptive_limit(
-        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None
+        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None,
     ) -> int:
         """
         Calculate adaptive depth limit based on mission complexity.

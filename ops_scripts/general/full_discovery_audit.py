@@ -11,7 +11,6 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / 'agent_discovery_full.json'
 SOVEREIGN_BASES = {'SovereignBaseAgent', 'L0RoutingBaseAgent', 'L1CognitionBase', 'L2ExecutionBase', 'L3OrchestrationBase', 'L4StateBase', 'L5SafetyBase', 'L6ObservabilityBase', 'HealerMixin', 'MCPHardenedMixin', 'CanonBaseAgent'}

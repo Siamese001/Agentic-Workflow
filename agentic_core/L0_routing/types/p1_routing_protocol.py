@@ -26,7 +26,7 @@ class P1Core:
         """Register an agent with capabilities."""
         self._agents[agent_id] = {
             "capabilities": capabilities,
-            "status": "active"
+            "status": "active",
         }
 
     def route_to_agent(self, agent_id: str, context: dict[str, Any]) -> bool:

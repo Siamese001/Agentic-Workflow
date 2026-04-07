@@ -67,7 +67,7 @@ class RerankingEngine:
             "recency_score",
             "popularity_score",
             "query_term_match",
-            "file_type_relevance"
+            "file_type_relevance",
         ]
 
         # Collection priority weights
@@ -79,7 +79,7 @@ class RerankingEngine:
             "repo_incidents_rca": 1.0,
             "repo_tests_guardrails": 1.0,
             "repo_git_history": 0.9,
-            "repo_arch_docs": 0.85
+            "repo_arch_docs": 0.85,
         }
 
         # Layer relevance weights
@@ -90,7 +90,7 @@ class RerankingEngine:
             "L3": 1.1,  # Orchestration is important
             "L4": 1.0,  # State is baseline
             "L5": 1.15, # Safety is critical
-            "L6": 0.9   # Observability is supporting
+            "L6": 0.9,   # Observability is supporting
         }
 
         # File type relevance weights
@@ -102,7 +102,7 @@ class RerankingEngine:
             "doc": 0.9,
             "runtime_evidence": 1.1,
             "incident_rca": 1.05,
-            "git_commit": 0.8
+            "git_commit": 0.8,
         }
 
         # Try to load model
@@ -130,7 +130,7 @@ class RerankingEngine:
         self,
         fusion_result: FusionResult,
         query: str,
-        max_results: int = 20
+        max_results: int = 20,
     ) -> RerankingResult:
         """
         Rerank search results using ML model or rule-based approach.
@@ -166,7 +166,7 @@ class RerankingEngine:
                 reranking_scores=[],
                 features_used=self.feature_names,
                 execution_time_ms=0,
-                model_info={"model_type": "none", "model_loaded": False}
+                model_info={"model_type": "none", "model_loaded": False},
             )
 
         # Extract features for each result
@@ -181,14 +181,14 @@ class RerankingEngine:
             model_info = {
                 "model_type": "lightgbm",
                 "model_loaded": True,
-                "model_path": self.model_path
+                "model_path": self.model_path,
             }
         else:
             reranked_results, scores = self._rule_based_rerank(all_results, features_list)
             model_info = {
                 "model_type": "rule_based",
                 "model_loaded": False,
-                "reason": "LightGBM not available"
+                "reason": "LightGBM not available",
             }
 
         # Limit results
@@ -203,7 +203,7 @@ class RerankingEngine:
             reranking_scores=scores,
             features_used=self.feature_names,
             execution_time_ms=execution_time_ms,
-            model_info=model_info
+            model_info=model_info,
         )
 
     def _extract_features(self, result: RetrievalResult, query: str, fusion_result: FusionResult) -> RerankingFeatures:
@@ -297,7 +297,7 @@ class RerankingEngine:
             recency_score=recency_score,
             popularity_score=popularity_score,
             query_term_match=query_term_match,
-            file_type_relevance=file_type_relevance
+            file_type_relevance=file_type_relevance,
         )
 
     def _ml_rerank(self, results: list[RetrievalResult], features_list: list[RerankingFeatures]) -> tuple[list[RetrievalResult], list[float]]:
@@ -313,7 +313,7 @@ class RerankingEngine:
                 f.recency_score,
                 f.popularity_score,
                 f.query_term_match,
-                f.file_type_relevance
+                f.file_type_relevance,
             ] for f in features_list])
 
             # Predict scores
@@ -362,7 +362,7 @@ class RerankingEngine:
         self,
         queries: list[str],
         results_list: list[list[RetrievalResult]],
-        relevance_labels: list[list[int]]
+        relevance_labels: list[list[int]],
     ) -> tuple[np.ndarray, np.ndarray]:
         """
         Create training data for reranking model.
@@ -397,7 +397,7 @@ class RerankingEngine:
                     feature_vector.recency_score,
                     feature_vector.popularity_score,
                     feature_vector.query_term_match,
-                    feature_vector.file_type_relevance
+                    feature_vector.file_type_relevance,
                 ])
                 labels.append(rel_label)
 
@@ -412,7 +412,7 @@ class RerankingEngine:
             "feature_names": self.feature_names,
             "collection_weights": self.collection_weights,
             "layer_weights": self.layer_weights,
-            "file_type_weights": self.file_type_weights
+            "file_type_weights": self.file_type_weights,
         }
 
 
@@ -428,14 +428,14 @@ def main():
             content="UniversalWriteGateway implementation",
             metadata={"artifact_type": "code", "layer": "L2"},
             score=0.8,
-            collection="repo_code_chunks"
+            collection="repo_code_chunks",
         ),
         RetrievalResult(
             content="ADG static scanner code",
             metadata={"artifact_type": "sym", "layer": "L4"},
             score=0.7,
-            collection="repo_symbols"
-        )
+            collection="repo_symbols",
+        ),
     ]
 
     # Create dummy fusion result
@@ -445,7 +445,7 @@ def main():
         fusion_strategy="score_fusion",
         total_results=2,
         execution_time_ms=100.0,
-        query_variations_used=[]
+        query_variations_used=[],
     )
 
     # Test reranking
@@ -454,7 +454,7 @@ def main():
     rerank_result = reranker.rerank_results(
         fusion_result=dummy_fusion,
         query="What does UWG do?",
-        max_results=10
+        max_results=10,
     )
 
     print("Reranking Test:")

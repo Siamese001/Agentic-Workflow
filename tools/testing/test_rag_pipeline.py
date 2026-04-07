@@ -33,7 +33,7 @@ async def test_rag_pipeline():
         print("[TEST] Testing document retrieval...")
         results = await orchestrator.retrieve(
             "Why did denied claims increase for Client ABC?",
-            top_k=3
+            top_k=3,
         )
 
         # Verify results

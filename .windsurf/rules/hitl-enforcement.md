@@ -1,6 +1,8 @@
+---
+trigger: always_on
+---
 # HITL (Human-In-The-Loop) Enforcement Rule
 
-**Trigger**: always_on
 **Layer**: Windsurf (AI-time behavioral)
 **Type**: Behavioural
 **Priority**: Constitutional
@@ -557,7 +559,17 @@ This is a **behavioral rule** enforced during AI execution. No pre-commit hook c
 
 ### 6.2 Audit Trail
 
-All HITL decisions MUST be recorded in:
+All HITL decisions MUST be recorded with:
+- **Decision Point**: Clear description of the decision
+- **Timestamp**: ISO8601 timestamp of decision
+- **Options Presented**: All options A/B/C/D with pros/cons
+- **User Selection**: Which option was selected
+- **Rationale**: User's stated rationale (if provided)
+- **Impact**: Expected impact of the decision
+- **Evidence File**: Path to evidence file containing this record
+
+Audit trail MUST be stored in evidence files under `docs/reports/plans/`.
+Missing audit trail = constitutional violation.
 - Evidence files (`docs/reports/plans/`)
 - Commit messages (when applicable)
 - Plan updates (when scope changes)

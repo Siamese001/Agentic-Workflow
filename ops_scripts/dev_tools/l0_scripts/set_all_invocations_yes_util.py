@@ -7,7 +7,6 @@ termination point of the heal chain.
 import json
 from pathlib import Path
 
-
 discovery_path = Path('agent_discovery_full.json')
 with open(discovery_path) as f:
     agents = json.load(f)

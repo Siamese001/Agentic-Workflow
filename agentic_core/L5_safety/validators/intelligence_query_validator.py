@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -214,7 +213,7 @@ class IntelligenceQueryValidator:
         self.min_query_length = config.get("min_query_length", 3)
         self.max_query_length = config.get("max_query_length", 500)
         self.allowed_filter_keys = config.get(
-            "allowed_filter_keys", ["industry", "date_range", "source", "relevance_threshold"]
+            "allowed_filter_keys", ["industry", "date_range", "source", "relevance_threshold"],
         )
         self.cache_ttl = config.get("cache_ttl", 3600)
 
@@ -233,12 +232,12 @@ class IntelligenceQueryValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "IntelligenceQueryValidator.validate_query"
+            _trace_id, LayerSegment.L5_POLICY, "IntelligenceQueryValidator.validate_query",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:IntelligenceQueryValidator.validate_query".encode()
+            f"{_trace_id}:IntelligenceQueryValidator.validate_query".encode(),
         ).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 

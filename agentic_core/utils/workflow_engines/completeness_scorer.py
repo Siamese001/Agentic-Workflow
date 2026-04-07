@@ -186,7 +186,7 @@ _CONDITION_KEYWORDS: frozenset[str] = frozenset(
         "on condition",
         "where",
         "requires",
-    }
+    },
 )
 
 _EXCEPTION_KEYWORDS: frozenset[str] = frozenset(
@@ -208,7 +208,7 @@ _EXCEPTION_KEYWORDS: frozenset[str] = frozenset(
         "limitation",
         "constraint",
         "restriction",
-    }
+    },
 )
 
 _SCOPE_KEYWORDS: frozenset[str] = frozenset(
@@ -231,7 +231,7 @@ _SCOPE_KEYWORDS: frozenset[str] = frozenset(
         "tier",
         "plan",
         "configuration",
-    }
+    },
 )
 
 _TEMPORAL_KEYWORDS: frozenset[str] = frozenset(
@@ -254,7 +254,7 @@ _TEMPORAL_KEYWORDS: frozenset[str] = frozenset(
         "current",
         "legacy",
         "future",
-    }
+    },
 )
 
 

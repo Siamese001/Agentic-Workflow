@@ -54,7 +54,7 @@ print("\n=== IMPORTERS OF heal_policy_types (module) ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%heal_policy_types%' "
     "AND entity_type NOT LIKE '%symbol%' "
-    "AND resolved_path NOT LIKE '%archive%'"
+    "AND resolved_path NOT LIKE '%archive%'",
 )
 hpt_ids = [r[0] for r in cur.fetchall()]
 print("  heal_policy_types module node ids:", hpt_ids)
@@ -76,7 +76,7 @@ print("\n=== IMPORTERS OF _ssot_routing MODULE ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%_ssot_routing%' "
     "AND entity_type NOT LIKE '%symbol%' "
-    "AND resolved_path NOT LIKE '%archive%'"
+    "AND resolved_path NOT LIKE '%archive%'",
 )
 sr_ids = [r[0] for r in cur.fetchall()]
 if sr_ids:

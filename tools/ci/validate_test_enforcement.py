@@ -33,7 +33,7 @@ class TestEnforcementValidator:
             'total_tests': 0,
             'with_markers': 0,
             'without_markers': 0,
-            'marker_distribution': {}
+            'marker_distribution': {},
         }
 
         for test_file_info in self.test_files[:200]:  # Validate first 200 files
@@ -91,7 +91,7 @@ class TestEnforcementValidator:
             'properly_named': 0,
             'with_assertions': 0,
             'correct_parameters': 0,
-            'structure_issues': []
+            'structure_issues': [],
         }
 
         for test_file_info in self.test_files[:200]:  # Validate first 200 files
@@ -138,7 +138,7 @@ class TestEnforcementValidator:
                                 'file': str(file_path),
                                 'line': i + 1,
                                 'function': line.strip(),
-                                'issues': issues
+                                'issues': issues,
                             })
 
             except Exception as e:
@@ -147,7 +147,7 @@ class TestEnforcementValidator:
 
         self.validation_results['test_structure'] = structure_compliance
 
-        print(f"  ✅ Validated test structure")
+        print("  ✅ Validated test structure")
         print(f"     Properly named: {structure_compliance['properly_named']}")
         print(f"     With assertions: {structure_compliance['with_assertions']}")
         print(f"     Correct parameters: {structure_compliance['correct_parameters']}")
@@ -164,7 +164,7 @@ class TestEnforcementValidator:
             'execution_errors': 0,
             'passed': 0,
             'failed': 0,
-            'skipped': 0
+            'skipped': 0,
         }
 
         try:
@@ -174,7 +174,7 @@ class TestEnforcementValidator:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
             )
 
             if result.returncode == 0:
@@ -195,7 +195,7 @@ class TestEnforcementValidator:
                 cwd=PROJECT_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
             )
 
             if result.returncode == 0:
@@ -227,7 +227,7 @@ class TestEnforcementValidator:
 
         self.validation_results['pytest'] = pytest_results
 
-        print(f"  ✅ Pytest validation completed")
+        print("  ✅ Pytest validation completed")
         print(f"     Collected: {pytest_results['collected']}")
         print(f"     Passed: {pytest_results['passed']}")
         print(f"     Failed: {pytest_results['failed']}")
@@ -244,7 +244,7 @@ class TestEnforcementValidator:
             'overall_compliance': self._calculate_overall_compliance(),
             'validation_results': self.validation_results,
             'errors': self.errors,
-            'recommendations': self._generate_recommendations()
+            'recommendations': self._generate_recommendations(),
         }
 
         report_file = PROJECT_ROOT / "tools" / "test_enforcement_validation_report.json"
@@ -289,12 +289,12 @@ class TestEnforcementValidator:
 
         if marker_compliance.get('without_markers', 0) > 0:
             recommendations.append(
-                f"Add category markers to {marker_compliance['without_markers']} tests without markers"
+                f"Add category markers to {marker_compliance['without_markers']} tests without markers",
             )
 
         if structure_compliance.get('structure_issues'):
             recommendations.append(
-                f"Fix {len(structure_compliance['structure_issues'])} test structure issues"
+                f"Fix {len(structure_compliance['structure_issues'])} test structure issues",
             )
 
         if self.errors > 0:

@@ -49,13 +49,13 @@ class EnhancedRedisMCPClient:
                 self._client.ping()
                 if not self._client.exists("adg:meta"):
                     raise RuntimeError(
-                        "ADG Redis cache is not loaded. Run: python tools/adg/adg_redis_ingest.py --force"
+                        "ADG Redis cache is not loaded. Run: python tools/adg/adg_redis_ingest.py --force",
                     )
                 logger.debug("Redis client connected and ADG cache is hot")
             except redis.RedisError as exc:
                 raise RuntimeError(
                     f"Redis unavailable — ADG cache cannot be queried: {exc}. "
-                    "Run: python tools/adg/adg_redis_ingest.py --force"
+                    "Run: python tools/adg/adg_redis_ingest.py --force",
                 ) from exc
         return self._client
 

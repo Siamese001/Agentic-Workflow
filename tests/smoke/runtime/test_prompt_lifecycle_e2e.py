@@ -106,7 +106,7 @@ class TestE2ESmoke(unittest.TestCase):
             "token_estimate": 50,
         })
         signature = hmac.new(
-            secret_key, canonical.encode("utf-8"), hashlib.sha256
+            secret_key, canonical.encode("utf-8"), hashlib.sha256,
         ).hexdigest()
 
         # Create final artifact with signature

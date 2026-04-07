@@ -95,7 +95,7 @@ class ADGEndToEndTest:
                 "invalid_dst_refs": invalid_dst,
                 "entity_types": len(entity_types),
                 "relation_types": len(relation_types),
-                "integrity_score": 100 - (null_layers + null_identity + null_confidence + invalid_src + invalid_dst)
+                "integrity_score": 100 - (null_layers + null_identity + null_confidence + invalid_src + invalid_dst),
             }
 
             success = (null_layers == 0 and null_identity == 0 and null_confidence == 0 and
@@ -150,7 +150,7 @@ class ADGEndToEndTest:
                 "critical_layers": critical_counts,
                 "modules_by_layer": {row['layer']: row['count'] for row in module_by_layer},
                 "symbols_by_layer": {row['layer']: row['count'] for row in symbol_by_layer},
-                "architecture_health": len(layer_distribution) >= 10 and sum(critical_counts.values()) > 0
+                "architecture_health": len(layer_distribution) >= 10 and sum(critical_counts.values()) > 0,
             }
 
             success = len(layer_distribution) >= 10 and sum(critical_counts.values()) > 0
@@ -186,7 +186,7 @@ class ADGEndToEndTest:
             key_relations = [
                 'calls', 'imports', 'exports', 'implements', 'covers',
                 'emits_test_result', 'defines_test_case', 'detects_regression',
-                'emits_replay_key', 'mutation_signature', 'parent_snapshot_hash'
+                'emits_replay_key', 'mutation_signature', 'parent_snapshot_hash',
             ]
 
             edge_counts = {}
@@ -217,7 +217,7 @@ class ADGEndToEndTest:
                 "key_relation_counts": edge_counts,
                 "average_degree": round(avg_degree, 2),
                 "isolated_nodes": isolated_nodes,
-                "connectivity_health": avg_degree > 1 and isolated_nodes < len(edge_counts)
+                "connectivity_health": avg_degree > 1 and isolated_nodes < len(edge_counts),
             }
 
             success = avg_degree > 1 and isolated_nodes < len(edge_counts)
@@ -276,7 +276,7 @@ class ADGEndToEndTest:
                 "total_nodes": len(node_data),
                 "total_edges": len(edge_data),
                 "mutation_edge_counts": mutation_counts,
-                "determinism_score": 100 if len(mutation_counts) >= 4 else 50
+                "determinism_score": 100 if len(mutation_counts) >= 4 else 50,
             }
 
             success = len(mutation_counts) >= 4 and len(node_data) > 0 and len(edge_data) > 0
@@ -318,7 +318,7 @@ class ADGEndToEndTest:
                 ADG_ARTIFACTS_DIR / "adg_file_graph_03232026_0655.json",
                 ADG_ARTIFACTS_DIR / "adg_symbol_graph_03232026_0655.json",
                 ADG_ARTIFACTS_DIR / "adg_governance_graph_03232026_0655.json",
-                ADG_ARTIFACTS_DIR / "cache" / "scan_result_cache.json"
+                ADG_ARTIFACTS_DIR / "cache" / "scan_result_cache.json",
             ]
 
             file_status = {}
@@ -341,7 +341,7 @@ class ADGEndToEndTest:
                 "required_files": file_status,
                 "zip_archive": zip_status,
                 "reports_directory": {"exists": reports_exist, "report_count": report_count},
-                "completeness_score": sum(1 for f in file_status.values() if f["exists"]) / len(file_status) * 100
+                "completeness_score": sum(1 for f in file_status.values() if f["exists"]) / len(file_status) * 100,
             }
 
             success = (sum(1 for f in file_status.values() if f["exists"]) >= len(required_files) - 1 and
@@ -407,9 +407,9 @@ class ADGEndToEndTest:
                 "query_performance": {
                     "node_count_query_ms": round(node_query_time * 1000, 2),
                     "edge_count_query_ms": round(edge_query_time * 1000, 2),
-                    "layer_distribution_query_ms": round(layer_query_time * 1000, 2)
+                    "layer_distribution_query_ms": round(layer_query_time * 1000, 2),
                 },
-                "performance_score": 100 if (node_query_time < 0.1 and edge_query_time < 0.1) else 80
+                "performance_score": 100 if (node_query_time < 0.1 and edge_query_time < 0.1) else 80,
             }
 
             success = (db_size_mb > 10 and node_query_time < 0.5 and edge_query_time < 0.5)

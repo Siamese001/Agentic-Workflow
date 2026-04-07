@@ -98,7 +98,7 @@ and system evolution based on execution patterns.
 
         if len(snapshot.nodes) > self._max_pattern_nodes:
             raise ValueError(
-                f"Snapshot node count {len(snapshot.nodes)} exceeds limit {self._max_pattern_nodes}"
+                f"Snapshot node count {len(snapshot.nodes)} exceeds limit {self._max_pattern_nodes}",
             )
 
         timestamp = int(time.time())
@@ -154,7 +154,7 @@ and system evolution based on execution patterns.
         serialized = json.dumps(snapshot_data)
         if len(serialized) > self._max_snapshot_size_mb * 1024 * 1024:
             raise ValueError(
-                f"Snapshot size {len(serialized) / (1024*1024):.1f}MB exceeds limit {self._max_snapshot_size_mb}MB"
+                f"Snapshot size {len(serialized) / (1024*1024):.1f}MB exceeds limit {self._max_snapshot_size_mb}MB",
             )
 
         snapshot_file.write_text(serialized, encoding="utf-8")

@@ -17,7 +17,7 @@ for sd in sorted(os.listdir(ac_dir)):
         [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
          "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
         capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root,
-        timeout=60
+        timeout=60,
     )
     out = r.stdout + r.stderr
     lines = out.splitlines()

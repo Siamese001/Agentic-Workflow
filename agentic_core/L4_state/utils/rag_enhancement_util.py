@@ -115,7 +115,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -219,7 +218,7 @@ class semantic_cache:
         cached: Any = self.get(query)
         if cached:
             return CacheSufficiencyResult(
-                is_sufficient=True, cached_response=cached, confidence=1.0, reason="Exact cache hit"
+                is_sufficient=True, cached_response=cached, confidence=1.0, reason="Exact cache hit",
             )
         return CacheSufficiencyResult(is_sufficient=False, reason="cache miss")
 
@@ -322,7 +321,7 @@ class KnowledgeGraphInjector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "KnowledgeGraphInjector.inject_context"
+            _trace_id, LayerSegment.L4_STATE, "KnowledgeGraphInjector.inject_context",
         )
 
         if not context.entities:
@@ -366,7 +365,7 @@ class FewShotInjector:
         if not examples:
             return prompt
         example_str: Any = "\n\n".join(
-            [f"Example {i + 1}:\nInput: {ex.input}\nOutput: {ex.output}" for i, ex in enumerate(examples)]
+            [f"Example {i + 1}:\nInput: {ex.input}\nOutput: {ex.output}" for i, ex in enumerate(examples)],
         )
         return f"{example_str}\n\n{prompt}"
 

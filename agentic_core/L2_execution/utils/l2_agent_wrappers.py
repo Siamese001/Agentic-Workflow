@@ -10,13 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from agentic_core.L2_execution.types.l2_execution_contract import (
-    L2ExecutionAgent,
-    L2ExecutionContext,
-    L2ExecutionPhase,
-    L2PhaseResult,
-)
-
 # Import underlying agents
 from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
     EmbeddingSovereignAgent as _EmbeddingSovereignAgent,
@@ -32,6 +25,12 @@ from agentic_core.L2_execution.reasoning.StructuredEngineAgent import (
 )
 from agentic_core.L2_execution.reasoning.SubAtomicRegistryAgent import (
     SubAtomicRegistryAgent as _SubAtomicRegistryAgent,
+)
+from agentic_core.L2_execution.types.l2_execution_contract import (
+    L2ExecutionAgent,
+    L2ExecutionContext,
+    L2ExecutionPhase,
+    L2PhaseResult,
 )
 
 # =============================================================================
@@ -98,7 +97,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             embedding = loop.run_until_complete(
-                self._gateway.get_embedding(content, provider)
+                self._gateway.get_embedding(content, provider),
             )
             loop.close()
 

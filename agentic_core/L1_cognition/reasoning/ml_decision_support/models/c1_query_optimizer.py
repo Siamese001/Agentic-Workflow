@@ -49,7 +49,7 @@ class C1QueryOptimizer(BaseMLModel):
         4: "Update_Statistics",
         5: "Partition_Table",
         6: "Materialize_View",
-        7: "No_Optimization"
+        7: "No_Optimization",
     }
 
     # Reverse mapping
@@ -64,7 +64,7 @@ class C1QueryOptimizer(BaseMLModel):
             model_version="1.0",
             model_type="gradient_boosting",
             prediction_type=PredictionType.MULTICLASS,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -80,7 +80,7 @@ class C1QueryOptimizer(BaseMLModel):
         self.threshold_config = {
             "complexity_threshold": 0.6,
             "performance_threshold": 0.5,
-            "optimization_threshold": 0.7
+            "optimization_threshold": 0.7,
         }
 
         if model_file_path and model_file_path.exists():
@@ -119,8 +119,8 @@ class C1QueryOptimizer(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'class_names': self.class_names,
                 'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat()
-            }
+                'saved_at': datetime.now().isoformat(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -132,7 +132,7 @@ class C1QueryOptimizer(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.ADVISORY
+        decision_mode: DecisionMode = DecisionMode.ADVISORY,
     ) -> ModelPrediction:
         """
         Predict query optimization action.
@@ -165,7 +165,7 @@ class C1QueryOptimizer(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -200,8 +200,8 @@ class C1QueryOptimizer(BaseMLModel):
                     prediction=predicted_action,
                     confidence=confidence,
                     probability_distribution=prob_distribution,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Create prediction
@@ -214,7 +214,7 @@ class C1QueryOptimizer(BaseMLModel):
                 decision_mode=decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -226,7 +226,7 @@ class C1QueryOptimizer(BaseMLModel):
                 'class_probabilities': [float(p) for p in probabilities],
                 'thresholds_passed': passes_threshold,
                 'optimization_action': predicted_action,
-                'requires_optimization': predicted_action != "No_Optimization"
+                'requires_optimization': predicted_action != "No_Optimization",
             })
 
             # Log prediction
@@ -242,7 +242,7 @@ class C1QueryOptimizer(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def optimize_query(
@@ -250,7 +250,7 @@ class C1QueryOptimizer(BaseMLModel):
         query_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Get comprehensive query optimization recommendations.
@@ -269,7 +269,7 @@ class C1QueryOptimizer(BaseMLModel):
             context=query_context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -277,7 +277,7 @@ class C1QueryOptimizer(BaseMLModel):
                 'optimization_action': 'No_Optimization',
                 'confidence': 0.0,
                 'reason': 'Feature extraction failed',
-                'recommendations': ['Check query data availability']
+                'recommendations': ['Check query data availability'],
             }
 
         # Validate input
@@ -289,28 +289,28 @@ class C1QueryOptimizer(BaseMLModel):
             model_input=model_input,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Generate detailed recommendations
         recommendations = self._generate_optimization_recommendations(
             action=prediction.prediction,
             context=query_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         # Generate optimized query if applicable
         optimized_query = self._generate_optimized_query(
             action=prediction.prediction,
             original_query=query_context.get("query", ""),
-            context=query_context
+            context=query_context,
         )
 
         # Calculate expected performance improvement
         performance_impact = self._calculate_performance_impact(
             action=prediction.prediction,
             context=query_context,
-            features=extraction_result.features
+            features=extraction_result.features,
         )
 
         return {
@@ -322,7 +322,7 @@ class C1QueryOptimizer(BaseMLModel):
             'optimized_query': optimized_query,
             'performance_impact': performance_impact,
             'implementation_effort': self._estimate_implementation_effort(prediction.prediction),
-            'risk_assessment': self._assess_optimization_risk(prediction.prediction, query_context)
+            'risk_assessment': self._assess_optimization_risk(prediction.prediction, query_context),
         }
 
     def analyze_query_plan(
@@ -330,7 +330,7 @@ class C1QueryOptimizer(BaseMLModel):
         query_plan: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Analyze query execution plan and provide insights.
@@ -359,7 +359,7 @@ class C1QueryOptimizer(BaseMLModel):
                 'type': 'performance_issue',
                 'severity': 'high',
                 'description': f'{len(table_scans)} table scans detected - consider adding indexes',
-                'recommendation': 'Add appropriate indexes to avoid full table scans'
+                'recommendation': 'Add appropriate indexes to avoid full table scans',
             })
 
         # Join order analysis
@@ -370,7 +370,7 @@ class C1QueryOptimizer(BaseMLModel):
                 'type': 'complexity_issue',
                 'severity': 'medium',
                 'description': f'Complex join with {len(join_operations)} operations',
-                'recommendation': 'Consider query rewrite or materialized views'
+                'recommendation': 'Consider query rewrite or materialized views',
             })
 
         # Cost analysis
@@ -381,7 +381,7 @@ class C1QueryOptimizer(BaseMLModel):
                 'type': 'cost_issue',
                 'severity': 'high',
                 'description': f'High execution cost: {total_cost:.2f}',
-                'recommendation': 'Optimize query structure and add indexes'
+                'recommendation': 'Optimize query structure and add indexes',
             })
 
         # Generate optimization suggestions
@@ -392,11 +392,11 @@ class C1QueryOptimizer(BaseMLModel):
                 'total_cost': total_cost,
                 'operation_count': len(query_plan.get('operations', [])),
                 'table_scans': len(table_scans),
-                'join_operations': len(join_operations)
+                'join_operations': len(join_operations),
             },
             'insights': insights,
             'suggestions': suggestions,
-            'optimization_priority': self._determine_optimization_priority(insights)
+            'optimization_priority': self._determine_optimization_priority(insights),
         }
 
     def recommend_indexes(
@@ -404,7 +404,7 @@ class C1QueryOptimizer(BaseMLModel):
         query_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> dict[str, Any]:
         """
         Generate index recommendations based on query analysis.
@@ -458,7 +458,7 @@ class C1QueryOptimizer(BaseMLModel):
                     'selectivity': selectivity,
                     'impact': impact,
                     'estimated_improvement': self._estimate_index_improvement(selectivity),
-                    'recommendation': f'Create {index_type} index on {table}.{column}'
+                    'recommendation': f'Create {index_type} index on {table}.{column}',
                 })
 
         # Analyze JOIN conditions
@@ -479,7 +479,7 @@ class C1QueryOptimizer(BaseMLModel):
                     'purpose': 'foreign_key',
                     'impact': 'High',
                     'estimated_improvement': 0.3,
-                    'recommendation': f'Create index on {left_table}.{left_column} for join optimization'
+                    'recommendation': f'Create index on {left_table}.{left_column} for join optimization',
                 })
 
                 recommendations.append({
@@ -489,7 +489,7 @@ class C1QueryOptimizer(BaseMLModel):
                     'purpose': 'foreign_key',
                     'impact': 'High',
                     'estimated_improvement': 0.3,
-                    'recommendation': f'Create index on {right_table}.{right_column} for join optimization'
+                    'recommendation': f'Create index on {right_table}.{right_column} for join optimization',
                 })
 
         # Sort by impact and remove duplicates
@@ -506,14 +506,14 @@ class C1QueryOptimizer(BaseMLModel):
             'recommendations': final_recommendations[:10],  # Top 10 recommendations
             'total_recommendations': len(final_recommendations),
             'high_impact_count': len([r for r in final_recommendations if r['impact'] == 'High']),
-            'estimated_overall_improvement': sum(r.get('estimated_improvement', 0) for r in final_recommendations[:5])
+            'estimated_overall_improvement': sum(r.get('estimated_improvement', 0) for r in final_recommendations[:5]),
         }
 
     def _generate_optimization_recommendations(
         self,
         action: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> list[str]:
         """Generate action-specific optimization recommendations."""
         recommendations = []
@@ -523,56 +523,56 @@ class C1QueryOptimizer(BaseMLModel):
                 "Create appropriate indexes for frequently queried columns",
                 "Analyze WHERE clause predicates for index candidates",
                 "Consider composite indexes for multi-column queries",
-                "Monitor index usage and effectiveness"
+                "Monitor index usage and effectiveness",
             ])
         elif action == "Rewrite_Query":
             recommendations.extend([
                 "Restructure query for better performance",
                 "Eliminate unnecessary subqueries and CTEs",
                 "Use appropriate join types and order",
-                "Optimize WHERE clauses and predicates"
+                "Optimize WHERE clauses and predicates",
             ])
         elif action == "Optimize_Joins":
             recommendations.extend([
                 "Review and optimize join operations",
                 "Ensure proper join order based on table sizes",
                 "Consider join hints if necessary",
-                "Add indexes on foreign key columns"
+                "Add indexes on foreign key columns",
             ])
         elif action == "Add_Caching":
             recommendations.extend([
                 "Implement query result caching",
                 "Cache frequently accessed data",
                 "Consider application-level caching",
-                "Monitor cache hit rates"
+                "Monitor cache hit rates",
             ])
         elif action == "Update_Statistics":
             recommendations.extend([
                 "Update table statistics for better query plans",
                 "Run ANALYZE on modified tables",
                 "Consider automatic statistics updates",
-                "Monitor query plan changes"
+                "Monitor query plan changes",
             ])
         elif action == "Partition_Table":
             recommendations.extend([
                 "Implement table partitioning for large tables",
                 "Choose appropriate partitioning strategy",
                 "Consider partition pruning benefits",
-                "Monitor partition performance"
+                "Monitor partition performance",
             ])
         elif action == "Materialize_View":
             recommendations.extend([
                 "Create materialized views for complex queries",
                 "Schedule regular view refreshes",
                 "Monitor view performance and usage",
-                "Consider incremental maintenance"
+                "Consider incremental maintenance",
             ])
         else:  # No_Optimization
             recommendations.extend([
                 "Query is already optimally structured",
                 "Continue monitoring query performance",
                 "Maintain current indexes and statistics",
-                "Regular performance reviews recommended"
+                "Regular performance reviews recommended",
             ])
 
         # Add context-specific recommendations
@@ -613,7 +613,7 @@ class C1QueryOptimizer(BaseMLModel):
         self,
         action: str,
         context: dict[str, Any],
-        features: dict[str, float]
+        features: dict[str, float],
     ) -> dict[str, Any]:
         """Calculate expected performance impact of optimization."""
         # Base impact estimates by action type
@@ -621,43 +621,43 @@ class C1QueryOptimizer(BaseMLModel):
             "Add_Index": {
                 "execution_time_improvement": 0.6,
                 "cpu_reduction": 0.4,
-                "io_reduction": 0.7
+                "io_reduction": 0.7,
             },
             "Rewrite_Query": {
                 "execution_time_improvement": 0.4,
                 "cpu_reduction": 0.3,
-                "io_reduction": 0.2
+                "io_reduction": 0.2,
             },
             "Optimize_Joins": {
                 "execution_time_improvement": 0.5,
                 "cpu_reduction": 0.4,
-                "io_reduction": 0.3
+                "io_reduction": 0.3,
             },
             "Add_Caching": {
                 "execution_time_improvement": 0.8,
                 "cpu_reduction": 0.6,
-                "io_reduction": 0.9
+                "io_reduction": 0.9,
             },
             "Update_Statistics": {
                 "execution_time_improvement": 0.2,
                 "cpu_reduction": 0.1,
-                "io_reduction": 0.1
+                "io_reduction": 0.1,
             },
             "Partition_Table": {
                 "execution_time_improvement": 0.3,
                 "cpu_reduction": 0.2,
-                "io_reduction": 0.4
+                "io_reduction": 0.4,
             },
             "Materialize_View": {
                 "execution_time_improvement": 0.7,
                 "cpu_reduction": 0.5,
-                "io_reduction": 0.6
+                "io_reduction": 0.6,
             },
             "No_Optimization": {
                 "execution_time_improvement": 0.0,
                 "cpu_reduction": 0.0,
-                "io_reduction": 0.0
-            }
+                "io_reduction": 0.0,
+            },
         }
 
         base_impact = impact_estimates.get(action, impact_estimates["No_Optimization"])
@@ -691,7 +691,7 @@ class C1QueryOptimizer(BaseMLModel):
             "Update_Statistics": "Low",
             "Partition_Table": "High",
             "Materialize_View": "High",
-            "No_Optimization": "None"
+            "No_Optimization": "None",
         }
 
         return effort_estimates.get(action, "Medium")
@@ -707,7 +707,7 @@ class C1QueryOptimizer(BaseMLModel):
             "Update_Statistics": "Low",
             "Partition_Table": "High",
             "Materialize_View": "Medium",
-            "No_Optimization": "None"
+            "No_Optimization": "None",
         }
 
         base_risk = risk_levels.get(action, "Medium")
@@ -731,7 +731,7 @@ class C1QueryOptimizer(BaseMLModel):
             'total_cost': sum(op.get('cost', 0) for op in operations),
             'table_scans': len([op for op in operations if op.get('operation_type') == 'Table Scan']),
             'index_scans': len([op for op in operations if 'Index Scan' in op.get('operation_type', '')]),
-            'join_operations': len([op for op in operations if 'Join' in op.get('operation_type', '')])
+            'join_operations': len([op for op in operations if 'Join' in op.get('operation_type', '')]),
         }
 
         return features
@@ -805,7 +805,7 @@ class C1QueryOptimizer(BaseMLModel):
                     'importance_score': float(importance),
                     'feature_value': model_input.features.get(name),
                     'rank': i + 1,
-                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0
+                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0,
                 })
 
             # Sort by importance
@@ -862,7 +862,7 @@ class C1QueryOptimizer(BaseMLModel):
         self,
         training_data: list[dict[str, Any]],
         feature_names: list[str],
-        training_data_digest: str = ""
+        training_data_digest: str = "",
     ) -> None:
         """
         Train the Gradient Boosting model.
@@ -906,8 +906,8 @@ class C1QueryOptimizer(BaseMLModel):
                 max_depth=6,
                 min_samples_split=5,
                 min_samples_leaf=2,
-                random_state=42
-            ))
+                random_state=42,
+            )),
         ])
 
         # Train model

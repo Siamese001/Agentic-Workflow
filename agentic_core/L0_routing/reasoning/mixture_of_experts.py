@@ -119,7 +119,7 @@ class CodeReviewExpert(BaseExpert):
             domain_name="code_review",
             keywords=["code", "review", "python", "javascript", "bug", "fix", "refactor"],
             capability_score=0.9,
-            confidence_threshold=0.7
+            confidence_threshold=0.7,
         )
         super().__init__(expert_id, specialization)
 
@@ -151,7 +151,7 @@ class CodeReviewExpert(BaseExpert):
             specialization_match=match_score,
             processing_time=processing_time,
             reasoning=f"Code review expert: {match_score:.2f} match",
-            features_used={"keyword_match": match_score, "confidence": confidence}
+            features_used={"keyword_match": match_score, "confidence": confidence},
         )
 
     def update_performance(self, prediction: ExpertPrediction, success: bool):
@@ -170,7 +170,7 @@ class ResumeExpert(BaseExpert):
             domain_name="resume_career",
             keywords=["resume", "cv", "career", "job", "interview", "hiring"],
             capability_score=0.85,
-            confidence_threshold=0.6
+            confidence_threshold=0.6,
         )
         super().__init__(expert_id, specialization)
 
@@ -199,7 +199,7 @@ class ResumeExpert(BaseExpert):
             specialization_match=match_score,
             processing_time=processing_time,
             reasoning=f"Resume expert: {match_score:.2f} match",
-            features_used={"keyword_match": match_score, "confidence": confidence}
+            features_used={"keyword_match": match_score, "confidence": confidence},
         )
 
     def update_performance(self, prediction: ExpertPrediction, success: bool):
@@ -218,7 +218,7 @@ class DataAnalysisExpert(BaseExpert):
             domain_name="data_analysis",
             keywords=["data", "analysis", "chart", "graph", "statistics", "visualization"],
             capability_score=0.8,
-            confidence_threshold=0.65
+            confidence_threshold=0.65,
         )
         super().__init__(expert_id, specialization)
 
@@ -247,7 +247,7 @@ class DataAnalysisExpert(BaseExpert):
             specialization_match=match_score,
             processing_time=processing_time,
             reasoning=f"Data analysis expert: {match_score:.2f} match",
-            features_used={"keyword_match": match_score, "confidence": confidence}
+            features_used={"keyword_match": match_score, "confidence": confidence},
         )
 
     def update_performance(self, prediction: ExpertPrediction, success: bool):
@@ -278,7 +278,7 @@ class GatingNetwork:
         _emit_stores_learning_state("gating_network", "initialization", {
             "input_dim": input_dim,
             "hidden_dim": hidden_dim,
-            "num_experts": num_experts
+            "num_experts": num_experts,
         })
 
     def forward(self, query_embedding: np.ndarray, expert_features: list[dict[str, float]]) -> np.ndarray:
@@ -324,7 +324,7 @@ class GatingNetwork:
         # Update weights (simplified)
         combined_input = np.concatenate([
             query_embedding,
-            np.array([list(f.values()) for f in expert_features]).flatten()[:self.input_dim - len(query_embedding)]
+            np.array([list(f.values()) for f in expert_features]).flatten()[:self.input_dim - len(query_embedding)],
         ])
 
         if len(combined_input) > self.input_dim:
@@ -342,7 +342,7 @@ class GatingNetwork:
             "training_count": self.training_count,
             "loss": float(loss),
             "selected_expert": selected_expert_idx,
-            "reward": reward
+            "reward": reward,
         })
 
 class LoadBalancer:
@@ -404,7 +404,7 @@ class MixtureOfExperts:
         experts: list[BaseExpert] | None = None,
         gating_network: GatingNetwork | None = None,
         load_balancer: LoadBalancer | None = None,
-        max_concurrent_experts: int = 3
+        max_concurrent_experts: int = 3,
     ):
         """
         Initialize Mixture of Experts.
@@ -435,7 +435,7 @@ class MixtureOfExperts:
         _emit_stores_learning_state("mixture_of_experts", "initialization", {
             "experts_count": len(self.experts),
             "max_concurrent": max_concurrent_experts,
-            "load_balance_strategy": self.load_balancer.load_balance_strategy
+            "load_balance_strategy": self.load_balancer.load_balance_strategy,
         })
 
     def add_expert(self, expert: BaseExpert):
@@ -450,7 +450,7 @@ class MixtureOfExperts:
         _emit_records_learning_event("mixture_of_experts", "expert_added", {
             "expert_id": expert.expert_id,
             "domain": expert.specialization.domain_name,
-            "total_experts": len(self.experts)
+            "total_experts": len(self.experts),
         })
 
     def route(self, query: str, context: dict[str, Any]) -> MoEDecision:
@@ -481,7 +481,7 @@ class MixtureOfExperts:
                 "reliability": expert.get_reliability(),
                 "avg_processing_time": expert.get_average_processing_time(),
                 "load_factor": expert.specialization.load_factor,
-                "confidence": prediction.confidence
+                "confidence": prediction.confidence,
             }
             expert_features.append(features)
 
@@ -518,7 +518,7 @@ class MixtureOfExperts:
             f"Selected expert: {selected_expert.specialization.domain_name}",
             f"Specialization match: {selected_prediction.specialization_match:.2f}",
             f"Gating score: {final_scores[selected_expert_id]:.3f}",
-            f"Load balanced: {True}"
+            f"Load balanced: {True}",
         ]
         reasoning = "; ".join(reasoning_parts)
 
@@ -531,7 +531,7 @@ class MixtureOfExperts:
             expert_predictions=expert_predictions,
             load_balancing_applied=True,
             reasoning=reasoning,
-            decision_time=time.time() - start_time
+            decision_time=time.time() - start_time,
         )
 
         # Record decision
@@ -543,19 +543,19 @@ class MixtureOfExperts:
             "selected_expert": selected_expert_id,
             "selected_agent": selected_prediction.agent_name,
             "confidence": confidence,
-            "domain": selected_expert.specialization.domain_name
+            "domain": selected_expert.specialization.domain_name,
         })
 
         _emit_dispatches_agent("mixture_of_experts", selected_prediction.agent_name, {
             "expert_id": selected_expert_id,
             "confidence": confidence,
-            "specialization": selected_expert.specialization.domain_name
+            "specialization": selected_expert.specialization.domain_name,
         })
 
         _emit_coordinates_agents("mixture_of_experts", "expert_coordination", {
             "selected_expert": selected_expert_id,
             "all_experts": list(self.experts.keys()),
-            "load_balanced": True
+            "load_balanced": True,
         })
 
         return decision
@@ -587,7 +587,7 @@ class MixtureOfExperts:
                     uncertainty=0.9,
                     specialization_match=0.0,
                     processing_time=5.0,
-                    reasoning=f"Expert error: {str(e)}"
+                    reasoning=f"Expert error: {str(e)}",
                 )
 
         return expert_predictions
@@ -615,7 +615,7 @@ class MixtureOfExperts:
                 "reliability": expert.get_reliability(),
                 "avg_processing_time": expert.get_average_processing_time(),
                 "load_factor": expert.specialization.load_factor,
-                "confidence": prediction.confidence
+                "confidence": prediction.confidence,
             }
             expert_features.append(features)
 
@@ -631,14 +631,14 @@ class MixtureOfExperts:
             "success": success,
             "selected_expert": decision.selected_expert,
             "confidence": decision.confidence,
-            "success_rate": self.get_success_rate()
+            "success_rate": self.get_success_rate(),
         })
 
         _emit_feeds_meta_learning("mixture_of_experts", "feedback", {
             "expert_id": decision.selected_expert,
             "success": success,
             "reward": reward,
-            "specialization": selected_expert.specialization.domain_name
+            "specialization": selected_expert.specialization.domain_name,
         })
 
     def get_success_rate(self) -> float:
@@ -658,7 +658,7 @@ class MixtureOfExperts:
                 "successes": expert.success_count,
                 "avg_processing_time": expert.get_average_processing_time(),
                 "load_factor": expert.specialization.load_factor,
-                "capability_score": expert.specialization.capability_score
+                "capability_score": expert.specialization.capability_score,
             }
         return performance
 
@@ -673,19 +673,19 @@ class MixtureOfExperts:
                     "predictions": expert.prediction_count,
                     "successes": expert.success_count,
                     "avg_processing_time": expert.get_average_processing_time(),
-                    "load_factor": expert.specialization.load_factor
+                    "load_factor": expert.specialization.load_factor,
                 }
                 for expert_id, expert in self.experts.items()
             },
             "gating_network": {
                 "training_count": self.gating_network.training_count,
-                "learning_rate": self.gating_network.learning_rate
+                "learning_rate": self.gating_network.learning_rate,
             },
             "load_balancer": {
                 "strategy": self.load_balancer.load_balance_strategy,
                 "expert_loads": self.load_balancer.expert_loads,
-                "expert_capacities": self.load_balancer.expert_capacities
-            }
+                "expert_capacities": self.load_balancer.expert_capacities,
+            },
         }
 
         with open(filepath, 'w') as f:
@@ -693,7 +693,7 @@ class MixtureOfExperts:
 
         _emit_stores_learning_state("mixture_of_experts", "state_saved", {
             "filepath": filepath,
-            "success_rate": self.get_success_rate()
+            "success_rate": self.get_success_rate(),
         })
 
     def shutdown(self):
@@ -708,13 +708,13 @@ def create_default_moe() -> MixtureOfExperts:
     experts = [
         CodeReviewExpert("code_review_expert"),
         ResumeExpert("resume_expert"),
-        DataAnalysisExpert("data_analysis_expert")
+        DataAnalysisExpert("data_analysis_expert"),
     ]
 
     # Create MoE system
     moe = MixtureOfExperts(
         experts=experts,
-        max_concurrent_experts=3
+        max_concurrent_experts=3,
     )
 
     return moe
@@ -730,5 +730,5 @@ __all__ = [
     "ExpertSpecialization",
     "ExpertPrediction",
     "MoEDecision",
-    "create_default_moe"
+    "create_default_moe",
 ]

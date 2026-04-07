@@ -94,7 +94,6 @@ from typing import Any
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -120,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -135,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
 _emit_emits_metric_event("fix_all_tunnels_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_all_tunnels_util", "p4obs", "metric_2")

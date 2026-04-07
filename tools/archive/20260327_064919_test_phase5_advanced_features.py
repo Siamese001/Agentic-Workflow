@@ -24,7 +24,6 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-
 from agentic_core.cloud_native.cloud_native_manager import (
     AutoScalingConfig,
     HealthStatus,
@@ -60,7 +59,7 @@ class TestPhase5MLIntegration(unittest.TestCase):
         self.normal_data = np.random.normal(0, 1, 1000)
         self.anomaly_data = np.concatenate([
             np.random.normal(0, 1, 950),
-            np.random.normal(5, 1, 50)  # Anomalies
+            np.random.normal(5, 1, 50),  # Anomalies
         ])
 
     def test_ml_detector_initialization(self):
@@ -333,7 +332,7 @@ class TestPhase5APIGateway(unittest.TestCase):
             trace_id="test-trace-123",
             span_id="test-span-456",
             parent_span_id="test-parent-789",
-            baggage={"user_id": "123", "session_id": "abc"}
+            baggage={"user_id": "123", "session_id": "abc"},
         )
 
         # Check that original headers are preserved
@@ -862,8 +861,9 @@ class TestPhase5Integration(unittest.TestCase):
         """Set up integration tests."""
         # Initialize all components
         from agentic_core.cloud_native.cloud_native_manager import get_global_cloud_native_manager
-        from agentic_core.gateway.api_gateway_integration import get_global_gateway
         from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
+
+        from agentic_core.gateway.api_gateway_integration import get_global_gateway
         from system_learning.ml_integration.anomaly_detection import get_global_ml_detector
         from system_learning.ml_integration.training_pipeline import get_global_ml_pipeline
 
@@ -937,7 +937,7 @@ class TestPhase5Integration(unittest.TestCase):
         # 6. Inject tracing headers through gateway
         headers = {"Content-Type": "application/json"}
         traced_headers = self.gateway.inject_tracing_headers(
-            headers, "integration-trace", "integration-span"
+            headers, "integration-trace", "integration-span",
         )
 
         self.assertIn("x-trace-id", traced_headers)
@@ -987,7 +987,7 @@ class TestPhase5Integration(unittest.TestCase):
                 {"id": "e1", "source": "user_request", "target": "auth_check", "type": "calls"},
                 {"id": "e2", "source": "auth_check", "target": "data_processing", "type": "flows_to"},
                 {"id": "e3", "source": "data_processing", "target": "response", "type": "flows_to"},
-            ]
+            ],
         }
 
         # 2. Visualize trace
@@ -1009,7 +1009,7 @@ class TestPhase5Integration(unittest.TestCase):
             {"Content-Type": "application/json"},
             "e2e-trace",
             "e2e-span",
-            baggage={"workflow": "test", "user_id": "123"}
+            baggage={"workflow": "test", "user_id": "123"},
         )
 
         # 6. Create training data for ML pipeline

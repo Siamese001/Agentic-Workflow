@@ -88,7 +88,7 @@ class PreRetrievalGate:
         """
         trace_id = f"gate_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "PreRetrievalGate.evaluate"
+            trace_id, LayerSegment.L1_REASONING, "PreRetrievalGate.evaluate",
         )
 
         filters_to_apply = required_filters or list(self._filters.keys())
@@ -128,7 +128,7 @@ class PreRetrievalGate:
 
         _emit_records_telemetry_event(
             "pre_retrieval_gate",
-            f"{decision.value}_{query_id}"
+            f"{decision.value}_{query_id}",
         )
 
         log.info(f"Gate decision for {query_id}: {decision.value}")

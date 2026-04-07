@@ -122,7 +122,7 @@ for d in dead:
 
 # --- 5. Layer distribution of all nodes to see where alignment fits ---
 cur.execute(
-    "SELECT layer, COUNT(*) as cnt FROM nodes WHERE layer NOT LIKE 'L_TEST%' GROUP BY layer ORDER BY cnt DESC"
+    "SELECT layer, COUNT(*) as cnt FROM nodes WHERE layer NOT LIKE 'L_TEST%' GROUP BY layer ORDER BY cnt DESC",
 )
 dist = cur.fetchall()
 print("\n=== PROD LAYER DISTRIBUTION ===")

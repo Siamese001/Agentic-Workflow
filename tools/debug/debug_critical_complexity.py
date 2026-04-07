@@ -24,7 +24,7 @@ def debug_critical_complexity():
     step_config = {
         'type': 'implementation',
         'complexity': 'critical',
-        'files': ['file.py']
+        'files': ['file.py'],
     }
 
     print(f"Testing: {step_config['type']} with {step_config['complexity']} complexity")

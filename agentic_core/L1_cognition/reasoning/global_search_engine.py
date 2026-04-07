@@ -100,7 +100,7 @@ class GlobalSearchEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        config: GlobalSearchConfig | None = None
+        config: GlobalSearchConfig | None = None,
     ) -> None:
         """Initialize the global search engine.
 
@@ -153,13 +153,13 @@ class GlobalSearchEngine:
                 metadata={
                     "communities_searched": len(community_results),
                     "entities_found": len(entity_results),
-                    "max_communities": self.config.max_communities
-                }
+                    "max_communities": self.config.max_communities,
+                },
             )
 
             _emit_records_telemetry_event(
                 "global_search_engine",
-                f"search_completed_{len(filtered_results)}_results"
+                f"search_completed_{len(filtered_results)}_results",
             )
 
             return response
@@ -175,7 +175,7 @@ class GlobalSearchEngine:
                 max_relevance_score=0.0,
                 min_relevance_score=0.0,
                 search_strategy="global",
-                errors=[f"Global search failed: {str(e)}"]
+                errors=[f"Global search failed: {str(e)}"],
             )
 
     async def _search_communities(self, query: SearchQuery) -> list[SearchResult]:
@@ -204,8 +204,8 @@ class GlobalSearchEngine:
                     metadata={
                         "community_level": i % 3,
                         "summary_match": summary_score,
-                        "entity_count": 10 + i * 5
-                    }
+                        "entity_count": 10 + i * 5,
+                    },
                 )
                 communities.append(result)
 
@@ -217,7 +217,7 @@ class GlobalSearchEngine:
     async def _search_within_communities(
         self,
         community_results: list[SearchResult],
-        query: SearchQuery
+        query: SearchQuery,
     ) -> list[SearchResult]:
         """Search for entities within the top communities."""
         entity_results = []
@@ -234,7 +234,7 @@ class GlobalSearchEngine:
             if community and community.entities:
                 # Search within this community
                 community_entities = await self._search_community_entities(
-                    community, query, community_result.relevance_score
+                    community, query, community_result.relevance_score,
                 )
                 entity_results.extend(community_entities)
 
@@ -244,7 +244,7 @@ class GlobalSearchEngine:
         self,
         community: GraphCommunity,
         query: SearchQuery,
-        community_boost: float
+        community_boost: float,
     ) -> list[SearchResult]:
         """Search for entities within a specific community."""
         entity_results = []
@@ -276,8 +276,8 @@ class GlobalSearchEngine:
                             "entity_type": entity.entity_type,
                             "community_id": community.id,
                             "base_score": entity_score,
-                            "community_boost": community_boost
-                        }
+                            "community_boost": community_boost,
+                        },
                     )
                     entity_results.append(result)
 
@@ -343,7 +343,7 @@ class GlobalSearchEngine:
         self,
         community_results: list[SearchResult],
         entity_results: list[SearchResult],
-        query: SearchQuery
+        query: SearchQuery,
     ) -> list[SearchResult]:
         """Combine community and entity results."""
         combined = []
@@ -387,7 +387,7 @@ class GlobalSearchEngine:
 # Factory function
 def create_global_search_engine(
     graph_store: IGraphStore,
-    config: GlobalSearchConfig | None = None
+    config: GlobalSearchConfig | None = None,
 ) -> GlobalSearchEngine:
     """Create a global search engine."""
     return GlobalSearchEngine(graph_store, config)

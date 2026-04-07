@@ -1,45 +1,6 @@
 # guardian: allow-silent-swallower -- Memory bridge operations logged, failures non-critical for system continuity
 from __future__ import annotations
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
 "\n[PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.\n\nProvides a programmatic interface to the Memory MCP server for:\n- Entity creation (agents, tasks, protocols)\n- Relation creation (MASTERED_TASK, INTERACTS_WITH, etc.)\n- Observation storage\n- Graph queries\n\nThis bridge uses the live Windsurf Memory MCP tools:\n- mcp11_create_entities: Create entities in the knowledge graph\n- mcp11_create_relations: Create relations between entities\n- mcp11_add_observations: Add observations to entities\n- mcp11_search_nodes: Search for nodes in the graph\n- mcp11_open_nodes: Open specific nodes by name\n- mcp11_read_graph: Read the full graph\n\nResilient Mode: If MCP is unavailable, operations are logged but don't crash.\n\n[SSOT] This is the canonical interface for Memory MCP operations.\n"
 import hashlib
 import logging
@@ -48,7 +9,10 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
 
 try:
     from agentic_core.adg.client.InMemoryStore import ADGMCPClient as _MCPFallbackClient
@@ -66,42 +30,6 @@ try:
 except ImportError:
     _SqliteMemoryStore = None  # type: ignore[assignment,misc]
     _SQLITE_STORE_AVAILABLE = False
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 
 Logger = logging.getLogger(__name__)
 
@@ -243,7 +171,7 @@ class GraphMemoryBridge:
                 "stats_totals": stats_total,
                 "mcp_available": self._mcp_available,
                 "cleanup_registered": self._cleanup_registered,
-                "is_clean": len(self._registered_entities) == 0 and stats_total == 0
+                "is_clean": len(self._registered_entities) == 0 and stats_total == 0,
             }
 
     @classmethod
@@ -357,7 +285,7 @@ class GraphMemoryBridge:
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphMemoryBridge.set_mcp_functions"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphMemoryBridge.set_mcp_functions",
         )
         self._create_entities_fn = create_entities
         self._create_relations_fn = create_relations
@@ -404,7 +332,7 @@ class GraphMemoryBridge:
             return None
 
     def create_agent_entity(
-        self, agent_name: str, agent_type: str = "Agent", observations: list[str] | None = None
+        self, agent_name: str, agent_type: str = "Agent", observations: list[str] | None = None,
     ) -> bool:
         """
         Create an agent entity in the Knowledge Graph.
@@ -429,7 +357,7 @@ class GraphMemoryBridge:
                 "name": agent_name,
                 "entityType": agent_type,
                 "observations": observations or [f"Agent {agent_name} registered in Knowledge Graph"],
-            }
+            },
         ]
         result = self._call_mcp_create_entities(entities)
         # guardian: allow-silent-degradation - Silent success when MCP unavailable
@@ -443,7 +371,7 @@ class GraphMemoryBridge:
         return False
 
     def create_mastered_task_relation(
-        self, agent_name: str, task_description: str, feedback_score: float
+        self, agent_name: str, task_description: str, feedback_score: float,
     ) -> bool:
         """
         Create a MASTERED_TASK relation when memory is promoted to Long-Term DNA.
@@ -468,11 +396,11 @@ class GraphMemoryBridge:
                     f"Task mastered by {agent_name} with score {feedback_score:.2f}",
                     f"Description hash: {task_hash}",
                 ],
-            }
+            },
         ]
         self._call_mcp_create_entities(task_entities)
         relations = [
-            {"from": agent_name, "to": task_entity_name, "relationType": self.RELATION_MASTERED_TASK}
+            {"from": agent_name, "to": task_entity_name, "relationType": self.RELATION_MASTERED_TASK},
         ]
         result = self._call_mcp_create_relations(relations)
         # guardian: allow-silent-degradation - Silent success when MCP unavailable
@@ -480,7 +408,7 @@ class GraphMemoryBridge:
             with self._lock:
                 self.stats["relations_created"] += 1
             Logger.info(
-                f"[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}"
+                f"[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}",
             )
             # guardian: allow-silent-degradation - Silent success on relation creation
             return True

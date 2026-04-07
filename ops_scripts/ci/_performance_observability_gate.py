@@ -62,7 +62,7 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST
+    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(
@@ -114,7 +114,7 @@ def gate_a(conn: sqlite3.Connection) -> bool:
             f"records_execution_trace sources={trace_edges} (>=1), "
             f"routes_path sources={routing_edges} (>=1), "
             f"agent_executes_agent sources={orchestration_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -137,7 +137,7 @@ def gate_b(conn: sqlite3.Connection) -> bool:
             "B",
             ok,
             f"PerformanceRecord exported={perf_record} (>=1), writes_through sources={mutation_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -165,7 +165,7 @@ def gate_c(conn: sqlite3.Connection) -> bool:
             f"PerformanceRecord exported={perf_record} (>=1), "
             f"StageOwner exported={stage_owner} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -193,7 +193,7 @@ def gate_d(conn: sqlite3.Connection) -> bool:
             f"BudgetViolationError exported={budget_error} (>=1), "
             f"LatencyBudget exported={latency_budget} (>=1), "
             f"PerformanceRecord exported={perf_record} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -225,7 +225,7 @@ def gate_e(conn: sqlite3.Connection) -> bool:
             f"query_performance_records exported={query_function} (>=1), "
             f"PerformanceRecord exported={perf_record} (>=1), "
             f"records_execution_trace sources={trace_edges} (>=1)",
-        )
+        ),
     )
     return ok
 
@@ -279,7 +279,7 @@ def _print_baseline(conn: sqlite3.Connection) -> None:
         WHERE source_file LIKE '%L6_observability/performance%' {NON_TEST}
         ORDER BY source_file, symbol
         LIMIT 30
-        """
+        """,
     )
     for source, symbol in cursor.fetchall():
         print(f"  {source:<60} [{symbol}]")

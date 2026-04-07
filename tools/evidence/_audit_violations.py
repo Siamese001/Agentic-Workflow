@@ -122,6 +122,7 @@ for entry in data:
 
 # Group by edge
 from collections import defaultdict
+
 by_edge = defaultdict(list)
 for v in real:
     by_edge[v["edge"]].append(v)

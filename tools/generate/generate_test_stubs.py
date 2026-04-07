@@ -57,7 +57,7 @@ class TestStubGenerator:
                                 for n in node.body
                                 if isinstance(n, ast.FunctionDef) and not n.name.startswith("_")
                             ],
-                        }
+                        },
                     )
 
             return analysis
@@ -91,14 +91,14 @@ class TestStubGenerator:
         # Add function tests (limit to 2 most important)
         for func_name in analysis["functions"][:2]:
             test_methods.append(
-                self.templates["function"].format(name=func_name, module=analysis["module_name"])
+                self.templates["function"].format(name=func_name, module=analysis["module_name"]),
             )
 
         # Add class tests (limit to 2 most important)
         for class_info in analysis["classes"][:2]:
             # Test class initialization
             test_methods.append(
-                self.templates["class"].format(class_name=class_info["name"], module=analysis["module_name"])
+                self.templates["class"].format(class_name=class_info["name"], module=analysis["module_name"]),
             )
 
             # Test one key method if available
@@ -106,8 +106,8 @@ class TestStubGenerator:
                 method_name = class_info["methods"][0]
                 test_methods.append(
                     self.templates["method"].format(
-                        class_name=class_info["name"], method_name=method_name, module=analysis["module_name"]
-                    )
+                        class_name=class_info["name"], method_name=method_name, module=analysis["module_name"],
+                    ),
                 )
 
         # Replace placeholder test class with generated tests

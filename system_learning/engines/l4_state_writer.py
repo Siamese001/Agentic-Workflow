@@ -176,23 +176,23 @@ class L4StateWriter(Protocol):
     """
 
     def write_l4a_detection_signal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str: ...
 
     def write_l4b_healing_snapshot(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str: ...
 
     def write_l4c_shadow_drift(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str: ...
 
     def write_l4c_policy_recommendation(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str: ...
 
     def write_l4c_retrieval_profile_proposal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str: ...
 
     def read_latest_detection_signal(self) -> bytes | None: ...
@@ -239,7 +239,7 @@ class InMemoryL4StateWriter:
         return version_id
 
     def write_l4a_detection_signal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "l4a_detection",
@@ -249,10 +249,10 @@ class InMemoryL4StateWriter:
         )
 
     def write_l4b_healing_snapshot(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
-            "l4b_healing", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc
+            "l4b_healing", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc,
         )
 
     def write_l4c_shadow_drift(self, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
@@ -264,7 +264,7 @@ class InMemoryL4StateWriter:
         )
 
     def write_l4c_policy_recommendation(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "l4c_policy_rec",
@@ -274,7 +274,7 @@ class InMemoryL4StateWriter:
         )
 
     def write_l4c_retrieval_profile_proposal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "l4c_profile_prop",
@@ -331,7 +331,7 @@ class FileBackedL4StateWriter:
         return version_id
 
     def write_l4a_detection_signal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "l4a_detection",
@@ -341,10 +341,10 @@ class FileBackedL4StateWriter:
         )
 
     def write_l4b_healing_snapshot(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
-            "l4b_healing", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc
+            "l4b_healing", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc,
         )
 
     def write_l4c_shadow_drift(self, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
@@ -356,7 +356,7 @@ class FileBackedL4StateWriter:
         )
 
     def write_l4c_policy_recommendation(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "l4c_policy_rec",
@@ -366,7 +366,7 @@ class FileBackedL4StateWriter:
         )
 
     def write_l4c_retrieval_profile_proposal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "l4c_profile_prop",
@@ -391,12 +391,12 @@ class NoOpL4StateWriter:
     """
 
     def write_l4a_detection_signal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return f"noop_l4a_{created_utc}"
 
     def write_l4b_healing_snapshot(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return f"noop_l4b_{created_utc}"
 
@@ -404,12 +404,12 @@ class NoOpL4StateWriter:
         return f"noop_l4c_drift_{created_utc}"
 
     def write_l4c_policy_recommendation(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return f"noop_l4c_policy_{created_utc}"
 
     def write_l4c_retrieval_profile_proposal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return f"noop_l4c_profile_{created_utc}"
 
@@ -472,7 +472,7 @@ class DefaultL4StateWriter:
         )
 
     def write_l4a_detection_signal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "detection_signal",
@@ -483,7 +483,7 @@ class DefaultL4StateWriter:
         )
 
     def write_l4b_healing_snapshot(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "healing_snapshot",
@@ -503,7 +503,7 @@ class DefaultL4StateWriter:
         )
 
     def write_l4c_policy_recommendation(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "policy_recommendation",
@@ -514,7 +514,7 @@ class DefaultL4StateWriter:
         )
 
     def write_l4c_retrieval_profile_proposal(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int,
     ) -> str:
         return self._write(
             "retrieval_profile_proposal",

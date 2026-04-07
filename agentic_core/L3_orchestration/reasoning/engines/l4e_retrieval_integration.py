@@ -131,7 +131,7 @@ class ADGEdgeHydrator:
         """
         _trace_id = f"hydrate_{chunk_id}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ADGEdgeHydrator.hydrate"
+            _trace_id, LayerSegment.L4_STATE, "ADGEdgeHydrator.hydrate",
         )
 
         hydration = ADGEdgeHydration(chunk_id=chunk_id)
@@ -180,7 +180,7 @@ class ADGEdgeHydrator:
 
         for node in nodes:
             edges = self.adg_client.get_edges_for_node(
-                node.node_id, relation_type="reads_from", direction="out"
+                node.node_id, relation_type="reads_from", direction="out",
             )
             for edge in edges:
                 reads_from.append({
@@ -200,7 +200,7 @@ class ADGEdgeHydrator:
 
         for node in nodes:
             edges = self.adg_client.get_edges_for_node(
-                node.node_id, relation_type="writes_to", direction="out"
+                node.node_id, relation_type="writes_to", direction="out",
             )
             for edge in edges:
                 writes_to.append({
@@ -292,7 +292,7 @@ class GraphRetrievalEngine:
 
         _trace_id = f"retrieve_{self._retrieval_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphRetrievalEngine.retrieve"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphRetrievalEngine.retrieve",
         )
         _emit_reads_through(_trace_id, "vector", query[:50])
 
@@ -357,7 +357,7 @@ class GraphRetrievalEngine:
             for i, (doc_id, document, metadata) in enumerate(zip(
                 results['ids'][0],
                 results['documents'][0],
-                results['metadatas'][0]
+                results['metadatas'][0],
             )):
                 formatted.append({
                     "chunk_id": doc_id,
@@ -617,7 +617,7 @@ def get_global_integration() -> RetrievalWithGraphIntegration:
     global _global_integration
     if _global_integration is None:
         _global_integration = RetrievalWithGraphIntegration(
-            retrieval_engine=get_global_engine()
+            retrieval_engine=get_global_engine(),
         )
     return _global_integration
 

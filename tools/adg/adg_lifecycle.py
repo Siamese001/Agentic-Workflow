@@ -169,8 +169,8 @@ def cmd_status(args: argparse.Namespace) -> int:
         "is_fresh": age_hours < 24,
         "cache_exists": CACHE_FILE.exists(),
         "cache_size_mb": round(
-            CACHE_FILE.stat().st_size / (1024*1024), 2
-        ) if CACHE_FILE.exists() else 0
+            CACHE_FILE.stat().st_size / (1024*1024), 2,
+        ) if CACHE_FILE.exists() else 0,
     }
 
     # Get node/edge counts
@@ -188,23 +188,23 @@ def cmd_status(args: argparse.Namespace) -> int:
 
     if args.json:
         Path(args.json).write_text(
-            json.dumps(result, indent=2), encoding="utf-8"
+            json.dumps(result, indent=2), encoding="utf-8",
         )
 
     # Print summary
     status = "✓ FRESH" if result["is_fresh"] else "✗ STALE"
     _logger.info(
-        "Status: %s (%.1f hours old)", status, result["age_hours"]
+        "Status: %s (%.1f hours old)", status, result["age_hours"],
     )
     _logger.info(
         "Nodes: %s, Edges: %s",
         result.get("node_count", "?"),
-        result.get("edge_count", "?")
+        result.get("edge_count", "?"),
     )
     _logger.info(
         "Cache: %s (%.2f MB)",
         "✓" if result["cache_exists"] else "✗",
-        result["cache_size_mb"]
+        result["cache_size_mb"],
     )
 
     return 0 if result["is_fresh"] else 1
@@ -230,7 +230,7 @@ def cmd_maintain(args: argparse.Namespace) -> int:
         # Get changed files from git
         result = subprocess.run(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
-            capture_output=True, text=True, cwd=REPO_ROOT, check=False
+            capture_output=True, text=True, cwd=REPO_ROOT, check=False,
         )
         changed_files = [f.strip() for f in result.stdout.split("\n")
                         if f.strip().endswith(".py")]
@@ -263,7 +263,7 @@ def main() -> int:
     """Main entry point for ADG lifecycle CLI."""
     parser = argparse.ArgumentParser(
         prog="adg_lifecycle",
-        description="ADG Unified Lifecycle Accelerator"
+        description="ADG Unified Lifecycle Accelerator",
     )
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
 

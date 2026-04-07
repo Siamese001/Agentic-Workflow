@@ -117,7 +117,7 @@ def test_embedding_factory_bge_client():
         guarded = GuardedText(
             redacted_text=text,
             hash=text_hash,
-            size=len(text)
+            size=len(text),
         )
         embedding = await client.get_embedding(guarded)
         return embedding
@@ -162,8 +162,9 @@ def test_in_memory_vector_store_blue_vs_blue():
     import asyncio
 
     from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
-    from agentic_core.L4_state.utils.memory.in_memory_vector_store import InMemoryVectorStore
+
     from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
+    from agentic_core.L4_state.utils.memory.in_memory_vector_store import InMemoryVectorStore
 
     # Create store
     store = InMemoryVectorStore()
@@ -183,7 +184,7 @@ def test_in_memory_vector_store_blue_vs_blue():
         item = MemoryItem(
             content=text,
             embedding=vector,
-            metadata={"namespace": "test", "original_text": text}
+            metadata={"namespace": "test", "original_text": text},
         )
         items.append(item)
 

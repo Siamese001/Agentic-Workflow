@@ -53,7 +53,7 @@ class TestEdgeDataclass:
             edge_kind="test_kind",
             source_file="test.py",
             line_no=1,
-            symbol="test_symbol"
+            symbol="test_symbol",
         )
         assert edge.from_name == "test_from"
         assert edge.relation_type == "test_relation"
@@ -70,7 +70,7 @@ class TestEdgeDataclass:
             edge_kind="governance",
             source_file="file.py",
             line_no=1,
-            symbol="call"
+            symbol="call",
         )
         assert edge.confidence == 1.0  # default
         assert edge.semantic_type in ("", None)  # default
@@ -86,7 +86,7 @@ class TestScanManifestDataclass:
         manifest = ScanManifest(
             discovered_module_count=10,
             parsed_module_count=8,
-            edge_counts_by_graph={"imports": 15}
+            edge_counts_by_graph={"imports": 15},
         )
         assert manifest.discovered_module_count == 10
         assert manifest.parsed_module_count == 8
@@ -98,7 +98,7 @@ class TestScanManifestDataclass:
         manifest = ScanManifest(
             discovered_module_count=10,
             parsed_module_count=8,
-            edge_counts_by_graph={"imports": 15}
+            edge_counts_by_graph={"imports": 15},
         )
         data = manifest.to_dict()
         assert isinstance(data, dict)

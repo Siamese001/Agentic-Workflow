@@ -141,7 +141,7 @@ def benchmark_structural_only():
     print("Expected: {'imports', 'implements'}")
     print(f"Actual: {test_edge_types_structural}")
     print(
-        f"Test filtering correct: {'✓' if test_edge_types_structural == {'imports', 'implements'} else '✗'}"
+        f"Test filtering correct: {'✓' if test_edge_types_structural == {'imports', 'implements'} else '✗'}",
     )
     print()
 

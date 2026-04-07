@@ -83,39 +83,25 @@ _emit_applies_guardrail("p0", "redis_cache_client", "p0_governance")
 _emit_reads_policy_state("p0", "redis_cache_client", "policy_binding")
 _emit_snapshots_state("p0", "redis_cache_client", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -228,11 +214,11 @@ def canonical_json_bytes(obj: Any) -> bytes:
     """
     try:
         return json.dumps(
-            obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False
+            obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False,
         ).encode("ascii")
     except TypeError as exc:
         raise TypeError(
-            f"Object contains non-JSON-serializable type: {exc}. Only dict, list, str, int, float, bool, None are allowed."
+            f"Object contains non-JSON-serializable type: {exc}. Only dict, list, str, int, float, bool, None are allowed.",
         ) from exc
     except ValueError as exc:
         raise ValueError(f"Object contains NaN or Infinity: {exc}") from exc
@@ -351,7 +337,7 @@ class DeterministicRedisCache:
             port = int(parsed.port or 6379)
             if not self._tcp_reachable(host, port):
                 raise OSError(
-                    f"TCP pre-check failed: {host}:{port} unreachable within {_REDIS_SOCKET_TIMEOUT_S}s"
+                    f"TCP pre-check failed: {host}:{port} unreachable within {_REDIS_SOCKET_TIMEOUT_S}s",
                 )
             params: dict[str, Any] = {
                 "host": host,
@@ -372,7 +358,7 @@ class DeterministicRedisCache:
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.warning(
-                "[cache] Redis unavailable (db=%s): %s — switching to in-process fallback", int(self._db), exc
+                "[cache] Redis unavailable (db=%s): %s — switching to in-process fallback", int(self._db), exc,
             )
             self._use_fallback = True
             self._conn = None
@@ -497,7 +483,7 @@ class DeterministicRedisCache:
             return None
 
     def acquire_lease(
-        self, key: str, holder_id: str, nonce: str, semantic_clock_tick: int, ttl_seconds: int = 30
+        self, key: str, holder_id: str, nonce: str, semantic_clock_tick: int, ttl_seconds: int = 30,
     ) -> bool:
         """Acquire an exclusive lease.  Returns ``True`` if acquired.
 
@@ -539,7 +525,7 @@ class DeterministicRedisCache:
         if ttl_seconds > _MAX_TTL_SECONDS:
             raise ValueError(f"Lease TTL exceeds {_MAX_TTL_SECONDS}s limit, got {ttl_seconds}")
         payload = canonical_json_bytes(
-            {"holder_id": holder_id, "nonce": nonce, "semantic_clock_tick": semantic_clock_tick}
+            {"holder_id": holder_id, "nonce": nonce, "semantic_clock_tick": semantic_clock_tick},
         )
         conn = self._connect()
         if conn is not None:

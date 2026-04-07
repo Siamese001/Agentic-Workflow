@@ -24,12 +24,12 @@ def test_cache_aware_mode():
             repo_root=Path("."),
             include_tests=False,
             cache_path=None,  # No cache
-            scan_mode="auto"
+            scan_mode="auto",
         )
 
         # Force mode selection by calling scan (but we'll intercept the mode)
         scanner_no_cache.scan_mode = _get_cache_aware_scan_mode(
-            None, Path("."), include_tests=False
+            None, Path("."), include_tests=False,
         )
 
         print(f"  Selected mode: {scanner_no_cache.scan_mode}")
@@ -44,7 +44,7 @@ def test_cache_aware_mode():
             repo_root=Path("."),
             include_tests=False,
             cache_path=cache_file,
-            scan_mode="full"
+            scan_mode="full",
         )
 
         start_time = time.time()
@@ -61,7 +61,7 @@ def test_cache_aware_mode():
             repo_root=Path("."),
             include_tests=False,
             cache_path=cache_file,
-            scan_mode="auto"
+            scan_mode="auto",
         )
 
         start_time = time.time()
@@ -79,7 +79,7 @@ def test_cache_aware_mode():
             repo_root=Path("."),
             include_tests=True,
             cache_path=cache_file,
-            scan_mode="auto"
+            scan_mode="auto",
         )
 
         start_time = time.time()
@@ -132,7 +132,7 @@ def test_cache_aware_mode():
             "cache_hit_rate": cache_stats.get("hit_rate", 0),
             "cache_speedup": cache_speedup if build_time > 0 else 0,
             "prod_mode_correct": prod_mode_correct,
-            "test_mode_correct": test_mode_correct
+            "test_mode_correct": test_mode_correct,
         }
 
     finally:

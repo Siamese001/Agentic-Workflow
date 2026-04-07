@@ -15,7 +15,7 @@ def categorize_errors():
         'Phase 2 - Cache Layer': [],
         'Phase 3 - Config Core': [],
         'Phase 4 - Interfaces & Mixins': [],
-        'Phase 5 - Remaining Files': []
+        'Phase 5 - Remaining Files': [],
     }
 
     for err in report['details']:

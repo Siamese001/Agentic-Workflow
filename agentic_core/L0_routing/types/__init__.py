@@ -1,8 +1,6 @@
 # Import P1 routing protocols
-from agentic_core.L0_routing.types.p1_routing_protocol import P1Core, P1RoutingProtocol
-
-# Import V15 exceptions from zero-dependency module (breaks circular import)
-from agentic_core.L0_routing.types.v15_exceptions import (
+# Import guardian enforcement exceptions from zero-dependency module (breaks circular import)
+from agentic_core.L0_routing.types.guardian_enforcement_exceptions import (
     V15EnforcementError,
     V15HardFailAbort,
     V15SoftFailAbort,
@@ -10,6 +8,7 @@ from agentic_core.L0_routing.types.v15_exceptions import (
     is_v15_hard_fail,
     is_v15_soft_fail,
 )
+from agentic_core.L0_routing.types.p1_routing_protocol import P1Core, P1RoutingProtocol
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

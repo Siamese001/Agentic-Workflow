@@ -21,16 +21,15 @@ import pytest
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def execute_ssot_imports():
-    from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
-        AGENT_PIPELINE,
-        run_pipeline,
-    )
-
     from agentic_core.L2_execution.protocol import (
         PIPELINE_SUBPHASES,
         SubphaseResult,
         compute_pipeline_digest,
         emit_pipeline_digest,
+    )
+    from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
+        AGENT_PIPELINE,
+        run_pipeline,
     )
     return AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult, compute_pipeline_digest, emit_pipeline_digest
 

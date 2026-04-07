@@ -63,7 +63,7 @@ def split_file_by_type(filepath: Path) -> None:
     if total_defs <= 5:
         return
     LOGGER.info(
-        f"Splitting {filepath.name}: {total_defs} defs({len(enums)} enums, {len(dataclasses)} dataclasses, {len(classes)} classes, {len(functions)} functions)"
+        f"Splitting {filepath.name}: {total_defs} defs({len(enums)} enums, {len(dataclasses)} dataclasses, {len(classes)} classes, {len(functions)} functions)",
     )
     parent_dir: Any = filepath.parent
     stem: Any = filepath.stem

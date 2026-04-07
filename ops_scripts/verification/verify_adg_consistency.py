@@ -69,7 +69,7 @@ class ADGConsistencyVerifier:
         "unresolved_import_count": "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'unresolved_import'",
         "low_confidence_node_count": "SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW'",
         "unknown_layer_module_count": "SELECT COUNT(*) FROM nodes WHERE entity_type = 'module' AND layer = 'UNKNOWN'",
-        "dead_import_count": "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'"
+        "dead_import_count": "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'",
     }
 
     def __init__(self, adg_dir: Path):
@@ -147,7 +147,7 @@ class ADGConsistencyVerifier:
 
         if sql_value != snapshot_value:
             self.errors.append(
-                f"Metric {metric_name} mismatch: SQL={sql_value}, Snapshot={snapshot_value}"
+                f"Metric {metric_name} mismatch: SQL={sql_value}, Snapshot={snapshot_value}",
             )
 
     def _verify_sql_schema(self) -> None:
@@ -327,7 +327,7 @@ class ADGConsistencyVerifier:
             consistency_results[metric_name] = {
                 "sql_value": sql_value,
                 "snapshot_value": snapshot_value,
-                "consistent": sql_value == snapshot_value if snapshot_value is not None else None
+                "consistent": sql_value == snapshot_value if snapshot_value is not None else None,
             }
 
         # Calculate derived metrics
@@ -339,7 +339,7 @@ class ADGConsistencyVerifier:
             "status": "PASS" if not self.errors else "FAIL",
             "artifacts_verified": {
                 "sqlite": str(self.sqlite_path),
-                "snapshot": str(self.snapshot_path) if self.snapshot_path else None
+                "snapshot": str(self.snapshot_path) if self.snapshot_path else None,
             },
             "metric_consistency": consistency_results,
             "derived_metrics": derived_metrics,
@@ -349,8 +349,8 @@ class ADGConsistencyVerifier:
                 "total_metrics_checked": len(self.REQUIRED_METRICS),
                 "consistent_metrics": sum(1 for r in consistency_results.values() if r.get("consistent") is True),
                 "inconsistent_metrics": sum(1 for r in consistency_results.values() if r.get("consistent") is False),
-                "missing_in_snapshot": sum(1 for r in consistency_results.values() if r.get("consistent") is None)
-            }
+                "missing_in_snapshot": sum(1 for r in consistency_results.values() if r.get("consistent") is None),
+            },
         }
 
         # Print results
@@ -379,17 +379,17 @@ def main():
         "--adg-dir",
         type=Path,
         default=Path("artifacts/adg"),
-        help="Path to ADG artifacts directory"
+        help="Path to ADG artifacts directory",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        help="Path to save verification report"
+        help="Path to save verification report",
     )
     parser.add_argument(
         "--metric",
         type=str,
-        help="Verify specific metric only"
+        help="Verify specific metric only",
     )
 
     args = parser.parse_args()

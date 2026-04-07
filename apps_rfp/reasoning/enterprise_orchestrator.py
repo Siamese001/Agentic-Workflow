@@ -270,7 +270,7 @@ class EnterpriseRfpOrchestrator:
             result.execution_log = self._execution_log
 
             _log.info(
-                f"[EnterpriseRfpOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms"
+                f"[EnterpriseRfpOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms",
             )
             _emit_captures_pattern("enterprise", "EnterpriseRfpOrchestrator", "process_complete")
 
@@ -467,10 +467,10 @@ class EnterpriseRfpOrchestrator:
         lines.append("")
         lines.append(f"- **Estimated Hours:** {result.implementation_plan.get('total_estimated_hours', 0)}")
         lines.append(
-            f"- **Sprint Estimate:** {result.implementation_plan.get('estimated_sprints', 0)} sprints"
+            f"- **Sprint Estimate:** {result.implementation_plan.get('estimated_sprints', 0)} sprints",
         )
         lines.append(
-            f"- **High Complexity Items:** {len(result.implementation_plan.get('high_complexity_items', []))}"
+            f"- **High Complexity Items:** {len(result.implementation_plan.get('high_complexity_items', []))}",
         )
         lines.append("")
 
@@ -495,14 +495,14 @@ class EnterpriseRfpOrchestrator:
 
             lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
             lines.append(
-                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
+                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}",
             )
             lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
             lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
             lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
             lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
             lines.append(
-                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
             )
             lines.append("")
 

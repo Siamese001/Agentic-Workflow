@@ -56,7 +56,7 @@ class AuthoritySlot:
         expected_level = AuthorityLevel.from_slot_code(self.slot_type)
         if self.authority_level != expected_level:
             raise ValueError(
-                f"Slot type {self.slot_type} does not match authority level {self.authority_level}"
+                f"Slot type {self.slot_type} does not match authority level {self.authority_level}",
             )
         # Security invariant: no routing/safety fields in C0/U0
         if self.slot_type in ("C0", "U0"):

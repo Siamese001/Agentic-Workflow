@@ -6,9 +6,8 @@ Target: 2,379 broad exception violations (Exception, except:, etc.)
 Phase 2.2: Systematic application of MEDIUM severity fixes
 """
 
-import json
-import re
 import argparse
+import json
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -50,19 +49,19 @@ class MediumSeveritySilentSwallowerFixer:
                         # Add context-specific exception handling
                         new_line = original_line.replace(
                             'except Exception:',
-                            'except (ValueError, TypeError, RuntimeError) as e:'
+                            'except (ValueError, TypeError, RuntimeError) as e:',
                         )
                     elif 'except Exception as e:' in original_line:
                         # Add specific exception types
                         new_line = original_line.replace(
                             'except Exception as e:',
-                            'except (ValueError, TypeError, RuntimeError) as e:'
+                            'except (ValueError, TypeError, RuntimeError) as e:',
                         )
                     elif 'except:' in original_line:
                         # Replace bare except with specific exceptions
                         new_line = original_line.replace(
                             'except:',
-                            'except (ValueError, TypeError, RuntimeError) as e:'
+                            'except (ValueError, TypeError, RuntimeError) as e:',
                         )
 
                     if new_line != original_line:
@@ -102,7 +101,7 @@ class MediumSeveritySilentSwallowerFixer:
                     if len(exception_type.split(',')) > 5:
                         new_line = original_line.replace(
                             exception_type,
-                            'ValueError, TypeError, RuntimeError, OSError'
+                            'ValueError, TypeError, RuntimeError, OSError',
                         )
 
                     if new_line != original_line:
@@ -117,7 +116,7 @@ class MediumSeveritySilentSwallowerFixer:
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
-        print(f"  ✅ Fixed additional multiple exception violations")
+        print("  ✅ Fixed additional multiple exception violations")
 
     def apply_fixes_to_all_remaining_violations(self):
         """Phase 2.2: Apply fixes to ALL remaining MEDIUM severity violations systematically."""
@@ -183,7 +182,7 @@ class MediumSeveritySilentSwallowerFixer:
             'total_violations': len(medium_violations),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining': len(medium_violations) - self.fixes_applied
+            'remaining': len(medium_violations) - self.fixes_applied,
         }
 
     def _determine_specific_exception_types(self, context):
@@ -224,17 +223,17 @@ class MediumSeveritySilentSwallowerFixer:
             if 'as e' in original_line:
                 return original_line.replace(
                     'except Exception as e:',
-                    f'except ({", ".join(specific_types)}) as e:'
+                    f'except ({", ".join(specific_types)}) as e:',
                 )
             else:
                 return original_line.replace(
                     'except Exception:',
-                    f'except ({", ".join(specific_types)}) as e:'
+                    f'except ({", ".join(specific_types)}) as e:',
                 )
         elif 'except:' in original_line:
             return original_line.replace(
                 'except:',
-                f'except ({", ".join(specific_types)}) as e:'
+                f'except ({", ".join(specific_types)}) as e:',
             )
         else:
             return original_line
@@ -252,7 +251,7 @@ class MediumSeveritySilentSwallowerFixer:
 
         return original_line.replace(
             exception_type,
-            ', '.join(unique_types)
+            ', '.join(unique_types),
         )
 
     def generate_systematic_fix_report(self):
@@ -277,9 +276,9 @@ class MediumSeveritySilentSwallowerFixer:
                 'validation': ['ValueError', 'TypeError', 'AssertionError'],
                 'database_operations': ['DatabaseError', 'IntegrityError', 'OperationalError'],
                 'async_operations': ['AsyncError', 'TimeoutError', 'CancelledError'],
-                'default': ['ValueError', 'TypeError', 'RuntimeError']
+                'default': ['ValueError', 'TypeError', 'RuntimeError'],
             },
-            'phase_status': 'COMPLETED' if self.fixes_applied == len(medium_violations) else 'PARTIAL'
+            'phase_status': 'COMPLETED' if self.fixes_applied == len(medium_violations) else 'PARTIAL',
         }
 
         report_file = PROJECT_ROOT / "tools" / "phase22_medium_severity_fixes_report.json"
@@ -300,7 +299,7 @@ class MediumSeveritySilentSwallowerFixer:
             'total_medium_severity_violations': len(self.violations),
             'fixes_applied': self.fixes_applied,
             'errors': self.errors,
-            'remaining_violations': len(self.violations) - self.fixes_applied
+            'remaining_violations': len(self.violations) - self.fixes_applied,
         }
 
         report_file = PROJECT_ROOT / "tools" / "medium_severity_fixes_report.json"

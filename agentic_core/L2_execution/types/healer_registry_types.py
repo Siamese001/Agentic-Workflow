@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typing import Callable
 
+from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult
 from agentic_core.L3_orchestration.healers.architecture_governance_healer import (
     heal_import_compliance,
     heal_layer_gravity,
@@ -40,7 +41,6 @@ from agentic_core.L3_orchestration.healers.hierarchy_compliance_healer import (
     heal_missing_structure,
     heal_subfolder_compliance,
 )
-from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

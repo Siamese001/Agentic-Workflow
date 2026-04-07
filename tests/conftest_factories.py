@@ -27,8 +27,8 @@ def sample_config():
         "debug": False,
         "paths": {
             "data": "/tmp/test_data",
-            "logs": "/tmp/test_logs"
-        }
+            "logs": "/tmp/test_logs",
+        },
     }
 
 
@@ -49,12 +49,12 @@ def sample_test_data():
         "test_cases": [
             {"input": "test1", "expected": "result1"},
             {"input": "test2", "expected": "result2"},
-            {"input": "test3", "expected": "result3"}
+            {"input": "test3", "expected": "result3"},
         ],
         "metadata": {
             "version": "1.0",
-            "created": "2024-01-01"
-        }
+            "created": "2024-01-01",
+        },
     }
 
 

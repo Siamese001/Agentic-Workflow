@@ -32,7 +32,7 @@ class MCPRobustTesterFixed:
             "success": success,
             "details": details,
             "error": error,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
         self.test_results.append(result)
 
@@ -92,7 +92,7 @@ except Exception as e:
             result = subprocess.run(
                 ["python", str(script_file)],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=timeout
+                capture_output=True, text=True, timeout=timeout,
             )
 
             if result.returncode == 0:
@@ -263,14 +263,14 @@ except Exception as e:
         # Create a simple in-memory knowledge graph for testing
         memory_graph = {
             "entities": {},
-            "relations": []
+            "relations": [],
         }
 
         # Test 1: Create entities
         try:
             entities = [
                 {"name": "test_entity_1", "entityType": "test", "observations": ["test observation"]},
-                {"name": "test_entity_2", "entityType": "test", "observations": ["another observation"]}
+                {"name": "test_entity_2", "entityType": "test", "observations": ["another observation"]},
             ]
 
             for entity in entities:
@@ -286,7 +286,7 @@ except Exception as e:
         # Test 2: Add observations
         try:
             observations = [
-                {"entityName": "test_entity_1", "contents": ["new observation"]}
+                {"entityName": "test_entity_1", "contents": ["new observation"]},
             ]
 
             for obs in observations:
@@ -321,7 +321,7 @@ except Exception as e:
         try:
             graph_data = {
                 "entities": list(memory_graph["entities"].values()),
-                "relations": memory_graph["relations"]
+                "relations": memory_graph["relations"],
             }
 
             if len(graph_data["entities"]) > 0:
@@ -339,7 +339,7 @@ except Exception as e:
                 "total_observations": sum(
                     len(entity.get("observations", []))
                     for entity in memory_graph["entities"].values()
-                )
+                ),
             }
 
             if stats["entity_count"] > 0:
@@ -356,7 +356,7 @@ except Exception as e:
 
         memory_graph = {
             "entities": {},
-            "relations": []
+            "relations": [],
         }
 
         # Test 1: Large observations
@@ -365,7 +365,7 @@ except Exception as e:
             memory_graph["entities"]["large_test"] = {
                 "name": "large_test",
                 "entityType": "test",
-                "observations": [large_obs]
+                "observations": [large_obs],
             }
 
             entity = memory_graph["entities"]["large_test"]
@@ -382,7 +382,7 @@ except Exception as e:
             memory_graph["entities"]["special_test"] = {
                 "name": "special_test",
                 "entityType": "test",
-                "observations": [special_obs]
+                "observations": [special_obs],
             }
 
             entity = memory_graph["entities"]["special_test"]
@@ -399,14 +399,14 @@ except Exception as e:
             memory_graph["entities"]["duplicate_test"] = {
                 "name": "duplicate_test",
                 "entityType": "test",
-                "observations": ["first"]
+                "observations": ["first"],
             }
 
             # Try to create duplicate
             memory_graph["entities"]["duplicate_test"] = {
                 "name": "duplicate_test",
                 "entityType": "test",
-                "observations": ["second"]
+                "observations": ["second"],
             }
 
             # Should only have one entity
@@ -422,7 +422,7 @@ except Exception as e:
             memory_graph["entities"]["search_test"] = {
                 "name": "search_test",
                 "entityType": "test",
-                "observations": ["Special content: 特殊"]
+                "observations": ["Special content: 特殊"],
             }
 
             search_term = "特殊"
@@ -462,10 +462,10 @@ except Exception as e:
                     "integration_file": {
                         "name": "integration_file",
                         "entityType": "file",
-                        "observations": [f"Size: {file_size} bytes", "Content: Integration test"]
-                    }
+                        "observations": [f"Size: {file_size} bytes", "Content: Integration test"],
+                    },
                 },
-                "relations": []
+                "relations": [],
             }
 
             if memory_graph["entities"]["integration_file"]["observations"][0] == f"Size: {file_size} bytes":
@@ -488,7 +488,7 @@ except Exception as e:
                     graph["entities"][f"concurrent_test_{entity_id}"] = {
                         "name": f"concurrent_test_{entity_id}",
                         "entityType": "test",
-                        "observations": ["concurrent test"]
+                        "observations": ["concurrent test"],
                     }
                     results_queue.put((entity_id, True))
                 except Exception as e:
@@ -567,10 +567,10 @@ except Exception as e:
                     "total_tests": total_tests,
                     "passed": passed_tests,
                     "failed": failed_tests,
-                    "success_rate": (passed_tests/total_tests)*100
+                    "success_rate": (passed_tests/total_tests)*100,
                 },
                 "results": self.test_results,
-                "errors": self.errors_found
+                "errors": self.errors_found,
             }, f, indent=2)
 
         print(f"\nDetailed results saved to: {results_file}")

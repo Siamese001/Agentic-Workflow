@@ -108,7 +108,7 @@ class PrecisionSecurityContext:
             "security_level": self.security_level.value,
             "region": self.region,
             "timestamp": self.timestamp.isoformat(),
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }, sort_keys=True)
         checksum = hashlib.sha256(content.encode()).hexdigest()
         object.__setattr__(self, 'checksum', checksum)
@@ -123,7 +123,7 @@ class PrecisionSecurityContext:
             "security_level": self.security_level.value,
             "region": self.region,
             "timestamp": self.timestamp.isoformat(),
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }, sort_keys=True)
         expected = hashlib.sha256(content.encode()).hexdigest()
         return self.checksum == expected
@@ -169,7 +169,7 @@ class PrecisionAuditLog:
             "resource": self.resource,
             "outcome": self.outcome,
             "details": self.details,
-            "previous_log_hash": self.previous_log_hash
+            "previous_log_hash": self.previous_log_hash,
         }, sort_keys=True, default=str)
         self.log_hash = hashlib.sha256(content.encode()).hexdigest()
 
@@ -189,7 +189,7 @@ class PrecisionCryptographyManager:
             "encryptions": 0,
             "decryptions": 0,
             "key_rotations": 0,
-            "encryption_failures": 0
+            "encryption_failures": 0,
         }
 
     def generate_symmetric_key(self, key_id: str, key_size: int = 256) -> str:
@@ -211,7 +211,7 @@ class PrecisionCryptographyManager:
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=key_size,
-            backend=default_backend()
+            backend=default_backend(),
         )
         public_key = private_key.public_key()
 
@@ -235,7 +235,7 @@ class PrecisionCryptographyManager:
             cipher = Cipher(
                 algorithms.AES(key),
                 modes.GCM(iv),
-                backend=default_backend()
+                backend=default_backend(),
             )
             encryptor = cipher.encryptor()
 
@@ -268,7 +268,7 @@ class PrecisionCryptographyManager:
             cipher = Cipher(
                 algorithms.AES(key),
                 modes.GCM(iv, tag),
-                backend=default_backend()
+                backend=default_backend(),
             )
             decryptor = cipher.decryptor()
 
@@ -297,8 +297,8 @@ class PrecisionCryptographyManager:
                 padding.OAEP(
                     mgf=padding.MGF1(algorithm=hashes.SHA256()),
                     algorithm=hashes.SHA256(),
-                    label=None
-                )
+                    label=None,
+                ),
             )
 
             self.encryption_metrics["encryptions"] += 1
@@ -323,8 +323,8 @@ class PrecisionCryptographyManager:
                 padding.OAEP(
                     mgf=padding.MGF1(algorithm=hashes.SHA256()),
                     algorithm=hashes.SHA256(),
-                    label=None
-                )
+                    label=None,
+                ),
             )
 
             self.encryption_metrics["decryptions"] += 1
@@ -340,7 +340,7 @@ class PrecisionCryptographyManager:
             "symmetric_keys": len(self.symmetric_keys),
             "asymmetric_key_pairs": len(self.key_pairs),
             "metrics": self.encryption_metrics,
-            "key_rotation_interval_days": self.key_rotation_interval.days
+            "key_rotation_interval_days": self.key_rotation_interval.days,
         }
 
 
@@ -356,7 +356,7 @@ class PrecisionAccessController:
             "access_requests": 0,
             "access_granted": 0,
             "access_denied": 0,
-            "policy_violations": 0
+            "policy_violations": 0,
         }
 
         # Initialize default roles and permissions
@@ -368,20 +368,20 @@ class PrecisionAccessController:
         self.role_permissions = {
             "admin": {
                 "read", "write", "delete", "manage_users", "manage_policies",
-                "view_audit_logs", "system_config", "encrypt_data", "decrypt_data"
+                "view_audit_logs", "system_config", "encrypt_data", "decrypt_data",
             },
             "developer": {
-                "read", "write", "deploy", "view_logs", "encrypt_data", "decrypt_data"
+                "read", "write", "deploy", "view_logs", "encrypt_data", "decrypt_data",
             },
             "analyst": {
-                "read", "view_reports", "export_data", "decrypt_data"
+                "read", "view_reports", "export_data", "decrypt_data",
             },
             "user": {
-                "read", "view_own_data"
+                "read", "view_own_data",
             },
             "auditor": {
-                "read", "view_audit_logs", "export_audit_logs"
-            }
+                "read", "view_audit_logs", "export_audit_logs",
+            },
         }
 
         # Define resource policies
@@ -389,23 +389,23 @@ class PrecisionAccessController:
             "user_data": {
                 "required_permissions": ["read"],
                 "security_level": PrecisionSecurityLevel.CONFIDENTIAL,
-                "data_classification": PrecisionDataClassification.SENSITIVE_DATA
+                "data_classification": PrecisionDataClassification.SENSITIVE_DATA,
             },
             "system_config": {
                 "required_permissions": ["manage_policies"],
                 "security_level": PrecisionSecurityLevel.SECRET,
-                "data_classification": PrecisionDataClassification.RESTRICTED_DATA
+                "data_classification": PrecisionDataClassification.RESTRICTED_DATA,
             },
             "audit_logs": {
                 "required_permissions": ["view_audit_logs"],
                 "security_level": PrecisionSecurityLevel.SECRET,
-                "data_classification": PrecisionDataClassification.RESTRICTED_DATA
+                "data_classification": PrecisionDataClassification.RESTRICTED_DATA,
             },
             "encryption_keys": {
                 "required_permissions": ["encrypt_data", "decrypt_data"],
                 "security_level": PrecisionSecurityLevel.TOP_SECRET,
-                "data_classification": PrecisionDataClassification.CRITICAL_DATA
-            }
+                "data_classification": PrecisionDataClassification.CRITICAL_DATA,
+            },
         }
 
     def assign_role(self, user_id: str, role: str) -> bool:
@@ -439,7 +439,7 @@ class PrecisionAccessController:
             "resource": resource,
             "action": action,
             "outcome": "denied",
-            "reason": ""
+            "reason": "",
         }
 
         try:
@@ -511,7 +511,7 @@ class PrecisionAccessController:
             "metrics": self.access_metrics,
             "grant_rate": grant_rate,
             "recent_access_logs": len([log for log in self.access_logs
-                                     if datetime.fromisoformat(log["timestamp"]) > datetime.now() - timedelta(hours=1)])
+                                     if datetime.fromisoformat(log["timestamp"]) > datetime.now() - timedelta(hours=1)]),
         }
 
 
@@ -524,7 +524,7 @@ class PrecisionPrivacyEngine:
         self.privacy_metrics = {
             "data_masked": 0,
             "data_anonymized": 0,
-            "privacy_violations": 0
+            "privacy_violations": 0,
         }
 
         # Initialize default masking rules
@@ -538,7 +538,7 @@ class PrecisionPrivacyEngine:
             "ssn": lambda x: "***-**-" + x[-4:] if len(x) == 9 else "***",
             "credit_card": lambda x: "****-****-****-" + x[-4:] if len(x) == 16 else "***",
             "ip_address": lambda x: x[:3] + "***" if "." in x else "***",
-            "name": lambda x: x[0] + "***" + x[-1] if len(x) > 2 else "***"
+            "name": lambda x: x[0] + "***" + x[-1] if len(x) > 2 else "***",
         }
 
     def mask_data(self, data: dict[str, Any], field_types: dict[str, str]) -> dict[str, Any]:
@@ -596,7 +596,7 @@ class PrecisionPrivacyEngine:
         return {
             "masking_rules": len(self.masking_rules),
             "metrics": self.privacy_metrics,
-            "supported_pii_types": list(self.masking_rules.keys())
+            "supported_pii_types": list(self.masking_rules.keys()),
         }
 
 
@@ -611,7 +611,7 @@ class PrecisionAuditLogger:
             "total_logs": 0,
             "logs_per_hour": 0,
             "security_events": 0,
-            "compliance_violations": 0
+            "compliance_violations": 0,
         }
 
     def log_event(self, event_type: str, user_id: str, session_id: str,
@@ -630,7 +630,7 @@ class PrecisionAuditLogger:
             resource=resource,
             outcome=outcome,
             details=details or {},
-            previous_log_hash=self.current_hash
+            previous_log_hash=self.current_hash,
         )
 
         # Add to chain
@@ -701,7 +701,7 @@ class PrecisionAuditLogger:
             "chain_integrity": self.verify_audit_chain(),
             "metrics": self.audit_metrics,
             "oldest_log": self.log_chain[0].timestamp.isoformat() if self.log_chain else None,
-            "newest_log": self.log_chain[-1].timestamp.isoformat() if self.log_chain else None
+            "newest_log": self.log_chain[-1].timestamp.isoformat() if self.log_chain else None,
         }
 
 
@@ -716,7 +716,7 @@ class PrecisionComplianceManager:
             "checks_performed": 0,
             "violations_detected": 0,
             "violations_resolved": 0,
-            "compliance_score": 0.0
+            "compliance_score": 0.0,
         }
 
         # Initialize compliance frameworks
@@ -732,10 +732,10 @@ class PrecisionComplianceManager:
                 "right_to_be_forgotten": True,
                 "data_portability": True,
                 "consent_management": True,
-                "breach_notification": True
+                "breach_notification": True,
             },
             "data_retention_days": 2555,  # 7 years
-            "encryption_required": True
+            "encryption_required": True,
         }
 
         self.compliance_frameworks[PrecisionComplianceFramework.HIPAA] = {
@@ -745,10 +745,10 @@ class PrecisionComplianceManager:
                 "access_controls": True,
                 "audit_logs": True,
                 "encryption_required": True,
-                "business_associate_agreements": True
+                "business_associate_agreements": True,
             },
             "data_retention_days": 3650,  # 10 years
-            "encryption_required": True
+            "encryption_required": True,
         }
 
         self.compliance_frameworks[PrecisionComplianceFramework.PCI_DSS] = {
@@ -758,10 +758,10 @@ class PrecisionComplianceManager:
                 "strong_cryptography": True,
                 "access_control": True,
                 "network_security": True,
-                "vulnerability_management": True
+                "vulnerability_management": True,
             },
             "data_retention_days": 1095,  # 3 years
-            "encryption_required": True
+            "encryption_required": True,
         }
 
     def check_compliance(self, framework: PrecisionComplianceFramework,
@@ -779,7 +779,7 @@ class PrecisionComplianceManager:
             "requirements_met": [],
             "requirements_violated": [],
             "overall_compliant": True,
-            "score": 0.0
+            "score": 0.0,
         }
 
         total_requirements = len(requirements)
@@ -791,14 +791,14 @@ class PrecisionComplianceManager:
             if check_result["compliant"]:
                 compliance_results["requirements_met"].append({
                     "requirement": requirement,
-                    "details": check_result["details"]
+                    "details": check_result["details"],
                 })
                 met_requirements += 1
             else:
                 compliance_results["requirements_violated"].append({
                     "requirement": requirement,
                     "violation": check_result["violation"],
-                    "details": check_result["details"]
+                    "details": check_result["details"],
                 })
                 compliance_results["overall_compliant"] = False
 
@@ -808,7 +808,7 @@ class PrecisionComplianceManager:
                     "requirement": requirement,
                     "violation": check_result["violation"],
                     "timestamp": datetime.now().isoformat(),
-                    "resolved": False
+                    "resolved": False,
                 })
 
         # Calculate compliance score
@@ -827,7 +827,7 @@ class PrecisionComplianceManager:
         check_result = {
             "compliant": True,
             "violation": "",
-            "details": ""
+            "details": "",
         }
 
         if not required:
@@ -912,7 +912,7 @@ class PrecisionComplianceManager:
             "resolved_violations": resolved_violations,
             "active_violations": total_violations - resolved_violations,
             "compliance_score": avg_score,
-            "metrics": self.compliance_metrics
+            "metrics": self.compliance_metrics,
         }
 
 
@@ -930,7 +930,7 @@ class PrecisionSecurityGateway:
             "total_requests": 0,
             "authenticated_requests": 0,
             "authorized_requests": 0,
-            "blocked_requests": 0
+            "blocked_requests": 0,
         }
 
     async def authenticate_request(self, auth_data: dict[str, Any]) -> PrecisionSecurityContext | None:
@@ -968,7 +968,7 @@ class PrecisionSecurityGateway:
                 security_level=security_level,
                 region=auth_data.get("region", "unknown"),
                 timestamp=datetime.now(),
-                metadata=auth_data.get("metadata", {})
+                metadata=auth_data.get("metadata", {}),
             )
 
             # Verify context integrity
@@ -983,7 +983,7 @@ class PrecisionSecurityGateway:
                 action="authenticate",
                 resource="security_gateway",
                 outcome="success",
-                details={"security_level": security_level.name}
+                details={"security_level": security_level.name},
             )
 
             self.gateway_metrics["authenticated_requests"] += 1
@@ -997,7 +997,7 @@ class PrecisionSecurityGateway:
                 action="authenticate",
                 resource="security_gateway",
                 outcome="failure",
-                details={"error": str(e)}
+                details={"error": str(e)},
             )
             return None
 
@@ -1016,7 +1016,7 @@ class PrecisionSecurityGateway:
                 action=action,
                 resource=resource,
                 outcome="granted" if authorized else "denied",
-                details={"reason": reason, "security_level": context.security_level.name}
+                details={"reason": reason, "security_level": context.security_level.name},
             )
 
             if authorized:
@@ -1034,7 +1034,7 @@ class PrecisionSecurityGateway:
                 action=action,
                 resource=resource,
                 outcome="error",
-                details={"error": str(e)}
+                details={"error": str(e)},
             )
             return False, f"Authorization error: {e}"
 
@@ -1050,7 +1050,7 @@ class PrecisionSecurityGateway:
             return {
                 "success": False,
                 "error": "Authentication failed",
-                "stage": "authentication"
+                "stage": "authentication",
             }
 
         # Step 2: Authorization
@@ -1059,13 +1059,13 @@ class PrecisionSecurityGateway:
             return {
                 "success": False,
                 "error": f"Authorization failed: {reason}",
-                "stage": "authorization"
+                "stage": "authorization",
             }
 
         # Step 3: Privacy processing
         processed_data = self.privacy_engine.mask_data(
             request_data,
-            request_data.get("field_types", {})
+            request_data.get("field_types", {}),
         )
 
         # Step 4: Compliance check
@@ -1075,8 +1075,8 @@ class PrecisionSecurityGateway:
                 "data_fields_count": len(processed_data),
                 "encryption_enabled": True,
                 "access_controls": {"implemented": True},
-                "audit_logging": {"enabled": True}
-            }
+                "audit_logging": {"enabled": True},
+            },
         )
 
         # Step 5: Return success with processed data
@@ -1085,11 +1085,11 @@ class PrecisionSecurityGateway:
             "context": {
                 "user_id": context.user_id,
                 "security_level": context.security_level.name,
-                "roles": context.roles
+                "roles": context.roles,
             },
             "processed_data": processed_data,
             "compliance": compliance_result,
-            "stage": "completed"
+            "stage": "completed",
         }
 
     def get_gateway_status(self) -> dict[str, Any]:
@@ -1100,7 +1100,7 @@ class PrecisionSecurityGateway:
             "access_control": self.access_controller.get_access_metrics(),
             "privacy": self.privacy_engine.get_privacy_metrics(),
             "audit": self.audit_logger.get_audit_metrics(),
-            "compliance": self.compliance_manager.get_compliance_summary()
+            "compliance": self.compliance_manager.get_compliance_summary(),
         }
 
 
@@ -1116,5 +1116,5 @@ __all__ = [
     "PrecisionPrivacyEngine",
     "PrecisionAuditLogger",
     "PrecisionComplianceManager",
-    "PrecisionSecurityGateway"
+    "PrecisionSecurityGateway",
 ]

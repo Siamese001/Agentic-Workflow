@@ -98,7 +98,7 @@ class L5BoardBridge:
         """
         _trace_id = f"l5_submit_{self._package_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_SAFETY, "L5BoardBridge.submit_proposal"
+            _trace_id, LayerSegment.L5_SAFETY, "L5BoardBridge.submit_proposal",
         )
 
         package = CompletenessChangePackage(
@@ -124,7 +124,7 @@ class L5BoardBridge:
 
         Logger.info(
             f"Submitted proposal to L5 Board: {package.package_id} "
-            f"({proposal_type}, confidence={confidence:.2f})"
+            f"({proposal_type}, confidence={confidence:.2f})",
         )
 
         return package
@@ -183,7 +183,7 @@ class L5BoardBridge:
         self._decided_packages.append(package)
 
         Logger.info(
-            f"L5 Board decision: {package.package_id} = {package.status}"
+            f"L5 Board decision: {package.package_id} = {package.status}",
         )
 
     def get_pending_packages(self) -> list[CompletenessChangePackage]:

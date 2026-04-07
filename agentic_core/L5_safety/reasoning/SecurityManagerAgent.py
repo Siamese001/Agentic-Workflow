@@ -127,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -295,12 +294,12 @@ class SecurityManagerAgent(SovereignBaseAgent):
         self._audit_log: list[SecurityAuditEntry] = []
         self._vault_path = vault_path
         self._permissions["system"] = AgentPermission(
-            agent_id="system", level=PermissionLevel.ADMIN, granted_by="system"
+            agent_id="system", level=PermissionLevel.ADMIN, granted_by="system",
         )
         Logger.info("SecurityManagerAgent initialized")
 
     def _audit(
-        self, agent_id: str, action: SecurityAction, resource: str, success: bool, details: str = ""
+        self, agent_id: str, action: SecurityAction, resource: str, success: bool, details: str = "",
     ) -> None:
         """Log a security audit entry."""
         entry = SecurityAuditEntry(
@@ -314,11 +313,11 @@ class SecurityManagerAgent(SovereignBaseAgent):
         self._audit_log.append(entry)
         level = logging.INFO if success else logging.WARNING
         Logger.log(
-            level, f"SECURITY: {agent_id} {action.name} {resource} - {('OK' if success else 'DENIED')}"
+            level, f"SECURITY: {agent_id} {action.name} {resource} - {('OK' if success else 'DENIED')}",
         )
 
     def _check_permission(
-        self, agent_id: str, required_level: PermissionLevel, resource: str | None = None
+        self, agent_id: str, required_level: PermissionLevel, resource: str | None = None,
     ) -> bool:
         """Check if agent has required permission level."""
         _emit_applies_guardrail(str(uuid.uuid4()), "SecurityManagerAgent._check_permission", "L5_POLICY")
@@ -346,7 +345,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
         with self._lock:
             if not self._check_permission(granted_by, PermissionLevel.ADMIN):
                 self._audit(
-                    granted_by, SecurityAction.GRANT_PERMISSION, agent_id, False, "Insufficient permission"
+                    granted_by, SecurityAction.GRANT_PERMISSION, agent_id, False, "Insufficient permission",
                 )
                 return False
             self._permissions[agent_id] = AgentPermission(
@@ -364,7 +363,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
         with self._lock:
             if not self._check_permission(revoked_by, PermissionLevel.ADMIN):
                 self._audit(
-                    revoked_by, SecurityAction.REVOKE_PERMISSION, agent_id, False, "Insufficient permission"
+                    revoked_by, SecurityAction.REVOKE_PERMISSION, agent_id, False, "Insufficient permission",
                 )
                 return False
             if agent_id in self._permissions:
@@ -419,13 +418,13 @@ class SecurityManagerAgent(SovereignBaseAgent):
             return config.value
 
     def create_checkpoint(
-        self, agent_id: str, data: dict[str, Any], encrypted: bool = True
+        self, agent_id: str, data: dict[str, Any], encrypted: bool = True,
     ) -> secure_checkpoint | None:
         """Create a secure checkpoint."""
         with self._lock:
             if not self._check_permission(agent_id, PermissionLevel.SECURE_WRITER):
                 self._audit(
-                    agent_id, SecurityAction.CREATE_CHECKPOINT, "new", False, "Insufficient permission"
+                    agent_id, SecurityAction.CREATE_CHECKPOINT, "new", False, "Insufficient permission",
                 )
                 return None
             checkpoint_id = secrets.token_hex(16)
@@ -463,7 +462,7 @@ class SecurityManagerAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def get_audit_log(
-        self, agent_id: str | None = None, action: SecurityAction | None = None, limit: int = 100
+        self, agent_id: str | None = None, action: SecurityAction | None = None, limit: int = 100,
     ) -> list[SecurityAuditEntry]:
         """Get audit log entries."""
         with self._lock:

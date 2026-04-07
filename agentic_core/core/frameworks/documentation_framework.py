@@ -93,7 +93,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             DocumentationQuality.BASIC: ["has_description", "has_parameters"],
             DocumentationQuality.STANDARD: ["has_examples", "has_return_types"],
             DocumentationQuality.COMPREHENSIVE: ["has_edge_cases", "has_troubleshooting"],
-            DocumentationQuality.EXHAUSTIVE: ["has_performance_notes", "has_migration_guide"]
+            DocumentationQuality.EXHAUSTIVE: ["has_performance_notes", "has_migration_guide"],
         }
 
     def generate(self, source: Path, target_path: Path) -> DocumentationArtifact:
@@ -118,7 +118,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             overview = DocumentationSection(
                 title="Overview",
                 content=self._generate_overview(source, classes, functions),
-                quality_level=DocumentationQuality.STANDARD
+                quality_level=DocumentationQuality.STANDARD,
             )
             sections.append(overview)
 
@@ -136,7 +136,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             examples = DocumentationSection(
                 title="Usage Examples",
                 content=self._generate_usage_examples(classes, functions),
-                quality_level=DocumentationQuality.COMPREHENSIVE
+                quality_level=DocumentationQuality.COMPREHENSIVE,
             )
             sections.append(examples)
 
@@ -147,7 +147,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 sections=sections,
                 target_audience=["developers", "api_users"],
                 quality_level=DocumentationQuality.COMPREHENSIVE,
-                file_path=target_path
+                file_path=target_path,
             )
 
             return artifact
@@ -254,7 +254,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
         return DocumentationSection(
             title=f"Class: {cls.name}",
             content=content,
-            quality_level=DocumentationQuality.COMPREHENSIVE
+            quality_level=DocumentationQuality.COMPREHENSIVE,
         )
 
     def _generate_function_documentation(self, func: ast.FunctionDef) -> DocumentationSection:
@@ -281,7 +281,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
         return DocumentationSection(
             title=f"Function: {func.name}",
             content=content,
-            quality_level=DocumentationQuality.STANDARD
+            quality_level=DocumentationQuality.STANDARD,
         )
 
     def _generate_usage_examples(self, classes: list[ast.ClassDef], functions: list[ast.FunctionDef]) -> str:
@@ -328,7 +328,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
             "L2": "Execution and Tool Use",
             "L3": "Orchestration and Workflow",
             "L4": "State Management",
-            "L5": "Safety and Governance"
+            "L5": "Safety and Governance",
         }
 
     def generate(self, source: Path, target_path: Path) -> DocumentationArtifact:
@@ -339,7 +339,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
         overview = DocumentationSection(
             title="System Architecture Overview",
             content=self._generate_system_overview(source),
-            quality_level=DocumentationQuality.COMPREHENSIVE
+            quality_level=DocumentationQuality.COMPREHENSIVE,
         )
         sections.append(overview)
 
@@ -351,7 +351,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
         interactions = DocumentationSection(
             title="Component Interactions",
             content=self._generate_interaction_documentation(source),
-            quality_level=DocumentationQuality.COMPREHENSIVE
+            quality_level=DocumentationQuality.COMPREHENSIVE,
         )
         sections.append(interactions)
 
@@ -359,7 +359,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
         data_flow = DocumentationSection(
             title="Data Flow and State Management",
             content=self._generate_data_flow_documentation(source),
-            quality_level=DocumentationQuality.STANDARD
+            quality_level=DocumentationQuality.STANDARD,
         )
         sections.append(data_flow)
 
@@ -369,7 +369,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
             sections=sections,
             target_audience=["architects", "developers", "system_designers"],
             quality_level=DocumentationQuality.COMPREHENSIVE,
-            file_path=target_path
+            file_path=target_path,
         )
 
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
@@ -548,7 +548,7 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
             sections.append(DocumentationSection(
                 title=f"Layer {layer_code}",
                 content=content,
-                quality_level=DocumentationQuality.COMPREHENSIVE
+                quality_level=DocumentationQuality.COMPREHENSIVE,
             ))
 
         return sections
@@ -703,7 +703,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
         onboarding = DocumentationSection(
             title="Developer Onboarding Guide",
             content=self._generate_onboarding_guide(),
-            quality_level=DocumentationQuality.COMPREHENSIVE
+            quality_level=DocumentationQuality.COMPREHENSIVE,
         )
         sections.append(onboarding)
 
@@ -711,7 +711,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
         arch_dive = DocumentationSection(
             title="Architecture Deep Dive",
             content=self._generate_architecture_dive(),
-            quality_level=DocumentationQuality.COMPREHENSIVE
+            quality_level=DocumentationQuality.COMPREHENSIVE,
         )
         sections.append(arch_dive)
 
@@ -719,7 +719,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
         workflows = DocumentationSection(
             title="Development Workflows",
             content=self._generate_development_workflows(),
-            quality_level=DocumentationQuality.STANDARD
+            quality_level=DocumentationQuality.STANDARD,
         )
         sections.append(workflows)
 
@@ -727,7 +727,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
         troubleshooting = DocumentationSection(
             title="Troubleshooting Guide",
             content=self._generate_troubleshooting_guide(),
-            quality_level=DocumentationQuality.COMPREHENSIVE
+            quality_level=DocumentationQuality.COMPREHENSIVE,
         )
         sections.append(troubleshooting)
 
@@ -737,7 +737,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
             sections=sections,
             target_audience=["new_developers", "team_members", "stakeholders"],
             quality_level=DocumentationQuality.COMPREHENSIVE,
-            file_path=target_path
+            file_path=target_path,
         )
 
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
@@ -1983,23 +1983,23 @@ class DocumentationQualityValidator:
             DocumentationQuality.BASIC: {
                 "has_title": True,
                 "has_description": True,
-                "min_length": 100
+                "min_length": 100,
             },
             DocumentationQuality.STANDARD: {
                 "has_examples": True,
                 "has_usage": True,
-                "min_length": 500
+                "min_length": 500,
             },
             DocumentationQuality.COMPREHENSIVE: {
                 "has_troubleshooting": True,
                 "has_best_practices": True,
-                "min_length": 1000
+                "min_length": 1000,
             },
             DocumentationQuality.EXHAUSTIVE: {
                 "has_performance_notes": True,
                 "has_migration_guide": True,
-                "min_length": 2000
-            }
+                "min_length": 2000,
+            },
         }
 
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:

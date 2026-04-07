@@ -509,7 +509,7 @@ _BASE_MIRROR_ROOTS: frozenset[str] = frozenset(
     {
         "agentic_core",
         "system_learning",
-    }
+    },
 )
 
 # ---------------------------------------------------------------------------
@@ -705,7 +705,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "archives",
         ".gravity_state",
         ".backup",
-    }
+    },
 )
 
 

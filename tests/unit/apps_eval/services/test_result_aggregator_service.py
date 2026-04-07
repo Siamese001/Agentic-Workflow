@@ -45,7 +45,7 @@ class TestResultAggregatorService:
         results = [
             {"test_id": "test_1", "status": "passed"},
             {"test_id": "test_2", "status": "passed"},
-            {"test_id": "test_3", "status": "passed"}
+            {"test_id": "test_3", "status": "passed"},
         ]
         aggregated = service.aggregate_results(results)
 

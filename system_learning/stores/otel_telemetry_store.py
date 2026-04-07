@@ -83,7 +83,7 @@ class OpenTelemetrySpanStore(TelemetryStoreProtocol):
         _emit_records_telemetry_event(
             "opentelemetry_span_store", "L4_STATE", "span_ingestion",
             ingested_count=ingested,
-            buffer_size=len(self._span_buffer)
+            buffer_size=len(self._span_buffer),
         )
 
         return ingested
@@ -138,7 +138,7 @@ class OpenTelemetrySpanStore(TelemetryStoreProtocol):
             "opentelemetry_span_store", "L4_STATE", "read_events",
             window_start=window_start_utc,
             window_end=window_end_utc,
-            events_returned=len(events)
+            events_returned=len(events),
         )
 
         return tuple(events)

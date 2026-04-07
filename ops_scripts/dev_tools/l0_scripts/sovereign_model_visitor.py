@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 exempt: Any = {'agentic_core/schemas/models/core_contracts_types.py'}
 
 class SovereignModelVisitor(ast.NodeVisitor):

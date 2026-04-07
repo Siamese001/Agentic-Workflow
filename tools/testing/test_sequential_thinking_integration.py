@@ -24,15 +24,15 @@ def create_test_scenarios():
                 "sqlite_size": "300+ MB",
                 "nodes": "263,888",
                 "edges": "929,125",
-                "scan_time": "5+ minutes"
+                "scan_time": "5+ minutes",
             },
             "constraints": [
                 "Must maintain semantic precision",
                 "Cannot break existing governance queries",
-                "Need to support incremental updates"
-            ]
+                "Need to support incremental updates",
+            ],
         },
-        "question": "How can we optimize the ADG (Application Dependency Graph) system for better performance while maintaining accuracy and governance capabilities?"
+        "question": "How can we optimize the ADG (Application Dependency Graph) system for better performance while maintaining accuracy and governance capabilities?",
     }
 
     # Scenario 2: Test Strategy Enhancement
@@ -45,16 +45,16 @@ def create_test_scenarios():
                 "python_files": "11,074",
                 "test_files": "2,384",
                 "layers": "L0-L6 architecture",
-                "apps_modules": "apps_eval, apps_exec, apps_lic, apps_rg, apps_research, apps_rfp"
+                "apps_modules": "apps_eval, apps_exec, apps_lic, apps_rg, apps_research, apps_rfp",
             },
             "challenges": [
                 "Cross-layer integration testing",
                 "Agent behavior validation",
                 "Performance regression testing",
-                "Governance compliance verification"
-            ]
+                "Governance compliance verification",
+            ],
         },
-        "question": "What comprehensive testing strategy should we implement for this multi-layered agentic system to ensure reliability, performance, and compliance?"
+        "question": "What comprehensive testing strategy should we implement for this multi-layered agentic system to ensure reliability, performance, and compliance?",
     }
 
     # Scenario 3: Memory System Integration
@@ -66,16 +66,16 @@ def create_test_scenarios():
             "current_integration": {
                 "adg_redis": "Hot cache with 17 tools",
                 "memory_mcp": "SQLite-backed knowledge graph",
-                "lifecycle_tracing": "Runtime execution traces"
+                "lifecycle_tracing": "Runtime execution traces",
             },
             "goals": [
                 "Seamless data flow between components",
                 "Consistent entity resolution",
                 "Efficient query performance",
-                "Audit trail maintenance"
-            ]
+                "Audit trail maintenance",
+            ],
         },
-        "question": "How should we architect the integration between ADG static analysis, runtime memory, and execution tracing to create a cohesive system understanding?"
+        "question": "How should we architect the integration between ADG static analysis, runtime memory, and execution tracing to create a cohesive system understanding?",
     }
 
     return [adg_scenario, test_scenario, memory_scenario]
@@ -182,7 +182,7 @@ def main():
         "revisesThought": None,
         "branchFromThought": None,
         "branchId": None,
-        "needsMoreThoughts": True
+        "needsMoreThoughts": True,
     }
 
     test_file = Path(__file__).parent / "sequential_thinking_test_input.json"

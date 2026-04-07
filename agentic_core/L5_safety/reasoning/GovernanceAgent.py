@@ -4,7 +4,6 @@ from __future__ import annotations
 import importlib
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -45,6 +44,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
 emit_replay_key("p0", "GovernanceAgent")
 emit_determinism_digest("p0", "GovernanceAgent")
@@ -96,8 +96,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
@@ -106,7 +106,10 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     enforce_policy_before_action,
 )
 from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
 
 _guardrail = get_guardrail_gate()
 _pep = get_policy_enforcement_point()
@@ -144,7 +147,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -328,7 +330,7 @@ class DependencyGraph:
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             self.graph[file_path]["from_imports"].append(
-                                {"module": node.module, "names": [n.name for n in node.names]}
+                                {"module": node.module, "names": [n.name for n in node.names]},
                             )
                     elif isinstance(node, ast.ClassDef):
                         self.graph[file_path]["classes"].append(node.name)
@@ -626,7 +628,7 @@ class GovernanceAgent(SovereignBaseAgent):
         return violations
 
     def _check_root_file(
-        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool
+        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool,
     ) -> None:
         if file_path.name not in self.ALLOWED_ROOT_FILES:
             violations.append(f"Unauthorized file at root: {file_path.name}")
@@ -682,7 +684,7 @@ class GovernanceAgent(SovereignBaseAgent):
                     target = scripts_dir / f"{stem}_{counter}{suffix}"
                     counter += 1
                 result = self.gatekeeper.safe_move(
-                    file_path, target, "GovernanceAgent", "Move root script to scripts/"
+                    file_path, target, "GovernanceAgent", "Move root script to scripts/",
                 )
                 if result.success:
                     return f"MOVED to scripts/{target.name}"
@@ -817,7 +819,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "spaces": spaces,
                                 "content": line.strip()[:100],
                                 "message": f"Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})",
-                            }
+                            },
                         )
         except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Error checking nesting depth in {file_path}: {e}")
@@ -851,7 +853,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "complexity": complexity,
                                 "threshold": self.MAX_COMPLEXITY,
                                 "message": f"Function '{node.name}' at line {node.lineno}: Complexity {complexity} > {self.MAX_COMPLEXITY}",
-                            }
+                            },
                         )
                     if func_lines > self.MAX_FUNC_LINES:
                         violations.append(
@@ -862,7 +864,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "lines": func_lines,
                                 "threshold": self.MAX_FUNC_LINES,
                                 "message": f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}",
-                            }
+                            },
                         )
         except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
@@ -936,7 +938,7 @@ class GovernanceAgent(SovereignBaseAgent):
             report["root_violations"]
             or report["depth_violations"]
             or report["atomicity_violations"]
-            or report["complexity_violations"]
+            or report["complexity_violations"],
         )
 
     # guardian: allow-type-erasure
@@ -1026,7 +1028,7 @@ class GovernanceAgent(SovereignBaseAgent):
                     "type": "ROOT_HYGIENE",
                     "applied": not dry_run,
                     "action_taken": "SANITIZED" if not dry_run else "PREVIEW",
-                }
+                },
             )
         if file_paths:
             for fp in file_paths:
@@ -1039,7 +1041,7 @@ class GovernanceAgent(SovereignBaseAgent):
                             "type": "DEPTH",
                             "applied": False,
                             "action_taken": "SUGGEST: Use HealerAgent.heal_file_moves()",
-                        }
+                        },
                     )
                     affected_paths.append(fp)
                 atom_v = self.check_atomicity_law(fp)
@@ -1051,7 +1053,7 @@ class GovernanceAgent(SovereignBaseAgent):
                             "type": "ATOMICITY",
                             "applied": False,
                             "action_taken": "SUGGEST: Use HealerAgent.heal_fission()",
-                        }
+                        },
                     )
                     affected_paths.append(fp)
         batch_report = {"batch_post_heal_status": "PENDING", "batch_message": ""}
@@ -1197,7 +1199,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 self.logger.error(f"  Error checking atomicity law: {e}")
                 errors += 1
             self.logger.info(
-                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed"
+                f"[{agent_name}] Complete: {violations_found} violations, {violations_fixed} fixed",
             )
             return {
                 "violations_found": violations_found,

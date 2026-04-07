@@ -91,7 +91,7 @@ def mine_workflows():
                     if isinstance(step, dict):
                         sid = step.get("id", step.get("step_id", step.get("name", "Unknown")))
                         agent = step.get(
-                            "agent", step.get("tool", step.get("node", step.get("type", "Unknown")))
+                            "agent", step.get("tool", step.get("node", step.get("type", "Unknown"))),
                         )
                         desc = step.get("description", step.get("desc", ""))[:60]
                         next_s = step.get("next_step", step.get("next", step.get("transitions", "End")))
@@ -114,7 +114,7 @@ def mine_workflows():
             report.write("## 3. 🧠 Prompt Encyclopedia\n\n")
             report.write("*Exact text extraction of all detected prompt templates.*\n\n")
             prompts = extract_keys_recursive(
-                data, ["prompt", "system_prompt", "user_prompt", "template", "instruction"]
+                data, ["prompt", "system_prompt", "user_prompt", "template", "instruction"],
             )
             prompt_count = 0
             for key, content in sorted(prompts.items()):

@@ -124,7 +124,7 @@ class FixGuardianFormatRule(BaseRepairRule):
 
     # Pattern that matches ALREADY CANONICAL lines (no change needed)
     CANONICAL_RE = re.compile(
-        r"^\s*#\s*guardian:\s+allow-[a-z][a-z0-9-]+\s+--\s+\S.*$"
+        r"^\s*#\s*guardian:\s+allow-[a-z][a-z0-9-]+\s+--\s+\S.*$",
     )
 
     def match(self, deficiency: Deficiency) -> bool:

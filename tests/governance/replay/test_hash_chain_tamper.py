@@ -108,7 +108,7 @@ class HashChainAuditLog:
             expected_previous = self.entries[i - 1].data_hash
             if entry.previous_hash != expected_previous:
                 issues.append(
-                    f"Hash break at entry {i}: expected {expected_previous[:16]}, got {entry.previous_hash[:16]}"
+                    f"Hash break at entry {i}: expected {expected_previous[:16]}, got {entry.previous_hash[:16]}",
                 )
 
         return issues

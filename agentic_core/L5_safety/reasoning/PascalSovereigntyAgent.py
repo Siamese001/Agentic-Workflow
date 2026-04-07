@@ -145,11 +145,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -373,7 +371,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         9. UTILITY  - No class definitions
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "PascalSovereigntyAgent.classify_file", "L5_POLICY"
+            str(uuid.uuid4()), "PascalSovereigntyAgent.classify_file", "L5_POLICY",
         )
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
@@ -462,10 +460,10 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
 
         regex_from = re.compile(
             # guardian: allow-path-string
-            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)"
+            r"(?P<prefix>from\s+\.*)" + re.escape(old_mod) + r"(?P<suffix>\s+import)",
         )
         regex_import = re.compile(
-            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))"
+            rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
 
         for i, path in enumerate(self.file_registry):
@@ -497,7 +495,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                 import winreg
 
                 key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem"
+                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
                 )
                 value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if value != 1:
@@ -570,7 +568,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
 
                 else:
                     print(
-                        "  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename."
+                        "  [ANALYSIS] Files are DIFFERENT. Remediation: Preserving data via conflict rename.",
                     )
                     timestamp = int(time.time())
                     conflict_name = f"{dest_name}.CONFLICT_{timestamp}"
@@ -710,7 +708,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         """Heal Pascal naming violations."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal"
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal",
         )
         from agentic_core.base_agents.decorators import standard_heal
 

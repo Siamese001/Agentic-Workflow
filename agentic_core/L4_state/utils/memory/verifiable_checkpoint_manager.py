@@ -206,7 +206,7 @@ class VerifiableCheckpointManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "VerifiableCheckpointManager.save_checkpoint"
+            _trace_id, LayerSegment.L4_STATE, "VerifiableCheckpointManager.save_checkpoint",
         )
 
         payload_str: Any = json.dumps(state, sort_keys=True)
@@ -227,7 +227,7 @@ class VerifiableCheckpointManager:
         return storage_etag
 
     async def load_checkpoint(
-        self, session_id: str, node_id: str, verify: bool = True
+        self, session_id: str, node_id: str, verify: bool = True,
     ) -> dict[str, Any] | None:
         """
         Loads and verifies a Checkpoint.

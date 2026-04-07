@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -252,7 +251,7 @@ class StateLifecyclePolicy:
         allowed = _VALID_TRANSITIONS.get(self._stage, set())
         if target not in allowed:
             raise StateLifecycleViolationError(
-                f"StateLifecyclePolicy: invalid transition {self._stage} → {target} for run={self._run_id}"
+                f"StateLifecyclePolicy: invalid transition {self._stage} → {target} for run={self._run_id}",
             )
         record = LifecycleTransition(
             run_id=self._run_id,

@@ -78,7 +78,7 @@ def profile_ingest_stages():
 
     return {
         'serialization': t1-t0,
-        'total_per_1k': (t1-t0) * 3  # rough extrapolation
+        'total_per_1k': (t1-t0) * 3,  # rough extrapolation
     }
 
 def compare_write_layouts():

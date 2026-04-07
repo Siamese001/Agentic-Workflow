@@ -13,6 +13,7 @@ BUFFER_SIZE = 8192
 
 from pydantic import BaseModel, Field
 
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -56,7 +57,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.utils.lic_agent_base_util import LICAgentBase
 
 _emit_authorize_and_execute("p2", "PIISanitizerSpecialistAgent_util", "execution_auth")
@@ -86,39 +86,25 @@ _emit_applies_guardrail("p0", "PIISanitizerSpecialistAgent_util", "p0_governance
 _emit_reads_policy_state("p0", "PIISanitizerSpecialistAgent_util", "policy_binding")
 _emit_snapshots_state("p0", "PIISanitizerSpecialistAgent_util", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
-    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_stores_learning_state,
-    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
@@ -197,7 +183,7 @@ class PII_SanitizerSpecialistAgent(LICAgentBase):
             "EMAIL": re.compile("\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"),
             "PHONE": re.compile("\\b(?:\\+?1[ -]?)?\\(?\\d{3}\\)?[ -]?\\d{3}[ -]?\\d{4}\\b"),
             "NAME": re.compile("\\b[A-Z][a-z]+ [A-Z][a-z]+\\b"),
-        }
+        },
     )
 
     def __post_init__(self) -> None:
@@ -293,7 +279,7 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
 
     detection_threshold: float = 0.8
     attack_patterns: list[str] = field(
-        default_factory=lambda: ["ignore previous instructions", "system prompt", "jailbreak"]
+        default_factory=lambda: ["ignore previous instructions", "system prompt", "jailbreak"],
     )
 
     def __post_init__(self) -> None:
@@ -339,7 +325,7 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
             }
         if validated_output.injection_detected:
             self.log_warning(
-                f"PROMPT INJECTION DETECTED (Confidence: {validated_output.confidence}): {validated_output.reason}"
+                f"PROMPT INJECTION DETECTED (Confidence: {validated_output.confidence}): {validated_output.reason}",
             )
         return validated_output.model_dump()
 
@@ -372,7 +358,7 @@ class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
         if not self.config.agent_stacks.enable_constitutional_review:
             self.log_warning("Constitutional review is disabled. Passing by default.")
             return ConstitutionalReviewResult(
-                review_passed=True, violations_found=[], feedback="Review disabled"
+                review_passed=True, violations_found=[], feedback="Review disabled",
             )
         client = self.get_model_client("constitutional_review_model")
         prompt_template = self.prompt_manager.get_template("constitutional_review")
@@ -393,10 +379,10 @@ class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
         validated_output, error = self.validator.validate(response["content"], ConstitutionalReviewResult)
         if error:
             self.log_error(
-                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
+                f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft).",
             )
             return ConstitutionalReviewResult(
-                review_passed=True, violations_found=["VALIDATION_ERROR"], feedback=error
+                review_passed=True, violations_found=["VALIDATION_ERROR"], feedback=error,
             )
         if not validated_output.review_passed:
             self.log_warning(f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}")

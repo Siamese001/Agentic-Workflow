@@ -109,7 +109,7 @@ class FileBackedRuntimeADGStore:
             if not l4_approved:
                 raise ValueError(
                     f"Runtime ADG store path not in L4 approved territory: {rel_path_str}. "
-                    f"Approved L4 folders include: {sorted(L4_APPROVED_FOLDERS)[:3]}..."
+                    f"Approved L4 folders include: {sorted(L4_APPROVED_FOLDERS)[:3]}...",
                 )
 
         except Exception as e:
@@ -125,7 +125,7 @@ class FileBackedRuntimeADGStore:
 
     def _save_trace_index(self) -> None:
         self._trace_index_path.write_text(
-            json.dumps(self._trace_index, indent=2, sort_keys=True), encoding="utf-8"
+            json.dumps(self._trace_index, indent=2, sort_keys=True), encoding="utf-8",
         )
 
     def persist(self, snapshot: RuntimeADGSnapshot) -> str:

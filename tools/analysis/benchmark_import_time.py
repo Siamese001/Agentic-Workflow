@@ -36,7 +36,7 @@ except Exception as e:
             capture_output=True,
             text=True,
             timeout=30,
-            cwd="."
+            cwd=".",
         )
         end = time.time()
 

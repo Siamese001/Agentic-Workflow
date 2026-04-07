@@ -30,7 +30,7 @@ def get_baseline(conn):
     rows = conn.execute(
         "SELECT relation_type, COUNT(*) FROM edges "
         "WHERE relation_type IN ('writes_to','writes_through') "
-        "GROUP BY relation_type"
+        "GROUP BY relation_type",
     ).fetchall()
     return dict(rows)
 
@@ -145,7 +145,7 @@ def patch_module(filepath: Path, module_name: str, target_wt: int,
             text = text.replace(
                 "from agentic_core.runtime.contracts.lifecycle_trace_contract import",
                 "from agentic_core.runtime.contracts.lifecycle_trace_contract import\n    _emit_writes_through,",
-                1
+                1,
             )
         else:
             # Add new import after first docstring or at top
@@ -164,7 +164,7 @@ def patch_module(filepath: Path, module_name: str, target_wt: int,
     new_calls = []
     for i in range(existing_calls + 1, existing_calls + needed + 1):
         new_calls.append(
-            f'_emit_writes_through("l4", "{short_name}", "uwg_write_{i}")'
+            f'_emit_writes_through("l4", "{short_name}", "uwg_write_{i}")',
         )
 
     # Find insertion point: after last existing _emit_writes_through call,

@@ -1,6 +1,5 @@
 """Fix remaining TODO patterns."""
 import os
-import re
 
 # Fix all remaining TODO patterns in L0_routing subdirectories
 dirs_to_fix = [

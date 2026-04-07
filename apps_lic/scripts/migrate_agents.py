@@ -41,7 +41,7 @@ def migrate_rescued_agents() -> None:
             # guardian: allow-path-string
             if os.path.exists(dst):
                 print(
-                    f"WARNING: Target {filename} already exists in engines/. Overwriting with Enriched version."
+                    f"WARNING: Target {filename} already exists in engines/. Overwriting with Enriched version.",
                 )
             shutil.move(src, dst)
             print(f"SUCCESS: Moved {filename} to {target_dir}")

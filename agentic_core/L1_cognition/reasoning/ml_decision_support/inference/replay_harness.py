@@ -69,7 +69,7 @@ class ReplayHarness:
         original_replay_key: str,
         original_policy_hash: str,
         original_semantic_clock: int | None = None,
-        original_prediction: ModelPrediction | None = None
+        original_prediction: ModelPrediction | None = None,
     ) -> ReplayResult:
         """
         Replay a single prediction to verify determinism.
@@ -95,7 +95,7 @@ class ReplayHarness:
                     context=original_context,
                     trace_id=original_trace_id,
                     replay_key=original_replay_key,
-                    policy_hash=original_policy_hash
+                    policy_hash=original_policy_hash,
                 )
             else:
                 # Fallback to manual feature extraction
@@ -105,7 +105,7 @@ class ReplayHarness:
                         trace_id=original_trace_id,
                         replay_key=original_replay_key,
                         policy_hash=original_policy_hash,
-                        semantic_clock=original_semantic_clock
+                        semantic_clock=original_semantic_clock,
                     )
 
                     if extraction_result.success:
@@ -116,7 +116,7 @@ class ReplayHarness:
                             model_input=model_input,
                             trace_id=original_trace_id,
                             replay_key=original_replay_key,
-                            policy_hash=original_policy_hash
+                            policy_hash=original_policy_hash,
                         )
                     else:
                         raise RuntimeError("Feature extraction failed during replay")
@@ -140,7 +140,7 @@ class ReplayHarness:
                 confidence_difference=confidence_diff,
                 prediction_difference=prediction_diff,
                 replay_timestamp=start_time,
-                replay_success=True
+                replay_success=True,
             )
 
             # Log replay result
@@ -160,7 +160,7 @@ class ReplayHarness:
                 prediction_difference=None,
                 replay_timestamp=start_time,
                 replay_success=False,
-                error_message=error_message
+                error_message=error_message,
             )
 
             self._log_replay_result(replay_result)
@@ -171,7 +171,7 @@ class ReplayHarness:
         self,
         model,
         replay_cases: list[dict[str, Any]],
-        session_id: str | None = None
+        session_id: str | None = None,
     ) -> ReplaySession:
         """
         Replay multiple predictions in a batch.
@@ -189,7 +189,7 @@ class ReplayHarness:
 
         session = ReplaySession(
             session_id=session_id,
-            start_time=datetime.now()
+            start_time=datetime.now(),
         )
 
         self.active_sessions[session_id] = session
@@ -206,7 +206,7 @@ class ReplayHarness:
                 original_replay_key=case.get('replay_key', ''),
                 original_policy_hash=case.get('policy_hash', ''),
                 original_semantic_clock=case.get('semantic_clock'),
-                original_prediction=case.get('original_prediction')
+                original_prediction=case.get('original_prediction'),
             )
 
             if result.replay_success:
@@ -236,7 +236,7 @@ class ReplayHarness:
         self,
         model,
         test_cases: list[dict[str, Any]],
-        tolerance: float = 0.001
+        tolerance: float = 0.001,
     ) -> dict[str, Any]:
         """
         Validate model determinism across multiple test cases.
@@ -273,7 +273,7 @@ class ReplayHarness:
             'mismatches': session.mismatches,
             'failed_replays': session.failed_replays,
             'session_id': session.session_id,
-            'validation_timestamp': datetime.now().isoformat()
+            'validation_timestamp': datetime.now().isoformat(),
         }
 
         # Log validation result
@@ -286,7 +286,7 @@ class ReplayHarness:
         model,
         historical_cases: list[dict[str, Any]],
         current_cases: list[dict[str, Any]],
-        drift_threshold: float = 0.1
+        drift_threshold: float = 0.1,
     ) -> dict[str, Any]:
         """
         Detect model drift by comparing historical and current predictions.
@@ -304,14 +304,14 @@ class ReplayHarness:
         historical_session = self.replay_batch(
             model,
             historical_cases,
-            f"historical_{int(time.time())}"
+            f"historical_{int(time.time())}",
         )
 
         # Replay current cases
         current_session = self.replay_batch(
             model,
             current_cases,
-            f"current_{int(time.time())}"
+            f"current_{int(time.time())}",
         )
 
         # Calculate drift metrics
@@ -322,7 +322,7 @@ class ReplayHarness:
 
         # Compare prediction distributions
         prediction_drift = self._calculate_prediction_distribution_drift(
-            historical_cases, current_cases
+            historical_cases, current_cases,
         )
 
         # Determine if drift is detected
@@ -338,15 +338,15 @@ class ReplayHarness:
             'historical_session': {
                 'total_cases': historical_session.total_replays,
                 'success_rate': historical_session.successful_replays / max(1, historical_session.total_replays),
-                'average_confidence': historical_confidence
+                'average_confidence': historical_confidence,
             },
             'current_session': {
                 'total_cases': current_session.total_replays,
                 'success_rate': current_session.successful_replays / max(1, current_session.total_replays),
-                'average_confidence': current_confidence
+                'average_confidence': current_confidence,
             },
             'drift_threshold': drift_threshold,
-            'detection_timestamp': datetime.now().isoformat()
+            'detection_timestamp': datetime.now().isoformat(),
         }
 
         # Log drift detection result
@@ -392,7 +392,7 @@ class ReplayHarness:
     def _calculate_prediction_distribution_drift(
         self,
         historical_cases: list[dict[str, Any]],
-        current_cases: list[dict[str, Any]]
+        current_cases: list[dict[str, Any]],
     ) -> float:
         """Calculate drift in prediction distributions."""
         # Get prediction distributions
@@ -438,7 +438,7 @@ class ReplayHarness:
             'replay_success': result.replay_success,
             'error_message': result.error_message,
             'original_prediction': asdict(result.original_prediction) if result.original_prediction else None,
-            'replayed_prediction': asdict(result.replayed_prediction) if result.replayed_prediction else None
+            'replayed_prediction': asdict(result.replayed_prediction) if result.replayed_prediction else None,
         }
 
         with open(self.replay_log_file, 'a', encoding='utf-8') as f:
@@ -456,13 +456,13 @@ class ReplayHarness:
                 'failed_replays': session.failed_replays,
                 'matches': session.matches,
                 'mismatches': session.mismatches,
-                'average_confidence_diff': session.average_confidence_diff
+                'average_confidence_diff': session.average_confidence_diff,
             }
 
             _emit_records_execution_trace(
                 root_trace_id=f"replay_session_{session.session_id}",
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="session_completed"
+                operation="session_completed",
             )
 
         except Exception as e:
@@ -474,7 +474,7 @@ class ReplayHarness:
             _emit_records_execution_trace(
                 root_trace_id=f"determinism_validation_{int(time.time())}",
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="determinism_validated"
+                operation="determinism_validated",
             )
 
         except Exception as e:
@@ -486,7 +486,7 @@ class ReplayHarness:
             _emit_records_execution_trace(
                 root_trace_id=f"drift_detection_{int(time.time())}",
                 layer="L1_ML_DECISION_SUPPORT",
-                operation="drift_detected"
+                operation="drift_detected",
             )
 
         except Exception as e:
@@ -525,7 +525,7 @@ class ReplayHarness:
                 'mismatches': mismatches,
                 'success_rate': successful_replays / max(1, total_replays),
                 'determinism_rate': matches / max(1, successful_replays),
-                'active_sessions': len(self.active_sessions)
+                'active_sessions': len(self.active_sessions),
             }
 
         except FileNotFoundError:
@@ -537,5 +537,5 @@ class ReplayHarness:
                 'mismatches': 0,
                 'success_rate': 0.0,
                 'determinism_rate': 0.0,
-                'active_sessions': 0
+                'active_sessions': 0,
             }

@@ -177,7 +177,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
         return spans
 
     def _materialize_and_persist(
-        self, spans: list[dict[str, Any]], mission: str = ""
+        self, spans: list[dict[str, Any]], mission: str = "",
     ) -> RuntimeADGSnapshot | None:
         """Materialize spans into RuntimeADGSnapshot and persist.
 
@@ -207,10 +207,10 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
 
         # Emit trace linking execution to snapshot
         _emit_links_execution_to_snapshot(
-            trace_id, "L4_STATE", snapshot.snapshot_id
+            trace_id, "L4_STATE", snapshot.snapshot_id,
         )
         _emit_records_execution_trace(
-            snapshot.snapshot_id, LayerSegment.L4_STATE, "snapshot_materialized"
+            snapshot.snapshot_id, LayerSegment.L4_STATE, "snapshot_materialized",
         )
 
         # Persist via UWG if available
@@ -259,7 +259,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
             )
 
             _emit_writes_via_uwg(
-                "L4_STATE", "auto_persistence_adapter", snapshot.snapshot_id
+                "L4_STATE", "auto_persistence_adapter", snapshot.snapshot_id,
             )
 
             if self.enable_logging:
@@ -346,7 +346,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
         self._current_trace_id = trace_id
 
     def create_snapshot_for_spans(
-        self, spans: list[dict[str, Any]], mission: str = ""
+        self, spans: list[dict[str, Any]], mission: str = "",
     ) -> RuntimeADGSnapshot | None:
         """Manually create snapshot from spans without draining.
 

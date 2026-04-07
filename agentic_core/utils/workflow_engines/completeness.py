@@ -22,6 +22,11 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # Configuration constants
+BATCH_SIZE = 32
+BUFFER_SIZE = 4096
+DEFAULT_SLEEP = 0.1
+MAX_RETRIES = 3
+THRESHOLD = 0.8
 
 
 @dataclass(frozen=True)
@@ -95,7 +100,7 @@ class ContextCompletenessScore:
                 self.missing_exception,
                 self.missing_scope,
                 self.missing_temporal_qualifier,
-            ]
+            ],
         )
 
 
@@ -178,7 +183,7 @@ class IContextCompletenessScorer(ABC):
 
     @abstractmethod
     def score(
-        self, query_id: str, query: str, chunk: Document | GroundedDocument
+        self, query_id: str, query: str, chunk: Document | GroundedDocument,
     ) -> ContextCompletenessScore:
         """Score the completeness of a chunk relative to the query.
 
@@ -194,7 +199,7 @@ class IContextCompletenessScorer(ABC):
 
     @abstractmethod
     def score_batch(
-        self, query_id: str, query: str, chunks: list[Document | GroundedDocument]
+        self, query_id: str, query: str, chunks: list[Document | GroundedDocument],
     ) -> list[ContextCompletenessScore]:
         """Score a batch of chunks for a single query.
 

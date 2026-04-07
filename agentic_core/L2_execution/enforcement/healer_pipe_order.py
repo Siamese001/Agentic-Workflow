@@ -114,7 +114,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -175,7 +174,7 @@ _REQUIRED_STEP_COUNT = 10
 
 
 def enforce_healer_pipe_order(
-    expected_steps: tuple[str, ...], observed_steps: Sequence[str], trace_id: str | None = None
+    expected_steps: tuple[str, ...], observed_steps: Sequence[str], trace_id: str | None = None,
 ) -> None:
     """Validate that observed_steps exactly matches expected_steps.
 

@@ -1,3 +1,7 @@
+---
+trigger:
+  - file_change
+---
 # Pytest Configuration SSOT Enforcement
 
 **Status**: ACTIVE  

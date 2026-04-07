@@ -9,6 +9,9 @@ import subprocess
 import time
 from pathlib import Path
 
+# Dynamic repo root resolution
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def test_startup_time(name, command, args, timeout=5):
     """Test MCP server startup time."""
@@ -18,7 +21,7 @@ def test_startup_time(name, command, args, timeout=5):
             [command] + args,
             capture_output=True,
             text=True,
-            timeout=timeout
+            timeout=timeout,
         )
         end_time = time.time()
 
@@ -43,13 +46,13 @@ def main():
         "filesystem": {
             "global_path": f"{npm_prefix}\\node_modules\\@modelcontextprotocol\\server-filesystem\\dist\\index.js",
             "npx_package": "@modelcontextprotocol/server-filesystem",
-            "args": ["C:\\Git\\Agentic-Workflow"]
+            "args": [str(REPO_ROOT)],
         },
         "sequential-thinking": {
             "global_path": f"{npm_prefix}\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js",
             "npx_package": "@modelcontextprotocol/server-sequential-thinking",
-            "args": []
-        }
+            "args": [],
+        },
     }
 
     results = {}
@@ -63,12 +66,12 @@ def main():
             startup_time, success, message = test_startup_time(
                 f"{server_name} (global npm)",
                 "node",
-                [global_path] + config["args"] + ["--help"]
+                [global_path] + config["args"] + ["--help"],
             )
             results[f"{server_name}_global"] = {
                 "time": startup_time,
                 "success": success,
-                "message": message
+                "message": message,
             }
             print(f"   ✅ Global npm: {startup_time:.3f}s ({'Success' if success else 'Failed'})")
         else:
@@ -81,7 +84,7 @@ def main():
         results[f"{server_name}_npx"] = {
             "time": -1,
             "success": False,
-            "message": "NPX not available"
+            "message": "NPX not available",
         }
 
     # Summary

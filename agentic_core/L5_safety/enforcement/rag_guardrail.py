@@ -124,7 +124,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -202,7 +201,7 @@ class CitationBundle:
 
 
 def validate_citation_custody(
-    context_chunks: list[dict[str, Any]], citation_bundles: list[CitationBundle] | None
+    context_chunks: list[dict[str, Any]], citation_bundles: list[CitationBundle] | None,
 ) -> None:
     """Enforce that every external-knowledge chunk has a matching CitationBundle.
 
@@ -220,7 +219,7 @@ def validate_citation_custody(
         return
     if citation_bundles is None or len(citation_bundles) == 0:
         raise ExternalKnowledgeAccessViolation(
-            f"CITATION_MISSING: {len(context_chunks)} context chunk(s) present but no CitationBundle provided — wave aborted"
+            f"CITATION_MISSING: {len(context_chunks)} context chunk(s) present but no CitationBundle provided — wave aborted",
         )
     cited_ids = {cb.chunk_id for cb in citation_bundles}
     for chunk in context_chunks:
@@ -229,7 +228,7 @@ def validate_citation_custody(
             raise ExternalKnowledgeAccessViolation("CHUNK_ID_MISSING: context chunk lacks 'chunk_id' field")
         if cid not in cited_ids:
             raise ExternalKnowledgeAccessViolation(
-                f"CITATION_GAP: chunk_id={cid!r} has no matching CitationBundle — wave aborted"
+                f"CITATION_GAP: chunk_id={cid!r} has no matching CitationBundle — wave aborted",
             )
 
 

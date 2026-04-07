@@ -119,7 +119,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -230,7 +229,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         super().__init__()
 
     def store_experience(
-        self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float
+        self, state: dict[str, Any], thought_type: str, outcome: dict[str, Any], reward: float,
     ) -> str:
         """Stores a new experience in the replay buffer with reward signal."""
         _emit_transcripts_response(str(uuid.uuid4()), "MetaLearningAgent.store_experience", "model")
@@ -238,7 +237,7 @@ class MetaLearningAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "MetaLearningAgent.store_experience"
+            _trace_id, LayerSegment.L1_REASONING, "MetaLearningAgent.store_experience",
         )
 
         exp = ExperienceRecord(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
@@ -316,7 +315,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         except (OSError, json.JSONDecodeError, ValueError) as exc:
             if strict:
                 raise RuntimeError(
-                    f"META_LEARNING_STRICT_WEIGHTS=1: corrupt strategy weights file '{self._strategy_weights_file}' — {type(exc).__name__}: {exc}"
+                    f"META_LEARNING_STRICT_WEIGHTS=1: corrupt strategy weights file '{self._strategy_weights_file}' — {type(exc).__name__}: {exc}",
                 ) from exc
             if self.telemetry_callback:
                 self.telemetry_callback(
@@ -337,7 +336,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         a replay run can verify it was initialised from the same learned state.
         """
         payload = json.dumps(
-            {"strategy_weights": self.strategy_weights}, separators=(",", ":"), sort_keys=True
+            {"strategy_weights": self.strategy_weights}, separators=(",", ":"), sort_keys=True,
         ).encode("ascii")
         return hashlib.sha256(payload).hexdigest()
 
@@ -378,7 +377,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         patterns = [{"type": "high_reward_cot", "threshold": 0.8}]
         if self.telemetry_callback:
             self.telemetry_callback(
-                "patterns_extracted", {"patterns": patterns, "total_patterns": self.patterns_extracted}
+                "patterns_extracted", {"patterns": patterns, "total_patterns": self.patterns_extracted},
             )
         return patterns
 

@@ -40,7 +40,7 @@ class IOrchestratorProtocol(Protocol):
         ...
 
     async def dispatch(
-        self, action: str, target: str, payload: dict[str, Any] | None = None, **kwargs
+        self, action: str, target: str, payload: dict[str, Any] | None = None, **kwargs,
     ) -> dict[str, Any]:
         """
         Dispatch an action to a specific target component.

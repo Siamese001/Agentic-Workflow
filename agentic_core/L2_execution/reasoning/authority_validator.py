@@ -62,7 +62,7 @@ class AuthorityValidator:
                 expected_idx = self.SLOT_ORDER.index(code)
                 if expected_idx < order_idx:
                     self.errors.append(
-                        f"Slot {code} appears out of order. Expected order: {' -> '.join(self.SLOT_ORDER)}"
+                        f"Slot {code} appears out of order. Expected order: {' -> '.join(self.SLOT_ORDER)}",
                     )
                 order_idx = expected_idx
             except ValueError:
@@ -106,7 +106,7 @@ class AuthorityValidator:
             if rank > prev_rank:
                 self.errors.append(
                     f"Authority inversion detected: {slot.slot_type} "
-                    f"({slot.authority_level.name}) has higher authority than previous slot"
+                    f"({slot.authority_level.name}) has higher authority than previous slot",
                 )
             prev_rank = rank
 

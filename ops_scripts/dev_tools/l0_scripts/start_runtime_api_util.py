@@ -30,7 +30,6 @@ import argparse
 import sys
 from pathlib import Path
 
-
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
@@ -67,6 +66,7 @@ def main():
     print('=' * 70)
     try:
         import uvicorn
+
         # guardian: allow-layer-violation -- runtime API utility script requires L6 observability layer for server startup
         from agentic_core.L6_observability.api.runtime_api import app
         uvicorn.run('agentic_core.L6_observability.api.runtime_api:app', host=args.host, port=args.port, reload=args.reload, workers=args.workers if not args.reload else 1, log_level='info')

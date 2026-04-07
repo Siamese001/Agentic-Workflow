@@ -16,7 +16,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
 
 
 class SequentialThinkingDeployer:
@@ -81,7 +80,7 @@ class SequentialThinkingDeployer:
 
             # Run environment setup and capture output to set in current process
             result = subprocess.run([
-                sys.executable, str(env_script)
+                sys.executable, str(env_script),
             ], capture_output=True, text=True, cwd=self.repo_root)
 
             if result.returncode == 0:
@@ -94,7 +93,7 @@ class SequentialThinkingDeployer:
                     "SEQUENTIAL_THINKING_PRIORITY": "1",
                     "WINDSURF_TOOL_PREFERENCE": "sequential-thinking",
                     "KIMI25_SEQUENTIAL_THINKING": "enabled",
-                    "MCP_SEQUENTIAL_THINKING_BOOST": "enabled"
+                    "MCP_SEQUENTIAL_THINKING_BOOST": "enabled",
                 }
 
                 for key, value in env_vars.items():
@@ -117,7 +116,7 @@ class SequentialThinkingDeployer:
                 self.repo_root / "tools" / "mcp",
                 self.repo_root / "tools" / "monitoring",
                 self.repo_root / "ops_scripts" / "environment",
-                self.repo_root / "apps_shared" / "prompts"
+                self.repo_root / "apps_shared" / "prompts",
             ]
 
             for directory in directories:
@@ -154,7 +153,7 @@ class SequentialThinkingDeployer:
             "SEQUENTIAL_THINKING_ENABLED",
             "SEQUENTIAL_THINKING_PRIORITY",
             "WINDSURF_TOOL_PREFERENCE",
-            "KIMI25_SEQUENTIAL_THINKING"
+            "KIMI25_SEQUENTIAL_THINKING",
         ]
 
         all_env_set = True
@@ -172,7 +171,7 @@ class SequentialThinkingDeployer:
             self.repo_root / "tools" / "mcp" / "sequential_thinking_booster.py",
             self.repo_root / "tools" / "monitoring" / "mcp_usage_tracker.py",
             self.repo_root / "agentic_core" / "planning" / "sequential_thinking_workflow.py",
-            self.repo_root / "apps_shared" / "prompts" / "sequential_thinking_templates.py"
+            self.repo_root / "apps_shared" / "prompts" / "sequential_thinking_templates.py",
         ]
 
         all_tools_exist = True
@@ -197,7 +196,7 @@ class SequentialThinkingDeployer:
             test_tools = [
                 {"name": "sequential-thinking", "description": "Sequential reasoning tool"},
                 {"name": "filesystem", "description": "File system access"},
-                {"name": "other-tool", "description": "Other functionality"}
+                {"name": "other-tool", "description": "Other functionality"},
             ]
 
             test_file = self.repo_root / "test_tools.json"
@@ -206,7 +205,7 @@ class SequentialThinkingDeployer:
 
             # Run booster
             result = subprocess.run([
-                sys.executable, str(booster_script), str(test_file)
+                sys.executable, str(booster_script), str(test_file),
             ], capture_output=True, text=True, cwd=self.repo_root)
 
             # Clean up

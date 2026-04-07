@@ -56,7 +56,7 @@ for node_id, node_data in test_nodes.items():
     # Check for various import issue indicators
     if "parse_error" in node_data and node_data["parse_error"]:
         broken_imports.append(
-            {"file": node_id, "issue": "parse_error", "detail": str(node_data["parse_error"])[:200]}
+            {"file": node_id, "issue": "parse_error", "detail": str(node_data["parse_error"])[:200]},
         )
 
     if "missing_imports" in node_data and node_data["missing_imports"]:

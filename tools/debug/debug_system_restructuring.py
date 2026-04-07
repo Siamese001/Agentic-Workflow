@@ -26,7 +26,7 @@ def debug_system_restructuring():
         'name': 'System Restructuring',
         'type': 'system_restructuring',
         'complexity': 'critical',
-        'files': ['legacy.py']
+        'files': ['legacy.py'],
     }
 
     template_content = workflow._get_seq_thinking_template('system_restructuring', step_config)
@@ -49,7 +49,7 @@ def debug_system_restructuring():
         'identified_issues',
         'system_size',
         'complexity_metrics',
-        'restructuring_goals'
+        'restructuring_goals',
     ]
 
     for value in check_values:

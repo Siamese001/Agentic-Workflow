@@ -130,7 +130,7 @@ def main() -> None:
     # Skip certain directories
     skip_dirs = {
         ".git", ".venv", "venv", "__pycache__", ".pytest_cache",
-        "node_modules", ".nox", "archives", ".backup"
+        "node_modules", ".nox", "archives", ".backup",
     }
 
     total_fixed = 0

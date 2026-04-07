@@ -1,6 +1,5 @@
 """Tests for apps_exec engine components."""
 
-import pytest
 
 from apps_exec.engines.brief_assembly_engine import (
     BriefAssemblyEngine,

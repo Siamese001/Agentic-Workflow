@@ -1,12 +1,12 @@
 """
 Storage Adapter - Persists domain artifacts through approved repo seam.
 """
-from typing import Optional, List
-from pathlib import Path
 import json
 from datetime import datetime
+from pathlib import Path
+from typing import List, Optional
 
-from ..types import DecisionMemo, DecisionPacket, AuditTrace
+from ..types import AuditTrace, DecisionMemo, DecisionPacket
 
 
 class StorageAdapter:
@@ -29,7 +29,7 @@ class StorageAdapter:
     def save_decision_memo(
         self,
         memo: DecisionMemo,
-        request_id: str
+        request_id: str,
     ) -> Path:
         """Save decision memo as markdown."""
         output_path = self.base_path / f"{request_id}_decision_memo.md"
@@ -45,7 +45,7 @@ class StorageAdapter:
     def save_decision_packet(
         self,
         packet: DecisionPacket,
-        request_id: str
+        request_id: str,
     ) -> Path:
         """Save decision packet as JSON."""
         output_path = self.base_path / f"{request_id}_decision_packet.json"
@@ -59,7 +59,7 @@ class StorageAdapter:
     def save_audit_trace(
         self,
         trace: AuditTrace,
-        request_id: str
+        request_id: str,
     ) -> Path:
         """Save audit trace as JSON."""
         output_path = self.base_path / f"{request_id}_audit_trace.json"
@@ -74,7 +74,7 @@ class StorageAdapter:
         self,
         conditions: List[str],
         covenants: List[str],
-        request_id: str
+        request_id: str,
     ) -> Path:
         """Save conditions and covenants as JSON."""
         output_path = self.base_path / f"{request_id}_conditions.json"
@@ -83,7 +83,7 @@ class StorageAdapter:
         data = {
             "conditions_precedent": conditions,
             "ongoing_covenants": covenants,
-            "generated_at": datetime.now().isoformat()
+            "generated_at": datetime.now().isoformat(),
         }
 
         with open(output_path, 'w', encoding='utf-8') as f:

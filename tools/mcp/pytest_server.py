@@ -4,7 +4,6 @@ Pytest MCP Server - Test discovery, execution, and analysis
 Provides pytest integration for Windsurf with comprehensive test management
 """
 
-import asyncio
 import json
 import logging
 import subprocess
@@ -14,6 +13,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
+import anyio
+
 # MCP imports
 try:
     from mcp.server import Server
@@ -21,9 +22,7 @@ try:
     from mcp.server.models import InitializationOptions
     from mcp.server.stdio import stdio_server
     from mcp.types import (
-        CallToolRequest,
         CallToolResult,
-        ListToolsRequest,
         ListToolsResult,
         TextContent,
         Tool,
@@ -64,15 +63,15 @@ class PytestMCPServer:
                                 "path": {
                                     "type": "string",
                                     "description": "Path to search for tests (default: tests/)",
-                                    "default": "tests"
+                                    "default": "tests",
                                 },
                                 "pattern": {
                                     "type": "string",
                                     "description": "Test file pattern (default: test_*.py)",
-                                    "default": "test_*.py"
-                                }
-                            }
-                        }
+                                    "default": "test_*.py",
+                                },
+                            },
+                        },
                     ),
                     Tool(
                         name="run_tests",
@@ -83,34 +82,34 @@ class PytestMCPServer:
                                 "path": {
                                     "type": "string",
                                     "description": "Test path or file",
-                                    "default": "tests"
+                                    "default": "tests",
                                 },
                                 "keywords": {
                                     "type": "string",
-                                    "description": "Run tests matching keywords"
+                                    "description": "Run tests matching keywords",
                                 },
                                 "markers": {
                                     "type": "string",
-                                    "description": "Run tests with specific markers"
+                                    "description": "Run tests with specific markers",
                                 },
                                 "verbose": {
                                     "type": "boolean",
                                     "description": "Verbose output",
-                                    "default": True
+                                    "default": True,
                                 },
                                 "coverage": {
                                     "type": "boolean",
                                     "description": "Generate coverage report",
-                                    "default": False
+                                    "default": False,
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Timeout in seconds (max 300)",
                                     "default": 60,
-                                    "maximum": 300
-                                }
-                            }
-                        }
+                                    "maximum": 300,
+                                },
+                            },
+                        },
                     ),
                     Tool(
                         name="get_test_details",
@@ -120,15 +119,15 @@ class PytestMCPServer:
                             "properties": {
                                 "test_path": {
                                     "type": "string",
-                                    "description": "Path to test file"
+                                    "description": "Path to test file",
                                 },
                                 "test_name": {
                                     "type": "string",
-                                    "description": "Specific test function name"
-                                }
+                                    "description": "Specific test function name",
+                                },
                             },
-                            "required": ["test_path"]
-                        }
+                            "required": ["test_path"],
+                        },
                     ),
                     Tool(
                         name="analyze_test_coverage",
@@ -139,25 +138,25 @@ class PytestMCPServer:
                                 "path": {
                                     "type": "string",
                                     "description": "Path to analyze coverage for",
-                                    "default": "agentic_core"
+                                    "default": "agentic_core",
                                 },
                                 "format": {
                                     "type": "string",
                                     "description": "Output format (text, json, html)",
-                                    "default": "text"
-                                }
-                            }
-                        }
+                                    "default": "text",
+                                },
+                            },
+                        },
                     ),
                     Tool(
                         name="list_pytest_config",
                         description="Show pytest configuration",
                         inputSchema={
                             "type": "object",
-                            "properties": {}
-                        }
-                    )
-                ]
+                            "properties": {},
+                        },
+                    ),
+                ],
             )
 
         @self.server.call_tool()
@@ -180,7 +179,7 @@ class PytestMCPServer:
                 logger.error(f"Error in tool {name}: {e}")
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error: {str(e)}")],
-                    isError=True
+                    isError=True,
                 )
 
     async def _discover_tests(self, args: dict[str, Any]) -> CallToolResult:
@@ -192,9 +191,9 @@ class PytestMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Test path {search_path} does not exist"
+                    text=f"Test path {search_path} does not exist",
                 )],
-                isError=True
+                isError=True,
             )
 
         # Use pytest to collect tests
@@ -206,16 +205,16 @@ class PytestMCPServer:
                 cwd=REPO_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=30,
             )
 
             if result.returncode != 0:
                 return CallToolResult(
                     content=[TextContent(
                         type="text",
-                        text=f"Error collecting tests:\n{result.stderr}"
+                        text=f"Error collecting tests:\n{result.stderr}",
                     )],
-                    isError=True
+                    isError=True,
                 )
 
             # Parse the collection output
@@ -236,18 +235,18 @@ class PytestMCPServer:
                 summary += f"- {rel_path}\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=summary)]
+                content=[TextContent(type="text", text=summary)],
             )
 
         except subprocess.TimeoutExpired:
             return CallToolResult(
                 content=[TextContent(type="text", text="Test discovery timed out")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Discovery error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _run_tests(self, args: dict[str, Any]) -> CallToolResult:
@@ -287,7 +286,7 @@ class PytestMCPServer:
                 cwd=REPO_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=timeout
+                timeout=timeout,
             )
             execution_time = time.time() - start_time
 
@@ -334,21 +333,21 @@ class PytestMCPServer:
                 output = output[:MAX_OUTPUT_SIZE] + "\n... (output truncated)"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=output)]
+                content=[TextContent(type="text", text=output)],
             )
 
         except subprocess.TimeoutExpired:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Tests timed out after {timeout} seconds"
+                    text=f"Tests timed out after {timeout} seconds",
                 )],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Test execution error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _get_test_details(self, args: dict[str, Any]) -> CallToolResult:
@@ -360,9 +359,9 @@ class PytestMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Test file {test_path} does not exist"
+                    text=f"Test file {test_path} does not exist",
                 )],
-                isError=True
+                isError=True,
             )
 
         try:
@@ -428,13 +427,13 @@ class PytestMCPServer:
                     details += f"- {func}\n"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=details)]
+                content=[TextContent(type="text", text=details)],
             )
 
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Error reading test file: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _analyze_test_coverage(self, args: dict[str, Any]) -> CallToolResult:
@@ -449,9 +448,9 @@ class PytestMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text="Coverage tool not found. Install with: pip install coverage"
+                    text="Coverage tool not found. Install with: pip install coverage",
                 )],
-                isError=True
+                isError=True,
             )
 
         target_path = REPO_ROOT / path
@@ -459,9 +458,9 @@ class PytestMCPServer:
             return CallToolResult(
                 content=[TextContent(
                     type="text",
-                    text=f"Path {target_path} does not exist"
+                    text=f"Path {target_path} does not exist",
                 )],
-                isError=True
+                isError=True,
             )
 
         cmd = [
@@ -469,7 +468,7 @@ class PytestMCPServer:
             f"--cov={path}",
             f"--cov-report={format_type}",
             "--cov-report=term",
-            "tests"
+            "tests",
         ]
 
         try:
@@ -478,7 +477,7 @@ class PytestMCPServer:
                 cwd=REPO_ROOT,
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
             )
 
             output = f"Coverage analysis for: {path}\n"
@@ -492,18 +491,18 @@ class PytestMCPServer:
                 output += f"\nSTDERR:\n{result.stderr}"
 
             return CallToolResult(
-                content=[TextContent(type="text", text=output)]
+                content=[TextContent(type="text", text=output)],
             )
 
         except subprocess.TimeoutExpired:
             return CallToolResult(
                 content=[TextContent(type="text", text="Coverage analysis timed out")],
-                isError=True
+                isError=True,
             )
         except Exception as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Coverage error: {str(e)}")],
-                isError=True
+                isError=True,
             )
 
     async def _list_pytest_config(self, args: dict[str, Any]) -> CallToolResult:
@@ -551,7 +550,7 @@ class PytestMCPServer:
             config_info += f"\nError getting pytest version: {e}"
 
         return CallToolResult(
-            content=[TextContent(type="text", text=config_info)]
+            content=[TextContent(type="text", text=config_info)],
         )
 
 async def main():
@@ -579,7 +578,7 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        anyio.run(main)
     except KeyboardInterrupt:
         print("Pytest MCP Server stopped by user")
     except Exception as e:

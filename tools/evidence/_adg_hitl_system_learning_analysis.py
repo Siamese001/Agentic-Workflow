@@ -16,7 +16,7 @@ def run_query(description, query):
         "--sqlite",
         "artifacts/adg/adg_indexed_03132026_1949.sqlite",
         "--query",
-        query
+        query,
     ]
 
     result = subprocess.run(cmd, capture_output=True, text=True)

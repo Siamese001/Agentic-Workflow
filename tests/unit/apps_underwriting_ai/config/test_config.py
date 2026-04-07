@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai config module."""
 
-import pytest
 
 
 class TestConfigImportable:

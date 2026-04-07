@@ -40,7 +40,7 @@ _SIDE_EFFECT_PREFIXES: frozenset[str] = frozenset(
         "pathlib.",
         "tempfile.",
         "io.",
-    }
+    },
 )
 
 _MUTATION_METHODS: frozenset[str] = frozenset(
@@ -57,7 +57,7 @@ _MUTATION_METHODS: frozenset[str] = frozenset(
         "discard",
         "__setitem__",
         "__delitem__",
-    }
+    },
 )
 
 _TRIVIAL_DISPATCH_METHODS: frozenset[str] = frozenset(
@@ -96,7 +96,7 @@ _TRIVIAL_DISPATCH_METHODS: frozenset[str] = frozenset(
         "error",
         "critical",
         "exception",
-    }
+    },
 )
 
 
@@ -188,7 +188,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
                 target_span_line=eln,
                 target_span_column=ecol,
                 dynamic_resolution=dynamic_resolution,
-            )
+            ),
         )
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
@@ -352,13 +352,13 @@ class _EvalSpineVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract evaluation spine edges from call expressions."""
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import (
             DPO_BATCH_CLASSES,
             DRIFT_ALERT_METHODS,
             EVAL_METRIC_CLASSES,
             canonical_name,
         )
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -374,7 +374,7 @@ class _EvalSpineVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in DPO_BATCH_CLASSES or base in DPO_BATCH_CLASSES:
             self.edges.append(
@@ -386,7 +386,7 @@ class _EvalSpineVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         elif tail in DRIFT_ALERT_METHODS:
             if "drift" in tail:
@@ -406,7 +406,7 @@ class _EvalSpineVisitor(BaseRuntimeVisitor):
                     source_file=self._source_file,
                     line_no=node.lineno,
                     symbol=sym or tail,
-                )
+                ),
             )
         self.generic_visit(node)
 

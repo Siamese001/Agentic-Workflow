@@ -6,7 +6,7 @@ from collections import Counter
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/", "--co", "-q", "--tb=line"],
     capture_output=True, text=True, encoding="utf-8", errors="replace",
-    timeout=60
+    timeout=60,
 )
 out = r.stdout + "\n" + r.stderr
 

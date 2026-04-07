@@ -1,10 +1,10 @@
 """
 Core Adapter - Packages app results for handoff to agentic_core.
 """
-from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
 
-from ..types import UnderwritingRequest, DecisionMemo, DecisionPacket, AuditTrace
+from ..types import AuditTrace, DecisionMemo, DecisionPacket, UnderwritingRequest
 
 
 @dataclass
@@ -36,7 +36,7 @@ class CoreAdapter:
         request: UnderwritingRequest,
         memo: DecisionMemo,
         packet: DecisionPacket,
-        trace: AuditTrace
+        trace: AuditTrace,
     ) -> CoreHandoffPayload:
         """
         Prepare handoff payload for agentic_core.
@@ -102,7 +102,7 @@ class CoreAdapter:
 
     def create_domain_request_payload(
         self,
-        request: UnderwritingRequest
+        request: UnderwritingRequest,
     ) -> Dict[str, Any]:
         """Create L1 domain request payload for core routing."""
         return {
@@ -115,5 +115,5 @@ class CoreAdapter:
                 "amount": request.requested_amount,
                 "product": request.product_type,
                 "decision_type": request.decision_type,
-            }
+            },
         }

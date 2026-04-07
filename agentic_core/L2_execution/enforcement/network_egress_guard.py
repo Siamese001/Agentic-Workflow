@@ -113,7 +113,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -231,7 +230,7 @@ def is_llm_endpoint(hostname: str, port: int | None = None) -> bool:
 
 
 def check_network_egress_allowed(
-    hostname: str, port: int | None = None, caller_module: str | None = None
+    hostname: str, port: int | None = None, caller_module: str | None = None,
 ) -> bool:
     """Check if network egress to LLM endpoint is allowed (REQ-414).
 

@@ -88,7 +88,7 @@ def generate_guardian_comments():
         "File read errors in analysis scripts",
         "Optional dependency imports in tools",
         "Network/IO errors in non-critical paths",
-        "Configuration parsing in utilities"
+        "Configuration parsing in utilities",
     ]
 
     for pattern in legitimate_patterns:

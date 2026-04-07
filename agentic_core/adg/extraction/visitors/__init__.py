@@ -96,8 +96,8 @@ class BaseADGVisitor(ABC, ast.NodeVisitor):
             Configured Edge dataclass instance
         """
         # Import here to avoid circular dependency
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         # Build canonical target name if not already canonical
         if not to_symbol.startswith("ADG::"):

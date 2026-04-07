@@ -118,7 +118,7 @@ def gate_b(cur: sqlite3.Cursor) -> tuple[bool, str]:
         " WHERE relation_type IN ('writes_through', 'observes_runtime_state', 'snapshots_state')"
         " AND (source_file LIKE '%L3_orchestration%' OR source_file LIKE '%L4_state%')"
         " AND source_file NOT LIKE '%test%'"
-        " AND source_file NOT LIKE '%tests%'"
+        " AND source_file NOT LIKE '%tests%'",
     )
     n = cur.fetchone()[0]
     ok = n >= GATE_B_MIN_AUTHORITY_SOURCES

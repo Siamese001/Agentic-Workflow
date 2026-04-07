@@ -19,8 +19,8 @@ src_rows = list(
         "WHERE entity_type='module' "
         "AND resolved_path LIKE 'agentic_core/%' "
         "AND resolved_path NOT LIKE '%__pycache__%' "
-        "AND resolved_path NOT LIKE '%::%'"
-    )
+        "AND resolved_path NOT LIKE '%::%'",
+    ),
 )
 src_mods = {r["resolved_path"] for r in src_rows}
 
@@ -34,8 +34,8 @@ cov_rows = list(
         "WHERE e.relation_type='imports' "
         "AND n1.resolved_path LIKE 'tests/%' "
         "AND n2.resolved_path LIKE 'agentic_core/%' "
-        "AND n2.resolved_path NOT LIKE '%__pycache__%'"
-    )
+        "AND n2.resolved_path NOT LIKE '%__pycache__%'",
+    ),
 )
 covered_raw = {r["src_file"].split("::")[0] for r in cov_rows}
 covered = covered_raw & src_mods
@@ -50,7 +50,7 @@ for r in conn.execute(
     "WHERE e.relation_type='imports' "
     "AND n1.resolved_path LIKE 'tests/%' "
     "AND n2.resolved_path LIKE 'agentic_core/%' "
-    "AND n2.resolved_path NOT LIKE '%__pycache__%'"
+    "AND n2.resolved_path NOT LIKE '%__pycache__%'",
 ):
     src = r["src_file"].split("::")[0]
     if src in src_mods:
@@ -106,11 +106,11 @@ pct_covered = 100 * len(covered) / len(src_mods)
 print(f"  Covered by any test:             {len(covered)}  ({pct_covered:.1f}%)")
 print(
     f"  Covered behavioral only:         {len(non_stub_covered)}  "
-    f"({100 * len(non_stub_covered) / len(src_mods):.1f}%)"
+    f"({100 * len(non_stub_covered) / len(src_mods):.1f}%)",
 )
 print(
     f"  Covered by stubs only:           {len(stub_only_covered)}  "
-    f"({100 * len(stub_only_covered) / len(src_mods):.1f}%)"
+    f"({100 * len(stub_only_covered) / len(src_mods):.1f}%)",
 )
 pct_uncovered = 100 * len(uncovered) / len(src_mods)
 print(f"  Uncovered (no test):             {len(uncovered)}  ({pct_uncovered:.1f}%)")

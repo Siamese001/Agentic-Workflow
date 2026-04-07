@@ -121,7 +121,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -340,7 +339,7 @@ class SSOTRelocator:
             else:
                 report.failed += 1
         logger.info(
-            f"Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful"
+            f"Hierarchy enforcement complete: {report.successful}/{report.total_operations} successful",
         )
         return report
 
@@ -360,7 +359,7 @@ class SSOTRelocator:
         for violation in gravity_violations:
             source = self.project_root / violation.file_path
             target_path = violation.file_path.replace(
-                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/"
+                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/",
             )
             target = self.project_root / target_path
             result = self._relocate_file(source=source, target=target, action="MOVED")
@@ -408,7 +407,7 @@ class SSOTRelocator:
         else:
             try:
                 gk_result = self.gatekeeper.safe_move(
-                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action}"
+                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action}",
                 )
                 if gk_result.success:
                     result.success = True
@@ -460,7 +459,7 @@ class SSOTRelocator:
         else:
             try:
                 gk_result = self.gatekeeper.safe_move(
-                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action} folder"
+                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action} folder",
                 )
                 if gk_result.success:
                     result.success = True
@@ -507,7 +506,10 @@ class SSOTRelocator:
         else:
             try:
                 _wg.ensure_dir(target)
-                from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
+                from agentic_core.utils.runners.ssot_discovery_validator import (
+                    get_data_files,
+                    get_python_files,
+                )
 
                 all_items = list(get_python_files(source)) + list(get_data_files(source))
                 for item in all_items:
@@ -517,7 +519,7 @@ class SSOTRelocator:
                         if not target_file.exists():
                             _wg.ensure_dir(target_file.parent)
                             gk_result = self.gatekeeper.safe_move(
-                                item, target_file, "SSOTRelocator", "SSOT Reconciliation: Flatten folder"
+                                item, target_file, "SSOTRelocator", "SSOT Reconciliation: Flatten folder",
                             )
                             if not gk_result.success and gk_result.approval_status == "DENIED":
                                 result.action = "SKIPPED"

@@ -12,7 +12,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 PYTEST_INI = Path('pytest.ini')
 GOV_DOC = Path('docs/rules/governance.md')
 

@@ -18,7 +18,7 @@ def get_fnf_source_files():
         [sys.executable, "-m", "pytest", "tests/unit/agentic_core/L0_routing",
          "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
-        cwd=ROOT, timeout=60
+        cwd=ROOT, timeout=60,
     )
     lines = (r.stdout + r.stderr).splitlines()
     results = []

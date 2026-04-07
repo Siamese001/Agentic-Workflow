@@ -48,7 +48,7 @@ class L6AnomalyDetector(BaseMLModel):
             model_version="1.0",
             model_type="isolation_forest",
             prediction_type=PredictionType.ANOMALY_DETECTION,
-            model_file_path=model_file_path
+            model_file_path=model_file_path,
         )
 
         # Initialize feature extractor
@@ -64,7 +64,7 @@ class L6AnomalyDetector(BaseMLModel):
         self.threshold_config = {
             "anomaly_threshold": 0.1,
             "high_anomaly_threshold": 0.05,
-            "critical_anomaly_threshold": 0.02
+            "critical_anomaly_threshold": 0.02,
         }
 
         if model_file_path and model_file_path.exists():
@@ -111,8 +111,8 @@ class L6AnomalyDetector(BaseMLModel):
                 'prediction_type': self.prediction_type.value,
                 'feature_schema_digest': self.feature_schema.schema_digest,
                 'saved_at': datetime.now().isoformat(),
-                'isolation_forest_params': self._get_model_params()
-            }
+                'isolation_forest_params': self._get_model_params(),
+            },
         }
 
         with open(model_file_path, 'wb') as f:
@@ -124,7 +124,7 @@ class L6AnomalyDetector(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.SHADOW_ONLY
+        decision_mode: DecisionMode = DecisionMode.SHADOW_ONLY,
     ) -> ModelPrediction:
         """
         Predict anomaly score for system monitoring.
@@ -157,7 +157,7 @@ class L6AnomalyDetector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         try:
@@ -192,8 +192,8 @@ class L6AnomalyDetector(BaseMLModel):
                 self.create_prediction(
                     prediction=normalized_score,
                     confidence=confidence,
-                    threshold_used=threshold_used
-                )
+                    threshold_used=threshold_used,
+                ),
             )
 
             # Always operate in shadow or escalated mode for anomaly detection
@@ -210,7 +210,7 @@ class L6AnomalyDetector(BaseMLModel):
                 decision_mode=final_decision_mode,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Add prediction metadata
@@ -221,7 +221,7 @@ class L6AnomalyDetector(BaseMLModel):
                 'raw_prediction': int(raw_prediction),
                 'anomaly_level': anomaly_level,
                 'is_anomaly': normalized_score > threshold_used,
-                'anomaly_indicators': self._get_anomaly_indicators(model_input.features)
+                'anomaly_indicators': self._get_anomaly_indicators(model_input.features),
             })
 
             # Log prediction
@@ -237,7 +237,7 @@ class L6AnomalyDetector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
     def detect_anomalies_batch(
@@ -245,7 +245,7 @@ class L6AnomalyDetector(BaseMLModel):
         contexts: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
-        policy_hash: str
+        policy_hash: str,
     ) -> list[dict[str, Any]]:
         """
         Detect anomalies in a batch of contexts.
@@ -267,7 +267,7 @@ class L6AnomalyDetector(BaseMLModel):
             contexts=contexts,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         # Detect anomalies for each context
@@ -284,7 +284,7 @@ class L6AnomalyDetector(BaseMLModel):
                 model_input=model_input,
                 trace_id=context_trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
             # Get human-readable indicators
@@ -297,7 +297,7 @@ class L6AnomalyDetector(BaseMLModel):
                 'prediction': prediction,
                 'indicators': indicators,
                 'is_anomaly': prediction.prediction > self.threshold_config.get("anomaly_threshold", 0.1),
-                'anomaly_level': prediction.model_metadata.get('anomaly_level', 'normal')
+                'anomaly_level': prediction.model_metadata.get('anomaly_level', 'normal'),
             })
 
         return anomaly_results
@@ -339,7 +339,7 @@ class L6AnomalyDetector(BaseMLModel):
                         'feature_value': model_input.features.get(feature_name),
                         'base_score': float(base_score),
                         'perturbed_score': float(perturbed_score),
-                        'rank': 0  # Will be set after sorting
+                        'rank': 0,  # Will be set after sorting
                     })
 
             # Sort by contribution
@@ -445,7 +445,7 @@ class L6AnomalyDetector(BaseMLModel):
             "replay_mismatch_count": 10.0,
             "escalation_frequency": 5.0,
             "healing_success_rate": 0.5,
-            "semantic_drift_score": 0.2
+            "semantic_drift_score": 0.2,
         }
 
         for feature_name, threshold in feature_thresholds.items():
@@ -472,7 +472,7 @@ class L6AnomalyDetector(BaseMLModel):
                     'max_samples': isolation_forest.max_samples,
                     'contamination': isolation_forest.contamination,
                     'max_features': isolation_forest.max_features,
-                    'random_state': isolation_forest.random_state
+                    'random_state': isolation_forest.random_state,
                 }
         return {}
 
@@ -502,7 +502,7 @@ class L6AnomalyDetector(BaseMLModel):
         feature_names: list[str],
         training_data_digest: str = "",
         contamination: float = 0.1,
-        n_estimators: int = 100
+        n_estimators: int = 100,
     ) -> None:
         """
         Train the Isolation Forest model.
@@ -537,8 +537,8 @@ class L6AnomalyDetector(BaseMLModel):
                 contamination=contamination,
                 max_features=1.0,
                 random_state=42,
-                n_jobs=-1
-            ))
+                n_jobs=-1,
+            )),
         ])
 
         # Train model
@@ -559,7 +559,7 @@ class L6AnomalyDetector(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        decision_mode: DecisionMode = DecisionMode.SHADOW_ONLY
+        decision_mode: DecisionMode = DecisionMode.SHADOW_ONLY,
     ) -> ModelPrediction:
         """
         Predict anomaly from context (convenience method).
@@ -579,7 +579,7 @@ class L6AnomalyDetector(BaseMLModel):
             context=context,
             trace_id=trace_id,
             replay_key=replay_key,
-            policy_hash=policy_hash
+            policy_hash=policy_hash,
         )
 
         if not extraction_result.success:
@@ -590,7 +590,7 @@ class L6AnomalyDetector(BaseMLModel):
                 decision_mode=DecisionMode.BLOCKED,
                 trace_id=trace_id,
                 replay_key=replay_key,
-                policy_hash=policy_hash
+                policy_hash=policy_hash,
             )
 
         # Validate input
@@ -603,5 +603,5 @@ class L6AnomalyDetector(BaseMLModel):
             trace_id=trace_id,
             replay_key=replay_key,
             policy_hash=policy_hash,
-            decision_mode=decision_mode
+            decision_mode=decision_mode,
         )

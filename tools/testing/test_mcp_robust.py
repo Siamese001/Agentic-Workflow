@@ -31,7 +31,7 @@ class MCPRobustTester:
             "success": success,
             "details": details,
             "error": error,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
         self.test_results.append(result)
 
@@ -74,7 +74,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", "from mcp5_list_allowed_directories import list_allowed_directories; print(json.dumps(list_allowed_directrices()))"],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -89,7 +89,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_list_directory import list_directory; print(json.dumps(list_directory('{self.repo_root}')))" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -106,7 +106,7 @@ class MCPRobustTester:
                 result = subprocess.run(
                     ["python", "-c", f"from mcp5_read_text_file import read_text_file; print(len(read_text_file('{test_file}')))" ],
                     cwd=str(self.repo_root),
-                    capture_output=True, text=True, timeout=30
+                    capture_output=True, text=True, timeout=30,
                 )
                 if result.returncode == 0:
                     size = result.stdout.strip()
@@ -124,7 +124,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_write_file import write_file; write_file('{test_write_file}', 'Test content', False)" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0 and test_write_file.exists():
                 self.log_result("Write File", True, "File written successfully")
@@ -139,7 +139,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_create_directory import create_directory; create_directory('{test_dir}')" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0 and test_dir.exists():
                 self.log_result("Create Directory", True, "Directory created successfully")
@@ -161,7 +161,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_write_file import write_file; write_file('{large_file}', '{large_content[:100]}...', False)" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=60
+                capture_output=True, text=True, timeout=60,
             )
 
             # Write the actual large content
@@ -181,7 +181,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_write_file import write_file; write_file('{special_file}', 'Special chars test', False)" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0 and special_file.exists():
                 self.log_result("Special Characters in Filename", True, "Special characters handled correctly")
@@ -199,7 +199,7 @@ class MCPRobustTester:
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_create_directory import create_directory; create_directory('{deep_dir}')" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0 and deep_dir.exists():
                 self.log_result("Deep Directory Nesting", True, "Created 10-level deep directory")
@@ -216,7 +216,7 @@ class MCPRobustTester:
                 result = subprocess.run(
                     ["python", "-c", f"from mcp5_read_text_file import read_text_file; read_text_file('{system_file}')" ],
                     cwd=str(self.repo_root),
-                    capture_output=True, text=True, timeout=30
+                    capture_output=True, text=True, timeout=30,
                 )
                 # This should fail gracefully
                 if result.returncode != 0:
@@ -245,7 +245,7 @@ entities = [
 print(json.dumps(create_entities(entities)))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -266,7 +266,7 @@ observations = [
 print(json.dumps(add_observations(observations)))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -284,7 +284,7 @@ from mcp6_search_nodes import search_nodes
 print(json.dumps(search_nodes("test")))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -304,7 +304,7 @@ print(f"Entities: {len(data.get('entities', []))}")
 print(f"Relations: {len(data.get('relations', []))}")
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 lines = result.stdout.strip().split('\n')
@@ -322,7 +322,7 @@ from mcp6_mem_get_stats import mem_get_stats
 print(json.dumps(mem_get_stats()))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -349,7 +349,7 @@ observations = [
 print(json.dumps(add_observations(observations)))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 self.log_result("Large Observations", True, "Large observation handled")
@@ -370,7 +370,7 @@ observations = [
 print(json.dumps(add_observations(observations)))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 self.log_result("Special Characters in Observations", True, "Special characters handled")
@@ -391,7 +391,7 @@ entities = [
 print(json.dumps(create_entities(entities)))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 self.log_result("Duplicate Entities", True, "Duplicate handling works")
@@ -408,7 +408,7 @@ from mcp6_search_nodes import search_nodes
 print(json.dumps(search_nodes("特殊")))
 """],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
             if result.returncode == 0:
                 self.log_result("Search Special Characters", True, "Special search handled")
@@ -435,7 +435,7 @@ print(json.dumps(search_nodes("特殊")))
             result = subprocess.run(
                 ["python", "-c", f"from mcp5_read_text_file import read_text_file; print(len(read_text_file('{test_file}')))" ],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=30,
             )
 
             if result.returncode == 0:
@@ -450,7 +450,7 @@ entities = [
 print(json.dumps(create_entities(entities)))
 """],
                     cwd=str(self.repo_root),
-                    capture_output=True, text=True, timeout=30
+                    capture_output=True, text=True, timeout=30,
                 )
 
                 if result2.returncode == 0:
@@ -480,7 +480,7 @@ entities = [
 print(json.dumps(create_entities(entities)))
 """],
                         cwd=str(self.repo_root),
-                        capture_output=True, text=True, timeout=30
+                        capture_output=True, text=True, timeout=30,
                     )
                     results_queue.put((entity_id, result.returncode == 0))
                 except Exception as e:
@@ -559,10 +559,10 @@ print(json.dumps(create_entities(entities)))
                     "total_tests": total_tests,
                     "passed": passed_tests,
                     "failed": failed_tests,
-                    "success_rate": (passed_tests/total_tests)*100
+                    "success_rate": (passed_tests/total_tests)*100,
                 },
                 "results": self.test_results,
-                "errors": self.errors_found
+                "errors": self.errors_found,
             }, f, indent=2)
 
         print(f"\nDetailed results saved to: {results_file}")

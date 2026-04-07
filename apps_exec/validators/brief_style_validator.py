@@ -118,7 +118,7 @@ class StyleValidator:
 
         # Calculate quality score
         quality_score = self._calculate_quality_score(
-            violations, style_metrics, evidence_result
+            violations, style_metrics, evidence_result,
         )
 
         # Determine pass/fail
@@ -162,7 +162,7 @@ class StyleValidator:
                     severity=ViolationSeverity.BLOCKING,
                     message=f"Buzzword density {density:.1f}% exceeds 5% threshold",
                     suggestion="Replace buzzwords with specific, concrete language",
-                )
+                ),
             )
         elif buzzword_count > 0:
             self._violation_counter += 1
@@ -174,7 +174,7 @@ class StyleValidator:
                     severity=ViolationSeverity.WARNING,
                     message=f"{buzzword_count} buzzwords detected",
                     suggestion="Consider replacing with more specific terms",
-                )
+                ),
             )
 
         return violations
@@ -195,7 +195,7 @@ class StyleValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Unsupported claim detected: '{match}'",
                         suggestion="Remove or provide concrete evidence for this claim",
-                    )
+                    ),
                 )
 
         return violations
@@ -220,7 +220,7 @@ class StyleValidator:
                         severity=ViolationSeverity.BLOCKING,
                         message=f"Section '{section_title}' has empty body",
                         suggestion="Add substantive content to this section",
-                    )
+                    ),
                 )
 
         return violations
@@ -340,7 +340,7 @@ class QualityGate:
         if quality_score < self.min_quality_score:
             gates_passed = False
             violations.append(
-                f"Quality score {quality_score:.0%} below threshold {self.min_quality_score:.0%}"
+                f"Quality score {quality_score:.0%} below threshold {self.min_quality_score:.0%}",
             )
 
         # Evidence score gate
@@ -348,7 +348,7 @@ class QualityGate:
         if evidence_score < self.min_evidence_score:
             gates_passed = False
             violations.append(
-                f"Evidence score {evidence_score:.0%} below threshold {self.min_evidence_score:.0%}"
+                f"Evidence score {evidence_score:.0%} below threshold {self.min_evidence_score:.0%}",
             )
 
         # Buzzword density gate
@@ -356,7 +356,7 @@ class QualityGate:
         if buzzword_density > self.max_buzzword_density:
             gates_passed = False
             violations.append(
-                f"Buzzword density {buzzword_density:.1%} exceeds maximum {self.max_buzzword_density:.0%}"
+                f"Buzzword density {buzzword_density:.1%} exceeds maximum {self.max_buzzword_density:.0%}",
             )
 
         # Style violations gate
@@ -398,7 +398,7 @@ class BriefValidationAgent:
 
         # Run style validation
         validation = self.validator.validate(
-            brief_content, brief_metadata, target_audience
+            brief_content, brief_metadata, target_audience,
         )
 
         # Run quality gates

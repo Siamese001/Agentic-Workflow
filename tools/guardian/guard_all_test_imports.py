@@ -27,7 +27,7 @@ def get_erroring_test_files():
              "-c", "tools/pytest_minimal.ini", "--co", "--tb=line", "-p", "no:warnings",
              f"--ignore={IGNORE}"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
-            cwd=ROOT, timeout=60, stdin=subprocess.DEVNULL
+            cwd=ROOT, timeout=60, stdin=subprocess.DEVNULL,
         )
         for line in r.stdout.splitlines():
             s = line.strip()

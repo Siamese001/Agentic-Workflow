@@ -73,7 +73,7 @@ for prop in ["is_high_confidence", "is_medium_confidence", "is_low_confidence"]:
 print("\n=== heal_policy_types IMPORTERS (detailed) ===")
 cur.execute(
     "SELECT id FROM nodes WHERE resolved_path LIKE '%heal_policy_types%' AND entity_type='module' "
-    "AND resolved_path NOT LIKE '%archive%'"
+    "AND resolved_path NOT LIKE '%archive%'",
 )
 hpt_ids = [r[0] for r in cur.fetchall()]
 if hpt_ids:
@@ -92,7 +92,7 @@ else:
     # Try via symbol nodes
     cur.execute(
         "SELECT id FROM nodes WHERE adg_name LIKE '%heal_policy_types%' "
-        "AND resolved_path NOT LIKE '%archive%'"
+        "AND resolved_path NOT LIKE '%archive%'",
     )
     sym_ids = [r[0] for r in cur.fetchall()]
     if sym_ids:
@@ -111,7 +111,7 @@ else:
 # tiered_batch_util importers
 print("\n=== tiered_batch_util IMPORTERS (via symbol) ===")
 cur.execute(
-    "SELECT id FROM nodes WHERE adg_name LIKE '%tiered_batch%' AND resolved_path NOT LIKE '%archive%'"
+    "SELECT id FROM nodes WHERE adg_name LIKE '%tiered_batch%' AND resolved_path NOT LIKE '%archive%'",
 )
 tbu_ids = [r[0] for r in cur.fetchall()]
 if tbu_ids:

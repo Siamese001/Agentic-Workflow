@@ -58,7 +58,7 @@ class MockExecutionTrace:
             "kind": kind,
             "started_at_utc": int(time.time() * 1000),
             "attributes": attributes or {},
-            "status": "ok"
+            "status": "ok",
         }
         self.spans.append(span)
         return span
@@ -80,7 +80,7 @@ class MockExecutionTrace:
                 "started_at_utc": span["started_at_utc"],
                 "duration_ms": span.get("duration_ms", 10),
                 "status": span["status"],
-                "attributes_json": json.dumps(span["attributes"])
+                "attributes_json": json.dumps(span["attributes"]),
             }
             nodes.append(node)
 
@@ -90,7 +90,7 @@ class MockExecutionTrace:
             "mission": f"test-{self.trace_id}",
             "started_at_utc": self.started_at_utc,
             "ended_at_utc": self.ended_at_utc,
-            "nodes": nodes
+            "nodes": nodes,
         }
 
 
@@ -108,7 +108,7 @@ class MockAgent:
         self.trace.add_span(
             name=f"execute_{task}",
             kind=self.kind,
-            attributes={"agent_name": self.name, "task": task}
+            attributes={"agent_name": self.name, "task": task},
         )
 
         # Simulate work
@@ -119,7 +119,7 @@ class MockAgent:
             self.trace.add_span(
                 name=f"subtask_{i+1}",
                 kind="SUB_TASK",
-                attributes={"subtask_id": i+1, "parent": self.name}
+                attributes={"subtask_id": i+1, "parent": self.name},
             )
             time.sleep(0.02)
 
@@ -134,8 +134,8 @@ class MockAgent:
             "metadata": {
                 "agent": self.name,
                 "kind": self.kind,
-                "subtasks": 3
-            }
+                "subtasks": 3,
+            },
         }
 
 
@@ -172,7 +172,7 @@ async def test_runtime_adg_e2e():
         agents = [
             MockAgent("ValidatorAgent", "VALIDATOR"),
             MockAgent("ProcessorAgent", "PROCESSOR"),
-            MockAgent("HealerAgent", "HEALER")
+            MockAgent("HealerAgent", "HEALER"),
         ]
 
         snapshots = []

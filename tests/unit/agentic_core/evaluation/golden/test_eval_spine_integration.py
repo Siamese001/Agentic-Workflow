@@ -39,7 +39,7 @@ def integration(eval_spine):
             missing_spans=[],
             extra_spans=[],
             eval_duration_ms=10.0,
-        )
+        ),
     ]
     mock_evaluator.list_available_datasets.return_value = ["test_cases"]
 
@@ -116,7 +116,7 @@ class TestGoldenEvalIntegration:
                 missing_spans=[],
                 extra_spans=[],
                 eval_duration_ms=10.0,
-            )
+            ),
         ]
 
         integration.emit_golden_metrics(results)
@@ -142,7 +142,7 @@ class TestGoldenEvalIntegration:
                 missing_spans=["b", "c"],
                 extra_spans=[],
                 eval_duration_ms=10.0,
-            )
+            ),
         ]
 
         integration.emit_golden_metrics(results)

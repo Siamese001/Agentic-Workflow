@@ -422,7 +422,7 @@ class CanonicalStore:
 
         if backend == "local":
             self._backend: StorageBackend = LocalFileBackend(
-                backend_config.get("path", "artifacts/canonical_store")
+                backend_config.get("path", "artifacts/canonical_store"),
             )
         elif backend == "postgres":
             self._backend = PostgresBackend(backend_config.get("connection_string"))

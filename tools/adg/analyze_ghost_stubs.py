@@ -47,7 +47,7 @@ def main() -> None:
             "FROM edges e JOIN nodes n1 ON e.src_id=n1.id "
             "WHERE e.relation_type='imports' "
             "AND n1.resolved_path LIKE 'tests/%' "
-            "AND n1.resolved_path LIKE '%_adg.py'"
+            "AND n1.resolved_path LIKE '%_adg.py'",
         )
     }
 

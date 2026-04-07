@@ -125,12 +125,12 @@ def create_validation_package():
         f.write("  adg_file_graph       - file-level edges fully subsumed by sqlite\n")
         f.write("  adg_governance_graph - governance edges present in sqlite relation_type col\n")
         f.write(
-            "  adg_graphsnap        - 28 MB of canonical ordering arrays (diff-only use, no validation signal)\n"
+            "  adg_graphsnap        - 28 MB of canonical ordering arrays (diff-only use, no validation signal)\n",
         )
         f.write("KEPT (unique signal):\n")
         f.write("  adg_indexed.sqlite   - superset: 64,293 nodes + 217,071 edges + line_no + symbol cols\n")
         f.write(
-            "  adg_symbol_graph     - symbol-level detail (class/function bodies) not abbreviated in sqlite\n"
+            "  adg_symbol_graph     - symbol-level detail (class/function bodies) not abbreviated in sqlite\n",
         )
         f.write("  adg_snapshot         - 7 KB summary stats (layer counts, hotspots, coverage)\n\n")
 

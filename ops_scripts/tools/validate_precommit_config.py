@@ -57,7 +57,7 @@ def check_hook_ordering(config):
         'end-of-file-fixer',
         'mixed-line-ending',
         'check-merge-conflict',
-        'auto-stage-hook-fixes'
+        'auto-stage-hook-fixes',
     ]
 
     for repo in config.get('repos', []):

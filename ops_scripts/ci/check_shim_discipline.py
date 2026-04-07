@@ -199,7 +199,7 @@ def main() -> int:
                 if missing_elements:
                     violations.append(
                         f"Shim file missing required elements: {file_path}\n"
-                        f"  Missing: {', '.join(missing_elements)}"
+                        f"  Missing: {', '.join(missing_elements)}",
                     )
 
     # Check for module moves without shims
@@ -216,7 +216,7 @@ def main() -> int:
         if old_shim_path not in staged_files["added"]:
             violations.append(
                 f"Module moved without shim: {old_path} -> {new_path}\n"
-                f"  Expected shim at: {old_shim_path}"
+                f"  Expected shim at: {old_shim_path}",
             )
 
     # Check for deleted canonical modules without shims
@@ -237,7 +237,7 @@ def main() -> int:
         if not is_renamed:
             violations.append(
                 f"Canonical module deleted without shim: {deleted_path}\n"
-                f"  Create shim or justify shimless deletion"
+                f"  Create shim or justify shimless deletion",
             )
 
     # If no violations, pass

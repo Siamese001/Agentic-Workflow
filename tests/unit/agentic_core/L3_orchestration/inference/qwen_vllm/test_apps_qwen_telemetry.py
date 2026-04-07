@@ -8,9 +8,15 @@ import pytest
 
 # Check if qwen_vllm is available
 try:
-    from agentic_core.L3_orchestration.inference.qwen_vllm import QwenInferenceMetric, QwenSessionMetrics, QwenInferenceTelemetry
     # Also import backward compatibility aliases
-    from agentic_core.L3_orchestration.inference.qwen_vllm import AppsQwenMetric, AppsQwenSessionMetrics, AppsQwenTelemetry
+    from agentic_core.L3_orchestration.inference.qwen_vllm import (
+        AppsQwenMetric,
+        AppsQwenSessionMetrics,
+        AppsQwenTelemetry,
+        QwenInferenceMetric,
+        QwenInferenceTelemetry,
+        QwenSessionMetrics,
+    )
     QWEN_VLLM_AVAILABLE = True
 except ImportError:
     QWEN_VLLM_AVAILABLE = False

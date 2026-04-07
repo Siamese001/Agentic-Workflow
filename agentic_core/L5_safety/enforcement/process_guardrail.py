@@ -126,7 +126,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -184,7 +183,7 @@ _emit_proposal_commits_routing("p1", "process_guardrail", "routing_commit")
 
 logger = logging.getLogger(__name__)
 BLOCKED_COMMANDS: Final[frozenset[str]] = frozenset(
-    {"pip", "npm", "yarn", "apt", "apt-get", "brew", "rm", "sudo", "powershell", "cmd"}
+    {"pip", "npm", "yarn", "apt", "apt-get", "brew", "rm", "sudo", "powershell", "cmd"},
 )
 
 

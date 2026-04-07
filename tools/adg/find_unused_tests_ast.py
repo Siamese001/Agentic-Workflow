@@ -23,7 +23,7 @@ def find_test_functions(file_path: Path) -> list[dict]:
                 test_funcs.append({
                     'name': node.name,
                     'line': node.lineno,
-                    'file': str(file_path)
+                    'file': str(file_path),
                 })
     return test_funcs
 
@@ -91,7 +91,7 @@ def main():
     output = {
         'adg_database': str(adg_db),
         'directory': 'tests/adg',
-        'unused_tests': unused
+        'unused_tests': unused,
     }
 
     output_path = Path('wave1_ast_unused_tests.json')

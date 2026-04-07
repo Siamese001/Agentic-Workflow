@@ -28,7 +28,7 @@ _REQUIRED_SECTION_IDS = frozenset(
         "implementation_roadmap",
         "risk_and_governance",
         "value_case",
-    ]
+    ],
 )
 
 
@@ -72,7 +72,7 @@ class ProposalGateValidator:
                         severity="BLOCK",
                         message=f"Required section '{required_id}' is missing from proposal.",
                         section_id=required_id,
-                    )
+                    ),
                 )
 
         for section in sections:
@@ -83,7 +83,7 @@ class ProposalGateValidator:
                         severity="BLOCK",
                         message=f"Section '{section.section_id}' has empty body.",
                         section_id=section.section_id,
-                    )
+                    ),
                 )
 
         if len(roadmap) < 3:
@@ -92,7 +92,7 @@ class ProposalGateValidator:
                     rule_id="PROP_ROADMAP_TOO_SHORT",
                     severity="BLOCK",
                     message=f"Roadmap has only {len(roadmap)} phases; minimum is 3.",
-                )
+                ),
             )
 
         has_gov_phase = any("govern" in p.name.lower() for p in roadmap)
@@ -102,7 +102,7 @@ class ProposalGateValidator:
                     rule_id="PROP_NO_GOVERNANCE_PHASE",
                     severity="BLOCK",
                     message="Roadmap is missing a Governance phase.",
-                )
+                ),
             )
 
         if not risks:
@@ -111,7 +111,7 @@ class ProposalGateValidator:
                     rule_id="PROP_NO_RISK_MATRIX",
                     severity="BLOCK",
                     message="Proposal has no risk items defined.",
-                )
+                ),
             )
 
         block_count = sum(1 for v in violations if v.severity == "BLOCK")

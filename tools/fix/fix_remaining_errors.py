@@ -19,7 +19,7 @@ def get_errors():
             [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
              "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
-            cwd=ROOT, timeout=60
+            cwd=ROOT, timeout=60,
         )
         lines = (r.stdout + r.stderr).splitlines()
         for i, line in enumerate(lines):

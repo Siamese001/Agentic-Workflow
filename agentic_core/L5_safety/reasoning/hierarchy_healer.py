@@ -455,7 +455,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         results = {"created": [], "errors": [], "violations_found": 0}
 
         Logger.info(
-            "HierarchyAgent: Enforcing directory structure per SSOT across all enforced territories..."
+            "HierarchyAgent: Enforcing directory structure per SSOT across all enforced territories...",
         )
 
         # Determine which territories to process
@@ -498,7 +498,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         return results
 
     def _create_agentic_core_structure(
-        self, territory_path: Path, target_territory: str | None, results: dict
+        self, territory_path: Path, target_territory: str | None, results: dict,
     ) -> None:
         """Create L2/L3 layer structure for agentic_core."""
         # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
@@ -550,7 +550,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     )
 
     def _create_territory_structure(
-        self, territory_name: str, territory_path: Path, territory_config: dict, results: dict
+        self, territory_name: str, territory_path: Path, territory_config: dict, results: dict,
     ) -> None:
         """Create required subfolders for non-agentic_core territories (ops_scripts, system_learning, tools, data, docs, etc.)."""
         required_subfolders = territory_config.get("required_subfolders", [])
@@ -659,7 +659,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             Logger.error(
                 f"[HierarchyAgent] AGENT FILE IN tests/: {rel} — "
                 "Agent files must never be relocated into tests/. "
-                "Move this file back to its correct agentic_core/ territory manually."
+                "Move this file back to its correct agentic_core/ territory manually.",
             )
 
     def _enforce_agentic_core_structure(self, agentic_core_path: Path, results: dict[str, Any]) -> None:
@@ -744,7 +744,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                         f"[HierarchyAgent] NON-TEST FILE IN tests/{rel.parts[0]}/: {rel} — "
                         "all files inside a tests/ subfolder must have a 'test_' prefix. "
                         "This file does not belong in tests/ and must be moved to its "
-                        "correct source territory manually."
+                        "correct source territory manually.",
                     )
                 continue  # Handled (clean or violation logged) — skip rest of loop body
 
@@ -769,7 +769,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     f"[HierarchyAgent] NON-TEST FILE IN tests/: {rel} — "
                     "all test files must have a 'test_' prefix. "
                     "This file does not belong in tests/ and must be moved to its "
-                    "correct source territory manually."
+                    "correct source territory manually.",
                 )
                 # No healing action — moving a misclassified file to a random
                 # category would be worse than leaving it in place.
@@ -782,7 +782,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             Logger.error(
                 f"[HierarchyAgent] UNCATEGORIZED TEST: {rel} — "
                 "file has test_ prefix but is not inside a canonical tests/ subfolder. "
-                "Move it to the correct subfolder (unit/, integration/, e2e/, etc.) manually."
+                "Move it to the correct subfolder (unit/, integration/, e2e/, etc.) manually.",
             )
 
     def _relocate_l2_layer_files(
@@ -880,7 +880,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 Logger.error(
                     f"[HierarchyAgent] ARCHIVE SENTINEL: {py_file.name} — "
                     "Agent files cannot be auto-relocated to a non-source root. "
-                    "Move this file back to its correct agentic_core/ territory manually."
+                    "Move this file back to its correct agentic_core/ territory manually.",
                 )
                 return
 
@@ -1019,7 +1019,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 Logger.error(
                     f"[HierarchyAgent] ARCHIVE SENTINEL: {py_file.name} — "
                     "Agent files cannot be auto-relocated to a non-source root. "
-                    "Move this file back to its correct agentic_core/ territory manually."
+                    "Move this file back to its correct agentic_core/ territory manually.",
                 )
                 return
 
@@ -1214,7 +1214,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 Logger.error(
                     f"  [VIOLATION] SHALLOW DEPTH: {rel} is at depth {depth}, "
                     f"expected {expected}. Manual intervention required: "
-                    "place file in a semantically named subfolder."
+                    "place file in a semantically named subfolder.",
                 )
                 return 0
 
@@ -1692,7 +1692,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
             # 3. Test Structure Mirror Validation (NEW)
             test_mirror_result = self.validate_test_structure_mirror(
-                dry_run=dry_run, execute=execute
+                dry_run=dry_run, execute=execute,
             )
             result["test_mirror_validation"] = test_mirror_result
 

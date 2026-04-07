@@ -14,7 +14,7 @@ def main():
     try:
         # Get staged files
         result = subprocess.run([
-            "git", "diff", "--cached", "--name-only", "--diff-filter=ACM"
+            "git", "diff", "--cached", "--name-only", "--diff-filter=ACM",
         ], capture_output=True, text=True)
 
         if result.returncode == 0:
@@ -34,7 +34,7 @@ def main():
     # Run validation
     try:
         result = subprocess.run([
-            sys.executable, "tools/validation_runner.py"
+            sys.executable, "tools/validation_runner.py",
         ], capture_output=True, text=True)
 
         if result.returncode != 0:

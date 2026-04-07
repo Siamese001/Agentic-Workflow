@@ -1,6 +1,5 @@
 """Tests for _write_sqlite lock fix (connection close before rename)."""
 
-import sqlite3
 import sys
 from pathlib import Path
 from unittest.mock import patch

@@ -116,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_runtime_state,
-    _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
@@ -313,14 +312,14 @@ class SurgicalContextBuilder:
         self.ast_tree = ast.parse(self.file_content)
 
     def build_context(
-        self, violation_id: str, violations: list[dict[str, Any]], target_nodes: list[ast.AST], **kwargs
+        self, violation_id: str, violations: list[dict[str, Any]], target_nodes: list[ast.AST], **kwargs,
     ) -> SurgicalContext:
         """Build SurgicalContext from detection results."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "SurgicalContextBuilder.build_context"
+            _trace_id, LayerSegment.L5_POLICY, "SurgicalContextBuilder.build_context",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

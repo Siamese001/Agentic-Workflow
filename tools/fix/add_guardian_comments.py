@@ -107,7 +107,7 @@ class GuardianCommentAdder:
             'total_low_severity_violations': len(self.violations),
             'comments_added': self.comments_added,
             'errors': self.errors,
-            'remaining_violations': len(self.violations) - self.comments_added
+            'remaining_violations': len(self.violations) - self.comments_added,
         }
 
         report_file = PROJECT_ROOT / "tools" / "guardian_comments_report.json"
