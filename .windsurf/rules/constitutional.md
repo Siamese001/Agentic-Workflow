@@ -18,7 +18,9 @@ trigger: always_on
 > 11. **TERMINAL PROCESS LIFECYCLE MANAGEMENT.** All terminal processes spawned via `run_command` or `subprocess` MUST be explicitly terminated when the query completes. Non-blocking commands MUST set `WaitMsBeforeAsync` or implement explicit process cleanup. Hanging terminal processes after query finish = CONSTITUTIONAL VIOLATION. Gate: `ops_scripts/ci/check_terminal_cleanup.py`.
 > 12. **NO IMPORTS FROM ARCHIVES/ IN PRODUCTION CODE.** The `archives/` directory is a backup graveyard — imports from it are FORBIDDEN in production code (`agentic_core/`, `apps_*/`, `system_learning/`). During module migration, imports MUST be updated to canonical locations, not left pointing to archived copies. CI blocks any commit with active `from archives.` or `import archives.` statements. Gate: `ops_scripts/ci/check_no_archives_imports.py`.
 > 13. **MCP GREEN LIGHT PREREQUISITE.** Before beginning ANY T2/T3 work, call `mcp1_adg_health`. If the result is unhealthy or stale (>30 min), run `/mcp-failure-rca` and wait for recovery. NEVER begin multi-file work with unhealthy MCPs. Reinforced at runtime by `pre_mcp_tool_use` hook (Wave 1 Phase 1.3).
-> 14. **SUBPROCESS TIMEOUT DISCIPLINE.** ALL subprocess calls MUST include `timeout=`. No exceptions. `subprocess.run(argv, shell=False, timeout=30)` is the REQUIRED pattern. Omitting `timeout=` is a constitutional violation - runaway subprocesses are PP-9 zombie sources. PowerShell (`powershell`, `pwsh`) is FORBIDDEN - use `subprocess.run(argv, shell=False)`. Reinforced at runtime by `pre_run_command` hook (Wave 1 Phase 1.1). Policy SSOT: `global_rules.md` Section Subprocess Timeout Discipline.
+> 14. **SUBPROCESS TIMEOUT DISCIPLINE.** ALL subprocess calls MUST include `timeout=`. No exceptions. `subprocess.run(argv, shell=False, timeout=30)` is the REQUIRED pattern. Omitting `timeout=` is a constitutional violation — runaway subprocesses are PP-9 zombie sources. PowerShell (`powershell`, `pwsh`) is FORBIDDEN — use `subprocess.run(argv, shell=False)`. Reinforced at runtime by `pre_run_command` hook (Wave 1 Phase 1.1). Policy SSOT: `global_rules.md` Section Subprocess Timeout Discipline.
+> 15. **EXCEPTION HANDLING — COLUMN 5 PRECISE EXCEPTIONS.** Catch specific exception types with specific recovery. `except:` (bare) is FORBIDDEN. `except Exception` without `# guardian: allow-broad-exception -- <specific justification>` is FORBIDDEN. Guardian exemptions require HITL approval (§8). Enforced by `pre_write_gate.py` (Wave 1 Phase 1.2). Reference: `docs/reference/Python/Error & Exception Handling.md`.
+
 ## §0. DEFAULT ANALYSIS MODE — Tier-Aware
 
 **DEFAULT = AST DEPENDENCY GRAPH, scaled to change complexity.**
@@ -490,3 +492,62 @@ Omitting `timeout=` creates zombie processes (PP-9) and session hangs.
 - **Wave 1 Phase 1.1**: `pre_run_command` hook blocks PowerShell commands
 - **Policy SSOT**: `global_rules.md` Section Subprocess Timeout Discipline
 - **CI gate**: `ops_scripts/ci/check_terminal_cleanup.py` (Constitutional §11)
+
+---
+
+## §15. EXCEPTION HANDLING — COLUMN 5 PRECISE EXCEPTIONS
+
+### 15.1 Rule
+
+All exception handling MUST catch **specific** exception types with **specific** recovery actions.
+
+```python
+# REQUIRED — precise exception type, explicit recovery
+try:
+    data = json.loads(raw)
+except json.JSONDecodeError as exc:
+    log.error("Malformed JSON payload: %s", exc)
+    return default_value
+
+# FORBIDDEN — bare except (catches KeyboardInterrupt, SystemExit, etc.)
+except:
+    pass
+
+# FORBIDDEN — broad except without guardian
+except Exception:
+    pass
+
+# ALLOWED — broad except WITH explicit guardian and specific justification
+except Exception as exc:  # guardian: allow-broad-exception -- third-party plugin raises unknown types
+    log.warning("Plugin error (untyped): %s", exc)
+```
+
+### 15.2 Exception Vocabulary
+
+Use these standard exception types. Never invent custom exceptions for standard conditions:
+
+| Condition | Use |
+|-----------|-----|
+| File not found | `FileNotFoundError` |
+| Invalid JSON | `json.JSONDecodeError` |
+| Missing dict key | `KeyError` |
+| Type mismatch | `TypeError`, `ValueError` |
+| Subprocess failure | `subprocess.CalledProcessError`, `subprocess.TimeoutExpired` |
+| Network error | `OSError`, `ConnectionError` |
+| Permission denied | `PermissionError` |
+| Import failure | `ImportError`, `ModuleNotFoundError` |
+
+### 15.3 Guardian Exemption Protocol
+
+When `except Exception` is genuinely unavoidable:
+
+1. Add `# guardian: allow-broad-exception -- <specific justification>` on the same line
+2. Justification MUST be specific — generic words ("needed", "temporary") are FORBIDDEN
+3. HITL approval required before adding any guardian comment (Constitutional §8)
+4. Gate: `ops_scripts/ci/guardian_exemption_gate.py` enforces the ratchet ceiling
+
+### 15.4 Enforcement
+
+- **Wave 1 Phase 1.2**: `pre_write_gate.py` blocks bare `except:` and `except Exception` without guardian
+- **Policy SSOT**: `global_rules.md` §Exception Handling: Column 5 Precise Exceptions
+- **Reference**: `docs/reference/Python/Error & Exception Handling.md`
