@@ -258,7 +258,7 @@ class SovereignFilesystemMcp:
             result = await self.manager.call_tool("read_file", {"path": safe_path})
             return result.get("content", "") if isinstance(result, dict) else str(result)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"[L4 FS] Read failed: {e}")
             try:
                 get_mcp_authority().record_breach(f"FS Read Failure: {safe_path}")
@@ -320,7 +320,7 @@ class SovereignFilesystemMcp:
                 Logger.warning(f"[L4 FS] Ledger write failed (non-fatal): {ledger_e}")
             return {"status": "fission_complete", "count": len(results)}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.critical(f"[L4 FS BREACH] Fission write failed: {e}")
             try:
                 get_mcp_authority().record_breach(f"Fission Write Failure: {monolith_path}")

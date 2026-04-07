@@ -263,7 +263,7 @@ class SovereignConfigLoader:
             cls._topology = OrchestrationTopology(**data)
             Logger.info("Sovereign Topology loaded successfully.")
             return cls._topology
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.critical(f"Failed to load topology: {e}")
             raise
 

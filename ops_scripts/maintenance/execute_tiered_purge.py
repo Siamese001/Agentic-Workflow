@@ -334,7 +334,7 @@ def run_tiered_purge(
 
         return 0
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         Logger.error(f"[ERROR] {e}")
         import traceback

@@ -71,7 +71,7 @@ class TestTokenEstimatorStressTests:
         if self.temp_dir.exists():
             try:
                 shutil.rmtree(self.temp_dir, ignore_errors=True)
-            except (OSError, PermissionError):
+            except (OSError, PermissionError):  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 pass  # Ignore cleanup errors on Windows
 
     def test_extreme_large_file_compression(self):

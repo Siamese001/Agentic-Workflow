@@ -201,7 +201,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
                     if name:
                         self._agent_registry[name] = agent
             # guardian: allow-silent-swallow -- agent registry population is best-effort; logged above
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 pass

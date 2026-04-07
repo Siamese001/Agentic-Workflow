@@ -50,7 +50,7 @@ def test_l6_observability_imports_no_mro_error():
             else:
                 # Other TypeErrors are acceptable for this test
                 pass
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Import/Attribute errors are acceptable - we only care about MRO

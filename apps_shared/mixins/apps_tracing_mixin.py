@@ -190,7 +190,7 @@ class AppsTracingMixin:
             if otel_span:
                 otel_span.set_status(Status(StatusCode.OK))
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # Mark span as error
             if otel_span:
                 otel_span.set_status(Status(StatusCode.ERROR, str(e)))

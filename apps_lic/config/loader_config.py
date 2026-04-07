@@ -64,6 +64,6 @@ def load_agent_specs(force_reload: bool = False) -> AgentSpecs:
         _AGENT_SPECS_CACHE = specs
         return specs
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         logging.error(f"Failed to load agent specs: {e}")
         raise

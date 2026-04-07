@@ -98,7 +98,7 @@ class IsolatedTest:
             if self.temp_dir.exists():
                 shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             # Log cleanup error but don't fail test
             print(f"Warning: Test cleanup error: {e}")
 

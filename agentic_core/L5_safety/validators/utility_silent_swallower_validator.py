@@ -337,7 +337,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
                     if violation:
                         violations.append(violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             logger.warning(f"Error scanning {file_path}: {e}")
 

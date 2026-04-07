@@ -464,7 +464,7 @@ class ReportMigrator:
                     rollback_count += 1
                 else:
                     print(f'❌ Failed to restore: {entry.source}')
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 print(f'❌ Error restoring {entry.source}: {e}')
         print(f'\n✅ Rollback complete: {rollback_count} files restored')

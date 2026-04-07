@@ -330,7 +330,7 @@ def find_imports_to_update(
                     )
                     break
         # guardian: allow-silent-swallow
-        except:  # noqa: E722
+        except:  # noqa: E722  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             continue
 

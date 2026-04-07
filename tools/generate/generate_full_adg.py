@@ -323,7 +323,7 @@ def _check_artifact_consistency(paths: object, artifact: object) -> None:
         sys.exit(1)
 
 
-def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None = None, adg_artifacts_dir: Path | None = None, ts: str | None = None) -> None:
+def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None = None) -> None:
     """Fail if P1 critical defects are present (unconditional fail-fast).
 
     P1 defects include:
@@ -334,13 +334,9 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
     All P1 defects must block ADG generation unconditionally.
     This is a constitutional requirement for architectural integrity.
 
-    Before halting, attempts to auto-fix via repair orchestrator.
-
     Args:
         routing_summary: Dictionary with by_severity counts
         sqlite_path: Path to SQLite database for in_cycle/dynamic_exec queries
-        adg_artifacts_dir: Directory containing ADG artifacts (for repair orchestrator)
-        ts: ADG timestamp (for repair orchestrator)
     """
     # Check P1 critical defects (layer violations)
     if sqlite_path is not None and sqlite_path.exists():
@@ -400,7 +396,7 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
             pass
 
 
-def _check_p2_antipatterns(sqlite_path: Path | None = None, adg_artifacts_dir: Path | None = None, ts: str | None = None) -> None:
+def _check_p2_antipatterns(sqlite_path: Path | None = None) -> None:
     """Fail if HIGH-severity antipatterns are present.
 
     Blocks ADG generation if any HIGH-severity antipatterns exist:
@@ -410,12 +406,9 @@ def _check_p2_antipatterns(sqlite_path: Path | None = None, adg_artifacts_dir: P
     - return_none_swallow
 
     This is an unconditional fail-fast gate.
-    Before halting, attempts to auto-fix via repair orchestrator.
 
     Args:
         sqlite_path: Path to SQLite database for exception swallow queries
-        adg_artifacts_dir: Directory containing ADG artifacts (for repair orchestrator)
-        ts: ADG timestamp (for repair orchestrator)
     """
     if sqlite_path is None or not sqlite_path.exists():
         return
@@ -440,12 +433,6 @@ def _check_p2_antipatterns(sqlite_path: Path | None = None, adg_artifacts_dir: P
             if swallow_count > 0:
                 print(f"\n[ERROR] P2 HIGH antipatterns detected: {swallow_count}")
                 print("[ERROR] ADG generation failed - HIGH-severity exception antipatterns present")
-                
-                # Attempt auto-repair before halting (connection will be closed by with block)
-                if adg_artifacts_dir is not None:
-                    print("[INFO] Attempting auto-repair via P1/P2 auto-fix script...")
-                    _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
-                
                 print("[ERROR] Fix exception swallows before regenerating ADG")
                 sys.exit(1)
     except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during P2 check falls back gracefully
@@ -787,8 +774,8 @@ def generate_full_adg(
     production_sqlite = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
     prod_sqlite_path = production_sqlite[-1] if production_sqlite else None
 
-    _check_p1_defects(routing_summary, sqlite_path=prod_sqlite_path, adg_artifacts_dir=adg_artifacts_dir, ts=ts)
-    _check_p2_antipatterns(sqlite_path=prod_sqlite_path, adg_artifacts_dir=adg_artifacts_dir, ts=ts)
+    _check_p1_defects(routing_summary, sqlite_path=prod_sqlite_path)
+    _check_p2_antipatterns(sqlite_path=prod_sqlite_path)
     _check_dead_production_imports(sqlite_path=prod_sqlite_path)
 
     # --- Repair orchestrator: classify + fix remaining issues ---

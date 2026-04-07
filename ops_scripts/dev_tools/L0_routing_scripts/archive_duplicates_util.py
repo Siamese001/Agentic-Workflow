@@ -180,7 +180,7 @@ def main():
         try:
             ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
         # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             sys.exit(1)
@@ -199,7 +199,7 @@ def main():
                 shutil.move(str(source_path), str(dest_path))
                 moved_count += 1
             # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 pass

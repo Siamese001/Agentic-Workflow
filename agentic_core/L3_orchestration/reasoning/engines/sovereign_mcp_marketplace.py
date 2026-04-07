@@ -228,7 +228,7 @@ class SovereignMcpMarketplace:
                 try:
                     self.safe_tools.append(name)
                     Logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     Logger.warning(f"Failed to register {name}: {e}")
                     raise
         if not self.safe_tools:

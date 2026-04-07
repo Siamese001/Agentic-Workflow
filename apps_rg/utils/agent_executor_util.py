@@ -361,7 +361,7 @@ class AgentExecutor:
                 set_span_attribute("agent.message_count", len(messages))
                 try:
                     return self._execute_internal(messages, system_prompt, tools, **kwargs)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     record_exception(e)
                     raise
         else:
@@ -675,7 +675,7 @@ class AgentExecutor:
                     interaction_id=getattr(response, "id", None),
                     raw_response=response,
                 )
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 logger.error(f"Google GenAI Interactions API error: {e}")
                 raise
 

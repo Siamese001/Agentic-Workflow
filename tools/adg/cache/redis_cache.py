@@ -152,7 +152,7 @@ class RedisCache:
             try:
                 self._client.close()
                 logger.info("Redis connection closed")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error closing Redis connection: {e}")
             finally:
                 self._client = None

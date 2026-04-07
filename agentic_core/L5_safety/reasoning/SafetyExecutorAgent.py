@@ -348,7 +348,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                 self._results.append(exec_result)
                 return exec_result
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 end_time = datetime.utcnow()
                 execution_time = (end_time - start_time).total_seconds() * 1000

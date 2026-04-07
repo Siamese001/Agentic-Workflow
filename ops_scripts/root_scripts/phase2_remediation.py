@@ -207,7 +207,7 @@ def move_mislocated_tests():
                 shutil.move(str(actual_test), str(expected_test_path))
                 moved_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 print(f"Failed to move {actual_test}: {e}")
 
@@ -356,7 +356,7 @@ _emit_gated_by_confidence("p1", "phase2_remediation", "confidence_gate")
         test_path.write_text(test_content, encoding="utf-8")
         print(f"Created: {test_path}")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"Failed to create {test_path}: {e}")
         return False

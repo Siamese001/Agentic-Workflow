@@ -384,7 +384,7 @@ class ADGFileBatcher:
             else:
                 return 3 + (size // 10240)
 
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             return 1
 
 

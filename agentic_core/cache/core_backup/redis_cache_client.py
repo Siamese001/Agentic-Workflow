@@ -414,7 +414,7 @@ class DeterministicRedisCache:
                 self.stats.misses += 1
                 return None
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 self._mark_failed(exc)
         result = self._fallback.get(key)

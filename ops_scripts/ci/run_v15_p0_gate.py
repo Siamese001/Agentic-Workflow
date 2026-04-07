@@ -32,7 +32,7 @@ def run_subprocess(cmd: list[str], capture: bool=True) -> tuple[int, str, str]:
     try:
         result = subprocess.run(cmd, capture_output=capture, text=True, cwd=str(PROJECT_ROOT))
         return (result.returncode, result.stdout, result.stderr)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return (1, '', str(e))
 

@@ -331,7 +331,7 @@ class AsyncCoordinator:
                     self._tasks[task_id].state = TaskState.FAILED
             raise
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Task {task_id} failed: {e}")
             async with self._lock:
                 if task_id in self._tasks:
@@ -482,7 +482,7 @@ class AsyncCoordinator:
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error in cleanup loop: {e}")
 
     @asynccontextmanager

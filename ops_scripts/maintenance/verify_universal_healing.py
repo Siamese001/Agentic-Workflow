@@ -210,7 +210,7 @@ def run_verification():
     except subprocess.TimeoutExpired:
         print("❌ Dry-run test timed out")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"❌ Dry-run test failed: {e}")
         return False
@@ -261,7 +261,7 @@ def run_verification():
     except subprocess.TimeoutExpired:
         print("❌ Agent listing timed out")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"❌ Agent listing failed: {e}")
         return False
@@ -298,7 +298,7 @@ def run_verification():
     except subprocess.TimeoutExpired:
         print("❌ Help system timed out")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"❌ Help system failed: {e}")
         return False
@@ -328,7 +328,7 @@ def run_verification():
     except ImportError as e:
         print(f"❌ FAIL: Import error: {e}")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"❌ FAIL: Module test failed: {e}")
         return False

@@ -213,7 +213,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             await self.manager.connect(self.role)
             self.initialized = True
             Logger.info(f"[L3 MCP] Sovereign router ARMED for role '{self.role}'")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.critical(f"[L3 MCP BREACH] Initialization failed: {e}")
             get_mcp_authority().record_breach(str(e))
             raise
@@ -251,7 +251,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "findings": redteam_result.get("vulnerabilities", []),
                         "insight": "L5 shield tested against adversarial simulation",
                     }
-                except Exception as red_e:
+                except Exception as red_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     Logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
                     raise
             elif key_id in {21, 13}:
@@ -265,7 +265,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "recall": memory_result,
                         "insight": "Pattern matched against eternal knowledge graph.",
                     }
-                except Exception as mem_e:
+                except Exception as mem_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     Logger.warning(f"[L4 MCP] Memory search failed: {mem_e}")
                     raise
             elif key_id == 18:
@@ -293,7 +293,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     "guidance": answer.get("response", ""),
                                     "insight": "Applied internal repository guidance to healing round.",
                                 }
-                            except Exception as wiki_e:
+                            except Exception as wiki_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
                                 raise
                 except (ImportError, AttributeError) as e:
@@ -312,7 +312,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     "guidance": "Enforce these audited design tokens in the heal.",
                                     "tokens": tokens,
                                 }
-                            except Exception as figma_e:
+                            except Exception as figma_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
                                 raise
                 except (ImportError, AttributeError) as e:
@@ -375,7 +375,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "solution": solution,
                         "cached": cached_template is not None,
                     }
-                except Exception as reasoning_e:
+                except Exception as reasoning_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     Logger.warning(f"[L1 MCP] Sequential thinking failed: {reasoning_e}")
                     raise
                     PolicyResult: Any = await self.manager.call_tool(

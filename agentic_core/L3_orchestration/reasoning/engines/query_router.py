@@ -81,7 +81,8 @@ class QueryRouter:
         words = query.split()
         entity_name = None
         for word in words:
-            if word.isalpha() and len(word) > 2:  # Simple heuristic
+            # Allow underscores (common in Python identifiers)
+            if word.replace("_", "").isalpha() and len(word) > 2:
                 entity_name = word
                 break
 
@@ -110,11 +111,16 @@ class QueryRouter:
 
             # Get chunks for this node
             chunks = self.engine.get_chunks_by_adg_node(node_id)
+            
+            # Apply governance filter if provided
+            if governance_filter and chunks:
+                chunks = self.engine._apply_governance_filters(chunks, governance_filter)
+            
             return chunks
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"Structural search failed: {e}")
-            return []
+            raise  # Re-raise to surface errors to caller
 
     def _hybrid_search(
         self,

@@ -431,7 +431,7 @@ class MCPToolServer:
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("TOOL_ENFORCEMENT", artifact)
-        except Exception as _emit_exc:
+        except Exception as _emit_exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error("§Wave2.4 ToolEnforcementArtifact emission failed: %s", _emit_exc)
         if outcome == LawSlotOutcome.BLOCK:

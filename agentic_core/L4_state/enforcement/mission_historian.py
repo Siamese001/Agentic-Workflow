@@ -140,7 +140,7 @@ class MissionHistorian:
             )
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"[MissionHistorian] Failed to record action: {e}")
 

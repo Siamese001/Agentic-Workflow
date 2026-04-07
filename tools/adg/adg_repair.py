@@ -51,8 +51,20 @@ def find_latest_timestamp(adg_dir: Path) -> str | None:
     return timestamps[-1]
 
 
+def find_latest_sqlite(adg_dir: Path) -> Path | None:
+    """Find the latest ADG SQLite database."""
+    if not adg_dir.exists():
+        return None
+
+    files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
+    return files[-1] if files else None
+
+
 def cmd_list_rules(args: argparse.Namespace) -> int:
     """List all available repair rules."""
+    from tools.adg.repair.rule_engine import register_builtin_rules
+
+    register_builtin_rules()
     engine = RuleEngine()
     rules = engine.list_rules()
 
@@ -144,6 +156,13 @@ def cmd_repair(args: argparse.Namespace) -> int:
         print("Error: No timestamp specified (use --timestamp or --latest)")
         return 1
 
+    # Auto-detect SQLite path
+    sqlite_path = find_latest_sqlite(adg_dir)
+    if sqlite_path:
+        print(f"Using SQLite: {sqlite_path.name}")
+    else:
+        print("Warning: No SQLite database found, SQLite-based detection disabled")
+
     # Create git checkpoint if requested
     if args.git_checkpoint:
         git = GitIntegration(ROOT)
@@ -156,6 +175,7 @@ def cmd_repair(args: argparse.Namespace) -> int:
     print(f"{'=' * 60}")
     print(f"ADG Dir: {adg_dir}")
     print(f"Timestamp: {timestamp}")
+    print(f"SQLite: {sqlite_path.name if sqlite_path else 'None'}")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'APPLY'}")
     print(f"{'=' * 60}\n")
 
@@ -163,6 +183,7 @@ def cmd_repair(args: argparse.Namespace) -> int:
         adg_dir=adg_dir,
         timestamp=timestamp,
         repo_root=ROOT,
+        sqlite_path=sqlite_path,
     )
 
     skip_rules = args.skip_rule if args.skip_rule else []

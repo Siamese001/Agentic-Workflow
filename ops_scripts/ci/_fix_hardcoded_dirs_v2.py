@@ -261,7 +261,7 @@ def main() -> int:
                 continue
             try:
                 modified, notes = fix_file(py_file)
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 print(f'[ERROR] {rel}: {exc}')
                 continue

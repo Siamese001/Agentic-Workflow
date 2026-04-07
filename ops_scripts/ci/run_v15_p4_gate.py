@@ -232,7 +232,7 @@ class P4EvidenceCollector:
                 self.checks_passed.append({'check': 'validate_trace_id_accepts_good', 'detail': 'validate_trace_id accepts compliant trace_id'})
             else:
                 self.violations.append({'check': 'validate_trace_id_accepts_good', 'detail': f'Returned unexpected value: {valid}'})
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             self.violations.append({'check': 'validate_trace_id_callable', 'detail': f'Import/call failed: {e}'})
 
@@ -248,7 +248,7 @@ class P4EvidenceCollector:
                 self.checks_passed.append({'check': 'generate_trace_id_compliant', 'detail': f'generate_trace_id produced: {tid}'})
             else:
                 self.violations.append({'check': 'generate_trace_id_compliant', 'detail': f'Non-compliant output: {tid}'})
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             self.violations.append({'check': 'generate_trace_id_callable', 'detail': f'Import/call failed: {e}'})
 

@@ -1042,7 +1042,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         try:
             content = self.blueprint_file.read_text(encoding="utf-8")
             compile(content, str(self.blueprint_file), "exec")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             issues.append(f"Blueprint syntax error: {e}")
 

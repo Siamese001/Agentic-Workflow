@@ -490,7 +490,7 @@ class ToolVerifier:
                         suggestion="Fix syntax errors before execution",
                     )
                 )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             issues.append(
                 VerificationIssue(

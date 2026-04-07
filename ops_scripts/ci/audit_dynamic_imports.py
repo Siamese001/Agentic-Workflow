@@ -107,7 +107,7 @@ def scan_file(file_path: Path) -> list[DynamicImportViolation]:
         scanner = DynamicImportScanner(str(file_path))
         scanner.visit(tree)
         return scanner.violations
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f'Error scanning {file_path}: {e}', file=sys.stderr)
         return []

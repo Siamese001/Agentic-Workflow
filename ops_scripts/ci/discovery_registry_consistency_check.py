@@ -194,7 +194,7 @@ def check_discovery_consistency(project_root: Path) -> tuple[list[str], dict[str
     from ops_scripts.ci.active_set_helper import get_active_set
     try:
         result = get_active_set(project_root)
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return ([f'active_set_helper failed: {exc}'], {})
     verified = list(result.agents)

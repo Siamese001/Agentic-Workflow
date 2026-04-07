@@ -376,7 +376,7 @@ class DAGSafetyManager:
             try:
                 hook(graph, mutation_info)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 logger.error(f"Validation hook failed in phase {phase.value}: {e}")
                 raise
 

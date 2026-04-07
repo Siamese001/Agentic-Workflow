@@ -372,7 +372,7 @@ def main() -> Any:
             print(f"   Index: {args.index}")
             print(f"   Upserted: {result.get('upserted_count', 1)} vectors")
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         Logger.error(f"❌ Error: {e}")
         sys.exit(1)

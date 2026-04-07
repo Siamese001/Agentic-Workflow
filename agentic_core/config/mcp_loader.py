@@ -288,7 +288,7 @@ class MCPLoader:
             return [f"Missing dependency: {e}"]
         except ValueError as e:
             return [f"Config validation error: {e}"]
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # Catch YAML parsing errors and other unexpected issues
             if "yaml" in type(e).__module__.lower():
                 return [f"YAML parsing error: {e}"]

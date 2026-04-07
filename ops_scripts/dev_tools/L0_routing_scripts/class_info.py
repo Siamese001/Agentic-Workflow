@@ -652,7 +652,7 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
             analysis.llm_calls = compliance["llm_calls"]
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             analysis.docstring = f"ANALYSIS_ERROR: {e}"

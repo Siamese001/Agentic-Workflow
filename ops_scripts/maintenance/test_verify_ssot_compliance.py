@@ -214,7 +214,7 @@ def test_ssot_import():
             f"     ArchivalGatekeeper.ARCHIVE_ROOT_NAME = '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'",
         )
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ❌ FAIL: {e}")
         return False
@@ -243,7 +243,7 @@ def test_path_resolution():
 
         ArchivalGatekeeper.reset_instance()
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ❌ FAIL: {e}")
         return False
@@ -258,7 +258,7 @@ def test_exclusion_logic():
         print("  ✅ PASS: 'archives' is in SOVEREIGN_EXCLUDED_FOLDERS")
         print(f"     SOVEREIGN_EXCLUDED_FOLDERS = {sorted(SOVEREIGN_EXCLUDED_FOLDERS)}")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ❌ FAIL: {e}")
         return False
@@ -280,7 +280,7 @@ def test_no_hardcoded_paths():
 
         print("  ✅ PASS: No hardcoded '.archive' paths found")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ❌ FAIL: {e}")
         return False

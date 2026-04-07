@@ -588,7 +588,7 @@ def main():
 
     try:
         results.append(("Circuit Breaker", test_circuit_breaker()))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"\n❌ Circuit Breaker tests FAILED: {e}")
         import traceback
@@ -598,28 +598,28 @@ def main():
 
     try:
         results.append(("Adapter Base", test_adapter_base()))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"\n❌ Adapter Base tests FAILED: {e}")
         results.append(("Adapter Base", False))
 
     try:
         results.append(("Atomic Execution", test_atomic_execution()))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"\n❌ Atomic Execution tests FAILED: {e}")
         results.append(("Atomic Execution", False))
 
     try:
         results.append(("Context Session", test_context_session()))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"\n❌ Context Session tests FAILED: {e}")
         results.append(("Context Session", False))
 
     try:
         results.append(("Contextual Router", test_contextual_router()))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"\n❌ Contextual Router tests FAILED: {e}")
         results.append(("Contextual Router", False))

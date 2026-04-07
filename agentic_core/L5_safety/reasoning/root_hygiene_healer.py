@@ -404,7 +404,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     if age_days > AGE_THRESHOLD_DAYS:
                         should_delete = True
                         reason = f"unused ({age_days:.0f} days old)"
-                except OSError:
+                except OSError:  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                     pass
     # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             if should_delete:

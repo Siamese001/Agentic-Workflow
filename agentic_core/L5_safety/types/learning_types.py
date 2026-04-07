@@ -286,7 +286,7 @@ class AdaptiveLearningEngine:
                     ]
                 self._save_patterns()
                 Logger.debug("L1 Self-improvement cycle completed")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"L1 Self-improvement error: {e}")
                 await asyncio.sleep(DEFAULT_SLEEP)
@@ -317,7 +317,7 @@ class AdaptiveLearningEngine:
                     )
                     self.patterns[key].append(pattern)
             Logger.info(f"Loaded {sum(len(p) for p in self.patterns.values())} healing patterns")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to load patterns: {e}")
 
@@ -357,7 +357,7 @@ class AdaptiveLearningEngine:
                 ]
             _wg.write_json(self.pattern_storage_path, data, indent=2)
             Logger.debug(f"Saved patterns to {self.pattern_storage_path}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to save patterns: {e}")
 

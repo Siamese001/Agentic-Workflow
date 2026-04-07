@@ -309,7 +309,7 @@ class AtomicExecutionMixin:
                 if backup.backup_path.exists():
                     shutil.copy2(backup.backup_path, backup.original_path)
                     logger.debug(f"Restored {backup.original_path} from backup")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 errors.append(f"Failed to restore {backup.original_path}: {e}")
         for created_path in txn.created_files:
@@ -317,7 +317,7 @@ class AtomicExecutionMixin:
                 if created_path.exists() and created_path not in [b.original_path for b in txn.backups]:
                     created_path.unlink()
                     logger.debug(f"Removed created file {created_path}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 errors.append(f"Failed to remove {created_path}: {e}")
         txn.rolled_back = True
@@ -334,7 +334,7 @@ class AtomicExecutionMixin:
                 shutil.rmtree(backup_dir)
                 logger.debug(f"Cleaned up backup directory {backup_dir}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.warning(f"Failed to cleanup transaction {txn.transaction_id}: {e}")
         if txn.transaction_id in self._active_transactions:
             del self._active_transactions[txn.transaction_id]

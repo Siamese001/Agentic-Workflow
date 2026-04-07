@@ -75,7 +75,7 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
                     visitor = AgentVisitor()
                     visitor.visit(tree)
                     results.append(FileDisposition(filepath=full_path, is_agent=visitor.is_agent, confidence='HIGH' if visitor.signals else 'LOW', signals=visitor.signals))
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     results.append(FileDisposition(filepath=full_path, is_agent=False, confidence='ERROR', signals=[f'Parse Error: {str(e)}']))
     return results

@@ -328,7 +328,7 @@ def run_cognitive_purge(
         Logger.error(f"[ERROR] Import Error: {e}")
         Logger.error("Ensure agentic_core is properly installed.")
         return 2
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         Logger.error(f"[ERROR] Execution Error: {e}")
         import traceback

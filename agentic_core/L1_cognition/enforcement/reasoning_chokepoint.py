@@ -319,7 +319,7 @@ def reason_and_record(
     reasoning_success = True
     try:
         output = model_callable(prompt_payload, retrieved_context)
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         reasoning_success = False
         trace_id = trace.reasoning_trace_id
         _emit_hard_fails_untranscripted(trace_id, f"model_callable raised: {exc}")

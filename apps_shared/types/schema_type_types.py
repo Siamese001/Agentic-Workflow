@@ -427,7 +427,7 @@ class InternalSchemaConverter:
         try:
             external_value = self._extract_and_transform_value(mapping, external_data, errors, warnings)
             self._set_converted_value(mapping, external_value, converted_data, errors, warnings)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             error_msg = f"Failed to map field {mapping.external_path}: {str(e)}"
             if mapping.required:
@@ -453,7 +453,7 @@ class InternalSchemaConverter:
         try:
             return self._convert_type(value, mapping.type_conversion)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             error_msg = f"Type conversion failed for {mapping.external_path}: {str(e)}"
             if self.config.strategy == ConversionStrategy.STRICT:

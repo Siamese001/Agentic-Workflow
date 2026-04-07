@@ -242,7 +242,7 @@ class TieredBatchProcessor:
             _wg.ensure_dir(self.checkpoint_file.parent)
             _wg.write_text(self.checkpoint_file, json.dumps(self.results, indent=2), encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"[TIERED] Checkpoint save failed: {e}")
 
@@ -312,7 +312,7 @@ class TieredBatchProcessor:
                 content = self.agent._read_file_safe(Path(file_path))
                 cache.cache_decision(content, violation_type, decision)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.debug(f"[TIERED] cache store failed: {e}")
 
@@ -433,7 +433,7 @@ class TieredBatchProcessor:
                 Logger.info(f"    -> {decision.action} ({decision.confidence:.0%})")
                 time.sleep(self.rate_limit_delay)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"    -> Error: {e}")
                 self.results[file_path_str] = {

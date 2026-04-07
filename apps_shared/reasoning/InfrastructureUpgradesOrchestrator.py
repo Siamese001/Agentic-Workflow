@@ -427,7 +427,7 @@ class InfrastructureUpgradesOrchestrator:
                     "facts": [v.dict() for v in fact_violations],
                 },
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_failed",

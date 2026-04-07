@@ -205,7 +205,7 @@ def hunt_and_archive():
                     shutil.move(str(full_path), str(dest_path))
                     print(f"[ARCHIVED] -> {dest_path}")
                     found_count += 1
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     print(f"[ERROR] Could not archive {file}: {e}")
 

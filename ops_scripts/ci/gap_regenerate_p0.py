@@ -350,7 +350,7 @@ def check_8_1() -> tuple[bool, str]:
         result = subprocess.run([sys.executable, str(scanner)], capture_output=True, text=True, cwd=str(PROJECT_ROOT), timeout=ADAPTER_SCANNER_TIMEOUT_SECONDS)
         passed = result.returncode == 0
         detail = result.stdout.strip().split('\n')[-1] if result.stdout else 'no output'
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         passed = False
         detail = str(e)

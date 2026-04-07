@@ -126,7 +126,7 @@ class TestTerritoryHealing:
                     assert healing_result.dry_run is True
                     assert healing_result.territory == "tests"
                     logger.info("    Dry-run healing succeeded")
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     logger.error(f"    Dry-run healing failed: {e}")
                     raise
 
@@ -311,7 +311,7 @@ class TestNoExceptions:
             try:
                 report = coordinator.validate_territory(territory)
                 logger.info(f"Scan {territory}: success={report.success}, violations={report.total_violations_found}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # Non-existent territories should be handled gracefully
                 logger.warning(f"Exception for {territory}: {e}")
                 # Only non-existent should potentially fail

@@ -220,7 +220,7 @@ def _atomic_write_json(path: Path, data: dict[str, Any]) -> None:    # guardian:
         os.replace(tmp, str(path))
     # guardian: allow-silent-swallow - acceptable exception handling
     # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
-    except BaseException:
+    except BaseException:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         try:
             os.close(fd)
         except OSError:

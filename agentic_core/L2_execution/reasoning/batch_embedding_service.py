@@ -242,7 +242,7 @@ class BatchEmbeddingService:
             embeddings: Any = [emb for batch_result in results for emb in batch_result]
             Logger.info(f"Successfully generated {len(embeddings)} embeddings from {len(texts)} texts")
             return embeddings
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"Failed to generate embeddings: {e}")
             raise
 

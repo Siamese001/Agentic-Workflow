@@ -208,7 +208,7 @@ def main():
         with open(arg, encoding="utf-8") as f:
             try:
                 ModelVisitor().visit(ast.parse(f.read()))
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.warning(f"Parse Warning in {arg}: {e}")
 

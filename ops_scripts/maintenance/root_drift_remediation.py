@@ -250,7 +250,7 @@ def migrate_and_audit_scripts():
                     print(f"    [VERIFIED] {file_path.name} is valid in {NEW_OPS_DIR.name}")
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             print(f"    [ERR] Could not process {file_path.name}: {e}")
 
@@ -322,8 +322,6 @@ def validate_structure():
                 if AGENTIC_CORE_DIR in content:
                     issues.append(f"Core dependency found in ops_scripts/{py_file.name}")
             # guardian: allow-silent-swallow
-            except Exception:
-                raise
 
     if issues:
         print("[!] Structure validation issues found:")

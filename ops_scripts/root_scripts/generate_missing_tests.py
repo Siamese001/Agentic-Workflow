@@ -48,7 +48,7 @@ def main():
             if result:
                 generated_count += 1
                 print(f'Generated: {result}')
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             print(f'Failed to generate test for {module_path}: {e}')
     print(f'Generated {generated_count} test files')

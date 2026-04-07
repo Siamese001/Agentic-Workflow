@@ -209,7 +209,7 @@ class MetaLearningStorage:
 
                         cls._memory = SemanticCacheManager.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         raise
                         cls._lobotomized = True
                         Logger.critical(
@@ -238,7 +238,7 @@ class MetaLearningStorage:
         try:
             _ = json.dumps(result)
             await cls._memory.learn_async(context, namespace, result)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{namespace}] Async learn failed: {e}")
 
@@ -289,7 +289,7 @@ class MetaLearningStorage:
 
                         cls._graph_bridge = GraphMemoryBridge.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Graph Memory Bridge")
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         raise
                         Logger.warning(f"[{agent_name}] Graph Memory Bridge unavailable: {e}")
 
@@ -302,7 +302,7 @@ class MetaLearningStorage:
             cls._graph_bridge.create_agent_entity(
                 agent_name=agent_name, agent_type="Agent", observations=[f"Agent {agent_name} initialized"]
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{agent_name}] Agent entity registration failed: {e}")
 
@@ -315,7 +315,7 @@ class MetaLearningStorage:
             cls._graph_bridge.create_mastered_task_relation(
                 agent_name=agent_name, task_description=context, feedback_score=feedback_score
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{agent_name}] MASTERED_TASK relation creation failed: {e}")
 

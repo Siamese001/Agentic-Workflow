@@ -386,7 +386,7 @@
   },
   "agentic_core/L4_state/utils/memory/semantic_cache_manager.py": {
     "magic-config": 1,
-    "silent-swallow": 10
+    "silent-swallow": 9
   },
   "agentic_core/L4_state/utils/memory/sovereign_memory_store.py": {
     "silent-swallow": 3
@@ -1376,9 +1376,6 @@
   },
   "apps_lic/config/retry_policy_config.py": {
     "silent-swallow": 2
-  },
-  "apps_lic/engines/__init__.py": {
-    "silent-swallow": 1
   },
   "apps_lic/engines/control_plane.py": {
     "silent-swallow": 2

@@ -472,7 +472,7 @@ class InfrastructureOrchestrator:
                 "execution_time": execution_time,
                 "lineage": lineage.to_dict() if sources else None,
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             await self.event_bus.publish(
                 "events.error_occurred",

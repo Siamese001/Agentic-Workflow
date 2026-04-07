@@ -627,7 +627,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     await aiofiles.os.remove(file_path)
                     count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Failed to cleanup dead letter file {file_path}: {e}")
         logger.info(f"Cleaned up {count} old dead letter items")
         return count
@@ -834,7 +834,7 @@ def dead_letter_handler(failure_reason: FailureReason = FailureReason.UNKNOWN, i
         async def wrapper(envelope: SignalEnvelope, *args, **kwargs):
             try:
                 return await func(envelope, *args, **kwargs)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 dlq = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(

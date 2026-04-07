@@ -52,7 +52,7 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
                     with open(fpath, encoding="utf-8") as f:
                         content = f.read()
                         contents.append(content)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     # TODO: Handle specific exception properly
                     raise  # Re-raise after logging/handling
                     contents.append(f"ERROR: {e}")

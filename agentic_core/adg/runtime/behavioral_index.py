@@ -396,7 +396,7 @@ class ADGBehavioralIndex:
         if self._con is not None:
             try:
                 self._con.close()
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.debug(f"Error closing SQLite connection: {e}")
             self._con = None
 

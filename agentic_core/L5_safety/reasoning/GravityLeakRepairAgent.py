@@ -635,7 +635,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     return self._emit_plan_only(fix)
                 raise
             # guardian: allow-silent-swallow -- write error re-raised after temp cleanup; logged for diagnostics
-            except Exception as write_err:
+            except Exception as write_err:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 # guardian: allow-path-string -- temp_path is OS tempfile path requiring os.path.exists check
                 if os.path.exists(temp_path):

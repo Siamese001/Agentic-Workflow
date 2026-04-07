@@ -178,7 +178,7 @@ try:
     with urllib.request.urlopen("http://localhost:8000/v1/models", timeout=3) as r:
         data = json.loads(r.read())
         results["F1_vllm"] = "PASS: " + data["data"][0]["id"]
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
     raise
     results["F1_vllm"] = f"FAIL: {e}"
 
@@ -200,7 +200,7 @@ try:
         if emb_en != "true":
             missing.append(f"EMBEDDING_ENABLED={emb_en!r}")
         results["F2_embedding"] = "FAIL: " + "; ".join(missing)
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
     raise
     results["F2_embedding"] = f"FAIL: {e}"
 
@@ -215,7 +215,7 @@ try:
         results["F3_faiss_index"] = f"PASS: {list(boot.keys())} digest={first_digest[:16]}..."
     else:
         results["F3_faiss_index"] = "FAIL: no indexes found"
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
     raise
     results["F3_faiss_index"] = f"FAIL: {e}"
 
@@ -228,7 +228,7 @@ try:
         results["F4_redis"] = f"PASS: healthy, mem={h.get('used_memory_human', '?')}"
     else:
         results["F4_redis"] = f"FAIL: {h['error']}"
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
     raise
     results["F4_redis"] = f"FAIL: {e}"
 
@@ -243,7 +243,7 @@ try:
         results["F5_gpu_util_ssot"] = f"PASS: QWEN_GPU_MEM_UTIL={QWEN_GPU_MEM_UTIL} (7B={cfg7}, 14B={cfg14})"
     else:
         results["F5_gpu_util_ssot"] = f"FAIL: const={QWEN_GPU_MEM_UTIL} 7B={cfg7} 14B={cfg14}"
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
     raise
     results["F5_gpu_util_ssot"] = f"FAIL: {e}"
 

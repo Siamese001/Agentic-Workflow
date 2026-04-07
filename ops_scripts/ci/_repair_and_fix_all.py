@@ -245,7 +245,7 @@ def main() -> int:
             if fix_import_order(p):
                 print(f'ORDER  {rel}')
                 fixed_order += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             print(f'ORDER-ERR  {rel}: {e}')
             errors += 1
@@ -259,7 +259,7 @@ def main() -> int:
                 fixed_literal += 1
             else:
                 print(f'SKIP  {rel}:{lineno} [{varname}] (no change)')
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             print(f'LITERAL-ERR  {rel}:{lineno} [{varname}]: {e}')
             errors += 1

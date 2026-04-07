@@ -531,7 +531,7 @@ def standard_heal(func: F) -> F:
 
             return normalized
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             execution_time_ms = (time.time() - start_time) * 1000
@@ -595,7 +595,7 @@ def standard_heal_async(func: F) -> F:
 
             return normalized
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             execution_time_ms = (time.time() - start_time) * 1000

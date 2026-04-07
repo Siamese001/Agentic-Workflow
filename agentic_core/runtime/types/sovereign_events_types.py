@@ -273,7 +273,7 @@ class event_emission_mixin:
                     return
                 except asyncio.TimeoutError:
                     self._ee_logger.warning(f"Redis dispatch timeout (attempt {attempt}/{MAX_RETRIES})")
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     self._ee_logger.warning(f"Redis dispatch failed (attempt {attempt}/{MAX_RETRIES}): {e}")
                 if attempt < MAX_RETRIES:
@@ -288,7 +288,7 @@ class event_emission_mixin:
                 self.redis_client.xadd(
                     "sovereign_event_stream", {"event": json.dumps(event.model_dump())}, maxlen=10000
                 )
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 self._ee_logger.error(f"Redis Dispatch Failed: {e}")
 
@@ -312,7 +312,7 @@ class event_emission_mixin:
                         f"{event_prefix}.completed", {"duration": round(duration, 4), "success": True}
                     )
                     return result
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     self.emit_event(
                         f"{event_prefix}.failed", {"error": str(e), "success": False}, severity="ERROR"

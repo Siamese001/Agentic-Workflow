@@ -53,6 +53,7 @@ class ADGRepairOrchestrator:
         adg_dir: Path,
         timestamp: str,
         repo_root: Path | None = None,
+        sqlite_path: Path | None = None,
     ):
         """Initialize the repair orchestrator.
 
@@ -60,10 +61,12 @@ class ADGRepairOrchestrator:
             adg_dir: Directory containing ADG artifacts
             timestamp: ADG timestamp (MMDDYYYY_HHMM format)
             repo_root: Repository root path (default: auto-detect)
+            sqlite_path: Path to ADG SQLite database (optional, enables SQLite-based detection)
         """
         self.adg_dir = Path(adg_dir)
         self.timestamp = timestamp
         self.repo_root = repo_root or ROOT
+        self.sqlite_path = Path(sqlite_path) if sqlite_path else None
 
         # Initialize components
         self.rule_engine = RuleEngine()
@@ -187,6 +190,10 @@ class ADGRepairOrchestrator:
         # Extract deficiencies from mutation report
         if "mutation" in reports:
             self._extract_mutation_deficiencies(reports["mutation"])
+
+        # Extract deficiencies from SQLite database (if path provided)
+        if self.sqlite_path and self.sqlite_path.exists():
+            self._extract_sqlite_deficiencies()
 
         self._log_event(
             "deficiencies_detected",
@@ -369,6 +376,40 @@ class ADGRepairOrchestrator:
                 },
             )
             self.deficiencies.append(deficiency)
+
+    def _extract_sqlite_deficiencies(self) -> None:
+        """Extract deficiencies from SQLite database using SQLiteAnalyzer."""
+        if not self.sqlite_path or not self.sqlite_path.exists():
+            return
+
+        from .sqlite_analyzer import SQLiteAnalyzer
+
+        try:
+            with SQLiteAnalyzer(self.sqlite_path) as analyzer:
+                sqlite_defs = analyzer.get_deficiencies_as_dicts()
+
+                for sqlite_def in sqlite_defs:
+                    deficiency = Deficiency(
+                        id=sqlite_def["id"],
+                        category=sqlite_def["category"],
+                        file_path=sqlite_def["file_path"],
+                        line_no=sqlite_def["line_no"],
+                        issue_type=sqlite_def["issue_type"],
+                        description=sqlite_def["description"],
+                        confidence=sqlite_def["confidence"],
+                        metadata=sqlite_def["metadata"],
+                    )
+                    self.deficiencies.append(deficiency)
+
+                self._log_event(
+                    "sqlite_deficiencies_extracted",
+                    {"count": len(sqlite_defs)},
+                )
+        except Exception as e:
+            self._log_event(
+                "sqlite_extraction_failed",
+                {"error": str(e)},
+            )
 
     def _infer_layer_from_path(self, path: str) -> str | None:
         """Infer layer from file path.

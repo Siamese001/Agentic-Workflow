@@ -240,7 +240,7 @@ class StructuralHealingMixin:
                                 "complexity": structure["complexity_score"],
                             }
                         )
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     results["errors"] += 1
                     results["details"].append(

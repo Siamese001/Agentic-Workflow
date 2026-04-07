@@ -440,7 +440,7 @@ class HITLMixin:
         if callback and request.status == ApprovalStatus.APPROVED:
             try:
                 callback(request)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")
 

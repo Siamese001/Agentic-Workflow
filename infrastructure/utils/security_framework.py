@@ -608,7 +608,7 @@ class SecurityGateway:
                 await self.audit_logger.cleanup_old_logs()
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error in periodic cleanup: {e}")
 
     async def authenticate_request(self, request: QueryRequest, security_context: SecurityContext) -> bool:

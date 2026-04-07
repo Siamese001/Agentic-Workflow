@@ -276,7 +276,7 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
                 result["output"] = self._do_execute(task)
                 result["status"] = "success"
                 break
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 result["retries"] = attempt + 1
                 result["error"] = str(e)

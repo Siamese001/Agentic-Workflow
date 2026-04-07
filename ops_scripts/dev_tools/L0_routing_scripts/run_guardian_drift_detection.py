@@ -360,7 +360,7 @@ def run_drift_detection_guardian(
         result.metrics["drift_detected"] = drift_detected
 
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(

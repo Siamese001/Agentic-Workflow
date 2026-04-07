@@ -187,7 +187,7 @@ def main():
             try:
                 shutil.move(str(actual_test), str(expected_test_path))
                 print("Successfully moved mislocated test")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 print(f"Failed to move {actual_test}: {e}")
 

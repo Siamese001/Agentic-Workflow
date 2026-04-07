@@ -434,7 +434,7 @@ def run_classification_compliance_guardian(
                 evidence={"violation_count": 0, "violations": []},
             )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(
@@ -466,7 +466,7 @@ def run_classification_compliance_guardian(
                 evidence={"violation_count": 0, "violations": []},
             )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(

@@ -315,7 +315,7 @@ class ResumeOrchestratorEngine(BaseRGEngine):
                 "final_quality_score": final_quality.get("score", 0),
                 "ats_valid": final_ats.get("valid", False),
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.ctx.trace.add_trace("ORCHESTRATOR_ERROR", {"error": str(e)})
             self.logger.error(f"Orchestration failed: {e}")
             raise

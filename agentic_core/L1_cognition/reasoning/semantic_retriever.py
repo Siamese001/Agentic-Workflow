@@ -162,7 +162,7 @@ class SemanticRetriever:
 
             return results
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to query collection {collection}: {e}")
             raise
 

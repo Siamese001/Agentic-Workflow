@@ -217,7 +217,7 @@ class PhaseLockStore:
                 phase = int(phase_str)
                 self._locks[phase] = PhaseLockRecord(**lock_data)
             Logger.info(f"Loaded {len(self._locks)} phase locks from storage")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to load phase locks: {e}")
             self._locks = {}
@@ -232,7 +232,7 @@ class PhaseLockStore:
             with open(self.storage_file, "w") as f:
                 json.dump(data, f, indent=2)
             Logger.debug(f"Saved {len(self._locks)} phase locks to storage")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to save phase locks: {e}")
 

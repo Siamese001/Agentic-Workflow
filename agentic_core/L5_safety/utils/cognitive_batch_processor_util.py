@@ -250,7 +250,7 @@ class CognitiveBatchProcessor:
             _wg.write_text(self.checkpoint_file, json.dumps(self.results, indent=2), encoding="utf-8")
             Logger.debug(f"[BATCH] Checkpoint saved: {len(self.results)} items")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"[BATCH] Failed to save checkpoint: {e}")
 
@@ -361,7 +361,7 @@ class CognitiveBatchProcessor:
                 )
                 return True
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.warning(f"    Attempt {attempt}/{self.max_retries} failed: {e}")
                 if attempt < self.max_retries:

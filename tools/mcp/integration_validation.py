@@ -992,7 +992,7 @@ print(f'Total: {total}')
                 import shutil
                 shutil.rmtree(self.temp_workspace)
                 logger.info(f"Cleaned up temporary workspace: {self.temp_workspace}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.warning(f"Failed to cleanup workspace: {e}")
 
 async def main():

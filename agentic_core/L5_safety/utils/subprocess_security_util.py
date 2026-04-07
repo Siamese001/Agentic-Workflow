@@ -330,7 +330,7 @@ def safe_execute(
     except subprocess.TimeoutExpired:
         Logger.error(f"[Security] Command timeout after {timeout}s: {cmd_str}")
         raise
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         Logger.error(f"[Security] Unexpected error executing command: {cmd_str}\nError: {e}")
         raise
 
@@ -388,7 +388,7 @@ def safe_popen(
         proc = subprocess.Popen(args, cwd=cwd, stdout=stdout, stderr=stderr, text=text, env=env, shell=False)
         Logger.info(f"[Security] Popen process started: PID {proc.pid}")
         return proc
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         Logger.error(f"[Security] Failed to start Popen process: {cmd_str}\nError: {e}")
         raise
 

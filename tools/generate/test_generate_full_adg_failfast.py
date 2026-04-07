@@ -229,8 +229,8 @@ class TestArtifactConsistencyCheck:
 class TestP1DefectsCheck:
     """Tests for _check_p1_defects function."""
 
-    def test_p1_defects_fail_in_strict_mode(self):
-        """Test that P1 defects cause failure in strict mode."""
+    def test_p1_defects_fail_unconditionally(self):
+        """Test that P1 defects fail unconditionally."""
         from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {
@@ -242,12 +242,13 @@ class TestP1DefectsCheck:
             },
         }
 
+        # Should fail (no strict_mode param)
         with pytest.raises(SystemExit) as exc_info:
-            _check_p1_defects(routing_summary, strict_mode=True)
+            _check_p1_defects(routing_summary)
         assert exc_info.value.code == 1
 
-    def test_no_p1_defects_pass_in_strict_mode(self):
-        """Test that no P1 defects pass in strict mode."""
+    def test_no_p1_defects_pass(self):
+        """Test that no P1 defects pass."""
         from tools.generate.generate_full_adg import _check_p1_defects
 
         routing_summary = {
@@ -259,31 +260,9 @@ class TestP1DefectsCheck:
             },
         }
 
-        # Should not raise
-        _check_p1_defects(routing_summary, strict_mode=True)
+        # Should not raise (no strict_mode param)
+        _check_p1_defects(routing_summary)
 
-    def test_p1_defects_fail_unconditionally(self):
-        """Test that P1 defects fail regardless of strict_mode (unconditional fail-fast)."""
-        from tools.generate.generate_full_adg import _check_p1_defects
-
-        routing_summary = {
-            "by_severity": {
-                "critical": 5,  # P1 defects present
-                "high": 0,
-                "medium": 0,
-                "low": 0,
-            },
-        }
-
-        # Should fail even when strict_mode=False
-        with pytest.raises(SystemExit) as exc_info:
-            _check_p1_defects(routing_summary, strict_mode=False)
-        assert exc_info.value.code == 1
-
-        # Should also fail when strict_mode=True
-        with pytest.raises(SystemExit) as exc_info:
-            _check_p1_defects(routing_summary, strict_mode=True)
-        assert exc_info.value.code == 1
 
     def test_in_cycle_blocks_generation(self, tmp_path):
         """Test that in_cycle edges block ADG generation (Tier 1A)."""
@@ -323,46 +302,27 @@ class TestP1DefectsCheck:
             _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
         assert exc_info.value.code == 1
 
-    def test_exempt_files_excludes_from_p1_check(self, tmp_path):
-        """Test that exempt_files parameter excludes specific files from P1 layer violation checks."""
+
+    def test_any_violation_blocks(self, tmp_path):
+        """Test that any layer violation blocks ADG generation (no exemption bypass)."""
         from tools.generate.generate_full_adg import _check_p1_defects
         import sqlite3
 
         routing_summary = {"by_severity": {"critical": 0}}
         sqlite_path = tmp_path / "test.sqlite"
 
-        # Create SQLite with violates edge in exempted file
+        # Create SQLite with violates edge in any file
         conn = sqlite3.connect(str(sqlite_path))
         conn.execute("CREATE TABLE edges (relation_type TEXT, source_file TEXT)")
         conn.execute(
-            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py')"
+            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'some/file.py')"
         )
         conn.commit()
         conn.close()
 
-        # Should pass because file is exempted
-        _check_p1_defects(routing_summary, sqlite_path=sqlite_path, exempt_files=["ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py"])
-
-    def test_exempt_files_non_existent_violation_still_blocks(self, tmp_path):
-        """Test that exempt_files only exempts specified files, other violations still block."""
-        from tools.generate.generate_full_adg import _check_p1_defects
-        import sqlite3
-
-        routing_summary = {"by_severity": {"critical": 0}}
-        sqlite_path = tmp_path / "test.sqlite"
-
-        # Create SQLite with violates edge in non-exempted file
-        conn = sqlite3.connect(str(sqlite_path))
-        conn.execute("CREATE TABLE edges (relation_type TEXT, source_file TEXT)")
-        conn.execute(
-            "INSERT INTO edges (relation_type, source_file) VALUES ('violates', 'other/file.py')"
-        )
-        conn.commit()
-        conn.close()
-
-        # Should fail because violation is in non-exempted file
+        # Should fail because violation is present (no exemption bypass)
         with pytest.raises(SystemExit) as exc_info:
-            _check_p1_defects(routing_summary, sqlite_path=sqlite_path, exempt_files=["ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py"])
+            _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
         assert exc_info.value.code == 1
 
     def test_no_graph_corruption_passes(self, tmp_path):
@@ -384,54 +344,37 @@ class TestP1DefectsCheck:
         _check_p1_defects(routing_summary, sqlite_path=sqlite_path)
 
 
-class TestP2PipelineIntegrityCheck:
-    """Tests for Tier 2 P2 pipeline integrity gate (warning-only mode)."""
+class TestP2AntipatternsCheck:
+    """Tests for P2 HIGH antipatterns hard-fail gate."""
 
-    def test_exception_swallow_in_pipeline_warns(self, tmp_path, capsys):
-        """Test that exception swallows in ADG pipeline paths warn (not block)."""
-        from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
+    def test_exception_swallow_hard_fails(self, tmp_path, capsys):
+        """Test that HIGH antipatterns hard-fail ADG generation."""
+        from tools.generate.generate_full_adg import _check_p2_antipatterns
         import sqlite3
 
         sqlite_path = tmp_path / "test.sqlite"
 
-        # Create SQLite with exception swallow in pipeline path
+        # Create SQLite with exception swallow in any path
         conn = sqlite3.connect(str(sqlite_path))
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
         conn.execute(
-            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'tools/adg/server.py')"
+            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'some/file.py')"
         )
         conn.commit()
         conn.close()
 
-        # Should not raise (warning-only mode)
-        _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
+        # Should hard-fail (not warn)
+        with pytest.raises(SystemExit) as exc_info:
+            _check_p2_antipatterns(sqlite_path=sqlite_path)
+        assert exc_info.value.code == 1
 
         out = capsys.readouterr().out
-        assert "[WARNING] P2 Tier 2" in out
-        assert "Exception swallows in ADG pipeline detected" in out
+        assert "[ERROR] P2 HIGH antipatterns detected" in out
+        assert "ADG generation failed" in out
 
-    def test_exception_swallow_outside_pipeline_passes(self, tmp_path):
-        """Test that exception swallows outside pipeline paths do not block."""
-        from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
-        import sqlite3
-
-        sqlite_path = tmp_path / "test.sqlite"
-
-        # Create SQLite with exception swallow outside pipeline path
-        conn = sqlite3.connect(str(sqlite_path))
-        conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
-        conn.execute(
-            "INSERT INTO edges (edge_kind, source_file) VALUES ('broad_exception_catch', 'apps_eval/engine.py')"
-        )
-        conn.commit()
-        conn.close()
-
-        # Should not raise
-        _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
-
-    def test_no_exception_swallows_passes(self, tmp_path):
-        """Test that clean pipeline (no exception swallows) passes P2 checks."""
-        from tools.generate.generate_full_adg import _check_p2_pipeline_integrity
+    def test_no_antipatterns_passes(self, tmp_path):
+        """Test that clean codebase (no HIGH antipatterns) passes P2 checks."""
+        from tools.generate.generate_full_adg import _check_p2_antipatterns
         import sqlite3
 
         sqlite_path = tmp_path / "test.sqlite"
@@ -439,12 +382,12 @@ class TestP2PipelineIntegrityCheck:
         # Create SQLite without exception swallows
         conn = sqlite3.connect(str(sqlite_path))
         conn.execute("CREATE TABLE edges (edge_kind TEXT, source_file TEXT)")
-        conn.execute("INSERT INTO edges (edge_kind, source_file) VALUES ('imports', 'tools/adg/server.py')")
+        conn.execute("INSERT INTO edges (edge_kind, source_file) VALUES ('imports', 'some/file.py')")
         conn.commit()
         conn.close()
 
         # Should not raise
-        _check_p2_pipeline_integrity(sqlite_path=sqlite_path)
+        _check_p2_antipatterns(sqlite_path=sqlite_path)
 
 
 class TestP3RatchetCheck:
@@ -635,67 +578,6 @@ class TestRepoStateChangeCheck:
         # When hashes match, it indicates no change
         assert start_hash == end_hash
         assert start_hash == end_hash, "Matching hashes should be detected as unchanged"
-
-
-class TestClosureValidationStrictMode:
-    """Tests for closure validation in strict mode."""
-
-    def test_non_allowed_gap_fails_in_strict_mode(self, tmp_path, capsys):
-        """Test that non-allowed closure gaps fail in strict mode."""
-        # This would be tested by checking the closure validation logic
-        # The actual implementation is in generate_full_adg function
-        # Here we verify the logic conceptually
-
-        failed_caps = ["LAYER_BOUNDARY", "IMPORT_HYGIENE"]  # Not in allowlist
-        strict_mode = True
-
-        # These should fail in strict mode
-        assert strict_mode is True
-        assert "EDGE SEMANTIC PRECISION" not in failed_caps
-        assert "DETERMINISM (ARTIFACT LEVEL)" not in failed_caps
-
-    def test_allowed_gap_passes_in_strict_mode(self):
-        """Test that allowed closure gaps pass even in strict mode."""
-        failed_caps = ["EDGE SEMANTIC PRECISION"]  # In allowlist
-        strict_mode = True
-
-        # These should be allowed even in strict mode
-        assert strict_mode is True
-        assert failed_caps == ["EDGE SEMANTIC PRECISION"]
-
-    def test_multiple_allowed_gaps_pass(self):
-        """Test that multiple allowed gaps pass in strict mode."""
-        failed_caps = ["EDGE SEMANTIC PRECISION", "DETERMINISM (ARTIFACT LEVEL)"]
-        strict_mode = True
-
-        # These should be allowed even in strict mode
-        assert strict_mode is True
-        assert set(failed_caps) == {"EDGE SEMANTIC PRECISION", "DETERMINISM (ARTIFACT LEVEL)"}
-
-
-class TestIntegrationFailFast:
-    """Integration tests for fail-fast behavior."""
-
-    def test_strict_mode_cli_argument(self):
-        """Test that --strict CLI argument is properly parsed."""
-        import argparse
-
-        # Simulate CLI parsing
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--strict", action="store_true")
-        args = parser.parse_args(["--strict"])
-
-        assert args.strict is True
-
-    def test_non_strict_mode_default(self):
-        """Test that strict mode defaults to False."""
-        import argparse
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--strict", action="store_true")
-        args = parser.parse_args([])
-
-        assert args.strict is False
 
 
 if __name__ == "__main__":

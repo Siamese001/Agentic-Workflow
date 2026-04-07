@@ -333,7 +333,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             try:
                 self.ts_parser = Parser()
                 self.ts_parser.language = language()
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 self.ts_parser = None
 
@@ -390,7 +390,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                 file_size = len(content)
                 file_hashes[file_hash].append((file_path, file_size))
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.warning(f"Failed to read {file_path}: {e}")
                 continue
@@ -422,7 +422,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         rel_path = file_path
                     code_blocks[block_hash].append((str(rel_path), i + 1))
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.warning(f"Failed to scan {file_path}: {e}")
                 continue

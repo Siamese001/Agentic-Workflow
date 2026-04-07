@@ -190,7 +190,7 @@ class DEvidenceCollector:
             }
         # Runtime test failures are expected and should be reported as failed tests
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             return {"passed": False, "details": f"Runtime test failed: {e}"}
 

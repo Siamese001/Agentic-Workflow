@@ -498,7 +498,7 @@ class HardenedGeminiExecutor:
             if not hasattr(self._client, "interactions"):
                 raise ImportError("google-genai v1beta not available")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to initialize hardened Gemini client: {e}")
             raise
 
@@ -683,7 +683,7 @@ class HardenedGeminiExecutor:
             result = await _execute()
             self._circuit_breaker.record_success()
             return result
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self._circuit_breaker.record_failure()
             raise
 
@@ -788,7 +788,7 @@ class HardenedGeminiExecutor:
 
             return content
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Log error telemetry
@@ -882,7 +882,7 @@ class HardenedGeminiExecutor:
             response = _call()
             self._circuit_breaker.record_success()
             return response
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self._circuit_breaker.record_failure()
             raise
 

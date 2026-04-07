@@ -469,7 +469,7 @@ class ProvenanceTracker:
             async with asyncio.to_thread(self._append_lineage, lineage_json):
                 pass
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to store lineage: {e}")
             raise
 
@@ -575,7 +575,7 @@ class ProvenanceTracker:
                 logger.info(f"Cleaned up {cleaned} old lineage records")
             return cleaned
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Failed to cleanup lineage: {e}")
             return 0
 

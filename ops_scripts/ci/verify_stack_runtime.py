@@ -222,7 +222,7 @@ def verify_f1_f5_qwen_gpu_mem_util() -> tuple[bool, str]:
             return False, "qwen_vllm_inference.py does not import QWEN_GPU_MEM_UTIL"
 
         return True, "QWEN_GPU_MEM_UTIL SSOT verified"
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, f"F1+F5 verification failed: {exc}"
 
@@ -255,7 +255,7 @@ def verify_f2_embedding_gpu_path() -> tuple[bool, str]:
             return False, "_build_gpu_index is not callable"
 
         return True, f"EmbeddingServiceFactory GPU path verified (device={device}, faiss-gpu={result})"
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, f"F2 verification failed: {exc}"
 
@@ -283,7 +283,7 @@ def verify_f3_faiss_boot_sweep() -> tuple[bool, str]:
                 return False, f"verify_indexes_at_boot returned {type(result)}, expected dict"
 
         return True, "LocalFAISSStore.verify_indexes_at_boot verified"
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, f"F3 verification failed: {exc}"
 
@@ -317,7 +317,7 @@ def verify_f4_redis_health_check() -> tuple[bool, str]:
 
         status = "healthy" if result["healthy"] else "unhealthy (fallback active)"
         return True, f"Redis health check verified: {status}"
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, f"F4 verification failed: {exc}"
 

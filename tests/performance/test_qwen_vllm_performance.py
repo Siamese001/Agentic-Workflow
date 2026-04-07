@@ -465,7 +465,7 @@ async def main():
         print("FULL JSON REPORT")
         print("=" * 60)
         print(report)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         logger.error(f"Test suite failed: {e}", exc_info=True)
         raise
 

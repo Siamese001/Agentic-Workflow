@@ -251,7 +251,7 @@ class RedisCacheMixin:
                 self._redis_client = get_hot_cache()
                 log.info(f"[{self.__class__.__name__}] Connected to Hardened Redis Gateway")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 if not GRACEFUL_DEGRADATION:
                     raise
                 log.warning(f"Redis client init failed ({e}) - using local cache fallback")

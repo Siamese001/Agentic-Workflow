@@ -141,7 +141,7 @@ class GovernedPromptAdapter:
                 "governed": True,
             }
 
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Governed prompt execution failed: {exc}")
             raise
 

@@ -97,7 +97,7 @@ repos:
 
       - id: windsurf-plan-ci
         name: "T0-ci: Windsurf Plan CI"
-        entry: python ops_scripts/hooks/windsurf_plan_ci.py
+        entry: py ops_scripts/hooks/windsurf_plan_ci.py
         language: system
         pass_filenames: false
         always_run: true
@@ -105,7 +105,7 @@ repos:
 
       - id: guard-no-verify
         name: "T0-guard: No-Verify Bypass Authorization"
-        entry: python ops_scripts/ci/guard_no_verify.py
+        entry: py ops_scripts/ci/guard_no_verify.py
         language: system
         pass_filenames: false
         always_run: true
@@ -114,7 +114,7 @@ repos:
 
       - id: guard-guardian-hitl
         name: "T0-guard: HITL Authorization for New Guardian Exemptions (§8.5.2)"
-        entry: python ops_scripts/ci/guard_guardian_hitl.py
+        entry: py ops_scripts/ci/guard_guardian_hitl.py
         language: system
         pass_filenames: true
         always_run: true
@@ -123,7 +123,7 @@ repos:
 
       - id: guard-agent-deletion
         name: "T0-guard: Agent Deletion Authorization"
-        entry: python ops_scripts/ci/guard_agent_deletion.py
+        entry: py ops_scripts/ci/guard_agent_deletion.py
         language: system
         pass_filenames: false
         always_run: true
@@ -155,7 +155,7 @@ repos:
     hooks:
       - id: python-syntax-check
         name: "T1: Python Syntax Validation"
-        entry: python -m py_compile
+        entry: py -m py_compile
         language: system
         types: [python]
         require_serial: true
@@ -231,7 +231,7 @@ repos:
       # No Redis dependency — runs on raw source. Always exit 0 (auto-fixer).
       - id: guardian-comment-fixer
         name: "T4: Guardian Comment Auto-Fix (Accelerator #1)"
-        entry: python tools/adg/adg_antipattern_fixer.py --staged
+        entry: py tools/adg/adg_antipattern_fixer.py --staged
         language: system
         pass_filenames: false
         always_run: true
@@ -247,7 +247,7 @@ repos:
       # Clears temp issue collection before governance hooks run.
       - id: pre-commit-summary-init
         name: "T-1: Pre-Commit Summary Initialization"
-        entry: python ops_scripts/ci/pre_commit_summary_reporter.py --init
+        entry: py ops_scripts/ci/pre_commit_summary_reporter.py --init
         language: system
         pass_filenames: false
         always_run: true
@@ -258,7 +258,7 @@ repos:
       # flip to enforce via: python ops_scripts/ci/_adg_ci_gates.py --set-enforce M1,M2,M3
       - id: adg-ci-gates
         name: "T5: ADG CI Delta Gates (Wave 0 M1-M6)"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/_adg_ci_gates.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/_adg_ci_gates.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -274,7 +274,7 @@ repos:
       # AST parse with --changed-only: cheap. Must run before burndown.
       - id: hollow-file-gate
         name: "T6: Hollow File Gate — AST Semantic Verification"
-        entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& python ops_scripts/ci/hollow_file_gate.py --changed-only --json-output %TEMP%/pre-commit-issues/hollow_file_gate.jsonl"
+        entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& py ops_scripts/ci/hollow_file_gate.py --changed-only --json-output %TEMP%/pre-commit-issues/hollow_file_gate.jsonl"
         language: system
         pass_filenames: false
         always_run: true
@@ -283,7 +283,7 @@ repos:
       # -- T7: Report location SSOT (staged-only, structural) -------------------
       - id: check-report-location
         name: "T7: Report Location SSOT Check"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/validate_report_location.py --staged-only"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/hooks/validate_report_location.py --staged-only"
         language: system
         pass_filenames: false
         always_run: true
@@ -293,7 +293,7 @@ repos:
       # Blocks commits if plans exist in .windsurf/plans/ instead of docs/reports/plans/
       - id: plan-location-gate
         name: "T7.5: Plan Location SSOT Gate"
-        entry: python ops_scripts/ci/plan_location_gate.py
+        entry: py ops_scripts/ci/plan_location_gate.py
         language: system
         pass_filenames: false
         always_run: true
@@ -306,7 +306,7 @@ repos:
       # 3) Duplicate content check (within categories only, excludes common template headers)
       - id: windsurf-governance-health
         name: "T7.7-P1: Windsurf Governance Health Check"
-        entry: python ops_scripts/ci/check_windsurf_governance.py
+        entry: py ops_scripts/ci/check_windsurf_governance.py
         language: system
         pass_filenames: false
         always_run: true
@@ -319,7 +319,7 @@ repos:
       # On failure: prints tracked paths + exact `git rm --cached` fix.
       - id: reject-generated-artifacts-tracked
         name: "T8: Reject Tracked Generated Artifacts"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/reject_tracked_generated_artifacts.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/hooks/reject_tracked_generated_artifacts.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -330,7 +330,7 @@ repos:
       # Tooling must remain pure — apps_* only referenced as strings/paths.
       - id: check-tooling-apps-boundary
         name: "T9: Tooling/Apps Boundary Guard (§8.3)"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_tooling_apps_boundary.py --staged-only"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_tooling_apps_boundary.py --staged-only"
         language: system
         pass_filenames: false
         always_run: false
@@ -342,7 +342,7 @@ repos:
       # Blocks commits that violate architectural module integrity
       - id: module-collision-guard
         name: "T10: Module Collision Guard"
-        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
+        entry: cmd /c "set PYTHONPATH=.&& py agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -373,7 +373,7 @@ repos:
       # No duplication: generate_full_adg.py handles P1/layer/burndown, this gate handles source-code checks
       - id: adg-unified-gate
         name: "T10.6: ADG Unified Gate — ADG generation + source-code checks"
-        entry: python ops_scripts/hooks/adg_unified_gate.py
+        entry: py ops_scripts/hooks/adg_unified_gate.py
         language: system
         pass_filenames: false
         always_run: true
@@ -386,7 +386,7 @@ repos:
       # paths in any server args or cwd.
       - id: mcp-config-sovereignty
         name: "T11: MCP Config Sovereignty — filesystem allowedDirectories locked to repo root (Rule #0)"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_mcp_config_sovereignty.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_mcp_config_sovereignty.py"
         language: system
         pass_filenames: false
         files: ^mcp_config\.json$
@@ -409,7 +409,7 @@ repos:
       # Blocks commits with config drift that would cause Windsurf IDE vs CI behavior mismatch.
       - id: pytest-config-ssot
         name: "T11.3: Pytest Config SSOT — pytest.ini vs pyproject.toml consistency"
-        entry: python ops_scripts/ci/_validate_pytest_config.py --strict
+        entry: py ops_scripts/ci/_validate_pytest_config.py --strict
         language: system
         pass_filenames: false
         files: ^(pytest\.ini|pyproject\.toml)$
@@ -428,7 +428,7 @@ repos:
       # Init:  ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py
       - id: guardian-exemption-gate
         name: "T12: Guardian Exemption Quality Ratchet"
-        entry: cmd /c "set PYTHONPATH=.&& set ADG_EXEMPTION_JSON_OUTPUT=%TEMP%/pre-commit-issues/guardian_exemption_gate.jsonl&& python ops_scripts/ci/guardian_exemption_gate.py"
+        entry: cmd /c "set PYTHONPATH=.&& set ADG_EXEMPTION_JSON_OUTPUT=%TEMP%/pre-commit-issues/guardian_exemption_gate.jsonl&& py ops_scripts/ci/guardian_exemption_gate.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -521,7 +521,7 @@ repos:
       # -- C0 Sovereignty Guardian (embedding must not drive routing) ----------
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty — Embedding Boundary Enforcement"
-        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
+        entry: cmd /c "set PYTHONPATH=.&& py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -531,7 +531,7 @@ repos:
       # -- Dedup Guard (prevent duplicate symbols) ----------------------------
       - id: check-dedup-violations
         name: "CI: Dedup Guard — Prevent Duplicate Symbols"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_dedup_violations.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_dedup_violations.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -541,7 +541,7 @@ repos:
       # -- Script Sprawl Guard (block new runner scripts) --------------------
       - id: check-script-sprawl
         name: "CI: Script Sprawl Guard — Block New Runners"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_script_sprawl.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_script_sprawl.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -551,7 +551,7 @@ repos:
       # -- Shim Discipline (backward-compatibility enforcement) --------------
       - id: check-shim-discipline
         name: "CI: Shim Discipline — Backward-Compatibility"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_shim_discipline.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_shim_discipline.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -561,7 +561,7 @@ repos:
       # -- Rollback Gate (multi-file phase checkpoints) ----------------------
       - id: check-rollback-checkpoints
         name: "CI: Rollback Gate — Phase Checkpoints"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_rollback_checkpoints.py"
+        entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_rollback_checkpoints.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -589,6 +589,6 @@ repos:
       # Runs after all hooks to ensure complete issue collection.
       - id: pre-commit-summary-report
         name: "T21: Pre-Commit Governance Summary Report"
-        entry: python ops_scripts/ci/pre_commit_summary_reporter.py --report
+        entry: py ops_scripts/ci/pre_commit_summary_reporter.py --report
         language: system
         pass_filenames: false

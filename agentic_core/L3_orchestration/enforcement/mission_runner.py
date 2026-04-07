@@ -257,7 +257,7 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
             agent_id="mission_runner",
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         Logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
 

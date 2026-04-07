@@ -240,7 +240,7 @@ async def main():
             Logger.error("❌ HOP-5 ATS FAILED")
         summary = ctx.trace.get_summary()
         Logger.info(f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         Logger.critical(f"❌ SYSTEM CRASH: {e}", exc_info=True)
         sys.exit(1)

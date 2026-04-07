@@ -240,7 +240,7 @@ class VectorDBIngestor:
         try:
             self.collection = self.client.get_or_create_collection(name=collection_name)
             Logger.info(f"Initialized ChromaDB collection: {collection_name}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"Failed to initialize ChromaDB collection '{collection_name}': {e}")
             raise
 

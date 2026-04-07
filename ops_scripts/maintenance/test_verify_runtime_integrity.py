@@ -195,7 +195,7 @@ def test_instantiation():
         assert hasattr(agent, "llm_generate"), "Missing LLM capability"
         assert hasattr(agent, "cache_get"), "Missing Redis capability"
         print("   ✅ SovereignBaseAgent OK")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         failures.append(f"SovereignBaseAgent: {e}")
         traceback.print_exc()
@@ -211,7 +211,7 @@ def test_instantiation():
         assert len(tools) > 0, "No tools registered"
         assert isinstance(tools[0], dict), "Tools must be pure dicts (Architecture requirement)"
         print("   ✅ tool_registry OK (Pure Dicts confirmed)")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         failures.append(f"tool_registry: {e}")
         traceback.print_exc()
@@ -250,7 +250,7 @@ def test_instantiation():
             failures.append(f"IMPORT ERROR {class_name}: {e} (Likely circular dependency)")
         except AttributeError as e:
             failures.append(f"CLASS NOT FOUND {class_name}: {e}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             failures.append(f"RUNTIME ERROR {class_name}: {e}")
 

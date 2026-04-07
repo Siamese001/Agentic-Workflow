@@ -227,7 +227,7 @@ class MigrationMixin:
                     hook_result = hook(data, current_v)
                     if inspect.isawaitable(hook_result):
                         await hook_result
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 self._mm_logger.error(f"Rollback triggered at {old_v}: {e}")
                 data = pre_step_snapshot

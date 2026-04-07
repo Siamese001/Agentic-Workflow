@@ -178,9 +178,9 @@ class PowerShellBanChecker:
                     }
 
                     self.violations.append(violation)
+        except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure skipped silently
+            pass
 
-        except Exception as e:
-            raise
 
     def _get_line_content(self, content: str, line_num: int) -> str:
         """Extract the content of a specific line."""

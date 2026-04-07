@@ -372,7 +372,7 @@ def create_test_for_module(module_info: dict) -> bool:
         test_path.write_text(test_content, encoding="utf-8")
         print(f"Created: {test_path}")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"Failed to create {test_path}: {e}")
         return False
@@ -468,7 +468,7 @@ def validate_minimum_behavioral_bar():
                 violations.append(f"{test_file}: Insufficient assertions ({assertion_count} < 2)")
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             violations.append(f"{test_file}: Error reading file - {e}")
 

@@ -284,7 +284,7 @@ def run_hardened_query(
             progress.update(task_id, description="[bold red]TIMEOUT[/bold red]")
             _console.print(f"\n[bold red]Alert:[/bold red] Query timed out after {timeout_seconds}s.")
             raise TimeoutError(f"Database operation timed out after {timeout_seconds}s.")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             progress.update(task_id, description="[bold red]FAILED[/bold red]")
             _console.print(f"\n[bold red]Driver Error:[/bold red] {str(e)}")
             raise

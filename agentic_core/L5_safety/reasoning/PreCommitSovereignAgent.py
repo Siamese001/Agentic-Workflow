@@ -245,7 +245,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
                         len(validation_result) if isinstance(validation_result, list) else 1
                     )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"Error in validate_staged_files: {e}")
                 metrics["errors"] += 1

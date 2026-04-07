@@ -399,7 +399,7 @@ class AMD9950X3DOptimizer:
 
                 try:
                     yield future.result()
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     logger.error(f"Parallel task failed: {e}")
                     raise
         finally:

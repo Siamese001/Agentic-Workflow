@@ -61,7 +61,7 @@ class MCPRobustTester:
             try:
                 shutil.rmtree(self.temp_dir)
                 print(f"Test environment cleaned up: {self.temp_dir}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 print(f"Warning: Could not cleanup test directory: {e}")
 
     def test_filesystem_mcp_basic_operations(self):

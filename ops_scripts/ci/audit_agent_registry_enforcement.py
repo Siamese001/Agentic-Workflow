@@ -294,7 +294,7 @@ def scan_file(file_path: Path) -> list[AgentUsageViolation]:
                 f"Unable to parse file: {e}",
             )
         )
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         violations.append(
             AgentUsageViolation(

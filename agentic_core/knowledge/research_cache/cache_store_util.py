@@ -220,7 +220,7 @@ class ResearchCache:
                         except json.JSONDecodeError:
                             continue
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to load cache index: {e}")
 

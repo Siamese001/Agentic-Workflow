@@ -219,7 +219,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             self.redis = get_redis_client()
             Logger.info("[L4 REDIS] Sovereign MCP cache armed.")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
             self.redis = None
@@ -267,7 +267,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
                     Logger.info(f"[L4 HIT] Redis MCP recall for {Path(file_path).name}")
                     return
             # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 pass
         ast_features: Any = self._extract_ast_features(code)
@@ -295,7 +295,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             }
             Logger.info(f"[L4 STORE] Dual-sync complete for {Path(file_path).name}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"[L4 CACHE FAILURE] Could not cache {file_path}: {e}")
 

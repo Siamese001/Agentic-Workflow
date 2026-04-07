@@ -339,8 +339,9 @@ class HybridSearchEngine:
                     Logger.info(f"ADG SQLite connection established: {self.adg_db_path}")
                 else:
                     Logger.warning(f"ADG database not found: {self.adg_db_path}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 Logger.error(f"Failed to connect to ADG database: {e}")
+                raise  # Re-raise to surface connection errors
         return self._adg_conn
 
     def close_adg_connection(self) -> None:
@@ -779,6 +780,9 @@ class HybridSearchEngine:
         Returns:
             Filtered results within token budget
         """
+        if avg_tokens_per_chunk <= 0:
+            raise ValueError(f"avg_tokens_per_chunk must be positive, got {avg_tokens_per_chunk}")
+
         max_chunks = max_tokens // avg_tokens_per_chunk
 
         if len(results) <= max_chunks:

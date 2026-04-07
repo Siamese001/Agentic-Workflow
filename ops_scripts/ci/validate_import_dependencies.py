@@ -400,7 +400,7 @@ class ImportDependencyValidator:
                 return self._validate_import_statement(import_info, file_path)
             elif import_info["type"] == "import_from":
                 return self._validate_import_from(import_info, file_path)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             return (
                 f"Line {import_info['line']}: Error validating import '{import_info.get('module', '')}': {e}"

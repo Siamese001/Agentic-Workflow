@@ -134,7 +134,7 @@ class LifecycleMixin(ABC):
                 self._lifecycle_state = LifecycleState.READY
                 self._startup_time = time.time()
                 Logger.info(f"[{self.__class__.__name__}] Started successfully")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 self._lifecycle_state = LifecycleState.FAILED
                 self._lifecycle_error = e
                 Logger.error(f"[{self.__class__.__name__}] Startup failed: {e}")
@@ -175,7 +175,7 @@ class LifecycleMixin(ABC):
                 self._lifecycle_state = LifecycleState.STOPPED
                 self._shutdown_time = time.time()
                 Logger.info(f"[{self.__class__.__name__}] Stopped successfully")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 self._lifecycle_state = LifecycleState.FAILED
                 self._lifecycle_error = e
                 Logger.error(f"[{self.__class__.__name__}] Shutdown failed: {e}")

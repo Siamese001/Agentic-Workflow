@@ -580,7 +580,7 @@ class HumanReviewQueue:
             try:
                 callback(request_id, action)
             # guardian: allow-silent-swallow -- review queue persistence is best-effort; logged
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 Logger.error(f"[REVIEW_QUEUE] Callback error: {e}")
@@ -618,7 +618,7 @@ class HumanReviewQueue:
             _log_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
             emitter.flush_to_artifacts_dir(_log_dir)
         # guardian: allow-silent-swallow -- review queue persistence is best-effort; logged
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             Logger.error(

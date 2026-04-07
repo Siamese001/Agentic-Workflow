@@ -748,7 +748,7 @@ class FallbackClient:
             self._record_usage(client, prompt, result)
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.warning(f"Primary model failed: {e}")
             fallback_tier = self._get_fallback_tier(self.primary_config.tier)
             if fallback_tier:
@@ -761,7 +761,7 @@ class FallbackClient:
                     logger.info(f"Fallback to {fallback_config.model_name} succeeded")
                     return result
                 # guardian: allow-silent-swallow
-                except Exception as fallback_error:
+                except Exception as fallback_error:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     logger.error(f"[FallbackClient] All providers failed: {fallback_error}")
                     raise
             raise RuntimeError(f"All model attempts failed. Last error: {e}")

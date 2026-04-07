@@ -621,7 +621,7 @@ def telemetry_traced(
 
                 return result
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # End operation with error
                 emitter.end_operation(
                     context,

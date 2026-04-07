@@ -196,7 +196,7 @@ class L5Streamer:
                     self.stream_queue.task_done()
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 LOGGER.error(f"Streamer error writing to stream: {e}")
 
@@ -218,7 +218,7 @@ class L5Streamer:
                     )
                 )
                 await websocket.wait_closed()
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 LOGGER.error(f"WebSocket client error: {e}")
             finally:
@@ -231,7 +231,7 @@ class L5Streamer:
                 async with websockets.serve(handle_client, "127.0.0.1", 8765):
                     LOGGER.info("🌐 WebSocket server started at ws://127.0.0.1:8765")
                     await asyncio.Future()
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 LOGGER.error(f"WebSocket server error: {e}")
 

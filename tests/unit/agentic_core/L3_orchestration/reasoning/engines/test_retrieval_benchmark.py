@@ -119,3 +119,14 @@ def test_quality_benchmark_empty_queries():
     assert metrics.precision_at_k == 0.0
     assert metrics.recall_at_k == 0.0
     assert metrics.mean_reciprocal_rank == 0.0
+
+
+def test_performance_benchmark_empty_queries():
+    """Test performance benchmark with empty query list."""
+    engine = HybridSearchEngine()
+    benchmark = RetrievalBenchmark(engine)
+
+    metrics = benchmark.run_performance_benchmark([])
+
+    assert metrics.query_count == 0
+    assert metrics.avg_latency_ms == 0.0

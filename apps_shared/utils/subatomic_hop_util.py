@@ -495,7 +495,7 @@ class SubatomicHop:
             return final_checkpoint.partial_result or {}
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.state = HopState.FAILED
             self.end_time = time.time()
             logger.error(f"Hop {self.config.hop_id} failed: {e}")
@@ -1091,7 +1091,7 @@ class SubatomicHop:
             try:
                 checkpoint_file.unlink()
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.warning(f"Failed to cleanup {checkpoint_file}: {e}")
 
         logger.debug(f"Cleaned up hop {self.config.hop_id}")

@@ -279,7 +279,7 @@ class RandomForestModel(BaseMLModel):
             self.is_trained = True
             return metrics
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"[ML_PIPELINE] Random Forest training failed: {e}")
             raise
 
@@ -384,7 +384,7 @@ class XGBoostModel(BaseMLModel):
             Logger.warning("[ML_PIPELINE] XGBoost not available, using fallback")
             # Fallback to Random Forest
             return RandomForestModel(self.config).train(X_train, y_train, X_val, y_val)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"[ML_PIPELINE] XGBoost training failed: {e}")
             raise
 
@@ -488,7 +488,7 @@ class NeuralNetworkModel(BaseMLModel):
             self.is_trained = True
             return metrics
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"[ML_PIPELINE] Neural Network training failed: {e}")
             raise
 

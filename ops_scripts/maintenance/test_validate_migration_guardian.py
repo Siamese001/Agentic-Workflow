@@ -115,7 +115,7 @@ def test_basic_functionality():
         print("\n🎯 ALL BASIC TESTS PASSED!")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"❌ Test failed: {e}")
         return False
@@ -156,7 +156,7 @@ def test_actual_repository():
 
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"❌ Repository test failed: {e}")
         return False

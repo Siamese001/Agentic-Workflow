@@ -377,7 +377,7 @@ def run_hygiene_guardian(
             )
             result.metrics["temp_artifact_count"] = 0
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(
@@ -405,7 +405,7 @@ def run_hygiene_guardian(
             )
         result.metrics["empty_folder_count"] = len(empty)
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(
@@ -433,7 +433,7 @@ def run_hygiene_guardian(
             )
         result.metrics["init_only_folder_count"] = len(init_only)
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(

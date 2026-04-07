@@ -79,7 +79,7 @@ def audit(fp: Path) -> list[str]:
     try:
         src = fp.read_text(encoding='utf-8')
         tree = ast.parse(src)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return [f'parse error: {e}']
     for node in ast.walk(tree):

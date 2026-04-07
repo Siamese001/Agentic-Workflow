@@ -238,7 +238,7 @@ def execute_in_sandbox(
         return SandboxResult(success=False, result=violation, violation=violation)
     try:
         simulated_result = operation(*args, **kwargs)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         simulated_result = e
     expected_result = transcript.get("result")

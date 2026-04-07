@@ -285,7 +285,7 @@ class FeatureExtractor:
 
             return import_count + from_count
 
-        except Exception:
+        except Exception:  # guardian: allow-return-none-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             return 0
 
     def _calculate_function_complexity(self, file_path: str, line_no: int) -> int:

@@ -606,9 +606,9 @@ class AutomatedLearningPipeline:
             # Clean up expired application state
             # This would be implemented in the memory manager
             pass
-        except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Error during cleanup: {e}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Error during cleanup: {e}")
 
     def get_pipeline_stats(self) -> dict[str, Any]:

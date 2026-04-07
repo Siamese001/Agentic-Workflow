@@ -280,7 +280,7 @@ class CircuitBreaker:
             self._on_failure()
             logger.error(f"Expected exception in circuit '{self.name}': {e}")
             raise
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self._on_failure()
             logger.error(f"Unexpected exception in circuit '{self.name}': {e}")
             raise

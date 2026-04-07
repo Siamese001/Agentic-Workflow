@@ -200,7 +200,7 @@ class FixExecutionEngine:
                     if stat.st_mtime < cutoff:
                         shutil.rmtree(item)
                         removed += 1
-                except OSError:
+                except OSError:  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                     pass
 
         return removed

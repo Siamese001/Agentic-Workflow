@@ -199,7 +199,7 @@ def capture_evidence(test_func: Callable) -> Callable:
             _store_evidence_to_file(evidence)
 
             return result
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             outputs = {"error": str(e), "status": "failure"}
             evidence = evidence_collector.end_test(outputs)
             _store_evidence_to_file(evidence)

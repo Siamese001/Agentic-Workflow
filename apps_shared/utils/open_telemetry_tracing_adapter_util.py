@@ -611,7 +611,7 @@ class OpenTelemetryTracingAdapter:
                             "duration_ms": (time.time() - start_time) * 1000,
                         },
                     )
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 outcome = "error"
                 span.set_status(Status(StatusCode.ERROR, str(e)))
                 span.record_exception(e)

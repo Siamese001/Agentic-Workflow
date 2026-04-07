@@ -207,7 +207,7 @@ class MetaLearningEngine:
                         cls._kg_bridge.register_agent(agent_name, agent_type="Agent")
                         Logger.debug(f"[{agent_name}] Connected to Knowledge Graph")
                     # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         raise
                         Logger.warning(f"[{agent_name}] Knowledge Graph unavailable: {e}")
 
@@ -291,7 +291,7 @@ class MetaLearningEngine:
             )
             cls._kg_bridge.reflect_on_execution(trace)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{agent_name}] Reflection failed: {e}")
 
@@ -307,7 +307,7 @@ class MetaLearningEngine:
                 caller_agent=caller_agent, callee_agent=callee_agent, success=success, error_type=error_type
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{caller_agent}] Interaction recording failed: {e}")
 
@@ -319,7 +319,7 @@ class MetaLearningEngine:
         try:
             cls._kg_bridge.establish_inheritance(child_entity=child_entity, parent_entity=parent_entity)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{child_entity}] Inheritance setup failed: {e}")
 
@@ -331,7 +331,7 @@ class MetaLearningEngine:
         try:
             cls._kg_bridge.mark_incompatibility(entity_a=entity_a, entity_b=entity_b, reason=reason)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{entity_a}] Incompatibility marking failed: {e}")
 
@@ -343,7 +343,7 @@ class MetaLearningEngine:
         try:
             cls._kg_bridge.add_observation(entity_name=agent_name, observation=observation)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[{agent_name}] Observation recording failed: {e}")
 

@@ -303,7 +303,7 @@ class HardeningMixin:
                 component=self.component_name, breaker_name=e.breaker_name, state="OPEN", metadata=metadata
             )
             raise
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             latency_ms = (time.time() - start_time) * 1000
             self.telemetry.log_failure(
                 component=self.component_name,

@@ -227,7 +227,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     genai_client = genai.Client(api_key=api_key)
                     Logger.info("[OK] Regression Oracle connected to Gemini 2.5")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     Logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     genai_available = False
@@ -475,7 +475,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     )
                     action["applied"] = not dry_run
             # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 action["error"] = str(e)
                 Logger.error(f"[RegressionOracleAgent] Cleanup error: {e}")
             actions.append(action)

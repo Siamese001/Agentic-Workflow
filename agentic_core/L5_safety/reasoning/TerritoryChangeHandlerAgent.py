@@ -313,7 +313,7 @@ class AutonomousRagDaemon:
                 if faithfulness < 0.75:
                     Logger.warning(f"[TERRITORY] Faithfulness low ({faithfulness}). Triggering reindex.")
                     await self.trigger_reindex()
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"[TERRITORY] Health check failed: {e}")
 
@@ -328,7 +328,7 @@ class AutonomousRagDaemon:
         try:
             Logger.info("[TERRITORY] Starting reindexing of the canon...")
             await self.retriever.reindex_all()
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"[TERRITORY] Reindexing failed: {e}")
 

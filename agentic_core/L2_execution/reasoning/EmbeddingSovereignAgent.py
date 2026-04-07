@@ -389,7 +389,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit(provider, True, False, latency)
             return embedding
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit(provider, False, False, latency)
             Logger.error(f"Embedding failed: {e}")

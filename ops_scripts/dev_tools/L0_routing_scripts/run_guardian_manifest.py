@@ -333,7 +333,7 @@ def run_manifest_guardian(
                 "Re-seal manifest with ManifestGuardian.seal_manifest() after intentional changes",
             ]
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(

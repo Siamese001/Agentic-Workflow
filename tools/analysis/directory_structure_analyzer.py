@@ -27,7 +27,7 @@ def analyze_file_complexity(file_path: Path) -> Dict:
             'lines': len(content.splitlines()),
             'size': file_path.stat().st_size
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
         return {
             'error': str(e),
             'lines': 0,

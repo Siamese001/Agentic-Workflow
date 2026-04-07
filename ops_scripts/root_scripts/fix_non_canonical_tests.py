@@ -27,7 +27,7 @@ def main():
             test_file.unlink()
             print(f'Removed: {test_file}')
             removed_count += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             print(f'Failed to remove {test_file}: {e}')
     print(f'Removed {removed_count} non-canonical test files')

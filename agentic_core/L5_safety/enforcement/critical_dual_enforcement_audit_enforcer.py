@@ -287,7 +287,7 @@ class CriticalDualEnforcementAuditor:
                             enforcement_layers=enforcement_layers,
                             enforcement_class=enforcement_class,
                         )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"Failed to parse requirements: {e}")
             raise
         return requirements

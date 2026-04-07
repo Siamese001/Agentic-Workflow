@@ -229,7 +229,7 @@ async def main():
                     Logger.info(f"  {section}: {list(content.keys())}")
                 else:
                     Logger.info(f"  {section}: {content}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         Logger.error(f"❌ Generation failed: {e}")
         raise
 

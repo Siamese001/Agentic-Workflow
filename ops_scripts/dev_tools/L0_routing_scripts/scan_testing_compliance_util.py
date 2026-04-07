@@ -354,7 +354,7 @@ def main():
             source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             errors.append(f"Parse error in {py_file.name}: {e}")

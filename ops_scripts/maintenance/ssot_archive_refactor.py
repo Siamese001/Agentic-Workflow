@@ -188,7 +188,7 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
                     continue
                 matches.append((i, line))
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ⚠️  Error reading {file_path}: {e}")
 
@@ -240,7 +240,7 @@ def add_import(file_path: Path, dry_run: bool = True) -> bool:
             file_path.write_text("\n".join(lines), encoding="utf-8")
 
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ❌ Error adding import to {file_path}: {e}")
         return False
@@ -262,7 +262,7 @@ def replace_hardcoded_archives(file_path: Path, dry_run: bool = True) -> int:
             file_path.write_text(content, encoding="utf-8")
 
         return replacements
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"  ❌ Error replacing in {file_path}: {e}")
         return 0

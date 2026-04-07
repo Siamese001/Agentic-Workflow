@@ -380,7 +380,7 @@ def timed(collector: MetricsCollector | None = None, operation_name: str | None 
                     collector.record_metric(name, duration_ms, {"success": True})
                 logger.debug(f"{name} completed in {duration_ms:.2f}ms")
                 return result
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 duration_ms = (time.perf_counter() - start) * 1000
                 if collector:

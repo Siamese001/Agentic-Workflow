@@ -395,7 +395,7 @@ class Bulkhead:
         else:
             try:
                 return await coro(*args, **kwargs)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
                 raise
 
@@ -412,7 +412,7 @@ class Bulkhead:
         """
         try:
             return await coro(*args, **kwargs)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
             raise
 

@@ -360,7 +360,7 @@ def main():
                 visitor.visit(tree)
                 findings.extend(visitor.findings)
             # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 continue

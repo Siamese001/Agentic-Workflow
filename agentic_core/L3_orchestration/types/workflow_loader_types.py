@@ -288,7 +288,7 @@ class WorkflowLoader:
         except json.JSONDecodeError as e:
             LOGGER.error(f"Invalid JSON in workflow file: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             LOGGER.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()

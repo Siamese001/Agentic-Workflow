@@ -363,7 +363,7 @@ class TraceRegistry(MCPHardenedMixin):
                 }
                 with open(self.persistence_path, "a") as f:
                     f.write(json.dumps(entry) + "\n")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to persist trace: {e}")
 

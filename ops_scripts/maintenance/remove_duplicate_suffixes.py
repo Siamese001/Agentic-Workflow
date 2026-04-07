@@ -239,7 +239,7 @@ def remove_duplicates(safe_to_delete: list[tuple[Path, Path, str, bool]], dry_ru
                 dup_path.unlink()
                 print(f'  ✓ Deleted: {rel_dup} (suffix: {suffix})')
                 removed_count += 1
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 print(f'  ✗ Failed to delete {rel_dup}: {e}')
     return removed_count

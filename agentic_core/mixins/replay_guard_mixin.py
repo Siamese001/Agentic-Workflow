@@ -276,6 +276,6 @@ class ReplayGuardMixin:
             _logger.error(
                 "[ReplayGuard] deterministic_providers module not found; replay determinism NOT enforced."
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             _logger.error("[ReplayGuard] Failed to install deterministic providers: %s", exc)
             raise

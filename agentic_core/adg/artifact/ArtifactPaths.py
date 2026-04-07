@@ -489,13 +489,17 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executemany("INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)", meta_rows)
 
         conn.commit()
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         write_failed = True
         raise
     finally:
         conn.close()
         if write_failed and temp_db_path.exists():
             temp_db_path.unlink()
+        
+        # Force garbage collection to release file handles on Windows
+        import gc
+        gc.collect()
 
     # Atomic rename: only move to final path after successful commit and close
     import shutil

@@ -240,7 +240,7 @@ class HardenedEventBus:
             self._stats["events_published"] += 1
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             self._stats["events_failed"] += 1
             dlq = await get_dead_letter_queue()
@@ -468,7 +468,7 @@ def hardened_event_publisher(event_type: EventType, priority: TaskPriority = Tas
                     priority=priority,
                 )
                 return result
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 await publish_hardened_event(
                     EventType.ERROR_OCCURRED,

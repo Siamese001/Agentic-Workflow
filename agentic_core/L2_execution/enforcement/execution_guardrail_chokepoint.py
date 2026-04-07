@@ -748,7 +748,7 @@ def authorize_and_execute(
 
         _emit_reenters_safety(bound_ctx, f"TYPED_TOOL_CONTRACT_VIOLATION:{type(exc).__name__}")
         raise
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # P3/L2: Record execution observability for general errors
         try:
             obs_context = ExecutionObservabilityContext.create(

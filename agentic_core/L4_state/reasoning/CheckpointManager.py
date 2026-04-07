@@ -422,7 +422,7 @@ class CheckpointManager(SovereignBaseAgent):
             Logger.info(f"[SYNC] Checkpoint saved: {checkpoint_id}")
             return checkpoint_id
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"Failed to save checkpoint {checkpoint_id}: {e}")
             raise
 
@@ -639,7 +639,7 @@ class CheckpointManager(SovereignBaseAgent):
                         self.checkpoints[cp_id] = checkpoint
                 Logger.debug(f"Loaded {len(self.checkpoints)} checkpoints from index")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.warning(f"Failed to load checkpoint index: {e}")
 
@@ -655,7 +655,7 @@ class CheckpointManager(SovereignBaseAgent):
             assert_no_persistent_write("L4", "json.dump")
             _get_write_gateway().write_json(index_path, index_data, indent=2)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to save checkpoint index: {e}")
 

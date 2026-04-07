@@ -67,6 +67,9 @@ class RetrievalBenchmark:
         Returns:
             BenchmarkMetrics with performance statistics
         """
+        if not queries:
+            return BenchmarkMetrics()
+
         latencies = []
         total_results = 0
 

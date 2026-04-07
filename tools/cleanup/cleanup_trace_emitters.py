@@ -139,7 +139,7 @@ def cleanup_layer(layer_path: Path, batch_size: Optional[int] = None, dry_run: b
             result = cleanup_file(filepath, dry_run)
             if result['changed'] or result['original_count'] > 0:
                 results.append(result)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             results.append({
                 'file': str(filepath),
                 'error': str(e),

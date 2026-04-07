@@ -493,7 +493,7 @@ class CompetitorReconAgent:
             gap = f"{target_company} lacks {move.recent_launch} that {move.competitor_name} has"
             return StrategicHook(hook_text=hook_text, relevance_score=match["relevance"], competitive_gap=gap)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Error creating targeted hook: {str(e)}")
             raise
 
@@ -515,7 +515,7 @@ class CompetitorReconAgent:
             gap = f"Development velocity gap with {move.competitor_name}"
             return StrategicHook(hook_text=hook_text, relevance_score=0.6, competitive_gap=gap)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Error creating speed hook: {str(e)}")
             raise
 

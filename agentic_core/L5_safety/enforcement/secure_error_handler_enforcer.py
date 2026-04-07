@@ -359,7 +359,7 @@ def secure_exception(
                 return await func(*args, **kwargs)
             except SecureError:    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context
                 raise
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 context = {}
                 if sanitize_args:
@@ -380,7 +380,7 @@ def secure_exception(
                 return func(*args, **kwargs)
             except SecureError:    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context
                 raise
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 context = {}
                 if sanitize_args:

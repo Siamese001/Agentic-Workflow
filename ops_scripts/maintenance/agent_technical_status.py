@@ -312,7 +312,7 @@ class NuclearAuditor:
                             if isinstance(target, ast.Name) and target.id == "SOVEREIGN_TERRITORIES":
                                 return ast.literal_eval(node.value)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             logger.warning(f"Failed to load structure blueprint: {e}")
 
@@ -331,7 +331,7 @@ class NuclearAuditor:
                 agents = self._analyze_file(file_path)
                 self.agent_statuses.extend(agents)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 logger.error(f"Failed to analyze {file_path}: {e}")
 
@@ -354,7 +354,7 @@ class NuclearAuditor:
                     agents.append(status)
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             logger.error(f"Error parsing {file_path}: {e}")
 

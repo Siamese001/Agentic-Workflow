@@ -843,7 +843,7 @@ class UnifiedAgent(SovereignBaseAgent):
             logger.warning("config_loader module could not be imported; using empty config")
             return {}
         # guardian: allow-silent-swallow -- config load failure is non-fatal; re-raised after logging
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.warning(f"Failed to load config {self._config_name}: {e}")
             raise
 

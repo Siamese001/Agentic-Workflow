@@ -828,7 +828,7 @@ class ADGQueryClient:
         if self._connection:
             try:
                 self._connection.close()
-            except sqlite3.Error:
+            except sqlite3.Error:  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 # Connection may already be closed
                 pass
             finally:

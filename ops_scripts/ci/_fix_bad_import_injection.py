@@ -183,7 +183,7 @@ def main(dry_run: bool=False) -> int:
             result = fix_file(p, dry_run=dry_run)
             if result:
                 fixed += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             print(f'  [ERROR] {p.relative_to(ROOT)}: {e}')
             errors += 1

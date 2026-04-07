@@ -233,7 +233,7 @@ class HealingCycle:
                 "converged": converged,
                 "rollback_triggered": rollback_triggered,
             }
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error("HealingCycle[%d] failed: %s", self.cycle_num, exc)
             if emitter:

@@ -246,7 +246,7 @@ def try_import_agent(name, module_path, class_name):
         cls = getattr(mod, class_name)
         return cls, None
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return None, f"{type(e).__name__}: {e}"
 
@@ -275,7 +275,7 @@ def try_run_agent(cls, name, method_name, territory):
             return {"error": f"Unknown method: {method_name}"}
 
         return {"success": True, "result": result}
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return {"error": f"{type(e).__name__}: {str(e)[:300]}"}
 
@@ -340,8 +340,6 @@ if "FileClassificationAgent" in agent_classes:
                 v["file"] = str(Path(v["file"]).relative_to(PROJECT_ROOT)).replace("\\", "/")
                 layer_violations.append(v)
         # guardian: allow-silent-swallow
-        except Exception:
-            raise
 
     print(f"  Layer violations found: {len(layer_violations)}", file=sys.stderr)
 

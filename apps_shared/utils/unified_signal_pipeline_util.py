@@ -419,7 +419,7 @@ class InputProcessingStage(PipelineStage):
                 stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
             )
             return envelope
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Input processing failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -536,7 +536,7 @@ class ContextEnrichmentStage(PipelineStage):
                 stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
             )
             return envelope
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Context enrichment failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -635,7 +635,7 @@ class SignalAugmentationStage(PipelineStage):
                 stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False}
             )
             return envelope
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Signal augmentation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -780,7 +780,7 @@ class QualityValidationStage(PipelineStage):
                 metadata={"quality_score": quality_result.composite_score},
             )
             return envelope
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Quality validation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -897,7 +897,7 @@ class OutputFormattingStage(PipelineStage):
                 metadata={"output_format": formatted.get("format_type", "default")},
             )
             return envelope
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Output formatting failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise

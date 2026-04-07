@@ -215,7 +215,7 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         print("\n✅ No duplicate filenames detected")
         return True, "Code deduplication check passed"
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, f"Code deduplication check failed: {e}"
 
@@ -255,7 +255,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         print(f"   Roots scanned: {', '.join(results.get('roots_scanned', []))}")
         return True, "Architecture governance check passed"
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, f"Architecture governance check failed: {e}"
 

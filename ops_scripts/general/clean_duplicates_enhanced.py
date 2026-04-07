@@ -188,7 +188,7 @@ def aggressive_cleanup():
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 raise
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
     temp_patterns = SOVEREIGN_EXCLUDED_FOLDERS
@@ -205,7 +205,7 @@ def aggressive_cleanup():
             Logger.info(f"🗑️ Purged temp file: {file}")
             purged_count += 1
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             raise
             Logger.error(f"❌ Failed to delete {file}: {e}")
     for root, dirs, _files in os.walk("."):
@@ -216,7 +216,7 @@ def aggressive_cleanup():
                 Logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
                 purged_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 Logger.error(f"❌ Failed to delete directory {pycache_path}: {e}")
     return purged_count
 
@@ -389,7 +389,7 @@ def purge_everything(
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
     for root, _dirs, files in os.walk("."):
@@ -401,7 +401,7 @@ def purge_everything(
                     Logger.info(f"🗑️ Purged File: {file_path}")
                     purged_count += 1
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     Logger.error(f"❌ Failed to delete {file_path}: {e}")
     if aggressive:

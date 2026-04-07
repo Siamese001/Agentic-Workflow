@@ -59,6 +59,9 @@ class QueryIntentDetector:
         Returns:
             Intent classification: semantic, structural, or hybrid
         """
+        if not query or not isinstance(query, str):
+            return QueryIntent.SEMANTIC
+
         # Check for structural patterns
         structural_matches = self._structural_regex.findall(query)
         has_structural = len(structural_matches) > 0

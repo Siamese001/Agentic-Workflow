@@ -578,7 +578,7 @@ class ToolReliabilityMixin:
                 agent_id="tool_reliability_mixin",
             )
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)

@@ -395,7 +395,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
                     rule = SafetyRule.from_dict(rule_data)
                     self.rules[rule.rule_id] = rule
             Logger.info(f"Loaded {len(self.rules)} safety rules")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to load rules: {e}")
 
@@ -410,7 +410,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
             }
             _wg.write_json(self.rules_storage_path, data, indent=2)
             Logger.debug(f"Saved {len(self.rules)} rules")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to save rules: {e}")
 

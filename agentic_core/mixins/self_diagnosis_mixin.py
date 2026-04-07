@@ -229,7 +229,7 @@ class SelfDiagnosisMixin:
                             diagnosis["self_repair_attempts"].append(
                                 {"component": component_name, "success": True}
                             )
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     issue = {
                         "type": "component_diagnosis_failed",

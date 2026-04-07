@@ -160,7 +160,7 @@ class ActivationFlagsStore:
                     proof_data = json.load(f)
                 self._current_proof = ActivationProof(**proof_data)
             Logger.info("Activation flags loaded from L4")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to load activation flags: {e}")
             self._current_flags = ActivationFlags()
@@ -175,7 +175,7 @@ class ActivationFlagsStore:
                 with open(self.proof_file, "w") as f:
                     json.dump(asdict(self._current_proof), f, indent=2)
             Logger.debug("Activation flags saved to L4")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to save activation flags: {e}")
 

@@ -152,7 +152,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
 
             return artifact
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to generate API documentation for {source}: {e}")
             raise
 

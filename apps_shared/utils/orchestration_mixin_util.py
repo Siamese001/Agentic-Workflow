@@ -230,7 +230,7 @@ class OrchestrationMixin:
                 completed_steps.append(step)
                 results["steps"].append({"name": step.name, "status": "completed", "result": step.result})
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 step.status = WorkflowStatus.FAILED
                 step.error = str(e)
@@ -313,7 +313,7 @@ class OrchestrationMixin:
                         completed.add(agent_name)
                         progress_made = True
                     # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         raise
                         results[agent_name] = {"status": "failed", "error": str(e)}
                         errors.append({"agent": agent_name, "error": str(e)})

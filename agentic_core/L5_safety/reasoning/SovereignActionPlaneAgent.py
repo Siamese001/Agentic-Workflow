@@ -455,7 +455,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                     agent_id="orchestrator_engine",
                 )
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
         start_time: Any = time.time()
@@ -487,7 +487,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             await self._log_to_signal_ledger(request, result)
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             result: Any = ActionResult(
                 success=False, output="", error=str(e), execution_time=time.time() - start_time

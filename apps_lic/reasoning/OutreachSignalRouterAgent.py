@@ -576,7 +576,7 @@ class OutreachHealingCycle:
                     passed_agents.append(agent.name)
                 else:
                     failed_agents.append(agent.name)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 agents_executed.append(agent.name)
                 failed_agents.append(agent.name)

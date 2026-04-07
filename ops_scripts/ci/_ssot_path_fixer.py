@@ -481,7 +481,7 @@ def main() -> None:
                         total_files += 1
                         total_replacements += replacements
                         total_new_imports += new_imports
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 rel = py_file.relative_to(ROOT).as_posix()
                 errors.append((rel, str(exc)))

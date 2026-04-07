@@ -458,6 +458,157 @@ servers:
         target: "mcp8_vector_stats"
         description: "Get vector database statistics"
 
+  # ==========================================================================
+  # OpenTelemetry MCP (mcp9_*) - Runtime tracing and execution observability
+  # ==========================================================================
+  otel_mcp:
+    name: "OpenTelemetry MCP"
+    prefix: "mcp9"
+    enabled: true
+    target_layer: "L6"
+    description: "Runtime ADG tracing, OTel span queries, Prometheus metrics, healing chain analysis"
+    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\otel\\\\otel_mcp_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\otel\\\\otel_mcp_server.py', encoding='utf-8').read())"
+    cwd: "C:\\Git\\Agentic-Workflow"
+    capabilities:
+      - otel_tracing
+      - runtime_adg
+      - prometheus_metrics
+      - healing_chain_analysis
+      - policy_decision_tracing
+      - span_anomaly_detection
+    tools:
+      otel_status:
+        target: "mcp9_otel_status"
+        description: "Check OTel collector health and runtime ADG freshness"
+      otel_trace:
+        target: "mcp9_otel_trace"
+        description: "Fetch trace by CID as ADG edges"
+      otel_spans_by_agent:
+        target: "mcp9_otel_spans_by_agent"
+        description: "Get OTel spans for a specific agent class/instance"
+      otel_healing_chain:
+        target: "mcp9_otel_healing_chain"
+        description: "Follow healing dispatch->outcome->escalation chain"
+      otel_policy_decisions:
+        target: "mcp9_otel_policy_decisions"
+        description: "Path A/B/C/D verdicts with safety plane evidence"
+      otel_metrics_summary:
+        target: "mcp9_otel_metrics_summary"
+        description: "Aggregated runtime edge counters per layer"
+      otel_anomalies:
+        target: "mcp9_otel_anomalies"
+        description: "Spans flagged by circuit breaker or safety plane"
+      otel_ingest_to_runtime_adg:
+        target: "mcp9_otel_ingest_to_runtime_adg"
+        description: "Push collected OTel spans to runtime_adg_*.sqlite"
+
+  # ==========================================================================
+  # Redis MCP (mcp10_*) - Cache/state inspection and targeted invalidation
+  # ==========================================================================
+  redis_mcp:
+    name: "Redis MCP"
+    prefix: "mcp10"
+    enabled: true
+    target_layer: "L4"
+    description: "Redis cache/state inspection for ADG hot cache, sovereign orchestration fabric, and tool embedding cache"
+    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\redis_mcp_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\redis_mcp_server.py', encoding='utf-8').read())"
+    cwd: "C:\\Git\\Agentic-Workflow"
+    env:
+      REDIS_HOST: "localhost"
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+      REDIS_TIMEOUT: "5"
+    capabilities:
+      - cache_inspection
+      - key_scanning
+      - namespace_stats
+      - targeted_invalidation
+      - adg_cache_management
+    tools:
+      redis_health:
+        target: "mcp10_redis_health"
+        description: "Ping Redis and return INFO stats (memory, keyspace, uptime)"
+      redis_dbsize:
+        target: "mcp10_redis_dbsize"
+        description: "Total key count in the current Redis database"
+      redis_namespace_stats:
+        target: "mcp10_redis_namespace_stats"
+        description: "Key counts grouped by namespace prefix"
+      redis_keys:
+        target: "mcp10_redis_keys"
+        description: "SCAN for keys matching a pattern (safe, non-blocking)"
+      redis_get:
+        target: "mcp10_redis_get"
+        description: "GET a single key (auto-detects string/hash/list/set)"
+      redis_hgetall:
+        target: "mcp10_redis_hgetall"
+        description: "HGETALL a hash key (e.g. ADG node cache entries)"
+      redis_ttl:
+        target: "mcp10_redis_ttl"
+        description: "TTL remaining on a key"
+      redis_del_key:
+        target: "mcp10_redis_del_key"
+        description: "DEL a single specific key (targeted invalidation)"
+      redis_flush_namespace:
+        target: "mcp10_redis_flush_namespace"
+        description: "DEL all keys matching a pattern (dry_run=True by default)"
+      redis_stats:
+        target: "mcp10_redis_stats"
+        description: "Full Redis INFO: memory, persistence, replication, clients"
+
+  # ==========================================================================
+  # Pytest MCP (mcp11_*) - Test discovery, execution, and triage
+  # ==========================================================================
+  pytest_mcp:
+    name: "Pytest MCP"
+    prefix: "mcp11"
+    enabled: true
+    target_layer: "L5"
+    description: "Test discovery, targeted execution, CI gate analysis, and failure triage for the 2,771-module test suite"
+    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    args:
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\pytest_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\pytest_server.py', encoding='utf-8').read())"
+    cwd: "C:\\Git\\Agentic-Workflow"
+    capabilities:
+      - test_discovery
+      - test_execution
+      - failure_triage
+      - coverage_reporting
+      - marker_filtering
+      - ci_gate_analysis
+    tools:
+      pytest_discover:
+        target: "mcp11_discover_tests"
+        description: "Discover all tests in the repository by path/pattern"
+      pytest_run:
+        target: "mcp11_run_tests"
+        description: "Run pytest with specified path, markers, and options"
+      pytest_run_file:
+        target: "mcp11_run_test_file"
+        description: "Run a single test file"
+      pytest_run_function:
+        target: "mcp11_run_test_function"
+        description: "Run a specific test function by ID"
+      pytest_last_results:
+        target: "mcp11_get_last_results"
+        description: "Get results from the last test run"
+      pytest_coverage:
+        target: "mcp11_get_coverage"
+        description: "Get test coverage report"
+      pytest_markers:
+        target: "mcp11_list_markers"
+        description: "List all pytest markers defined in the project"
+      pytest_failing:
+        target: "mcp11_get_failing_tests"
+        description: "Get currently failing tests from last run"
+
 # ============================================================================
 # TOOL ALIASES (convenience mappings)
 # ============================================================================
@@ -494,3 +645,6 @@ validation:
     - mcp6
     - mcp7
     - mcp8
+    - mcp9
+    - mcp10
+    - mcp11

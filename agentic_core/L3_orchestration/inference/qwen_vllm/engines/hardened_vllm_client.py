@@ -118,7 +118,7 @@ class CircuitBreaker:
             result = await operation()
             await self._record_success()
             return result
-        except Exception as _:
+        except Exception as _:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             await self._record_failure()
             raise
 

@@ -236,7 +236,7 @@ class SSOTTracingMixin:
         try:
             yield span
             span["status"] = "ok"
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             span["status"] = "error"
             span["error"] = str(exc)
             raise

@@ -254,7 +254,7 @@ class ExperienceBuffer:
                 _get_write_gateway().write_text(self.path, "".join(kept), encoding="utf-8")
                 self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 self.Logger.error(f"Failed to trim buffer: {e}")
 

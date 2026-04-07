@@ -248,7 +248,7 @@ def main() -> int:
         print(f"[ERROR] Import Error: {e}")
         print("Ensure agentic_core is properly installed.")
         return 2
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"[ERROR] Verification Error: {e}")
         return 2

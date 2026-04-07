@@ -289,7 +289,7 @@ class CircuitBreakerMixin:
             result = operation(*args, **kwargs)
             self._record_success()
             return result
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self._record_failure(e)
             raise
 

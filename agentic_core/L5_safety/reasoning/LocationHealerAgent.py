@@ -3000,7 +3000,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 else:
                     batch_report["batch_post_heal_status"] = "NO_ACTIONS"
                     batch_report["batch_message"] = "No healing actions applied"
-            except (OSError, ImportError, AttributeError, ValueError) as e:
+            except (OSError, ImportError, AttributeError, ValueError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 batch_report["batch_post_heal_status"] = "ERROR"
                 batch_report["batch_message"] = f"Batch validation error: {e}"
                 Logger.error(f"[LocationHealerAgent] Batch post-heal failed: {e}")
@@ -3086,7 +3086,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     duplicate_report["duplicate_message"] = f"Resolved {len(duplicate_actions)} duplicates"
                 else:
                     duplicate_report["duplicate_message"] = "No duplicates detected"
-            except (OSError, ImportError, AttributeError, ValueError) as e:
+            except (OSError, ImportError, AttributeError, ValueError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 duplicate_report["duplicate_message"] = f"ERROR: {e}"
                 Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")
 

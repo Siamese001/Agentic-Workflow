@@ -356,7 +356,7 @@ class ForwardRollingFacade:
                 result = self._execute_static_dag(agent_name, context)
                 self._metrics.static_dag_executions += 1
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Fallback on error if enabled

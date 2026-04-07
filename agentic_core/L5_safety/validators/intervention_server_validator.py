@@ -420,7 +420,7 @@ class InterventionServer:
             if instructions:
                 Logger.info(f"Telepathy instructions received: {instructions[:100]}...")
                 return instructions
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Failed to read telepathy file: {e}")
         return None

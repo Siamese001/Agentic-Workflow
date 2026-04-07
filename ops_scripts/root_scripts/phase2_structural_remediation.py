@@ -215,7 +215,7 @@ def move_test_to_canonical_location(source: pathlib.Path, target: pathlib.Path) 
         shutil.move(str(source), str(target))
         print(f"Moved: {source} -> {target}")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"Failed to move {source} to {target}: {e}")
         return False

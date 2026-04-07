@@ -210,7 +210,7 @@ def update_class_names_in_unified():
             if content != original:
                 py_file.write_text(content, encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             pass
@@ -252,7 +252,7 @@ def update_imports_codebase():
                     py_file.write_text(content, encoding="utf-8")
                     files_updated += 1
             # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 pass

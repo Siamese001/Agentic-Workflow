@@ -303,7 +303,7 @@ class MissionPreflight:
                     for v in span_result.get("details", [])[:3]:
                         print(f"   [X] {v}")
                 return violations
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
                 raise
                 print(f"   [!] Span check failed: {e}")
@@ -329,7 +329,7 @@ class MissionPreflight:
                     if len(violations) > 3:
                         print(f"   ... and {len(violations) - 3} more violations")
                 return violations
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
                 raise
                 print(f"   [!] Hierarchy check failed: {e}")

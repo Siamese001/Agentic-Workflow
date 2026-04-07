@@ -109,7 +109,7 @@ def _trace_agent_init(func: Callable) -> Callable:
                 try:
                     result = func(self, *args, **kwargs)
                     return result
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     Logger.error(f"[ADG_HOOKS] Agent initialization failed for {class_name}: {e}")
                     raise
         else:
@@ -146,7 +146,7 @@ def _trace_agent_execute(func: Callable) -> Callable:
 
                     return result
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     span.set_attribute("execution_success", False)
                     span.set_attribute("error_type", type(e).__name__)
                     span.set_attribute("error_message", str(e))
@@ -187,7 +187,7 @@ def _trace_agent_method(func: Callable, method_name: str) -> Callable:
 
                     return result
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     span.set_attribute("method_success", False)
                     span.set_attribute("error_type", type(e).__name__)
                     span.set_attribute("error_message", str(e))
@@ -326,7 +326,7 @@ def trace_cognitive_operation(reasoning_mode: str = "react"):
                         result = func(self, *args, **kwargs)
                         span.set_attribute("cognitive_success", True)
                         return result
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         span.set_attribute("cognitive_success", False)
                         span.set_attribute("error_type", type(e).__name__)
                         raise
@@ -367,7 +367,7 @@ def trace_tool_operation(tool_name: str | None = None):
                         result = func(self, *args, **kwargs)
                         span.set_attribute("tool_success", True)
                         return result
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         span.set_attribute("tool_success", False)
                         span.set_attribute("error_type", type(e).__name__)
                         raise

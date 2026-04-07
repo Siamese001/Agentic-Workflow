@@ -82,7 +82,7 @@ class TestDiscoveryService:
             _emit_records_telemetry_event("p4", "test_discovery", "discover_complete")
             return discovered
 
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             _log.error("Test discovery failed: %s", exc)
             _emit_records_telemetry_event("p4", "test_discovery", "discover_error")
             raise

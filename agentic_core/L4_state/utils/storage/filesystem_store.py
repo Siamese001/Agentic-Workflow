@@ -317,7 +317,7 @@ class FileSystemStore:
             temp_path.rename(artifact_path)
 
         # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Clean up temp file if it exists

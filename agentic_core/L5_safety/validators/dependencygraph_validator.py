@@ -234,7 +234,7 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
             for attempt in range(1, max_attempts + 1):
                 try:
                     return await func(*args, **kwargs)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     if attempt < max_attempts:
                         print(
                             f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s..."

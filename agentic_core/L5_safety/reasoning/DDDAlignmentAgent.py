@@ -499,7 +499,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         try:
             try:
                 super().heal_repository(dry_run=dry_run)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.debug(f"Parent chain warning: {e}")
             violations = self.run()

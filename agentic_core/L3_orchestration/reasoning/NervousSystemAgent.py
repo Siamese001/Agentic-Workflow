@@ -462,7 +462,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                         agent_id="orchestrator_engine",
                     )
                 # guardian: allow-silent-swallow
-                except Exception as exc:
+                except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
         start_time = get_clock().now_epoch()
@@ -826,7 +826,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                                 if not dry_run:
                                     affected_paths.append(violation.file_path)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 raise
                 action["error"] = str(e)
                 Logger.error(f"[NervousSystemAgent] Cleanup error: {e}")

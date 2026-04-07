@@ -350,7 +350,7 @@ class PromptAssembler:
                     name=template_name, template=template_content, description="Custom template"
                 )
                 Logger.debug(f"Loaded template: {template_name}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"Failed to load template {file_path}: {e}")
 

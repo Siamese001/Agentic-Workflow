@@ -138,7 +138,7 @@ async def test_runtime_adg_integration():
             print("[TEST] Runtime ADG integration test completed successfully!")
             return result
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         print(f"[TEST ERROR] {e}")
         raise
 

@@ -26,6 +26,6 @@ class CapabilityDiscoveryMixin:
             if self._capabilities:
                 await client.sadd(key, *self._capabilities)
                 await client.expire(key, 3600)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"Capability publish failed: {e}")

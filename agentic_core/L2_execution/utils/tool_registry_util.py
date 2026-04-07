@@ -354,7 +354,7 @@ class ToolRegistry:
                     tool_name, tool_func, description = tool_loader(tool_path)
                     if self.register_tool(tool_name, str(tool_path), tool_func, description):
                         registered += 1
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     Logger.warning(f"[REGISTRY] Failed to load tool from {tool_path}: {e}")
             else:

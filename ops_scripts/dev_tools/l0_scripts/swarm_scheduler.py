@@ -279,7 +279,7 @@ class SwarmScheduler:
                 await asyncio.sleep(DEFAULT_SLEEP)
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 LOGGER.error(f'Error in scheduler loop: {e}')
                 await asyncio.sleep(DEFAULT_SLEEP)
@@ -307,7 +307,7 @@ class SwarmScheduler:
             Task.completed_at = datetime.utcnow()
             self.stats['failed'] += 1
             LOGGER.warning(f'Task timed out: {Task.id}')
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Task.error = str(e)
             Task.status = TaskStatus.FAILED

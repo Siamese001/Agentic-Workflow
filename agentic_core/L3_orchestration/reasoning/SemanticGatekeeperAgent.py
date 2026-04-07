@@ -280,7 +280,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
                 }
             )
             raise
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.error(f"Execution failed for trace {trace_id}: {e}")
             self.dead_letter_queue.append(

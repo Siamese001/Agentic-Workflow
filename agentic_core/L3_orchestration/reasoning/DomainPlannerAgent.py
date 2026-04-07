@@ -329,7 +329,7 @@ class DomainPlannerAgent(L3OrchestrationBase):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - domain planning validation")
             metrics["skipped"] = 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
@@ -438,7 +438,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - risk assessment validation")
             metrics["skipped"] = 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
@@ -548,7 +548,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - feasibility analysis validation")
             metrics["skipped"] = 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
@@ -690,7 +690,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - scenario simulation validation")
             metrics["skipped"] = 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
@@ -852,7 +852,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - strategy coordination validation")
             metrics["skipped"] = 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")

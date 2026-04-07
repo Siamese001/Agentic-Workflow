@@ -401,7 +401,7 @@ class AdapterBase(ABC, Generic[T]):
             raw_result = self._execute_legacy(context, *args, **kwargs)
             self._circuit_breaker.record_success()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             self._circuit_breaker.record_failure(e)
             self._log_audit("execution_error", context, error=e)

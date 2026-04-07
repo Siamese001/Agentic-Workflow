@@ -140,7 +140,7 @@ class SQLiteBackend:
                 self._conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                 self._conn.close()
                 logger.info(f"Closed SQLite connection to {self._sqlite_path}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error closing SQLite connection: {e}")
             finally:
                 self._conn = None

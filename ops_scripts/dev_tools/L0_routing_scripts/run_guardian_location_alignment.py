@@ -357,7 +357,7 @@ def run_location_alignment_guardian(
         result.metrics["misplaced_file_count"] = len(misplaced)
 
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(
@@ -387,7 +387,7 @@ def run_location_alignment_guardian(
         result.metrics["missing_directory_count"] = len(missing)
 
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         result.add_check(

@@ -268,7 +268,7 @@ class HealingMemoryEmbedder:
             self._embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
             Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f"[HealingMemoryEmbedder] Embedding agent unavailable: {e}")
             self._embedding_agent = None

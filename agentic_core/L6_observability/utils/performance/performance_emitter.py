@@ -494,7 +494,7 @@ def measure_stage_timing(
 
     try:
         yield start_tick
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         status = StageStatus.ERROR
         raise
     finally:

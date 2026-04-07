@@ -229,7 +229,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                 }
             )
             continue
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
 
             raise
             violations.append(

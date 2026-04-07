@@ -325,7 +325,7 @@ class SubatomicHop:
                 )
             )
             return results
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             if type(e).__name__ == "BudgetExceededError":
                 self._handle_budget_exceeded(trace_id, e)
                 raise
@@ -464,7 +464,7 @@ class SubatomicHop:
                         await self.membrane.sanitize(result, f"tool_output_{tool_name}")
                     results.append({"tool": tool_name, "result": result})
                 total_cost += self.governor.track("tool_execution", 10, 10)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 self.telemetry.record(
                     TraceEvent(

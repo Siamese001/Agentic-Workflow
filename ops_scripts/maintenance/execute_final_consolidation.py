@@ -193,7 +193,7 @@ def fix_imports():
                     print(f"[FIXED] Rewired imports in {file}")
                     fixed_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 print(f"[ERROR] processing {file}: {e}")
 
@@ -216,7 +216,7 @@ def run_verification():
             print("\n⚠️ SYSTEM HAS REMAINING ISSUES. SEE OUTPUT ABOVE.")
             print(result.stderr)
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"Verification failed to run: {e}")
 

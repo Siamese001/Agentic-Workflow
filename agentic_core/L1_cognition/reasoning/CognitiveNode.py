@@ -421,7 +421,7 @@ class CognitiveNode:
         if self.meta_learner:
             try:
                 self.meta_learner.replay_and_learn(batch_size=BATCH_SIZE)
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 pass
 

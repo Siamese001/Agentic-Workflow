@@ -505,7 +505,7 @@ class DagEngineAgent(SovereignBaseAgent):
             if self.enable_logging:
                 Logger.info("task_completed", extra={"task_id": task_id})
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Task.status = TaskStatus.FAILED
             Task.error = str(e)
@@ -648,7 +648,7 @@ class DagEngineAgent(SovereignBaseAgent):
                 cleanup_results = self._cleanup_orphaned_tasks(dry_run=dry_run)
                 metrics["violations"] += cleanup_results.get("violations", 0)
                 metrics["fixed"] += cleanup_results.get("fixed", 0)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             LOGGER.error(f"[{agent_name}] DAG Healing Failed: {str(e)}")
             metrics["errors"] += 1

@@ -594,7 +594,7 @@ class RedisEventBus(EventBus):
         except ImportError:
             raise ImportError("redis package required for RedisEventBus")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to connect to Redis: {e}")
             raise
 
@@ -616,7 +616,7 @@ class RedisEventBus(EventBus):
             self._stats["events_published"] += 1
             logger.debug(f"Published event {event.id} to Redis stream {channel}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to publish to Redis: {e}")
             await self._handle_connection_error(e)
             raise
@@ -865,7 +865,7 @@ def event_publisher(event_type: EventType, channel: str | None = None):
                     causation_id=trace_id,
                 )
                 return result
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 await publish_event(
                     EventType.ERROR_OCCURRED,

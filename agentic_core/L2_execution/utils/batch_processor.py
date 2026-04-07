@@ -117,7 +117,7 @@ class BatchProcessor(Generic[T, R]):
 
                 results.extend(batch_results)
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 logger.error(f"Batch {batch_num} failed: {e}")
                 raise
 
@@ -171,7 +171,7 @@ class BatchProcessor(Generic[T, R]):
                 try:
                     result = future.result()
                     results.append(result)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     if self.error_isolation:
                         logger.warning(f"Parallel item failed: {e}")
                         results.append(None)  # type: ignore

@@ -127,7 +127,7 @@ class ADGSQLiteBatchInserter:
             logger.debug(f"Inserted {len(batch)} edges (total: {self._total_inserted})")
             return len(batch)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Edge batch insert failed: {e}")
             self.conn.rollback()
             raise
@@ -163,7 +163,7 @@ class ADGSQLiteBatchInserter:
             logger.debug(f"Inserted/updated {len(batch)} nodes")
             return len(batch)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Node batch insert failed: {e}")
             self.conn.rollback()
             raise

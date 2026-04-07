@@ -182,7 +182,7 @@ def run_simulation():
             CoreIntegrityVerifier.verify_core_integrity()
             Logger.info('    PASS: Immutable Lock Verified.')
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Logger.warning(f'    WARNING: Core Integrity check failed (expected during dev): {e}')
         Logger.info('[2] Booting Resume Generation Agent (CampaignPlanner)...')

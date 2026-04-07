@@ -316,7 +316,7 @@ class TracingMixin:
                 self._initialize_tracing_safe()
                 self._tracing_initialized = True
                 TracingMixin._circuit_breaker_failures = 0
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 TracingMixin._circuit_breaker_failures += 1
                 if TracingMixin._circuit_breaker_failures >= TracingMixin._circuit_breaker_threshold:
@@ -400,7 +400,7 @@ class TracingMixin:
         try:
             yield span
             span.status = "OK"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             span.status = "ERROR"
             span.attributes["error"] = str(e)
             span.attributes["error_type"] = type(e).__name__

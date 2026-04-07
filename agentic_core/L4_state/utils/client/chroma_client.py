@@ -204,6 +204,6 @@ class SovereignChromaClient:
             if collection_name in self._collections:
                 del self._collections[collection_name]
             logger.info(f"Deleted collection '{collection_name}'")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to delete collection '{collection_name}': {e}")
             raise

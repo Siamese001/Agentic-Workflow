@@ -183,7 +183,7 @@ def hunt_bootstrap():
                     found_path.rename(dest)
                     print(f" -> Archived to {dest.name}")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     print(f" -> Failed to archive: {e}")
 

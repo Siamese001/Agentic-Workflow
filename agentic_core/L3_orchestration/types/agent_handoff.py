@@ -412,7 +412,7 @@ class HandoffDispatcher:
                 handoff.handoff_key[:12],
                 _decision.capability_token.capability_token[:12],
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             record.mark_failed(str(exc))
 
             # P3/L3: Record workflow failure

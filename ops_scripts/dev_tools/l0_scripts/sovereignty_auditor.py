@@ -203,7 +203,7 @@ class SovereigntyAuditor:
             if module_name not in classes:
                 self.naming_violations.append(f"{path.name}: Expected class '{module_name}' not found. Found: {classes}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             self.naming_violations.append(f'{path.name}: AST Parse Error - {e}')
         try:

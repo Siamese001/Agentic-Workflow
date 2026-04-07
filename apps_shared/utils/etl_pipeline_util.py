@@ -362,7 +362,7 @@ class ETLPipeline:
             index.upsert(vectors=vectors)
             logger.debug(f"Upserted {len(entries)} vectors to Pinecone")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to upsert to Pinecone: {e}")
             raise
 

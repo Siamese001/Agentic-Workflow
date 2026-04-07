@@ -394,7 +394,7 @@ class ArchivalGatekeeper:
                 self._l4_ledger_hook(result)
                 Logger.debug(f"[ArchivalGatekeeper] L4 Ledger notified: {result.operation.value}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"[ArchivalGatekeeper] L4 Ledger hook failed: {e}")
 
@@ -498,7 +498,7 @@ class ArchivalGatekeeper:
                 reason=reason,
                 approval_status=pending_result.approval_status,
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             result = ArchivalResult(
                 success=False,
@@ -577,7 +577,7 @@ class ArchivalGatekeeper:
                 reason=reason,
                 approval_status=pending_result.approval_status,
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             result = ArchivalResult(
                 success=False,
@@ -653,7 +653,7 @@ class ArchivalGatekeeper:
                 reason=f"[SOFT DELETE] {reason}",
                 approval_status=pending_result.approval_status,
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             result = ArchivalResult(
                 success=False,
@@ -754,7 +754,7 @@ class ArchivalGatekeeper:
                 requester_agent=requester_agent,
                 reason=f"[RESTORE] {reason}",
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             result = ArchivalResult(
                 success=False,

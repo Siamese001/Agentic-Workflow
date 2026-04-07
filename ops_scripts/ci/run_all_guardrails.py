@@ -321,7 +321,7 @@ class GuardrailOrchestrator:
             print(f'⏱️  {name} TIMEOUT after {elapsed:.2f}s')
             rca_path = generate_rca(operation_name=name, error_type='TIMEOUT', error_message=f'Guardrail exceeded {timeout}s timeout limit', elapsed_time=elapsed, context={'script': script, 'timeout_limit': timeout, 'stdout': e.stdout[:500] if e.stdout else 'N/A', 'stderr': e.stderr[:500] if e.stderr else 'N/A'})
             return GuardrailResult(name=name, script=script, passed=False, exit_code=124, elapsed_time=elapsed, timeout=True, error=f'Timeout after {timeout}s', rca_path=rca_path)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             elapsed = clock_provider.time() - start_time
             print(f'💥 {name} EXCEPTION: {e}')

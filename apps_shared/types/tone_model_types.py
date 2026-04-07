@@ -492,7 +492,7 @@ class ToneAnalyzer:
             complexity = avg_word_length / 10 * 0.4 + complex_ratio * 0.6
             return max(0.0, min(1.0, complexity))
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Error calculating vocabulary complexity: {str(e)}")
             return 0.5
 

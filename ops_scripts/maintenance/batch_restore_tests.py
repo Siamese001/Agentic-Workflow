@@ -174,7 +174,7 @@ def restore_file(file_path: str, commit: str) -> tuple[bool, str]:
         full_path.write_text(fixed_content, encoding="utf-8")
 
         return True, "Restored and imports fixed"
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         return False, str(e)
 

@@ -149,7 +149,7 @@ class CircuitBreaker:
             result = fn(*args, **kwargs)
             self.record_success()
             return result
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.record_failure()
             raise
 

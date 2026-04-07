@@ -247,7 +247,7 @@ class PrecisionCryptographyManager:
 
             return (iv + ciphertext, tag)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.encryption_metrics["encryption_failures"] += 1
             logger.error(f"Symmetric encryption failed: {e}")
             raise
@@ -279,7 +279,7 @@ class PrecisionCryptographyManager:
 
             return plaintext
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Symmetric decryption failed: {e}")
             raise
 
@@ -304,7 +304,7 @@ class PrecisionCryptographyManager:
             self.encryption_metrics["encryptions"] += 1
             return ciphertext
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.encryption_metrics["encryption_failures"] += 1
             logger.error(f"Asymmetric encryption failed: {e}")
             raise
@@ -330,7 +330,7 @@ class PrecisionCryptographyManager:
             self.encryption_metrics["decryptions"] += 1
             return plaintext
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Asymmetric decryption failed: {e}")
             raise
 

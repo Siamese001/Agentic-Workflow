@@ -223,7 +223,7 @@ def main() -> int:
             timestamp=args.timestamp,
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

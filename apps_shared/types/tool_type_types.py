@@ -540,7 +540,7 @@ class ObservabilityToolExecutor:
                     total_metrics[key].append(value)
                 all_artifacts.extend(item_result.get("artifacts", []))
                 all_warnings.extend(item_result.get("warnings", []))
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 all_warnings.append(f"Batch item failed: {str(e)}")
         final_metrics = {}

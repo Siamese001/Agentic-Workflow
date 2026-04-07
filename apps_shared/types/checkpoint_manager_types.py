@@ -506,7 +506,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             logger.info(f"Cleaned up {count} old checkpoint files")
             return count
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Failed to cleanup checkpoints: {e}")
             return 0
 

@@ -291,7 +291,7 @@ class HealingPolicyMixin:
                         fixed = self._fix_file_violations(file_path, file_violations)
                         violations_fixed += fixed
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     errors += 1
                     Logger.error(f"Error processing {file_path}: {e}")

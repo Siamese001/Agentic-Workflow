@@ -369,7 +369,7 @@ class ResourceManager:
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error in cleanup loop: {e}")
 
     @contextmanager
@@ -441,7 +441,7 @@ class ResourceManager:
             await aiofiles.os.replace(str(temp_path), str(file_path))
             logger.debug(f"Atomically wrote {file_path}")
         # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             try:
                 await aiofiles.os.remove(temp_path)

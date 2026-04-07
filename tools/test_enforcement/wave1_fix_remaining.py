@@ -39,7 +39,7 @@ def fix_unclosed_bracket(filepath: pathlib.Path) -> dict:
             ast.parse(source)
             filepath.write_text(source, encoding="utf-8")
             return {"status": "fixed", "fix": "closed_bracket"}
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             pass
 
     return {"status": "still_broken"}

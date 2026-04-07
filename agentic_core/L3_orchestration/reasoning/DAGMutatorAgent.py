@@ -390,7 +390,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
                 self._store_mutation_result(result)
                 return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             error_result = MutationResult(
                 mutation_id=mutation.mutation_id, success=False, message=f"Mutation failed: {str(e)}"
