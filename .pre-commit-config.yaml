@@ -21,13 +21,11 @@
 #   T8   reject-artifacts  — reject generated artifacts that got re-tracked (fast)
 #   T9   tooling-bnd       — tooling/apps_* boundary guard (no ADG dependency)
 #   T10  module-coll       — architectural module collision check (no ADG dependency)
-#   T10.5 eager-import     — eager import lint in tests (no ADG dependency)
 #   T10.6 adg-unified      — UNIFIED ADG GATE: generates ADG if needed, then runs source-code checks
 #                           Replaces: adg-preflight, adg-burndown, adg-layer-violation, adg-p1-defect,
 #                                    adg-python-ban, adg-yaml-grep-ban, adg-skip-file-ratchet
 #                           Does NOT duplicate: generate_full_adg.py handles P1/layer/burndown internally
 #   T11  mcp-config        — MCP config sovereignty (file-triggered; cheap)
-#   T11.2 mcp-config-drift  — MCP config drift detection (always runs; prevents drift)
 #   T11.3 pytest-config    — pytest.ini vs pyproject.toml consistency
 #   ---- RATCHETS & POLICY (T12-T14) ----
 #   T12  exemption-gate    — guardian exemption quality ratchet
@@ -35,13 +33,12 @@
 #   ---- STYLE & FORMATTING (T2-T3, moved to end — Wave 4) ----
 #   T2   ruff-severity-gate — P0+P1 BLOCKING / P2+P3 warn-only (single wrapper, 4→1)
 #   T3   ruff-format       — normalize style on clean code (separate from lint; both required)
-#   T20  purge-cache       — cleanup, always last
 #
 # Manual / CI-only lane (stages: [manual]):
 #   adg-ci-gates, c0-sovereignty, dedup-guard, script-sprawl,
-#   shim-discipline, rollback-gate
+#   shim-discipline, rollback-gate, check-memory-health
 #
-# NOTE: T12–T20 share a single `repo: local` block. Tier labels in comments
+# NOTE: T12–T21 share a single `repo: local` block. Tier labels in comments
 #       are logical groupings; YAML structure groups them under one repo entry.
 #
 # NOTE: `default_language_version` applies to hooks with `language: python`
@@ -630,8 +627,6 @@ repos:
       # Ruff format runs after ruff lint; both in the same local block at end.
       # NOTE: ruff-format uses the remote ruff-pre-commit repo and must stay separate.
       # See the repo: https://github.com/astral-sh/ruff-pre-commit block below.
-
-      # ---- CLEANUP (T20 — always last) ------------------------------------------
 
       # ---- SUMMARY REPORT (T21 — displays after all hooks) ----------------------
 
