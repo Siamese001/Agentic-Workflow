@@ -100,14 +100,6 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
-##      - id: auto-stage
-#        name: "T0-stage: Auto-Stage Files (untracked + hook fixes)"
-#        entry: python ops_scripts/hooks/auto_stage.py
-#        language: system
-#        pass_filenames: false
-#        always_run: true
-#        require_serial: true
-
       - id: windsurf-plan-ci
         name: "T5.5: Windsurf Plan CI Validation"
         entry: py ops_scripts/hooks/windsurf_plan_ci.py
@@ -426,17 +418,6 @@ repos:
         always_run: true
         require_serial: true
 
-      # -- T10.5: Eager Import Lint — Detect risky module-level imports in tests ----
-      # Blocks test files with eager agentic_core imports that cause collection failures
-      # TEMPORARILY DISABLED: Script not yet implemented
-#      - id: eager-import-lint
-#        name: "T10.5: Eager Import Lint — No risky module-scope imports in tests"
-#        entry: cmd /c "set PYTHONPATH=.&& python tools/lint_eager_imports.py tests --strict --config config/eager_import_risk.yml"
-#        language: system
-#        pass_filenames: false
-#        always_run: true
-#        require_serial: true
-
       # -- T10.6: ADG Unified Gate — Single orchestrator for ADG generation + source-code checks ----
       # Replaces: adg-preflight, adg-burndown-gate, adg-layer-violation-gate, adg-p1-defect-gate,
       #           adg-python-ban-gate, adg-yaml-grep-ban-gate, adg-skip-file-ratchet
@@ -541,43 +522,6 @@ repos:
         always_run: true
         require_serial: true
 
-      # -- T13: Unified ADG Anti-Pattern Burndown Ratchet ---------------------------
-      # NOTE: Now handled by adg-unified-gate (generate_full_adg.py does burndown internally)
-      # Single scan enforces both Rule 1 (no new file+category pairs) and
-      # Rule 2 (existing counts may only decrease). Supersedes check_anti_patterns.py.
-      # - id: adg-burndown-gate
-      #   name: "T13: ADG Anti-Pattern Burndown Ratchet"
-      #   entry: cmd /c "set PYTHONPATH=.&& set ADG_BURNDOWN_JSON_OUTPUT=%TEMP%/pre-commit-issues/adg_burndown_gate.jsonl&& python ops_scripts/ci/adg_burndown_gate.py"
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: true
-      #   require_serial: true
-      #   exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
-
-      # -- T13.5: ADG Layer Violation Gate ----------------------------------------
-      # NOTE: Now handled by adg-unified-gate (generate_full_adg.py does layer violations internally)
-      # Queries ADG for layer boundary violations (violates edges) and reports them.
-      # Non-blocking in warning mode; violations are logged for visibility.
-      # - id: adg-layer-violation-gate
-      #   name: "T13.5: ADG Layer Violation Gate"
-      #   entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_layer_violation_gate.py --warn"
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: true
-      #   require_serial: true
-
-      # -- T13.6: ADG:CRITICAL Defect Gate — BLOCKING ----------------------------
-      # NOTE: Now handled by adg-unified-gate (generate_full_adg.py --strict does this internally)
-      # SEVERITY SSOT: SeverityLevel.CRITICAL  |  ADG: CRITICAL  (legacy name: ADG:P1)
-      # Blocks commits if ADG:CRITICAL (layer boundary violations) exist in the codebase.
-      # - id: adg-p1-defect-gate
-      #   name: "T13.6: ADG P1 Defect Gate — BLOCKING on critical defects"
-      #   entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_p1_defect_gate.py"
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: true
-      #   require_serial: true
-
       # -- T14: ADG Accelerator Compliance Gate (Wave 3 consolidation) -----------
       # Merges adg_python_ban_gate.py (T14) + adg_yaml_grep_ban_gate.py (T15) into one.
       # Python: hard-fail if staged .py files use grep/mypy/pytest as ADG substitutes.
@@ -594,20 +538,6 @@ repos:
         pass_filenames: false
         always_run: false
         require_serial: true
-
-      # -- T15: Skip-File Ratchet (renamed from T16) -----------------------------
-      # NOTE: Now handled by adg-unified-gate
-      # Hard-fail if new # adg-grep-ban: skip-file directives were added without
-      # updating the baseline in ops_scripts/hooks/skip_file_budget.json.
-      # To legitimately add: run python ops_scripts/ci/adg_skip_file_ratchet.py --update
-      # - id: adg-skip-file-ratchet
-      #   name: "T15: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
-      #   entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_skip_file_ratchet.py"
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: false
-      #   types: [python]
-      #   require_serial: true
 
       # ---- STYLE & FORMATTING (T2-T3) — moved to end for better signal flow ------
       # Governance checks run first; style corrections applied after policy passes.
@@ -721,18 +651,6 @@ repos:
       # See the repo: https://github.com/astral-sh/ruff-pre-commit block below.
 
       # ---- CLEANUP (T20 — always last) ------------------------------------------
-
-      # -- T20: Pycache purge (FINAL CLEANUP) ------------------------------------
-      # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
-      # CRITICAL: Must run AFTER all Python hooks to prevent __pycache__ litter.
-      # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
-      # TEMPORARILY DISABLED: File corruption issue on Windows
-#      - id: purge-cache
-#        name: "T20: Pycache Purge (Final Cleanup)"
-#        entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
-#        language: system
-#        pass_filenames: false
-#        always_run: true
 
       # ---- SUMMARY REPORT (T21 — displays after all hooks) ----------------------
 
