@@ -9,7 +9,7 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 CDA_PATH = (
-    Path(__file__).parent.parent.parent
+    Path(__file__).parent.parent.parent.parent.parent.parent
     / AGENTIC_CORE_DIR
     / "L5_safety"
     / "reasoning"

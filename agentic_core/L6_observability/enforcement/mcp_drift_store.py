@@ -24,8 +24,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_emits_metric_event,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
-    emit_determinism_digest,
-    emit_replay_key,
 )
 
 
@@ -40,6 +38,16 @@ def _get_mcp_drift_recorder():
         MCPServerState,
     )
     return MCPServerState, MCPConfigSnapshot, MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity
+
+# Bind at module scope for type annotations and direct usage throughout this file
+(
+    MCPServerState,
+    MCPConfigSnapshot,
+    MCPDriftEvent,
+    MCPDriftRecorder,
+    MCPDriftReport,
+    MCPDriftSeverity,
+) = _get_mcp_drift_recorder()
 
 # Self-bootstrap emitters
 _emit_records_telemetry_event("mcp_l6", "l6_obs", "persistence_active")

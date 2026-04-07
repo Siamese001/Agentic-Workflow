@@ -9,7 +9,7 @@ import pytest
 
 # Lazy import to avoid collection-time conflicts
 def _get_capture_function():
-    from tools.capture_evidence import capture_command
+    from tools.analysis.capture_evidence import capture_command
     return capture_command
 
 
@@ -34,6 +34,7 @@ class TestCaptureEvidence:
 
     def test_pwsh_string_abort(self, tmp_path):
         """Test that capture_command aborts if output contains 'pwsh'."""
+        capture_command = _get_capture_function()
         evidence_file = tmp_path / "evidence.md"
 
         # Mock subprocess.run to return output with "pwsh"
@@ -48,6 +49,7 @@ class TestCaptureEvidence:
 
     def test_clean_output_no_abort(self, tmp_path):
         """Test that capture_command succeeds with clean output."""
+        capture_command = _get_capture_function()
         evidence_file = tmp_path / "evidence.md"
 
         # Mock subprocess.run to return clean output
@@ -67,6 +69,7 @@ class TestCaptureEvidence:
 
     def test_case_insensitive_detection(self, tmp_path):
         """Test that PowerShell detection is case-insensitive."""
+        capture_command = _get_capture_function()
         evidence_file = tmp_path / "evidence.md"
 
         # Mock subprocess.run to return output with "PowerShell" (mixed case)

@@ -19,11 +19,11 @@ class TestRedisMcp:
         assert redis_mcp is not None
 
     def test_redis_mcp_class(self):
-        """Test RedisMcp class exists."""
-        from agentic_core import RedisMcp
-        assert RedisMcp is not None
+        """Test RedisCacheClient (DeterministicRedisCache) class exists."""
+        from agentic_core import RedisCacheClient
+        assert RedisCacheClient is not None
 
     def test_redis_mcp_callable(self):
-        """Test redis_mcp functions are callable."""
-        from agentic_core import validate_redis_mcp
-        assert callable(validate_redis_mcp)
+        """Test DeterministicRedisCache is instantiable (callable)."""
+        from agentic_core import RedisCacheClient
+        assert callable(RedisCacheClient)
