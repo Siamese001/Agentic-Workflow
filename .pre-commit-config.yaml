@@ -1,4 +1,13 @@
 # .pre-commit-config.yaml
+#
+# W4.1 FAST LOCAL LANE — gates that run on every commit must be cheap (<2s each):
+#   T0  admission/whitespace  — deterministic, no Python startup
+#   T1  py_compile            — fastest syntax fail
+#   T4  guardian-fix          — auto-fixer, always exit 0
+#   T7.8 powershell-ban       — staged-only regex scan, fast
+#   T14 accelerator-compliance— staged-only, skipped if no .py/.yml changed
+# Gates that may be slow are scoped to [manual] or [commit] stages with files: filters.
+#
 # OPTIMIZED: authorize -> normalize -> prove basic validity -> mutate safely ->
 #            certify structure -> enforce policy -> run ADG unified gate -> clean up
 # Order of operations:
@@ -627,6 +636,8 @@ repos:
         stages: [manual]
 
       # -- Rollback Gate (multi-file phase checkpoints) ----------------------
+      # W4.1: Moved to [manual] — rollback checkpoint is a phase tool, not per-commit.
+      # Run manually: pre-commit run check-rollback-checkpoints --hook-stage manual
       - id: check-rollback-checkpoints
         name: "T18: Rollback Gate — Phase Checkpoints"
         entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_rollback_checkpoints.py"
@@ -634,6 +645,7 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
       # ---- STYLE & FORMATTING (T3 — ruff-format, after T2) ----------------------
       # Ruff format runs after ruff lint; both in the same local block at end.
