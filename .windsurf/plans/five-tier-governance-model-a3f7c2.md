@@ -17,7 +17,7 @@ Three concerns, cleanly separated:
 | Wave 0 | 0.1 | MCP Green Light prerequisite | Z: constitutional §13 MCP health check | ~2K | ✅ DONE |
 | Wave 1 | 1.1–1.8 | Cascade Hooks: 3 hard gates + 1 advisory classifier + 4 advisory post-hooks | A: hooks block pwsh, anti-patterns; classifier tags tier; audit hooks log; response-tail cleanup | ~16K | 🟢 READY |
 | Wave 2 | 2.1–2.10 | Policy layer cleanup + MCP simplification + HITL calibration + plan format | B: all rules loading, MCP simplified, HITL calibrated, plan template updated | ~15K | 🟢 READY |
-| **Wave 2.5** | **M.1–M.7** | **ADG Generator Modularization** (3,305-line monolith → 7 subpackages) | **B2: `generate_full_adg.py` → package, tests green, pre-commit green** | **~18K** | **🟡 AFTER W2** |
+| **Wave 2.5** | **M.1–M.7** | **ADG Generator Modularization** (3,305-line monolith → 7 subpackages) | **B2: `generate_full_adg.py` → package, tests green, pre-commit green** | **~18K** | **✅ DONE** |
 | Wave 3 | 3.1–3.7 | ADG structural truth + Refactor Accelerator + syntax/guardian hardening | C: ADG scoped to structure, RA created, syntax gate, guardian idempotent | ~16K | 🟡 DEPENDS ON W2.5 |
 | Wave 4 | 4.1–4.6 | Local quality ratchet + CI promotion authority + verification | D: fast pre-commit, explicit promotion criteria, full pipeline green | ~10K | 🟢 READY |
 | **Wave 5** | **5.1–5.14** | **Post-plan tech debt cleanup: archive ~800 superseded scripts, rewire RepairOrchestrator, fix paths, consolidate tools/** | **E: zero dangling refs, tools/ from ~1,200→~200 items, pre-commit clean** | **~18K** | **🟡 AFTER W4** |
@@ -51,13 +51,13 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 | W2 | 2.8 | HITL SVP Calibration | Ground ⭐ recommendations in measurable target state | PP-16 | ~2K | 🟢 |
 | W2 | 2.9 | Plan Format Enforcement | Mandate phase-level summary table at top of all plans | PP-18 | ~1K | 🟢 |
 | W2 | 2.10 | Approval & Exception Policy | Define allow/deny/require-approval classes, escalation paths, risk classes | — | ~2K | 🟢 |
-| **W2.5** | **M.1** | **Extract utils/** | Move 6 utility functions (file_utils, digest_utils) to subpackage | PP-19 | ~2K | 🟡 |
-| **W2.5** | **M.2** | **Extract archiving/** | Move 6 archive/zip functions to subpackage | PP-19 | ~2K | 🟡 |
-| **W2.5** | **M.3** | **Extract validation/** | Move 6 validation/gate functions + rewrite 22 test imports | PP-19 | ~3K | 🟡 |
-| **W2.5** | **M.4** | **Extract reporting/** | Move defect table (389 lines) + reports (622 lines) to subpackage | PP-19 | ~3K | 🟡 |
-| **W2.5** | **M.5** | **Extract integration/** | Move 5 integration functions (redis, git, memory, mcp, repair) | PP-19 | ~2K | 🟡 |
-| **W2.5** | **M.6** | **Extract core/ + main.py** | Move orchestrator + CLI + config to core package, slim monolith to shim | PP-19 | ~3K | 🟡 |
-| **W2.5** | **M.7** | **Modularization Verification** | Full E2E: generate ADG, tests green, pre-commit green, no import breakage | PP-19 | ~3K | 🟡 |
+| **W2.5** | **M.1** | **Extract utils/** | Move 6 utility functions (file_utils, digest_utils) to subpackage | PP-19 | ~2K | ✅ DONE |
+| **W2.5** | **M.2** | **Extract archiving/** | Move 6 archive/zip functions to subpackage | PP-19 | ~2K | ✅ DONE |
+| **W2.5** | **M.3** | **Extract validation/** | Move 6 validation/gate functions + rewrite 22 test imports | PP-19 | ~3K | ✅ DONE |
+| **W2.5** | **M.4** | **Extract reporting/** | Move defect table (389 lines) + reports (622 lines) to subpackage | PP-19 | ~3K | ✅ DONE |
+| **W2.5** | **M.5** | **Extract integration/** | Move 5 integration functions (redis, git, memory, mcp, repair) | PP-19 | ~2K | ✅ DONE |
+| **W2.5** | **M.6** | **Extract core/ + main.py** | Move orchestrator + CLI + config to core package, slim monolith to shim | PP-19 | ~3K | ✅ DONE |
+| **W2.5** | **M.7** | **Modularization Verification** | Full E2E: generate ADG, tests green, pre-commit green, no import breakage | PP-19 | ~3K | ✅ DONE |
 | W3 | 3.1 | ADG Scope Clarification | Explicit in-scope / out-of-scope boundary for ADG | — | ~1K | 🟡 |
 | W3 | 3.2 | ADG Structural Outputs | Burndown table, blast radius, seam detection, centrality | PP-17 | ~3K | 🟡 |
 | W3 | 3.3 | Refactor Accelerator Design | RA spec: inputs (ADG + git + lint + test), outputs (ranked candidates, safe cuts) | — | ~3K | 🟡 |
