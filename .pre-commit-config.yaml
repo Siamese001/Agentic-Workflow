@@ -4,10 +4,9 @@
 # Order of operations:
 #   T0   admission/guards  — auto-stage, no-verify guard, HITL, agent-deletion, whitespace/LF/EOF/merge-conflict
 #   T1   py_compile        — fastest gate, catches broken syntax immediately
-#   T2   ruff-severity-gate — P0+P1 BLOCKING / P2+P3 warn-only (single wrapper, 4→1)
-#   T3   ruff-format       — normalize style on clean code (separate from lint; both required)
 #   T4   guardian-fix      — canonicalize guardian comment format in staged files
 #   T5   adg-ci-gates      — Wave 0 ADG CI delta gates M1-M6 (manual only)
+#   ---- STRUCTURAL INTEGRITY BLOCK (T6-T11.3) ----
 #   T6   hollow-file-gate  — AST semantic validity check (cheap; before architectural checks)
 #   T7   report-loc        — structural SSOT path check (no ADG dependency; fast)
 #   T8   reject-artifacts  — reject generated artifacts that got re-tracked (fast)
@@ -21,8 +20,12 @@
 #   T11  mcp-config        — MCP config sovereignty (file-triggered; cheap)
 #   T11.2 mcp-config-drift  — MCP config drift detection (always runs; prevents drift)
 #   T11.3 pytest-config    — pytest.ini vs pyproject.toml consistency
+#   ---- RATCHETS & POLICY (T12-T14) ----
 #   T12  exemption-gate    — guardian exemption quality ratchet
 #   T14  adg-accelerator-compliance — unified Python+YAML ban gate (4→1, Wave 3)
+#   ---- STYLE & FORMATTING (T2-T3, moved to end — Wave 4) ----
+#   T2   ruff-severity-gate — P0+P1 BLOCKING / P2+P3 warn-only (single wrapper, 4→1)
+#   T3   ruff-format       — normalize style on clean code (separate from lint; both required)
 #   T20  purge-cache       — cleanup, always last
 #
 # Manual / CI-only lane (stages: [manual]):
@@ -164,42 +167,8 @@ repos:
         require_serial: true
 
   # ============================================================================
-  # TIER 2: Ruff Lint — Severity Gate Wrapper (Wave 2 consolidation)
-  # SEVERITY SSOT: agentic_core.L5_safety.config.severity.SeverityLevel
-  #
-  # P-NUMBER NAMESPACES — THREE DISTINCT SYSTEMS, DO NOT CONFLATE:
-  #   Ruff:      P0=CRITICAL  P1=HIGH     P2=MEDIUM   P3=LOW
-  #   ADG:       CRITICAL     HIGH        MEDIUM      LOW     (legacy aliases: P1/P2/P3/P4)
-  #   V15 gates: phase-1 ... phase-6  (build phases, unrelated to severity)
-  #
-  # Replaces 4 separate T2-P0/P1/P2/P3 hooks with a single wrapper that:
-  #   Pass 1 (P0+P1) → BLOCKING  (exits 1 on violations)
-  #   Pass 2 (P2+P3) → NON-BLOCKING (always exits 0, warn-only)
-  # Rule SSOT: ops_scripts/ci/ruff_severity_gate.py
-  # ============================================================================
-  - repo: local
-    hooks:
-      # -- T2: Ruff Lint (All Severities — severity-gated wrapper) ---------------
-      # SEVERITY SSOT: SeverityLevel.*  |  Ruff: P0-P3  |  ADG: CRITICAL→LOW
-      # P0+P1 violations BLOCK commit; P2+P3 violations are warnings only.
-      - id: ruff-severity-gate
-        name: "T2: Ruff Lint (P0+P1 blocking / P2+P3 warn)"
-        entry: python ops_scripts/ci/ruff_severity_gate.py
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
-    hooks:
-      # -- T3: Ruff Format ----------------------------------------------------
-      - id: ruff-format
-        name: "T3: Ruff Format"
-        exclude: '.*\.md$|ops_scripts/ci/check_anti_patterns\.py'
-
-  # ============================================================================
   # TIER 4: ADG Accelerator Auto-Fixers
-  # Runs after ruff-format so formatting is canonical before guardian fixes.
+  # Runs after T1 syntax check; T2/T3 style gates moved to end (Wave 4).
   # ============================================================================
   - repo: local
     hooks:
@@ -580,6 +549,23 @@ repos:
       #   types: [python]
       #   require_serial: true
 
+      # ---- STYLE & FORMATTING (T2-T3) — moved to end for better signal flow ------
+      # Governance checks run first; style corrections applied after policy passes.
+      # P-NUMBER NAMESPACES — THREE DISTINCT SYSTEMS, DO NOT CONFLATE:
+      #   Ruff:  P0=CRITICAL  P1=HIGH  P2=MEDIUM  P3=LOW
+      #   ADG:   CRITICAL     HIGH     MEDIUM     LOW  (legacy aliases: P1/P2/P3/P4)
+
+      # -- T2: Ruff Lint (All Severities — severity-gated wrapper) ---------------
+      # SEVERITY SSOT: SeverityLevel.*  |  Ruff: P0-P3  |  ADG: CRITICAL→LOW
+      # P0+P1 violations BLOCK commit; P2+P3 violations are warnings only.
+      # Rule SSOT: ops_scripts/ci/ruff_severity_gate.py
+      - id: ruff-severity-gate
+        name: "T2: Ruff Lint (P0+P1 blocking / P2+P3 warn)"
+        entry: python ops_scripts/ci/ruff_severity_gate.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # These are too heavy or too specialized for every local commit.
 
@@ -649,6 +635,11 @@ repos:
         always_run: true
         require_serial: true
 
+      # ---- STYLE & FORMATTING (T3 — ruff-format, after T2) ----------------------
+      # Ruff format runs after ruff lint; both in the same local block at end.
+      # NOTE: ruff-format uses the remote ruff-pre-commit repo and must stay separate.
+      # See the repo: https://github.com/astral-sh/ruff-pre-commit block below.
+
       # ---- CLEANUP (T20 — always last) ------------------------------------------
 
       # -- T20: Pycache purge (FINAL CLEANUP) ------------------------------------
@@ -673,3 +664,16 @@ repos:
         entry: py ops_scripts/ci/pre_commit_summary_reporter.py --report
         language: system
         pass_filenames: false
+
+  # ============================================================================
+  # STYLE & FORMATTING — T3: Ruff Format (moved to end — Wave 4)
+  # Runs after all governance checks; style normalization is the final step.
+  # Remote repo block must remain separate from repo: local entries above.
+  # ============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
+    hooks:
+      # -- T3: Ruff Format -------------------------------------------------------
+      - id: ruff-format
+        name: "T3: Ruff Format"
+        exclude: '.*\.md$|ops_scripts/ci/check_anti_patterns\.py'
