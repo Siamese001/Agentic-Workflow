@@ -11,10 +11,8 @@ Invoke with `/mcp-failure-rca`. Automatically diagnoses and fixes ADG MCP and Re
 ## STEP 0: Triage — identify which MCP is down
 
 Call `adg_health` MCP tool. If it returns an error, ADG MCP is down → go to STEP 1.
-Call `redis_health` MCP tool (mcp10). If it returns an error, Redis is down → go to STEP 3.
-Call `mcp7_sequentialthinking` with minimal probe. If it hangs or errors → go to STEP 6.
+Call `mcp12_redis_health` MCP tool. If it returns an error, Redis is down → go to STEP 3.
 Call `mcp11_discover_tests` with path=`tests`. If it errors → go to STEP 7.
-Call `mcp9_otel_status`. If it errors → go to STEP 8.
 If all healthy → nothing to fix, return to original prompt.
 
 ---
@@ -188,9 +186,9 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 ```
 python -c "import subprocess; r=subprocess.run(['where', 'npx'], capture_output=True, text=True, check=False); print(r.stdout.strip())"
 ```
-On Windows, `npx` requires `npx.cmd` — bare `npx` causes `FileNotFoundError` which Windsurf silently converts to a hang.
+On older Windsurf versions, `npx` required `npx.cmd` on Windows. Current Windsurf resolves `npx` correctly.
 
-Fix: ensure `config/mcp_servers.yaml` and `~/.codeium/windsurf/mcp_config.json` use `command: npx.cmd` not `command: npx` for all npx-based servers.
+Fix: ensure `config/mcp_servers.yaml` uses `command: npx` (NOT `npx.cmd`). Run sync: `python tools/adg/sync_yaml_to_global.py`. Then health check: `python ops_scripts/ci/mcp_health_check.py`.
 
 **B) Check if the process is hung (zombie node.exe):**
 // turbo

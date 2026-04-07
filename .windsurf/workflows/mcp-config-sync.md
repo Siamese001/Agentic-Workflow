@@ -36,17 +36,30 @@ The script:
 
 ---
 
-## STEP 3: Restart Windsurf
+## STEP 3: Health check all servers
+
+// turbo
+```
+python ops_scripts/ci/mcp_health_check.py
+```
+
+- Exit 0 → all 14 servers healthy
+- Exit 1 → failures detected, investigate output
+
+---
+
+## STEP 4: Restart Windsurf
 
 MCP servers only reload on IDE restart. After sync, restart Windsurf to pick up the new config.
 
 ---
 
-## STEP 3: Verify MCP servers respond
+## STEP 5: Verify MCP servers respond
 
 Call any MCP tool to confirm servers are live:
-- `mem_stats` — verifies memory server
-- `adg_status` — verifies ADG SQLite server
+- `mcp9_mem_get_stats` — verifies memory server
+- `mcp1_adg_status` — verifies ADG SQLite server
+- `mcp12_redis_health` — verifies Redis server
 
 ---
 
@@ -54,5 +67,6 @@ Call any MCP tool to confirm servers are live:
 
 - YAML SSOT: `config/mcp_servers.yaml`
 - Sync script: `tools/adg/sync_yaml_to_global.py`
+- Health check: `ops_scripts/ci/mcp_health_check.py`
 - Validation script: `ops_scripts/ci/validate_mcp_yaml.py`
 - Rule: `.windsurf/rules/mcp-config-ssot.md`

@@ -123,7 +123,7 @@ C:\Git\Agentic-Workflow
 
 ## Topology Decision — RESOLVED: Full Centralization
 
-**Selected:** Option 1 — Full Centralization (Recommended)
+**Selected:** Option 1 — Full Centralization (⭐ RECOMMENDED)
 
 **Rationale:**
 - Deterministic imports: Single discovery root prevents shadow loading

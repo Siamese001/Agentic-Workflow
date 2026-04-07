@@ -153,10 +153,8 @@ If issues arise:
 ## Open Questions
 
 1. Should we enforce SSOT usage via lint rule?
-   - Recommendation: Yes, add linter to catch string literal severity values
+   - Recommendation: ⭐ Yes, add linter to catch string literal severity values
 
 2. Should we deprecate legacy severity values (WARNING, ERROR)?
-   - Recommendation: Yes, map to MEDIUM/HIGH and add deprecation warning
-
-3. Should we canonicalize to lowercase everywhere?
-   - Recommendation: Yes, use lowercase for database, uppercase for UI/display via `.display_name`
+   - Recommendation: ⭐ Yes, map to MEDIUM/HIGH and add deprecation warning
+   - Recommendation: ⭐ Yes, use lowercase for database, uppercase for UI/display via `.display_name`

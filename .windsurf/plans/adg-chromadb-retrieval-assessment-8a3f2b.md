@@ -315,7 +315,7 @@ CREATE TABLE edges (
 **Pros**: Faster for structural queries, better governance
 **Cons**: Complex query orchestration
 
-**Option C: Hybrid Graph + Vector (Recommended)**
+**Option C: Hybrid Graph + Vector (⭐ RECOMMENDED)**
 1. Query ADG for structural context (parallel)
 2. Query ChromaDB for semantic similarity (parallel)
 3. Query BM25 for lexical matches (parallel)

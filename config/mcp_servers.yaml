@@ -8,13 +8,17 @@
 #   - agentic_core/L3_orchestration/reasoning/mcp_manager.py (hardcoded _TOOL_DISPATCH - DEPRECATED)
 #   - agentic_core/L2_execution/config/mcp_registry.py (hardcoded _BASE_MCP_REGISTRY - DEPRECATED)
 #
-# After editing this file, run: python tools/adg/sync_global_config.py
+# After editing this file, run: python tools/adg/sync_yaml_to_global.py
 
 # ============================================================================
 # REPOSITORY ROOT — Single point of change for repo location
 # All server paths use ${REPO_ROOT} placeholder. Expanded by expand_mcp_config.py.
 # ============================================================================
 repo_root: "C:/Git/Agentic-Workflow"
+
+# Platform-specific defaults (sync script checks env vars first, falls back to these)
+defaults:
+  GITKRAKEN_EXE: "C:/Users/amita/AppData/Local/GitKrakenCLI/gk.exe"
 
 schema_version: "1.0.0"
 last_updated: "2026-04-04"
@@ -30,6 +34,7 @@ servers:
   # GitKraken (mcp0_*) - Git operations, issues, PRs
   # ==========================================================================
   gitkraken:
+    windsurf_name: "GitKraken"
     name: "GitKraken"
     prefix: "mcp0"
     enabled: true
@@ -166,16 +171,16 @@ servers:
   # Brave Search (mcp2_*) - Web and content search
   # ==========================================================================
   brave_search:
+    windsurf_name: "brave-search"
     name: "Brave Search"
     prefix: "mcp2"
     enabled: true
     target_layer: "L2"
     description: "Web search, local search, news, video, and image search"
-    command: "npx.cmd"
+    command: "npx"
     args:
       - "-y"
-      - "@modelcontextprotocol/server-brave-search"
-    cwd: "${REPO_ROOT}"
+      - "@modelcontextprotocol/server-brave-search@0.6.2"
     env:
       BRAVE_API_KEY: "${BRAVE_API_KEY}"
     capabilities:
@@ -215,11 +220,7 @@ servers:
     enabled: true
     target_layer: "L6"
     description: "AI-powered repository documentation and analysis"
-    command: "npx.cmd"
-    args:
-      - "-y"
-      - "@iflow-mcp/deepwiki-mcp"
-    cwd: "${REPO_ROOT}"
+    url: "https://mcp.deepwiki.com/mcp"
     capabilities:
       - repo_documentation
       - code_analysis
@@ -287,12 +288,11 @@ servers:
     enabled: true
     target_layer: "L0"
     description: "File system operations within allowed directories"
-    command: "npx.cmd"
+    command: "npx"
     args:
       - "-y"
-      - "@modelcontextprotocol/server-filesystem"
+      - "@modelcontextprotocol/server-filesystem@0.6.2"
       - "${REPO_ROOT}"
-    cwd: "${REPO_ROOT}"
     capabilities:
       - file_read
       - file_write
@@ -399,53 +399,18 @@ servers:
         description: "Recall persistent project context"
 
   # ==========================================================================
-  # Browser / Puppeteer (no prefix assignment - mirrors Windsurf 'browser' entry)
-  # ==========================================================================
-  browser:
-    name: "Browser"
-    prefix: "mcp7"
-    enabled: true
-    target_layer: "L2"
-    description: "Browser automation via Puppeteer for web interaction and scraping"
-    command: "npx.cmd"
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-puppeteer"
-    capabilities:
-      - browser_automation
-      - web_scraping
-      - page_navigation
-    tools:
-      browser_navigate:
-        target: "mcp7_puppeteer_navigate"
-        description: "Navigate to a URL"
-      browser_screenshot:
-        target: "mcp7_puppeteer_screenshot"
-        description: "Take a screenshot"
-      browser_click:
-        target: "mcp7_puppeteer_click"
-        description: "Click an element"
-      browser_fill:
-        target: "mcp7_puppeteer_fill"
-        description: "Fill a form field"
-      browser_evaluate:
-        target: "mcp7_puppeteer_evaluate"
-        description: "Execute JavaScript in browser"
-
-  # ==========================================================================
-  # Playwright (mcp9_*) - Browser automation and web interaction
+  # Playwright (mcp10_*) - Browser automation and web interaction
   # ==========================================================================
   playwright:
     name: "Playwright"
-    prefix: "mcp9"
+    prefix: "mcp10"
     enabled: true
     target_layer: "L2"
     description: "Browser automation, web scraping, and UI interaction for testing/debugging"
-    command: "npx.cmd"
+    command: "npx"
     args:
       - "-y"
-      - "@playwright/mcp"
-    cwd: "${REPO_ROOT}"
+      - "@executeautomation/playwright-mcp-server@1.0.5"
     capabilities:
       - browser_automation
       - web_scraping
@@ -477,14 +442,13 @@ servers:
   # ==========================================================================
   fetch:
     name: "Fetch"
-    prefix: "mcp8"
+    prefix: "mcp5"
     enabled: true
     target_layer: "L2"
     description: "Web content retrieval and URL fetching"
-    command: "npx.cmd"
+    command: "uvx"
     args:
-      - "-y"
-      - "mcp-fetch"
+      - "mcp-server-fetch"
     capabilities:
       - url_fetching
       - web_content_retrieval
@@ -498,16 +462,17 @@ servers:
   # ==========================================================================
   figma:
     name: "Figma"
-    prefix: "mcp13"
+    prefix: "mcp6"
     enabled: true
     target_layer: "L2"
     description: "Figma design file access and asset export"
-    command: "npx.cmd"
+    command: "npx"
     args:
       - "-y"
-      - "figma-mcp-pro"
-      - "--figma-api-key"
-      - "${FIGMA_API_KEY}"
+      - "figma-mcp-pro@latest"
+    env:
+      FIGMA_API_KEY: "${FIGMA_API_KEY}"
+      FIGMA_TEAM_ID: "${FIGMA_TEAM_ID}"
     capabilities:
       - design_access
       - asset_export
@@ -525,14 +490,14 @@ servers:
   # ==========================================================================
   github:
     name: "GitHub"
-    prefix: "mcp14"
+    prefix: "mcp8"
     enabled: true
     target_layer: "L0"
     description: "GitHub API for issues, PRs, and repository management"
-    command: "npx.cmd"
+    command: "npx"
     args:
       - "-y"
-      - "@modelcontextprotocol/server-github"
+      - "@modelcontextprotocol/server-github@0.6.2"
     env:
       GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_PERSONAL_ACCESS_TOKEN}"
     capabilities:
@@ -549,28 +514,6 @@ servers:
       github_create_pr:
         target: "mcp14_create_pull_request"
         description: "Create a pull request"
-
-  # ==========================================================================
-  # Postgres Memory (no Windsurf prefix) - PostgreSQL-backed memory
-  # ==========================================================================
-  postgres_memory:
-    name: "Postgres Memory"
-    prefix: "mcp15"
-    enabled: true
-    target_layer: "L4"
-    description: "PostgreSQL-backed persistent memory store"
-    command: "npx.cmd"
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-postgres"
-      - "postgresql://postgres:postgres@localhost:5432/mcp_db"
-    capabilities:
-      - persistent_memory
-      - sql_queries
-    tools:
-      pg_query:
-        target: "mcp15_query"
-        description: "Run a read-only SQL query"
 
   # ==========================================================================
   # Vector DB (mcp16_*) - Embeddings and semantic search
@@ -672,15 +615,15 @@ servers:
   # ==========================================================================
   task_manager:
     name: "Task Manager"
-    prefix: "mcp18"
-    enabled: false
+    prefix: "mcp14"
+    enabled: true
     target_layer: "L1"
     description: "Task decomposition, step tracking, and progress preservation for multi-step work"
-    command: "npx.cmd"
+    command: "npx"
     args:
       - "-y"
-      - "@modelcontextprotocol/server-task-manager"
-    cwd: "${REPO_ROOT}"
+      - "@blizzy/mcp-task-manager"
+      - "stdio"
     capabilities:
       - task_decomposition
       - step_tracking
@@ -707,8 +650,9 @@ servers:
   # Redis MCP (mcp11_*) - Cache/state inspection and targeted invalidation
   # ==========================================================================
   redis_mcp:
+    windsurf_name: "redis"
     name: "Redis MCP"
-    prefix: "mcp19"
+    prefix: "mcp13"
     enabled: true
     target_layer: "L4"
     description: "Redis cache/state inspection for ADG hot cache, sovereign orchestration fabric, and tool embedding cache"
@@ -718,10 +662,10 @@ servers:
       - "import sys; sys.path.insert(0, r'${REPO_ROOT}'); __file__ = r'${REPO_ROOT}/tools/mcp/redis_mcp_server.py'; exec(open(r'${REPO_ROOT}/tools/mcp/redis_mcp_server.py', encoding='utf-8').read())"
     cwd: "${REPO_ROOT}"
     env:
-      REDIS_HOST: "localhost"
-      REDIS_PORT: "6379"
-      REDIS_DB: "0"
-      REDIS_TIMEOUT: "5"
+      REDIS_DB: "${REDIS_DB:-0}"
+      REDIS_HOST: "${REDIS_HOST:-localhost}"
+      REDIS_PORT: "${REDIS_PORT:-6379}"
+      REDIS_TIMEOUT: "${REDIS_TIMEOUT:-5}"
     capabilities:
       - cache_inspection
       - key_scanning
@@ -765,7 +709,7 @@ servers:
   # ==========================================================================
   pytest_mcp:
     name: "Pytest MCP"
-    prefix: "mcp20"
+    prefix: "mcp12"
     enabled: true
     target_layer: "L5"
     description: "Test discovery, targeted execution, CI gate analysis, and failure triage for the 2,771-module test suite"
@@ -844,11 +788,9 @@ validation:
     - mcp7
     - mcp8
     - mcp9
+    - mcp10
+    - mcp12
     - mcp13
     - mcp14
-    - mcp15
     - mcp16
     - mcp17
-    - mcp18
-    - mcp19
-    - mcp20
