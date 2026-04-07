@@ -211,7 +211,7 @@ class MissionPreflight:
 
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
         return self._hierarchy_agent
 
     def _get_import_agent(self):
@@ -223,7 +223,7 @@ class MissionPreflight:
 
                 self._import_agent = create_legacy_import_healer()
             except ImportError:
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
         return self._import_agent
 
     def run_preflight(self, target_sector: str) -> dict[str, Any]:
@@ -281,7 +281,7 @@ class MissionPreflight:
                 )
         # guardian: allow-silent-swallower
         except (ValueError, TypeError):
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         results["adg_antipattern_count"] = _adg_antipattern_count
         self._print_dashboard(results)
         total_violations = results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]

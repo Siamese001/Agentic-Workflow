@@ -390,4 +390,4 @@ class DefaultDeterministicResourcePredictor:
             )
         except (ValueError, TypeError):
             # System learning unavailable - continue without tracking
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow

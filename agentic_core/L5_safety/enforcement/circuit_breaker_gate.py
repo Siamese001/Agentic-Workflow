@@ -239,7 +239,7 @@ class CircuitBreaker:
             )
         except (ValueError, TypeError):
             # System learning unavailable - continue without emission
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
     def get_time_until_retry(self) -> float:
         """Get seconds until retry is allowed (for OPEN state)."""

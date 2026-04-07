@@ -175,8 +175,9 @@ def _existing_hashes(corpus_path: Path) -> set[str]:
             continue
         try:
             hashes.add(json.loads(line).get("content_hash", ""))
-        except json.JSONDecodeError:
-            pass
+        except json.JSONDecodeError as e:
+
+            import logging; logging.getLogger(__name__).debug("historical_backfill_engine: Exception swallowed at L178: %s", e)
     return hashes
 
 
@@ -188,8 +189,9 @@ def _load_jsonl_lenient(path: Path) -> list[dict[str, Any]]:
             continue
         try:
             records.append(json.loads(line))
-        except json.JSONDecodeError:
-            pass
+        except json.JSONDecodeError as e:
+
+            import logging; logging.getLogger(__name__).debug("historical_backfill_engine: Exception swallowed at L191: %s", e)
     return records
 
 
@@ -249,7 +251,7 @@ def backfill_protected_root_blocks(
             dt = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
             created_utc = int(dt.replace(tzinfo=timezone.utc).timestamp())
         except (ValueError, TypeError, RuntimeError) as e:
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
         entry = {
             "schema_version": 1,

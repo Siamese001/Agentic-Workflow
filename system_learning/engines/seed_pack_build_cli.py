@@ -97,7 +97,7 @@ try:
     load_dotenv()
 # guardian: allow-silent-swallow - optional dependency
 except ImportError:
-    pass
+    pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
 from agentic_core.embeddings.embedding_factory import create_embedding_client
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,

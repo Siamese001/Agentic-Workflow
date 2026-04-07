@@ -524,8 +524,9 @@ class CloudNativeManager:
                 self._k8s_client['autoscaling_v1'].read_namespaced_horizontal_pod_autoscaler(name, namespace)
                 Logger.info(f"[CLOUD_NATIVE] HPA already exists for {resource_name}")
                 return True
-            except Exception:
-                pass  # HPA doesn't exist, create it
+            except Exception as e:
+
+                import logging; logging.getLogger(__name__).debug("cloud_native_manager: Exception swallowed at L527: %s", e)
 
             # Create HPA spec
             hpa_spec = {

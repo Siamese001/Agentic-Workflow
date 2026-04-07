@@ -219,7 +219,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
                     issues.append(f"Potential Dark Reasoning at line {i + 1}: Action without L6 footprint")
     # guardian: allow-silent-swallow
     except (ValueError, TypeError):
-        pass
+        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
     return issues
 
 

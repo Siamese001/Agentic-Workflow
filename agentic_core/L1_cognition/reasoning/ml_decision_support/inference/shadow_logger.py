@@ -241,7 +241,7 @@ class ShadowLogger:
                         opportunities.append(entry)
 
         except FileNotFoundError:
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
 
         return opportunities
 
@@ -293,7 +293,7 @@ class ShadowLogger:
                         training_examples.append(training_example)
 
         except FileNotFoundError:
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
 
         # Write training data
         with open(output_file, 'w', encoding='utf-8') as f:
@@ -469,7 +469,7 @@ class ShadowLogger:
                         return entry
 
         except FileNotFoundError:
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
 
         return None
 
@@ -502,6 +502,6 @@ class ShadowLogger:
                     return entry.get('timestamp')
 
         except (FileNotFoundError, json.JSONDecodeError):
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
 
         return None

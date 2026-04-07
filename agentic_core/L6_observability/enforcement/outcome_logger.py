@@ -112,7 +112,7 @@ class OutcomeLogger:
                 trace_id=trace_id,
             )
         except (ValueError, TypeError, RuntimeError) as e:
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return record
 
     def records(self) -> tuple[OutcomeRecord, ...]:

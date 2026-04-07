@@ -247,9 +247,10 @@ class DefaultHealingPatternAdvisor:
                         "confidence_boost": 0.1,  # 10% boost for hotspots
                         "description": f"Module {module_name} is in top-20 fan-out hotspots",
                     })
-            except Exception:
+            except Exception as e:
+
                 # ADG unavailable - continue without hotspot boost
-                pass
+                import logging; logging.getLogger(__name__).debug("default_healing_pattern_advisor: Exception swallowed at L250: %s", e)
 
         # Take the highest-confidence pattern (advisory only)
         best = max(patterns, key=lambda p: p.get("confidence_boost", 0.0))

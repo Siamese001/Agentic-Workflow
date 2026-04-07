@@ -242,8 +242,8 @@ def _ensure_utf8():
             safe_execute(["chcp", "65001"], capture_output=True, check=False)
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         # guardian: allow-silent-swallow
-        except:
-            pass
+        except Exception as e:
+            import logging; logging.getLogger(__name__).debug("colors_config: Exception swallowed at L245: %s", e)
 
 
 _ensure_utf8()

@@ -257,12 +257,19 @@ def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
 
 
 def _get_staged_files(root: Path) -> list[Path]:
+    """Return list of staged files from git index.
+
+    Returns empty list if git is unavailable, returns a non-zero returncode,
+    or raises OSError. Does not filter by extension.
+    """
     try:
         r = subprocess.run(
             ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
             cwd=str(root), capture_output=True, encoding="utf-8", timeout=30,
         )
     except OSError:
+        return []
+    if r.returncode != 0:
         return []
     return [root / f for f in r.stdout.splitlines()]
 

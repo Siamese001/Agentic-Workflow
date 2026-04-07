@@ -351,8 +351,9 @@ class StateManager:
                             current_hash = hashlib.md5(f.read()).hexdigest()
                         if current_hash != entry.file_hash:
                             hash_mismatches.append(key)
-                    except OSError:
-                        pass
+                    except OSError as e:
+
+                        import logging; logging.getLogger(__name__).debug("state_management_util: OSError swallowed at L354: %s", e)
 
             # Log findings
             if ghost_files:

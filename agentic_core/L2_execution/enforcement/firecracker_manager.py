@@ -415,8 +415,9 @@ class FirecrackerManager:
         if container_id:
             try:
                 safe_execute(["docker", "rm", "-f", container_id], capture_output=True, check=True)
-            except subprocess.CalledProcessError:
-                pass
+            except subprocess.CalledProcessError as e:
+
+                import logging; logging.getLogger(__name__).debug("firecracker_manager: Exception swallowed at L418: %s", e)
 
     @timeout(300)
     @standard_heal

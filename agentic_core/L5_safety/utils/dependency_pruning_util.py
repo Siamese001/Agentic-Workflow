@@ -179,8 +179,9 @@ class DependencyPruner:
             _src = Path(__file__).resolve()
             _bp = _gbp(_src, self.project_root)
             adg_dead_imports = len(_bp.antipattern_signals)
-        except (RuntimeError, OSError, ImportError):
-            pass
+        except (RuntimeError, OSError, ImportError) as e:
+
+            import logging; logging.getLogger(__name__).debug("dependency_pruning_util: RuntimeError swallowed at L182: %s", e)
 
         # Find unused dependencies
         unused: list[str] = find_unused_deptry(self.project_root)

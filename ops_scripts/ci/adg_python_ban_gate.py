@@ -228,6 +228,11 @@ def scan_files(paths: list[Path], checks: list[str]) -> dict[Path, dict[str, lis
 # ---------------------------------------------------------------------------
 
 def _get_staged_py_files(root: Path) -> list[Path]:
+    """Return list of staged Python files from git index.
+
+    Returns empty list if git returns a non-zero returncode.
+    Filters to .py files only.
+    """
     r = subprocess.run(
         ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
         cwd=str(root),
@@ -235,6 +240,8 @@ def _get_staged_py_files(root: Path) -> list[Path]:
         encoding="utf-8",
         timeout=30,
     )
+    if r.returncode != 0:
+        return []
     return [root / f for f in r.stdout.splitlines() if f.endswith(".py")]
 
 

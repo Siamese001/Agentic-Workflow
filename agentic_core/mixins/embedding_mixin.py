@@ -202,4 +202,4 @@ class EmbeddingMixin:
         try:
             return await self.embedding_gateway.get_embeddings_batch(contents, provider)
         except Exception as e:
-            pass
+            import logging; logging.getLogger(__name__).debug("embedding_mixin: Exception swallowed at L204: %s", e)

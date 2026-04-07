@@ -204,8 +204,9 @@ class L6ObservabilityBase(SovereignBaseAgent):
                     "adg_orphan_modules": len(getattr(_idx, "orphan_modules", [])),
                 }
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("L6ObservabilityBase: Exception swallowed at L207: %s", e)
         return {"metrics": {}, "timestamp": None, **_adg_health}
 
     def emit_telemetry(self, event: dict[str, Any]) -> bool:

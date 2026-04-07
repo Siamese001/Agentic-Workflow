@@ -336,9 +336,10 @@ class InjectionDetector:
                     detection_counts=self._detection_counts.copy(),
                     timestamp_utc=int(time.time() * 1000),
                 )
-        except Exception:
+        except Exception as e:
+
             # System learning unavailable - continue without emission
-            pass
+            import logging; logging.getLogger(__name__).debug("injection_detector: Exception swallowed at L339: %s", e)
 
     def scan_with_context(
         self,
@@ -412,9 +413,10 @@ class InjectionDetector:
                     detection_counts=self._context_detection_counts.copy(),
                     timestamp_utc=int(time.time() * 1000),
                 )
-        except Exception:
+        except Exception as e:
+
             # System learning unavailable - continue without emission
-            pass
+            import logging; logging.getLogger(__name__).debug("injection_detector: Exception swallowed at L415: %s", e)
 
     def get_detection_counts(self) -> dict[str, int]:
         """Get current detection counts (for testing/monitoring)."""

@@ -551,8 +551,9 @@ class ADGQueryClient:
                 centrality_score = centrality
             elif isinstance(centrality, dict):
                 centrality_score = centrality.get("degree_centrality", 0.0)
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("adg_integration: Exception swallowed at L554: %s", e)
 
         root_node = self._get_node_info(root_node_id) or ADGNode(
             node_id=root_node_id,

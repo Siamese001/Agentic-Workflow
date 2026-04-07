@@ -1,12 +1,12 @@
 {
-  "runtime_adg_1775551281_331c894a": {
+  "runtime_adg_1775587399_f43b3940": {
     "component_distribution": {
       "NervousSystem": 1,
       "Tool.test_operation": 1
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775551281,
+      "timestamp": 1775587399,
       "total_nodes": 2
     },
     "layer_distribution": {
@@ -25,14 +25,14 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.test_operation",
+          "component": "NervousSystem",
           "duration_ms": 0.0,
-          "node_id": "588346cc49b43869"
+          "node_id": "8111bd1b7a653518"
         },
         {
-          "component": "NervousSystem",
-          "duration_ms": 0.506,
-          "node_id": "69825d02918d303c"
+          "component": "Tool.test_operation",
+          "duration_ms": 0.0,
+          "node_id": "dace39702373cfd0"
         }
       ],
       "slow_operations": []

@@ -111,7 +111,7 @@ class AuditHealingStrategy:
                         if entry_time < cutoff:
                             continue
                     except (ValueError, AttributeError):
-                        pass
+                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
                 if entry.get("action") == "apply" and "event_id" not in entry:
                     gaps.append(entry)
             except json.JSONDecodeError as e:

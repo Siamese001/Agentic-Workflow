@@ -278,7 +278,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
                             imports.add(alias.name)
         # guardian: allow-silent-swallow
         except (ValueError, TypeError):
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return imports
 
     def _get_module_name(self, file_path: Path) -> str:

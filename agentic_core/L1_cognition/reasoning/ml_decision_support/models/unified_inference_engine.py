@@ -125,18 +125,21 @@ class UnifiedInferenceEngine(BaseMLModel):
         """Initialize Phase 4 models."""
         try:
             self.routing_model = AdvancedL0Router()
-        except Exception:
-            pass  # Model not available
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("unified_inference_engine: Exception swallowed at L128: %s", e)
 
         try:
             self.reranking_model = AdvancedC0Reranker()
-        except Exception:
-            pass  # Model not available
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("unified_inference_engine: Exception swallowed at L133: %s", e)
 
         try:
             self.anomaly_model = AdvancedL6Detector()
-        except Exception:
-            pass  # Model not available
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("unified_inference_engine: Exception swallowed at L138: %s", e)
 
     def load_model(self) -> None:
         """Load the unified inference engine configuration."""
@@ -238,8 +241,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 result.routing_result = routing_result
                 result.models_executed.append("routing")
             except Exception as e:
-                # Log error but continue
-                pass
+                import logging; logging.getLogger(__name__).debug("unified_inference_engine: routing inference failed: %s", e)
 
         if request.enable_reranking and self.reranking_model:
             try:
@@ -247,8 +249,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 result.reranking_result = reranking_result
                 result.models_executed.append("reranking")
             except Exception as e:
-                # Log error but continue
-                pass
+                import logging; logging.getLogger(__name__).debug("unified_inference_engine: reranking inference failed: %s", e)
 
         if request.enable_anomaly_detection and self.anomaly_model:
             try:
@@ -256,8 +257,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 result.anomaly_result = anomaly_result
                 result.models_executed.append("anomaly")
             except Exception as e:
-                # Log error but continue
-                pass
+                import logging; logging.getLogger(__name__).debug("unified_inference_engine: anomaly inference failed: %s", e)
 
         # Coordinate results if enabled
         if request.enable_coordination and len(result.models_executed) > 1:
@@ -568,8 +568,8 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis['routing_analysis'] = routing_analysis
-            except Exception:
-                pass
+            except Exception as e:
+                import logging; logging.getLogger(__name__).debug("unified_inference_engine: routing analysis failed: %s", e)
 
         # Detailed reranking analysis
         if result.reranking_result and request.reranking_context:
@@ -581,8 +581,8 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis['reranking_analysis'] = reranking_analysis
-            except Exception:
-                pass
+            except Exception as e:
+                import logging; logging.getLogger(__name__).debug("unified_inference_engine: reranking analysis failed: %s", e)
 
         # Detailed anomaly analysis
         if result.anomaly_result and request.anomaly_context:
@@ -594,8 +594,8 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis['anomaly_analysis'] = anomaly_analysis
-            except Exception:
-                pass
+            except Exception as e:
+                import logging; logging.getLogger(__name__).debug("unified_inference_engine: anomaly analysis failed: %s", e)
 
         return analysis
 

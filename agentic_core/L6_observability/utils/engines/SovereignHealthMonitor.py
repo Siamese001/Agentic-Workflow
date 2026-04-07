@@ -232,8 +232,9 @@ class SovereignHealthMonitor:
             _bp = _gbp(_Path(__file__).resolve(), _root)
             _adg_trust_score = round(_bp.behavioral_score, 4)
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("SovereignHealthMonitor: Exception swallowed at L235: %s", e)
         snapshot = {
             "timestamp": timestamp,
             "domain": domain,

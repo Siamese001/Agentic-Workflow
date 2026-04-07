@@ -238,7 +238,7 @@ class ToolEmbeddingCache:
                     cache_key, {"embeddings": embeddings, "tool_names": tool_names}, ttl_seconds=self._ttl,
                 )
             except ValueError:
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             except (OSError, ConnectionError) as e:
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
         return (embeddings, tool_names)

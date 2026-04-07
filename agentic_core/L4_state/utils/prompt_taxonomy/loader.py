@@ -179,9 +179,10 @@ class TemplateLoader:
             try:
                 template = self._jinja_env.from_string(content)
                 return template.render(**variables)
-            except jinja2.TemplateError:
+            except jinja2.TemplateError as e:
+
                 # Fall back to string.Template
-                pass
+                import logging; logging.getLogger(__name__).debug("loader: Exception swallowed at L182: %s", e)
 
         # Use string.Template as fallback
         return StringTemplate(content).safe_substitute(variables)

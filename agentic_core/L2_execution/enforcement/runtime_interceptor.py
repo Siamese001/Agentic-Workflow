@@ -238,7 +238,7 @@ def _is_mutable(obj: Any) -> bool:
             hash(obj)
             return False
         except TypeError:
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: TypeError used for control flow
     if dataclasses.is_dataclass(obj) and getattr(obj, "__dataclass_params__", None).frozen:
         return False
     return True

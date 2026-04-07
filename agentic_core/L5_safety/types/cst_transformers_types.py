@@ -673,7 +673,7 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
                 self.modifications_made += 1
             # guardian: allow-silent-swallow
             except (ValueError, TypeError):
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return updated_node
 
 

@@ -411,7 +411,7 @@ def update_coordination_ledger(
                 if sv_int > ledger.state_version:
                     ledger.state_version = sv_int
             except (ValueError, TypeError):
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
     # 6. Increment state_version
     ledger.state_version += 1

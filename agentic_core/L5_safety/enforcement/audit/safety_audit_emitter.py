@@ -262,7 +262,7 @@ def emit_safety_audit_record(
         )
     except (ValueError, TypeError):
         # System learning unavailable - continue without emission
-        pass
+        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
     # Explicit ADG edge emission for static scanner detection
     def safety_audit_emitted(

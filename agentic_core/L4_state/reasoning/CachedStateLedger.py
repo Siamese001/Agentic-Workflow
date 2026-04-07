@@ -286,8 +286,9 @@ class CachedStateLedger(SovereignBaseAgent):
             try:
                 self.redis.rpush(f"{self.prefix_historian}:successful_traces", json.dumps(trace))
             # guardian: allow-silent-swallow
-            except:
-                pass
+            except Exception as e:
+
+                import logging; logging.getLogger(__name__).debug("CachedStateLedger: Exception swallowed at L289: %s", e)
         else:
             self._successful_traces.append(trace)
 

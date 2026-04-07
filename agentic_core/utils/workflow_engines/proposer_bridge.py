@@ -427,8 +427,9 @@ class EvaluatorProposerBridge:
             )
             self.l4_store.put(artifact)
         # guardian: allow-silent-swallow -- L4 persistence failure is non-critical; proposal already processed
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("proposer_bridge: Exception swallowed at L430: %s", e)
 
 
 __all__ = ["ImprovementSignal", "ImprovementProposal", "EvaluatorProposerBridge"]

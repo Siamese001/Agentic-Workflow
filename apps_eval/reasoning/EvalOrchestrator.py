@@ -511,7 +511,7 @@ class EvalOrchestrator:
 
     def _load_qwen_prompt_templates(self, prompts_path: Path) -> dict[str, Any]:
         """Load Qwen prompt templates for apps_eval pilot."""
-        try:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        try:    # guardian: Add error context logging
             resolved = prompts_path
             if not resolved.is_absolute():
                 resolved = Path(__file__).resolve().parents[2] / prompts_path

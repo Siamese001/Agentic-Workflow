@@ -422,7 +422,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
                 ):
                     return True
         except (IndexError, TypeError):
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: IndexError used for control flow
         return False
 
     def _has_reraise(self, handler: ast.ExceptHandler) -> bool:

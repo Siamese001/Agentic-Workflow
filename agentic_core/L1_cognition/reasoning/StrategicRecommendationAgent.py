@@ -59,8 +59,9 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
             try:
                 response = self.llm_client.complete(plan)
                 return _parse_llm_response(response)
-            except Exception:
-                pass
+            except Exception as e:
+
+                import logging; logging.getLogger(__name__).debug("StrategicRecommendationAgent: Exception swallowed at L62: %s", e)
 
         fallback = _generate_fallback_recommendations(dashboard_data)
         return {

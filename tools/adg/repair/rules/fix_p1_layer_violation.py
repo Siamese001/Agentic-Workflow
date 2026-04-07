@@ -27,10 +27,7 @@ class FixP1LayerViolationRule(BaseRepairRule):
     rule_priority = 5
 
     # Known-safe violations that can be auto-exempted
-    KNOWN_SAFE_VIOLATIONS: dict[str, str] = {
-        "ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py":
-            "runtime API utility script requires L6 observability layer for server startup diagnostics",
-    }
+    KNOWN_SAFE_VIOLATIONS: dict[str, str] = {}
 
     def match(self, deficiency: Deficiency) -> bool:
         """Check if this rule applies to the deficiency."""

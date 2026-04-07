@@ -220,8 +220,9 @@ class CodeDetector:
                         message=f"Potentially unused definition: {name}",
                     ),
                 )
-        except SyntaxError:
-            pass
+        except SyntaxError as e:
+
+            import logging; logging.getLogger(__name__).debug("code_detector_util: SyntaxError swallowed at L223: %s", e)
 
         return detections
 

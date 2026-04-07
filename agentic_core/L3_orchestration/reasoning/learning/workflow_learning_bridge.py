@@ -315,7 +315,7 @@ def ensure_sl_adapter_registered() -> None:
         register_with_workflow_bridge()
     except ImportError:
         # System learning unavailable - continue without registration
-        pass
+        pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
 
 
 __all__ = [

@@ -276,8 +276,9 @@ class SovereignRAGManager(SovereignBaseAgent):
             _root = Path(__file__).resolve().parents[3]
             _adg_confidence = _gbp(Path(__file__).resolve(), _root).behavioral_score
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("SovereignRAGManagerAgent: Exception swallowed at L279: %s", e)
         vector_results: list[dict[str, Any]] = []
         bm25_results: list[dict[str, Any]] = []
         if self.embedder and self.vector_store:

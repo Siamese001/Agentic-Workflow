@@ -367,8 +367,9 @@ class InterventionServer:
             self._server_task.cancel()
             try:
                 await self._server_task
-            except asyncio.CancelledError:
-                pass
+            except asyncio.CancelledError as e:
+
+                import logging; logging.getLogger(__name__).debug("intervention_server_validator: Exception swallowed at L370: %s", e)
             self._server_task = None
             Logger.info("Intervention server stopped")
 

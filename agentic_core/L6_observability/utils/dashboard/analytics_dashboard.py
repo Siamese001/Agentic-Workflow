@@ -377,8 +377,9 @@ class AnalyticsDashboard:
                 from agentic_core.mixins.performance_optimized_collector import get_global_optimized_collector
                 perf_collector = get_global_optimized_collector()
                 self._real_time_data["performance_stats"] = perf_collector.get_performance_stats()
-            except:
-                pass
+            except Exception as e:
+
+                import logging; logging.getLogger(__name__).debug("analytics_dashboard: Exception swallowed at L380: %s", e)
 
             # Timestamp
             self._real_time_data["timestamp"] = time.time()

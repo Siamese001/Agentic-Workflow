@@ -82,9 +82,10 @@ def _extract_attributes(
                 attributes[f"{name}_count"] = len(value)
             elif isinstance(value, dict):
                 attributes[f"{name}_keys"] = list(value.keys())[:10]  # Limit keys
-        except Exception:
+        except Exception as e:
+
             # Skip values that can't be serialized
-            pass
+            import logging; logging.getLogger(__name__).debug("tracing_decorators: Exception swallowed at L85: %s", e)
 
     if extra_attrs:
         attributes.update(extra_attrs)

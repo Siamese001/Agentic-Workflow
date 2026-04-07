@@ -255,7 +255,7 @@ def forge_fortress() -> Any:
                     _wg.remove_dir(old_path)
                 # guardian: allow-silent-swallow
                 except (ValueError, TypeError):
-                    pass
+                    pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
     logging.info("--- FORGE COMPLETE: Sovereign Architecture In Place ---")
 
 

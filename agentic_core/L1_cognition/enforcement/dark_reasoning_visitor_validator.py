@@ -234,8 +234,9 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         visitor.visit(tree)
         issues.extend(visitor.issues)
     # guardian: allow-silent-swallow
-    except Exception:
-        pass
+    except Exception as e:
+
+        import logging; logging.getLogger(__name__).debug("dark_reasoning_visitor_validator: Exception swallowed at L237: %s", e)
     return issues
 
 

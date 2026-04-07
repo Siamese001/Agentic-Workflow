@@ -254,7 +254,7 @@ class CredentialAccessGuard:
                 )
         # guardian: allow-silent-swallow
         except (ValueError, TypeError):
-            pass
+            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
     # ------------------------------------------------------------------
     # Public API

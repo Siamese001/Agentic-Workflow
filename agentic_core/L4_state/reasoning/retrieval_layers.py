@@ -149,8 +149,9 @@ class L2SemanticCache:
                     self.hit_count += 1
                     Logger.debug(f"L2 semantic cache HIT for query: {query[:50]}...")
                     return cached_response
-            except (json.JSONDecodeError, KeyError):
-                pass  # Continue to miss logic
+            except (json.JSONDecodeError, KeyError) as e:
+
+                import logging; logging.getLogger(__name__).debug("retrieval_layers: Exception swallowed at L152: %s", e)
 
         self.miss_count += 1
         Logger.debug(f"L2 semantic cache MISS for query: {query[:50]}...")

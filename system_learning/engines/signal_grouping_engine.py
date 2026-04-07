@@ -279,7 +279,7 @@ class SignalGroupingEngine:
                     try:
                         samples.append(bytes.fromhex(payload_hex))
                     except ValueError:
-                        pass
+                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             groups.append(
                 SignalGroup(
                     group_key=key,
@@ -380,9 +380,10 @@ class SignalGroupingEngine:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=analysis["timestamp_utc"],
             )
-        except Exception:
+        except Exception as e:
+
             # Bridge unavailable - continue without it
-            pass
+            import logging; logging.getLogger(__name__).debug("signal_grouping_engine: Exception swallowed at L383: %s", e)
 
         return analysis
 

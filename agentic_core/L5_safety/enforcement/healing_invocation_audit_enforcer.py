@@ -257,8 +257,9 @@ class HealingInvocationAudit:
                 if match:
                     return match.group(1)
         # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
-            pass
+        except (RuntimeError, OSError) as e:
+
+            import logging; logging.getLogger(__name__).debug("healing_invocation_audit_enforcer: RuntimeError swallowed at L260: %s", e)
         return file_path.stem
 
     def _check_super_presence(self, file_path: Path) -> bool:

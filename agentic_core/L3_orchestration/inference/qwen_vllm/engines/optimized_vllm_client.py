@@ -143,8 +143,9 @@ class OptimizedVLLMClient:
             self._batch_task.cancel()
             try:
                 await self._batch_task
-            except asyncio.CancelledError:
-                pass
+            except asyncio.CancelledError as e:
+
+                import logging; logging.getLogger(__name__).debug("optimized_vllm_client: Exception swallowed at L146: %s", e)
 
         if self._session:
             await self._session.close()

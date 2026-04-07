@@ -235,8 +235,9 @@ class L5Streamer:
             self.stream_task.cancel()
             try:
                 await self.stream_task
-            except asyncio.CancelledError:
-                pass
+            except asyncio.CancelledError as e:
+
+                import logging; logging.getLogger(__name__).debug("reasoning_streamer: Exception swallowed at L238: %s", e)
             self.stream_task = None
         for client in list(self._websocket_clients):
             try:

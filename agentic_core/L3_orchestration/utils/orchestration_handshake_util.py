@@ -85,8 +85,9 @@ def discover_capable_agents(
     if use_cache and redis_client and capable and cache_key:
         try:
             redis_client.set(cache_key, json.dumps(capable), ex=3600)
-        except Exception:
-            pass  # Cache failure is non-fatal
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("orchestration_handshake_util: Exception swallowed at L88: %s", e)
 
     return capable
 

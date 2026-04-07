@@ -258,8 +258,9 @@ class RerankingEngine:
                         timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
                         days_ago = (datetime.now() - timestamp).days
                         recency_score = max(0.1, 1.0 - (days_ago / 365.0))  # Decay over year
-                    except:
-                        pass
+                    except Exception as e:
+
+                        import logging; logging.getLogger(__name__).debug("reranking_engine: Exception swallowed at L261: %s", e)
             except:
                 pass
 

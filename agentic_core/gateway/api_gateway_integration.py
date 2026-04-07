@@ -210,8 +210,9 @@ class KongGatewayClient(GatewayClient):
             if baggage_str:
                 try:
                     baggage = json.loads(baggage_str)
-                except json.JSONDecodeError:
-                    pass
+                except json.JSONDecodeError as e:
+
+                    import logging; logging.getLogger(__name__).debug("api_gateway_integration: Exception swallowed at L213: %s", e)
 
             sampled = headers.get("x-sampled") == "1"
 
@@ -358,8 +359,9 @@ class EnvoyGatewayClient(GatewayClient):
             if baggage_str:
                 try:
                     baggage = json.loads(baggage_str)
-                except json.JSONDecodeError:
-                    pass
+                except json.JSONDecodeError as e:
+
+                    import logging; logging.getLogger(__name__).debug("api_gateway_integration: Exception swallowed at L361: %s", e)
 
             sampled = headers.get("x-sampled") == "1"
 
@@ -451,8 +453,9 @@ class CustomGatewayClient(GatewayClient):
             if baggage_str:
                 try:
                     baggage = json.loads(baggage_str)
-                except json.JSONDecodeError:
-                    pass
+                except json.JSONDecodeError as e:
+
+                    import logging; logging.getLogger(__name__).debug("api_gateway_integration: Exception swallowed at L454: %s", e)
 
             sampled = headers.get("x-sampled") == "1"
 

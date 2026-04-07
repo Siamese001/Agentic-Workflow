@@ -256,9 +256,10 @@ class ShadowDriftAnalyzer:
                 if violation_delta > 0:
                     # Violations increased - this is structural drift
                     drift_source = "adg_structural"
-        except Exception:
+        except Exception as e:
+
             # ADG data unavailable - continue with embedding-only analysis
-            pass
+            import logging; logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L259: %s", e)
 
         mean_cosine = statistics.mean(cosine_values)
         p95_cosine = self._compute_percentile(cosine_values, 95)
@@ -428,9 +429,10 @@ class ShadowDriftAnalyzer:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=now_utc,
             )
-        except Exception:
+        except Exception as e:
+
             # Bridge unavailable - continue without it
-            pass
+            import logging; logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L431: %s", e)
 
         return analysis
 

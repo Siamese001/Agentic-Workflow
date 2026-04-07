@@ -495,8 +495,9 @@ class CompletenessSnapshotRegistry:
                     triggers = json.loads(triggers_json)
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
-                except:
-                    pass
+                except Exception as e:
+
+                    import logging; logging.getLogger(__name__).debug("completeness_snapshot_registry: Exception swallowed at L498: %s", e)
 
             return {
                 "avg_completeness_score": row[0] or 0.0,

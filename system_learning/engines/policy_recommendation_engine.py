@@ -299,9 +299,10 @@ class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
                     quality_adjustment = (avg_quality_score - 0.5) * 0.2  # ±10% adjustment
                     recommendation.confidence_score = max(0.0, min(1.0,
                         recommendation.confidence_score + quality_adjustment))
-            except Exception:
+            except Exception as e:
+
                 # Quality adjustment unavailable - continue without it
-                pass
+                import logging; logging.getLogger(__name__).debug("policy_recommendation_engine: Exception swallowed at L302: %s", e)
         # guardian: allow-silent-swallow
         except Exception:
             pass

@@ -121,8 +121,9 @@ def parse_llm_response(response: str) -> dict[str, Any]:
         json_match = re.search(r'\{.*\}', response, re.DOTALL)
         if json_match:
             return json.loads(json_match.group())
-    except json.JSONDecodeError:
-        pass
+    except json.JSONDecodeError as e:
+
+        import logging; logging.getLogger(__name__).debug("strategic_recommendation_util: Exception swallowed at L124: %s", e)
 
     # Fallback: return empty structure
     return {"review": "", "recommendations": []}

@@ -510,8 +510,9 @@ class PerformanceOptimizedCollector:
             process = psutil.Process()
             self._performance_metrics.memory_usage_mb = process.memory_info().rss / 1024 / 1024
             self._performance_metrics.cpu_usage_percent = process.cpu_percent()
-        except:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("performance_optimized_collector: Exception swallowed at L513: %s", e)
 
         # Calculate buffer utilization
         self._performance_metrics.buffer_utilization = len(self._span_buffer) / self._config.max_buffer_size

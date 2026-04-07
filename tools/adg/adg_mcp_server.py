@@ -777,7 +777,7 @@ def adg_assert_fresh() -> dict[str, Any]:
             fix="python tools/adg/adg_redis_ingest.py --force",
         )
 
-    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+    # guardian: File operations should check existence before access
 
 
 # ---------------------------------------------------------------------------

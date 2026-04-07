@@ -240,8 +240,9 @@ class SelfDiagnosisMixin:
                 diagnosis["adg_antipatterns"] = sorted(_bp.antipattern_signals)
                 diagnosis["adg_behavioral_score"] = _bp.behavioral_score
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("self_diagnosis_mixin: Exception swallowed at L243: %s", e)
         if diagnosis["issues"]:
             critical_issues = [i for i in diagnosis["issues"] if i.get("Severity") == "CRITICAL"]
             diagnosis["overall_health"] = "critical" if critical_issues else "degraded"

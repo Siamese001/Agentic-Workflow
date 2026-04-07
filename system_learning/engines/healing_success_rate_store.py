@@ -248,8 +248,9 @@ class HealingSuccessRateStore:
 
             get_sl_memory_bridge().persist_healing_success_rate(error_signature, rate, count)
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("healing_success_rate_store: Exception swallowed at L251: %s", e)
 
     def _log_update(self, error_signature: str, success: bool, new_rate: float, new_count: int) -> None:
         """Structured telemetry for every update (never silent)."""

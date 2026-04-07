@@ -237,7 +237,7 @@ def force_app_depth() -> Any:
                 _wg.remove_tree(str(layer_folder))
             # guardian: allow-silent-swallow
             except (ValueError, TypeError):
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             print(f"  [✓] LAYER ANNEXED: {layer_folder.name} -> Core/{target_layer}/P1_core")
         app_p1: Any = app_path / "P1_core"
         _wg.ensure_dir(app_p1)

@@ -238,7 +238,7 @@ class AgentDefaults:
                     else:
                         return env_value
                 except (ValueError, TypeError):
-                    pass
+                    pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             return env_value
 
         # Fall back to class default

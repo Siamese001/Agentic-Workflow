@@ -378,9 +378,10 @@ class HealingMemoryRetriever:
                 top_k_used=effective_top_k,
                 timestamp_utc=int(time.time() * 1000),
             )
-        except Exception:
+        except Exception as e:
+
             # System learning unavailable - continue without tracking
-            pass
+            import logging; logging.getLogger(__name__).debug("healing_memory_retriever: Exception swallowed at L381: %s", e)
 
         return results
 
@@ -411,8 +412,9 @@ def build_retriever(
         if disk_dir.exists():
             try:
                 store.load_from_disk(index_id, disk_dir)
-            except (ManifestIntegrityError, Exception):
-                pass
+            except (ManifestIntegrityError, Exception) as e:
+
+                import logging; logging.getLogger(__name__).debug("healing_memory_retriever: ManifestIntegrityError swallowed at L414: %s", e)
         return HealingMemoryRetriever(store=store, profile=profile, index_id=index_id)
     except ImportError:  # guardian: allow-silent-swallow
         return NullHealingMemoryRetriever()

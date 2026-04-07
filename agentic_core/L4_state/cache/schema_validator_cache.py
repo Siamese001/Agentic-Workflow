@@ -239,7 +239,7 @@ class SchemaValidatorCache:
                 cache_key = f"schema_validator:{schema_hash}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except ValueError:
-                pass
+                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             except (OSError, ConnectionError) as e:
                 logger.warning(f"[Schema validator cache] Cache write failed: {e}")
         return result

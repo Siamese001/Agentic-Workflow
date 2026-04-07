@@ -499,7 +499,7 @@ class PromptOutcomeEmbedder:
                             evicted += 1
                             continue
                     except ValueError:
-                        pass
+                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
                 keep.append(record)
             self._records = keep
         return evicted

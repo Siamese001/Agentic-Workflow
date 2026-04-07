@@ -341,8 +341,9 @@ class SovereignRagOrchestrator:
 
             _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)
         vector_candidates = []
         bm25_candidates = []
         if hasattr(self, "vector_store") and self.vector_store:

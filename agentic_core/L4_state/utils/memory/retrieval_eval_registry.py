@@ -472,8 +472,9 @@ class RetrievalEvalRegistry:
                     triggers = json.loads(triggers_json)
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
-                except:
-                    pass
+                except Exception as e:
+
+                    import logging; logging.getLogger(__name__).debug("retrieval_eval_registry: Exception swallowed at L475: %s", e)
 
             return {
                 "avg_mrr": row[0] or 0.0,

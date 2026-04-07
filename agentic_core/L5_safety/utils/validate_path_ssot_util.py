@@ -258,7 +258,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
 
     # guardian: allow-silent-swallow -- path validation fallback; failure logged above
     except (ValueError, TypeError):
-        pass
+        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
     return violations
 

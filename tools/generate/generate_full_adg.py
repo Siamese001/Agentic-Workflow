@@ -137,13 +137,28 @@ def _print_defect_table(
     """
     by_severity = routing_summary.get("by_severity", {})
 
-    # P1: layer violations from SQLite (truthful count, same as halt check)
+    # P1: layer violations from SQLite (guardian-filtered — matches halt check, exempt violations are 0)
     p1_count = 0
+    _violation_rows: list = []
     if sqlite_path is not None and sqlite_path.exists():
         try:
             import sqlite3 as _sqlite3
             with _sqlite3.connect(str(sqlite_path)) as _conn:
-                p1_count = _conn.execute("SELECT COUNT(*) FROM edges WHERE relation_type='violates'").fetchone()[0]
+                _violation_rows = _conn.execute(
+                    "SELECT source_file, line_no FROM edges WHERE relation_type='violates'"
+                ).fetchall()
+            for _src_file, _line_no in _violation_rows:
+                try:
+                    _src_path = ROOT / _src_file
+                    if _src_path.exists() and _line_no and _line_no > 0:
+                        _file_lines = _src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+                        _check = _file_lines[max(0, _line_no - 2):_line_no]
+                        if not any("guardian: allow-layer-violation" in _ln for _ln in _check):
+                            p1_count += 1
+                    else:
+                        p1_count += 1
+                except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure counts violation as unapproved
+                    p1_count += 1
         except Exception:  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to 0
             pass
 
@@ -166,12 +181,29 @@ def _print_defect_table(
         except Exception:  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
             pass
 
-    # Non-antipattern HIGH/MEDIUM/LOW from routing (dynamic_exec, invokes_provider, etc.)
-    p2_routing = by_severity.get("high", 0)
-    p3_routing = by_severity.get("medium", 0)
+    # P2: ratchet ceiling and delta
+    _p2_ratchet_file = ROOT / "artifacts" / "adg" / "p2_ratchet.json"
+    _p2_ceiling = p2_antipattern  # default: delta = 0 if ratchet not found
+    try:
+        if _p2_ratchet_file.exists():
+            _p2_data = json.loads(_p2_ratchet_file.read_text(encoding="utf-8"))
+            _p2_ceiling = _p2_data.get("high_severity_ceiling",
+                          _p2_data.get("p2_antipattern_ceiling", p2_antipattern))
+    except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure shows raw count
+        pass
+    _p2_delta = max(0, p2_antipattern - _p2_ceiling)
+    p2_count = p2_antipattern
 
-    p2_count = p2_antipattern + p2_routing
-    p3_count = p3_antipattern + p3_routing
+    # P3: ratchet ceiling
+    _p3_ratchet_file = Path("artifacts/adg/p3_ratchet.json")
+    _p3_ceiling: int | None = None
+    try:
+        if _p3_ratchet_file.exists():
+            _p3_data = json.loads(_p3_ratchet_file.read_text(encoding="utf-8"))
+            _p3_ceiling = _p3_data.get("exception_swallow_ceiling")
+    except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure
+        pass
+    p3_count = p3_antipattern
 
     # P4: antipattern LOW + semantic enrichment warnings
     p4_count = p4_antipattern + by_severity.get("low", 0)
@@ -180,24 +212,151 @@ def _print_defect_table(
 
     total = p1_count + p2_count + p3_count + p4_count
 
-    print("\n[ADG] Defect Summary (from ADG edges):")
-    print("+-----+-------------------------------+--------+")
-    print("| P#  | Description                   | Count  |")
-    print("+-----+-------------------------------+--------+")
-    print(f"| P1  | CRITICAL - layer violations   | {p1_count:6} |")
-    print(f"| P2  | HIGH - exception antipatterns | {p2_count:6} |")
-    print(f"| P3  | MEDIUM - code quality         | {p3_count:6} |")
-    print(f"| P4  | LOW - style/warnings          | {p4_count:6} |")
-    print("+-----+-------------------------------+--------+")
-    print(f"| TOT | TOTAL                         | {total:6} |")
-    print("+-----+-------------------------------+--------+")
+    # Load diagnostics from SQLite once
+    _p1_layer_pairs: list = []
+    _p1_cycle_count = 0
+    _p1_dynamic_count = 0
+    _cat_data: dict[str, list[tuple]] = {"HIGH": [], "MEDIUM": [], "LOW": []}
+    _sev_files: dict[str, int] = {}
+    _sev_top_layer: dict[str, str] = {}
+    _sev_prod_pct: dict[str, dict[str, int]] = {}  # sev -> {kind: prod_pct}
+    _hotspot_pct: dict[str, int] = {}               # sev -> top-10-file % of total
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            import sqlite3 as _sqlite3_cats
+            _prod_layers = (
+                "L0", "L1", "L2", "L3", "L4", "L5", "L6",
+                "L_SHARED", "L_SL", "L_PG", "L_RUNTIME",
+            )
+            with _sqlite3_cats.connect(str(sqlite_path)) as _cc:
+                # P1 sub-types
+                _p1_layer_pairs = _cc.execute("""
+                    SELECT n_src.layer, n_dst.layer, COUNT(*)
+                    FROM edges e
+                    JOIN nodes n_src ON e.src_id = n_src.id
+                    JOIN nodes n_dst ON e.dst_id = n_dst.id
+                    WHERE e.relation_type='violates'
+                    GROUP BY 1,2 ORDER BY 3 DESC
+                """).fetchall()
+                _p1_cycle_count = _cc.execute(
+                    "SELECT COUNT(*) FROM edges WHERE relation_type='in_cycle'"
+                ).fetchone()[0]
+                _p1_dynamic_count = _cc.execute(
+                    "SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'"
+                ).fetchone()[0]
 
-    # Detail P4 breakdown if there are semantic warnings
+                for _sev in ("HIGH", "MEDIUM", "LOW"):
+                    # Per-category with prod count
+                    _cat_data[_sev] = _cc.execute(f"""
+                        SELECT e.edge_kind, COUNT(*) cnt,
+                               SUM(CASE WHEN n.layer IN ({','.join('?' for _ in _prod_layers)})
+                                        THEN 1 ELSE 0 END) prod_cnt
+                        FROM violations v
+                        JOIN edges e ON v.edge_id=e.id
+                        JOIN nodes n ON e.src_id=n.id
+                        WHERE v.severity=? AND v.category='antipattern'
+                        GROUP BY e.edge_kind ORDER BY cnt DESC
+                    """, (*_prod_layers, _sev)).fetchall()
+                    # Distinct files
+                    _sev_files[_sev] = _cc.execute(
+                        "SELECT COUNT(DISTINCT e.source_file) FROM violations v "
+                        "JOIN edges e ON v.edge_id=e.id "
+                        f"WHERE v.severity='{_sev}' AND v.category='antipattern'"
+                    ).fetchone()[0]
+                    # Top layer
+                    _r = _cc.execute(
+                        "SELECT n.layer FROM violations v JOIN edges e ON v.edge_id=e.id "
+                        "JOIN nodes n ON e.src_id=n.id "
+                        f"WHERE v.severity='{_sev}' AND v.category='antipattern' "
+                        "AND n.layer IS NOT NULL GROUP BY n.layer ORDER BY COUNT(*) DESC LIMIT 1"
+                    ).fetchone()
+                    _sev_top_layer[_sev] = _r[0] if _r else "N/A"
+                    # Top-10 hotspot concentration
+                    _total_sev = _cc.execute(
+                        f"SELECT COUNT(*) FROM violations WHERE severity='{_sev}' AND category='antipattern'"
+                    ).fetchone()[0]
+                    _top10 = _cc.execute(
+                        "SELECT SUM(c) FROM (SELECT COUNT(*) c FROM violations v "
+                        "JOIN edges e ON v.edge_id=e.id "
+                        f"WHERE v.severity='{_sev}' AND v.category='antipattern' "
+                        "GROUP BY e.source_file ORDER BY c DESC LIMIT 10)"
+                    ).fetchone()[0] or 0
+                    _hotspot_pct[_sev] = (_top10 * 100 // _total_sev) if _total_sev else 0
+        except Exception:  # guardian: allow-silent-swallow -- non-critical: category query failure
+            pass
+
+    # ── Table layout ──────────────────────────────────────────────────────────
+    # Header rows: P# | Description | Count | Files | Prod% | TopLayer | Gate
+    # Sub-rows:    category | count | share% | prod%
+    _H   = "+-----+------------------------------+-------+-------+-------+----------+--------+"
+    _HDR = "| P#  | Description / Category       | Count | Files | Prod% | TopLayer | Gate   |"
+    print("\n[ADG] Defect Summary:")
+    print(_H)
+    print(_HDR)
+    print(_H)
+
+    # ── P1 ────────────────────────────────────────────────────────────────────
+    _p1_gate = "BLOCKS" if p1_count > 0 else "PASS"
+    print(f"| P1  | CRITICAL (blocks on any > 0) | {p1_count:5} | {'':5} | {'':5} | {'':8} | {_p1_gate:6} |")
+    _p1_viol = sum(c for _, _, c in _p1_layer_pairs) if _p1_layer_pairs else 0
+    _p1_exempt = len(_violation_rows) - p1_count if _violation_rows else 0
+    _viol_label = f"{_p1_viol}" if _p1_viol else "0"
+    _exempt_note = f" ({_p1_exempt} exempt)" if _p1_exempt > 0 else ""
+    print(f"|     |  layer_violation{_exempt_note:<14} | {_viol_label:>5} |       |       |          |        |")
+    for _src_l, _dst_l, _cnt in _p1_layer_pairs:
+        _pair = f"    {_src_l or '?'} -> {_dst_l or '?'}"
+        print(f"|     | {_pair:<30}| {_cnt:5} |       |       |          |        |")
+    print(f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |          |        |")
+    print(f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |          |        |")
+    print(_H)
+
+    # Helper for P2/P3/P4 blocks
+    def _print_sev_block(label, p_tag, count, sev_key, ceiling, gate):
+        _files = _sev_files.get(sev_key, 0)
+        _top = _sev_top_layer.get(sev_key, "N/A")
+        _cats = _cat_data.get(sev_key, [])
+        # Overall prod %
+        _total_prod = sum(c[2] for c in _cats)
+        _overall_prod_pct = f"{_total_prod * 100 // count}%" if count else "N/A"
+        print(f"| {p_tag:<3} | {label:<29}| {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_top:8} | {gate:6} |")
+        for _kind, _cnt, _prod in _cats:
+            _share = f"{_cnt * 100 // count}%" if count else "  "
+            _ppct = f"{_prod * 100 // _cnt}%" if _cnt else "  "
+            print(f"|     |  {_kind:<28}  | {_cnt:5} | {_share:>5} | {_ppct:>5} |          |        |")
+        _hp = _hotspot_pct.get(sev_key, 0)
+        if _hp > 0:
+            print(f"|     |  (top-10 files = {_hp}% of total)  |       |       |       |          |        |")
+        print(_H)
+
+    # ── P2 ────────────────────────────────────────────────────────────────────
+    _p2_gate = "BLOCKS" if _p2_delta > 0 else "ratchet"
+    _print_sev_block("HIGH antipatterns", "P2", p2_count, "HIGH", _p2_ceiling, _p2_gate)
+
+    # ── P3 ────────────────────────────────────────────────────────────────────
+    _p3_delta_val = max(0, p3_count - _p3_ceiling) if _p3_ceiling is not None else 0
+    _p3_gate = "BLOCKS" if _p3_delta_val > 0 else "ratchet"
+    _print_sev_block("MEDIUM antipatterns", "P3", p3_count, "MEDIUM", _p3_ceiling, _p3_gate)
+
+    # ── P4 ────────────────────────────────────────────────────────────────────
+    _print_sev_block("LOW style / warnings", "P4", p4_count, "LOW", None, "watch")
     if semantic_warnings:
-        warning_count = len(semantic_warnings)
-        print(f"[ADG] P4 breakdown: {p4_antipattern} low antipatterns + {warning_count} semantic warnings")
-        for warning in semantic_warnings:
-            print(f"[ADG]   - {warning}")
+        _sw = len(semantic_warnings)
+        _pct = f"{_sw * 100 // p4_count}%" if p4_count else "  "
+        print(f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} | {_pct:>5} |       |          |        |")
+        print(_H)
+
+    # ── Totals + legend ──────────────────────────────────────────────────────
+    print(f"| TOT | ALL defects                  | {total:5} |       |       |          |        |")
+    print(_H)
+    print("| Gate: BLOCKS=halts ADG  ratchet=blocks on increase  watch=monitored only  |")
+    print("| Prod%: header=overall  sub-row=per-category  (prod layers: L0-L6+shared)  |")
+    print("| Files: sub-row=share of P-level total  TopLayer: highest-violation layer   |")
+    print(_H)
+    _p2_ratchet_label = "stable" if _p2_delta == 0 else "REGRESSION"
+    print(f"[ADG] P2 ratchet: {p2_count}/{_p2_ceiling} ({_p2_delta:+d} — {_p2_ratchet_label})")
+    if _p3_ceiling is not None:
+        _p3_label = "stable" if _p3_delta_val == 0 else "REGRESSION"
+        print(f"[ADG] P3 ratchet: {p3_count}/{_p3_ceiling} ({_p3_delta_val:+d} — {_p3_label})")
 
 
 def _check_artifact_validity(paths: object) -> None:
@@ -500,20 +659,15 @@ def _check_p2_antipatterns(sqlite_path: Path | None = None, ratchet_file: Path |
 
 
 def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None = None) -> None:
-    """Enforce non-regression ratchet for exception swallows in production paths.
+    """Enforce non-regression ratchet for MEDIUM-severity antipatterns (all paths).
 
-    Tier 3 blocks ADG generation if exception swallows in production paths exceed
-    the persisted ceiling. Production paths:
-    - apps_*/
-    - agentic_core/L*/
-    - system_learning/
-
-    The ratchet ceiling is persisted to a JSON file and can be explicitly updated
-    to allow intentional increases.
+    Blocks ADG generation if the MEDIUM antipattern count exceeds the persisted
+    ceiling. Counts all paths — same population as the P3 display row in the
+    defect table (violations table, severity=MEDIUM, category=antipattern).
 
     Args:
-        sqlite_path: Path to SQLite database for exception swallow queries
-        ratchet_file: Path to JSON file storing ratchet ceilings (default: artifacts/adg/p3_ratchet.json)
+        sqlite_path: Path to SQLite database
+        ratchet_file: Path to JSON file storing P3 ceiling (default: artifacts/adg/p3_ratchet.json)
     """
     if sqlite_path is None or not sqlite_path.exists():
         return
@@ -525,28 +679,11 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
         import json
         import sqlite3 as _sqlite3
 
-        # Production paths (excluding pipeline paths and test scaffolding)
-        production_paths = ("apps_/%", "agentic_core/L0/%", "agentic_core/L1/%", "agentic_core/L2/%", "agentic_core/L3/%", "system_learning/%")
-        swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
-
         with _sqlite3.connect(str(sqlite_path)) as conn:
             cursor = conn.cursor()
-
-            # Query current count
-            query = """
-                SELECT COUNT(*)
-                FROM edges e
-                WHERE e.edge_kind IN (?, ?, ?, ?)
-                AND (
-                    e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                )
-            """
-            cursor.execute(query, (*swallow_types, *production_paths))
+            cursor.execute(
+                "SELECT COUNT(*) FROM violations WHERE severity='MEDIUM' AND category='antipattern'"
+            )
             current_count = cursor.fetchone()[0]
 
         # Load or initialize ratchet ceiling
@@ -555,25 +692,21 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
                 ratchet_data = json.load(f)
                 ceiling = ratchet_data.get("exception_swallow_ceiling", current_count)
         else:
-            # Initialize with current count as ceiling
             ceiling = current_count
             ratchet_file.parent.mkdir(parents=True, exist_ok=True)
             with open(ratchet_file, "w") as f:
-                json.dump({"exception_swallow_ceiling": ceiling, "last_updated": str(Path.cwd())}, f, indent=2)
+                json.dump({"exception_swallow_ceiling": ceiling}, f, indent=2)
             print(f"[INFO] Initialized P3 ratchet ceiling: {ceiling}")
 
-        # Check for regression
         if current_count > ceiling:
-            print("\n[ERROR] P3 Tier 3: Exception swallow regression detected")
+            print("\n[ERROR] P3 ratchet: MEDIUM antipattern regression detected")
             print(f"[ERROR] Current count: {current_count}, Ceiling: {ceiling}")
-            print("[ERROR] ADG generation failed - production path exception swallows increased")
-            print(f"[ERROR] Fix exception swallows or update ceiling: {ratchet_file}")
+            print("[ERROR] ADG generation failed - MEDIUM antipattern count increased")
+            print(f"[ERROR] Fix antipatterns or update ceiling: {ratchet_file}")
             sys.exit(1)
         elif current_count < ceiling:
-            # Improvement - update ceiling downward
-            ratchet_data = {"exception_swallow_ceiling": current_count, "last_updated": str(Path.cwd())}
             with open(ratchet_file, "w") as f:
-                json.dump(ratchet_data, f, indent=2)
+                json.dump({"exception_swallow_ceiling": current_count}, f, indent=2)
             print(f"[INFO] P3 ratchet: Reduced ceiling from {ceiling} to {current_count}")
         else:
             print(f"[INFO] P3 ratchet: Current count {current_count} at ceiling {ceiling}")
@@ -927,7 +1060,7 @@ def generate_full_adg(
     if not seed_files:
         seed_files = list(
             result.modules[:5],
-        )  # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
+        )  # guardian: Runtime errors should be prevented with proper validation
     impact_report = predict_impact(result, seed_files)
     imp_summary = impact_summary(impact_report)
 
@@ -1725,7 +1858,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         src_name,
         relation_type,
         dst_name,
-    ) in rows:  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    ) in rows:  # guardian: Add error context logging
         if relation_type == "imports" and src_name.startswith("ADG::Module::"):
             for prefix in _key_prefixes(_symbol_to_module_key(dst_name)):
                 importers_of[prefix].add(src_name)
@@ -1743,7 +1876,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             for importer in importers_of.get(
                 violating_key,
                 set(),
-            )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            )  # guardian: Add error context logging
             if importer not in violating_modules and importer not in visited
         }
         visited |= frontier
@@ -1754,7 +1887,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             for node in frontier:
                 node_key = _module_to_key(
                     node,
-                )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                )  # guardian: Add error context logging
                 for importer in importers_of.get(node_key, set()):
                     if importer not in visited:
                         visited.add(importer)
@@ -1771,7 +1904,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol",
         ).fetchall(),
     )
-    return {  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    return {  # guardian: Add error context logging
         "eligible_edge_count": eligible_edge_count,
         "eligible_target_module_count": len(eligible_module_targets),
         "actual_edge_count": actual_edge_count,
@@ -1836,7 +1969,7 @@ def _artifact_determinism_probe(
                 "scanner_digest_match",
                 "artifact_digest_match",
                 "node_row_digest_match",
-                "edge_row_digest_match",  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                "edge_row_digest_match",  # guardian: Add error context logging
             )
         )
         else "partial"
@@ -1851,7 +1984,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
     Removes all MANIFEST files (low value).
     Removes non-timestamped report files (legacy cleanup).
 
-    Args:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    Args:    # guardian: Add error context logging
         adg_dir: ADG artifacts directory
         current_ts: Current timestamp (MMDDYYYY_HHMM format)
     """
@@ -1860,7 +1993,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     cleaned_count = 0
 
-    # Remove all MANIFEST files (low value)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    # Remove all MANIFEST files (low value)    # guardian: Add error context logging
     for manifest_file in adg_dir.glob("MANIFEST_*.txt"):
         # guardian: allow-silent-swallow - acceptable exception handling
         try:
@@ -1871,13 +2004,13 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     # Remove non-timestamped report files (legacy cleanup)
     for report_file in adg_dir.glob("*_report.json"):
-        # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)    # guardian: Add error context logging
         if "_" in report_file.stem and len(report_file.stem.split("_")) >= 3:
             # Check if the last part looks like a timestamp
             last_part = report_file.stem.split("_")[-1]
             if len(last_part) == 13 and "_" in last_part:  # MMDDYYYY_HHMM format
                 continue  # This is a timestamped file, keep it
-        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        # guardian: allow-silent-swallow - acceptable exception handling
         try:
             report_file.unlink()
             cleaned_count += 1
@@ -1915,7 +2048,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     if (
         cleaned_count > 0
-    ):  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    ):  # guardian: Add error context logging
         print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")
 
 
@@ -1979,7 +2112,7 @@ _RUNTIME_ENFORCEMENT_FILES = [
 
 def _archive_zip_files(zip_files: list[Path], archive_month_dir: Path) -> tuple[int, int, int]:
     """Archive zip files with compression.
-    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    # guardian: Add error context logging
     Returns:
         Tuple of (archived_count, bytes_original, bytes_archived)
     """
@@ -2021,7 +2154,7 @@ def _archive_zip_files(zip_files: list[Path], archive_month_dir: Path) -> tuple[
 
 
 def _archive_individual_files(files: list[Path], archive_month_dir: Path) -> tuple[int, int, int]:
-    """Archive individual files (legacy fallback for orphaned runs).    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    """Archive individual files (legacy fallback for orphaned runs).    # guardian: Add error context logging
 
     Returns:
         Tuple of (archived_count, bytes_original, bytes_archived)

@@ -264,7 +264,7 @@ class AgenticRouter:
         # P3/L0: Apply capacity-aware routing if multiple candidates exist
         _capacity_chosen_route = target_name
         if len(_candidate_routes) > 1:
-            try:    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context
+            try:    # guardian: RoutingCapacityError should be handled with specific context
                 capacity_ctx = RoutingCapacityContext.create(
                     run_id=_rtid,
                     trace_id=_rtid,
@@ -295,7 +295,7 @@ class AgenticRouter:
                     target_name = _capacity_chosen_route
 
             except RoutingCapacityError as _rce:
-                pass  # Continue with original routing - capacity failure should not block routing
+                import logging; logging.getLogger(__name__).debug("agentic_router: RoutingCapacityError swallowed at L297: %s", _rce)
             except (ImportError, AttributeError, KeyError, TypeError, ValueError) as _cap_exc:
                 Logger.error(
                     "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",

@@ -286,8 +286,9 @@ class L3OrchestrationBase(SovereignBaseAgent):
             )
             _adg_scope_widening = sorted(_bp.antipattern_signals)
         # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except Exception as e:
+
+            import logging; logging.getLogger(__name__).debug("L3OrchestrationBase: Exception swallowed at L289: %s", e)
         return {
             "task": task,
             "plan": [],

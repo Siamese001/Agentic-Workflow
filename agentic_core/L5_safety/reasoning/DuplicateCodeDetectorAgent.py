@@ -362,8 +362,9 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             if _adg_antipatterns:
                 Logger.info("[ADG] DuplicateCodeDetectorAgent antipatterns=%s", _adg_antipatterns)
         # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
-            pass
+        except (RuntimeError, OSError) as e:
+
+            import logging; logging.getLogger(__name__).debug("DuplicateCodeDetectorAgent: RuntimeError swallowed at L365: %s", e)
         results = {
             "whole_file_duplicates": [],
             "code_block_duplicates": [],
