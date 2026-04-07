@@ -1,6 +1,5 @@
 ---
-trigger:
-  - file_change
+trigger: model_decision
 ---
 # Anti-Pattern HITL Gate
 

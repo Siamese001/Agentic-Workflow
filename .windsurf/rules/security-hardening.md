@@ -1,7 +1,5 @@
 ---
-trigger:
-  - file_change
-  - pre_commit
+trigger: model_decision
 ---
 # Security Hardening Rule
 

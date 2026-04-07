@@ -1,8 +1,8 @@
 ---
-trigger:
-  - file_change
-  - pre_test
-  - pre_commit
+trigger: glob
+globs:
+  - "**/test_*_adg.py"
+  - "tools/adg/**"
 ---
 
 # ADG Test Accelerator Mandatory Enforcement

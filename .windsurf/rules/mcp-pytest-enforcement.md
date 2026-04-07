@@ -1,7 +1,8 @@
 ---
-trigger:
-  - file_change
-  - pre_commit
+trigger: glob
+globs:
+  - "**/test_*.py"
+  - "**/conftest.py"
 ---
 # MCP PyTest Enforcement Rule
 

@@ -1,7 +1,7 @@
 ---
-trigger:
-  - file_change
-  - pre_commit
+trigger: glob
+globs:
+  - "config/mcp_servers.yaml"
 ---
 # MCP Config SSOT Rule
 
