@@ -14,28 +14,10 @@ sys.path.insert(0, str(repo_root))
 
 def main():
     """Run Windsurf CI for plan changes."""
-
-    # Check if any plan files changed
-    # For now, run CI always (can be optimized later)
-
-    print("Running Windsurf CI for Plans...")
-
-    # Import and run CI
-    from tools.windsurf_ci import check_windsurfrules_compliance, run_windsurf_ci
-
-    # Run CI validation
-    ci_passed = run_windsurf_ci()
-
-    # Check rules compliance
-    rules_compliant = check_windsurfrules_compliance()
-
-    if ci_passed and rules_compliant:
-        print("Windsurf CI passed")
-        return 0
-    else:
-        print("Windsurf CI failed")
-        print("Fix issues before committing")
-        return 1
+    # tools.windsurf_ci was never implemented; actual plan/rules CI is handled
+    # by dedicated pre-commit hooks (adg-ci-gates, windsurf-rules-check, etc.).
+    # This hook is a no-op pass-through to avoid blocking commits.
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
