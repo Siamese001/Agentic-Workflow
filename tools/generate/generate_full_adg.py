@@ -1813,15 +1813,23 @@ def _violation_surface_stats(conn: sqlite3.Connection) -> dict[str, int | bool]:
     antipattern_edges = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='antipattern'",
     ).fetchone()[0]
+    # Guardian exemptions reduce violations count — include them in reconciliation
+    guardian_exemptions = 0
+    if "meta" in tables:
+        row = cur.execute("SELECT value FROM meta WHERE key='guardian_exemptions'").fetchone()
+        if row:
+            guardian_exemptions = int(row[0])
+    effective_violations = violation_table_count + guardian_exemptions
     surfaces_reconciled = bool(
         "violations" in tables
-        and violation_table_count >= antipattern_edges
-        and violation_table_count >= layer_violation_edges
+        and effective_violations >= antipattern_edges
+        and effective_violations >= layer_violation_edges
         and layer_violation_edges >= layer_violation_sources,
     )
     return {
         "violations_table_exists": "violations" in tables,
         "violations_table_count": violation_table_count,
+        "guardian_exemptions": guardian_exemptions,
         "antipattern_edge_count": antipattern_edges,
         "layer_violation_edge_count": layer_violation_edges,
         "layer_violation_source_count": layer_violation_sources,

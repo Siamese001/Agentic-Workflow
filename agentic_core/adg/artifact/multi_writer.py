@@ -426,6 +426,113 @@ LEFT JOIN precision_call_resolution cr ON cr.edge_id = e.id;
 """
 
 
+_GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
+    "silent_exception_swallow": (
+        "guardian: allow-silent-swallow",
+        "guardian: allow-silent-swallower",
+        "guardian: allow-silent_swallower",
+    ),
+    "broad_exception_catch": (
+        "guardian: allow-broad-exception",
+        "guardian: allow-broad-except",
+    ),
+    "log_and_swallow": (
+        "guardian: allow-log-and-swallow",
+        "guardian: allow-silent-swallow",
+    ),
+    "return_none_swallow": (
+        "guardian: allow-return-none-swallow",
+        "guardian: allow-silent-swallow",
+    ),
+}
+
+_LAYER_VIOLATION_GUARDIANS = ("guardian: allow-layer-violation",)
+
+_file_cache: dict[str, list[str]] = {}
+
+
+def _read_lines_cached(filepath: str) -> list[str]:
+    """Read file lines with caching to avoid repeated I/O for hot files."""
+    if filepath not in _file_cache:
+        try:
+            _file_cache[filepath] = Path(filepath).read_text(
+                encoding="utf-8", errors="ignore"
+            ).splitlines()
+        except OSError:
+            _file_cache[filepath] = []
+    return _file_cache[filepath]
+
+
+def _has_guardian_comment(
+    source_file: str, line_no: int, guardian_strings: tuple[str, ...]
+) -> bool:
+    """Check if source line (±2 lines) contains a matching guardian comment."""
+    lines = _read_lines_cached(source_file)
+    if not lines or line_no < 1:
+        return False
+    start = max(0, line_no - 3)
+    end = min(len(lines), line_no + 3)
+    for ln in lines[start:end]:
+        for gs in guardian_strings:
+            if gs in ln:
+                return True
+    return False
+
+
+def _filter_guardian_exempted_violations(conn: sqlite3.Connection) -> int:
+    """Remove violations that have valid guardian exemption comments in source.
+
+    Queries all antipattern and layer-violation rows, reads the source file
+    at the violation line, and DELETEs rows whose surrounding context contains
+    the matching ``# guardian: allow-<type>`` comment.
+
+    Returns the number of exempted (deleted) violations.
+    """
+    _file_cache.clear()
+
+    # Collect antipattern violations with edge_kind
+    rows = conn.execute(
+        "SELECT v.id, e.edge_kind, v.file_path, v.line_no "
+        "FROM violations v JOIN edges e ON v.edge_id = e.id "
+        "WHERE v.category = 'antipattern'"
+    ).fetchall()
+
+    exempt_ids: list[int] = []
+    for vid, edge_kind, fpath, lno in rows:
+        guardians = _GUARDIAN_MAP.get(edge_kind)
+        if guardians and _has_guardian_comment(fpath, lno, guardians):
+            exempt_ids.append(vid)
+
+    # Collect layer-violation violations
+    lv_rows = conn.execute(
+        "SELECT v.id, v.file_path, v.line_no "
+        "FROM violations v JOIN edges e ON v.edge_id = e.id "
+        "WHERE e.relation_type = 'violates'"
+    ).fetchall()
+    for vid, fpath, lno in lv_rows:
+        if _has_guardian_comment(fpath, lno, _LAYER_VIOLATION_GUARDIANS):
+            exempt_ids.append(vid)
+
+    # Batch delete
+    if exempt_ids:
+        # SQLite max variable limit is 999; batch if needed
+        for i in range(0, len(exempt_ids), 900):
+            batch = exempt_ids[i : i + 900]
+            placeholders = ",".join("?" for _ in batch)
+            conn.execute(
+                f"DELETE FROM violations WHERE id IN ({placeholders})", batch
+            )
+
+    # Store exemption count in meta for transparency
+    conn.execute(
+        "INSERT OR REPLACE INTO meta(key, value) VALUES (?, ?)",
+        ("guardian_exemptions", str(len(exempt_ids))),
+    )
+
+    _file_cache.clear()
+    return len(exempt_ids)
+
+
 def _write_sqlite(ng_full, db_path: Path) -> Path:
     """Write a NormalizedGraph to SQLite for fast querying."""
     db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -524,6 +631,11 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                 END as severity
             FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')""",
         )
+
+        # Guardian exemption filtering — remove violations with valid guardian comments
+        guardian_exempted = _filter_guardian_exempted_violations(conn)
+        if guardian_exempted:
+            print(f"[ADG] Guardian exemptions applied: {guardian_exempted} violations filtered")
 
         # Meta
         meta_rows = [

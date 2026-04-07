@@ -39,6 +39,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from agentic_core.adg.artifact.multi_writer import _filter_guardian_exempted_violations
 from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -461,6 +462,11 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                 END as severity
             FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')""",
         )
+
+        # Guardian exemption filtering — remove violations with valid guardian comments
+        guardian_exempted = _filter_guardian_exempted_violations(conn)
+        if guardian_exempted:
+            print(f"[ADG] Guardian exemptions applied: {guardian_exempted} violations filtered")
 
         # Meta
         meta_rows = [
