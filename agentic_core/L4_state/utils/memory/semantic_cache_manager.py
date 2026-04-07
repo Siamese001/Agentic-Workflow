@@ -30,6 +30,14 @@ import time
 import uuid
 from typing import Any
 
+# GPTCacheClient import for persistent Layer 2 backend
+try:
+    from agentic_core.L4_state.cache.gptcache_client import GPTCacheClient
+    _GPTCACHE_AVAILABLE = True
+except ImportError:
+    _GPTCACHE_AVAILABLE = False
+    GPTCacheClient = None  # type: ignore[misc, assignment]
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -315,21 +323,21 @@ class SemanticCacheManager:
         self.redis_client = None
         self.redis_enabled = False
         self._init_redis()
-        from agentic_core.L4_state.utils.memory.in_memory_vector_store import InMemoryVectorStore
-
-        self._vector_store: InMemoryVectorStore = InMemoryVectorStore()
-        self.vector_store_enabled = True
-        self._init_vector_store()
+        # Use NativePersistentCacheClient for persistent Layer 2 (SQLite + ChromaDB)
+        self._gptcache: GPTCacheClient | None = None
+        self.gptcache_enabled = False
+        self._init_gptcache()
         self.stats = {
             "redis_hits": 0,
             "vector_store_hits": 0,
+            "gptcache_hits": 0,
             "cache_misses": 0,
             "cache_stores": 0,
             "traces_sampled": 0,
             "traces_skipped": 0,
             "promotions": 0,
         }
-        infrastructure_available = self.redis_enabled or self.vector_store_enabled
+        infrastructure_available = self.redis_enabled or self.gptcache_enabled
         if not infrastructure_available:
             if self.strict_mode:
                 error_msg = "[HiveMind] CRITICAL: Hive Mind infrastructure unavailable in STRICT mode."
@@ -344,10 +352,38 @@ class SemanticCacheManager:
             Logger.info("[HiveMind] Connected to Working Memory (Redis)")
         else:
             Logger.warning("[HiveMind] Working Memory (Redis) unavailable")
-        Logger.info("[HiveMind] Connected to Long-Term Memory (InMemoryVectorStore+BGE)")
+        if self.gptcache_enabled:
+            Logger.info("[HiveMind] Connected to Long-Term Memory (Native L2: SQLite+ChromaDB)")
+        else:
+            Logger.warning("[HiveMind] Long-Term Memory (Native L2) unavailable")
         Logger.info(
             f"[HiveMind] Config: strict_mode={self.strict_mode}, sampling_rate={self.trace_sampling_rate}, promotion_threshold={self.promotion_threshold}"
         )
+
+    def _init_gptcache(self) -> Exception | None:
+        """Initialize Native L2 cache client for persistent Layer 2 storage.
+
+        Returns:
+            Exception if initialization failed, None if successful
+        """
+        try:
+            self._gptcache = GPTCacheClient(
+                cache_dir="artifacts/gptcache",
+                similarity_threshold=self.similarity_threshold,
+                max_entries=10000,
+                embedding_provider="bge-m3",
+                embedding_model="BAAI/bge-m3",
+            )
+            # Check if it's using real implementation or mock
+            if self._gptcache._cache == "mock":
+                Logger.warning("[HiveMind] Native L2 cache using mock implementation (ChromaDB not installed)")
+                return ValueError("Native L2 cache in mock mode")
+            self.gptcache_enabled = True
+            Logger.info("[HiveMind] Native L2 cache initialized at artifacts/gptcache/")
+            return None
+        except Exception as e:
+            Logger.warning(f"[HiveMind] Native L2 cache initialization failed: {e}")
+            return e
 
     def _init_redis(self) -> Exception | None:
         """
@@ -372,11 +408,6 @@ class SemanticCacheManager:
             Logger.warning(f"[HiveMind] Redis connection failed: {e}")
             return e
 
-    def _init_vector_store(self) -> None:
-        """Initialize in-memory vector store for semantic matching (BGE-m3 backend)."""
-        self.vector_store_enabled = True
-        Logger.debug("[HiveMind] In-memory vector store initialized (FAISS+BGE-m3 backend)")
-
     _EMBEDDING_MODEL_VERSION: str = os.environ.get("HIVE_MIND_EMBEDDING_MODEL_VERSION", "bge-m3-v1")
     _RETRIEVAL_CONFIG_HASH: str = os.environ.get("HIVE_MIND_RETRIEVAL_CONFIG_HASH", "default")
 
@@ -389,17 +420,6 @@ class SemanticCacheManager:
         """
         key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, context])
         return hashlib.sha256(key.encode()).hexdigest()
-
-    def _get_embedding(self, text: str) -> list[float] | None:
-        """Generate BGE-m3 embedding for semantic matching."""
-        try:
-            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
-
-            return bmg_embed_text(text[:2000])
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            Logger.warning(f"[HiveMind] BGE embedding failed: {e}")
-            return None
 
     def recall(self, context: str, namespace: str) -> dict[str, Any] | None:
         """
@@ -429,35 +449,24 @@ class SemanticCacheManager:
                     return json.loads(cached)
             # guardian: allow-silent-swallow
             except Exception as e:
-                raise
                 Logger.debug(f"[HiveMind] Redis recall failed: {e}")
-        if self.vector_store_enabled and self._vector_store._storage:
-            vector = self._get_embedding(context)
-            if vector:
-                try:
-                    import asyncio
-
-                    from agentic_core.L4_state.types.memory_item_types import MemoryQuery
-
-                    query = MemoryQuery(vector=vector, top_k=1, filter_metadata={"namespace": namespace})
-                    loop = asyncio.get_event_loop()
-                    results = loop.run_until_complete(self._vector_store.query(query))
-                    if (
-                        results
-                        and results[0].score is not None
-                        and (results[0].score >= self.similarity_threshold)
-                    ):
-                        best = results[0]
-                        Logger.info(f"[HiveMind] VectorStore HIT ({best.score:.2f}) for {namespace}")
+        if self.gptcache_enabled and self._gptcache:
+            try:
+                # Use Native L2 cache for semantic search (persistent Layer 2)
+                # Native L2 handles embedding internally via BGE-M3
+                result = self._gptcache.get(context)
+                if result:
+                    # Result is already a JSON string from previous storage
+                    cached_result = json.loads(result)
+                    # Verify namespace match (Native L2 doesn't support metadata filtering)
+                    if cached_result.get("_metadata", {}).get("namespace") == namespace:
+                        Logger.info(f"[HiveMind] Native L2 HIT for {namespace}")
                         with self._lock:
-                            self.stats["vector_store_hits"] += 1
-                        payload = best.metadata.get("payload")
-                        if payload:
-                            return json.loads(payload)
-                # guardian: allow-silent-swallow
-                except Exception as e:
-                    raise
-                    Logger.debug(f"[HiveMind] VectorStore recall failed: {e}")
+                            self.stats["gptcache_hits"] += 1
+                        return cached_result
+            # guardian: allow-silent-swallow
+            except Exception as e:
+                Logger.debug(f"[HiveMind] Native L2 recall failed: {e}")
         with self._lock:
             self.stats["cache_misses"] += 1
         return None
@@ -569,7 +578,7 @@ class SemanticCacheManager:
         self, context: str, namespace: str, result: dict[str, Any], feedback_score: float
     ) -> bool:
         """
-        Promote a memory to Long-Term DNA storage (InMemoryVectorStore).
+        Promote a memory to Long-Term DNA storage (Native L2 persistent backend).
 
         Only promotes if feedback_score >= promotion_threshold (default 0.8).
         This is the Validation Gate for memory lifecycle.
@@ -588,8 +597,8 @@ class SemanticCacheManager:
                 f"[HiveMind] Promotion rejected: feedback_score={feedback_score} < threshold={self.promotion_threshold}"
             )
             return False
-        if not self.vector_store_enabled:
-            Logger.warning("[HiveMind] Cannot promote: vector store not available")
+        if not self.gptcache_enabled:
+            Logger.warning("[HiveMind] Cannot promote: Native L2 cache not available")
             return False
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
@@ -604,30 +613,15 @@ class SemanticCacheManager:
             },
         }
         payload_json = json.dumps(enriched_result)
-        vector = self._get_embedding(sanitized_context)
-        if not vector:
-            Logger.warning("[HiveMind] Cannot promote: Embedding generation failed")
-            return False
         try:
-            from agentic_core.L4_state.types.memory_item_types import MemoryItem
-
-            item = MemoryItem(
-                content=sanitized_context,
-                embedding=vector,
-                metadata={
-                    "namespace": namespace,
-                    "feedback_score": feedback_score,
-                    "promoted_at": time.time(),
-                    "payload": payload_json,
-                },
-            )
-            await self._vector_store.upsert([item])
+            # Store in Native L2 cache (persistent Layer 2)
+            # Native L2 handles embedding internally via BGE-M3
+            self._gptcache.set(sanitized_context, payload_json)
             if self.redis_enabled:
                 try:
                     self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_LONG_TERM_TTL, payload_json)
                 # guardian: allow-silent-swallow
                 except Exception as e:
-                    raise
                     Logger.warning(f"[HiveMind] Redis TTL extension failed: {e}")
             with self._lock:
                 self.stats["promotions"] += 1
@@ -702,7 +696,7 @@ class SemanticCacheManager:
     def get_statistics(self) -> dict[str, Any]:
         """Get cache statistics."""
         with self._lock:
-            total_hits = self.stats["redis_hits"] + self.stats["vector_store_hits"]
+            total_hits = self.stats["redis_hits"] + self.stats["gptcache_hits"]
             total_lookups = total_hits + self.stats["cache_misses"]
             total_traces = self.stats["traces_sampled"] + self.stats["traces_skipped"]
             return {

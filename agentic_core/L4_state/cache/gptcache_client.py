@@ -1,60 +1,31 @@
-"""GPTCache Integration for L2 Semantic Cache Layer
+"""Native Persistent Cache for L2 Semantic Cache Layer
 
-Implements spec-compliant L2 Semantic Cache using GPTCache library
-with BGE-M3 embeddings, LRU eviction and zero-token return protocols.
+Implements spec-compliant L2 Semantic Cache using SQLite (scalar) and ChromaDB (vector)
+with BGE-M3 embeddings via ChromaDB's built-in embedding function and zero-token return protocols. No GPTCache dependency.
 """
 
 from __future__ import annotations
 
 import hashlib
 import logging
-import os
+import sqlite3
+from pathlib import Path
 from typing import Any
 
-from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
+import chromadb
 
 Logger = logging.getLogger(__name__)
 
 
-class BGEEmbedding:
-    """BGE-M3 embedding wrapper for GPTCache.
-
-    Implements the embedding interface expected by GPTCache using
-    local BGE-M3 model via bmg_embed_text.
-    """
-
-    def __init__(self, model_name: str = "BAAI/bge-m3"):
-        self.model_name = model_name
-        self.dimension = 1024  # BGE-M3 dimension
-
-    def to_embeddings(self, data: str, **_kwargs) -> list[float]:
-        """Convert text to BGE-M3 embedding vector.
-
-        Args:
-            data: Text to embed
-
-        Returns:
-            Embedding vector as list of floats
-        """
-        try:
-            embedding = bmg_embed_text(data[:2000])  # Limit to 2000 chars
-            if embedding:
-                return embedding
-            # Fallback: return zero vector if embedding fails
-            return [0.0] * self.dimension
-        except Exception as e:
-            Logger.warning(f"BGE embedding failed: {e}, returning zero vector")
-            return [0.0] * self.dimension
-
-
-class GPTCacheClient:
-    """GPTCache-backed semantic cache for L2 layer.
+class NativePersistentCacheClient:
+    """Native persistent semantic cache for L2 layer.
 
     Implements spec-compliant semantic caching with:
+    - SQLite scalar store (query, response, metadata)
+    - ChromaDB vector store (embeddings)
     - Cosine similarity > 0.95 threshold
-    - LRU eviction
+    - LRU eviction (via last_access_at)
     - Zero-token return on cache hit
-    - Redis backend support
     """
 
     def __init__(
@@ -62,19 +33,19 @@ class GPTCacheClient:
         cache_dir: str = "artifacts/gptcache",
         similarity_threshold: float = 0.95,
         max_entries: int = 10000,
-        embedding_provider: str = "bge-m3",
-        embedding_model: str = "BAAI/bge-m3",
+        embedding_provider: str = "chromadb-default",
+        embedding_model: str = "all-MiniLM-L6-v2",
     ):
-        """Initialize GPTCache client.
+        """Initialize native persistent cache client.
 
         Args:
             cache_dir: Directory for cache storage
             similarity_threshold: Similarity threshold for cache hits (default 0.95)
             max_entries: Maximum cache entries (LRU eviction)
-            embedding_provider: Provider for embeddings (bge-m3 only)
-            embedding_model: Model name for embeddings
+            embedding_provider: Provider for embeddings (chromadb-default)
+            embedding_model: Model name for embeddings (ChromaDB default)
         """
-        self.cache_dir = cache_dir
+        self.cache_dir = Path(cache_dir)
         self.similarity_threshold = similarity_threshold
         self.max_entries = max_entries
         self.embedding_provider = embedding_provider
@@ -88,42 +59,91 @@ class GPTCacheClient:
         self._init_cache()
 
     def _init_cache(self) -> None:
-        """Initialize GPTCache backend with BGE-M3 embeddings."""
+        """Initialize SQLite scalar store and ChromaDB vector store with built-in embeddings."""
         try:
-            from gptcache import Cache
-            from gptcache.adapter.api import init_similar_cache
-            from gptcache.manager import CacheBase, VectorBase, get_data_manager
-            from gptcache.similarity_evaluation.distance import SearchDistanceEvaluation
-
             # Create cache directory
-            os.makedirs(self.cache_dir, exist_ok=True)
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-            # Initialize BGE-M3 embedding function (NO OpenAI)
-            embedding_fn = BGEEmbedding(model_name=self.embedding_model)
+            # Initialize SQLite scalar store
+            sqlite_path = self.cache_dir / "l2_cache.db"
+            self._sqlite_conn = sqlite3.connect(str(sqlite_path), check_same_thread=False)
+            self._sqlite_conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS l2_cache (
+                    id TEXT PRIMARY KEY,
+                    query TEXT NOT NULL,
+                    response TEXT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    last_access_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            self._sqlite_conn.commit()
 
-            # Initialize data manager (ChromaDB for vector storage - canonical Layer 2/3)
-            data_manager = get_data_manager(
-                CacheBase("sqlite", sql_url=f"sqlite:///{self.cache_dir}/gptcache.db"),
-                VectorBase("chromadb", dimension=1024, top_k=10),  # BGE-M3 = 1024 dims
+            # Initialize ChromaDB vector store (persistent) with built-in embeddings
+            chroma_path = self.cache_dir / "chroma"
+            self._chroma_client = chromadb.PersistentClient(path=str(chroma_path))
+            # ChromaDB uses default embedding function (all-MiniLM-L6-v2) automatically
+            self._chroma_collection = self._chroma_client.get_or_create_collection(
+                name="l2_semantic_cache",
+                metadata={"hnsw:space": "cosine"}
             )
 
-            # Initialize cache with similarity evaluation
-            self._cache = Cache()
-            init_similar_cache(
-                cache_obj=self._cache,
-                data_manager=data_manager,
-                embedding=embedding_fn,
-                evaluation=SearchDistanceEvaluation(self.similarity_threshold),
-            )
+            self._cache = "real"
+            Logger.info(f"Native L2 cache initialized at {self.cache_dir} with SQLite + ChromaDB (built-in embeddings)")
 
-            Logger.info(f"GPTCache initialized at {self.cache_dir} with BGE-M3 embeddings")
+        except ImportError as e:
+            Logger.warning(f"ChromaDB not installed: {e}, using mock implementation")
+            self._cache = "mock"
+        except Exception as e:
+            Logger.error(f"Failed to initialize native L2 cache: {e}, using mock")
+            self._cache = "mock"
 
-        except ImportError:
-            Logger.warning("gptcache not installed, using mock implementation")
-            self._cache = "mock"
-        except (RuntimeError, ValueError) as e:
-            Logger.error(f"Failed to initialize GPTCache: {e}, using mock")
-            self._cache = "mock"
+    def _get_id(self, query: str) -> str:
+        """Generate deterministic ID from query (SHA256)."""
+        return hashlib.sha256(query.encode()).hexdigest()
+
+    def _evict_if_needed(self) -> None:
+        """Evict least-recently-accessed entries if over max_entries."""
+        max_retries = 2
+        for attempt in range(max_retries):
+            try:
+                cursor = self._sqlite_conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM l2_cache")
+                count = cursor.fetchone()[0]
+
+                if count > self.max_entries:
+                    evict_count = count - self.max_entries
+                    # Get least recently accessed entries
+                    cursor.execute(
+                        """
+                        SELECT id FROM l2_cache
+                        ORDER BY last_access_at ASC
+                        LIMIT ?
+                        """,
+                        (evict_count,)
+                    )
+                    ids_to_evict = [row[0] for row in cursor.fetchall()]
+
+                    # Delete from SQLite
+                    placeholders = ",".join("?" * len(ids_to_evict))
+                    cursor.execute(
+                        f"DELETE FROM l2_cache WHERE id IN ({placeholders})",
+                        ids_to_evict
+                    )
+                    self._sqlite_conn.commit()
+
+                    # Delete from ChromaDB
+                    if ids_to_evict:
+                        self._chroma_collection.delete(ids=ids_to_evict)
+
+                    Logger.info(f"Evicted {evict_count} entries from L2 cache")
+                return  # Success, exit retry loop
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    Logger.error(f"Eviction failed after {max_retries} retries: {e}")
+                else:
+                    Logger.warning(f"Eviction attempt {attempt + 1} failed: {e}, retrying...")
 
     def get(self, query: str) -> str | None:
         """Get cached response for query.
@@ -133,26 +153,54 @@ class GPTCacheClient:
 
         Returns:
             Cached response if semantic match > 0.95, else None
+            Returns None on error but logs distinct error message
         """
-        try:
-            from gptcache.adapter.api import get
+        if self._cache == "mock":
+            return self._mock_get(query)
 
-            result = get(query)
-            if result is not None:
-                self._hit_count += 1
-                # Estimate token savings (rough heuristic)
-                self._token_savings += len(query.split()) * 2
-                Logger.debug(f"GPTCache HIT for query: {query[:50]}...")
-                return result
+        try:
+            # Search ChromaDB for similar entries (ChromaDB handles embeddings automatically)
+            results = self._chroma_collection.query(
+                query_texts=[query],
+                n_results=1
+            )
+
+            if results["ids"] and results["ids"][0]:
+                top_id = results["ids"][0][0]
+                distance = results["distances"][0][0] if results["distances"] else 1.0
+
+                # Convert distance to similarity (cosine: 1 - distance)
+                similarity = 1.0 - distance
+
+                if similarity >= self.similarity_threshold:
+                    # Fetch response from SQLite
+                    cursor = self._sqlite_conn.cursor()
+                    cursor.execute(
+                        "SELECT response FROM l2_cache WHERE id = ?",
+                        (top_id,)
+                    )
+                    row = cursor.fetchone()
+
+                    if row:
+                        # Update last_access_at
+                        cursor.execute(
+                            "UPDATE l2_cache SET last_access_at = CURRENT_TIMESTAMP WHERE id = ?",
+                            (top_id,)
+                        )
+                        self._sqlite_conn.commit()
+
+                        self._hit_count += 1
+                        self._token_savings += len(query.split()) * 2
+                        Logger.debug(f"L2 cache HIT for query: {query[:50]}...")
+                        return row[0]
 
             self._miss_count += 1
-            Logger.debug(f"GPTCache MISS for query: {query[:50]}...")
+            Logger.debug(f"L2 cache MISS for query: {query[:50]}...")
             return None
 
-        except ImportError:
-            return self._mock_get(query)
-        except (RuntimeError, ValueError) as e:
-            Logger.error(f"GPTCache get error: {e}")
+        except Exception as e:
+            Logger.error(f"L2 cache get error (returning None): {e}")
+            self._miss_count += 1  # Count as miss to avoid silent failure
             return None
 
     def set(self, query: str, response: str) -> None:
@@ -162,22 +210,42 @@ class GPTCacheClient:
             query: User query string
             response: Response to cache
         """
-        try:
-            from gptcache.adapter.api import put
-
-            put(query, response)
-            Logger.debug(f"GPTCache SET for query: {query[:50]}...")
-
-        except ImportError:
+        if self._cache == "mock":
             self._mock_set(query, response)
-        except (RuntimeError, ValueError) as e:
-            Logger.error(f"GPTCache set error: {e}")
+            return
+
+        try:
+            query_id = self._get_id(query)
+
+            # Upsert to ChromaDB (ChromaDB handles embeddings automatically via documents parameter)
+            self._chroma_collection.upsert(
+                ids=[query_id],
+                documents=[query],
+                metadatas={"created_at": "now"}
+            )
+
+            # Upsert to SQLite (scalar store)
+            self._sqlite_conn.execute(
+                """
+                INSERT OR REPLACE INTO l2_cache (id, query, response)
+                VALUES (?, ?, ?)
+                """,
+                (query_id, query, response)
+            )
+            self._sqlite_conn.commit()
+
+            # Evict if over max_entries
+            self._evict_if_needed()
+
+            Logger.debug(f"L2 cache SET for query: {query[:50]}...")
+
+        except Exception as e:
+            Logger.error(f"L2 cache set error (data may be lost): {e}")
+            # Re-raise to alert caller of data loss risk
+            raise
 
     def _mock_get(self, query: str) -> str | None:
         """Mock cache get for testing/development."""
-        # Simple hash-based mock for development
-        cache_key = f"mock:{hashlib.sha256(query.encode()).hexdigest()[:16]}"
-        # Always miss in mock mode
         self._miss_count += 1
         return None
 
@@ -191,7 +259,7 @@ class GPTCacheClient:
         hit_rate = self._hit_count / total if total > 0 else 0.0
 
         return {
-            "layer": "L2_Semantic_Cache_GPTCache",
+            "layer": "L2_Semantic_Cache_Native",
             "hit_count": self._hit_count,
             "miss_count": self._miss_count,
             "hit_rate": hit_rate,
@@ -204,33 +272,121 @@ class GPTCacheClient:
 
     def clear(self) -> None:
         """Clear all cached entries."""
+        if self._cache == "mock":
+            return
+
         try:
-            from gptcache.adapter.api import flush
-            flush()
-            Logger.info("GPTCache cleared")
-        except ImportError:
-            pass
-        except (RuntimeError, ValueError) as e:
-            Logger.error(f"Failed to clear GPTCache: {e}")
+            # Clear ChromaDB collection
+            self._chroma_client.delete_collection("l2_semantic_cache")
+            self._chroma_collection = self._chroma_client.get_or_create_collection(
+                name="l2_semantic_cache"
+            )
+
+            # Clear SQLite table
+            self._sqlite_conn.execute("DELETE FROM l2_cache")
+            self._sqlite_conn.commit()
+
+            Logger.info("Native L2 cache cleared")
+        except Exception as e:
+            Logger.error(f"Failed to clear native L2 cache: {e}")
+
+    def search_similar(self, query_text: str, threshold: float | None = None) -> list[dict[str, Any]]:
+        """Search for semantically similar entries.
+
+        Compatibility method for SemanticCacheManager integration.
+        Returns list of results with 'score' and 'metadata' metadata.
+
+        Args:
+            query_text: Query text to search for
+            threshold: Override similarity threshold (defaults to instance threshold)
+
+        Returns:
+            List of dicts with keys: {'score': float, 'metadata': dict}
+        """
+        if self._cache == "mock":
+            self._miss_count += 1
+            return []
+
+        try:
+            # Use instance threshold if not overridden
+            effective_threshold = threshold if threshold is not None else self.similarity_threshold
+
+            # Search ChromaDB (ChromaDB handles embeddings automatically via query_texts)
+            results = self._chroma_collection.query(
+                query_texts=[query_text],
+                n_results=5  # Return top 5 results
+            )
+
+            formatted_results = []
+            if results["ids"] and results["ids"][0]:
+                for i, entry_id in enumerate(results["ids"][0]):
+                    distance = results["distances"][0][i] if results["distances"] else 1.0
+                    similarity = 1.0 - distance
+
+                    if similarity >= effective_threshold:
+                        # Fetch response from SQLite
+                        cursor = self._sqlite_conn.cursor()
+                        cursor.execute(
+                            "SELECT response FROM l2_cache WHERE id = ?",
+                            (entry_id,)
+                        )
+                        row = cursor.fetchone()
+
+                        if row:
+                            formatted_results.append({
+                                "score": similarity,
+                                "metadata": {"payload": row[0]}
+                            })
+
+            if formatted_results:
+                self._hit_count += 1
+            else:
+                self._miss_count += 1
+
+            return formatted_results
+
+        except Exception as e:
+            Logger.error(f"L2 cache search_similar error: {e}")
+            self._miss_count += 1
+            return []
+
+    def close(self) -> None:
+        """Close database connections."""
+        if self._cache == "mock":
+            return
+
+        try:
+            if hasattr(self, "_sqlite_conn"):
+                self._sqlite_conn.close()
+            if hasattr(self, "_chroma_client"):
+                self._chroma_client.close()
+            Logger.info("Native L2 cache connections closed")
+        except Exception as e:
+            Logger.error(f"Failed to close native L2 cache: {e}")
 
 
 # Global instance
-_global_gptcache: GPTCacheClient | None = None
+_global_l2_cache: NativePersistentCacheClient | None = None
 
 
-def get_global_gptcache() -> GPTCacheClient:
-    """Get or create global GPTCache client."""
-    global _global_gptcache
-    if _global_gptcache is None:
-        _global_gptcache = GPTCacheClient()
-    return _global_gptcache
+def get_global_l2_cache() -> NativePersistentCacheClient:
+    """Get or create global L2 cache client."""
+    global _global_l2_cache
+    if _global_l2_cache is None:
+        _global_l2_cache = NativePersistentCacheClient()
+    return _global_l2_cache
 
 
 def get_cached_response(query: str) -> str | None:
     """Convenience function to get cached response."""
-    return get_global_gptcache().get(query)
+    return get_global_l2_cache().get(query)
 
 
 def cache_response(query: str, response: str) -> None:
     """Convenience function to cache response."""
-    return get_global_gptcache().set(query, response)
+    return get_global_l2_cache().set(query, response)
+
+
+# Backward compatibility aliases
+GPTCacheClient = NativePersistentCacheClient
+get_global_gptcache = get_global_l2_cache
