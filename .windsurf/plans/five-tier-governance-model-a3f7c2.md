@@ -65,12 +65,12 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 | W3 | 3.5 | Write-time Syntax Gate | AST parse in pre_write_gate blocks syntax errors | PP-13 | ~2K | ✅ DONE (pre-existing, 25 tests) |
 | W3 | 3.6 | Guardian Idempotency | Harden antipattern fixer, block duplicate guardians | PP-14 | ~2K | ✅ DONE |
 | W3 | 3.7 | Guardian Quality Scanner | ADG flags weak justifications, P1 ratchet | PP-14 | ~1K | ✅ DONE |
-| W4 | 4.1 | Pre-commit Slim-down | Fast local quality ratchet — evidence checks + syntax + format only | — | ~2K | 🟢 |
-| W4 | 4.2 | Dead Script Archival | Archive ~96 dead scripts from ops_scripts/ci/ | GAP-13 | ~2K | 🟢 |
-| W4 | 4.3 | Wire Missing Gates | Connect 5 existing-but-unwired enforcement scripts | GAP-7,9,10,11,12 | ~2K | 🟢 |
-| W4 | 4.4 | Eliminate cmd /c | Remove 13 Windows shell wrappers from pre-commit | GAP-14 | ~1K | 🟢 |
-| W4 | 4.5 | CI Promotion Authority | Explicit promotion criteria, high-risk review path, approval classes | — | ~3K | 🟢 |
-| W4 | 4.6 | End-to-End Verification | Measurable verification across all 5 tiers | — | ~1K | 🟢 |
+| W4 | 4.1 | Pre-commit Slim-down | Fast local quality ratchet — evidence checks + syntax + format only | — | ~2K | ✅ DONE |
+| W4 | 4.2 | Dead Script Archival | Archive 77 dead scripts from ops_scripts/ci/ | GAP-13 | ~2K | ✅ DONE |
+| W4 | 4.3 | Wire Missing Gates | Connect 5 existing-but-unwired enforcement scripts | GAP-7,9,10,11,12 | ~2K | ✅ DONE |
+| W4 | 4.4 | Eliminate cmd /c | Replaced 13 Windows shell wrappers with py + env: [PYTHONPATH=.] | GAP-14 | ~1K | ✅ DONE |
+| W4 | 4.5 | CI Promotion Authority | Explicit promotion criteria, high-risk review path, approval classes | — | ~3K | ✅ DONE |
+| W4 | 4.6 | End-to-End Verification | Measurable verification across all 5 tiers | — | ~1K | ✅ DONE |
 | **W5** | **5.1** | **Archive ADG Severity Hooks** | Remove 3 superseded pre-commit ADG hooks + 7 commented-out entries from config | GAP-6 | ~1K | 🟡 |
 | **W5** | **5.2** | **Archive MCP YAML Infrastructure** | Archive YAML SSOT, sync script, sovereignty gate, drift check (W2.7 residuals) | PP-15 | ~1K | 🟡 |
 | **W5** | **5.3** | **Archive Orphan Hook Scripts** | Archive 13 unreferenced scripts + baselines in ops_scripts/hooks/ | GAP-13 | ~1K | 🟡 |
