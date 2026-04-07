@@ -144,6 +144,15 @@ repos:
         always_run: true
         require_serial: true
 
+      - id: check-secrets-scan
+        name: "T0-sec: Secrets Scan — block credential leaks"
+        entry: py ops_scripts/ci/check_secrets_scan.py
+        language: system
+        pass_filenames: true
+        always_run: false
+        require_serial: true
+        types: [python]
+
   # ============================================================================
   # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
   # ============================================================================
@@ -240,6 +249,18 @@ repos:
       # ---- CHEAP STRUCTURAL HARD-FAILS (T6-T11) ---------------------------------
       # Run before ratchets: lower cost, more decisive. Fail fast on obvious
       # structural breakage before spending time on burndown/exemption accounting.
+
+      # -- T6.5: Zero-Loss Refactor Verifier (Constitutional §10) — GAP-12 WIRED W4.3 --
+      # Verifies no hollow files remain after a refactor (zero behavioral defs).
+      # Only runs when agentic_core/ or tools/generate/ files are staged.
+      - id: zero-loss-refactor-verifier
+        name: "T6.5: Zero-Loss Refactor Verifier (Constitutional §10)"
+        entry: py ops_scripts/ci/zero_loss_refactor_verifier.py
+        language: system
+        pass_filenames: false
+        always_run: false
+        require_serial: true
+        files: ^(agentic_core|tools/generate)/.*\.py$
 
       # -- T6: Hollow File Gate — AST Semantic Verification -----------------------
       # Blocks new hollow files; flags existing files that become hollow.
@@ -341,6 +362,28 @@ repos:
         always_run: true
         require_serial: true
         files: ^docs/reports/plans/.*rca.*\.md$
+
+      # -- T7.13: No Archives Imports (Constitutional §12) — GAP-7 WIRED W4.3 ------
+      # Blocks imports from archives/ in production code (agentic_core/, apps_*/, system_learning/).
+      - id: check-no-archives-imports
+        name: "T7.13: No Archives Imports (Constitutional §12)"
+        entry: py ops_scripts/ci/check_no_archives_imports.py
+        language: system
+        pass_filenames: false
+        always_run: false
+        require_serial: true
+        types: [python]
+
+      # -- T7.14: Sensitive Log Scan (Security) — GAP-11 WIRED W4.3 ---------------
+      # Warns if staged files log sensitive data (passwords, tokens, secrets).
+      - id: check-sensitive-logs
+        name: "T7.14: Sensitive Log Scan (Security)"
+        entry: py ops_scripts/ci/check_sensitive_logs.py
+        language: system
+        pass_filenames: true
+        always_run: false
+        require_serial: true
+        types: [python]
 
       # -- T8: Generated-artifact tracking guard ----------------------------------
       # Rejects commits if git tracks any of:
@@ -583,6 +626,18 @@ repos:
       # Run manually: pre-commit run adg-stale-guard --hook-stage manual
       #           or: pre-commit run adg-drift-score  --hook-stage manual
       # Also triggered by .github/workflows/adg-preventative.yml (nightly).
+
+      # -- GAP-9: Memory Health Check (CI/nightly) — WIRED W4.3 -----------------
+      # Checks knowledge graph health: entity count, stale entities, protected types.
+      # Too slow for every commit; run nightly or manually.
+      - id: check-memory-health
+        name: "CI: Memory Health Check (GAP-9)"
+        entry: py ops_scripts/ci/check_memory_health.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
 
       # -- P1: ADG Staleness Guard -----------------------------------------------
       # Fails if ADG Redis ingest is stale relative to latest Python commit.
