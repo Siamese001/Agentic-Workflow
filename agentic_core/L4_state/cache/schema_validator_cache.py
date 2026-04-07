@@ -230,8 +230,7 @@ class SchemaValidatorCache:
                     return cached
             except ValueError:
                 raise
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ConnectionError) as e:
                 logger.warning(f"[Schema validator cache] Cache read failed: {e}")
         logger.debug("[Schema validator cache] MISS — compiling validator")
         result = fetch_validator()
@@ -242,8 +241,7 @@ class SchemaValidatorCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except ValueError:
                 pass
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ConnectionError) as e:
                 logger.warning(f"[Schema validator cache] Cache write failed: {e}")
         return result
 

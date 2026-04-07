@@ -96,12 +96,14 @@ repos:
 #        require_serial: true
 
       - id: windsurf-plan-ci
-        name: "T0-ci: Windsurf Plan CI"
+        name: "T5.5: Windsurf Plan CI Validation"
         entry: py ops_scripts/hooks/windsurf_plan_ci.py
         language: system
         pass_filenames: false
         always_run: true
-        stages: [manual]
+        require_serial: true
+        files: ^\.windsurf/plans/
+        stages: [commit]
 
       - id: guard-no-verify
         name: "T0-guard: No-Verify Bypass Authorization"
@@ -161,18 +163,21 @@ repos:
         require_serial: true
 
   # ============================================================================
-  # TIER 2: P0-P3 Tiered Ruff Lint (Security/Bugs/Style/Format)
-  # SEVERITY SSOT: See agentic_core.L5_safety.config.severity.SeverityLevel
-  # Ruff mapping: P0 → CRITICAL, P1 → HIGH, P2 → MEDIUM, P3 → LOW
-  # NOTE: ADG uses P1-P4 (P1=CRITICAL), Ruff uses P0-P3 (P0=CRITICAL)
+  # TIER 2: Tiered Ruff Lint (Security/Bugs/Style/Format)
+  # SEVERITY SSOT: agentic_core.L5_safety.config.severity.SeverityLevel
+  #
+  # P-NUMBER NAMESPACES — THREE DISTINCT SYSTEMS, DO NOT CONFLATE:
+  #   Ruff:      P0=CRITICAL  P1=HIGH     P2=MEDIUM   P3=LOW
+  #   ADG:       CRITICAL     HIGH        MEDIUM      LOW     (legacy aliases: P1/P2/P3/P4)
+  #   V15 gates: phase-1 ... phase-6  (build phases, unrelated to severity)
+  #
   # Uses priority_definitions.json SSOT for rule selection
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
     hooks:
-      # -- T2-P0: CRITICAL (Security/Safety/Runtime) — BLOCKING ------------
-      # SEVERITY SSOT: Maps to SeverityLevel.CRITICAL (P0/P1)
-      # NOTE: Ruff uses P0 for critical; ADG uses P1 for critical
+      # -- T2-P0: Ruff CRITICAL (Security/Safety/Runtime) — BLOCKING --------
+      # SEVERITY SSOT: SeverityLevel.CRITICAL  |  Ruff: P0  |  ADG: CRITICAL
       - id: ruff
         name: "T2-P0: Ruff CRITICAL (Security/Safety/Runtime)"
         args:
@@ -181,9 +186,8 @@ repos:
         exclude: ops_scripts/ci/check_anti_patterns\.py
         stages: [pre-commit]
 
-      # -- T2-P1: HIGH (Bug Patterns/Code Quality) -----------------------------
-      # SEVERITY SSOT: Maps to SeverityLevel.HIGH (P1/P2)
-      # NOTE: Ruff P1 = HIGH, not to be confused with ADG P1 = CRITICAL
+      # -- T2-P1: Ruff HIGH (Bug Patterns/Code Quality) -----------------------
+      # SEVERITY SSOT: SeverityLevel.HIGH  |  Ruff: P1  |  ADG: HIGH
       - id: ruff
         name: "T2-P1: Ruff HIGH (Bug Patterns/Code Quality)"
         args:
@@ -192,8 +196,8 @@ repos:
         exclude: ops_scripts/ci/check_anti_patterns\.py
         stages: [pre-commit]
 
-      # -- T2-P2: MEDIUM (Style/Organization) — WARNING ----------------------
-      # SEVERITY SSOT: Maps to SeverityLevel.MEDIUM (P2/P3)
+      # -- T2-P2: Ruff MEDIUM (Style/Organization) — WARNING ------------------
+      # SEVERITY SSOT: SeverityLevel.MEDIUM  |  Ruff: P2  |  ADG: MEDIUM
       - id: ruff
         name: "T2-P2: Ruff MEDIUM (Style/Organization)"
         args:
@@ -203,8 +207,8 @@ repos:
         exclude: ops_scripts/ci/check_anti_patterns\.py
         stages: [pre-commit]
 
-      # -- T2-P3: LOW (Formatting/Python3) — INFO ----------------------------
-      # SEVERITY SSOT: Maps to SeverityLevel.LOW (P3/P4)
+      # -- T2-P3: Ruff LOW (Formatting/Python3) — INFO -----------------------
+      # SEVERITY SSOT: SeverityLevel.LOW  |  Ruff: P3  |  ADG: LOW
       - id: ruff
         name: "T2-P3: Ruff LOW (Formatting/Python3)"
         args:
@@ -238,6 +242,22 @@ repos:
         require_serial: true
 
   # ============================================================================
+  # TIER 4.5: ADG Auto-Fix — RepairOrchestrator AUTO_FIX rules on staged files
+  # Runs after ruff-format + guardian-fix so all formatting is canonical.
+  # SEVERITY MODEL: ADG:MEDIUM + ADG:LOW → AUTO_FIX (safe, deterministic)
+  # Always exits 0 (never blocks). Re-stages fixed files automatically.
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: adg-autofix
+        name: "T4.5: ADG Auto-Fix — RepairOrchestrator AUTO_FIX rules (ADG:MEDIUM/LOW)"
+        entry: py ops_scripts/hooks/adg_autofix_hook.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+  # ============================================================================
   # TIER 5+: Logic Analysis, Structural Checks, Guard & Cleanup (local hooks)
   # All hooks below share this single `repo: local` block.
   # ============================================================================
@@ -263,7 +283,7 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
-        stages: [manual]
+        stages: [commit]
 
       # ---- CHEAP STRUCTURAL HARD-FAILS (T6-T11) ---------------------------------
       # Run before ratchets: lower cost, more decisive. Fail fast on obvious
@@ -312,6 +332,63 @@ repos:
         always_run: true
         require_serial: true
         files: ^\.windsurf/
+
+      # -- T7.8: PowerShell Usage Ban (Constitutional §0) ---------------------------
+      # Blocks commits if staged Python files use PowerShell for shell commands.
+      # Use Python subprocess or direct Python file operations instead.
+      - id: powershell-ban-gate
+        name: "T7.8: PowerShell Usage Ban (Constitutional §0)"
+        entry: py ops_scripts/ci/check_powershell_ban.py
+        language: system
+        pass_filenames: true
+        always_run: true
+        require_serial: true
+        types: [python]
+
+      # -- T7.9: Grep-Ban Enforcement (Constitutional §2) ---------------------------
+      # Blocks commits if staged Python files use grep/rg as ADG query substitutes.
+      # Use ADG MCP tools (mcp0_adg_*) instead.
+      - id: adg-grep-ban-gate
+        name: "T7.9: ADG Grep-Ban Enforcement (Constitutional §2)"
+        entry: py ops_scripts/ci/adg_grep_ban_gate.py
+        language: system
+        pass_filenames: true
+        always_run: true
+        require_serial: true
+        types: [python]
+
+      # -- T7.10: No Unconditional xfail (Constitutional §1) -------------------------
+      # Blocks unconditional @pytest.mark.xfail without env-gated conditions.
+      - id: no-unconditional-xfail-gate
+        name: "T7.10: No Unconditional xfail (Constitutional §1)"
+        entry: py ops_scripts/ci/check_no_unconditional_xfail.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        types: [python]
+
+      # -- T7.11: HITL Decision Record (Constitutional §6) --------------------------
+      # Blocks commits if decision gates lack HITL_DECISION_RECORD section.
+      - id: hitl-decision-record-gate
+        name: "T7.11: HITL Decision Record (Constitutional §6)"
+        entry: py ops_scripts/ci/check_hitl_decision_record.py
+        language: system
+        pass_filenames: true
+        always_run: true
+        require_serial: true
+        files: ^docs/reports/plans/.*\.md$
+
+      # -- T7.12: RCA Closure Enforcement (Constitutional §7) -------------------------
+      # Blocks commits if RCA documents are not marked RESOLVED.
+      - id: rca-closure-gate
+        name: "T7.12: RCA Closure Enforcement (Constitutional §7)"
+        entry: py ops_scripts/ci/check_rca_closure.py
+        language: system
+        pass_filenames: true
+        always_run: true
+        require_serial: true
+        files: ^docs/reports/plans/.*rca.*\.md$
 
       # -- T8: Generated-artifact tracking guard ----------------------------------
       # Rejects commits if git tracks any of:
@@ -364,16 +441,29 @@ repos:
       #           adg-python-ban-gate, adg-yaml-grep-ban-gate, adg-skip-file-ratchet
       # Logic:
       #   1. Check if ADG-relevant files changed (agentic_core/, tools/generate/, tools/adg/, config/)
-      #   2. If YES → Run generate_full_adg.py --strict (does P1, layer violations, burndown internally)
+      #   2. If YES → Run generate_full_adg.py --strict (does ADG:CRITICAL, layer violations, burndown internally)
       #   3. If NO → Skip ADG generation, use existing ADG
       #   4. Run source-code checks NOT done by generate_full_adg.py:
       #      - Python grep ban (grep/mypy/pytest usage)
       #      - YAML grep ban (grep in GitHub Actions workflows)
       #      - Skip-file ratchet
-      # No duplication: generate_full_adg.py handles P1/layer/burndown, this gate handles source-code checks
+      # No duplication: generate_full_adg.py handles ADG:CRITICAL/layer/burndown; this gate handles source-code checks
       - id: adg-unified-gate
-        name: "T10.6: ADG Unified Gate — ADG generation + source-code checks"
+        name: "T10.6: ADG Unified Gate — ADG generation + source-code checks (ADG:CRITICAL block)"
         entry: py ops_scripts/hooks/adg_unified_gate.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T10.7: ADG Suggest-Fix Report — surfaces ADG:HIGH issues for HITL review ----------------
+      # SEVERITY MODEL: ADG:HIGH (SeverityLevel.HIGH) → SUGGEST_FIX (human must approve before apply)
+      # Always exits 0 (warn-only reporter, never blocks).
+      # Output aggregated by T21 pre-commit summary reporter.
+      # To apply suggestions: python tools/adg/adg_repair.py --latest --apply (after HITL approval)
+      - id: adg-suggest-report
+        name: "T10.7: ADG Suggest-Fix Report — ADG:HIGH issues require HITL approval"
+        entry: py ops_scripts/hooks/adg_suggest_hook.py
         language: system
         pass_filenames: false
         always_run: true
@@ -393,15 +483,29 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T11.1: MCP npx Windows Gate -------------------------------------------
+      # Blocks bare 'npx' command in mcp_servers.yaml — on Windows npx is not
+      # executable and causes silent Windsurf MCP hangs. Requires 'npx.cmd'.
+      - id: mcp-npx-windows-gate
+        name: "T11.1: MCP npx Windows Gate — bare npx causes silent hangs, use npx.cmd"
+        entry: python ops_scripts/ci/check_mcp_npx_windows.py
+        language: system
+        pass_filenames: false
+        files: ^config/mcp_servers\.yaml$
+        always_run: false
+        require_serial: true
+
       # -- T11.2: MCP Config Drift Detection (SSOT enforcement) -------------------
-      # TEMPORARILY DISABLED: Script not yet implemented
-#      - id: mcp-config-drift-check
-#        name: "T11.2: MCP Config Drift Detection — workspace vs global"
-#        entry: python tools/adg/sync_global_config.py --check
-#        language: system
-#        pass_filenames: false
-#        always_run: true
-#        require_serial: true
+      # Detects drift between config/mcp_servers.yaml (SSOT) and global Windsurf config.
+      # Auto-syncs on drift to prevent stale global config causing MCP failures.
+      - id: mcp-config-drift-check
+        name: "T11.2: MCP Config Drift Detection — YAML SSOT vs global Windsurf config"
+        entry: python tools/adg/sync_yaml_to_global.py --check
+        language: system
+        pass_filenames: false
+        files: ^config/mcp_servers\.yaml$
+        always_run: false
+        require_serial: true
 
       # -- T11.3: Pytest Config SSOT Gate ----------------------------------------
       # Validates pytest.ini and pyproject.toml [tool.pytest.ini_options] consistency.
@@ -459,12 +563,10 @@ repos:
       #   always_run: true
       #   require_serial: true
 
-      # -- T13.6: ADG P1 Defect Gate — BLOCKING -----------------------------------
-      # NOTE: Now handled by adg-unified-gate (generate_full_adg.py --strict does P1 check internally)
-      # SEVERITY SSOT: P1 = SeverityLevel.CRITICAL (critical layer violations)
-      # See agentic_core.L5_safety.config.severity.SeverityLevel for canonical definitions
-      # Blocks commits if P1 (CRITICAL) ADG defects exist in the codebase.
-      # P1 defects are critical layer violations that must be resolved before committing.
+      # -- T13.6: ADG:CRITICAL Defect Gate — BLOCKING ----------------------------
+      # NOTE: Now handled by adg-unified-gate (generate_full_adg.py --strict does this internally)
+      # SEVERITY SSOT: SeverityLevel.CRITICAL  |  ADG: CRITICAL  (legacy name: ADG:P1)
+      # Blocks commits if ADG:CRITICAL (layer boundary violations) exist in the codebase.
       # - id: adg-p1-defect-gate
       #   name: "T13.6: ADG P1 Defect Gate — BLOCKING on critical defects"
       #   entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_p1_defect_gate.py"
@@ -518,6 +620,23 @@ repos:
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # These are too heavy or too specialized for every local commit.
 
+      # ---- PREVENTATIVE LANE (T-PREVENT) ----------------------------------------
+      # ADG:PREVENTATIVE — drift, staleness, and dead-code analysis.
+      # Run manually: pre-commit run adg-stale-guard --hook-stage manual
+      #           or: pre-commit run adg-drift-score  --hook-stage manual
+      # Also triggered by .github/workflows/adg-preventative.yml (nightly).
+
+      # -- P1: ADG Staleness Guard -----------------------------------------------
+      # Fails if ADG Redis ingest is stale relative to latest Python commit.
+      - id: adg-stale-guard
+        name: "T-PREVENT-1: ADG Staleness Guard — detect stale ADG vs latest commit"
+        entry: py tools/adg/adg_stale_guard.py --warn
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
       # -- C0 Sovereignty Guardian (embedding must not drive routing) ----------
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty — Embedding Boundary Enforcement"
@@ -560,13 +679,12 @@ repos:
 
       # -- Rollback Gate (multi-file phase checkpoints) ----------------------
       - id: check-rollback-checkpoints
-        name: "CI: Rollback Gate — Phase Checkpoints"
+        name: "T18: Rollback Gate — Phase Checkpoints"
         entry: cmd /c "set PYTHONPATH=.&& py ops_scripts/ci/check_rollback_checkpoints.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
-        stages: [manual]
 
       # ---- CLEANUP (T20 — always last) ------------------------------------------
 

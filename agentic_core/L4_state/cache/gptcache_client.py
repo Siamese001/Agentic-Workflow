@@ -95,7 +95,7 @@ class NativePersistentCacheClient:
         except ImportError as e:
             Logger.warning(f"ChromaDB not installed: {e}, using mock implementation")
             self._cache = "mock"
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             Logger.error(f"Failed to initialize native L2 cache: {e}, using mock")
             self._cache = "mock"
 
@@ -139,7 +139,7 @@ class NativePersistentCacheClient:
 
                     Logger.info(f"Evicted {evict_count} entries from L2 cache")
                 return  # Success, exit retry loop
-            except Exception as e:
+            except (OSError, sqlite3.Error, RuntimeError) as e:
                 if attempt == max_retries - 1:
                     Logger.error(f"Eviction failed after {max_retries} retries: {e}")
                 else:
@@ -198,7 +198,7 @@ class NativePersistentCacheClient:
             Logger.debug(f"L2 cache MISS for query: {query[:50]}...")
             return None
 
-        except Exception as e:
+        except (OSError, sqlite3.Error, RuntimeError) as e:
             Logger.error(f"L2 cache get error (returning None): {e}")
             self._miss_count += 1  # Count as miss to avoid silent failure
             return None
@@ -239,7 +239,7 @@ class NativePersistentCacheClient:
 
             Logger.debug(f"L2 cache SET for query: {query[:50]}...")
 
-        except Exception as e:
+        except (OSError, sqlite3.Error, RuntimeError) as e:
             Logger.error(f"L2 cache set error (data may be lost): {e}")
             # Re-raise to alert caller of data loss risk
             raise
@@ -287,7 +287,7 @@ class NativePersistentCacheClient:
             self._sqlite_conn.commit()
 
             Logger.info("Native L2 cache cleared")
-        except Exception as e:
+        except (OSError, sqlite3.Error, RuntimeError) as e:
             Logger.error(f"Failed to clear native L2 cache: {e}")
 
     def search_similar(self, query_text: str, threshold: float | None = None) -> list[dict[str, Any]]:
@@ -345,7 +345,7 @@ class NativePersistentCacheClient:
 
             return formatted_results
 
-        except Exception as e:
+        except (OSError, sqlite3.Error, RuntimeError) as e:
             Logger.error(f"L2 cache search_similar error: {e}")
             self._miss_count += 1
             return []
@@ -361,7 +361,7 @@ class NativePersistentCacheClient:
             if hasattr(self, "_chroma_client"):
                 self._chroma_client.close()
             Logger.info("Native L2 cache connections closed")
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             Logger.error(f"Failed to close native L2 cache: {e}")
 
 

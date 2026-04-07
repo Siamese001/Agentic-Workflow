@@ -227,8 +227,7 @@ class ToolEmbeddingCache:
                     return (cached["embeddings"], cached["tool_names"])
             except ValueError:
                 raise
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ConnectionError) as e:
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
         logger.debug("[Tool embedding cache] MISS — computing embeddings")
         embeddings, tool_names = fetch_embeddings()
@@ -241,8 +240,7 @@ class ToolEmbeddingCache:
                 )
             except ValueError:
                 pass
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ConnectionError) as e:
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
         return (embeddings, tool_names)
 
