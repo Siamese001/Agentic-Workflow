@@ -179,3 +179,13 @@ class TestMain:
             }
         }
         assert self._run(payload) == 0
+
+    def test_argv_fast_path_md_exits_zero(self):
+        with patch("sys.argv", ["pre_write_gate.py", ".windsurf/rules/constitutional.md"]):
+            with patch("sys.stdin", StringIO("")):
+                assert main() == 0
+
+    def test_argv_fast_path_non_py_exits_zero_before_stdin(self):
+        with patch("sys.argv", ["pre_write_gate.py", "some/doc.rst"]):
+            with patch("sys.stdin", StringIO("{bad json}")):
+                assert main() == 0

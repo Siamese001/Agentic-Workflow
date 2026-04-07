@@ -144,6 +144,13 @@ def check_mcp_config(file_path: str, edits: list[dict]) -> tuple[bool, list[str]
 
 
 def main() -> int:
+    # Fast path: if Windsurf passes file path as argv[1], check it before reading stdin.
+    # This prevents fail-closed stdin logic from blocking non-.py/.json writes.
+    if len(sys.argv) > 1:
+        argv_path = sys.argv[1]
+        if not argv_path.endswith(".py") and not argv_path.endswith(MCP_CONFIG_SUFFIX):
+            return 0
+
     raw = sys.stdin.read()
     if not raw.strip():
         if FAIL_POLICY == "closed":
@@ -163,6 +170,7 @@ def main() -> int:
     file_path = tool_info.get("file_path", "")
     edits = tool_info.get("edits", [])
 
+    # Payload-level file type check (covers cases where argv is not provided).
     if not file_path.endswith(".py") and not file_path.endswith(MCP_CONFIG_SUFFIX):
         return 0
 
