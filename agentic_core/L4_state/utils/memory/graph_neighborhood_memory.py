@@ -345,6 +345,22 @@ class GraphNeighborhoodMemory:
     def __init__(self, bridge: GraphMemoryBridge | None = None) -> None:
         self._bridge = bridge or GraphMemoryBridge.get_instance()
         self._cards: dict[str, MemoryCard] = {}
+        self._graph_store = None
+        self._init_graph_store()
+
+    def _init_graph_store(self) -> None:
+        """Initialize SQLiteGraphStore for graph-distance-based memory retrieval."""
+        try:
+            from agentic_core.L4_state.utils.memory.graph_store_factory import (
+                create_sqlite_graph_store_or_none,
+            )
+
+            self._graph_store = create_sqlite_graph_store_or_none()
+            if self._graph_store:
+                logger.info("GraphNeighborhoodMemory: Graph store initialized for enhanced retrieval")
+        except Exception as e:
+            logger.warning(f"GraphNeighborhoodMemory: Graph store initialization failed: {e}")
+            self._graph_store = None
 
     # ------------------------------------------------------------------
     # Public API
@@ -458,6 +474,129 @@ class GraphNeighborhoodMemory:
         Returns raw MCP graph node dicts.
         """
         return self._bridge.search_entities(query)
+
+    def search_by_graph_distance(
+        self,
+        adg_entity_name: str,
+        max_depth: int = 2,
+        relation_types: list[str] | None = None,
+    ) -> list[MemoryCard]:
+        """Search memory cards by graph distance from a given entity.
+
+        Uses SQLiteGraphStore to find structurally related ADG nodes,
+        then returns their memory cards. This enables retrieval of memories
+        from components that are graph-adjacent (e.g., callers, callees,
+        import dependencies) rather than just text-similar.
+
+        Args:
+            adg_entity_name: The ADG entity name to start from
+            max_depth: Maximum graph traversal depth (default: 2)
+            relation_types: Optional filter for relation types (e.g., ['calls', 'imports'])
+
+        Returns:
+            List of MemoryCard objects for graph-adjacent entities
+        """
+        if not self._graph_store:
+            logger.warning("Graph store not available, using text search fallback")
+            # Fallback to text search
+            results = self.search(adg_entity_name)
+            return [
+                self._bridge.get_agent_entity(r.get("name", ""))
+                for r in results if r.get("name")
+            ]
+
+        try:
+            # Search for the entity in the graph store
+            entities = self._graph_store.search_entities(adg_entity_name, limit=10)
+            if not entities:
+                logger.debug(f"No graph entities found for {adg_entity_name}")
+                return []
+
+            # Get the first matching entity
+            start_entity = entities[0]
+
+            # Traverse the graph to find related entities
+            paths = self._graph_store.traverse(
+                start_entity.id, max_depth=max_depth, relation_types=relation_types
+            )
+
+            # Collect unique entity IDs from paths
+            related_entity_ids = set()
+            for path in paths:
+                for node in path.nodes:
+                    if node.id != start_entity.id:  # Exclude the start node
+                        related_entity_ids.add(node.id)
+
+            # Get memory cards for related entities
+            related_cards = []
+            for entity_id in related_entity_ids:
+                entity = self._graph_store.get_entity(entity_id)
+                if entity:
+                    card = self.get_card(entity.name)
+                    if card:
+                        related_cards.append(card)
+
+            logger.info(
+                f"GraphNeighborhoodMemory[Graph]: Found {len(related_cards)} cards "
+                f"within {max_depth} hops of {adg_entity_name}"
+            )
+            return related_cards
+
+        except Exception as e:
+            logger.warning(f"Graph-distance search failed: {e}, falling back to text search")
+            return []
+
+    def search_by_centrality(
+        self,
+        min_centrality: float = 0.5,
+        layer: str | None = None,
+    ) -> list[MemoryCard]:
+        """Search memory cards by centrality score.
+
+        Returns cards for high-centrality nodes (important hubs in the graph).
+        Useful for finding memories from critical components.
+
+        Args:
+            min_centrality: Minimum centrality score (0.0-1.0)
+            layer: Optional layer filter (e.g., 'L4', 'L5')
+
+        Returns:
+            List of MemoryCard objects for high-centrality entities
+        """
+        if not self._graph_store:
+            logger.warning("Graph store not available, returning all cached cards")
+            return list(self._cards.values())
+
+        try:
+            high_centrality_cards = []
+            for card in self._cards.values():
+                if layer and card.layer != layer:
+                    continue
+
+                # Get centrality from graph store
+                entities = self._graph_store.search_entities(card.adg_entity_name, limit=1)
+                if entities:
+                    centrality = self._graph_store.get_centrality(entities[0].id)
+                    if isinstance(centrality, float) and centrality >= min_centrality:
+                        high_centrality_cards.append(card)
+
+            # Sort by centrality (descending)
+            high_centrality_cards.sort(
+                key=lambda c: self._graph_store.get_centrality(
+                    self._graph_store.search_entities(c.adg_entity_name, limit=1)[0].id
+                ) if self._graph_store.search_entities(c.adg_entity_name, limit=1) else 0.0,
+                reverse=True,
+            )
+
+            logger.info(
+                f"GraphNeighborhoodMemory[Graph]: Found {len(high_centrality_cards)} "
+                f"high-centrality cards (>= {min_centrality})"
+            )
+            return high_centrality_cards
+
+        except Exception as e:
+            logger.warning(f"Centrality-based search failed: {e}, returning all cached cards")
+            return list(self._cards.values())
 
     def get_card(self, adg_entity_name: str) -> MemoryCard | None:
         """Return the in-process cached card for an entity (if any)."""

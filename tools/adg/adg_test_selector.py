@@ -198,11 +198,25 @@ class ADGTestSelector:
       2. adg:edge:in:<nid>:covers      -> test node IDs (fan-in on 'covers')
       3. adg:node:<tnid>.resolved_path -> test file path (must start with 'tests/')
 
+    Enhanced with SQLiteGraphStore for graph-native traversal and clustering.
+
     Fail-closed: all Redis errors propagate as-is (no silent swallowing).
     """
 
     def __init__(self, client: ADGRedisClient | None = None) -> None:
         self._adg = client or ADGRedisClient()
+        self._graph_store = None
+        # Try to initialize graph store for enhanced features
+        try:
+            from agentic_core.L4_state.utils.memory.graph_store_factory import (
+                create_sqlite_graph_store_or_none,
+            )
+
+            self._graph_store = create_sqlite_graph_store_or_none()
+            if self._graph_store:
+                Logger.info("ADGTestSelector: Graph store initialized for enhanced features")
+        except Exception as e:
+            Logger.warning(f"ADGTestSelector: Graph store initialization failed: {e}")
 
     def select_tests(self, changed_files: Iterable[str]) -> list[str]:
         """Return sorted unique test file paths covering any file in changed_files.
@@ -216,6 +230,14 @@ class ADGTestSelector:
         Raises:
             redis.ConnectionError / RuntimeError: if Redis unavailable or ADG not loaded.
         """
+        # Try graph-based selection first (enhanced)
+        if self._graph_store:
+            try:
+                return self._select_tests_via_graph(changed_files)
+            except Exception as e:
+                Logger.warning(f"Graph-based test selection failed: {e}, falling back to Redis")
+
+        # Fallback to Redis-based selection
         test_paths: set[str] = set()
         for path in changed_files:
             path = path.replace("\\", "/")
@@ -228,6 +250,68 @@ class ADGTestSelector:
                     if rp and rp.startswith("tests/"):
                         test_paths.add(rp)
         return sorted(test_paths)
+
+    def _select_tests_via_graph(self, changed_files: Iterable[str]) -> list[str]:
+        """Select tests using SQLiteGraphStore with graph-native traversal.
+
+        Enhanced features:
+        - Single graph traversal vs multiple Redis queries
+        - Centrality scoring for test prioritization
+        - Subgraph extraction for test clustering
+
+        Args:
+            changed_files: Iterable of repo-relative production file paths.
+
+        Returns:
+            Sorted list of test file paths (all start with 'tests/').
+        """
+        test_paths: set[str] = set()
+        test_scores: dict[str, float] = {}
+
+        for path in changed_files:
+            path = path.replace("\\", "/")
+
+            # Search for nodes in the file
+            nodes = self._graph_store.search_entities(path, limit=50)
+
+            for node in nodes:
+                # Get relationships of type 'covers' (incoming edges)
+                relationships = self._graph_store.get_relationships(
+                    node.id, direction="incoming"
+                )
+
+                for rel in relationships:
+                    if rel.relation_type == "covers":
+                        # Get the test node
+                        test_node = self._graph_store.get_entity(rel.source_id)
+                        if test_node and test_node.metadata.get("file_path", "").startswith(
+                            "tests/"
+                        ):
+                            test_path = test_node.metadata.get("file_path")
+                            if test_path:
+                                test_paths.add(test_path)
+
+                                # Calculate test priority score based on centrality
+                                try:
+                                    centrality = self._graph_store.get_centrality(
+                                        test_node.id
+                                    )
+                                    # Higher centrality = higher priority
+                                    test_scores[test_path] = max(
+                                        test_scores.get(test_path, 0.0), centrality
+                                    )
+                                except Exception:
+                                    pass
+
+        # Sort by centrality score (descending) then by path
+        sorted_tests = sorted(
+            test_paths, key=lambda x: (-test_scores.get(x, 0.0), x)
+        )
+
+        Logger.info(
+            f"ADGTestSelector[Graph]: Selected {len(sorted_tests)} tests for {len(changed_files)} files"
+        )
+        return sorted_tests
 
     def coverage_gaps(self, changed_files: Iterable[str]) -> list[str]:
         """Return production files that have NO covers edges in ADG.

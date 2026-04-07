@@ -293,6 +293,91 @@ def analyze_global_mutation(violations: dict) -> dict:
     }
 
 
+def detect_antipattern_hotspots(violations: dict) -> dict:
+    """Detect antipattern hotspots using graph store centrality analysis.
+
+    Uses SQLiteGraphStore to identify high-centrality nodes with many violations,
+    indicating systemic issues that should be prioritized for fixing.
+
+    Returns:
+        Dict with hotspot analysis including centrality scores and community clusters
+    """
+    try:
+        from agentic_core.L4_state.utils.memory.graph_store_factory import (
+            create_sqlite_graph_store_or_none,
+        )
+
+        graph_store = create_sqlite_graph_store_or_none()
+        if graph_store is None:
+            return {"method": "fallback", "message": "Graph store not available"}
+
+        # Collect all files with violations
+        violation_files = []
+        for category, files_violations in violations.items():
+            if isinstance(files_violations, dict):
+                violation_files.extend(files_violations.keys())
+
+        hotspots = []
+        for file_path in violation_files[:50]:  # Limit to 50 files for performance
+            try:
+                # Search for nodes in this file
+                entities = graph_store.search_entities(file_path, limit=10)
+
+                for entity in entities:
+                    # Get centrality score
+                    centrality = graph_store.get_centrality(entity.id)
+                    if isinstance(centrality, float) and centrality > 0.5:
+                        hotspots.append({
+                            'file_path': file_path,
+                            'entity_id': entity.id,
+                            'entity_name': entity.name,
+                            'entity_type': entity.entity_type,
+                            'centrality': centrality,
+                            'layer': entity.metadata.get('layer', 'unknown'),
+                        })
+            except Exception:
+                continue
+
+        # Sort by centrality (descending)
+        hotspots.sort(key=lambda x: x['centrality'], reverse=True)
+
+        # Detect communities of hotspots
+        communities = []
+        if hotspots:
+            try:
+                detected_communities = graph_store.detect_communities()
+                for community in detected_communities:
+                    # Check if any hotspot is in this community
+                    community_hotspots = [
+                        h for h in hotspots if h['entity_id'] in community.entities
+                    ]
+                    if community_hotspots:
+                        communities.append({
+                            'community_id': community.id,
+                            'description': community.description,
+                            'size': len(community.entities),
+                            'hotspot_count': len(community_hotspots),
+                            'avg_centrality': sum(h['centrality'] for h in community_hotspots) / len(community_hotspots),
+                            'hotspots': community_hotspots[:5],  # Top 5 hotspots in this community
+                        })
+            except Exception:
+                pass
+
+        return {
+            'method': 'graph_store',
+            'total_hotspots': len(hotspots),
+            'hotspots': hotspots[:20],  # Top 20 hotspots
+            'communities': communities[:10],  # Top 10 communities
+            'summary': {
+                'high_centrality_count': len([h for h in hotspots if h['centrality'] > 0.8]),
+                'medium_centrality_count': len([h for h in hotspots if 0.5 < h['centrality'] <= 0.8]),
+            }
+        }
+
+    except Exception as e:
+        return {"method": "fallback", "message": f"Graph store analysis failed: {e}"}
+
+
 def main():
     """Main execution."""
     project_root = get_validated_project_root()

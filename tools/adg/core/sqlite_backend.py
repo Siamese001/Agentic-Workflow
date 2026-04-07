@@ -1,4 +1,7 @@
-"""SQLite Backend — Canonical ADG source, mandatory, always available."""
+"""SQLite Backend — Canonical ADG source, mandatory, always available.
+
+Enhanced with SQLiteGraphStore for graph-native operations.
+"""
 import logging
 import sqlite3
 from pathlib import Path
@@ -14,14 +17,20 @@ SQLITE_QUERY_TIMEOUT = 5.0
 
 
 class SQLiteBackend:
-    """Canonical ADG backend using SQLite as source of truth."""
+    """Canonical ADG backend using SQLite as source of truth.
+
+    Enhanced with optional SQLiteGraphStore for graph-native operations.
+    """
 
     _conn: sqlite3.Connection | None = None
     _sqlite_path: Path | None = None
     _last_mtime: float = 0.0
+    _graph_store: Any = None  # Optional SQLiteGraphStore instance
 
-    def __init__(self):
+    def __init__(self, use_graph_store: bool = True):
         self._connect()
+        if use_graph_store:
+            self._init_graph_store()
 
     def _connect(self) -> None:
         """Establish connection to latest SQLite file."""
@@ -141,4 +150,57 @@ class SQLiteBackend:
         if self._conn is not None:
             self.close()
         self._connect()
+        if self._graph_store is None:
+            self._init_graph_store()
         logger.info(f"Reopened SQLite connection to {self._sqlite_path}")
+
+    # Graph-native methods that delegate to SQLiteGraphStore when available
+
+    def get_centrality(self, node_id: str) -> float:
+        """Get centrality score for a node using graph store if available."""
+        if self._graph_store:
+            return self._graph_store.get_centrality(node_id)
+        # Fallback: degree centrality from direct edge count
+        cur = self._conn.execute(
+            "SELECT COUNT(*) FROM edges WHERE src_id = ? OR dst_id = ?",
+            (node_id, node_id)
+        )
+        return float(cur.fetchone()[0])
+
+    def traverse(self, start_id: str, max_depth: int = 2, relation_types: list[str] | None = None) -> list:
+        """Traverse graph from start node using graph store if available."""
+        if self._graph_store:
+            return self._graph_store.traverse(start_id, max_depth, relation_types)
+        # Fallback: simple BFS using SQL
+        return self._traverse_sql(start_id, max_depth, relation_types)
+
+    def _traverse_sql(self, start_id: str, max_depth: int, relation_types: list[str] | None) -> list:
+        """Fallback SQL-based traversal when graph store unavailable."""
+        paths = []
+        visited = {start_id}
+        current_level = [(start_id, [])]  # (node_id, path)
+
+        for depth in range(max_depth):
+            next_level = []
+            for node_id, path in current_level:
+                # Get neighbors
+                query = "SELECT dst_id FROM edges WHERE src_id = ?"
+                params = [node_id]
+                if relation_types:
+                    placeholders = ",".join(["?" for _ in relation_types])
+                    query += f" AND relation_type IN ({placeholders})"
+                    params.extend(relation_types)
+
+                cur = self._conn.execute(query, params)
+                for row in cur.fetchall():
+                    neighbor_id = row[0]
+                    if neighbor_id not in visited:
+                        visited.add(neighbor_id)
+                        new_path = path + [node_id]
+                        paths.append({"path": new_path, "depth": depth + 1})
+                        next_level.append((neighbor_id, new_path))
+            current_level = next_level
+            if not current_level:
+                break
+
+        return paths

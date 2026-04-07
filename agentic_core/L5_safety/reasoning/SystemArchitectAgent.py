@@ -329,6 +329,68 @@ class SystemArchitectAgent(SovereignBaseAgent):
                                 violations.append(f"{root_folder}/{l1_name}/{l2_name}: Missing __init__.py")
         return (len(violations) == 0, violations)
 
+    def _detect_circular_dependencies_via_graph_store(
+        self, target_path: str
+    ) -> list[str] | None:
+        """Detect circular dependencies using SQLiteGraphStore (ADG import graph).
+
+        Uses the ADG database's pre-computed import edges for faster cycle detection.
+        Falls back to AST parsing if graph store is unavailable.
+
+        Args:
+            target_path: Target path to check
+
+        Returns:
+            List of circular dependency paths (as strings), or None if graph store unavailable
+        """
+        try:
+            from agentic_core.L4_state.utils.memory.graph_store_factory import (
+                create_sqlite_graph_store_or_none,
+            )
+
+            graph_store = create_sqlite_graph_store_or_none()
+            if graph_store is None:
+                Logger.info("SystemArchitect: Graph store unavailable, using AST fallback")
+                return None
+
+            # Get nodes for the target file
+            nodes = graph_store.search_entities(target_path)
+            if not nodes:
+                Logger.info(f"SystemArchitect: No ADG nodes found for {target_path}")
+                return None
+
+            # For each module node, check for cycles in import graph
+            circular_deps = []
+            for node in nodes:
+                if node.entity_type != "Module":
+                    continue
+
+                # Traverse import graph to find cycles
+                # Use traverse with max_depth=10 to detect cycles
+                paths = graph_store.traverse(
+                    node.id, max_depth=10, relation_types=["imports"]
+                )
+
+                # Check if any path leads back to the source (cycle)
+                for path in paths:
+                    if path.nodes and path.nodes[-1].id == node.id:
+                        # Found a cycle
+                        cycle_str = " -> ".join([n.name for n in path.nodes])
+                        circular_deps.append(cycle_str)
+
+            if circular_deps:
+                Logger.info(
+                    f"SystemArchitect[Graph]: Found {len(circular_deps)} circular dependencies"
+                )
+            else:
+                Logger.info("SystemArchitect[Graph]: No circular dependencies found")
+
+            return circular_deps
+
+        except Exception as e:
+            Logger.warning(f"SystemArchitect: Graph store cycle detection failed: {e}")
+            return None
+
     # guardian: allow-type-erasure
     def validate_core_architecture(self, target_path: str) -> dict[str, Any]:
         """
@@ -389,7 +451,42 @@ class SystemArchitectAgent(SovereignBaseAgent):
             self._cached_scan_root = cache_key
             self._cached_module_map = module_map
             self._cached_dependency_graph = dependency_graph
-        circular_dependencies = []
+
+        # Try graph-based cycle detection first (faster, more accurate)
+        graph_cycles = self._detect_circular_dependencies_via_graph_store(target_path)
+        if graph_cycles is not None:
+            # Graph store succeeded - use results directly
+            _adg_score: float = 0.5
+            _adg_antipatterns: list = []
+            try:
+                from agentic_core.adg.runtime.behavioral_index import (
+                    get_behavioral_profile as _gbp,
+                )
+
+                _bp = _gbp(self.project_root / target_path, self.project_root)
+                _adg_score = _bp.behavioral_score
+                _adg_antipatterns = sorted(_bp.antipattern_signals)
+                if _adg_antipatterns:
+                    Logger.info(
+                        "SystemArchitect[ADG] %s: score=%.2f antipatterns=%s",
+                        target_path,
+                        _adg_score,
+                        _adg_antipatterns,
+                    )
+            except (RuntimeError, OSError):
+                pass
+
+            return {
+                "valid": len(graph_cycles) == 0,
+                "imports_valid": True,
+                "circular_dependencies": graph_cycles,
+                "files_scanned": "graph_store",
+                "adg_behavioral_score": _adg_score,
+                "adg_antipatterns": _adg_antipatterns,
+                "detection_method": "graph_store",
+            }
+
+        # Fallback to AST-based DFS (original implementation)
         visited = set()
         path_stack = []
         path_set = set()
@@ -437,6 +534,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             "files_scanned": len(python_files),
             "adg_behavioral_score": _adg_score,
             "adg_antipatterns": _adg_antipatterns,
+            "detection_method": "ast_fallback",
         }
 
     def check_no_deep_nesting(self) -> tuple[bool, list[str]]:

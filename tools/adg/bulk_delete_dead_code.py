@@ -113,12 +113,82 @@ def query_unused_imports(limit: int = 1000) -> list[dict]:
     return results
 
 
+def cluster_dead_code_via_graph(limit: int = 1000) -> dict:
+    """Cluster dead code using SQLiteGraphStore with community detection.
+
+    Enhanced features:
+    - Community detection on unused_import edges for clustering
+    - Centrality scoring for risk assessment
+    - Subgraph extraction for bulk deletion planning
+
+    Returns:
+        Dict with clusters, centrality scores, and metadata
+    """
+    try:
+        from agentic_core.L4_state.utils.memory.graph_store_factory import (
+            create_sqlite_graph_store_or_none,
+        )
+
+        graph_store = create_sqlite_graph_store_or_none()
+        if graph_store is None:
+            print('Graph store not available, falling back to SQL query')
+            return {"clusters": [], "method": "fallback"}
+
+        # Detect communities on unused_import graph
+        communities = graph_store.detect_communities()
+
+        # Get centrality scores for risk assessment
+        clusters_with_scores = []
+        for community in communities:
+            cluster_nodes = []
+            cluster_centralities = []
+
+            for entity_id in community.entities:
+                entity = graph_store.get_entity(entity_id)
+                if entity:
+                    centrality = graph_store.get_centrality(entity_id)
+                    cluster_nodes.append({
+                        'id': entity.id,
+                        'name': entity.name,
+                        'file_path': entity.metadata.get('file_path', ''),
+                        'entity_type': entity.entity_type,
+                        'centrality': centrality if isinstance(centrality, float) else 0.0,
+                    })
+                    cluster_centralities.append(centrality if isinstance(centrality, float) else 0.0)
+
+            # Calculate cluster risk score (avg centrality)
+            avg_centrality = sum(cluster_centralities) / len(cluster_centralities) if cluster_centralities else 0.0
+
+            clusters_with_scores.append({
+                'cluster_id': community.id,
+                'description': community.description,
+                'size': len(cluster_nodes),
+                'avg_centrality': avg_centrality,
+                'nodes': sorted(cluster_nodes, key=lambda x: x['centrality'], reverse=True),
+            })
+
+        # Sort clusters by risk (highest centrality first)
+        clusters_with_scores.sort(key=lambda x: x['avg_centrality'], reverse=True)
+
+        print(f'Graph-based clustering: Found {len(clusters_with_scores)} clusters')
+        return {
+            'clusters': clusters_with_scores[:limit],
+            'method': 'graph_store',
+            'total_clusters': len(communities),
+        }
+
+    except Exception as e:
+        print(f'Graph-based clustering failed: {e}, falling back to SQL query')
+        return {"clusters": [], "method": "fallback", "error": str(e)}
+
+
 def main():
     parser = argparse.ArgumentParser(description='Bulk delete dead code based on ADG analysis')
     parser.add_argument('--layer', help='Target layer (e.g., L_TEST, L_TOOLS)')
     parser.add_argument('--directory', help='Target directory (e.g., tests/adg/)')
     parser.add_argument('--functions', action='store_true', help='Target dead functions only (not modules)')
     parser.add_argument('--unused-imports', action='store_true', help='Target unused imports')
+    parser.add_argument('--cluster', action='store_true', help='Use graph-based clustering')
     parser.add_argument('--output', help='Output JSON file for targets')
     parser.add_argument('--input', help='Input JSON file with targets to delete')
     parser.add_argument('--dry-run', action='store_true', help='Preview deletions without executing')
@@ -127,8 +197,9 @@ def main():
     args = parser.parse_args()
 
     if args.output:
-        # Query mode - generate targets
-        if args.unused_imports:
+        if args.mode == 'cluster':
+            targets = cluster_dead_code_via_graph()
+        elif args.unused_imports:
             targets = query_unused_imports()
         elif args.functions:
             targets = query_dead_functions(args.layer, args.directory)
