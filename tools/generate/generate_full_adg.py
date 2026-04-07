@@ -50,35 +50,16 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
 
 
-def _is_file_locked(filepath: Path) -> bool:
-    """Check if file is locked (Windows only).
-
-    Returns True if file cannot be opened exclusively.
-    """
-    if os.name != "nt":
-        return False
-    try:
-        import ctypes
-
-        GENERIC_WRITE = 0x40000000
-        FILE_SHARE_READ = 0x00000001
-        FILE_SHARE_WRITE = 0x00000002
-        OPEN_EXISTING = 3
-        handle = ctypes.windll.kernel32.CreateFileW(
-            str(filepath),
-            GENERIC_WRITE,
-            FILE_SHARE_READ | FILE_SHARE_WRITE,
-            None,
-            OPEN_EXISTING,
-            0,
-            None,
-        )
-        if handle == ctypes.c_void_p(-1).value:
-            return True  # Another process holds an exclusive write lock
-        ctypes.windll.kernel32.CloseHandle(handle)
-        return False
-    except Exception:  # guardian: allow-broad-exception -- Windows API best-effort: file lock check may fail unpredictably, treat failure as locked
-        return True
+from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularization
+    _is_file_locked,
+    _perform_wal_checkpoint,
+    _check_locked_files,
+)
+from tools.generate.utils.digest_utils import (  # noqa: E402  # M.1 modularization
+    _ratio,
+    _stable_digest,
+    _sqlite_table_digest,
+)
 
 
 from agentic_core.adg.analysis.CanonicalSnapshot import (  # noqa: E402
@@ -1800,34 +1781,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     _cleanup_validation_files(adg_dir, current_ts)
 
 
-def _ratio(numerator: int, denominator: int) -> float:
-    if denominator <= 0:
-        return 1.0
-    return round(numerator / denominator, 4)
-
-
-def _stable_digest(payload: object) -> str:
-    text = json.dumps(
-        payload,
-        sort_keys=True,
-        separators=(",", ":"),
-        default=str,
-    )
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-
-def _sqlite_table_digest(sqlite_path: Path, table_name: str) -> str:
-    conn = sqlite3.connect(sqlite_path)
-    cur = conn.cursor()
-    col_rows = cur.execute(f"PRAGMA table_info({table_name})").fetchall()
-    columns = [row[1] for row in col_rows]
-    if not columns:
-        conn.close()
-        return ""
-    order_by = "id" if "id" in columns else ", ".join(columns)
-    rows = cur.execute(f"SELECT {', '.join(columns)} FROM {table_name} ORDER BY {order_by}").fetchall()
-    conn.close()
-    return _stable_digest(rows)
+# _ratio, _stable_digest, _sqlite_table_digest imported above from tools.generate.utils.digest_utils (M.1)
 
 
 def _audit_semantic_surfaces(repo_root: Path, realized_node_names: set[str]) -> dict[str, int]:
@@ -3067,67 +3021,7 @@ def _check_mcp_config_drift() -> None:
         print("[WARNING] MCP config files not found, skipping drift check")
 
 
-def _perform_wal_checkpoint() -> None:
-    """Perform best-effort WAL checkpoint on prior SQLite files."""
-    print("[ADG] Pre-flight: attempting best-effort SQLite WAL checkpoint...")
-    try:
-        adg_dir = ROOT / "artifacts" / "adg"
-        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
-
-        for sqlite_file in sqlite_files:
-            try:
-                # Try to checkpoint and close any connections
-                import sqlite3
-
-                temp_conn = sqlite3.connect(str(sqlite_file))
-                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-                temp_conn.close()
-                del temp_conn
-                print(f"[ADG] WAL checkpoint attempted for: {sqlite_file.name}")
-            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure during lock check
-                pass
-
-        # Force GC and brief sleep to ensure Windows releases file handles before lock check
-        import gc
-        gc.collect()
-        import time
-        time.sleep(0.5)
-    except Exception:  # guardian: allow-silent-swallow -- best-effort lock check: failure caught by subsequent pre-generation check
-        pass
-
-
-def _check_locked_files() -> None:
-    """Check for locked SQLite files and abort if found."""
-    print("[ADG] Checking for remaining locked SQLite files...")
-    try:
-        adg_dir = ROOT / "artifacts" / "adg"
-        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
-        locked_count = 0
-        locked_files_list = []
-
-        for sqlite_file in sqlite_files:
-            if _is_file_locked(sqlite_file):
-                locked_count += 1
-                locked_files_list.append(sqlite_file.name)
-                print(f"[ADG] Found locked SQLite file: {sqlite_file.name}")
-
-        if locked_count > 0:
-            print(f"\n[ERROR] {locked_count} SQLite file(s) are locked by MCP server process")
-            print(f"[ERROR] Locked files: {', '.join(locked_files_list)}")
-            print("[ERROR]")
-            print("[ERROR] The MCP server (adg_sqlite) has these files open.")
-            print("[ERROR] Automatic lock release cannot close connections from another process.")
-            print("[ERROR]")
-            print("[ERROR] REQUIRED ACTION: call adg_close_connections() MCP tool")
-            print("[ERROR] Fallback: restart Windsurf if MCP close tool unavailable")
-            print("[ERROR]")
-            print("[ERROR] ADG generation aborted - file locks prevent archive cleanup")
-            sys.exit(1)
-        else:
-            print("[ADG] No locked SQLite files found - proceeding with generation")
-    except Exception as e:  # guardian: allow-broad-exception -- non-critical: locked file check failure should not block ADG generation
-        print(f"[WARNING] Could not check for locked SQLite files: {e}")
-        print("[WARNING]   Proceeding with ADG generation...")
+# _perform_wal_checkpoint, _check_locked_files imported above from tools.generate.utils.file_utils (M.1)
 
 
 def _generate_timestamp() -> str:

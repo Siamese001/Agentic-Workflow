@@ -534,17 +534,17 @@ class TestLockedFilesFailFast:
 
     def test_check_locked_files_fails_with_adg_close_guidance(self, tmp_path, monkeypatch, capsys):
         """Locked SQLite files must fail and instruct adg_close_connections()."""
+        import tools.generate.utils.file_utils as fu
         from tools.generate import generate_full_adg as mod
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
         (adg_dir / "adg_indexed_04062026_0100.sqlite").write_text("stub")
 
-        monkeypatch.setattr(mod, "ROOT", tmp_path)
-        monkeypatch.setattr(mod, "_is_file_locked", lambda _p: True)
+        monkeypatch.setattr(fu, "_is_file_locked", lambda _p: True)
 
         with pytest.raises(SystemExit) as exc_info:
-            mod._check_locked_files()
+            mod._check_locked_files(adg_dir=adg_dir)
         assert exc_info.value.code == 1
 
         out = capsys.readouterr().out
@@ -553,16 +553,16 @@ class TestLockedFilesFailFast:
 
     def test_check_locked_files_passes_when_unlocked(self, tmp_path, monkeypatch, capsys):
         """Unlocked SQLite files should pass preflight lock check."""
+        import tools.generate.utils.file_utils as fu
         from tools.generate import generate_full_adg as mod
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
         (adg_dir / "adg_indexed_04062026_0100.sqlite").write_text("stub")
 
-        monkeypatch.setattr(mod, "ROOT", tmp_path)
-        monkeypatch.setattr(mod, "_is_file_locked", lambda _p: False)
+        monkeypatch.setattr(fu, "_is_file_locked", lambda _p: False)
 
-        mod._check_locked_files()
+        mod._check_locked_files(adg_dir=adg_dir)
 
         out = capsys.readouterr().out
         assert "No locked SQLite files found" in out
