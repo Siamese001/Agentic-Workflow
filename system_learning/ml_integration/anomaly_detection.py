@@ -203,7 +203,7 @@ class MLAnomalyDetector:
             self._models_initialized = True
             Logger.info("[ML_DETECTOR] All models initialized successfully")
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, ImportError) as e:
             Logger.error(f"[ML_DETECTOR] Failed to initialize models: {e}")
             self._models_initialized = False
 
@@ -341,7 +341,7 @@ class MLAnomalyDetector:
                     metadata={"z_score": z_score, "mean": mean, "std": std},
                 )
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:
             Logger.debug(f"[ML_DETECTOR] Z-score detection failed: {e}")
 
         return None
@@ -387,7 +387,7 @@ class MLAnomalyDetector:
                     metadata={"q1": q1, "q3": q3, "iqr": iqr, "distance": distance},
                 )
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.debug(f"[ML_DETECTOR] IQR detection failed: {e}")
 
         return None
@@ -431,7 +431,7 @@ class MLAnomalyDetector:
                     metadata={"moving_avg": moving_avg, "moving_std": moving_std, "deviation": deviation},
                 )
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:
             Logger.debug(f"[ML_DETECTOR] Moving average detection failed: {e}")
 
         return None
@@ -447,7 +447,7 @@ class MLAnomalyDetector:
                 if anomaly:
                     anomalies.append(anomaly)
 
-        except Exception as e:
+        except (AttributeError, KeyError, ValueError) as e:
             Logger.debug(f"[ML_DETECTOR] ML anomaly detection failed: {e}")
 
         return anomalies
@@ -502,7 +502,7 @@ class MLAnomalyDetector:
                     metadata={"anomaly_score": anomaly_score, "prediction": prediction},
                 )
 
-        except Exception as e:
+        except (AttributeError, KeyError, ValueError) as e:
             Logger.debug(f"[ML_DETECTOR] Isolation Forest detection failed: {e}")
 
         return None
@@ -533,7 +533,7 @@ class MLAnomalyDetector:
                 self._prediction_history.append(prediction)
                 return prediction
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, IndexError) as e:
             Logger.error(f"[ML_DETECTOR] Performance prediction failed: {e}")
 
         return None
@@ -581,7 +581,7 @@ class MLAnomalyDetector:
                 metadata={"alpha": alpha, "std_error": std_error},
             )
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:
             Logger.debug(f"[ML_DETECTOR] Exponential smoothing prediction failed: {e}")
 
         return None
@@ -616,7 +616,7 @@ class MLAnomalyDetector:
 
             self._last_training_time = time.time()
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, KeyError) as e:
             Logger.error(f"[ML_DETECTOR] Model retraining failed: {e}")
 
     def get_anomaly_statistics(self) -> dict[str, Any]:
@@ -697,7 +697,7 @@ class MLAnomalyDetector:
             Logger.info(f"[ML_DETECTOR] Models saved to {filepath}")
             return True
 
-        except Exception as e:
+        except (OSError, IOError, TypeError, pickle.PickleError) as e:
             Logger.error(f"[ML_DETECTOR] Failed to save models: {e}")
             return False
 
@@ -718,7 +718,7 @@ class MLAnomalyDetector:
             Logger.info(f"[ML_DETECTOR] Models loaded from {filepath}")
             return True
 
-        except Exception as e:
+        except (OSError, IOError, TypeError, pickle.PickleError, KeyError) as e:
             Logger.error(f"[ML_DETECTOR] Failed to load models: {e}")
             return False
 

@@ -2,11 +2,16 @@
 ║ [00] 📥 INGESTION + 🧱 INDEX BUILD                                                                                             ║
 ║      offline pre-runtime • builds the 🟠 document-side knowledge substrate for C0 / L0 / L1                                  ║
 ║                                                                                                                              ║
-║ PEDAGOGICAL LEGEND (MANTRA: 🔵 Blue asks, 🟠 Orange knows)                                                                   ║
+║ PEDAGOGICAL & TECHNICAL LEGEND (MANTRA: 🔵 Blue asks, 🟠 Orange knows)                                                       ║
 ║ 🔵 Blue      = Query-side semantic seeker vector (query_vec)                                                                 ║
 ║ 🟠 Orange    = Document-side knowledge representation (raw_text_vector / contextual_text_vector)                             ║
 ║ raw_text     = Literal text rail (canonical truth, bypasses vector math)                                                     ║
 ║ route_signal = Routing / policy / control signal (distinct from retrieval vector)                                            ║
+║                                                                                                                              ║
+║ [ MODEL DISTINCTIONS ]                                                                                                       ║
+║ • Embedding model = map text into semantic space (offline for 🟠 orange vectors, runtime for 🔵 blue query vector)           ║
+║ • LLM = predict next token sequence (runtime generation)                                                                     ║
+║ • Both may be transformer-based, but they serve different objectives and use different output heads.                         ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
 [ RAW SOURCES ]
@@ -65,9 +70,15 @@
        │ [ bounded data chunks ]
        ▼
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ [00.6] 🧠 DUAL REPRESENTATION                                                                                                ║
+║ [00.6] 🧠 DUAL REPRESENTATION & EMBEDDING ENGINE                                                                             ║
 ║ [ CORE LOGIC: SEMANTIC ENRICHMENT & DUAL EMBEDDING ]                                                                         ║
 ║ Maintain canonical raw text integrity WHILE generating contextualized semantic overlays. Both become Document-Side Vectors.  ║
+║                                                                                                                              ║
+║ [ EMBEDDING ARCHITECTURE CLARIFICATION ]                                                                                     ║
+║ • Embedding models use transformer-style computation but do not perform next-token prediction.                               ║
+║ • Next-token prediction belongs to the downstream generation LLM.                                                            ║
+║ • Embedding model run over chunks: tokenizer -> transformer blocks -> self-attention -> feed-forward -> normalization ->     ║
+║   pooling / projection -> dense vectors.                                                                                     ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
          RAW PATH                                                  CONTEXTUAL PATH
@@ -130,26 +141,18 @@
    ♻️ partial/full reindex
 
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ [00.9] 🔌 HANDOFF TO INFERENCE PIPELINE / 01-06                                                                              ║
+║ [00.9] 🔌 00.9 = PUBLISH RETRIEVAL ASSETS / RUNTIME HANDOFF                                                                  ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
-   [00] publishes:
+   [00] ingestion pipeline officially publishes:
       • 🟠 raw_text_vector
       • 🟠 contextual_text_vector
       • 🔎 sparse keyword surfaces
       • 🧾 canonical raw chunks
       • 🔗 parent-child lineage
 
-   then later at inference:
-      🔵 query_vec
-          │
-          │ [ semantic retrieval request ]
-          ├──> dense recall against 🟠 raw_text_vector + 🟠 contextual_text_vector
-          ├──> sparse recall against exact term / code / schema
-          └──> hydrate canonical truth + parent-child expansion
-
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ [00.10] 📚 LIBRARY ANALOGY                                                                                                   ║
+║ [00.10] 📚 LIBRARY ANALOGY (INGESTION ROLES)                                                                                 ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
 📥 Intake Clerk      → receives books / scans / ledgers / logs
@@ -161,5 +164,34 @@
 🗂️ Stack Builder     → publishes vector shelves + keyword shelves + canonical archive + lineage map
 
 Bottom line:
-[00] is where the vector DB and keyword retrieval surfaces are built.
-[03]/C0 later query them.
+[00] is where the semantic representation and keyword retrieval surfaces are built offline.
+
+
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██ 🛑 OFFLINE / ONLINE BOUNDARY 🛑                                                                                          ██
+██ Everything above this boundary is offline ingestion / index build.                                                       ██
+██ Everything below this boundary is live inference / runtime execution.                                                    ██
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ [01.0] ⚡ INFERENCE PIPELINE: LIVE RETRIEVAL KICKOFF                                                                         ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+Inference begins only after handoff, when a live user query is embedded into a 🔵 query_vec and retrieval starts against the published 🟠 substrate.
+
+   [ LIVE RUNTIME EXECUTION ]
+   User Prompt Arrives
+          │
+          │ [ identical embedding model architecture applied at runtime ]
+          ▼
+      🔵 query_vec
+          │
+          │ [ semantic retrieval request begins ]
+          ├──> dense recall: 🔵 query_vec against stored 🟠 raw_text_vector + 🟠 contextual_text_vector
+          ├──> sparse recall in parallel against exact term / code / schema
+          └──> merge / rerank / hydrate canonical truth + parent-child expansion afterward
+          │
+          │ [ fetched & curated context ]
+          ▼
+      [ Handed off to downstream Generation LLM for next-token prediction and final response synthesis ]

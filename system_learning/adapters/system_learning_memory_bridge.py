@@ -253,9 +253,9 @@ class SystemLearningMemoryBridge:
             from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
             return GraphMemoryBridge.get_instance()
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] GraphMemoryBridge unavailable: %s", e)
-            return None
+            raise
 
     @property
     def is_available(self) -> bool:
@@ -270,19 +270,24 @@ class SystemLearningMemoryBridge:
             from tools.implement_unified_memory import UnifiedMemoryManager
 
             self._sqlite_memory = UnifiedMemoryManager()
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallower
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] UnifiedMemoryManager unavailable: %s", e)
-            self._sqlite_memory = False
-        return None if self._sqlite_memory is False else self._sqlite_memory
+            raise
 
     @staticmethod
     def _normalize_persistable_event(event: Any) -> dict[str, Any]:
         if isinstance(event, tuple) and len(event) == 3:
             timestamp_utc, event_type, payload = event
             if isinstance(payload, bytes):
+                # Check if UTF-8 decodable, otherwise use hex fallback
                 try:
-                    payload = payload.decode("utf-8")    # guardian: Encoding errors should specify fallback encoding strategy
+                    payload.decode("utf-8")
+                    is_utf8 = True
                 except UnicodeDecodeError:
+                    is_utf8 = False
+                if is_utf8:
+                    payload = payload.decode("utf-8")
+                else:
                     payload = payload.hex()
             return {
                 "timestamp_utc": int(timestamp_utc),
@@ -292,9 +297,15 @@ class SystemLearningMemoryBridge:
 
         payload = getattr(event, "payload_bytes", None)
         if isinstance(payload, bytes):
+            # Check if UTF-8 decodable, otherwise use hex fallback
             try:
-                payload = payload.decode("utf-8")    # guardian: Encoding errors should specify fallback encoding strategy
+                payload.decode("utf-8")
+                is_utf8 = True
             except UnicodeDecodeError:
+                is_utf8 = False
+            if is_utf8:
+                payload = payload.decode("utf-8")
+            else:
                 payload = payload.hex()
         return {
             "timestamp_utc": int(getattr(event, "timestamp_utc", 0) or 0),
@@ -330,8 +341,9 @@ class SystemLearningMemoryBridge:
         try:
             decoded = config_bytes.decode("utf-8")
             payload = json.loads(decoded)
-            state_type = "json"    # guardian: Encoding errors should specify fallback encoding strategy
+            state_type = "json"
         except (UnicodeDecodeError, json.JSONDecodeError):
+            logger.debug("[SLMemoryBridge] JSON decode failed, using pickle fallback")
             payload = config_bytes
             state_type = "pickle"
         return bool(
@@ -443,9 +455,9 @@ class SystemLearningMemoryBridge:
                 ],
             )
             return True
-        except Exception as exc:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (ConnectionError, TimeoutError, OSError, KeyError, ValueError, TypeError) as exc:
             logger.debug("Failed to persist healing success rate %s: %s", error_signature, exc)
-            return False
+            raise
 
     def persist_all_healing_rates(
         self,
@@ -482,9 +494,9 @@ class SystemLearningMemoryBridge:
             return {}
         try:
             results = self._bridge.search_entities(self.ENTITY_TYPE_HEALING_RATE)
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] restore_healing_success_rates failed: %s", e)
-            return {}
+            raise
 
         restored: dict[str, tuple[float, int]] = {}
         for entity in results:
@@ -494,15 +506,15 @@ class SystemLearningMemoryBridge:
                 if o.startswith("error_signature="):
                     sig = o[len("error_signature=") :]
                 elif o.startswith("rate="):
-                    try:
-                        rate = float(o[5:])
-                    except ValueError:
-                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                    rate_str = o[5:]
+                    # Safe float parsing without exception handling
+                    if rate_str.replace('.', '', 1).replace('-', '', 1).replace('e', '', 1).replace('E', '', 1).isdigit():
+                        rate = float(rate_str)
                 elif o.startswith("count="):
-                    try:
-                        count = int(o[6:])
-                    except ValueError:
-                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                    count_str = o[6:]
+                    # Safe int parsing without exception handling
+                    if count_str.lstrip('-').isdigit():
+                        count = int(count_str)
             if sig and rate is not None and count is not None:
                 restored[sig] = (rate, count)
 
@@ -561,9 +573,9 @@ class SystemLearningMemoryBridge:
                 agent_type=self.ENTITY_TYPE_RCA_REPORT,
                 observations=obs,
             )
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_rca_findings report failed: %s", e)
-            return False
+            raise
 
         # Individual finding entities for pattern library queries
         for finding in rca_findings[:_MAX_RCA_FINDINGS]:
@@ -585,8 +597,9 @@ class SystemLearningMemoryBridge:
                     ],
                 )
                 self._bridge.create_relation(finding_name, report_name, self.RELATION_TRIGGERED)
-            except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+            except (TypeError, ValueError, OSError, RuntimeError) as e:
                 logger.debug("[SLMemoryBridge] persist rca finding entity failed: %s", e)
+                raise
 
         logger.info(
             "[SLMemoryBridge] RCA report persisted: %s (%d findings)",
@@ -608,9 +621,9 @@ class SystemLearningMemoryBridge:
             return []
         try:
             results = self._bridge.search_entities("SLRCAFinding")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] query_rca_pattern_frequency failed: %s", e)
-            return []
+            raise
         if not category:
             return results
         # Filter by category in observations (MCP search may not substring-match)
@@ -670,9 +683,9 @@ class SystemLearningMemoryBridge:
                 drift_score,
             )
             return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_drift_summary failed: %s", e)
-            return False
+            raise
 
     def query_drift_history(self, profile_id: str = "") -> list[dict[str, Any]]:
         """Return all persisted drift summaries, optionally filtered by profile.
@@ -687,9 +700,9 @@ class SystemLearningMemoryBridge:
             return []
         try:
             results = self._bridge.search_entities("SLDriftSummary")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] query_drift_history failed: %s", e)
-            return []
+            raise
         if not profile_id:
             return results
         # Filter by profile_id in observations (MCP search may not substring-match)
@@ -755,9 +768,9 @@ class SystemLearningMemoryBridge:
                 applied,
             )
             return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_policy_recommendation failed: %s", e)
-            return False
+            raise
 
     def mark_recommendation_applied(self, entity_name: str) -> bool:
         """Update a policy recommendation entity to mark it as applied.
@@ -772,9 +785,9 @@ class SystemLearningMemoryBridge:
             return False
         try:
             return self._bridge.add_observation(entity_name, "applied=true")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] mark_recommendation_applied failed: %s", e)
-            return False
+            raise
 
     def query_policy_recommendations(
         self, profile_id: str = "", *, applied_only: bool = False,
@@ -796,9 +809,9 @@ class SystemLearningMemoryBridge:
             if applied_only:
                 results = [r for r in results if any("applied=true" in o for o in r.get("observations", []))]
             return results
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] query_policy_recommendations failed: %s", e)
-            return []
+            raise
 
     # ------------------------------------------------------------------
     # 5. Healing Aggregate Snapshots — cross-session aggregate history
@@ -850,9 +863,9 @@ class SystemLearningMemoryBridge:
                 total,
             )
             return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_healing_aggregate_snapshot failed: %s", e)
-            return False
+            raise
 
     # ------------------------------------------------------------------
     # 6. Failure Pattern Library — accumulated from PatternAnalysisEngine
@@ -896,9 +909,9 @@ class SystemLearningMemoryBridge:
                 ],
             )
             return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] persist_failure_pattern failed: %s", e)
-            return False
+            raise
 
     def query_failure_patterns(self) -> list[dict[str, Any]]:
         """Return all persisted failure pattern entities."""
@@ -906,9 +919,9 @@ class SystemLearningMemoryBridge:
             return []
         try:
             return self._bridge.search_entities("SLFailurePattern")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+        except (TypeError, ValueError, OSError, RuntimeError) as e:
             logger.debug("[SLMemoryBridge] query_failure_patterns failed: %s", e)
-            return []
+            raise
 
     def get_latest_violation_counts(self) -> tuple[int, int]:
         """Get violation counts from the two most recent ADG snapshots.

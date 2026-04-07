@@ -180,7 +180,7 @@ class KongGatewayClient(GatewayClient):
                 Logger.error(f"[GATEWAY] Failed to connect to Kong gateway at {self._proxy_url}")
                 return False
 
-        except Exception as e:
+        except (ConnectionError, OSError, TimeoutError) as e:
             Logger.error(f"[GATEWAY] Kong initialization failed: {e}")
             return False
 
@@ -224,7 +224,7 @@ class KongGatewayClient(GatewayClient):
                 sampled=sampled,
             )
 
-        except Exception as e:
+        except (KeyError, ValueError, TypeError) as e:
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -252,7 +252,7 @@ class KongGatewayClient(GatewayClient):
             self._metrics_cache = metrics
             return metrics
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to get Kong metrics: {e}")
             return self._metrics_cache
 
@@ -265,7 +265,7 @@ class KongGatewayClient(GatewayClient):
             response = requests.get(f"{self._admin_url}/", timeout=5.0)
             return response.status_code == 200
 
-        except Exception as e:
+        except (ConnectionError, OSError, TimeoutError) as e:
             Logger.debug(f"[GATEWAY] Kong health check failed: {e}")
             return False
 
@@ -305,7 +305,7 @@ class KongGatewayClient(GatewayClient):
 
             return False
 
-        except Exception as e:
+        except (KeyError, ValueError, TypeError, AttributeError) as e:
             Logger.error(f"[GATEWAY] Failed to apply security policy: {e}")
             return False
 
@@ -334,7 +334,7 @@ class EnvoyGatewayClient(GatewayClient):
                 Logger.error(f"[GATEWAY] Failed to connect to Envoy gateway at {self._proxy_url}")
                 return False
 
-        except Exception as e:
+        except (ConnectionError, OSError, TimeoutError) as e:
             Logger.error(f"[GATEWAY] Envoy initialization failed: {e}")
             return False
 
@@ -373,7 +373,7 @@ class EnvoyGatewayClient(GatewayClient):
                 sampled=sampled,
             )
 
-        except Exception as e:
+        except (KeyError, ValueError, TypeError) as e:
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -399,7 +399,7 @@ class EnvoyGatewayClient(GatewayClient):
             self._metrics_cache = metrics
             return metrics
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to get Envoy metrics: {e}")
             return self._metrics_cache
 
@@ -409,7 +409,7 @@ class EnvoyGatewayClient(GatewayClient):
             import requests
             response = requests.get(f"{self._admin_url}/ready", timeout=5.0)
             return response.status_code == 200
-        except Exception:
+        except (ConnectionError, OSError, TimeoutError):
             return False
 
     def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
@@ -467,7 +467,7 @@ class CustomGatewayClient(GatewayClient):
                 sampled=sampled,
             )
 
-        except Exception as e:
+        except (KeyError, ValueError, TypeError) as e:
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -539,7 +539,7 @@ class APIGatewayIntegration:
                 self._health_status = "unhealthy"
                 return False
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Initialization failed: {e}")
             self._health_status = "error"
             return False
@@ -573,7 +573,7 @@ class APIGatewayIntegration:
 
             return self._client.inject_tracing_headers(request_headers, tracing_headers)
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to inject tracing headers: {e}")
             return request_headers
 
@@ -593,7 +593,7 @@ class APIGatewayIntegration:
         try:
             return self._client.extract_tracing_headers(response_headers)
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -619,7 +619,7 @@ class APIGatewayIntegration:
             Logger.info(f"[GATEWAY] Registered service: {service_name}")
             return True
 
-        except Exception as e:
+        except (KeyError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to register service {service_name}: {e}")
             return False
 
@@ -633,7 +633,7 @@ class APIGatewayIntegration:
             self._metrics_history.append(metrics)
             return metrics
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to get gateway metrics: {e}")
             return GatewayMetrics()
 
@@ -649,7 +649,7 @@ class APIGatewayIntegration:
             self._last_health_check = time.time()
             return is_healthy
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Health check failed: {e}")
             self._health_status = "error"
             return False
@@ -676,7 +676,7 @@ class APIGatewayIntegration:
 
             return success
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to apply security policy {policy.value}: {e}")
             return False
 

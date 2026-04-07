@@ -125,21 +125,21 @@ class UnifiedInferenceEngine(BaseMLModel):
         """Initialize Phase 4 models."""
         try:
             self.routing_model = AdvancedL0Router()
-        except Exception as e:
+        except (AttributeError, ImportError, TypeError) as e:
 
-            import logging; logging.getLogger(__name__).debug("unified_inference_engine: Exception swallowed at L128: %s", e)
+            import logging; logging.getLogger(__name__).debug("unified_inference_engine: routing model init failed at L128: %s", e)
 
         try:
             self.reranking_model = AdvancedC0Reranker()
-        except Exception as e:
+        except (AttributeError, ImportError, TypeError) as e:
 
-            import logging; logging.getLogger(__name__).debug("unified_inference_engine: Exception swallowed at L133: %s", e)
+            import logging; logging.getLogger(__name__).debug("unified_inference_engine: reranking model init failed at L133: %s", e)
 
         try:
             self.anomaly_model = AdvancedL6Detector()
-        except Exception as e:
+        except (AttributeError, ImportError, TypeError) as e:
 
-            import logging; logging.getLogger(__name__).debug("unified_inference_engine: Exception swallowed at L138: %s", e)
+            import logging; logging.getLogger(__name__).debug("unified_inference_engine: anomaly model init failed at L138: %s", e)
 
     def load_model(self) -> None:
         """Load the unified inference engine configuration."""
@@ -156,7 +156,7 @@ class UnifiedInferenceEngine(BaseMLModel):
 
             self.is_loaded = True
 
-        except Exception as e:
+        except (OSError, IOError, pickle.PickleError, KeyError, TypeError) as e:
             raise RuntimeError(f"Failed to load model: {e}")
 
     def save_model(self, model_file_path: Path) -> None:
@@ -240,7 +240,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 routing_result = self._execute_routing_inference(request)
                 result.routing_result = routing_result
                 result.models_executed.append("routing")
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 import logging; logging.getLogger(__name__).debug("unified_inference_engine: routing inference failed: %s", e)
 
         if request.enable_reranking and self.reranking_model:
@@ -248,7 +248,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 reranking_result = self._execute_reranking_inference(request)
                 result.reranking_result = reranking_result
                 result.models_executed.append("reranking")
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 import logging; logging.getLogger(__name__).debug("unified_inference_engine: reranking inference failed: %s", e)
 
         if request.enable_anomaly_detection and self.anomaly_model:
@@ -256,7 +256,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 anomaly_result = self._execute_anomaly_inference(request)
                 result.anomaly_result = anomaly_result
                 result.models_executed.append("anomaly")
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 import logging; logging.getLogger(__name__).debug("unified_inference_engine: anomaly inference failed: %s", e)
 
         # Coordinate results if enabled
@@ -568,7 +568,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis['routing_analysis'] = routing_analysis
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 import logging; logging.getLogger(__name__).debug("unified_inference_engine: routing analysis failed: %s", e)
 
         # Detailed reranking analysis
@@ -581,7 +581,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis['reranking_analysis'] = reranking_analysis
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 import logging; logging.getLogger(__name__).debug("unified_inference_engine: reranking analysis failed: %s", e)
 
         # Detailed anomaly analysis
@@ -594,7 +594,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis['anomaly_analysis'] = anomaly_analysis
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 import logging; logging.getLogger(__name__).debug("unified_inference_engine: anomaly analysis failed: %s", e)
 
         return analysis

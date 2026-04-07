@@ -215,7 +215,7 @@ class CloudNativeManager:
         except ImportError:
             Logger.warning("[CLOUD_NATIVE] Kubernetes client not available, installing kubernetes package")
             self._initialized = False
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, OSError) as e:
             Logger.error(f"[CLOUD_NATIVE] Failed to initialize Kubernetes client: {e}")
             self._initialized = False
 
@@ -250,7 +250,7 @@ class CloudNativeManager:
                 Logger.error("[CLOUD_NATIVE] Failed to connect to Kubernetes cluster")
                 return False
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[CLOUD_NATIVE] Initialization failed: {e}")
             return False
 
@@ -264,7 +264,7 @@ class CloudNativeManager:
             self._k8s_client['core_v1'].list_node()
             return True
 
-        except Exception as e:
+        except (ConnectionError, OSError, TimeoutError) as e:
             Logger.debug(f"[CLOUD_NATIVE] Kubernetes connection test failed: {e}")
             return False
 
@@ -321,7 +321,7 @@ class CloudNativeManager:
                 # Sleep until next iteration
                 time.sleep(self._config["metrics_collection_interval"])
 
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 Logger.error(f"[CLOUD_NATIVE] Monitoring loop error: {e}")
                 time.sleep(5.0)
 
@@ -378,7 +378,7 @@ class CloudNativeManager:
                 timestamp=time.time(),
             )
 
-        except Exception as e:
+        except (AttributeError, TypeError, KeyError, ValueError) as e:
             Logger.debug(f"[CLOUD_NATIVE] Failed to collect cluster metrics: {e}")
 
     def _collect_resource_metrics(self) -> None:
@@ -424,7 +424,7 @@ class CloudNativeManager:
 
                 self._resources[f"{pod.metadata.namespace}/{pod.metadata.name}"] = metrics
 
-        except Exception as e:
+        except (AttributeError, TypeError, KeyError, ValueError) as e:
             Logger.debug(f"[CLOUD_NATIVE] Failed to collect resource metrics: {e}")
 
     def _determine_deployment_status(self, deployment) -> HealthStatus:
@@ -445,7 +445,7 @@ class CloudNativeManager:
             else:
                 return HealthStatus.CRITICAL
 
-        except Exception:
+        except (AttributeError, TypeError, KeyError):
             return HealthStatus.UNKNOWN
 
     def _determine_pod_status(self, pod) -> HealthStatus:
@@ -471,7 +471,7 @@ class CloudNativeManager:
             else:
                 return HealthStatus.UNKNOWN
 
-        except Exception:
+        except (AttributeError, TypeError, KeyError):
             return HealthStatus.UNKNOWN
 
     def _perform_health_checks(self) -> None:
@@ -507,7 +507,7 @@ class CloudNativeManager:
             Logger.info(f"[CLOUD_NATIVE] Enabled auto-scaling for {resource_name}")
             return True
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, KeyError) as e:
             Logger.error(f"[CLOUD_NATIVE] Failed to enable auto-scaling for {resource_name}: {e}")
             return False
 
@@ -524,9 +524,9 @@ class CloudNativeManager:
                 self._k8s_client['autoscaling_v1'].read_namespaced_horizontal_pod_autoscaler(name, namespace)
                 Logger.info(f"[CLOUD_NATIVE] HPA already exists for {resource_name}")
                 return True
-            except Exception as e:
+            except (AttributeError, KeyError, ValueError) as e:
 
-                import logging; logging.getLogger(__name__).debug("cloud_native_manager: Exception swallowed at L527: %s", e)
+                import logging; logging.getLogger(__name__).debug("cloud_native_manager: HPA read check failed at L527: %s", e)
 
             # Create HPA spec
             hpa_spec = {
@@ -557,7 +557,7 @@ class CloudNativeManager:
             Logger.info(f"[CLOUD_NATIVE] Created HPA for {resource_name}")
             return True
 
-        except Exception as e:
+        except (AttributeError, TypeError, KeyError, ValueError) as e:
             Logger.error(f"[CLOUD_NATIVE] Failed to create HPA for {resource_name}: {e}")
             return False
 
@@ -580,11 +580,11 @@ class CloudNativeManager:
                 should_scale_up, should_scale_down = self._evaluate_scaling_conditions(metrics, config)
 
                 if should_scale_up:
-                    self._scale_resource(resource_name, "scale_up", config)
+                    self._scale_resource(resource_name, "scale_up", config, metrics)
                 elif should_scale_down:
-                    self._scale_resource(resource_name, "scale_down", config)
+                    self._scale_resource(resource_name, "scale_down", config, metrics)
 
-            except Exception as e:
+            except (AttributeError, TypeError, ValueError, KeyError) as e:
                 Logger.error(f"[CLOUD_NATIVE] Auto-scaling check failed for {resource_name}: {e}")
 
     def _evaluate_scaling_conditions(self, metrics: ResourceMetrics, config: AutoScalingConfig) -> tuple[bool, bool]:
@@ -606,7 +606,7 @@ class CloudNativeManager:
 
         return should_scale_up, should_scale_down
 
-    def _scale_resource(self, resource_name: str, scaling_type: str, config: AutoScalingConfig) -> None:
+    def _scale_resource(self, resource_name: str, scaling_type: str, config: AutoScalingConfig, metrics: ResourceMetrics) -> None:
         """Scale a resource up or down."""
         try:
             if not self._k8s_client:
@@ -652,7 +652,7 @@ class CloudNativeManager:
 
             Logger.info(f"[CLOUD_NATIVE] {scaling_type} {resource_name}: {current_replicas} -> {new_replicas}")
 
-        except Exception as e:
+        except (AttributeError, TypeError, KeyError, ValueError) as e:
             Logger.error(f"[CLOUD_NATIVE] Failed to scale {resource_name}: {e}")
 
     def _optimize_resources(self) -> None:
@@ -668,7 +668,7 @@ class CloudNativeManager:
                         Logger.debug(f"[CLOUD_NATIVE] Resource optimization opportunity for {resource_name}")
                         # In real implementation, would update resource requests/limits
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, KeyError) as e:
             Logger.error(f"[CLOUD_NATIVE] Resource optimization failed: {e}")
 
     def get_cluster_health(self) -> dict[str, Any]:
@@ -716,7 +716,7 @@ class CloudNativeManager:
                 "timestamp": time.time(),
             }
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, KeyError) as e:
             Logger.error(f"[CLOUD_NATIVE] Failed to get cluster health: {e}")
             return {"error": str(e)}
 
