@@ -184,6 +184,10 @@ class MCPLoader:
 
         data = yaml.safe_load(raw_yaml) if yaml else self._manual_parse(raw_yaml)
 
+        # Strip top-level keys not accepted by MCPConfig (e.g. repo_root, last_updated)
+        known_keys = {"schema_version", "last_updated", "description", "servers", "tool_aliases", "validation"}
+        data = {k: v for k, v in data.items() if k in known_keys}
+
         # Validate with Pydantic
         config = MCPConfig(**data)
 
