@@ -17,6 +17,7 @@ trigger: always_on
 > 10. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
 > 11. **TERMINAL PROCESS LIFECYCLE MANAGEMENT.** All terminal processes spawned via `run_command` or `subprocess` MUST be explicitly terminated when the query completes. Non-blocking commands MUST set `WaitMsBeforeAsync` or implement explicit process cleanup. Hanging terminal processes after query finish = CONSTITUTIONAL VIOLATION. Gate: `ops_scripts/ci/check_terminal_cleanup.py`.
 > 12. **NO IMPORTS FROM ARCHIVES/ IN PRODUCTION CODE.** The `archives/` directory is a backup graveyard — imports from it are FORBIDDEN in production code (`agentic_core/`, `apps_*/`, `system_learning/`). During module migration, imports MUST be updated to canonical locations, not left pointing to archived copies. CI blocks any commit with active `from archives.` or `import archives.` statements. Gate: `ops_scripts/ci/check_no_archives_imports.py`.
+> 13. **MCP GREEN LIGHT PREREQUISITE.** Before beginning ANY T2/T3 work, call `mcp1_adg_health`. If the result is unhealthy or stale (>30 min), run `/mcp-failure-rca` and wait for recovery. NEVER begin multi-file work with unhealthy MCPs. Reinforced at runtime by `pre_mcp_tool_use` hook (Wave 1 Phase 1.3).
 
 ## §0. DEFAULT ANALYSIS MODE — Tier-Aware
 
@@ -414,3 +415,45 @@ Before committing any plan document:
 - ✅ Consistent "Waves" terminology used throughout (SSOT compliance)
 
 **Enforcement:** Plans missing required table or token estimation will be rejected during review.
+
+---
+
+## §13. MCP GREEN LIGHT PREREQUISITE
+
+### 13.1 Rule
+
+Before beginning ANY T2/T3 work, the MCP health check MUST pass:
+
+```
+1. Call mcp1_adg_health
+2. If result is unhealthy or last_check > 30 minutes ago → STOP
+3. Run /mcp-failure-rca
+4. Wait for recovery confirmation before proceeding
+```
+
+**NEVER begin multi-file work with unhealthy MCPs.** Silent MCP failures cascade into broken analysis, corrupt ADG queries, and wasted repair sessions.
+
+### 13.2 Scope
+
+| Tier | MCP Green Light Required? |
+|------|--------------------------|
+| T0 — Question | ❌ Not required (no code changes) |
+| T1 — Trivial | ⚠️ Recommended (ADG cache query optional) |
+| T2 — Scoped | ✅ **REQUIRED** before any file edits |
+| T3 — Architectural | ✅ **REQUIRED** before any analysis or edits |
+
+### 13.3 Runtime Enforcement
+
+This behavioral rule is reinforced at runtime by:
+- **Wave 1 Phase 1.3**: `pre_mcp_tool_use` hook blocks ADG calls when SQLite is locked or health is stale (>30 min)
+- **Wave 1 Phase 1.8**: `post_cascade_response` hook attempts `adg_close_connections` as response-tail cleanup
+
+### 13.4 Recovery Escalation
+
+If `mcp1_adg_health` is unhealthy:
+```
+1. python ops_scripts/ci/mcp_health_monitor.py --probe
+2. Check ~/adg_mcp_server.log for errors
+3. Run /mcp-failure-rca workflow
+4. Re-run mcp1_adg_health to confirm recovery before proceeding
+```
