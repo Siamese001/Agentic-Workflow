@@ -133,8 +133,15 @@ def _print_defect_table(
     """
     by_severity = routing_summary.get("by_severity", {})
 
-    # P1: layer violations always come from routing_summary (violates edges)
-    p1_count = by_severity.get("critical", 0)
+    # P1: layer violations from SQLite (truthful count, same as halt check)
+    p1_count = 0
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            import sqlite3 as _sqlite3
+            with _sqlite3.connect(str(sqlite_path)) as _conn:
+                p1_count = _conn.execute("SELECT COUNT(*) FROM edges WHERE relation_type='violates'").fetchone()[0]
+        except Exception:  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to 0
+            pass
 
     # P2/P3/P4: read antipattern violation counts directly from SQLite violations table
     p2_antipattern = 0
@@ -316,7 +323,7 @@ def _check_artifact_consistency(paths: object, artifact: object) -> None:
         sys.exit(1)
 
 
-def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None = None, strict_mode: bool = False, exempt_files: list[str] | None = None) -> None:
+def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None = None, adg_artifacts_dir: Path | None = None, ts: str | None = None) -> None:
     """Fail if P1 critical defects are present (unconditional fail-fast).
 
     P1 defects include:
@@ -324,30 +331,24 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
     - Circular imports (in_cycle edges) — graph topology corruption
     - Dynamic execution (dynamic_exec edges) — provably incomplete graph
 
-    All P1 defects must block ADG generation regardless of strict_mode setting.
+    All P1 defects must block ADG generation unconditionally.
     This is a constitutional requirement for architectural integrity.
+
+    Before halting, attempts to auto-fix via repair orchestrator.
 
     Args:
         routing_summary: Dictionary with by_severity counts
         sqlite_path: Path to SQLite database for in_cycle/dynamic_exec queries
-        strict_mode: Unused - P1 always fails (kept for API compatibility)
-        exempt_files: List of file paths to exempt from P1 layer violation checks
+        adg_artifacts_dir: Directory containing ADG artifacts (for repair orchestrator)
+        ts: ADG timestamp (for repair orchestrator)
     """
-    if exempt_files is None:
-        exempt_files = []
-
     # Check P1 critical defects (layer violations)
     if sqlite_path is not None and sqlite_path.exists():
         try:
             import sqlite3 as _sqlite3
             with _sqlite3.connect(str(sqlite_path)) as conn:
                 cursor = conn.cursor()
-                # Count violates edges not in exempt files
-                if exempt_files:
-                    placeholders = ",".join("?" * len(exempt_files))
-                    cursor.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type='violates' AND source_file NOT IN ({placeholders})", exempt_files)
-                else:
-                    cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type='violates'")
+                cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type='violates'")
                 p1_count = cursor.fetchone()[0]
                 
                 if p1_count > 0:
@@ -399,25 +400,22 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
             pass
 
 
-def _check_p2_pipeline_integrity(sqlite_path: Path | None = None) -> None:
-    """Warn if P2 exception swallows exist in ADG pipeline paths.
+def _check_p2_antipatterns(sqlite_path: Path | None = None, adg_artifacts_dir: Path | None = None, ts: str | None = None) -> None:
+    """Fail if HIGH-severity antipatterns are present.
 
-    Tier 2 warns if exception swallows exist in:
-    - tools/adg/
-    - tools/generate/
-    - agentic_core/adg/
-
-    Exception swallow types:
+    Blocks ADG generation if any HIGH-severity antipatterns exist:
     - silent_exception_swallow
     - broad_exception_catch
     - log_and_swallow
     - return_none_swallow
 
-    NOTE: Currently warning-only because ADG scanner doesn't respect guardian comments
-    for exception swallow detection. Once scanner is enhanced, this can be made blocking.
+    This is an unconditional fail-fast gate.
+    Before halting, attempts to auto-fix via repair orchestrator.
 
     Args:
         sqlite_path: Path to SQLite database for exception swallow queries
+        adg_artifacts_dir: Directory containing ADG artifacts (for repair orchestrator)
+        ts: ADG timestamp (for repair orchestrator)
     """
     if sqlite_path is None or not sqlite_path.exists():
         return
@@ -427,33 +425,30 @@ def _check_p2_pipeline_integrity(sqlite_path: Path | None = None) -> None:
         with _sqlite3.connect(str(sqlite_path)) as conn:
             cursor = conn.cursor()
 
-            # Define pipeline paths
-            pipeline_paths = ("tools/adg/%", "tools/generate/%", "agentic_core/adg/%")
-
-            # Define exception swallow edge types
+            # Define exception swallow edge types (HIGH severity)
             swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
 
-            # Query for exception swallows in pipeline paths
+            # Query for all HIGH-severity exception swallows (all paths)
             query = """
                 SELECT COUNT(*)
                 FROM edges e
                 WHERE e.edge_kind IN (?, ?, ?, ?)
-                AND (
-                    e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                    OR e.source_file LIKE ?
-                )
             """
-            cursor.execute(query, (*swallow_types, *pipeline_paths))
+            cursor.execute(query, swallow_types)
             swallow_count = cursor.fetchone()[0]
 
             if swallow_count > 0:
-                print(f"\n[WARNING] P2 Tier 2: Exception swallows in ADG pipeline detected: {swallow_count}")
-                print("[WARNING] These are legitimate resilience patterns with guardian exemptions")
-                print("[WARNING] ADG scanner doesn't respect guardian comments for exception swallows")
-                print("[WARNING] Affected paths: tools/adg/, tools/generate/, agentic_core/adg/")
-                print("[WARNING] This is informational only - ADG generation continuing")
-    except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during Tier 2 check falls back gracefully
+                print(f"\n[ERROR] P2 HIGH antipatterns detected: {swallow_count}")
+                print("[ERROR] ADG generation failed - HIGH-severity exception antipatterns present")
+                
+                # Attempt auto-repair before halting (connection will be closed by with block)
+                if adg_artifacts_dir is not None:
+                    print("[INFO] Attempting auto-repair via P1/P2 auto-fix script...")
+                    _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
+                
+                print("[ERROR] Fix exception swallows before regenerating ADG")
+                sys.exit(1)
+    except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during P2 check falls back gracefully
         pass
 
 
@@ -539,6 +534,62 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
         pass
 
 
+def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
+    """Fail if production modules have zero non-test/non-ops fan-in edges.
+
+    Blocks ADG generation if any production module in agentic_core/L4_state/cache/
+    has zero import edges from other production code. This prevents disconnected
+    "dead code" from being signed off as production-ready.
+
+    Args:
+        sqlite_path: Path to SQLite database for fan-in queries
+    """
+    if sqlite_path is None or not sqlite_path.exists():
+        return
+
+    try:
+        import sqlite3 as _sqlite3
+        with _sqlite3.connect(str(sqlite_path)) as conn:
+            cursor = conn.cursor()
+
+            # Query for production modules with zero production fan-in
+            # Target agentic_core/L4_state/cache/* only (high-risk cache modules)
+            query = """
+            SELECT n.resolved_path, n.layer, n.entity_type, COUNT(e.id) AS fan_in
+            FROM nodes n
+            LEFT JOIN edges e ON e.dst_id = n.id
+              AND e.relation_type = 'imports'
+              AND e.src_id IN (
+                SELECT id FROM nodes WHERE layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
+              )
+            WHERE n.entity_type = 'module'
+              AND n.layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
+              AND n.resolved_path LIKE 'agentic_core/L4_state/cache/%'
+            GROUP BY n.id
+            HAVING fan_in = 0
+            ORDER BY n.resolved_path;
+            """
+            cursor.execute(query)
+            violations = cursor.fetchall()
+
+            if violations:
+                print(f"\n[ERROR] Dead production import gate: Found {len(violations)} dead module(s)")
+                print("[ERROR] Modules with ZERO production importers:")
+                for row in violations:
+                    print(f"[ERROR]   - {row[0]} (layer={row[1]}, fan_in={row[3]})")
+                print("[ERROR]")
+                print("[ERROR] These modules have ZERO importers from production code.")
+                print("[ERROR] Either:")
+                print("[ERROR]   1. Wire them into production code (add imports), OR")
+                print("[ERROR]   2. Archive them to tools/archive/ if deprecated")
+                print("[ERROR] ADG generation blocked. Fix violations and retry.")
+                sys.exit(1)
+            else:
+                print("[INFO] Dead production import gate: PASSED (no dead modules in L4_state/cache)")
+    except Exception:  # guardian: allow-silent-swallow -- non-critical: Gate query failure falls back gracefully
+        pass
+
+
 def generate_full_adg(
     adg_artifacts_dir: Path,
     ts: str,
@@ -550,7 +601,6 @@ def generate_full_adg(
     enable_zip: bool = True,
     enable_reports: bool = True,
     enable_analysis: bool = True,
-    strict_mode: bool = False,
 ) -> tuple[ADGArtifact, dict[str, int], list[str]]:
     """Generate full ADG and write all artifact tiers.
 
@@ -668,19 +718,82 @@ def generate_full_adg(
     print("[ADG] Building canonical artifact...")
     artifact = build_artifact(result, repo_root=ROOT)
 
-    # --- Write all three tiers + split planes ---
-    print("[ADG] Writing artifact tiers...")
-    paths = write_all_artifacts(
-        artifact,
-        out_dir=adg_artifacts_dir,
-        ts=ts,
-        write_split_planes=False,  # Disable redundant JSON graph files (100.75 MB savings)
+    # --- Calculate routing summary for P1/P2 gates ---
+    _critical_layer_prefixes = (
+        "agentic_core/L0_routing/",
+        "agentic_core/L5_safety/",
+        "agentic_core/L2_execution/",
+        "agentic_core/L3_orchestration/",
     )
+    _high_antipattern_kinds = frozenset(
+        ("broad_exception_catch", "silent_exception_swallow", "log_and_swallow", "return_none_swallow")
+    )
+    violation_edges = [
+        e for e in result.edges
+        if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
+        or (
+            e.relation_type == "antipattern"
+            and e.edge_kind in _high_antipattern_kinds
+            and any(e.source_file.startswith(p) for p in _critical_layer_prefixes)
+        )
+    ]
+    repair_routes = route_violations(violation_edges)
+    routing_summary = repair_routing_summary(repair_routes)
 
-    # --- Fail-fast: Artifact validity checks ---
-    _check_artifact_validity(paths)
-    _check_sqlite_integrity(paths.sqlite)
-    _check_artifact_consistency(paths, artifact)
+    # --- Write artifacts to temp directory first for fail-fast check ---
+    print("[ADG] Writing artifact tiers to temp directory...")
+    import tempfile
+    import shutil
+    temp_dir = tempfile.mkdtemp(prefix="adg_temp_")
+    exit_code = 0
+    try:
+        temp_adg_dir = Path(temp_dir) / "adg"
+        temp_adg_dir.mkdir()
+        temp_paths = write_all_artifacts(
+            artifact,
+            out_dir=temp_adg_dir,
+            ts=ts,
+            write_split_planes=False,  # Disable redundant JSON graph files (100.75 MB savings)
+        )
+
+        # --- Fail-fast: Artifact validity checks ---
+        _check_artifact_validity(temp_paths)
+        _check_sqlite_integrity(temp_paths.sqlite)
+        _check_artifact_consistency(temp_paths, artifact)
+
+        # --- Tier-1: Structural integrity gates (block on temp SQLite) ---
+        # These gates protect artifact correctness. A corrupt artifact must never reach production.
+        _check_p3_ratchet(sqlite_path=temp_paths.sqlite)
+
+        # --- Tier-1 passed: commit artifacts to final production location ---
+        print("[ADG] Tier-1 gates passed - committing artifacts to final location...")
+        paths = write_all_artifacts(
+            artifact,
+            out_dir=adg_artifacts_dir,
+            ts=ts,
+            write_split_planes=False,
+        )
+    except SystemExit as e:
+        exit_code = e.code if e.code is not None else 1
+    finally:
+        # Clean up temp directory with ignore_errors=True to handle Windows file handle timing
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    if exit_code != 0:
+        sys.exit(exit_code)
+
+    # --- Tier-2: Code quality gates (run on PRODUCTION SQLite, never temp) ---
+    # Orchestrator runs inline here. No SQLite contention with temp directory.
+    production_sqlite = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
+    prod_sqlite_path = production_sqlite[-1] if production_sqlite else None
+
+    _check_p1_defects(routing_summary, sqlite_path=prod_sqlite_path, adg_artifacts_dir=adg_artifacts_dir, ts=ts)
+    _check_p2_antipatterns(sqlite_path=prod_sqlite_path, adg_artifacts_dir=adg_artifacts_dir, ts=ts)
+    _check_dead_production_imports(sqlite_path=prod_sqlite_path)
+
+    # --- Repair orchestrator: classify + fix remaining issues ---
+    print("[ADG] Running repair orchestrator on committed artifacts...")
+    _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
 
     # Size report
     sizes = paths.size_report()
@@ -736,36 +849,6 @@ def generate_full_adg(
             pass
 
     # --- E10: Repair routing ---
-    _critical_layer_prefixes = (
-        "agentic_core/L0_routing/",
-        "agentic_core/L5_safety/",
-        "agentic_core/L2_execution/",
-        "agentic_core/L3_orchestration/",
-    )
-    _high_antipattern_kinds = frozenset(
-        ("broad_exception_catch", "silent_exception_swallow", "log_and_swallow", "return_none_swallow")
-    )
-    violation_edges = [
-        e for e in result.edges
-        if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
-        or (
-            e.relation_type == "antipattern"
-            and e.edge_kind in _high_antipattern_kinds
-            and any(e.source_file.startswith(p) for p in _critical_layer_prefixes)
-        )
-    ]
-    repair_routes = route_violations(violation_edges)
-    routing_summary = repair_routing_summary(repair_routes)
-
-    # --- Fail-fast: P1 critical defects (strict mode only) ---
-    _check_p1_defects(routing_summary, sqlite_path=paths.sqlite, strict_mode=strict_mode, exempt_files=["ops_scripts/dev_tools/l0_scripts/start_runtime_api_util.py"])
-
-    # --- Fail-fast: P2 pipeline integrity (exception swallows in ADG pipeline paths) ---
-    _check_p2_pipeline_integrity(sqlite_path=paths.sqlite)
-
-    # --- Fail-fast: P3 ratchet (exception swallows in production paths) ---
-    _check_p3_ratchet(sqlite_path=paths.sqlite)
-
     # --- E5: Impact prediction ---
     violation_sources = [
         e.source_file
@@ -909,12 +992,10 @@ def generate_full_adg(
             print("[ADG] This does not block ADG generation - these systems need investigation")
             semantic_warnings.append("EDGE SEMANTIC PRECISION")
             semantic_warnings.append("DETERMINISM (ARTIFACT LEVEL)")
-        elif strict_mode:
-            print(f"\n[ERROR] ADG closure validation failed in strict mode: {failed_caps}")
-            print("[ERROR] Fix all closure validation gaps before regenerating ADG in strict mode")
-            sys.exit(1)
         else:
-            raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
+            print(f"\n[ERROR] ADG closure validation failed: {failed_caps}")
+            print("[ERROR] Fix all closure validation gaps before regenerating ADG")
+            sys.exit(1)
 
     # Print P1-P4 defect table (including semantic warnings as P4)
     _print_defect_table(routing_summary, semantic_warnings, sqlite_path=paths.sqlite)
@@ -1231,6 +1312,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         "scan_result_cache.json",
         "*_report_*.json",
         "test_surface_coverage_*.json",
+        "repair_log_*.json",
+        "p2_ratchet.json",
     ]:
         for path in adg_dir.glob(pattern):
             # Skip LATEST files
@@ -2746,43 +2829,41 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
     print("[ADG] Full ADG generation verification: all artifacts present")
 
 
-def _run_repair_orchestrator(adg_artifacts_dir: Path, ts: str, dry_run: bool) -> None:
-    """Run the ADG repair orchestrator if requested."""
-    print("\n" + "=" * 60)
-    print("ADG Repair Orchestrator Post-Generation")
-    print("=" * 60)
+def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str) -> None:
+    """Run P1/P2 auto-fix via repair orchestrator.
+
+    Args:
+        adg_artifacts_dir: Directory containing ADG artifacts
+        ts: ADG timestamp (for logging)
+    """
+    from tools.adg.repair import ADGRepairOrchestrator
+    from tools.adg.repair.rule_engine import register_builtin_rules
+
+    # Register built-in rules
+    register_builtin_rules()
+
+    # Find SQLite database
+    sqlite_path = None
+    sqlite_files = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
+    if sqlite_files:
+        sqlite_path = sqlite_files[-1]
+
+    # Run orchestrator in dry-run mode (classification only)
+    orchestrator = ADGRepairOrchestrator(
+        adg_dir=adg_artifacts_dir,
+        timestamp=ts,
+        repo_root=ROOT,
+        sqlite_path=sqlite_path,
+    )
 
     try:
-        from tools.adg.repair import ADGRepairOrchestrator
-
-        orchestrator = ADGRepairOrchestrator(
-            adg_dir=adg_artifacts_dir,
-            timestamp=ts,
-            repo_root=ROOT,
-        )
-
-        result = orchestrator.run(dry_run=dry_run)
-        orchestrator.print_summary()
-
-        # Log repair results
-        if result.fixes_applied > 0:
-            print(f"\n[ADG] Repair: {result.fixes_applied} fixes applied successfully")
-        if result.fixes_suggested > 0:
-            print(f"[ADG] Repair: {result.fixes_suggested} fixes suggested for review")
-        if result.fixes_blocked > 0:
-            print(f"[ADG] Repair: {result.fixes_blocked} fixes require human attention")
-        if result.failed_fixes > 0:
-            print(f"[ADG] Repair: {result.failed_fixes} fixes failed")
-
-        if result.log_path:
-            print(f"[ADG] Repair log: {result.log_path}")
-
-    except Exception as e:  # guardian: allow-broad-exception -- non-critical: repair orchestrator failure should not block ADG generation
-        print(f"[ADG] Repair orchestrator failed: {e}")
-        # Don't fail the whole ADG generation if repair fails
-        import traceback
-
-        traceback.print_exc()
+        result = orchestrator.run(dry_run=False)
+        print(f"[ADG] Repair orchestrator completed: {result.deficiencies_found} deficiencies found")
+        print(f"[ADG]   AUTO_FIX: {result.fixes_applied}")
+        print(f"[ADG]   SUGGEST_FIX: {result.fixes_suggested}")
+        print(f"[ADG]   BLOCK_FIX: {result.fixes_blocked}")
+    except Exception as e:
+        print(f"[WARNING] Repair orchestrator failed: {e}")
 
 
 def main() -> None:
@@ -2829,11 +2910,6 @@ def main() -> None:
         action="store_true",
         help="Disable report generation (default: enabled)",
     )
-    parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="Enable strict mode: fail on P1 defects and closure validation gaps",
-    )
 
     args = parser.parse_args()
 
@@ -2848,7 +2924,6 @@ def main() -> None:
 
     print(f"[ADG] Starting generation with timestamp: {ts}")
     print(f"[ADG] Parallel mode: {not args.no_parallel}")
-    print(f"[ADG] Strict mode: {args.strict}")
     if not args.no_parallel:
         print(f"[ADG] Workers: {args.workers or 'auto'}")
         print(f"[ADG] CPU affinity: {args.cpu_affinity}")
@@ -2866,7 +2941,6 @@ def main() -> None:
             enable_zip=not args.no_zip,
             enable_reports=not args.no_reports,
             enable_analysis=True,
-            strict_mode=args.strict,
         )
     except RuntimeError as e:
         if "Zip creation failed" in str(e) and not args.no_zip:
@@ -2881,7 +2955,7 @@ def main() -> None:
 
     # Run repair orchestrator if requested
     if args.repair:
-        _run_repair_orchestrator(adg_artifacts_dir, ts, args.repair_dry_run)
+        _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
 
 
 if __name__ == "__main__":
