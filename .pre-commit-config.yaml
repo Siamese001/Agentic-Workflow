@@ -467,28 +467,9 @@ repos:
         require_serial: true
 
       # -- T11.1: MCP npx Windows Gate -------------------------------------------
-      # Blocks bare 'npx' command in mcp_servers.yaml — on Windows npx is not
-      # executable and causes silent Windsurf MCP hangs. Requires 'npx.cmd'.
-      - id: mcp-npx-windows-gate
-        name: "T11.1: MCP npx Windows Gate — bare npx causes silent hangs, use npx.cmd"
-        entry: python ops_scripts/ci/check_mcp_npx_windows.py
-        language: system
-        pass_filenames: false
-        files: ^config/mcp_servers\.yaml$
-        always_run: false
-        require_serial: true
-
-      # -- T11.2: MCP Config Drift Detection (SSOT enforcement) -------------------
-      # Detects drift between config/mcp_servers.yaml (SSOT) and global Windsurf config.
-      # Auto-syncs on drift to prevent stale global config causing MCP failures.
-      - id: mcp-config-drift-check
-        name: "T11.2: MCP Config Drift Detection — YAML SSOT vs global Windsurf config"
-        entry: python tools/adg/sync_yaml_to_global.py --check
-        language: system
-        pass_filenames: false
-        files: ^config/mcp_servers\.yaml$
-        always_run: false
-        require_serial: true
+      # W5.2: ARCHIVED — mcp_servers.yaml YAML SSOT archived; mcp_config.json is canonical.
+      # -- T11.2: MCP Config Drift Detection (SSOT enforcement) ------------------
+      # W5.2: ARCHIVED — sync_yaml_to_global.py archived with YAML SSOT infrastructure.
 
       # -- T11.3: Pytest Config SSOT Gate ----------------------------------------
       # Validates pytest.ini and pyproject.toml [tool.pytest.ini_options] consistency.
