@@ -7,12 +7,19 @@ Reads JSON payload from stdin. Payload fields:
   tool_info.mcp_tool_name    — name of tool being called (optional)
 
 Behavior:
-  - Non-ADG MCPs → exit 0 immediately (FAIL-OPEN for non-ADG)
+  - Filesystem MCP (mcp_server_name == "filesystem") write tools → EXIT 2
+      * write_file and edit_file are BLOCKED — Windsurf does not pass tool
+        arguments to pre_mcp_tool_use hooks, so content validation is impossible
+        at this layer. Writes must go through Cascade's native write tools
+        (write_to_file, edit, multi_edit) which DO invoke pre_write_code and
+        the constitutional anti-pattern + syntax gates.
+      * Read-only tools (read_text_file, list_directory, etc.) → exit 0.
   - ADG MCP (mcp_server_name == "adg_sqlite"):
       * Check if any adg_indexed_*.sqlite file has an active write lock → EXIT 2
       * Check if ADG health timestamp is >30 min stale (via artifacts/adg/) → EXIT 2
+  - All other MCPs → exit 0 (FAIL-OPEN).
 
-Fail policy: CLOSED for ADG calls, OPEN for non-ADG.
+Fail policy: CLOSED for ADG and filesystem-write calls, OPEN for everything else.
 Zero hardcoded paths — REPO_ROOT resolved from __file__.
 """
 
@@ -32,6 +39,15 @@ ADG_RECOVERY_TOOLS = {
     "adg_status",  # mcp1_adg_status — snapshot status
     "adg_close_connections",  # needed to release SQLite locks
     "adg_reopen_connections",  # needed after lock release
+}
+
+FILESYSTEM_SERVER_NAME = "filesystem"
+# Write tools on the filesystem MCP that bypass pre_write_code. Blocked here
+# so all .py writes are forced through Cascade's native tools and the
+# constitutional anti-pattern + syntax gates.
+FILESYSTEM_WRITE_TOOLS = {
+    "write_file",  # mcp5_write_file — full overwrite
+    "edit_file",  # mcp5_edit_file  — line-based edits
 }
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -80,6 +96,25 @@ def _get_latest_snapshot_age_seconds(repo_root: Path) -> float | None:
     return age
 
 
+def check_filesystem_write_gate(tool_name: str) -> int:
+    """
+    Block filesystem MCP write tools (write_file, edit_file).
+
+    Windsurf does not expose tool arguments to pre_mcp_tool_use hooks, so
+    content-level validation is impossible here. The only safe option is to
+    redirect writes to Cascade's native write tools (write_to_file / edit /
+    multi_edit) which DO fire pre_write_code and the constitutional gates.
+    """
+    if tool_name in FILESYSTEM_WRITE_TOOLS:
+        return _exit_block(
+            f"filesystem MCP tool '{tool_name}' is blocked — "
+            "use Cascade's native write_to_file / edit / multi_edit tools instead. "
+            "Those tools invoke pre_write_code and the constitutional anti-pattern "
+            "and syntax gates that mcp5 bypasses.",
+        )
+    return 0
+
+
 def check_adg_gate(repo_root: Path) -> int:
     """Check ADG-specific gates. Return 0 (allow) or 2 (block)."""
     if _is_sqlite_locked(repo_root):
@@ -111,13 +146,22 @@ def main() -> int:
         print("[pre_mcp_gate] WARNING: malformed JSON payload — allowing (non-ADG assumed).", file=sys.stderr)
         return 0
 
+    if not isinstance(payload, dict):
+        print("[pre_mcp_gate] WARNING: non-dict payload — allowing (non-ADG assumed).", file=sys.stderr)
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     server_name = tool_info.get("mcp_server_name", "")
+    tool_name = tool_info.get("mcp_tool_name", "")
+
+    if server_name == FILESYSTEM_SERVER_NAME:
+        return check_filesystem_write_gate(tool_name)
 
     if server_name != ADG_SERVER_NAME:
         return 0
-
-    tool_name = tool_info.get("mcp_tool_name", "")
     if tool_name in ADG_RECOVERY_TOOLS:
         # Always allow recovery probes — blocking them creates a dead loop
         # where the gate blocks the only tools that can restore health.

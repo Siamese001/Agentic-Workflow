@@ -20,12 +20,14 @@ import json
 import os
 import re
 import sys
-from pathlib import PurePosixPath, PureWindowsPath
 
 FAIL_POLICY = "closed"
 
 POWERSHELL_PATTERNS = ("powershell", "pwsh")
-_FULL_SUITE_RE = re.compile(r"pytest\s+tests/unit(\s|$)")
+
+# Matches pytest invocations that run the full unit test suite.
+# Handles: trailing slash, Windows backslash, optional trailing args.
+_FULL_SUITE_RE = re.compile(r"pytest\s+tests[/\\]unit[/\\]?(\s|$)")
 
 # Script paths that are allowed to reference "powershell" in their name
 # because they are *about* PowerShell (checkers, RCA docs, etc.)
@@ -64,22 +66,27 @@ def _exit_block(reason: str) -> int:
 
 
 def check_command(command_line: str) -> int:
-    """Return 0 (allow) or 2 (block)."""
+    """Return 0 (allow) or 2 (block). command_line must be a non-empty string."""
     lower = command_line.lower()
 
-    # Allow commands that are invoking the powershell-ban checker itself
-    # or this gate — they reference "powershell" in path, not as execution target
-    if any(lower.endswith(s) or ("/" + s) in lower or ("\\" + s) in lower
-           for s in _ALLOWED_SCRIPT_SUFFIXES):
-        pass
-    else:
-        if _POWERSHELL_EXEC_RE.search(command_line):
-            matched = next(
-                pat for pat in POWERSHELL_PATTERNS if pat in command_line.lower()
-            )
+    # Always check for powershell/pwsh as the leading executor first.
+    # The allowlist exempts scripts whose *path* contains a known suffix
+    # (e.g. check_powershell_ban.py) but ONLY when powershell is not the
+    # executor itself — "powershell check_powershell_ban.py" must still block.
+    if _POWERSHELL_EXEC_RE.search(command_line):
+        leading_token = lower.lstrip().split()[0] if lower.strip() else ""
+        is_allowed_script = any(
+            lower.endswith(s) or ("/" + s) in lower or ("\\" + s) in lower for s in _ALLOWED_SCRIPT_SUFFIXES
+        )
+        # Exempt only when the leading token is NOT powershell/pwsh itself,
+        # i.e. a python invocation of a checker that mentions powershell by name.
+        if is_allowed_script and not any(pat in leading_token for pat in POWERSHELL_PATTERNS):
+            pass  # allowed: python script whose path references powershell
+        else:
+            matched = next(pat for pat in POWERSHELL_PATTERNS if pat in command_line.lower())
             return _exit_block(
                 f"PowerShell is forbidden (matched '{matched}'). "
-                "Use subprocess.run(argv, shell=False) per constitutional §0.",
+                "Use argv list with shell=False per constitutional §0.",
             )
 
     if _FULL_SUITE_RE.search(command_line) and os.environ.get("ADG_REPAIR_ACTIVE"):
@@ -116,7 +123,8 @@ def main() -> int:
 
     command_line = tool_info.get("command_line", "")
 
-    if not command_line:
+    # Only process string command lines — non-string types are ignored (fail-open)
+    if not isinstance(command_line, str) or not command_line:
         return 0
 
     return check_command(command_line)

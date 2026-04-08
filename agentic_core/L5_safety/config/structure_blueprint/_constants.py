@@ -616,12 +616,23 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "adg": {
             "purpose": "Architecture Dependency Graph (ADG) — commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
             "subfolders": {
+                "adapters": {"purpose": "ADG adapter modules for memory and MCP integration."},
+                "analysis": {"purpose": "ADG analysis modules (confidence, impact, ownership, snapshots)."},
                 "applications": {
-                    "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG).",
+                    "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."
+                },
+                "artifact": {
+                    "purpose": "ADG artifact generation and serialization (SQLite, JSON, split planes)."
                 },
                 "ci": {"purpose": "CI integration and invariant checks."},
                 "client": {"purpose": "MCP client for ADG graph operations."},
+                "contracts": {"purpose": "ADG contract definitions and protocol interfaces."},
                 "extraction": {"purpose": "Static AST-based scanner and edge extraction."},
+                "identity": {"purpose": "Entity identity resolution and canonicalization."},
+                "precision": {"purpose": "Precision scoring and semantic enrichment."},
+                "processing": {"purpose": "ADG processing pipelines and batch operations."},
+                "runtime": {"purpose": "ADG runtime behavioral indexing and live analysis."},
+                "_compat": {"purpose": "Backward-compatibility shims for ADG modules."},
             },
         },
         "agents": {
@@ -636,6 +647,71 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "base_agents": {
             "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
             "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/.",
+        },
+        # ORPHAN FOLDERS — added to SSOT to match actual repo structure
+        "case_memory": {
+            "purpose": "Case-based memory and graph neighborhood storage for agent reasoning.",
+            "subfolders": {
+                "core": {
+                    "purpose": "Core case memory implementations (case_library, memory_card, graph_neighborhood)."
+                },
+            },
+        },
+        "cloud_native": {
+            "purpose": "Cloud-native deployment and orchestration management.",
+            "subfolders": {
+                "core": {"purpose": "Cloud-native core manager implementations."},
+            },
+        },
+        "core": {
+            "purpose": "Core framework and fundamental system abstractions.",
+            "subfolders": {
+                "frameworks": {"purpose": "Core framework implementations (documentation, contracts)."},
+            },
+        },
+        "embeddings": {
+            "purpose": "Embedding generation, tokenization, and input guardrails.",
+            "notes": "Flat structure — embedding_factory, embedding_input_guard, tokenization_adapter.",
+        },
+        "evaluation": {
+            "purpose": "Evaluation frameworks, benchmarking, and quality assessment tooling.",
+            "subfolders": {
+                "chunking": {"purpose": "Text chunking strategies for evaluation pipelines."},
+                "datasets": {"purpose": "Evaluation datasets and golden ground truth."},
+                "feedback": {"purpose": "Feedback collection and annotation tooling."},
+                "golden": {"purpose": "Golden evaluation datasets and benchmarks."},
+                "judges": {"purpose": "Evaluation judges and scoring modules."},
+                "metrics": {"purpose": "Evaluation metrics and measurement tools."},
+                "monitoring": {"purpose": "Evaluation monitoring and metric tracking."},
+                "retrieval": {"purpose": "Retrieval evaluation and relevance scoring."},
+                "runners": {"purpose": "Evaluation pipeline runners and orchestrators."},
+                "schemas": {"purpose": "Evaluation data schemas and validation contracts."},
+            },
+        },
+        "gateway": {
+            "purpose": "API gateway integration and routing.",
+            "notes": "Single-file module: api_gateway_integration.py.",
+        },
+        "interfaces": {
+            "purpose": "Interface definitions, protocols, and contracts across all layers.",
+            "notes": "Contains protocol definitions (IHealerProtocol, IOrchestratorProtocol, etc.) and shims.",
+        },
+        "L_CONTRACTS": {
+            "purpose": "Layer contracts and cross-layer enforcement contracts.",
+            "subfolders": {},
+            "notes": "Contains execution_trace, lifecycle_trace_contract, healer_exceptions.",
+        },
+        "tracing": {
+            "purpose": "Distributed tracing and observability instrumentation.",
+            "subfolders": {
+                "engines": {"purpose": "Tracing engine implementations."},
+            },
+        },
+        "visualization": {
+            "purpose": "Visualization and rendering engines for ADG and system metrics.",
+            "subfolders": {
+                "engines": {"purpose": "Visualization engine implementations."},
+            },
         },
     }
 
@@ -1076,7 +1152,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 2,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
-            "_config": {"purpose": "Test-suite configuration (conftest helpers, marker registries, shared fixtures)"},
+            "_config": {
+                "purpose": "Test-suite configuration (conftest helpers, marker registries, shared fixtures)"
+            },
             "adg": {
                 "purpose": "ADG-specific tests and graph validation checks",
                 "subfolders": {
@@ -1113,11 +1191,15 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 },
             },
             "evaluation": {"purpose": "Evaluation pipeline and scoring tests"},
-            "governance": {"purpose": "Governance policy, lifecycle, determinism, migration robustness, and state isolation tests"},
+            "governance": {
+                "purpose": "Governance policy, lifecycle, determinism, migration robustness, and state isolation tests"
+            },
             "guardian": {
                 "purpose": "Architectural compliance validation (Red Shield validation gate); includes quarantine manifest and negative-test fixtures",
                 "subfolders": {
-                    "fixtures": {"purpose": "Synthetic fixture agents for guardian negative tests (AST-parsed only, never imported at runtime)"},
+                    "fixtures": {
+                        "purpose": "Synthetic fixture agents for guardian negative tests (AST-parsed only, never imported at runtime)"
+                    },
                 },
                 "constitutional_rules": [
                     "Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements",
@@ -1127,7 +1209,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "Guardian tests NEVER delete files based on filename patterns",
                 ],
             },
-            "helpers": {"purpose": "Shared test utility library (assertions, filesystem builders, repo scaffolding)"},
+            "helpers": {
+                "purpose": "Shared test utility library (assertions, filesystem builders, repo scaffolding)"
+            },
             "infrastructure": {"purpose": "Infrastructure-layer verification tests"},
             "integration": {
                 "purpose": "Component interaction tests mirroring source structure",
@@ -1174,7 +1258,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "system_learning": {
                 "purpose": "All system_learning tests — higher-level functional tests plus unit mirror under unit/.",
                 "subfolders": {
-                    "integration": {"purpose": "Integration tests for system_learning signal flow and bridge components"},
+                    "integration": {
+                        "purpose": "Integration tests for system_learning signal flow and bridge components"
+                    },
                     "unit": {
                         "purpose": "Unit tests for system_learning/ source root",
                         "subfolders": {
@@ -1231,66 +1317,128 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                         "subfolders": {
                             "L0_routing": {
                                 "subfolders": {
-                                    "artifacts": [], "capacity": [], "config": [],
-                                    "context": [], "core": [], "enforcement": [],
-                                    "engines": [], "logs": [], "meta_control": [],
-                                    "optimization": [], "orchestration": [], "P1_core": [],
-                                    "policy": [], "providers": [], "reasoning": [],
-                                    "scripts": [], "seam": [], "seams": [],
-                                    "telemetry": [], "types": [], "utils": [],
+                                    "artifacts": [],
+                                    "capacity": [],
+                                    "config": [],
+                                    "context": [],
+                                    "core": [],
+                                    "enforcement": [],
+                                    "engines": [],
+                                    "logs": [],
+                                    "meta_control": [],
+                                    "optimization": [],
+                                    "orchestration": [],
+                                    "P1_core": [],
+                                    "policy": [],
+                                    "providers": [],
+                                    "reasoning": [],
+                                    "scripts": [],
+                                    "seam": [],
+                                    "seams": [],
+                                    "telemetry": [],
+                                    "types": [],
+                                    "utils": [],
                                 },
                             },
                             "L1_cognition": {
                                 "subfolders": {
-                                    "config": [], "context": [], "core": [],
-                                    "enforcement": [], "engines": [], "evaluation": [],
-                                    "knowledge": [], "memory": [], "ml_decision_support": [],
-                                    "planning": [], "reasoning": [], "retrieval": [],
+                                    "config": [],
+                                    "context": [],
+                                    "core": [],
+                                    "enforcement": [],
+                                    "engines": [],
+                                    "evaluation": [],
+                                    "knowledge": [],
+                                    "memory": [],
+                                    "ml_decision_support": [],
+                                    "planning": [],
+                                    "reasoning": [],
+                                    "retrieval": [],
                                     "telemetry": [],
                                 },
                             },
                             "L2_execution": {
                                 "subfolders": {
-                                    "config": [], "core": [], "enforcement": [],
-                                    "engines": [], "reasoning": [], "scripts": [],
-                                    "telemetry": [], "tools": [], "types": [],
-                                    "utils": [], "validators": [],
+                                    "config": [],
+                                    "core": [],
+                                    "enforcement": [],
+                                    "engines": [],
+                                    "reasoning": [],
+                                    "scripts": [],
+                                    "telemetry": [],
+                                    "tools": [],
+                                    "types": [],
+                                    "utils": [],
+                                    "validators": [],
                                 },
                             },
                             "L3_orchestration": {
                                 "subfolders": {
-                                    "config": [], "core": [], "enforcement": [],
-                                    "engines": [], "reasoning": [], "scripts": [],
-                                    "telemetry": [], "types": [], "utils": [],
+                                    "config": [],
+                                    "core": [],
+                                    "enforcement": [],
+                                    "engines": [],
+                                    "reasoning": [],
+                                    "scripts": [],
+                                    "telemetry": [],
+                                    "types": [],
+                                    "utils": [],
                                     "validators": [],
                                 },
                             },
                             "L4_state": {
                                 "subfolders": {
-                                    "config": [], "core": [], "enforcement": [],
-                                    "memory": [], "prompt_taxonomy": [], "reasoning": [],
-                                    "retrieval": [], "storage": [], "stores": [],
-                                    "types": [], "utils": [], "versioning": [],
+                                    "config": [],
+                                    "core": [],
+                                    "enforcement": [],
+                                    "memory": [],
+                                    "prompt_taxonomy": [],
+                                    "reasoning": [],
+                                    "retrieval": [],
+                                    "storage": [],
+                                    "stores": [],
+                                    "types": [],
+                                    "utils": [],
+                                    "versioning": [],
                                     "workflow_engines": [],
                                 },
                             },
                             "L5_safety": {
                                 "subfolders": {
-                                    "adaptation": [], "audit": [], "config": [],
-                                    "core": [], "core_kernel": [], "enforcement": [],
-                                    "escalation": [], "gates": [], "governance": [],
-                                    "hitl": [], "invariants": [], "reasoning": [],
-                                    "retrieval": [], "runners": [], "security": [],
-                                    "static_checks": [], "types": [], "utils": [],
+                                    "adaptation": [],
+                                    "audit": [],
+                                    "config": [],
+                                    "core": [],
+                                    "core_kernel": [],
+                                    "enforcement": [],
+                                    "escalation": [],
+                                    "gates": [],
+                                    "governance": [],
+                                    "hitl": [],
+                                    "invariants": [],
+                                    "reasoning": [],
+                                    "retrieval": [],
+                                    "runners": [],
+                                    "security": [],
+                                    "static_checks": [],
+                                    "types": [],
+                                    "utils": [],
                                     "validators": [],
                                 },
                             },
                             "L6_observability": {
                                 "subfolders": {
-                                    "dashboard": [], "enforcement": [], "engines": [],
-                                    "evaluation": [], "golden_evaluation": [], "metrics": [],
-                                    "performance": [], "reasoning": [], "telemetry": [],
-                                    "types": [], "utils": [],
+                                    "dashboard": [],
+                                    "enforcement": [],
+                                    "engines": [],
+                                    "evaluation": [],
+                                    "golden_evaluation": [],
+                                    "metrics": [],
+                                    "performance": [],
+                                    "reasoning": [],
+                                    "telemetry": [],
+                                    "types": [],
+                                    "utils": [],
                                 },
                             },
                             "_compat": [],
@@ -1525,7 +1673,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     ".migration": {"purpose": "Migration tracking artifacts"},
                     "MCP": {"purpose": "MCP server integration reports"},
                     # apps_* wildcard — any apps_* domain report subfolder is valid
-                    "apps_*": {"purpose": "apps_* domain-specific reports (wildcard: apps_lic, apps_rg, etc.)"},
+                    "apps_*": {
+                        "purpose": "apps_* domain-specific reports (wildcard: apps_lic, apps_rg, etc.)"
+                    },
                     "misc": {"purpose": "Miscellaneous reports"},
                     "plans": {"purpose": "Planning documents and evidence packs"},
                     "verification": {"purpose": "Enforcement verification artifacts"},

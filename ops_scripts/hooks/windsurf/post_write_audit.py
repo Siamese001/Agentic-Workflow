@@ -97,7 +97,13 @@ def main() -> int:
     except json.JSONDecodeError:
         return 0
 
+    if not isinstance(payload, dict):
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     file_path = tool_info.get("file_path", "")
     edits = tool_info.get("edits", [])
 

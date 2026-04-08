@@ -3,6 +3,8 @@ EXHAUSTIVE tests for pre_run_gate.py (Phase 1.1) — PP-4, PP-9.
 
 Plan requirements verified:
   - PowerShell ban (pwsh, powershell, mixed case, .exe suffix, with args, with path)
+  - powershell-as-executor with allowed script path still BLOCKED (allowlist bypass fix)
+  - python invoking allowed checker script still ALLOWED
   - Full-suite block when ADG_REPAIR_ACTIVE set
   - Full-suite allowed when ADG_REPAIR_ACTIVE not set
   - Scoped pytest allowed even when ADG_REPAIR_ACTIVE set
@@ -32,6 +34,7 @@ from ops_scripts.hooks.windsurf.pre_run_gate import check_command, main
 # ---------------------------------------------------------------------------
 # check_command unit tests
 # ---------------------------------------------------------------------------
+
 
 class TestCheckCommandPowerShellBlock:
     def test_blocks_powershell_lowercase(self):
@@ -101,6 +104,17 @@ class TestCheckCommandAllowed:
         # Script path contains 'powershell' — must not be blocked
         assert check_command("python ops_scripts/ci/check_powershell_ban.py") == 0
 
+    def test_powershell_as_executor_with_allowed_script_still_blocked(self):
+        # The allowlist must NOT exempt powershell itself as executor.
+        # Before the fix, "powershell check_powershell_ban.py" bypassed the gate.
+        assert check_command("powershell check_powershell_ban.py") == 2
+
+    def test_pwsh_as_executor_with_allowed_script_still_blocked(self):
+        assert check_command("pwsh check_powershell_ban.py") == 2
+
+    def test_powershell_executor_with_pre_run_gate_still_blocked(self):
+        assert check_command("powershell pre_run_gate.py") == 2
+
 
 class TestCheckCommandFullSuiteBlock:
     def test_blocks_full_suite_when_repair_active(self, monkeypatch):
@@ -149,6 +163,7 @@ class TestCheckCommandEdgeCases:
 # ---------------------------------------------------------------------------
 # main() integration tests
 # ---------------------------------------------------------------------------
+
 
 class TestMain:
     def _run(self, stdin_data: str, env: dict = None) -> int:

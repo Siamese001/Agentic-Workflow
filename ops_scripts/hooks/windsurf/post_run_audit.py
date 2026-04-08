@@ -34,6 +34,7 @@ def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:
     """
     try:
         import psutil
+
         try:
             proc_iter = psutil.process_iter(["pid", "cmdline", "cwd"])
         except (psutil.AccessDenied, OSError):
@@ -71,7 +72,13 @@ def main() -> int:
     except json.JSONDecodeError:
         return 0
 
+    if not isinstance(payload, dict):
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     command_line = tool_info.get("command_line", "")
     cwd = tool_info.get("cwd", "")
 

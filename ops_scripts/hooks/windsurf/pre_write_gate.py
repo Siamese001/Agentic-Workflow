@@ -56,12 +56,37 @@ def _warn(reason: str) -> None:
     print(f"[pre_write_gate] WARNING: {reason}", file=sys.stderr)
 
 
+def _extract_call_window(text: str, start: int, max_chars: int = 400) -> str:
+    """
+    Return the substring from start to the balanced closing paren of the call
+    that begins at or shortly after start.  Falls back to a fixed max_chars
+    window if parens are unbalanced (e.g. incomplete snippet).
+    """
+    depth = 0
+    limit = min(start + max_chars, len(text))
+    for i in range(start, limit):
+        ch = text[i]
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth == 0:
+                return text[start : i + 1]
+    return text[start:limit]
+
+
 def scan_antipatterns(new_string: str) -> list[str]:
     """Return list of violation messages found in new_string."""
     violations = []
 
     for line in new_string.splitlines():
         stripped = line.strip()
+
+        # Skip comment lines — anti-pattern regexes must not fire on comments
+        # to avoid false positives when code is documented with examples.
+        if stripped.startswith("#"):
+            continue
+
         if _BARE_EXCEPT_RE.match(line):
             violations.append(
                 "Bare 'except:' found — use 'except SpecificError:' (Column 5 Precise Exceptions).",
@@ -77,14 +102,12 @@ def scan_antipatterns(new_string: str) -> list[str]:
             )
 
     # Enforce timeout= on every subprocess call site (constitutional §14).
-    # Scan the full new_string block to handle multi-line calls.
+    # Use paren-depth counting to find the correct closing paren, so that nested
+    # calls (e.g. subprocess.run(shlex.split(cmd), timeout=5)) are not falsely
+    # flagged as missing timeout.
     for match in _SUBPROCESS_CALL_RE.finditer(new_string):
         window_start = match.start()
-        # Find the closing paren of this call — scan forward up to 400 chars
-        window_end = new_string.find(")", window_start)
-        if window_end == -1:
-            window_end = min(window_start + 400, len(new_string))
-        window = new_string[window_start : window_end + 1]
+        window = _extract_call_window(new_string, window_start)
         if not _TIMEOUT_RE.search(window):
             violations.append(
                 f"subprocess.{match.group(1)}() missing timeout= — "
@@ -107,8 +130,10 @@ def reconstruct_projected_content(file_path: str, edits: list[dict]) -> str | No
         content = ""
 
     for edit in edits:
-        old = edit.get("old_string", "")
-        new = edit.get("new_string", "")
+        if not isinstance(edit, dict):
+            continue
+        old = edit.get("old_string", "") or ""
+        new = edit.get("new_string", "") or ""
         if old:
             content = content.replace(old, new, 1)
         else:
@@ -186,9 +211,24 @@ def main() -> int:
             return 2
         return 0
 
+    if not isinstance(payload, dict):
+        if FAIL_POLICY == "closed":
+            print("[pre_write_gate] BLOCKED: payload is not a JSON object.", file=sys.stderr)
+            return 2
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     file_path = tool_info.get("file_path", "")
+    if not isinstance(file_path, str):
+        file_path = ""
+
+    # Normalise edits: null or non-list → treat as empty list
     edits = tool_info.get("edits", [])
+    if not isinstance(edits, list):
+        edits = []
 
     # Payload-level file type check (covers cases where argv is not provided).
     if not file_path.endswith(".py") and not file_path.endswith(MCP_CONFIG_SUFFIX):
@@ -197,7 +237,11 @@ def main() -> int:
     violations = []
 
     for edit in edits:
+        if not isinstance(edit, dict):
+            continue
         new_string = edit.get("new_string", "")
+        if not isinstance(new_string, str):
+            continue
         violations.extend(scan_antipatterns(new_string))
 
     violations.extend(check_python_syntax(file_path, edits))

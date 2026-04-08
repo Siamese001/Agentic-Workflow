@@ -198,6 +198,7 @@ territories:
       types: {depth: 2, purpose: "Framework types"}
       gateway: {depth: 2, purpose: "Gateway implementations"}
       interfaces: {depth: 2, purpose: "Interface definitions"}
+      L_CONTRACTS: {depth: 2, purpose: "Layer contracts and cross-layer enforcement contracts"}
       tracing: {depth: 2, purpose: "Tracing infrastructure"}
       prompt_governance: {depth: 2, purpose: "Prompt governance"}
       cache: {depth: 2, purpose: "Caching infrastructure"}
@@ -208,7 +209,23 @@ territories:
       cloud_native: {depth: 2, purpose: "Cloud-native patterns"}
       case_memory: {depth: 2, purpose: "Case memory infrastructure"}
       _compat: {depth: 2, purpose: "Compatibility shims"}
-      adg: {depth: 2, purpose: "ADG integration"}
+      adg:
+        depth: 2
+        purpose: "ADG integration — Architecture Dependency Graph"
+        subfolders:
+          adapters: {depth: 2, purpose: "ADG adapter modules for memory and MCP integration"}
+          analysis: {depth: 2, purpose: "ADG analysis modules (confidence, impact, ownership, snapshots)"}
+          applications: {depth: 2, purpose: "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)"}
+          artifact: {depth: 2, purpose: "ADG artifact generation and serialization (SQLite, JSON, split planes)"}
+          ci: {depth: 2, purpose: "CI integration and invariant checks"}
+          client: {depth: 2, purpose: "MCP client for ADG graph operations"}
+          contracts: {depth: 2, purpose: "ADG contract definitions and protocol interfaces"}
+          extraction: {depth: 2, purpose: "Static AST-based scanner and edge extraction"}
+          identity: {depth: 2, purpose: "Entity identity resolution and canonicalization"}
+          precision: {depth: 2, purpose: "Precision scoring and semantic enrichment"}
+          processing: {depth: 2, purpose: "ADG processing pipelines and batch operations"}
+          runtime: {depth: 2, purpose: "ADG runtime behavioral indexing and live analysis"}
+          _compat: {depth: 2, purpose: "Backward-compatibility shims for ADG modules"}
       agents: {depth: 2, purpose: "Agent registry"}
       core: {depth: 2, purpose: "Core utilities"}
 
@@ -217,6 +234,7 @@ territories:
     purpose: "Evaluation application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
+      data: {depth: 2, purpose: "Evaluation datasets and golden references"}
       engines: {depth: 2, purpose: "Evaluation engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
       services: {depth: 2, purpose: "Evaluation services"}
@@ -304,6 +322,7 @@ territories:
     purpose: "RFP application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
+      data: {depth: 2, purpose: "RFP datasets and references"}
       engines: {depth: 2, purpose: "Proposal engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
       services: {depth: 2, purpose: "Proposal services"}
@@ -325,7 +344,6 @@ territories:
       enforcement: {depth: 2, purpose: "Guardrails"}
       engines: {depth: 2, purpose: "Generation engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
-      services: {depth: 2, purpose: "Generation services"}
       validators: {depth: 2, purpose: "Validation logic"}
       types: {depth: 2, purpose: "Data models"}
       integrations: {depth: 2, purpose: "External integrations"}
@@ -340,11 +358,12 @@ territories:
     purpose: "Shared application components"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
-      data_adapters: {depth: 2, purpose: "Data adapters"}
-      enforcement: {depth: 2, purpose: "Guardrails"}
-      mixins: {depth: 2, purpose: "Shared mixins"}
-      prompts: {depth: 2, purpose: "Prompt templates"}
-      reasoning: {depth: 2, purpose: "Shared reasoning"}
+      data: {depth: 2, purpose: "Shared datasets and references"}
+      data_adapters: {depth: 2, purpose: "Data adapters and transformation utilities"}
+      enforcement: {depth: 2, purpose: "Guardrails and validation"}
+      mixins: {depth: 2, purpose: "Shared mixins and composition helpers"}
+      prompts: {depth: 2, purpose: "Prompt templates and libraries"}
+      reasoning: {depth: 2, purpose: "Shared reasoning components"}
       services: {depth: 2, purpose: "Shared services"}
       spine: {depth: 2, purpose: "Spine adapters"}
       tests: {depth: 2, purpose: "Test suite"}
@@ -352,6 +371,40 @@ territories:
       utils: {depth: 2, purpose: "Shared utilities"}
       validators: {depth: 2, purpose: "Shared validators"}
       scripts: {depth: 2, purpose: "Utility scripts"}
+
+  apps_research:
+    depth: 2
+    purpose: "Research application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Research engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+      services: {depth: 2, purpose: "Research services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      spine: {depth: 2, purpose: "Spine adapters"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
+
+  apps_underwriting_ai:
+    depth: 2
+    purpose: "Underwriting AI application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Underwriting engines"}
+      examples: {depth: 2, purpose: "Sample underwriting requests and decisions"}
+      ingestion: {depth: 2, purpose: "Document ingestion and processing"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      parsers: {depth: 2, purpose: "Document parsers and extractors"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+      tests: {depth: 2, purpose: "Test suite"}
+      types: {depth: 2, purpose: "Data models"}
+      validators: {depth: 2, purpose: "Validation logic"}
 
   tests:
     depth: 2
@@ -382,74 +435,52 @@ territories:
     depth: 2
     purpose: "Meta-learning and system improvement"
     subfolders:
-      adapters: {depth: 2, purpose: "Learning adapters"}
-      arbitration: {depth: 2, purpose: "Arbitration engines"}
-      confidence: {depth: 2, purpose: "Confidence scoring"}
-      config: {depth: 2, purpose: "Configuration"}
-      constraints: {depth: 2, purpose: "Learning constraints"}
-      correlation: {depth: 2, purpose: "Correlation analysis"}
-      embedding: {depth: 2, purpose: "Embedding management"}
-      enforcement: {depth: 2, purpose: "Learning enforcement"}
-      engines: {depth: 2, purpose: "Learning engines"}
-      fingerprinting: {depth: 2, purpose: "Fingerprinting"}
-      golden: {depth: 2, purpose: "Golden state"}
-      invariants: {depth: 2, purpose: "Learning invariants"}
-      logs: {depth: 2, purpose: "Learning logs"}
-      memory: {depth: 2, purpose: "Learning memory"}
-      meta_learning: {depth: 2, purpose: "Meta-learning core"}
-      ml_integration: {depth: 2, purpose: "ML integration"}
-      monitoring: {depth: 2, purpose: "Learning monitoring"}
-      output: {depth: 2, purpose: "Learning output"}
-      pipelines: {depth: 2, purpose: "Learning pipelines"}
-      policy: {depth: 2, purpose: "Learning policies"}
-      ports: {depth: 2, purpose: "Learning ports"}
-      provenance: {depth: 2, purpose: "Learning provenance"}
-      raw: {depth: 2, purpose: "Learning raw"}
-      runtime: {depth: 2, purpose: "Runtime learning"}
-      runtime_adg: {depth: 2, purpose: "Runtime ADG"}
-      scripts: {depth: 2, purpose: "Learning scripts"}
-      snapshots: {depth: 2, purpose: "Learning snapshots"}
-      state: {depth: 2, purpose: "Learning state"}
-      stores: {depth: 2, purpose: "Learning stores"}
-      telemetry: {depth: 2, purpose: "Learning telemetry"}
-      types: {depth: 2, purpose: "Learning types"}
-      validators: {depth: 2, purpose: "Learning validators"}
+      adapters: {depth: 2, purpose: "Per-layer adaptation modules (l0_–l5_ prefixes are intentional)"}
+      arbitration: {depth: 2, purpose: "Conflict resolution and policy arbitration for learning proposals"}
+      confidence: {depth: 2, purpose: "Confidence scoring and calibration"}
+      config: {depth: 2, purpose: "Learning system configuration"}
+      constraints: {depth: 2, purpose: "Learning constraints and guardrails"}
+      correlation: {depth: 2, purpose: "Cross-signal correlation and pattern matching"}
+      embedding: {depth: 2, purpose: "Embedding management and vector operations"}
+      enforcement: {depth: 2, purpose: "Policy enforcement for learning outputs"}
+      engines: {depth: 2, purpose: "Learning engine implementations (l0_–l5_ prefixes are intentional)"}
+      fingerprinting: {depth: 2, purpose: "Behavioral fingerprinting and change detection"}
+      golden: {depth: 2, purpose: "Golden datasets and benchmark references"}
+      invariants: {depth: 2, purpose: "Learning invariants and consistency checks"}
+      logs: {depth: 2, purpose: "Learning system logs and audit trails"}
+      memory: {depth: 2, purpose: "Learning memory and state persistence"}
+      meta_learning: {depth: 2, purpose: "Meta-learning core and optimization loops"}
+      ml_integration: {depth: 2, purpose: "Machine learning framework integrations"}
+      monitoring: {depth: 2, purpose: "Learning system monitoring and metrics"}
+      output: {depth: 2, purpose: "Learning output generation and results"}
+      pipelines: {depth: 2, purpose: "Training and inference pipelines"}
+      policy: {depth: 2, purpose: "Learning policies and governance rules"}
+      ports: {depth: 2, purpose: "Integration ports for external learning systems"}
+      provenance: {depth: 2, purpose: "Learning provenance and lineage tracking"}
+      raw: {depth: 2, purpose: "Raw learning data and inputs"}
+      runtime: {depth: 2, purpose: "Runtime state for active learning loops"}
+      runtime_adg: {depth: 2, purpose: "Runtime ADG integration and live analysis"}
+      scripts: {depth: 2, purpose: "Learning system operational scripts"}
+      snapshots: {depth: 2, purpose: "Periodic state snapshots for rollback and replay"}
+      state: {depth: 2, purpose: "Learning state management and transitions"}
+      stores: {depth: 2, purpose: "Persistent learning artifact stores"}
+      telemetry: {depth: 2, purpose: "Learning telemetry and performance data"}
+      types: {depth: 2, purpose: "Domain types and data contracts"}
+      validators: {depth: 2, purpose: "Validation logic for learning artifacts"}
 
   tools:
     depth: 1
     purpose: "Development and operational tools"
     volatile: true
     subfolders:
-      adg: {depth: 2, purpose: "ADG tools"}
-      mcp: {depth: 2, purpose: "MCP servers"}
-      analysis: {depth: 2, purpose: "Analysis tools"}
-      archive: {depth: 2, purpose: "Archive tools"}
-      adg_backups: {depth: 2, purpose: "ADG backups"}
-      ci: {depth: 2, purpose: "CI tools"}
-      cleanup: {depth: 2, purpose: "Cleanup tools"}
-      debug: {depth: 2, purpose: "Debug tools"}
-      diagnose: {depth: 2, purpose: "Diagnostic tools"}
-      evidence: {depth: 2, purpose: "Evidence collection"}
-      fix: {depth: 2, purpose: "Fix tools"}
-      generate: {depth: 2, purpose: "Generation tools"}
-      governance: {depth: 2, purpose: "Governance tools"}
-      guardian: {depth: 2, purpose: "Guardian tools"}
-      ingestion: {depth: 2, purpose: "Ingestion tools"}
-      learning: {depth: 2, purpose: "Learning tools"}
-      manifests: {depth: 2, purpose: "Manifests"}
-      memory: {depth: 2, purpose: "Memory tools"}
-      migrate: {depth: 2, purpose: "Migration tools"}
-      monitoring: {depth: 2, purpose: "Monitoring tools"}
-      otl: {depth: 2, purpose: "OTL tools"}
-      profiling: {depth: 2, purpose: "Profiling tools"}
-      repair: {depth: 2, purpose: "Repair tools"}
-      scripts: {depth: 2, purpose: "Scripts"}
-      test_enforcement: {depth: 2, purpose: "Test enforcement"}
-      testing: {depth: 2, purpose: "Testing tools"}
-      utils: {depth: 2, purpose: "Shared utilities (token estimation, workflows)"}
-      verification: {depth: 2, purpose: "Verification tools"}
-      waves: {depth: 2, purpose: "Wave tools"}
-      windsurf: {depth: 2, purpose: "Windsurf tools"}
+      adg: {depth: 2, purpose: "ADG tools and analysis"}
+      archive: {depth: 2, purpose: "Archived and superseded tool scripts"}
+      generate: {depth: 2, purpose: "Code and report generation scripts"}
+      guardian: {depth: 2, purpose: "Guardian exemption and anti-pattern sweep tools"}
+      mcp: {depth: 2, purpose: "MCP server wrappers, fixes, and configuration tools"}
+      memory: {depth: 2, purpose: "ADG memory server and persistence tools"}
+      otel: {depth: 2, purpose: "OpenTelemetry integration and tracing tools"}
+      utils: {depth: 2, purpose: "Shared utilities and helper functions"}
 
   ops_scripts:
     depth: 2
@@ -462,9 +493,7 @@ territories:
       general: {depth: 3, purpose: "General scripts"}
       governance: {depth: 3, purpose: "Governance scripts"}
       hooks: {depth: 3, purpose: "Git hooks"}
-      incident: {depth: 3, purpose: "Incident response"}
       maintenance: {depth: 3, purpose: "Maintenance scripts"}
-      policy: {depth: 3, purpose: "Policy scripts"}
       review: {depth: 3, purpose: "Review scripts"}
       root_scripts: {depth: 3, purpose: "Root-level scripts"}
       security: {depth: 3, purpose: "Security scripts"}

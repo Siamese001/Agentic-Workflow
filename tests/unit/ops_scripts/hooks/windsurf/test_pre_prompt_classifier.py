@@ -6,7 +6,8 @@ Plan requirements verified:
   - T2 keywords: fix+update, implement+create, multi-keyword combos
   - T1 keywords: typo, docstring, trivial, single line
   - T0 keywords: explain, what is, how does, review
-  - Default T1 for unrecognized prompt
+  - Short prompt (≤4 words, zero keyword hits) → T2 (continuation guard)
+  - Long unrecognized prompt (>4 words) → T1
   - plan_exists check for T2/T3
   - ADG health red → BLOCKED exit 2 for T2/T3
   - Redis down → BLOCKED exit 2 for T2/T3
@@ -43,6 +44,7 @@ from ops_scripts.hooks.windsurf.pre_prompt_classifier import (
 # ---------------------------------------------------------------------------
 # classify_tier
 # ---------------------------------------------------------------------------
+
 
 class TestClassifyTier:
     # T3 triggers
@@ -119,11 +121,41 @@ class TestClassifyTier:
         assert classify_tier("summarize the changes in this commit") == "T0"
 
     # Defaults
-    def test_unrecognized_defaults_to_t1(self):
-        assert classify_tier("zork zork zork") == "T1"
+    def test_unrecognized_long_defaults_to_t1(self):
+        assert classify_tier("zork zork zork zork zork") == "T1"
 
-    def test_empty_defaults_to_t1(self):
-        assert classify_tier("") == "T1"
+    def test_empty_defaults_to_t2(self):
+        assert classify_tier("") == "T2"
+
+    def test_single_word_no_keywords_is_t2(self):
+        assert classify_tier("yes") == "T2"
+
+    def test_two_word_no_keywords_is_t2(self):
+        assert classify_tier("do it") == "T2"
+
+    def test_three_word_no_keywords_is_t2(self):
+        assert classify_tier("zork zork zork") == "T2"
+
+    def test_four_word_no_keywords_is_t2(self):
+        assert classify_tier("proceed with the plan") == "T2"
+
+    def test_five_word_no_keywords_defaults_to_t1(self):
+        assert classify_tier("zork zork zork zork zork") == "T1"
+
+    def test_continuation_yes_is_t2(self):
+        assert classify_tier("yes") == "T2"
+
+    def test_continuation_proceed_is_t2(self):
+        assert classify_tier("proceed") == "T2"
+
+    def test_continuation_implement_it_is_t2(self):
+        assert classify_tier("implement it") == "T2"
+
+    def test_short_prompt_with_t1_keyword_still_t1(self):
+        assert classify_tier("fix typo") == "T1"
+
+    def test_short_prompt_with_t0_keyword_still_t0(self):
+        assert classify_tier("explain it") == "T0"
 
     def test_single_t2_keyword_alone_is_t2(self):
         # Single T2 keyword with no T3 and no T1/T0 → T2
@@ -137,6 +169,7 @@ class TestClassifyTier:
 # ---------------------------------------------------------------------------
 # check_plan_exists
 # ---------------------------------------------------------------------------
+
 
 class TestCheckPlanExists:
     def test_t0_always_true(self):
@@ -184,9 +217,11 @@ class TestCheckPlanExists:
 # check_redis_down
 # ---------------------------------------------------------------------------
 
+
 class TestCheckRedisDown:
     def test_connection_refused_returns_true(self):
         import socket
+
         with patch("socket.create_connection", side_effect=ConnectionRefusedError):
             assert check_redis_down() is True
 
@@ -195,16 +230,19 @@ class TestCheckRedisDown:
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
         mock_conn.__exit__ = MagicMock(return_value=False)
         import socket
+
         with patch("socket.create_connection", return_value=mock_conn):
             assert check_redis_down() is False
 
     def test_os_error_fails_open(self):
         import socket
+
         with patch("socket.create_connection", side_effect=OSError("Network unreachable")):
             assert check_redis_down() is False
 
     def test_timeout_os_error_fails_open(self):
         import socket
+
         with patch("socket.create_connection", side_effect=TimeoutError("timed out")):
             assert check_redis_down() is False
 
@@ -213,9 +251,9 @@ class TestCheckRedisDown:
 # main() integration
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
-    def _run(self, payload: dict, adg_red: bool = False, redis_down: bool = False,
-             repo_root=None) -> int:
+    def _run(self, payload: dict, adg_red: bool = False, redis_down: bool = False, repo_root=None) -> int:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
             with patch(

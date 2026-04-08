@@ -119,6 +119,15 @@ def classify_tier(prompt: str) -> str:
         return "T0"
     if t2_hits >= 1:
         return "T2"
+
+    # Short prompts with zero keyword hits are most likely continuation of
+    # ongoing T2/T3 work (e.g. "yes", "proceed", "do it", "implement it").
+    # Defaulting to T1 silently bypasses the ADG health gate and SR mandate
+    # for all follow-up turns. Conservative default: treat as T2.
+    word_count = len(lower.split())
+    if word_count <= 4:
+        return "T2"
+
     return "T1"
 
 
@@ -199,7 +208,13 @@ def main() -> int:
     except json.JSONDecodeError:
         return 0
 
+    if not isinstance(payload, dict):
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     prompt = tool_info.get("user_prompt", "") or tool_info.get("prompt", "")
 
     if not prompt:

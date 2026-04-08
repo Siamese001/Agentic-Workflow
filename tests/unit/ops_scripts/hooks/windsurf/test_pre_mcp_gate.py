@@ -2,7 +2,10 @@
 EXHAUSTIVE tests for pre_mcp_gate.py (Phase 1.3) — PP-1, PP-10.
 
 Plan requirements verified:
-  - Non-ADG MCPs: always exit 0 (fail-open)
+  - Filesystem MCP write tools (write_file, edit_file): exit 2 (BLOCKED)
+  - Filesystem MCP read tools (read_text_file, list_directory, etc.): exit 0 (allowed)
+  - Filesystem MCP with no tool name: exit 0 (allowed — read assumed)
+  - Non-ADG, non-filesystem MCPs: always exit 0 (fail-open)
   - ADG MCP + recovery tools: always exit 0 (whitelist)
   - ADG MCP + SQLite WAL lock: exit 2 (block)
   - ADG MCP + SQLite journal lock: exit 2 (block)
@@ -33,9 +36,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.pre_mcp_gate import (
     ADG_RECOVERY_TOOLS,
+    FILESYSTEM_WRITE_TOOLS,
     _get_latest_snapshot_age_seconds,
     _is_sqlite_locked,
     check_adg_gate,
+    check_filesystem_write_gate,
     main,
 )
 
@@ -43,6 +48,7 @@ from ops_scripts.hooks.windsurf.pre_mcp_gate import (
 # ---------------------------------------------------------------------------
 # _is_sqlite_locked
 # ---------------------------------------------------------------------------
+
 
 class TestIsSqliteLocked:
     def test_no_artifacts_dir_returns_false(self, tmp_path):
@@ -100,6 +106,7 @@ class TestIsSqliteLocked:
 # _get_latest_snapshot_age_seconds
 # ---------------------------------------------------------------------------
 
+
 class TestGetLatestSnapshotAgeSeconds:
     def test_no_artifacts_dir_returns_none(self, tmp_path):
         assert _get_latest_snapshot_age_seconds(tmp_path) is None
@@ -144,6 +151,7 @@ class TestGetLatestSnapshotAgeSeconds:
 # ---------------------------------------------------------------------------
 # check_adg_gate
 # ---------------------------------------------------------------------------
+
 
 class TestCheckAdgGate:
     def test_fresh_snapshot_no_lock_allowed(self, tmp_path):
@@ -207,6 +215,7 @@ class TestCheckAdgGate:
 # main() integration
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
     def _run(self, payload: dict, repo_root=None) -> int:
         raw = json.dumps(payload)
@@ -216,10 +225,23 @@ class TestMain:
                     return main()
             return main()
 
-    # Non-ADG MCPs — always allowed
-    def test_filesystem_mcp_allowed(self):
+    # Filesystem MCP — read tools allowed, write tools blocked
+    def test_filesystem_mcp_no_tool_allowed(self):
         assert self._run({"tool_info": {"mcp_server_name": "filesystem"}}) == 0
 
+    def test_filesystem_mcp_read_tool_allowed(self):
+        payload = {"tool_info": {"mcp_server_name": "filesystem", "mcp_tool_name": "read_text_file"}}
+        assert self._run(payload) == 0
+
+    def test_filesystem_mcp_write_file_blocked(self):
+        payload = {"tool_info": {"mcp_server_name": "filesystem", "mcp_tool_name": "write_file"}}
+        assert self._run(payload) == 2
+
+    def test_filesystem_mcp_edit_file_blocked(self):
+        payload = {"tool_info": {"mcp_server_name": "filesystem", "mcp_tool_name": "edit_file"}}
+        assert self._run(payload) == 2
+
+    # Non-ADG, non-filesystem MCPs — always allowed
     def test_memory_mcp_allowed(self):
         assert self._run({"tool_info": {"mcp_server_name": "memory"}}) == 0
 
@@ -295,3 +317,58 @@ class TestMain:
     def test_whitespace_only_stdin_fail_open(self):
         with patch("sys.stdin", StringIO("   \n")):
             assert main() == 0
+
+
+# ---------------------------------------------------------------------------
+# check_filesystem_write_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckFilesystemWriteGate:
+    def test_write_file_blocked(self):
+        assert check_filesystem_write_gate("write_file") == 2
+
+    def test_edit_file_blocked(self):
+        assert check_filesystem_write_gate("edit_file") == 2
+
+    def test_all_write_tools_blocked(self):
+        for tool in FILESYSTEM_WRITE_TOOLS:
+            assert check_filesystem_write_gate(tool) == 2, f"Write tool '{tool}' must be blocked"
+
+    def test_read_text_file_allowed(self):
+        assert check_filesystem_write_gate("read_text_file") == 0
+
+    def test_list_directory_allowed(self):
+        assert check_filesystem_write_gate("list_directory") == 0
+
+    def test_directory_tree_allowed(self):
+        assert check_filesystem_write_gate("directory_tree") == 0
+
+    def test_search_files_allowed(self):
+        assert check_filesystem_write_gate("search_files") == 0
+
+    def test_get_file_info_allowed(self):
+        assert check_filesystem_write_gate("get_file_info") == 0
+
+    def test_read_multiple_files_allowed(self):
+        assert check_filesystem_write_gate("read_multiple_files") == 0
+
+    def test_create_directory_allowed(self):
+        assert check_filesystem_write_gate("create_directory") == 0
+
+    def test_move_file_allowed(self):
+        assert check_filesystem_write_gate("move_file") == 0
+
+    def test_empty_tool_name_allowed(self):
+        assert check_filesystem_write_gate("") == 0
+
+    def test_unknown_tool_name_allowed(self):
+        assert check_filesystem_write_gate("some_future_tool") == 0
+
+    def test_write_file_uppercase_not_blocked(self):
+        assert check_filesystem_write_gate("WRITE_FILE") == 0
+
+    def test_block_message_mentions_native_tools(self, capsys):
+        check_filesystem_write_gate("write_file")
+        captured = capsys.readouterr()
+        assert "write_to_file" in captured.err or "edit" in captured.err

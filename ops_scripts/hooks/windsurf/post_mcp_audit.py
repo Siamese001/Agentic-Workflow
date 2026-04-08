@@ -45,7 +45,13 @@ def main() -> int:
     except json.JSONDecodeError:
         return 0
 
+    if not isinstance(payload, dict):
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     server_name = tool_info.get("mcp_server_name", "")
     tool_name = tool_info.get("mcp_tool_name", "")
     duration_ms = tool_info.get("duration_ms", None)

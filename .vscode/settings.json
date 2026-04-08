@@ -11,17 +11,14 @@
     "python.testing.filter": "",
     "python.analysis.exclude": [
         "**/archives/**",
-        "**/archives/healing_backups/**",
         "**/.healing_backups/**",
         "**/artifacts/**",
-        "**/artifacts/adg/**/*.sqlite",
         "**/__pycache__/**",
         "**/.pytest_cache/**",
         "**/.mypy_cache/**"
     ],
     "python.analysis.ignore": [
         "**/archives/**",
-        "**/archives/healing_backups/**",
         "**/.healing_backups/**",
         "**/artifacts/**"
     ],
@@ -73,6 +70,9 @@
         "**/archives/**": true,
         "**/.healing_backups/**": true,
         "**/artifacts/**": true,
+        "**/data/golden_state/**": true,
+        "**/__pycache__/**": true,
+        "**/*.pyc": true,
         "**/docs/**/*.png": true,
         "**/docs/**/*.jpg": true,
         "**/docs/**/*.jpeg": true,
@@ -84,17 +84,19 @@
         "**/archives/**": true,
         "**/.healing_backups/**": true,
         "**/artifacts/**": true,
-        "**/docs/**/*.png": true,
-        "**/docs/**/*.jpg": true,
-        "**/docs/**/*.jpeg": true,
-        "**/docs/**/*.gif": true,
-        "**/docs/**/*.svg": true,
-        "**/docs/**/*.pdf": true
+        "**/data/golden_state/**": true,
+        "**/__pycache__/**": true,
+        "**/.pytest_cache/**": true,
+        "**/.mypy_cache/**": true,
+        "**/.ruff_cache/**": true
     },
     "search.exclude": {
         "**/archives/**": true,
         "**/.healing_backups/**": true,
         "**/artifacts/**": true,
+        "**/data/golden_state/**": true,
+        "**/__pycache__/**": true,
+        "**/*.pyc": true,
         "**/docs/**/*.png": true,
         "**/docs/**/*.jpg": true,
         "**/docs/**/*.jpeg": true,
