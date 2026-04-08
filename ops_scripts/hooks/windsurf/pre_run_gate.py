@@ -3,8 +3,14 @@
 pre_run_gate.py — Windsurf pre_run_command hard gate (Phase 1.1).
 
 Reads JSON payload from stdin. Blocks (exit 2) on:
-  - PowerShell commands (powershell, pwsh — case-insensitive)
+  - PowerShell commands (powershell, pwsh — case-insensitive as executable token)
   - Full test-suite run during ADG repair (ADG_REPAIR_ACTIVE env var)
+
+SSOT for PowerShell ban enforcement (2026-04-08):
+  Pre-commit T7.8 file scanner (check_powershell_ban.py) was archived because
+  retroactive file scanning caused 7,244 false positives. This hook is the
+  single enforcement point — blocks Cascade from running pwsh/powershell at
+  execution time, which is where the actual hang risk exists.
 
 Fail policy: CLOSED — malformed/missing JSON → exit 2 with diagnostic.
 Zero hardcoded paths.

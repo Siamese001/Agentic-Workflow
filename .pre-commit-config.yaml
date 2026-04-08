@@ -298,17 +298,11 @@ repos:
         require_serial: true
         files: ^\.windsurf/
 
-      # -- T7.8: PowerShell Usage Ban (Constitutional §0) ---------------------------
-      # Blocks commits if staged Python files use PowerShell for shell commands.
-      # Use Python subprocess or direct Python file operations instead.
-      - id: powershell-ban-gate
-        name: "T7.8: PowerShell Usage Ban (Constitutional §0)"
-        entry: py ops_scripts/ci/check_powershell_ban.py
-        language: system
-        pass_filenames: true
-        always_run: true
-        require_serial: true
-        types: [python]
+      # T7.8 (powershell-ban-gate) REMOVED 2026-04-08:
+      # Retroactive file scanning was redundant — pre_run_gate.py (hooks.json)
+      # enforces the ban at execution time. File scanner caused 7,244 false positives
+      # and the UTF-8 RCA failure loop. SSOT for PS ban = pre_run_gate.py only.
+      # Archived to: tools/archive/ops_scripts_ci_deprecated/check_powershell_ban.py
 
       # -- T7.9: Grep-Ban Enforcement (Constitutional §2) ---------------------------
       # Blocks commits if staged Python files use grep/rg as ADG query substitutes.
