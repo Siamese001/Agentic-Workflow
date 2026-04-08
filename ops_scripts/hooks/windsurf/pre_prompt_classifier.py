@@ -8,8 +8,8 @@ Reads JSON payload from stdin. Payload field:
 Classifies the prompt as T0/T1/T2/T3 based on keyword heuristics and writes
 tier tag + any warnings to stderr for Cascade context seeding.
 
-Exits 0 for T0/T1. Exits 2 for T2/T3 when ADG health is absent/stale (hard gate).
-Fail policy: OPEN for infrastructure errors, CLOSED for T2/T3 with red ADG.
+Exits 0 for T0/T1. Exits 2 (BLOCK) for T2/T3 when ADG health is red (hard gate).
+Fail policy: OPEN for infrastructure errors (probe missing/timeout), CLOSED for T2/T3 with confirmed red ADG.
 Zero hardcoded paths.
 """
 
@@ -184,12 +184,12 @@ def main() -> int:
             )
         if check_adg_health_red(REPO_ROOT):
             print(
-                f"[pre_prompt_classifier] WARNING: {tier} prompt detected but adg_sqlite MCP is red. "
-                "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
+                f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but adg_sqlite MCP is red. "
+                "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13). "
+                "ADG + Redis health check is MANDATORY before any T2/T3 refactoring.",
                 file=sys.stderr,
             )
-            # Advisory only — classifier never blocks (plan Phase 1.4, H-6 policy).
-            # Hard ADG health enforcement lives in pre_mcp_gate.py.
+            return 2
 
     return 0
 
