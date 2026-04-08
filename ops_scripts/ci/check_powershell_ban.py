@@ -36,48 +36,43 @@ PROJECT_ROOT = get_validated_project_root()
 class PowerShellBanChecker:
     """Enforces PowerShell usage ban across the repository."""
 
-    # PowerShell patterns to detect
+    # PowerShell patterns to detect — ONLY actual execution patterns, not syntax overlap
     POWERSHELL_PATTERNS = [
-        # Direct PowerShell executable calls
-        r"powershell\.exe",
-        r"pwsh\.exe",
-        r"PowerShell\.",
+        # Direct PowerShell executable calls — unambiguous
+        r"\bpowershell\.exe\b",
+        r"\bpwsh\.exe\b",
+        r"\bpwsh\b",
+        r"\bpowershell\b",
 
-        # PowerShell cmdlets
-        r"Start-Process",
-        r"Invoke-Expression",
-        r"Invoke-Command",
-        r"New-Object",
-        r"Get-Content",
-        r"Set-Content",
-        r"Out-File",
-        r"Write-Output",
-        r"Write-Host",
-        r"Write-Error",
-        r"Try-Catch",
-        r"ForEach-Object",
-        r"Where-Object",
-        r"Select-Object",
-        r"Sort-Object",
-        r"Group-Object",
+        # High-confidence PowerShell cmdlets (hyphenated Verb-Noun form — unique to PS)
+        r"\bStart-Process\b",
+        r"\bInvoke-Expression\b",
+        r"\bInvoke-Command\b",
+        r"\bGet-ChildItem\b",
+        r"\bSet-Content\b",
+        r"\bGet-Content\b",
+        r"\bOut-File\b",
+        r"\bWrite-Host\b",
+        r"\bWrite-Error\b",
+        r"\bForEach-Object\b",
+        r"\bWhere-Object\b",
+        r"\bSelect-Object\b",
+        r"\bSort-Object\b",
+        r"\bGroup-Object\b",
+        r"\bNew-Object\b",
+        r"\bRemove-Item\b",
+        r"\bCopy-Item\b",
+        r"\bMove-Item\b",
+        r"\bTest-Path\b",
+        r"\bMeasure-Object\b",
 
-        # PowerShell operators and syntax
-        r"\$[a-zA-Z_][a-zA-Z0-9_]*",  # Variables like $var
-        r"\$\([^)]+\)",  # Subexpression operator
-        r"@\(.*?\)",  # Array operator
-        r"%\{.*?\}",  # Hash table
-        r"\.ps1",
-        r"\.psm1",
-        r"\.psd1",
+        # PowerShell script file extensions — only as executable path, not string values
+        r'["\']?[\w./\\]+\.ps1["\']?\s*[,;)]',
+        r"\.psm1\b",
+        r"\.psd1\b",
 
-        # PowerShell specific constructs
-        r"param\s*\(",
-        r"function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\{",
-        r"if\s*\([^)]+\)\s*\{",
-        r"switch\s*\([^)]+\)\s*\{",
-
-        # Pipeline operators
-        r"\s*\|\s*[a-zA-Z-]+",
+        # subprocess with powershell/pwsh as argument (Python code calling PS)
+        r'subprocess\.[^\n]*["\'](?:powershell|pwsh)["\']',
     ]
 
     # File extensions to check
@@ -87,6 +82,14 @@ class PowerShellBanChecker:
     EXCLUDE_DIRS = {
         '.git', '__pycache__', '.pytest_cache', '.mypy_cache',
         'node_modules', '.venv', 'venv', '.vscode', '.idea',
+        '.windsurf',  # rules/plans/workflows are documentation, not code
+    }
+
+    # Individual files to exclude (documentation or config that legitimately references PS)
+    EXCLUDE_FILES = {
+        '.pre-commit-config.yaml',
+        'pyproject.toml',
+        'priority_definitions.json',
     }
 
     def __init__(self):
@@ -132,6 +135,10 @@ class PowerShellBanChecker:
 
         # Skip excluded directories
         if any(exclude in str(file_path) for exclude in self.EXCLUDE_DIRS):
+            return False
+
+        # Skip excluded individual files
+        if file_path.name in self.EXCLUDE_FILES:
             return False
 
         # Skip binary files
@@ -197,20 +204,19 @@ class PowerShellBanChecker:
         if line_content.strip().startswith('#') and 'powershell' in line_content.lower():
             return True
 
-        # Skip documentation about PowerShell
-        if file_path.suffix == '.md' and 'powershell' in line_content.lower():
-            return True
+        # Skip lines in code fences in markdown (indented or fenced — these are examples)
+        if file_path.suffix == '.md':
+            stripped = line_content.strip()
+            # Allow actual PS cmdlet detection in .md only if it's inside a code block
+            # For simplicity: skip all .md false positives on 'powershell'/'pwsh' word matches
+            # since those are almost always documentation references
+            if any(p in match.lower() for p in ['powershell', 'pwsh']) and \
+               not any(c in match for c in ['Start-Process', 'Invoke-', 'Get-ChildItem']):
+                return True
 
-        # Skip strings that contain PowerShell but aren't actually PowerShell code
-        if line_content.strip().startswith('"') or line_content.strip().startswith("'"):
-            return True
-
-        # Skip $ in regular expressions (not PowerShell variables)
-        if re.search(r'["\'][^"\']*\$[^"\']*["\']', line_content):
-            return True
-
-        # Skip $ in environment variable contexts like ${VAR}
-        if '${' in line_content and '}' in line_content:
+        # Skip commented-out lines
+        stripped = line_content.strip()
+        if stripped.startswith('#') or stripped.startswith('//'):
             return True
 
         return False

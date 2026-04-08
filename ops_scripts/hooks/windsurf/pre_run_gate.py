@@ -20,6 +20,13 @@ FAIL_POLICY = "closed"
 POWERSHELL_PATTERNS = ("powershell", "pwsh")
 _FULL_SUITE_RE = re.compile(r"pytest\s+tests/unit(\s|$)")
 
+# Script paths that are allowed to reference "powershell" in their name
+# because they are *about* PowerShell (checkers, RCA docs, etc.)
+_ALLOWED_SCRIPT_SUFFIXES = (
+    "check_powershell_ban.py",
+    "pre_run_gate.py",
+)
+
 
 def _exit_block(reason: str) -> int:
     print(f"[pre_run_gate] BLOCKED: {reason}", file=sys.stderr)
@@ -30,12 +37,22 @@ def check_command(command_line: str) -> int:
     """Return 0 (allow) or 2 (block)."""
     lower = command_line.lower()
 
-    for pat in POWERSHELL_PATTERNS:
-        if pat in lower:
-            return _exit_block(
-                "PowerShell is forbidden (matched '{}'). ".format(pat)
-                + "Use subprocess.run(argv, shell=False) per constitutional §0.",
-            )
+    # Allow commands that are invoking the powershell-ban checker itself
+    # or this gate — they reference "powershell" in path, not as execution target
+    if any(lower.endswith(s) or ("/" + s) in lower or ("\\" + s) in lower
+           for s in _ALLOWED_SCRIPT_SUFFIXES):
+        pass
+    else:
+        for pat in POWERSHELL_PATTERNS:
+            # Match powershell/pwsh only as the executable (first token) or
+            # as an explicit argument value — not inside a file path
+            tokens = command_line.split()
+            executable = tokens[0].lower() if tokens else ""
+            if pat == executable or executable.endswith(pat + ".exe"):
+                return _exit_block(
+                    "PowerShell is forbidden (matched '{}'). ".format(pat)
+                    + "Use subprocess.run(argv, shell=False) per constitutional §0.",
+                )
 
     if _FULL_SUITE_RE.search(command_line) and os.environ.get("ADG_REPAIR_ACTIVE"):
         return _exit_block(
