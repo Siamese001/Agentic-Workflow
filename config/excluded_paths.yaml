@@ -41,7 +41,7 @@ coverage_dirs:
   - ".coverage"
   - ".test_artifacts"
   - "test_artifacts"
-  - "reports"
+  # Note: 'reports' removed — docs/reports/ is needed and should not be blocked
 
 # Archive and backup directories
 archive_dirs:
@@ -70,8 +70,21 @@ vendor_dirs:
 
 # Data and log directories (content, not code)
 data_dirs:
-  - "data"
+  - "data/cache"
+  - "data/corpus"
+  - "data/external"
+  - "data/manifests"
+  - "data/memory"
+  - "data/monitoring"
+  - "data/processed"
+  - "data/prompt_governance"
+  - "data/rag_seeds"
+  - "data/snapshots"
+  - "data/ssot_artifacts"
+  - "data/store"
+  # - "data/golden_state"  # Needed for testing and evaluation
   # - "docs"  # Now an enforced territory per territories.yaml
+  - "docs/reference/_archive"
   - "logs"
   - "raw"
   - "shared"
