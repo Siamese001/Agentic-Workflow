@@ -7,13 +7,13 @@
 # Commit pipeline:
 #   T0   whitespace/LF/EOF/merge-conflict  — deterministic, no Python startup
 #   T1   py_compile                         — fastest syntax fail
-#   T3   ruff-format                        — auto-fixer first (eliminates retry loop)
-#   T4   guardian-comment-fixer             — staged Python files only
-#   T6   hollow-file-gate                   — --changed-only, staged only
-#   T10.6 adg-unified-gate                  — ADG snapshot freshness check, no auto-generate
-#   T11   mcp-config-sovereignty            — triggered by mcp_config.json only
-#   T11.3 pytest-config-ssot               — triggered by pytest.ini/pyproject.toml only
-#   T2   ruff-severity-gate                 — CRITICAL+HIGH blocking, staged only
+#   T2   ruff-format                        — auto-fixer first (eliminates retry loop)
+#   T3   guardian-comment-fixer             — staged Python files only
+#   T4   hollow-file-gate                   — --changed-only, staged only
+#   T5   adg-snapshot-freshness             — ADG snapshot freshness check, no auto-generate
+#   T6   mcp-config-sovereignty            — triggered by mcp_config.json only
+#   T7   pytest-config-ssot                 — triggered by pytest.ini/pyproject.toml only
+#   T8   ruff-severity-gate                 — CRITICAL+HIGH blocking, staged only
 #
 # Manual/CI lane (stages: [manual]):
 #   check-memory-health, adg-stale-guard, check-c0-sovereignty,
@@ -109,16 +109,16 @@ repos:
     rev: v0.14.13
     hooks:
       - id: ruff-format
-        name: "T3: Ruff Format"
+        name: "T2: Ruff Format"
         exclude: '.*\.md$|ops_scripts/ci/check_anti_patterns\.py'
 
   # ============================================================================
-  # TIER 4: Guardian Comment Auto-Fix (staged Python only)
+  # TIER 3: Guardian Comment Auto-Fix (staged Python only)
   # ============================================================================
   - repo: local
     hooks:
       - id: guardian-comment-fixer
-        name: "T4: Guardian Comment Auto-Fix"
+        name: "T3: Guardian Comment Auto-Fix"
         entry: py tools/adg/adg_antipattern_fixer.py --staged
         language: system
         pass_filenames: false
@@ -127,14 +127,14 @@ repos:
         types: [python]
 
   # ============================================================================
-  # TIER 5+: Structural checks, config validation, style (staged-file-only)
+  # TIER 4+: Structural checks, config validation, style (staged-file-only)
   # ============================================================================
   - repo: local
     hooks:
-      # -- T6: Hollow File Gate — AST Semantic Verification -----------------------
+      # -- T4: Hollow File Gate — AST Semantic Verification -----------------------
       # Detects Python files that became hollow after edits. --changed-only = staged only.
       - id: hollow-file-gate
-        name: "T6: Hollow File Gate — AST Semantic Verification"
+        name: "T4: Hollow File Gate — AST Semantic Verification"
         entry: PYTHONPATH=. py ops_scripts/ci/hollow_file_gate.py --changed-only
         language: system
         types: [python]
@@ -142,11 +142,11 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T10.6: ADG Snapshot Freshness Check ------------------------------------
+      # -- T5: ADG Snapshot Freshness Check ------------------------------------------
       # Checks if the latest ADG snapshot is fresh (< 30 min). Warns if stale.
       # Does NOT auto-generate ADG. To refresh: python tools/generate_full_adg.py
       - id: adg-unified-gate
-        name: "T10.6: ADG Snapshot Freshness Check"
+        name: "T5: ADG Snapshot Freshness Check"
         entry: py ops_scripts/hooks/adg_unified_gate.py --snapshot-only
         language: system
         types: [python]
@@ -154,9 +154,9 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T11: MCP Config Sovereignty --------------------------------------------
+      # -- T6: MCP Config Sovereignty ------------------------------------------------
       - id: mcp-config-sovereignty
-        name: "T11: MCP Config Sovereignty"
+        name: "T6: MCP Config Sovereignty"
         entry: PYTHONPATH=. py ops_scripts/ci/check_mcp_config_sovereignty.py
         language: system
         pass_filenames: false
@@ -164,9 +164,9 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T11.3: Pytest Config SSOT Gate ----------------------------------------
+      # -- T7: Pytest Config SSOT Gate ------------------------------------------------
       - id: pytest-config-ssot
-        name: "T11.3: Pytest Config SSOT"
+        name: "T7: Pytest Config SSOT"
         entry: py ops_scripts/ci/_validate_pytest_config.py --strict
         language: system
         pass_filenames: false
@@ -174,10 +174,10 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T2: Ruff Lint ---------------------------------------------------------
+      # -- T8: Ruff Lint --------------------------------------------------------------
       # CRITICAL+HIGH block. MEDIUM+LOW warn only. Uses git diff --staged internally.
       - id: ruff-severity-gate
-        name: "T2: Ruff Lint (CRITICAL+HIGH blocking / MEDIUM+LOW warn)"
+        name: "T8: Ruff Lint (CRITICAL+HIGH blocking / MEDIUM+LOW warn)"
         entry: python ops_scripts/ci/ruff_severity_gate.py
         language: system
         pass_filenames: false
