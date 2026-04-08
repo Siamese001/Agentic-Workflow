@@ -212,7 +212,7 @@ def _infer_agent_layer(py_path: Path) -> Path | None:
     try:
         src = py_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src)
-    except (ValueError, TypeError, RuntimeError) as e:
+    except (OSError, SyntaxError):
         return None
     for node in ast.walk(tree):
         if not isinstance(node, ast.ClassDef):

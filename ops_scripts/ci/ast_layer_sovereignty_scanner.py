@@ -400,7 +400,7 @@ def _get_layer_from_adg(bridge: ADGQueryBridge, module_name: str) -> str | None:
                     node.label.endswith(module_name)):
                     return layer
         return None
-    except Exception:
+    except (AttributeError, TypeError, ValueError):
         return None
 
 

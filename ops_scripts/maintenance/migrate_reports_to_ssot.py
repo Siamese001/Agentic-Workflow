@@ -306,9 +306,8 @@ class ReportMigrator:
             backup_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(file_path, backup_path)
             return backup_path
-        except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError):
             raise
-            return None
 
     def get_destination_path(self, source: Path) -> Path:
         """Calculate the destination path for a report file."""

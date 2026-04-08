@@ -159,7 +159,7 @@ class FixLayerAssignmentRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except (OSError, SyntaxError, ValueError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -190,7 +190,7 @@ class FixLayerAssignmentRule(BaseRepairRule):
 
             return True
 
-        except Exception:
+        except OSError:
             return False
 
     def _infer_layer(self, path: str) -> str | None:

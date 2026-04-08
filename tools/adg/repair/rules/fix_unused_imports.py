@@ -138,7 +138,7 @@ class FixUnusedImportsRule(BaseRepairRule):
             unused = self._find_unused_imports(tree)
             return len(unused) == 0
 
-        except Exception:
+        except (OSError, SyntaxError):
             return False
 
     def _find_unused_imports(self, tree: ast.AST) -> list[ast.AST]:

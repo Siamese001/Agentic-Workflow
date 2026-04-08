@@ -121,7 +121,7 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except (OSError, SyntaxError, ValueError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -144,7 +144,7 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
             missing = self._find_missing_docstrings(tree)
             return len(missing) == 0
 
-        except Exception:
+        except (OSError, SyntaxError):
             return False
 
     def _find_missing_docstrings(self, tree: ast.AST) -> list[tuple[ast.AST, str]]:

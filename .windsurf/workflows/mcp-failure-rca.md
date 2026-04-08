@@ -1,5 +1,5 @@
 ---
-description: RCA workflow for ADG SQLite (mcp1), Redis (mcp10), Sequential Thinking (mcp7), PyTest (mcp11), and OTel (mcp9) MCP failures
+description: RCA workflow for ADG SQLite (mcp1), Redis (mcp12), PyTest (mcp11), and OTel (mcp9) MCP failures. Sequential Thinking MCP is permanently retired — do not attempt recovery.
 ---
 
 # MCP Failure RCA & Auto-Fix Workflow
@@ -177,36 +177,28 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 
 ---
 
-## STEP 6: Fix — Sequential Thinking MCP hang or error
+## STEP 6: Sequential Thinking MCP — PERMANENTLY RETIRED
 
-**Symptom:** `mcp7_sequentialthinking` call hangs indefinitely or returns an error.
+**Do not attempt to recover the Sequential Thinking MCP.** It has been permanently retired.
 
-**A) Check Windows npx resolution (most common cause):**
-// turbo
-```
-python -c "import subprocess; r=subprocess.run(['where', 'npx'], capture_output=True, text=True, check=False); print(r.stdout.strip())"
-```
-On older Windsurf versions, `npx` required `npx.cmd` on Windows. Current Windsurf resolves `npx` correctly.
+**Why**: stdio transport fragility on Windows, zombie node.exe processes, no reliable timeout, oversized opaque tool surface, architectural mismatch with Cascade's native reasoning.
 
-Fix: ensure `config/mcp_servers.yaml` uses `command: npx` (NOT `npx.cmd`). Run sync: `python tools/adg/sync_yaml_to_global.py`. Then health check: `python ops_scripts/ci/mcp_health_check.py`.
+**Replacement**: Use the structured reasoning pattern instead:
+- Workflow: `/structured-reasoning`
+- Skill: `.windsurf/skills/structured-reasoning/SKILL.md`
+- Reference: `docs/mcp/sequential-thinking-replacement.md`
 
-**B) Check if the process is hung (zombie node.exe):**
+**If you see `mcp7_sequentialthinking` calls in old code or logs**: These are stale references. Update them to use the SR_INTAKE + SR_PLAN pattern described in the skill.
+
+**If zombie node.exe processes remain from old invocations:**
 // turbo
 ```
 python -c "import subprocess; r=subprocess.run(['tasklist', '/fi', 'imagename eq node.exe', '/fo', 'csv'], capture_output=True, text=True, check=False); print(r.stdout)"
 ```
-If multiple `node.exe` processes → kill stale ones:
+Kill stale processes only if confirmed to be Sequential Thinking remnants:
 ```
 python -c "import subprocess; subprocess.run(['taskkill', '/f', '/im', 'node.exe'], check=False)"
 ```
-
-**C) Restart MCP in Windsurf:**
-Ctrl+Shift+P → "Reload MCP" → verify `mcp7_sequentialthinking` responds.
-
-**D) If MCP cannot be restored:**
-Proceed WITHOUT sequential thinking for current task.
-Note in response: `[ST-MCP UNAVAILABLE — proceeding without structured decomposition]`
-Do NOT use grep or text search as a substitute.
 
 ---
 

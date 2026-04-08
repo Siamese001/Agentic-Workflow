@@ -320,7 +320,7 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return None
-    except (ValueError, TypeError):
+    except OSError:
         return None
 
     analysis = FileAnalysis(path=str(file_path))

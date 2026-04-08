@@ -325,7 +325,7 @@ class ADGStalenessChecker:
         """
         try:
             result = self.check()
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- warn_if_stale contract is never-raise; all Redis/network/timeout errors must be demoted to warnings
             print(
                 f"[adg-stale-guard] WARNING: could not check staleness: {exc}",
                 file=sys.stderr,

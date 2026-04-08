@@ -125,7 +125,7 @@ def refactor_file(file_path: Path, old_import: str, new_code: str) -> bool:
         print(f"✅ Fixed: {file_path.name}")
         return True
 
-    except Exception as e:
+    except OSError as e:
         print(f"❌ Error processing {file_path.name}: {e}")
         return False
 

@@ -69,7 +69,7 @@ def start_mcp_subprocess(name: str, config: dict) -> subprocess.Popen | None:
             text=True,
         )
         return proc
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  [STARTUP ERROR] Failed to start {name}: {e}")
         return None
 

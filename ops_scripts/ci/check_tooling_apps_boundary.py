@@ -43,8 +43,7 @@ class ToolingAppsBoundaryChecker:
         except SyntaxError as e:
             self.violations.append(f'{filepath}: Syntax error at line {e.lineno}')
             return
-        except Exception as e:
-            raise
+        except OSError as e:
             self.violations.append(f'{filepath}: Could not parse: {e}')
             return
         for node in ast.walk(tree):

@@ -150,8 +150,7 @@ def analyze_file(file_path: Path) -> FileInfo | None:
         content = file_path.read_text(encoding='utf-8', errors='replace')
         source_lines = content.splitlines()
         tree = ast.parse(content)
-    # guardian: allow-silent-swallow
-    except:
+    except (OSError, SyntaxError):
         return None
     classes = []
     functions = []

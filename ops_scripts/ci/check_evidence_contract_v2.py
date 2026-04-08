@@ -103,8 +103,7 @@ class EvidenceContractChecker:
         """Check a single evidence file for compliance."""
         try:
             content = filepath.read_text(encoding="utf-8")
-        except Exception as e:
-            raise
+        except OSError as e:
             self.violations.append(f"{filepath}: Could not read file: {e}")
             return
 

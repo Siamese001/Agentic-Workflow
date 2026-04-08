@@ -85,7 +85,7 @@ def scan_file(filepath: Path) -> FileAudit | None:
         elif any(s.type == 'function' for s in sigs):
             classification = 'Tool'
         return FileAudit(path=str(filepath), signatures=sigs, classification=classification)
-    except Exception as e:
+    except (OSError, SyntaxError) as e:
         logger.warning(f'Skipping {filepath.name}: {e}')
         return None
 

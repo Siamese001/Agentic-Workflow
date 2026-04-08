@@ -313,7 +313,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return FileAnalysis(path=str(file_path), archive_folder=archive_folder, has_syntax_error=True, loc=0)
-    except (ValueError, TypeError):
+    except OSError:
         return None
 
     analysis = FileAnalysis(path=str(file_path), archive_folder=archive_folder, loc=len(content.splitlines()))
