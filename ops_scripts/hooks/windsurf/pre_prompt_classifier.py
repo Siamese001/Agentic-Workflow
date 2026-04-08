@@ -184,9 +184,9 @@ def check_adg_health_red(repo_root: Path) -> bool:
         for srv in servers:
             if srv.get("name") == "adg_sqlite":
                 return bool(srv.get("status") != "ok")
-        return False  # server not in output — fail-open
+        return True  # adg_sqlite absent from probe results — treat as red
     except (json.JSONDecodeError, KeyError):
-        return False  # parse error — fail-open
+        return False  # parse error — fail-open (probe infrastructure error)
 
 
 def main() -> int:
