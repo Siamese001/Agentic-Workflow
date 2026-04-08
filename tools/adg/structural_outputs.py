@@ -55,7 +55,7 @@ def burndown_table(conn: sqlite3.Connection) -> dict:
     """).fetchall()
 
     total = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'",
     ).fetchone()[0]
 
     layer_totals: dict[str, int] = {}
@@ -116,10 +116,14 @@ def blast_radius(conn: sqlite3.Connection, target: str | None = None, top_n: int
             if depth > 20:
                 break
 
-        affected_nodes = cur.execute(
-            f"SELECT adg_name, layer, resolved_path FROM nodes WHERE id IN ({','.join('?' for _ in depth_map)})",
-            list(depth_map.keys()),
-        ).fetchall() if depth_map else []
+        affected_nodes = (
+            cur.execute(
+                f"SELECT adg_name, layer, resolved_path FROM nodes WHERE id IN ({','.join('?' for _ in depth_map)})",
+                list(depth_map.keys()),
+            ).fetchall()
+            if depth_map
+            else []
+        )
 
         return {
             "target": adg_name,
@@ -133,7 +137,8 @@ def blast_radius(conn: sqlite3.Connection, target: str | None = None, top_n: int
         }
 
     else:
-        rows = cur.execute("""
+        rows = cur.execute(
+            """
             SELECT
                 n.adg_name,
                 n.layer,
@@ -145,7 +150,9 @@ def blast_radius(conn: sqlite3.Connection, target: str | None = None, top_n: int
             GROUP BY n.id
             ORDER BY direct_fan_in DESC
             LIMIT ?
-        """, (top_n,)).fetchall()
+        """,
+            (top_n,),
+        ).fetchall()
 
         return {
             "mode": "top_n_hotspots",
@@ -197,7 +204,7 @@ def seam_detection(conn: sqlite3.Connection) -> dict:
     """).fetchone()[0]
 
     total_violations = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'"
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'",
     ).fetchone()[0]
 
     return {
@@ -220,7 +227,8 @@ def centrality(conn: sqlite3.Connection, top_n: int = 20) -> dict:
     """Top-N modules by fan-in (most imported/called) — highest centrality."""
     cur = conn.cursor()
 
-    rows = cur.execute("""
+    rows = cur.execute(
+        """
         SELECT
             n.adg_name,
             n.layer,
@@ -233,10 +241,12 @@ def centrality(conn: sqlite3.Connection, top_n: int = 20) -> dict:
         GROUP BY n.id
         ORDER BY fan_in DESC
         LIMIT ?
-    """, (top_n,)).fetchall()
+    """,
+        (top_n,),
+    ).fetchall()
 
     total_modules = cur.execute(
-        "SELECT COUNT(*) FROM nodes"
+        "SELECT COUNT(*) FROM nodes",
     ).fetchone()[0]
 
     return {
@@ -294,7 +304,9 @@ def _print_blast_radius(data: dict, target: str | None) -> None:
 
 
 def _print_seams(data: dict) -> None:
-    print(f"\n[ADG] Seam Detection — {data['total_cross_layer_edges']} cross-layer edges, {data['total_violations']} violations")
+    print(
+        f"\n[ADG] Seam Detection — {data['total_cross_layer_edges']} cross-layer edges, {data['total_violations']} violations"
+    )
     H = "+----------+----------+----------+-------+-------+"
     print(H)
     print("| Src      | Dst      | Type     | Edges | Files |")
@@ -323,8 +335,9 @@ def _print_centrality(data: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="ADG Structural Outputs (W3.2)")
     parser.add_argument("--sqlite", help="Path to ADG SQLite file (auto-detected if omitted)")
-    parser.add_argument("--mode", choices=["burndown", "blast-radius", "seams", "centrality", "all"],
-                        default="all")
+    parser.add_argument(
+        "--mode", choices=["burndown", "blast-radius", "seams", "centrality", "all"], default="all"
+    )
     parser.add_argument("--target", help="Module path for blast-radius mode")
     parser.add_argument("--top", type=int, default=20, help="Top-N for centrality/blast-radius")
     parser.add_argument("--json", action="store_true", help="Output JSON instead of tables")

@@ -26,7 +26,8 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(
-        0, str(_REPO_ROOT),
+        0,
+        str(_REPO_ROOT),
     )  # guardian: allow-global-mutation -- pre-commit bootstrap requires repo root on path before agentic_core imports
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -104,6 +105,8 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.adg.adg_redis_query import ADGRedisClient
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -129,7 +132,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tools.adg.adg_redis_query import ADGRedisClient
 
 _emit_emits_metric_event("adg_stale_guard", "p4obs", "metric_1")
 _emit_emits_metric_event("adg_stale_guard", "p4obs", "metric_2")

@@ -9,7 +9,6 @@ mixed-line-ending, etc.) to prevent commit failures.
 
 import subprocess
 import sys
-from pathlib import Path
 
 
 def main():
@@ -24,8 +23,8 @@ def main():
         )
 
         unstaged_files = []
-        for line in result.stdout.strip().split('\n'):
-            if line and line[0] in ' M':  # Modified but not staged
+        for line in result.stdout.strip().split("\n"):
+            if line and line[0] in " M":  # Modified but not staged
                 unstaged_files.append(line[3:].strip())
 
         if unstaged_files:

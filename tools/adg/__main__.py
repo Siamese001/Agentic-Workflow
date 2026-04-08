@@ -65,6 +65,8 @@ _emit_captures_evaluation_metric("p4", "__main__", "eval_metric")
 _emit_stores_embedding("p4", "__main__", "embedding_store")
 _emit_updates_meta_learning_state("p4", "__main__", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "__main__", "exec_snapshot_link")
+from tools.adg.react_chunking_graph_audit import main
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -89,7 +91,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tools.adg.react_chunking_graph_audit import main
 
 _emit_emits_metric_event("__main__", "p4obs", "metric_1")
 _emit_emits_metric_event("__main__", "p4obs", "metric_2")

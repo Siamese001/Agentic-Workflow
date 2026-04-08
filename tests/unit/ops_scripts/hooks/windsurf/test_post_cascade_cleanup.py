@@ -16,15 +16,13 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.post_cascade_cleanup import (
-    _rotate_log,
     _count_lines,
-    run_cleanup,
+    _rotate_log,
     main,
+    run_cleanup,
 )
 
 
@@ -100,16 +98,17 @@ class TestRunCleanup:
 class TestMain:
     def test_always_exits_0(self, tmp_path):
         with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY",
-                       tmp_path / "session_summary.json"):
+            with patch(
+                "ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY",
+                tmp_path / "session_summary.json",
+            ):
                 result = main()
         assert result == 0
 
     def test_session_summary_written(self, tmp_path):
         summary_path = tmp_path / "session_summary.json"
         with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY",
-                       summary_path):
+            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 main()
         assert summary_path.exists()
         data = json.loads(summary_path.read_text())

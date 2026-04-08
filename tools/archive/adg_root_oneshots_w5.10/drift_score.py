@@ -90,6 +90,8 @@ _emit_captures_evaluation_metric("p4", "drift_score", "eval_metric")
 _emit_stores_embedding("p4", "drift_score", "embedding_store")
 _emit_updates_meta_learning_state("p4", "drift_score", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "drift_score", "exec_snapshot_link")
+from tools.adg.adg_redis_query import ADGRedisClient
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -114,7 +116,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tools.adg.adg_redis_query import ADGRedisClient
 
 _emit_emits_metric_event("drift_score", "p4obs", "metric_1")
 _emit_emits_metric_event("drift_score", "p4obs", "metric_2")

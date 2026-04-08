@@ -1,4 +1,5 @@
 """Test fixer directly on the specific file."""
+
 import sys
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -72,8 +73,10 @@ _emit_stores_embedding("p4", "_test_fixer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "_test_fixer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "_test_fixer", "exec_snapshot_link")
 # guardian: allow-global-mutation
-sys.path.insert(0, '.')
+sys.path.insert(0, ".")
 from pathlib import Path
+
+from ops_scripts.ci._fix_hardcoded_ssot_literals import process_file
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -100,7 +103,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from ops_scripts.ci._fix_hardcoded_ssot_literals import process_file
 
 _emit_emits_metric_event("_test_fixer", "p4obs", "metric_1")
 _emit_emits_metric_event("_test_fixer", "p4obs", "metric_2")
@@ -153,9 +155,9 @@ _emit_transcripts_response("p1", "_test_fixer", "transcript")
 _emit_hard_fails_untranscripted("p1", "_test_fixer")
 _emit_gated_by_confidence("p1", "_test_fixer", "confidence_gate")
 
-file_path = Path('agentic_core/L0_routing/utils/scorched_earth_merge_util.py')
+file_path = Path("agentic_core/L0_routing/utils/scorched_earth_merge_util.py")
 dry_run = True
 fixes = process_file(file_path, str(file_path), dry_run=dry_run)
-print(f'Found {len(fixes)} fixes:')
+print(f"Found {len(fixes)} fixes:")
 for fix in fixes:
-    print(f'  {fix}')
+    print(f"  {fix}")

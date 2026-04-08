@@ -50,8 +50,6 @@ import glob
 import sqlite3
 import sys
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
-
 GATE_RESULTS: list[tuple[str, bool, str]] = []
 
 NON_TEST = (
@@ -189,7 +187,9 @@ def gate_d(conn: sqlite3.Connection) -> bool:
 
     # Also check GuardrailDecision / ToolGuardrailDeniedError in contract
     gdd_in_contract = _count_symbol_sources(
-        conn, "ToolGuardrailDeniedError", "AND source_file LIKE '%tool_safety_contract%'",
+        conn,
+        "ToolGuardrailDeniedError",
+        "AND source_file LIKE '%tool_safety_contract%'",
     )
 
     ok = ag_l5 >= 1 and vsp_total >= 10

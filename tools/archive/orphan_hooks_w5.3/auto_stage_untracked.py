@@ -9,9 +9,9 @@ Exclusions:
 - ADG archive files (*.gz in artifacts/adg/_archive/)
 - Temporary files and build artifacts
 """
+
 import subprocess
 import sys
-from pathlib import Path
 
 
 def get_untracked_files() -> list[str]:

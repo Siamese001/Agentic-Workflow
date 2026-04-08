@@ -67,8 +67,6 @@ import glob
 import sqlite3
 import sys
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
-
 GATE_RESULTS: list[tuple[str, bool, str]] = []
 
 NON_TEST = (
@@ -151,10 +149,14 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     orphan_guard = _count_exported(conn, "OrphanReasoningEvaluationError", "reasoning_evaluation")
     eval_step_exported = _count_exported(conn, "evaluate_reasoning_step", "reasoning_evaluation")
     eval_from_trace_exported = _count_exported(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_evaluation",
+        conn,
+        "evaluate_reasoning_step_from_trace",
+        "reasoning_evaluation",
     )
     eval_from_trace_in_chokepoint = _count_calls(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint",
+        conn,
+        "evaluate_reasoning_step_from_trace",
+        "reasoning_chokepoint",
     )
     eval_in_chokepoint = _count_in_file(conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint")
     total_wired = max(eval_from_trace_in_chokepoint, eval_in_chokepoint)
@@ -215,7 +217,9 @@ def gate_c(conn: sqlite3.Connection) -> bool:
     outcome_exported = _count_exported(conn, "ReasoningEvaluationOutcome", "reasoning_evaluation")
     outcome_in_chokepoint = _count_in_file(conn, "ReasoningEvaluationOutcome", "reasoning_chokepoint")
     eval_from_trace_in_chokepoint = _count_in_file(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint",
+        conn,
+        "evaluate_reasoning_step_from_trace",
+        "reasoning_chokepoint",
     )
 
     ok = record_exported >= 1 and outcome_exported >= 1 and eval_from_trace_in_chokepoint >= 1
@@ -271,13 +275,17 @@ def gate_e(conn: sqlite3.Connection) -> bool:
       (confirms L1 reasoning executes at runtime paths being evaluated)
     """
     eval_from_trace_in_chokepoint = _count_in_file(
-        conn, "evaluate_reasoning_step_from_trace", "reasoning_chokepoint",
+        conn,
+        "evaluate_reasoning_step_from_trace",
+        "reasoning_chokepoint",
     )
     store_exported = _count_exported(conn, "ReasoningEvaluationStore", "reasoning_evaluation")
     get_store_exported = _count_exported(conn, "get_reasoning_evaluation_store", "reasoning_evaluation")
     l1_trace_sources = _count_distinct_sources(conn, "records_execution_trace", L1_FILTER)
     eval_step_callers = _count_symbol_sources(
-        conn, "evaluate_reasoning_step", "AND source_file LIKE '%L1%' " + NON_TEST,
+        conn,
+        "evaluate_reasoning_step",
+        "AND source_file LIKE '%L1%' " + NON_TEST,
     )
 
     ok = eval_from_trace_in_chokepoint >= 1 and store_exported >= 1 and l1_trace_sources >= 1

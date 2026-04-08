@@ -15,10 +15,10 @@ def _audit_semantic_surfaces(repo_root: Path, realized_node_names: set[str]) -> 
     from tools.generate.generate_full_adg import (
         _BlockDecompositionVisitor,
         _ExecutionSemanticVisitor,
-        _TestExecutionLinkageVisitor,
-        _TypeSurfaceCollector,
         _iter_python_files,
         _repo_relative,
+        _TestExecutionLinkageVisitor,
+        _TypeSurfaceCollector,
     )
 
     counts: Counter[str] = Counter()
@@ -404,7 +404,5 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
                 except OSError as e:
                     print(f"[ADG] Cleanup: error removing {val_file.name}: {e}")
 
-    if (
-        cleaned_count > 0
-    ):  # guardian: Add error context logging
+    if cleaned_count > 0:  # guardian: Add error context logging
         print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")

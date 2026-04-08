@@ -5,28 +5,21 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
-
-import pytest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
-
-from ops_scripts.ci.guardian_quality_scanner import (
-    _load_ratchet,
-    _save_ratchet,
-    main,
-    RATCHET_FILE,
-)
 
 
 # ---------------------------------------------------------------------------
 # _load_ratchet
 # ---------------------------------------------------------------------------
 
+
 class TestLoadRatchet:
     def test_returns_empty_when_file_missing(self, tmp_path):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "nonexistent.json"
         try:
@@ -37,6 +30,7 @@ class TestLoadRatchet:
 
     def test_returns_parsed_content(self, tmp_path):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original = gqs.RATCHET_FILE
         ratchet_file = tmp_path / "ratchet.json"
         ratchet_file.write_text(json.dumps({"duplicate_ceiling": 0, "weak_justification_ceiling": 5}))
@@ -51,6 +45,7 @@ class TestLoadRatchet:
     def test_corrupt_json_prints_warning_returns_empty(self, tmp_path, capsys):
         """G4 fix: corrupt ratchet must warn on stderr, not silently return {}."""
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original = gqs.RATCHET_FILE
         ratchet_file = tmp_path / "ratchet.json"
         ratchet_file.write_text("{not valid json}")
@@ -66,6 +61,7 @@ class TestLoadRatchet:
 
     def test_os_error_prints_warning_returns_empty(self, tmp_path, capsys):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original = gqs.RATCHET_FILE
         ratchet_file = tmp_path / "ratchet.json"
         ratchet_file.write_text("{}")
@@ -84,9 +80,11 @@ class TestLoadRatchet:
 # _save_ratchet
 # ---------------------------------------------------------------------------
 
+
 class TestSaveRatchet:
     def test_creates_file_with_correct_content(self, tmp_path):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "sub" / "ratchet.json"
         try:
@@ -99,6 +97,7 @@ class TestSaveRatchet:
 
     def test_creates_parent_dirs(self, tmp_path):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original = gqs.RATCHET_FILE
         deep = tmp_path / "a" / "b" / "c" / "ratchet.json"
         gqs.RATCHET_FILE = deep
@@ -113,15 +112,18 @@ class TestSaveRatchet:
 # main — ratchet logic via env vars
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
     def _make_scanner(self, tmp_path, duplicates: int, weak: int):
         """Patch _run_scan and RATCHET_FILE for isolated main() tests."""
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         return patch.object(gqs, "_run_scan", return_value=(duplicates, weak))
 
     def test_init_mode_writes_ratchet(self, tmp_path, monkeypatch):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original_rf = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         monkeypatch.setenv("GUARDIAN_INIT", "1")
@@ -136,6 +138,7 @@ class TestMain:
 
     def test_pass_when_below_ceiling(self, tmp_path, monkeypatch):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original_rf = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         gqs.RATCHET_FILE.write_text(json.dumps({"duplicate_ceiling": 0, "weak_justification_ceiling": 10}))
@@ -148,6 +151,7 @@ class TestMain:
 
     def test_fail_when_duplicates_exceed_ceiling(self, tmp_path, monkeypatch):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original_rf = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         gqs.RATCHET_FILE.write_text(json.dumps({"duplicate_ceiling": 0, "weak_justification_ceiling": 5}))
@@ -160,6 +164,7 @@ class TestMain:
 
     def test_fail_when_weak_exceeds_ceiling(self, tmp_path, monkeypatch):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original_rf = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         gqs.RATCHET_FILE.write_text(json.dumps({"duplicate_ceiling": 0, "weak_justification_ceiling": 5}))
@@ -172,6 +177,7 @@ class TestMain:
 
     def test_ratchet_tightens_when_weak_improves(self, tmp_path, monkeypatch):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original_rf = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         gqs.RATCHET_FILE.write_text(json.dumps({"duplicate_ceiling": 0, "weak_justification_ceiling": 10}))
@@ -186,6 +192,7 @@ class TestMain:
 
     def test_dry_run_does_not_tighten_ratchet(self, tmp_path, monkeypatch):
         import ops_scripts.ci.guardian_quality_scanner as gqs
+
         original_rf = gqs.RATCHET_FILE
         gqs.RATCHET_FILE = tmp_path / "ratchet.json"
         gqs.RATCHET_FILE.write_text(json.dumps({"duplicate_ceiling": 0, "weak_justification_ceiling": 10}))

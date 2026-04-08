@@ -10,40 +10,40 @@ import ast
 import pathlib
 import re
 import sys
-from typing import Dict, List, Set
 
 # Target import patterns to block
 TARGET_IMPORT_PATTERNS = {
-    r'^from\s+agentic_core\..*\s+import',
-    r'^from\s+apps_\w+\..*\s+import',
-    r'^from\s+system_learning\..*\s+import',
-    r'^from\s+infrastructure\..*\s+import',
-    r'^import\s+agentic_core\..+',
-    r'^import\s+apps_\w+\..+',
-    r'^import\s+system_learning\..+',
-    r'^import\s+infrastructure\..+',
+    r"^from\s+agentic_core\..*\s+import",
+    r"^from\s+apps_\w+\..*\s+import",
+    r"^from\s+system_learning\..*\s+import",
+    r"^from\s+infrastructure\..*\s+import",
+    r"^import\s+agentic_core\..+",
+    r"^import\s+apps_\w+\..+",
+    r"^import\s+system_learning\..+",
+    r"^import\s+infrastructure\..+",
 }
 
 # Safe patterns (allowed at top level)
 SAFE_PATTERNS = {
-    r'^import\s+agentic_core$',
-    r'^import\s+apps_\w+$',
-    r'^import\s+system_learning$',
-    r'^import\s+infrastructure$',
-    r'^from\s+TYPE_CHECKING\s+import',
-    r'^if\s+TYPE_CHECKING:',
+    r"^import\s+agentic_core$",
+    r"^import\s+apps_\w+$",
+    r"^import\s+system_learning$",
+    r"^import\s+infrastructure$",
+    r"^from\s+TYPE_CHECKING\s+import",
+    r"^if\s+TYPE_CHECKING:",
 }
 
 # All test directories have been migrated in Waves 1-7
+
 
 class ImportGateChecker:
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.violations = []
         self.stats = {
-            'files_checked': 0,
-            'violations': 0,
-            'allowed': 0,
+            "files_checked": 0,
+            "violations": 0,
+            "allowed": 0,
         }
 
     def check_directory(self, test_dir: str) -> dict:
@@ -61,26 +61,30 @@ class ImportGateChecker:
 
     def check_file(self, file_path: pathlib.Path) -> bool:
         """Check a single test file for banned import patterns."""
-        self.stats['files_checked'] += 1
+        self.stats["files_checked"] += 1
 
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         except SyntaxError as e:
-            self.violations.append({
-                'file': str(file_path.relative_to(self.repo_root)),
-                'error': f'Syntax error: {e}',
-                'line': e.lineno or 0,
-            })
-            self.stats['violations'] += 1
+            self.violations.append(
+                {
+                    "file": str(file_path.relative_to(self.repo_root)),
+                    "error": f"Syntax error: {e}",
+                    "line": e.lineno or 0,
+                }
+            )
+            self.stats["violations"] += 1
             return False
         except Exception as e:
-            self.violations.append({
-                'file': str(file_path.relative_to(self.repo_root)),
-                'error': f'Read error: {e}',
-                'line': 0,
-            })
-            self.stats['violations'] += 1
+            self.violations.append(
+                {
+                    "file": str(file_path.relative_to(self.repo_root)),
+                    "error": f"Read error: {e}",
+                    "line": 0,
+                }
+            )
+            self.stats["violations"] += 1
             return False
 
         # Check if file is in migrated directories (all directories now migrated)
@@ -95,7 +99,7 @@ class ImportGateChecker:
             line_stripped = line.strip()
 
             # Skip comments and empty lines
-            if not line_stripped or line_stripped.startswith('#'):
+            if not line_stripped or line_stripped.startswith("#"):
                 continue
 
             # Check if it's a banned pattern
@@ -123,21 +127,25 @@ class ImportGateChecker:
                 continue
 
             # This is a violation
-            violations.append({
-                'line': i,
-                'content': line.strip(),
-                'reason': 'Top-level app import (should be deferred to test function)',
-            })
+            violations.append(
+                {
+                    "line": i,
+                    "content": line.strip(),
+                    "reason": "Top-level app import (should be deferred to test function)",
+                }
+            )
 
         if violations:
-            self.violations.append({
-                'file': str(file_path.relative_to(self.repo_root)),
-                'violations': violations,
-            })
-            self.stats['violations'] += len(violations)
+            self.violations.append(
+                {
+                    "file": str(file_path.relative_to(self.repo_root)),
+                    "violations": violations,
+                }
+            )
+            self.stats["violations"] += len(violations)
             return False
         else:
-            self.stats['allowed'] += 1
+            self.stats["allowed"] += 1
             return True
 
     def _is_inside_type_checking(self, lines: list[str], line_idx: int) -> bool:
@@ -147,8 +155,8 @@ class ImportGateChecker:
 
         for i in range(line_idx, -1, -1):
             line = lines[i].strip()
-            if 'TYPE_CHECKING' in line:
-                if line.startswith('if TYPE_CHECKING:') or line.startswith('from TYPE_CHECKING'):
+            if "TYPE_CHECKING" in line:
+                if line.startswith("if TYPE_CHECKING:") or line.startswith("from TYPE_CHECKING"):
                     return True
             # Stop if we hit a same-or-higher level dedent
             if i < line_idx:
@@ -168,11 +176,11 @@ class ImportGateChecker:
         if self.violations:
             print("\n🚨 VIOLATIONS FOUND:")
             for violation in self.violations:
-                if 'error' in violation:
+                if "error" in violation:
                     print(f"  {violation['file']}:{violation['line']} - {violation['error']}")
                 else:
                     print(f"  {violation['file']}:")
-                    for v in violation['violations']:
+                    for v in violation["violations"]:
                         print(f"    Line {v['line']}: {v['content']}")
                         print(f"      → {v['reason']}")
             print("\n💡 Fix: Move imports inside test functions or use pytest.importorskip()")
@@ -181,21 +189,22 @@ class ImportGateChecker:
             print("✅ All files passed - no top-level app imports detected")
             return True
 
+
 def main():
     if len(sys.argv) > 1:
         # Check specific directories
         dirs = sys.argv[1:]
     else:
         # Check all test directories
-        test_root = pathlib.Path(__file__).parent.parent.parent / 'tests'
-        dirs = [d.name for d in test_root.iterdir() if d.is_dir() and not d.name.startswith('_')]
+        test_root = pathlib.Path(__file__).parent.parent.parent / "tests"
+        dirs = [d.name for d in test_root.iterdir() if d.is_dir() and not d.name.startswith("_")]
 
     repo_root = pathlib.Path(__file__).parent.parent.parent
     checker = ImportGateChecker(repo_root)
 
     for test_dir in dirs:
         # Ensure we're checking a test directory
-        if not test_dir.startswith('tests/'):
+        if not test_dir.startswith("tests/"):
             full_path = f"tests/{test_dir}"
         else:
             full_path = test_dir
@@ -205,6 +214,7 @@ def main():
 
     success = checker.print_report()
     sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

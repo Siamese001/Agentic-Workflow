@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
-
-import pytest
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
@@ -19,10 +16,10 @@ from tools.guardian.idempotency_check import (
     scan_paths,
 )
 
-
 # ---------------------------------------------------------------------------
 # _count_guardians_on_line
 # ---------------------------------------------------------------------------
+
 
 class TestCountGuardiansOnLine:
     def test_zero_on_plain_line(self):
@@ -42,6 +39,7 @@ class TestCountGuardiansOnLine:
 # ---------------------------------------------------------------------------
 # _check_justification_quality
 # ---------------------------------------------------------------------------
+
 
 class TestCheckJustificationQuality:
     def test_good_justification_double_dash(self):
@@ -95,6 +93,7 @@ class TestCheckJustificationQuality:
 # scan_file
 # ---------------------------------------------------------------------------
 
+
 class TestScanFile:
     def test_clean_file_returns_empty(self, tmp_path):
         f = tmp_path / "clean.py"
@@ -139,6 +138,7 @@ class TestScanFile:
 # scan_new_string
 # ---------------------------------------------------------------------------
 
+
 class TestScanNewString:
     def test_clean_string_returns_empty(self):
         assert scan_new_string("x = 1\ny = 2\n") == []
@@ -178,6 +178,7 @@ class TestScanNewString:
 # ---------------------------------------------------------------------------
 # scan_paths
 # ---------------------------------------------------------------------------
+
 
 class TestScanPaths:
     def test_directory_scan_finds_issues(self, tmp_path):

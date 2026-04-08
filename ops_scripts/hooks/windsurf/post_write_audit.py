@@ -66,14 +66,14 @@ def lint_mcp_config(file_path: str, edits: list[dict]) -> list[str]:
     for name, server_cfg in servers.items():
         if "command" not in server_cfg and "serverUrl" not in server_cfg and "url" not in server_cfg:
             findings.append(
-                f"Schema: server '{name}' missing 'command' or 'serverUrl'/'url' field."
+                f"Schema: server '{name}' missing 'command' or 'serverUrl'/'url' field.",
             )
         env = server_cfg.get("env", {})
         for var_name, var_val in env.items():
             if isinstance(var_val, str) and _SHELL_ENV_VAR_RE.search(var_val):
                 findings.append(
                     f"Env var format: '{name}.env.{var_name}' uses shell syntax "
-                    f"'${{VAR:-default}}' — migrate to '${{env:VAR_NAME}}' (Windsurf native)."
+                    f"'${{VAR:-default}}' — migrate to '${{env:VAR_NAME}}' (Windsurf native).",
                 )
 
     for edit in edits:

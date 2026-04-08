@@ -15,7 +15,6 @@ Runtime = source_file NOT LIKE '%test%' / '%tests%' / '%spec%' / '%fixture%' / '
 """
 
 import glob
-import os
 import sqlite3
 import sys
 

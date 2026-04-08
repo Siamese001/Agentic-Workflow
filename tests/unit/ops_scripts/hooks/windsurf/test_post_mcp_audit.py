@@ -18,8 +18,6 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.post_mcp_audit import main
@@ -39,7 +37,7 @@ class TestMain:
                 "mcp_server_name": "adg_sqlite",
                 "mcp_tool_name": "adg_health",
                 "duration_ms": 42,
-            }
+            },
         }
         assert self._run(payload, log) == 0
 
@@ -50,7 +48,7 @@ class TestMain:
                 "mcp_server_name": "filesystem",
                 "mcp_tool_name": "read_file",
                 "duration_ms": 123,
-            }
+            },
         }
         self._run(payload, log)
         assert log.exists()

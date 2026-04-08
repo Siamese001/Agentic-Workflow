@@ -376,6 +376,7 @@ repos:
         always_run: false
         require_serial: true
         types: [python]
+        exclude: ^tools/archive/
 
       # -- T8: Generated-artifact tracking guard ----------------------------------
       # Rejects commits if git tracks any of:

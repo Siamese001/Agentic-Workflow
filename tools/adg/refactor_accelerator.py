@@ -101,7 +101,8 @@ def _fetch_candidates(
     layer_clause = "AND n.layer = ?" if layer_filter else ""
     params: list = [layer_filter] if layer_filter else []
 
-    rows = cur.execute(f"""
+    rows = cur.execute(
+        f"""
         SELECT
             n.id,
             n.adg_name,
@@ -118,7 +119,9 @@ def _fetch_candidates(
         HAVING fan_in > 0
         ORDER BY fan_in DESC
         LIMIT 500
-    """, params).fetchall()
+    """,
+        params,
+    ).fetchall()
 
     violation_counts: dict[int, int] = {}
     vrows = cur.execute("""
@@ -149,20 +152,22 @@ def _fetch_candidates(
             + W_LINT * (lint_count / max_lint)
         )
 
-        candidates.append({
-            "node_id": node_id,
-            "adg_name": adg_name,
-            "layer": layer or "?",
-            "resolved_path": rel_path,
-            "score": round(score, 4),
-            "dimensions": {
-                "fan_in": fan_in,
-                "fan_out": fan_out,
-                "churn_90d": churn_count,
-                "violations": viol_count,
-                "lint_count": lint_count,
-            },
-        })
+        candidates.append(
+            {
+                "node_id": node_id,
+                "adg_name": adg_name,
+                "layer": layer or "?",
+                "resolved_path": rel_path,
+                "score": round(score, 4),
+                "dimensions": {
+                    "fan_in": fan_in,
+                    "fan_out": fan_out,
+                    "churn_90d": churn_count,
+                    "violations": viol_count,
+                    "lint_count": lint_count,
+                },
+            }
+        )
 
     candidates.sort(key=lambda x: x["score"], reverse=True)
     return candidates[:top_n]
@@ -204,13 +209,16 @@ def _add_impacted_tests(conn: sqlite3.Connection, candidates: list[dict]) -> Non
     cur = conn.cursor()
     for c in candidates:
         node_id = c["node_id"]
-        test_rows = cur.execute("""
+        test_rows = cur.execute(
+            """
             SELECT DISTINCT n.resolved_path
             FROM edges e
             JOIN nodes n ON n.id = e.src_id
             WHERE e.dst_id = ? AND e.relation_type = 'covers'
             LIMIT 10
-        """, (node_id,)).fetchall()
+        """,
+            (node_id,),
+        ).fetchall()
         c["impacted_tests"] = [r[0] for r in test_rows if r[0]]
 
 
@@ -254,14 +262,16 @@ def _print_candidates(candidates: list[dict], with_rank: bool = True) -> None:
     print(f"\n[RA] Top {len(candidates)} Refactor Candidates")
     H = "+----+-------+----------+-------+-------+-------+------+------------------------------------------------------+"
     print(H)
-    print("| Rk | Score | Layer    | FanIn | Churn | Viol  | Lint | File                                                 |")
+    print(
+        "| Rk | Score | Layer    | FanIn | Churn | Viol  | Lint | File                                                 |"
+    )
     print(H)
     for i, c in enumerate(candidates, 1):
         layer = c["layer"][:8]
         name = (c["resolved_path"] or c["adg_name"])[:52]
         d = c["dimensions"]
         print(
-            f"| {i:2} | {c['score']:.3f} | {layer:<8} | {d['fan_in']:5} | {d['churn_90d']:5} | {d['violations']:5} | {d['lint_count']:4} | {name:<52} |"
+            f"| {i:2} | {c['score']:.3f} | {layer:<8} | {d['fan_in']:5} | {d['churn_90d']:5} | {d['violations']:5} | {d['lint_count']:4} | {name:<52} |",
         )
     print(H)
 
@@ -316,10 +326,7 @@ def main() -> None:
                 output = {
                     "sqlite_used": sqlite_path.name,
                     "layer_filter": args.layer,
-                    "candidates": [
-                        {k: v for k, v in c.items() if k != "node_id"}
-                        for c in candidates
-                    ],
+                    "candidates": [{k: v for k, v in c.items() if k != "node_id"} for c in candidates],
                 }
                 print(json.dumps(output, indent=2, default=str))
             else:
@@ -328,8 +335,12 @@ def main() -> None:
                     top = candidates[0]
                     d = top["dimensions"]
                     print(f"\n[RA] Top candidate: {top['resolved_path'] or top['adg_name']}")
-                    print(f"     Score: {top['score']} | FanIn: {d['fan_in']} | Churn: {d['churn_90d']} | Violations: {d['violations']}")
-                    print(f"     Blast radius: {top['blast_radius']['total_affected']} modules affected (depth {top['blast_radius']['max_depth']})")
+                    print(
+                        f"     Score: {top['score']} | FanIn: {d['fan_in']} | Churn: {d['churn_90d']} | Violations: {d['violations']}"
+                    )
+                    print(
+                        f"     Blast radius: {top['blast_radius']['total_affected']} modules affected (depth {top['blast_radius']['max_depth']})"
+                    )
                     tests = top.get("impacted_tests", [])
                     if tests:
                         print(f"     Impacted tests: {', '.join(tests[:3])}")

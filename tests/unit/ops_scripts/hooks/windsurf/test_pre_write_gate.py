@@ -21,8 +21,6 @@ import sys
 from io import StringIO
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.pre_write_gate import (
@@ -124,7 +122,7 @@ class TestMain:
             "tool_info": {
                 "file_path": "some/module.py",
                 "edits": [{"old_string": "x = 1", "new_string": "x = 2"}],
-            }
+            },
         }
         assert self._run(payload) == 0
 
@@ -133,7 +131,7 @@ class TestMain:
             "tool_info": {
                 "file_path": "some/module.py",
                 "edits": [{"old_string": "", "new_string": "except:\n    pass\n"}],
-            }
+            },
         }
         assert self._run(payload) == 2
 
@@ -141,8 +139,10 @@ class TestMain:
         payload = {
             "tool_info": {
                 "file_path": "runner.py",
-                "edits": [{"old_string": "", "new_string": "import subprocess\nsubprocess.run('ls', shell=True)\n"}],
-            }
+                "edits": [
+                    {"old_string": "", "new_string": "import subprocess\nsubprocess.run('ls', shell=True)\n"}
+                ],
+            },
         }
         assert self._run(payload) == 2
 
@@ -167,7 +167,7 @@ class TestMain:
             "tool_info": {
                 "file_path": ".windsurf/rules/constitutional.md",
                 "edits": [{"old_string": "x", "new_string": "except:\n    pass\n"}],
-            }
+            },
         }
         assert self._run(payload) == 0
 
@@ -176,7 +176,7 @@ class TestMain:
             "tool_info": {
                 "file_path": "docs/reference/some_doc.json",
                 "edits": [{"old_string": "", "new_string": "shell=True"}],
-            }
+            },
         }
         assert self._run(payload) == 0
 

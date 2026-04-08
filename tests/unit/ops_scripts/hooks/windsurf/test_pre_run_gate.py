@@ -16,8 +16,6 @@ import sys
 from io import StringIO
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.pre_run_gate import check_command, main

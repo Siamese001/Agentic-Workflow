@@ -22,10 +22,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 _GUARDIAN_RE = re.compile(r"#\s*guardian:\s*allow-\w[\w-]*")
-_GENERIC_JUSTIFICATIONS = frozenset({
-    "needed", "required", "temporary", "legacy", "fixme", "todo",
-    "workaround", "temp", "hack", "wip",
-})
+_GENERIC_JUSTIFICATIONS = frozenset(
+    {
+        "needed",
+        "required",
+        "temporary",
+        "legacy",
+        "fixme",
+        "todo",
+        "workaround",
+        "temp",
+        "hack",
+        "wip",
+    }
+)
 
 
 def _count_guardians_on_line(line: str) -> int:
@@ -40,14 +50,14 @@ def _check_justification_quality(line: str) -> str | None:
     """
     matches = _GUARDIAN_RE.finditer(line)
     for match in matches:
-        after = line[match.end():]
+        after = line[match.end() :]
         # Accept both ' -- ' (canonical) and ' - ' (legacy) as separators
         if "--" in after:
             justification = after.split("--", 1)[-1].strip()
         else:
             _m = re.search(r"(?<!-) - (?!-)", after)
             if _m:
-                justification = after[_m.end():].strip()
+                justification = after[_m.end() :].strip()
             else:
                 justification = ""
         has_justification = len(justification) > 3
@@ -78,21 +88,25 @@ def scan_file(filepath: Path) -> list[dict]:
     for i, line in enumerate(lines, 1):
         guardian_count = _count_guardians_on_line(line)
         if guardian_count > 1:
-            issues.append({
-                "file": rel_path,
-                "line_no": i,
-                "line": line.strip(),
-                "issue": f"DUPLICATE: {guardian_count} guardian annotations on one line",
-            })
-        elif guardian_count == 1:
-            quality_err = _check_justification_quality(line)
-            if quality_err:
-                issues.append({
+            issues.append(
+                {
                     "file": rel_path,
                     "line_no": i,
                     "line": line.strip(),
-                    "issue": f"WEAK_JUSTIFICATION: {quality_err}",
-                })
+                    "issue": f"DUPLICATE: {guardian_count} guardian annotations on one line",
+                }
+            )
+        elif guardian_count == 1:
+            quality_err = _check_justification_quality(line)
+            if quality_err:
+                issues.append(
+                    {
+                        "file": rel_path,
+                        "line_no": i,
+                        "line": line.strip(),
+                        "issue": f"WEAK_JUSTIFICATION: {quality_err}",
+                    }
+                )
 
     return issues
 
@@ -108,7 +122,7 @@ def scan_new_string(new_string: str, existing_content: str | None = None) -> lis
         count = _count_guardians_on_line(line)
         if count > 1:
             violations.append(
-                f"Duplicate guardian annotations on one line ({count} found) — each line may have at most one '# guardian: allow-*'."
+                f"Duplicate guardian annotations on one line ({count} found) — each line may have at most one '# guardian: allow-*'.",
             )
         elif count == 1:
             err = _check_justification_quality(line)
@@ -127,7 +141,7 @@ def scan_new_string(new_string: str, existing_content: str | None = None) -> lis
                 if tag in existing_guardians:
                     violations.append(
                         f"Duplicate guardian tag '{tag}' already exists in file — "
-                        "each guardian annotation must be unique per file."
+                        "each guardian annotation must be unique per file.",
                     )
 
     return violations
@@ -153,8 +167,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Guardian Idempotency Checker (W3.6)")
     parser.add_argument("paths", nargs="*", default=["."], help="Files or directories to scan")
     parser.add_argument("--json", action="store_true", dest="as_json", help="JSON output")
-    parser.add_argument("--production-only", action="store_true",
-                        help="Only scan production dirs (agentic_core/, apps_*/, system_learning/)")
+    parser.add_argument(
+        "--production-only",
+        action="store_true",
+        help="Only scan production dirs (agentic_core/, apps_*/, system_learning/)",
+    )
     args = parser.parse_args()
 
     scan_targets: list[Path]
@@ -172,18 +189,25 @@ def main() -> None:
     weak_count = sum(1 for i in issues if i["issue"].startswith("WEAK"))
 
     if args.as_json:
-        print(json.dumps({
-            "total_issues": len(issues),
-            "duplicate_guardian_lines": duplicate_count,
-            "weak_justification_lines": weak_count,
-            "issues": issues,
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "total_issues": len(issues),
+                    "duplicate_guardian_lines": duplicate_count,
+                    "weak_justification_lines": weak_count,
+                    "issues": issues,
+                },
+                indent=2,
+            )
+        )
     else:
         if not issues:
             print("[guardian-idempotency] Clean — no duplicate or weak guardian annotations found.")
             return
 
-        print(f"[guardian-idempotency] Found {len(issues)} issues ({duplicate_count} duplicates, {weak_count} weak justifications)")
+        print(
+            f"[guardian-idempotency] Found {len(issues)} issues ({duplicate_count} duplicates, {weak_count} weak justifications)"
+        )
         for issue in issues[:50]:
             print(f"  {issue['file']}:{issue['line_no']}  {issue['issue']}")
             print(f"    {issue['line'][:120]}")

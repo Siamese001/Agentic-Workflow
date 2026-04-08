@@ -113,7 +113,8 @@ class TestAntipatternRegistryHardened:
         # Create a record from a different registry (not in this registry)
         registry2 = AntipatternRegistry(agent_id="test-agent", run_id="different-run")
         external_record = registry2.register(
-            AntipatternCategory.BARE_EXCEPT, source_file="bar.py"
+            AntipatternCategory.BARE_EXCEPT,
+            source_file="bar.py",
         )
 
         with pytest.raises(ValueError, match="Record with fingerprint .* not found in registry"):

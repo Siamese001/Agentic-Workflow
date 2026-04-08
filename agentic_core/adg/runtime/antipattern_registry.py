@@ -13,14 +13,13 @@ from __future__ import annotations
 import threading
 
 from agentic_core.adg.runtime.antipattern_types import (
+    _SEVERITY_MAP,
     AntipatternCategory,
     AntipatternRecord,
     AntipatternRegistryReport,
     AntipatternSeverity,
     SuppressionRecord,
-    _SEVERITY_MAP,
 )
-
 
 # Re-export for backward compatibility
 __all__ = [

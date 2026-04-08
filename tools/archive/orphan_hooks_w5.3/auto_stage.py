@@ -13,7 +13,6 @@ Exclusions (from auto-stage-untracked):
 
 import subprocess
 import sys
-from pathlib import Path
 
 
 def get_untracked_files() -> list[str]:
@@ -66,8 +65,8 @@ def get_unstaged_files() -> list[str]:
     )
 
     unstaged_files = []
-    for line in result.stdout.strip().split('\n'):
-        if line and line.startswith(' M '):
+    for line in result.stdout.strip().split("\n"):
+        if line and line.startswith(" M "):
             path = line[3:].strip()
             # Handle cases where paths with spaces are quoted
             if path.startswith('"') and path.endswith('"'):

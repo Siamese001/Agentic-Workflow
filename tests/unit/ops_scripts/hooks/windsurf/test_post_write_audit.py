@@ -21,8 +21,6 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.post_write_audit import lint_mcp_config, main
@@ -57,8 +55,8 @@ class TestLintMcpConfig:
                 "redis": {
                     "command": "python",
                     "env": {"REDIS_URL": "${REDIS_URL:-redis://localhost:6379}"},
-                }
-            }
+                },
+            },
         }
         path = self._write_config(tmp_path, config)
         findings = lint_mcp_config(path, [])
@@ -70,8 +68,8 @@ class TestLintMcpConfig:
                 "brave": {
                     "command": "npx",
                     "env": {"BRAVE_API_KEY": "${env:BRAVE_API_KEY}"},
-                }
-            }
+                },
+            },
         }
         path = self._write_config(tmp_path, config)
         findings = lint_mcp_config(path, [])
@@ -80,8 +78,8 @@ class TestLintMcpConfig:
     def test_clean_config_no_findings(self, tmp_path):
         config = {
             "mcpServers": {
-                "fs": {"command": "python", "args": ["server.py"]}
-            }
+                "fs": {"command": "python", "args": ["server.py"]},
+            },
         }
         path = self._write_config(tmp_path, config)
         assert lint_mcp_config(path, []) == []

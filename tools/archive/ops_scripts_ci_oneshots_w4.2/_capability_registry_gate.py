@@ -66,8 +66,6 @@ import glob
 import sqlite3
 import sys
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
-
 GATE_RESULTS: list[tuple[str, bool, str]] = []
 
 NON_TEST = (

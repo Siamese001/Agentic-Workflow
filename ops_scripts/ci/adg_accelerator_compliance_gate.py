@@ -158,13 +158,15 @@ def check_python_bans(staged_files: list[Path]) -> list[dict]:
                             rel = str(path.relative_to(ROOT))
                         except ValueError:
                             rel = str(path)
-                        issues.append({
-                            "file": rel,
-                            "line": line_no,
-                            "check": check,
-                            "text": line.rstrip(),
-                            "kind": "python",
-                        })
+                        issues.append(
+                            {
+                                "file": rel,
+                                "line": line_no,
+                                "check": check,
+                                "text": line.rstrip(),
+                                "kind": "python",
+                            }
+                        )
                         break
 
     return issues
@@ -187,10 +189,7 @@ def _yaml_is_shell_line(line: str) -> bool:
 def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
     """Return list of issue dicts for YAML ban violations."""
     issues: list[dict] = []
-    yaml_files = [
-        p for p in staged_files
-        if p.suffix in (".yml", ".yaml") and p.is_file()
-    ]
+    yaml_files = [p for p in staged_files if p.suffix in (".yml", ".yaml") and p.is_file()]
 
     for path in yaml_files:
         try:
@@ -228,8 +227,7 @@ def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
 
             # Inline: '    run: cmd' or '    - run: cmd'
             is_inline = bool(
-                re.match(r"^\s+run:\s+\S", line)
-                or re.match(r"^\s+-\s+run:\s+\S", line)
+                re.match(r"^\s+run:\s+\S", line) or re.match(r"^\s+-\s+run:\s+\S", line),
             )
             is_in_block = in_run_block and _yaml_is_shell_line(line)
 
@@ -240,13 +238,15 @@ def check_yaml_bans(staged_files: list[Path]) -> list[dict]:
                         rel = str(path.relative_to(ROOT))
                     except ValueError:
                         rel = str(path)
-                    issues.append({
-                        "file": rel,
-                        "line": line_no,
-                        "check": "grep-yaml",
-                        "text": line.rstrip(),
-                        "kind": "yaml",
-                    })
+                    issues.append(
+                        {
+                            "file": rel,
+                            "line": line_no,
+                            "check": "grep-yaml",
+                            "text": line.rstrip(),
+                            "kind": "yaml",
+                        }
+                    )
 
     return issues
 
@@ -265,7 +265,10 @@ def _get_staged_files(root: Path) -> list[Path]:
     try:
         r = subprocess.run(
             ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
-            cwd=str(root), capture_output=True, encoding="utf-8", timeout=30,
+            cwd=str(root),
+            capture_output=True,
+            encoding="utf-8",
+            timeout=30,
         )
     except OSError:
         return []
@@ -318,7 +321,9 @@ def main() -> int:
 
     py_count = sum(1 for p in staged if p.suffix == ".py")
     yaml_count = sum(1 for p in staged if p.suffix in (".yml", ".yaml"))
-    print(f"OK: no ADG accelerator compliance violations ({py_count} Python, {yaml_count} YAML files scanned).")
+    print(
+        f"OK: no ADG accelerator compliance violations ({py_count} Python, {yaml_count} YAML files scanned)."
+    )
     return 0
 
 

@@ -17,9 +17,6 @@ NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default
 
 from __future__ import annotations
 
-import ast
-import gzip
-import hashlib
 import json
 import os
 
@@ -35,70 +32,13 @@ except ImportError:
         return json.dumps(obj, indent=2, sort_keys=True)
 
 
-import shutil
-import sqlite3
 import sys
-import tempfile
-import zipfile
-from collections import Counter, defaultdict
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
-
-
-from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularization
-    _is_file_locked,
-    _perform_wal_checkpoint,
-    _check_locked_files,
-)
-from tools.generate.utils.digest_utils import (  # noqa: E402  # M.1 modularization
-    _ratio,
-    _stable_digest,
-    _sqlite_table_digest,
-)
-from tools.generate.archiving import (  # noqa: E402  # M.2 modularization
-    _extract_timestamp,
-    _parse_timestamp,
-    _archive_old_artifacts,
-    _archive_zip_files,
-    _archive_individual_files,
-    _create_zip_archive,
-)
-from tools.generate.validation import (  # noqa: E402  # M.3 modularization
-    _check_artifact_validity,
-    _check_sqlite_integrity,
-    _check_artifact_consistency,
-    _check_p1_defects,
-    _check_p2_antipatterns,
-    _check_p3_ratchet,
-    _check_dead_production_imports,
-)
-from tools.generate.core import (  # noqa: E402  # M.6 modularization
-    _infer_layer,
-    _generate_timestamp,
-    _verify_artifacts,
-)
-from tools.generate.integration import (  # noqa: E402  # M.5 modularization
-    _auto_ingest_to_redis,
-    _auto_commit_artifacts,
-    _persist_adg_to_memory,
-    _check_mcp_config_drift,
-    _run_p1_p2_auto_fix,
-)
-from tools.generate.reporting import (  # noqa: E402  # M.4 modularization
-    _audit_semantic_surfaces,
-    _semantic_precision_stats,
-    _violation_surface_stats,
-    _violation_propagation_stats,
-    _artifact_determinism_probe,
-    _cleanup_validation_files,
-    _print_defect_table,
-    _generate_standardized_reports,
-)
 
 
 from agentic_core.adg.analysis.CanonicalSnapshot import (  # noqa: E402
@@ -113,16 +53,8 @@ from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_
 from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations  # noqa: E402
 from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts  # noqa: E402
 from agentic_core.adg.artifact.builder_types import build_artifact  # noqa: E402
-from agentic_core.adg.contracts.schema_util import canonical_name  # noqa: E402
 from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
     ADGStaticScanner,
-    _ExecutionSemanticVisitor,
-    _iter_python_files,
-    _repo_relative,
-    _TypeSurfaceCollector,
-)
-from agentic_core.L2_execution.utils.async_file_ops import (  # noqa: E402
-    BufferedFileWriter,
 )
 from agentic_core.L2_execution.utils.batch_processor import BatchProcessor  # noqa: E402
 
@@ -135,7 +67,38 @@ from agentic_core.L2_execution.utils.cpu_optimizer import (  # noqa: E402
 from agentic_core.L2_execution.utils.parallel_file_processor import (  # noqa: E402
     shutdown_file_processor,
 )
-
+from tools.generate.archiving import (  # noqa: E402  # M.2 modularization
+    _archive_old_artifacts,
+    _create_zip_archive,
+)
+from tools.generate.core import (  # noqa: E402  # M.6 modularization
+    _generate_timestamp,
+    _verify_artifacts,
+)
+from tools.generate.integration import (  # noqa: E402  # M.5 modularization
+    _auto_commit_artifacts,
+    _auto_ingest_to_redis,
+    _check_mcp_config_drift,
+    _persist_adg_to_memory,
+    _run_p1_p2_auto_fix,
+)
+from tools.generate.reporting import (  # noqa: E402  # M.4 modularization
+    _generate_standardized_reports,
+    _print_defect_table,
+)
+from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularization
+    _check_locked_files,
+    _perform_wal_checkpoint,
+)
+from tools.generate.validation import (  # noqa: E402  # M.3 modularization
+    _check_artifact_consistency,
+    _check_artifact_validity,
+    _check_dead_production_imports,
+    _check_p1_defects,
+    _check_p2_antipatterns,
+    _check_p3_ratchet,
+    _check_sqlite_integrity,
+)
 
 # M.4: _print_defect_table extracted to tools.generate.reporting.reports
 
@@ -279,7 +242,8 @@ def generate_full_adg(
         ("broad_exception_catch", "silent_exception_swallow", "log_and_swallow", "return_none_swallow"),
     )
     violation_edges = [
-        e for e in result.edges
+        e
+        for e in result.edges
         if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
         or (
             e.relation_type == "antipattern"
@@ -294,6 +258,7 @@ def generate_full_adg(
     print("[ADG] Writing artifact tiers to temp directory...")
     import shutil
     import tempfile
+
     temp_dir = tempfile.mkdtemp(prefix="adg_temp_")
     exit_code = 0
     try:
@@ -599,14 +564,13 @@ def generate_full_adg(
 
 
 # M.5: _auto_commit_artifacts extracted to tools.generate.integration.git_commit
-            # Don't raise - git failure shouldn't block ADG generation
+# Don't raise - git failure shouldn't block ADG generation
 
 
 # M.5: _persist_adg_to_memory extracted to tools.generate.integration.memory_persist
 
 
 # _extract_timestamp, _parse_timestamp, _archive_old_artifacts imported above from tools.generate.archiving (M.2)
-
 
 
 # M.4: _audit_semantic_surfaces extracted to tools.generate.reporting.analysis

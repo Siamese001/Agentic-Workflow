@@ -21,15 +21,13 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.pre_mcp_gate import (
+    _get_latest_snapshot_age_seconds,
+    _is_sqlite_locked,
     check_adg_gate,
     main,
-    _is_sqlite_locked,
-    _get_latest_snapshot_age_seconds,
 )
 
 
@@ -82,6 +80,7 @@ class TestGetSnapshotAge:
         snap.write_text("{}")
         old_time = time.time() - 3600  # 1 hour ago
         import os
+
         os.utime(str(snap), (old_time, old_time))
         age = _get_latest_snapshot_age_seconds(tmp_path)
         assert age is not None
@@ -112,6 +111,7 @@ class TestCheckAdgGate:
         snap.write_text("{}")
         old_time = time.time() - 3600
         import os
+
         os.utime(str(snap), (old_time, old_time))
         assert check_adg_gate(tmp_path) == 2
 

@@ -60,16 +60,16 @@ def scan_antipatterns(new_string: str) -> list[str]:
         stripped = line.strip()
         if _BARE_EXCEPT_RE.match(line):
             violations.append(
-                "Bare 'except:' found — use 'except SpecificError:' (Column 5 Precise Exceptions)."
+                "Bare 'except:' found — use 'except SpecificError:' (Column 5 Precise Exceptions).",
             )
         if _BROAD_EXCEPT_RE.search(line) and not _GUARDIAN_RE.search(line):
             violations.append(
                 "'except Exception' without guardian exemption — narrow exception type or add "
-                "'# guardian: allow-broad-exception -- <specific justification>'."
+                "'# guardian: allow-broad-exception -- <specific justification>'.",
             )
         if _SHELL_TRUE_RE.search(stripped) and "subprocess" in new_string:
             violations.append(
-                "'shell=True' in subprocess is forbidden — use argv list with shell=False per constitutional §0."
+                "'shell=True' in subprocess is forbidden — use argv list with shell=False per constitutional §0.",
             )
 
     return violations
@@ -131,12 +131,12 @@ def check_mcp_config(file_path: str, edits: list[dict]) -> tuple[bool, list[str]
         old = edit.get("old_string", "")
         if old and not new:
             warnings.append(
-                "mcp_config.json: server block removed — verify this is intentional."
+                "mcp_config.json: server block removed — verify this is intentional.",
             )
         for pat in _RISKY_MCP_PATTERNS:
             if pat.search(new):
                 warnings.append(
-                    "mcp_config.json: risky edit detected (server/transport/env change) — review carefully."
+                    "mcp_config.json: risky edit detected (server/transport/env change) — review carefully.",
                 )
                 break
 

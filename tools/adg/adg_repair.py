@@ -17,9 +17,10 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.adg.report_parsers import CompositeReportParser
+
 from tools.adg.repair import ADGRepairOrchestrator, RuleEngine
 from tools.adg.repair.git_integration import GitIntegration
-from tools.adg.report_parsers import CompositeReportParser
 
 
 def find_latest_timestamp(adg_dir: Path) -> str | None:
@@ -125,11 +126,11 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         print("\nDetailed Deficiencies:")
         print("=" * 60)
         for d in deficiencies[:20]:  # Show first 20
-            category_str = d['category'].value if hasattr(d['category'], 'value') else str(d['category'])
+            category_str = d["category"].value if hasattr(d["category"], "value") else str(d["category"])
             print(f"\n  [{category_str.upper()}] {d['issue_type']}")
             print(f"  File: {d['file_path']}")
             print(f"  Description: {d['description']}")
-            if d.get('suggested_fix'):
+            if d.get("suggested_fix"):
                 print(f"  Suggested Fix: {d['suggested_fix']}")
 
         if len(deficiencies) > 20:
@@ -239,7 +240,8 @@ def main() -> int:
         help="ADG artifacts directory (default: artifacts/adg)",
     )
     analyze_parser.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Show detailed deficiency information",
     )
@@ -264,7 +266,8 @@ def main() -> int:
         help="ADG artifacts directory (default: artifacts/adg)",
     )
     repair_parser.add_argument(
-        "--report", "-r",
+        "--report",
+        "-r",
         action="store_true",
         help="Report-only mode (show what would be fixed without making changes)",
     )

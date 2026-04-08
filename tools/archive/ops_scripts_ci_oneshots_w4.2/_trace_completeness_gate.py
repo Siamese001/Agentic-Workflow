@@ -56,7 +56,6 @@ import sqlite3
 import sys
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_reads_through,
     emit_determinism_digest,
     record_execution_trace,
 )

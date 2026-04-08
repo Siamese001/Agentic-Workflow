@@ -1,4 +1,5 @@
 """Debug AST visitor for mixed list in AnnAssign."""
+
 import ast
 import sys
 
@@ -73,8 +74,10 @@ _emit_stores_embedding("p4", "_debug_visitor", "embedding_store")
 _emit_updates_meta_learning_state("p4", "_debug_visitor", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "_debug_visitor", "exec_snapshot_link")
 # guardian: allow-global-mutation
-sys.path.insert(0, '.')
+sys.path.insert(0, ".")
 from pathlib import Path
+
+from ops_scripts.ci._fix_hardcoded_ssot_literals import _collect_safe_positions
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -101,7 +104,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from ops_scripts.ci._fix_hardcoded_ssot_literals import _collect_safe_positions
 
 _emit_emits_metric_event("_debug_visitor", "p4obs", "metric_1")
 _emit_emits_metric_event("_debug_visitor", "p4obs", "metric_2")
@@ -154,14 +156,14 @@ _emit_transcripts_response("p1", "_debug_visitor", "transcript")
 _emit_hard_fails_untranscripted("p1", "_debug_visitor")
 _emit_gated_by_confidence("p1", "_debug_visitor", "confidence_gate")
 
-content = Path('agentic_core/L0_routing/utils/scorched_earth_merge_util.py').read_text(encoding='utf-8')
+content = Path("agentic_core/L0_routing/utils/scorched_earth_merge_util.py").read_text(encoding="utf-8")
 safe_positions = _collect_safe_positions(content)
-print(f'Safe positions: {len(safe_positions)}')
+print(f"Safe positions: {len(safe_positions)}")
 for pos in sorted(safe_positions):
     if pos[0] == 23:
-        print(f'  Line 23, col {pos[1]} is safe')
+        print(f"  Line 23, col {pos[1]} is safe")
 tree = ast.parse(content)
 for node in ast.walk(tree):
     if isinstance(node, ast.Constant) and node.value == AGENTIC_CORE_DIR:
         print(f'"agentic_core" at line {node.lineno}, col {node.col_offset}')
-        print(f'  Is safe: {(node.lineno, node.col_offset) in safe_positions}')
+        print(f"  Is safe: {(node.lineno, node.col_offset) in safe_positions}")

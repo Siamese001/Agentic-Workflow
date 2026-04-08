@@ -33,14 +33,14 @@ def check_command(command_line: str) -> int:
     for pat in POWERSHELL_PATTERNS:
         if pat in lower:
             return _exit_block(
-                "PowerShell is forbidden (matched '{}'). ".format(pat) +
-                "Use subprocess.run(argv, shell=False) per constitutional §0."
+                "PowerShell is forbidden (matched '{}'). ".format(pat)
+                + "Use subprocess.run(argv, shell=False) per constitutional §0.",
             )
 
     if _FULL_SUITE_RE.search(command_line) and os.environ.get("ADG_REPAIR_ACTIVE"):
         return _exit_block(
-            "Full test-suite run blocked during ADG repair (ADG_REPAIR_ACTIVE is set). " +
-            "Run scoped cluster tests only per constitutional ADG repair discipline."
+            "Full test-suite run blocked during ADG repair (ADG_REPAIR_ACTIVE is set). "
+            + "Run scoped cluster tests only per constitutional ADG repair discipline.",
         )
 
     return 0

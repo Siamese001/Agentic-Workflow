@@ -12,8 +12,9 @@ from tools.adg.adg_query_bridge import (
     violations,
 )
 from tools.adg.adg_redis_query import ADGRedisClient, ADGRedisQuery
-from tools.adg.adg_stale_guard import ADGStaleGuard, ADGStalenessChecker
 from tools.adg.adg_test_selector import ADGTestSelector, TestImpactAnalyzer, select_tests_for_changes
+
+from tools.adg.adg_stale_guard import ADGStaleGuard, ADGStalenessChecker
 
 __all__ = [
     "ADGQueryBridge",

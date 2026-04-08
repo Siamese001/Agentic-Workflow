@@ -58,6 +58,7 @@ All other contexts are SKIPPED:
 Run:
     python ops_scripts/ci/_fix_hardcoded_ssot_literals.py [--dry-run]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -95,16 +96,65 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     TESTS_UNIT_DIR,
 )
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 
-_PC = 'agentic_core.L0_routing.config.path_constants'
-_SSOT = 'agentic_core.L5_safety.config.structure_blueprint.ssot'
-CONST_DEFS: list[tuple[str, str, str]] = sorted([('ARCHIVES_DIR', ARCHIVES_DIR, _PC), ('AGENTIC_CORE_DIR', AGENTIC_CORE_DIR, _PC), ('APPS_RG_DIR', APPS_RG_DIR, _PC), ('APPS_LIC_DIR', APPS_LIC_DIR, _PC), ('APPS_SHARED_DIR', APPS_SHARED_DIR, _PC), ('OPS_SCRIPTS_DIR', OPS_SCRIPTS_DIR, _PC), ('TESTS_DIR', TESTS_DIR, _PC), ('TOOLS_DIR', TOOLS_DIR, _PC), ('SYSTEM_LEARNING_DIR', SYSTEM_LEARNING_DIR, _PC), ('L0_MAINTENANCE_DIR', L0_MAINTENANCE_DIR, _PC), ('L1_COGNITION_DIR', L1_COGNITION_DIR, _PC), ('L2_EXECUTION_DIR', L2_EXECUTION_DIR, _PC), ('L3_ORCHESTRATION_DIR', L3_ORCHESTRATION_DIR, _PC), ('L4_STATE_DIR', L4_STATE_DIR, _PC), ('L5_SAFETY_DIR', L5_SAFETY_DIR, _PC), ('L6_OBSERVABILITY_DIR', L6_OBSERVABILITY_DIR, _PC), ('DOCS_REPORTS_PLANS', DOCS_REPORTS_PLANS, _SSOT), ('REPORTS_DIR', REPORTS_DIR, _SSOT), ('TESTS_UNIT_DIR', TESTS_UNIT_DIR, _SSOT)], key=lambda x: -len(x[1]))
-_SSOT_SKIP = ('agentic_core/L5_safety/config/structure_blueprint/', 'agentic_core/L0_routing/config/path_constants')
+_PC = "agentic_core.L0_routing.config.path_constants"
+_SSOT = "agentic_core.L5_safety.config.structure_blueprint.ssot"
+CONST_DEFS: list[tuple[str, str, str]] = sorted(
+    [
+        ("ARCHIVES_DIR", ARCHIVES_DIR, _PC),
+        ("AGENTIC_CORE_DIR", AGENTIC_CORE_DIR, _PC),
+        ("APPS_RG_DIR", APPS_RG_DIR, _PC),
+        ("APPS_LIC_DIR", APPS_LIC_DIR, _PC),
+        ("APPS_SHARED_DIR", APPS_SHARED_DIR, _PC),
+        ("OPS_SCRIPTS_DIR", OPS_SCRIPTS_DIR, _PC),
+        ("TESTS_DIR", TESTS_DIR, _PC),
+        ("TOOLS_DIR", TOOLS_DIR, _PC),
+        ("SYSTEM_LEARNING_DIR", SYSTEM_LEARNING_DIR, _PC),
+        ("L0_MAINTENANCE_DIR", L0_MAINTENANCE_DIR, _PC),
+        ("L1_COGNITION_DIR", L1_COGNITION_DIR, _PC),
+        ("L2_EXECUTION_DIR", L2_EXECUTION_DIR, _PC),
+        ("L3_ORCHESTRATION_DIR", L3_ORCHESTRATION_DIR, _PC),
+        ("L4_STATE_DIR", L4_STATE_DIR, _PC),
+        ("L5_SAFETY_DIR", L5_SAFETY_DIR, _PC),
+        ("L6_OBSERVABILITY_DIR", L6_OBSERVABILITY_DIR, _PC),
+        ("DOCS_REPORTS_PLANS", DOCS_REPORTS_PLANS, _SSOT),
+        ("REPORTS_DIR", REPORTS_DIR, _SSOT),
+        ("TESTS_UNIT_DIR", TESTS_UNIT_DIR, _SSOT),
+    ],
+    key=lambda x: -len(x[1]),
+)
+_SSOT_SKIP = (
+    "agentic_core/L5_safety/config/structure_blueprint/",
+    "agentic_core/L0_routing/config/path_constants",
+)
+
 
 def _is_ssot_def(rel: str) -> bool:
     return any(rel.startswith(p) for p in _SSOT_SKIP)
-_PATH_CALLS = {'Path', 'PurePath', 'PurePosixPath', 'PureWindowsPath', 'walk', 'makedirs', 'mkdir', 'listdir', 'scandir', 'isdir', 'isfile', 'exists', 'join', 'abspath', 'realpath', 'relpath', 'expanduser', 'glob', 'rglob'}
+
+
+_PATH_CALLS = {
+    "Path",
+    "PurePath",
+    "PurePosixPath",
+    "PureWindowsPath",
+    "walk",
+    "makedirs",
+    "mkdir",
+    "listdir",
+    "scandir",
+    "isdir",
+    "isfile",
+    "exists",
+    "join",
+    "abspath",
+    "realpath",
+    "relpath",
+    "expanduser",
+    "glob",
+    "rglob",
+}
+
 
 class _SafePositionCollector(ast.NodeVisitor):
     """
@@ -176,7 +226,7 @@ class _SafePositionCollector(ast.NodeVisitor):
                 if node in parent.args:
                     self._mark(node)
                 return
-            if func_name in ('add', 'append', 'discard', 'remove'):
+            if func_name in ("add", "append", "discard", "remove"):
                 if len(parent.args) == 1 and parent.args[0] is node and (not parent.keywords):
                     self._mark(node)
             return
@@ -194,14 +244,16 @@ class _SafePositionCollector(ast.NodeVisitor):
                     self._mark(node)
             return
 
+
 def _collect_safe_positions(source: str) -> set[tuple[int, int]]:
     try:
         tree = ast.parse(source)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return set()
     c = _SafePositionCollector()
     c.visit(tree)
     return c.safe
+
 
 def _find_last_import_line(lines: list[str]) -> int:
     """Return the index of the last line that is part of a TOP-LEVEL import.
@@ -212,101 +264,118 @@ def _find_last_import_line(lines: list[str]) -> int:
     i = 0
     while i < len(lines):
         ln = lines[i]
-        if ln.startswith('import ') or ln.startswith('from '):
+        if ln.startswith("import ") or ln.startswith("from "):
             last = i
-            depth = ln.count('(') - ln.count(')')
+            depth = ln.count("(") - ln.count(")")
             while depth > 0 and i + 1 < len(lines):
                 i += 1
-                depth += lines[i].count('(') - lines[i].count(')')
+                depth += lines[i].count("(") - lines[i].count(")")
                 last = i
         i += 1
     return last
 
+
 def _inject_import(lines: list[str], const: str, module: str) -> list[str]:
     lines = list(lines)
     # guardian: allow-path-string
-    from_multi = re.compile('^\\s*from\\s+' + re.escape(module) + '\\s+import\\s+\\(')
+    from_multi = re.compile("^\\s*from\\s+" + re.escape(module) + "\\s+import\\s+\\(")
     # guardian: allow-path-string
-    from_single = re.compile('^(\\s*from\\s+' + re.escape(module) + '\\s+import\\s+)(.+)$')
+    from_single = re.compile("^(\\s*from\\s+" + re.escape(module) + "\\s+import\\s+)(.+)$")
     for i, ln in enumerate(lines):
         if from_multi.match(ln):
             depth = 0
             j = i
             while j < len(lines):
-                depth += lines[j].count('(') - lines[j].count(')')
+                depth += lines[j].count("(") - lines[j].count(")")
                 if depth <= 0:
                     break
                 j += 1
-            lines.insert(j, f'    {const},\n')
+            lines.insert(j, f"    {const},\n")
             return lines
     for i, ln in enumerate(lines):
         m = from_single.match(ln)
         if m:
-            names = [n.strip().rstrip(',') for n in m.group(2).split(',') if n.strip()]
+            names = [n.strip().rstrip(",") for n in m.group(2).split(",") if n.strip()]
             names.append(const)
             names.sort()
-            indent = ' ' * (len(ln) - len(ln.lstrip()))
-            new_lines = [indent + f'from {module} import (\n']
+            indent = " " * (len(ln) - len(ln.lstrip()))
+            new_lines = [indent + f"from {module} import (\n"]
             for name in names:
-                new_lines.append(indent + f'    {name},\n')
-            new_lines.append(indent + ')\n')
-            lines[i:i + 1] = new_lines
+                new_lines.append(indent + f"    {name},\n")
+            new_lines.append(indent + ")\n")
+            lines[i : i + 1] = new_lines
             return lines
     last = _find_last_import_line(lines)
-    lines.insert(last + 1, f'from {module} import {const}\n')
+    lines.insert(last + 1, f"from {module} import {const}\n")
     return lines
+
 
 def process_file(fpath: Path, rel: str, dry_run: bool) -> list[dict]:
     if _is_ssot_def(rel):
         return []
     try:
-        original = fpath.read_text(encoding='utf-8', errors='replace')
-    except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+        original = fpath.read_text(encoding="utf-8", errors="replace")
+    except (
+        OSError,
+        UnicodeDecodeError,
+    ):  # guardian: File operations with encoding need error-specific handling
         return []
     lines = original.splitlines(keepends=True)
     fixes: list[dict] = []
     for const, literal, module in CONST_DEFS:
-        current_text = ''.join(lines)
+        current_text = "".join(lines)
         if const in current_text and literal not in current_text:
             continue
         safe_positions = _collect_safe_positions(current_text)
         if not safe_positions:
             continue
-        pat = re.compile('(?P<q>[\'"])' + re.escape(literal) + '(?P=q)')
+        pat = re.compile("(?P<q>['\"])" + re.escape(literal) + "(?P=q)")
         for i, line in enumerate(lines):
             stripped = line.strip()
-            if stripped.startswith('#') or stripped.startswith('import ') or stripped.startswith('from '):
+            if stripped.startswith("#") or stripped.startswith("import ") or stripped.startswith("from "):
                 continue
             m = pat.search(line)
             if not m:
                 continue
-            if m.end() < len(line) and line[m.end()] == '/':
+            if m.end() < len(line) and line[m.end()] == "/":
                 continue
             lineno = i + 1
             col = m.start()
-            is_safe = any((pos_line == lineno and abs(pos_col - (col + 1)) <= 1 for pos_line, pos_col in safe_positions))
+            is_safe = any(
+                (pos_line == lineno and abs(pos_col - (col + 1)) <= 1 for pos_line, pos_col in safe_positions)
+            )
             if not is_safe:
                 continue
             fixed_line = pat.sub(const, line, count=1)
             if fixed_line == line:
                 continue
-            fixes.append({'const': const, 'literal': literal, 'module': module, 'lineno': lineno, 'original': line.rstrip(), 'fixed': fixed_line.rstrip()})
+            fixes.append(
+                {
+                    "const": const,
+                    "literal": literal,
+                    "module": module,
+                    "lineno": lineno,
+                    "original": line.rstrip(),
+                    "fixed": fixed_line.rstrip(),
+                }
+            )
             lines[i] = fixed_line
             break
     if fixes and (not dry_run):
         new_lines = list(lines)
         injected: set[str] = set()
         for fix in fixes:
-            c = fix['const']
-            if c not in injected and c not in ''.join(new_lines[:50]):
-                new_lines = _inject_import(new_lines, c, fix['module'])
+            c = fix["const"]
+            if c not in injected and c not in "".join(new_lines[:50]):
+                new_lines = _inject_import(new_lines, c, fix["module"])
                 injected.add(c)
-        fpath.write_text(''.join(new_lines), encoding='utf-8')
+        fpath.write_text("".join(new_lines), encoding="utf-8")
     return fixes
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     total_files = 0
     total_fixes = 0
@@ -318,7 +387,7 @@ def main() -> None:
         for dirpath, dirs, files in os.walk(scan_root):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for fname in files:
-                if not fname.endswith('.py'):
+                if not fname.endswith(".py"):
                     continue
                 fpath = Path(dirpath) / fname
                 rel = fpath.relative_to(ROOT).as_posix()
@@ -327,13 +396,15 @@ def main() -> None:
                     total_files += 1
                     total_fixes += len(fixes)
                     all_results[rel] = fixes
-    mode = 'DRY-RUN' if args.dry_run else 'APPLIED'
-    print(f'[{mode}] {total_fixes} fixes across {total_files} files')
+    mode = "DRY-RUN" if args.dry_run else "APPLIED"
+    print(f"[{mode}] {total_fixes} fixes across {total_files} files")
     for rel in sorted(all_results):
-        print(f'  {rel}')
+        print(f"  {rel}")
         for f in all_results[rel]:
             print(f"    L{f['lineno']:4d} [{f['const']}]")
             print(f"         ORIG: {f['original'][:100]}")
             print(f"         NEW:  {f['fixed'][:100]}")
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()

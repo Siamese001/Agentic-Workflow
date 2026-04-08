@@ -30,12 +30,14 @@ def _check_p1_defects(routing_summary: dict[str, int], sqlite_path: Path | None 
                     src_path = ROOT / source_file
                     if src_path.exists() and line_no and line_no > 0:
                         lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-                        check_lines = lines[max(0, line_no - 2):line_no]
+                        check_lines = lines[max(0, line_no - 2) : line_no]
                         exempted = any("guardian: allow-layer-violation" in ln for ln in check_lines)
                         if not exempted:
                             unapproved.append((source_file, line_no))
                     else:
-                        print(f"[DEBUG] Guardian check: file not found or invalid line_no: {source_file}:{line_no}")
+                        print(
+                            f"[DEBUG] Guardian check: file not found or invalid line_no: {source_file}:{line_no}"
+                        )
                         unapproved.append((source_file, line_no))
                 except Exception as e:  # guardian: allow-silent-swallow -- non-critical: file read failure during exemption check
                     print(f"[DEBUG] Guardian check exception for {source_file}:{line_no}: {e}")
@@ -114,8 +116,9 @@ def _check_p2_antipatterns(sqlite_path: Path | None = None, ratchet_file: Path |
         if ratchet_file.exists():
             with open(ratchet_file) as f:
                 ratchet_data = json.load(f)
-            ceiling = ratchet_data.get("high_severity_ceiling",
-                       ratchet_data.get("p2_antipattern_ceiling", current_count))
+            ceiling = ratchet_data.get(
+                "high_severity_ceiling", ratchet_data.get("p2_antipattern_ceiling", current_count)
+            )
         else:
             ceiling = current_count
             ratchet_file.parent.mkdir(parents=True, exist_ok=True)
@@ -157,7 +160,7 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
         with sqlite3.connect(str(sqlite_path)) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT COUNT(*) FROM violations WHERE severity='MEDIUM' AND category='antipattern'"
+                "SELECT COUNT(*) FROM violations WHERE severity='MEDIUM' AND category='antipattern'",
             )
             current_count = cursor.fetchone()[0]
 
@@ -184,7 +187,9 @@ def _check_p3_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             print(f"[INFO] P3 ratchet: Reduced ceiling from {ceiling} to {current_count}")
         else:
             print(f"[INFO] P3 ratchet: Current count {current_count} at ceiling {ceiling}")
-    except Exception:  # guardian: allow-silent-swallow -- non-critical: Ratchet check failure falls back gracefully
+    except (
+        Exception
+    ):  # guardian: allow-silent-swallow -- non-critical: Ratchet check failure falls back gracefully
         pass
 
 
@@ -236,5 +241,7 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
                 sys.exit(1)
             else:
                 print("[INFO] Dead production import gate: PASSED (no dead modules in L4_state/cache)")
-    except Exception:  # guardian: allow-silent-swallow -- non-critical: Gate query failure falls back gracefully
+    except (
+        Exception
+    ):  # guardian: allow-silent-swallow -- non-critical: Gate query failure falls back gracefully
         pass

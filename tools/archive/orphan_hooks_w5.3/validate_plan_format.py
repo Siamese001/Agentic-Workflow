@@ -4,7 +4,6 @@ Pre-commit hook to validate Windsurf plan format.
 Enforces compliance with plan structure requirements.
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -48,16 +47,16 @@ def main():
         print(f"Validating: {plan_file}")
         result = validate_plan_format(str(plan_file))
 
-        if result['valid']:
+        if result["valid"]:
             print("✅ Valid")
         else:
             print("❌ Invalid")
             all_valid = False
-            for issue in result['issues']:
+            for issue in result["issues"]:
                 print(f"  - {issue}")
 
-        if result['warnings']:
-            for warning in result['warnings']:
+        if result["warnings"]:
+            for warning in result["warnings"]:
                 print(f"  ⚠️  {warning}")
         print()
 
@@ -68,6 +67,7 @@ def main():
         print("❌ Some plans failed validation!")
         print("Fix the issues above before committing.")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

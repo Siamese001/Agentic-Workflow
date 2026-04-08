@@ -66,8 +66,6 @@ import glob
 import sqlite3
 import sys
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
-
 GATE_RESULTS: list[tuple[str, bool, str]] = []
 
 NON_TEST = (
@@ -149,7 +147,9 @@ def gate_a(conn: sqlite3.Connection) -> bool:
     """
     version_missing = _count_exported(conn, "StateVersionMissingError", "state_transition_registry")
     commit_exported = _count_exported(
-        conn, "commit_versioned_state_transition", "commit_versioned_state_transition",
+        conn,
+        "commit_versioned_state_transition",
+        "commit_versioned_state_transition",
     )
     commit_in_run_state = _count_in_file(conn, "commit_versioned_state_transition", "run_state_authority")
     commit_in_scoped = _count_in_file(conn, "commit_versioned_state_transition", "run_scoped_state_authority")
@@ -276,7 +276,9 @@ def gate_e(conn: sqlite3.Connection) -> bool:
     """
     lineage_error = _count_exported(conn, "SnapshotLineageError", "state_transition_registry")
     transition_function = _count_exported(
-        conn, "state_transition_committed", "commit_versioned_state_transition",
+        conn,
+        "state_transition_committed",
+        "commit_versioned_state_transition",
     )
     transition_edges = _count_distinct_sources(conn, "state_transition_committed", NON_TEST)
     snapshots_edges = _count_distinct_sources(conn, "snapshots_state", NON_TEST)

@@ -28,8 +28,8 @@ STALE_THRESHOLD_SECONDS = 30 * 60  # 30 minutes
 # Recovery tools that MUST pass even when ADG is stale/locked.
 # Without this whitelist, the gate blocks the very tools needed to recover.
 ADG_RECOVERY_TOOLS = {
-    "adg_health",       # mcp1_adg_health — liveness probe
-    "adg_status",       # mcp1_adg_status — snapshot status
+    "adg_health",  # mcp1_adg_health — liveness probe
+    "adg_status",  # mcp1_adg_status — snapshot status
     "adg_close_connections",  # needed to release SQLite locks
     "adg_reopen_connections",  # needed after lock release
 }
@@ -85,7 +85,7 @@ def check_adg_gate(repo_root: Path) -> int:
     if _is_sqlite_locked(repo_root):
         return _exit_block(
             "ADG SQLite is locked (WAL/journal file detected). "
-            "Call mcp1_adg_close_connections before retrying ADG tools."
+            "Call mcp1_adg_close_connections before retrying ADG tools.",
         )
 
     age = _get_latest_snapshot_age_seconds(repo_root)
@@ -93,7 +93,7 @@ def check_adg_gate(repo_root: Path) -> int:
         minutes = int(age // 60)
         return _exit_block(
             f"ADG health is stale ({minutes} min old, threshold 30 min). "
-            "Run mcp1_adg_health first to verify ADG MCP is healthy."
+            "Run mcp1_adg_health first to verify ADG MCP is healthy.",
         )
 
     return 0

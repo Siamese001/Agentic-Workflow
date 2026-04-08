@@ -455,16 +455,23 @@ def _read_lines_cached(filepath: str) -> list[str]:
     """Read file lines with caching to avoid repeated I/O for hot files."""
     if filepath not in _file_cache:
         try:
-            _file_cache[filepath] = Path(filepath).read_text(
-                encoding="utf-8", errors="ignore"
-            ).splitlines()
+            _file_cache[filepath] = (
+                Path(filepath)
+                .read_text(
+                    encoding="utf-8",
+                    errors="ignore",
+                )
+                .splitlines()
+            )
         except OSError:
             _file_cache[filepath] = []
     return _file_cache[filepath]
 
 
 def _has_guardian_comment(
-    source_file: str, line_no: int, guardian_strings: tuple[str, ...]
+    source_file: str,
+    line_no: int,
+    guardian_strings: tuple[str, ...],
 ) -> bool:
     """Check if source line (±2 lines) contains a matching guardian comment."""
     lines = _read_lines_cached(source_file)
@@ -494,7 +501,7 @@ def _filter_guardian_exempted_violations(conn: sqlite3.Connection) -> int:
     rows = conn.execute(
         "SELECT v.id, e.edge_kind, v.file_path, v.line_no "
         "FROM violations v JOIN edges e ON v.edge_id = e.id "
-        "WHERE v.category = 'antipattern'"
+        "WHERE v.category = 'antipattern'",
     ).fetchall()
 
     exempt_ids: list[int] = []
@@ -507,7 +514,7 @@ def _filter_guardian_exempted_violations(conn: sqlite3.Connection) -> int:
     lv_rows = conn.execute(
         "SELECT v.id, v.file_path, v.line_no "
         "FROM violations v JOIN edges e ON v.edge_id = e.id "
-        "WHERE e.relation_type = 'violates'"
+        "WHERE e.relation_type = 'violates'",
     ).fetchall()
     for vid, fpath, lno in lv_rows:
         if _has_guardian_comment(fpath, lno, _LAYER_VIOLATION_GUARDIANS):
@@ -520,7 +527,8 @@ def _filter_guardian_exempted_violations(conn: sqlite3.Connection) -> int:
             batch = exempt_ids[i : i + 900]
             placeholders = ",".join("?" for _ in batch)
             conn.execute(
-                f"DELETE FROM violations WHERE id IN ({placeholders})", batch
+                f"DELETE FROM violations WHERE id IN ({placeholders})",
+                batch,
             )
 
     # Store exemption count in meta for transparency

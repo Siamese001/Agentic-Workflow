@@ -1,8 +1,9 @@
 {
-  "baseline": 2,
+  "baseline": 3,
   "note": "Number of tracked Python files allowed to carry '# adg-grep-ban: skip-file'. Increment only for files that legitimately contain banned patterns as string literals (test fixtures). Run with --update to tighten after removal.",
   "files": [
     "ops_scripts/ci/adg_skip_file_ratchet.py",
-    "ops_scripts/ci/pre_commit_summary_reporter.py"
+    "ops_scripts/ci/pre_commit_summary_reporter.py",
+    "tests/ops_scripts/ci/test_adg_accelerator_compliance_gate.py"
   ]
 }

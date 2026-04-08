@@ -100,6 +100,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import redis
+from tools.adg.adg_redis_query import ADGRedisClient
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -126,7 +127,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tools.adg.adg_redis_query import ADGRedisClient
 
 _emit_emits_metric_event("adg_type_check", "p4obs", "metric_1")
 _emit_emits_metric_event("adg_type_check", "p4obs", "metric_2")
@@ -341,7 +341,7 @@ class ADGTypeChecker:
             )
         except subprocess.TimeoutExpired as exc:
             raise RuntimeError(f"mypy timed out after 120s: {exc}") from exc
-        except FileNotFoundError as exc:    # guardian: File operations should check existence before access
+        except FileNotFoundError as exc:  # guardian: File operations should check existence before access
             raise RuntimeError(f"mypy not found — install with: pip install mypy. Error: {exc}") from exc
 
         return MypyResult(
@@ -448,7 +448,10 @@ def _cli() -> None:
     try:
         adg = ADGRedisClient()
         adg.ping()
-    except (RuntimeError, redis.ConnectionError) as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except (
+        RuntimeError,
+        redis.ConnectionError,
+    ) as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: ADG Redis unavailable — {exc}", file=sys.stderr)
         sys.exit(1)
 
@@ -458,13 +461,13 @@ def _cli() -> None:
     if use_diff:
         try:
             changed.extend(_git_changed_files(staged=args.staged))
-        except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
             print(f"ERROR: {exc}", file=sys.stderr)
             sys.exit(1)
 
     try:
         scope = checker.get_blast_radius(changed, depth=args.depth)
-    except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 
@@ -477,7 +480,7 @@ def _cli() -> None:
 
     try:
         result = checker.run_mypy(scope, strict=args.strict)
-    except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         sys.exit(1)
 

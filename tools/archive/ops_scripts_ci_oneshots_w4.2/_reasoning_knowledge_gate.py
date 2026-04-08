@@ -15,7 +15,6 @@ Runtime-only closure: excludes test, tests, spec, fixture, mock files.
 import sqlite3
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # Constants
 NON_TEST = """
@@ -53,7 +52,9 @@ def _count_exported(conn: sqlite3.Connection, symbol: str, module_hint: str = ""
 
 
 def _count_distinct_sources(
-    conn: sqlite3.Connection, relation_type: str, filter_clause: str = NON_TEST,
+    conn: sqlite3.Connection,
+    relation_type: str,
+    filter_clause: str = NON_TEST,
 ) -> int:
     """Count distinct source files for a relation type."""
     cursor = conn.execute(

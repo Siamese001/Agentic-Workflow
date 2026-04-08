@@ -13,13 +13,14 @@ import time
 from abc import ABC, abstractmethod
 from typing import Any
 
+from tools.adg.services.adg_query_service import ADGQueryService
+
 from agentic_core.adg.contracts.query_contracts import (
     FindingPacket,
     FindingSeverity,
     InvariantResult,
     UnresolvedImport,
 )
-from tools.adg.services.adg_query_service import ADGQueryService
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,9 @@ class ImportResolutionCheck(InvariantCheck):
                 policy_pack=policy_pack.get("name", "default"),
                 description=f"Unresolved import: {imp.src_module} imports {imp.symbol}",
                 remediation=f"Fix import at {imp.src_file}:{imp.line_no} or add to allowlist",
-                snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
+                snapshot_id=query_service.get_snapshot_metadata().snapshot_id
+                if query_service.get_snapshot_metadata()
+                else None,
             )
             findings.append(finding)
 
@@ -115,7 +118,9 @@ class ImportResolutionCheck(InvariantCheck):
             findings=findings,
             checked_count=len(unresolved),
             duration_ms=duration_ms,
-            snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
+            snapshot_id=query_service.get_snapshot_metadata().snapshot_id
+            if query_service.get_snapshot_metadata()
+            else None,
         )
 
     def _is_allowed_unresolved(
@@ -191,7 +196,9 @@ class BoundaryViolationCheck(InvariantCheck):
                         policy_pack=policy_pack.get("name", "default"),
                         description=f"Boundary violation: {scope} imports forbidden {imp.symbol}",
                         remediation=f"Remove forbidden import at {imp.src_file}:{imp.line_no}",
-                        snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
+                        snapshot_id=query_service.get_snapshot_metadata().snapshot_id
+                        if query_service.get_snapshot_metadata()
+                        else None,
                     )
                     findings.append(finding)
 
@@ -203,7 +210,9 @@ class BoundaryViolationCheck(InvariantCheck):
             findings=findings,
             checked_count=total_checked,
             duration_ms=duration_ms,
-            snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
+            snapshot_id=query_service.get_snapshot_metadata().snapshot_id
+            if query_service.get_snapshot_metadata()
+            else None,
         )
 
 

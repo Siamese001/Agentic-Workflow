@@ -15,7 +15,6 @@ import signal
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
-
 from tools.adg.core.service import ADGService
 from tools.adg.mcp.health import HealthDiagnostics
 

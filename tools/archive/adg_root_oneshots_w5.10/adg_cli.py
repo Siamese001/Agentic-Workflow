@@ -1022,8 +1022,9 @@ def cmd_guardian_scope(
     prioritizer = GuardianPrioritizer(result)
 
     if file_path:
-        from agentic_core.adg.contracts.schema_util import module_path_to_layer
         from tools.change_impact_engine import ChangeImpactEngine
+
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         norm_path = file_path.replace("\\", "/")
         layer = module_path_to_layer(norm_path)
@@ -1212,8 +1213,9 @@ def cmd_execution_impact(file_path: str, repo_root: Path) -> int:
 
 def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
     """Return safe healing scope for a symbol (modules that may be safely touched)."""
-    from agentic_core.adg.contracts.schema_util import module_path_to_layer
     from tools.change_impact_engine import ChangeImpactEngine
+
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
     result = _load_scan(repo_root)
     norm = symbol_name.replace("\\", "/")
@@ -1280,8 +1282,9 @@ def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
 
 def cmd_healing_radius(symbol_name: str, repo_root: Path) -> int:
     """Return full transitive healing radius (blast radius) for a symbol."""
-    from agentic_core.adg.contracts.schema_util import module_path_to_layer
     from tools.change_impact_engine import ChangeImpactEngine
+
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
     result = _load_scan(repo_root)
     norm = symbol_name.replace("\\", "/")
@@ -1407,7 +1410,10 @@ def main(argv: list[str] | None = None) -> int:
     # -- diff
     p_diff = sub.add_parser("diff", help="Diff current ADG against a baseline")
     p_diff.add_argument(
-        "--baseline", required=True, metavar="ARTIFACT_OR_PATH", help="Baseline artifact path",
+        "--baseline",
+        required=True,
+        metavar="ARTIFACT_OR_PATH",
+        help="Baseline artifact path",
     )
 
     # -- impact
@@ -1435,7 +1441,10 @@ def main(argv: list[str] | None = None) -> int:
     # -- scoped-tests
     p_st = sub.add_parser("scoped-tests", help="Map changed files to impacted tests")
     p_st.add_argument(
-        "--changed-files", required=True, metavar="FILE1,FILE2,...", help="Comma-separated changed files",
+        "--changed-files",
+        required=True,
+        metavar="FILE1,FILE2,...",
+        help="Comma-separated changed files",
     )
 
     # -- test-coverage

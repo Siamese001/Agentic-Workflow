@@ -20,14 +20,12 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from ops_scripts.hooks.windsurf.pre_prompt_classifier import (
-    classify_tier,
     check_adg_health_stale,
     check_plan_exists,
+    classify_tier,
     main,
 )
 
