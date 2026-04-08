@@ -5,7 +5,10 @@
 # Heavy structural/ADG checks (module collision, guardian ratchet) → CI.
 #
 # Commit pipeline:
-#   T0   whitespace/LF/EOF/merge-conflict  — deterministic, no Python startup
+#   T0a  trailing-whitespace                — deterministic, no Python startup
+#   T0b  end-of-file-fixer                  — deterministic, no Python startup
+#   T0c  enforce LF line endings            — deterministic, no Python startup
+#   T0d  check merge conflict markers       — deterministic, no Python startup
 #   T1   py_compile                         — fastest syntax fail
 #   T2   ruff-format                        — auto-fixer first (eliminates retry loop)
 #   T3   guardian-comment-fixer             — staged Python files only
@@ -78,17 +81,17 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        name: "T0: Trailing Whitespace"
+        name: "T0a: Trailing Whitespace"
         exclude: '.*\.md$'
       - id: end-of-file-fixer
-        name: "T0: End-of-File Fixer"
+        name: "T0b: End-of-File Fixer"
         exclude: '.*\.md$'
       - id: mixed-line-ending
-        name: "T0: Enforce LF Line Endings"
+        name: "T0c: Enforce LF Line Endings"
         args: [--fix=lf]
         exclude: '.*\.md$'
       - id: check-merge-conflict
-        name: "T0: Check Merge Conflict Markers"
+        name: "T0d: Check Merge Conflict Markers"
 
   # ============================================================================
   # TIER 1: Syntax Gate (Fastest Fail — broken files never proceed)
