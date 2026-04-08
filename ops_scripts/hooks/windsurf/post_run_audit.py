@@ -16,7 +16,6 @@ Zero hardcoded paths — REPO_ROOT resolved from __file__.
 """
 
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,7 +34,11 @@ def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:
     """
     try:
         import psutil
-        for proc in psutil.process_iter(["pid", "cmdline", "cwd"]):
+        try:
+            proc_iter = psutil.process_iter(["pid", "cmdline", "cwd"])
+        except (psutil.AccessDenied, OSError):
+            return None
+        for proc in proc_iter:
             try:
                 proc_cmd = " ".join(proc.info.get("cmdline") or [])
                 proc_cwd = proc.info.get("cwd") or ""

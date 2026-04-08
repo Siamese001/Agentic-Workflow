@@ -3,7 +3,7 @@
 pre_run_gate.py — Windsurf pre_run_command hard gate (Phase 1.1).
 
 Reads JSON payload from stdin. Blocks (exit 2) on:
-  - PowerShell commands (powershell, pwsh — case-insensitive as executable token)
+  - PowerShell commands (powershell, pwsh — case-insensitive, any path prefix, .exe suffix)
   - Full test-suite run during ADG repair (ADG_REPAIR_ACTIVE env var)
 
 SSOT for PowerShell ban enforcement (2026-04-08):
@@ -20,6 +20,7 @@ import json
 import os
 import re
 import sys
+from pathlib import PurePosixPath, PureWindowsPath
 
 FAIL_POLICY = "closed"
 
@@ -31,6 +32,29 @@ _FULL_SUITE_RE = re.compile(r"pytest\s+tests/unit(\s|$)")
 _ALLOWED_SCRIPT_SUFFIXES = (
     "check_powershell_ban.py",
     "pre_run_gate.py",
+)
+
+# Match powershell/pwsh as the leading executable in a command line.
+# Handles: bare name, .exe suffix, Unix paths (/usr/bin/pwsh),
+# Windows paths with or without spaces (C:/Program Files/PowerShell/7/pwsh.exe).
+# The pattern anchors to start of string and allows an optional path prefix
+# containing any chars except spaces — OR a quoted path.
+_POWERSHELL_EXEC_RE = re.compile(
+    r"""
+    (?:^|(?<=\s))           # start of string or preceded by whitespace
+    (?:
+        "(?:[^"]*[/\\])?    # optional quoted path prefix
+        (powershell|pwsh)   # executable name (group 1)
+        (?:\.exe)?          # optional .exe
+        "                   # closing quote
+      |
+        (?:[^\s]*[/\\])?    # optional unquoted path prefix (no spaces)
+        (powershell|pwsh)   # executable name (group 2)
+        (?:\.exe)?          # optional .exe
+    )
+    (?:\s|$)                # followed by space or end-of-string
+    """,
+    re.IGNORECASE | re.VERBOSE,
 )
 
 
@@ -49,21 +73,19 @@ def check_command(command_line: str) -> int:
            for s in _ALLOWED_SCRIPT_SUFFIXES):
         pass
     else:
-        for pat in POWERSHELL_PATTERNS:
-            # Match powershell/pwsh only as the executable (first token) or
-            # as an explicit argument value — not inside a file path
-            tokens = command_line.split()
-            executable = tokens[0].lower() if tokens else ""
-            if pat == executable or executable.endswith(pat + ".exe"):
-                return _exit_block(
-                    "PowerShell is forbidden (matched '{}'). ".format(pat)
-                    + "Use subprocess.run(argv, shell=False) per constitutional §0.",
-                )
+        if _POWERSHELL_EXEC_RE.search(command_line):
+            matched = next(
+                pat for pat in POWERSHELL_PATTERNS if pat in command_line.lower()
+            )
+            return _exit_block(
+                f"PowerShell is forbidden (matched '{matched}'). "
+                "Use subprocess.run(argv, shell=False) per constitutional §0.",
+            )
 
     if _FULL_SUITE_RE.search(command_line) and os.environ.get("ADG_REPAIR_ACTIVE"):
         return _exit_block(
             "Full test-suite run blocked during ADG repair (ADG_REPAIR_ACTIVE is set). "
-            + "Run scoped cluster tests only per constitutional ADG repair discipline.",
+            "Run scoped cluster tests only per constitutional ADG repair discipline.",
         )
 
     return 0
@@ -85,7 +107,13 @@ def main() -> int:
             return 2
         return 0
 
+    if not isinstance(payload, dict):
+        return 0
+
     tool_info = payload.get("tool_info", payload)
+    if not isinstance(tool_info, dict):
+        return 0
+
     command_line = tool_info.get("command_line", "")
 
     if not command_line:
