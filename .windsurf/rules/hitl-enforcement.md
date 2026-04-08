@@ -47,6 +47,34 @@ When HITL is required, use `ask_user_question` tool with:
   - **Recommendation**: ⭐ marker if this is the recommended choice
 - **allowMultiple**: false (single selection required)
 
+**⚠️ CRITICAL ANTI-PATTERN — FORBIDDEN**:
+```
+# WRONG: presenting STAR/pros/cons in chat prose, then sending a bare ask_user_question
+# This is a two-step split that loses the structured content from the clickable UI
+
+chat: "Option A pros: X. Option B pros: Y. ⭐ Recommended: A"
+ask_user_question(options=[{label:"A", description:"short summary"}, ...])  ← BARE, NO PROS/CONS
+```
+**The `ask_user_question` call IS the HITL prompt. ALL structured content MUST be inside the description field of each option — never in surrounding chat prose.**
+
+**REQUIRED FORMAT** — description field must contain Pros/Cons/⭐ inline:
+```
+ask_user_question(
+  question="<decision point>",
+  options=[
+    {
+      label: "Option A — short title",
+      description: "What it does. Pros: <benefit 1>, <benefit 2>. Cons: <drawback 1>. ⭐ RECOMMENDED — <reason>"
+    },
+    {
+      label: "Option B — short title",
+      description: "What it does. Pros: <benefit>. Cons: <drawback 1>, <drawback 2>."
+    }
+  ],
+  allowMultiple=false
+)
+```
+
 **EXAMPLE**:
 ```
 ask_user_question(
@@ -54,7 +82,7 @@ ask_user_question(
   options=[
     {
       label: "Investigate ADG detection patterns",
-      description: "Analyze what patterns ADG actually detects vs what AST tool catches. Pros: Root cause understanding, better tool. Cons: Takes time, delays other waves. ⭐ RECOMMENDED"
+      description: "Analyze what patterns ADG actually detects vs what AST tool catches. Pros: Root cause understanding, better tool. Cons: Takes time, delays other waves. ⭐ RECOMMENDED — addresses root cause"
     },
     {
       label: "Continue to Wave 3 (clock)",
