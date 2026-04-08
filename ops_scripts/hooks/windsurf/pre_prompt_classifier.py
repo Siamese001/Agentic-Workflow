@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """
-pre_prompt_classifier.py — Windsurf pre_user_prompt advisory classifier (Phase 1.4).
+pre_prompt_classifier.py — Windsurf pre_user_prompt hard gate + context seeder (Phase 1.4).
 
 Reads JSON payload from stdin. Payload field:
   tool_info.prompt  — the user's prompt text
 
 Classifies the prompt as T0/T1/T2/T3 based on keyword heuristics and writes
-tier tag + any warnings to stderr for Cascade context seeding.
+tier tag + mandatory requirements to stderr so Cascade sees them (show_output: true).
 
-Exits 0 for T0/T1. Exits 2 (BLOCK) for T2/T3 when ADG health is red (hard gate).
-Fail policy: OPEN for infrastructure errors (probe missing/timeout), CLOSED for T2/T3 with confirmed red ADG.
+Exits 0 for T0/T1.
+Exits 2 (BLOCK) for T2/T3 when ADG health is red or Redis is down (hard gate).
+Exits 0 for T2/T3 when healthy — but emits MANDATORY structured reasoning requirements
+so Cascade is instructed to call mcp8_create_task before proceeding.
+
+Fail policy: OPEN for infrastructure errors (probe missing/timeout), CLOSED for T2/T3 with confirmed red ADG/Redis.
 Zero hardcoded paths.
 """
 
@@ -81,6 +85,20 @@ T0_KEYWORDS = {
     "tell me",
     "what are",
 }
+
+# Structured reasoning mandate injected into Cascade context for every T2/T3 prompt.
+# show_output: true ensures Cascade sees this output before responding.
+_SR_MANDATE = """
+[pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
+  BEFORE making any edits or tool calls:
+  1. Call mcp8_create_task to register this task with goal + definitions of done
+  2. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
+  3. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
+  4. Emit SR_APPROVAL: APPROVED before any writes
+  Sequential Thinking MCP is RETIRED. Use: Task Manager (mcp8) + native Cascade reasoning.
+  Rule: .windsurf/rules/sequential-thinking-enforcement.md
+  Workflow: /structured-reasoning
+""".strip()
 
 
 def classify_tier(prompt: str) -> str:
@@ -213,6 +231,10 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 2
+
+        # Infrastructure healthy — inject structured reasoning mandate into Cascade context.
+        # show_output: true in hooks.json ensures Cascade sees this before responding.
+        print(_SR_MANDATE.format(tier=tier), file=sys.stderr)
 
     return 0
 

@@ -10,7 +10,8 @@ Blocks (exit 2) on:
   - Anti-patterns in new_string values:
       * bare 'except:' (no exception type)
       * 'except Exception' without '# guardian: allow-' on same line
-      * 'shell=True' in subprocess calls
+      * shell=True in subprocess calls
+      * subprocess.run/Popen/call without timeout= (constitutional §14)
   - Python syntax errors: reconstructs projected file, runs ast.parse()
   - Deletion of mcp_config.json (file_path ends with mcp_config.json, edits empty → DENY)
 
@@ -33,6 +34,9 @@ _BARE_EXCEPT_RE = re.compile(r"^\s*except\s*:", re.MULTILINE)
 _BROAD_EXCEPT_RE = re.compile(r"except\s+Exception(\s*:|\s+as\s+\w+\s*:)")
 _GUARDIAN_RE = re.compile(r"#\s*guardian:\s*allow-")
 _SHELL_TRUE_RE = re.compile(r"shell\s*=\s*True")
+# Matches subprocess call sites — used to enforce timeout= (constitutional §14)
+_SUBPROCESS_CALL_RE = re.compile(r"subprocess\.(run|Popen|call|check_output|check_call)\s*\(")
+_TIMEOUT_RE = re.compile(r"timeout\s*=")
 
 MCP_CONFIG_SUFFIX = "mcp_config.json"
 _RISKY_MCP_PATTERNS = [
@@ -69,7 +73,23 @@ def scan_antipatterns(new_string: str) -> list[str]:
             )
         if _SHELL_TRUE_RE.search(stripped) and "subprocess" in new_string:
             violations.append(
-                "'shell=True' in subprocess is forbidden — use argv list with shell=False per constitutional §0.",
+                "shell=True in subprocess is forbidden — use argv list with shell=False per constitutional §0.",
+            )
+
+    # Enforce timeout= on every subprocess call site (constitutional §14).
+    # Scan the full new_string block to handle multi-line calls.
+    for match in _SUBPROCESS_CALL_RE.finditer(new_string):
+        window_start = match.start()
+        # Find the closing paren of this call — scan forward up to 400 chars
+        window_end = new_string.find(")", window_start)
+        if window_end == -1:
+            window_end = min(window_start + 400, len(new_string))
+        window = new_string[window_start : window_end + 1]
+        if not _TIMEOUT_RE.search(window):
+            violations.append(
+                f"subprocess.{match.group(1)}() missing timeout= — "
+                "constitutional §14: all subprocess calls MUST include timeout=<seconds>. "
+                "Omitting timeout= is a zombie subprocess risk.",
             )
 
     return violations
