@@ -47,7 +47,8 @@ coverage_dirs:
 archive_dirs:
   - "archives"
   - "archive"
-  - "artifacts"
+  - "artifacts/adg"
+  - "artifacts/guardian_quality_ratchet.json"
   - ".sovereign_healing_backup"
   - ".healing_backups"
   - ".backup"

@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-06T05:24:59.709801
+# Last generated: 2026-04-08T10:15:54.582212
 
 
 # Build & Cache
@@ -44,7 +44,6 @@
 .sovereign_healing_backup/
 /archive/
 /archives/
-/artifacts/
 
 # IDE & Editor
 .DS_Store/
@@ -68,6 +67,8 @@
 # Other
 .hypothesis/
 /_compat/
+/artifacts/adg/
+/artifacts/guardian_quality_ratchet.json/
 
 # File Patterns
 *.dll
@@ -80,6 +81,3 @@
 *.tmp
 .coverage.*/
 /Thumbs.db/
-agentic_core/L0_routing/logs/
-agentic_core/L0_routing/utils/.core_golden_seal
-docs/reports/guardian_report.json
