@@ -19,6 +19,7 @@ This file specifically targets branches that the existing test files do NOT cove
 
 import json
 import os
+import sqlite3
 import sys
 import time
 from datetime import datetime, timezone
@@ -38,6 +39,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 def _stdin(payload) -> StringIO:
     return StringIO(json.dumps(payload))
+
+
+def _create_real_sqlite(adg_dir: Path, name: str = "adg_indexed_test.sqlite") -> Path:
+    """Create a real SQLite DB file that can be opened and queried."""
+    db_path = adg_dir / name
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("CREATE TABLE IF NOT EXISTS probe (id INTEGER)")
+    conn.commit()
+    conn.close()
+    return db_path
 
 
 # ============================================================================
@@ -448,10 +459,10 @@ class TestPreMcpGateRecoveryToolCaseSensitivity:
     def _run_adg(self, tool_name: str, repo_root: Path) -> int:
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
-        # Provision a dummy sqlite so _has_adg_sqlite returns True.
+        # Provision a real sqlite so _has_adg_sqlite returns True and probes pass.
         adg_dir = repo_root / "artifacts" / "adg"
         adg_dir.mkdir(parents=True, exist_ok=True)
-        (adg_dir / "adg_indexed_test.sqlite").write_text("")
+        _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": tool_name}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", repo_root):
@@ -487,8 +498,8 @@ class TestPreMcpGateStalenessThresholds:
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True, exist_ok=True)
-        # Dummy sqlite — makes _has_adg_sqlite return True so auto-gen is skipped.
-        (adg_dir / "adg_indexed_test.sqlite").write_text("")
+        # Real sqlite — makes _has_adg_sqlite return True and probes pass.
+        _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         snap = adg_dir / "adg_snapshot_test.json"
         snap.write_text("{}")
         mtime = time.time() - age_seconds
@@ -517,8 +528,8 @@ class TestPreMcpGateStalenessThresholds:
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
-        # Sqlite present → auto-gen skipped. No snapshot → staleness check skipped → 0.
-        (adg_dir / "adg_indexed_test.sqlite").write_text("")
+        # Real sqlite present → auto-gen skipped. No snapshot → staleness check skipped → 0.
+        _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
@@ -529,7 +540,7 @@ class TestPreMcpGateStalenessThresholds:
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
-        (adg_dir / "adg_indexed_test.sqlite").write_text("")
+        _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         old_snap = adg_dir / "adg_snapshot_20260101_0000.json"
         new_snap = adg_dir / "adg_snapshot_20260101_0001.json"
         old_snap.write_text("{}")
@@ -545,35 +556,71 @@ class TestPreMcpGateStalenessThresholds:
 
 
 class TestPreMcpGateLockDetection:
-    """WAL and journal lock file detection."""
+    """SQLite probe-based lock detection (real connections, not file heuristics)."""
 
-    def _run_with_lock(self, lock_suffix: str, tmp_path: Path) -> int:
+    def test_nonzero_wal_with_healthy_db_allowed_for_read(self, tmp_path):
+        """Non-zero WAL is normal in WAL mode — read-only tools must pass."""
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
-        sqlite_file = adg_dir / "adg_indexed_20260101.sqlite"
-        sqlite_file.write_text("")
-        lock_file = adg_dir / (sqlite_file.name + lock_suffix)
-        lock_file.write_text("")
+        db = _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
+        (adg_dir / (db.name + "-wal")).write_bytes(b"\x00" * 32)
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
-                return main()
+                assert main() == 0
 
-    def test_wal_lock_blocks(self, tmp_path):
-        assert self._run_with_lock("-wal", tmp_path) == 2
+    def test_nonzero_journal_with_healthy_db_allowed_for_read(self, tmp_path):
+        """Journal file presence does not block if DB is readable."""
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
-    def test_journal_lock_blocks(self, tmp_path):
-        assert self._run_with_lock("-journal", tmp_path) == 2
+        adg_dir = tmp_path / "artifacts" / "adg"
+        adg_dir.mkdir(parents=True)
+        db = _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
+        (adg_dir / (db.name + "-journal")).write_bytes(b"\x00" * 32)
+        payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
+        with patch("sys.stdin", _stdin(payload)):
+            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+                assert main() == 0
+
+    def test_real_write_contention_blocks_write_tool(self, tmp_path):
+        """BEGIN IMMEDIATE contention blocks write-affecting tools."""
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+
+        adg_dir = tmp_path / "artifacts" / "adg"
+        adg_dir.mkdir(parents=True)
+        db = _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
+        holder = sqlite3.connect(str(db), timeout=0.1)
+        holder.execute("BEGIN IMMEDIATE")
+        holder.execute("INSERT INTO probe VALUES (99)")
+        try:
+            payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_rebuild"}}
+            with patch("sys.stdin", _stdin(payload)):
+                with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+                    assert main() == 2
+        finally:
+            holder.rollback()
+            holder.close()
+
+    def test_zero_byte_wal_does_not_block(self, tmp_path):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+
+        adg_dir = tmp_path / "artifacts" / "adg"
+        adg_dir.mkdir(parents=True)
+        db = _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
+        (adg_dir / (db.name + "-wal")).write_text("")  # zero-byte = normal WAL mode
+        payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
+        with patch("sys.stdin", _stdin(payload)):
+            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+                assert main() == 0
 
     def test_no_lock_file_allowed(self, tmp_path):
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
-        sqlite_file = adg_dir / "adg_indexed_20260101.sqlite"
-        sqlite_file.write_text("")
+        _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
@@ -584,9 +631,8 @@ class TestPreMcpGateLockDetection:
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
-        sqlite_file = adg_dir / "adg_indexed_20260101.sqlite"
-        sqlite_file.write_text("")
-        (adg_dir / (sqlite_file.name + "-wal")).write_text("")
+        db = _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
+        (adg_dir / (db.name + "-wal")).write_text("")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_health"}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):

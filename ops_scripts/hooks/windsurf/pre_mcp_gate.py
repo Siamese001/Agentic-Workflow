@@ -25,6 +25,7 @@ Zero hardcoded paths — REPO_ROOT resolved from __file__.
 """
 
 import json
+import sqlite3
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -42,6 +43,16 @@ ADG_RECOVERY_TOOLS = {
     "adg_close_connections",  # needed to release SQLite locks
     "adg_reopen_connections",  # needed after lock release
 }
+
+# Write-affecting ADG tools that mutate DB state.
+# These require a BEGIN IMMEDIATE probe to detect real write contention.
+ADG_WRITE_TOOLS = {
+    "adg_rebuild",
+    "adg_checkpoint",
+    "adg_compact",
+}
+
+SQLITE_PROBE_TIMEOUT_MS = 500  # busy_timeout for probe connections
 
 FILESYSTEM_SERVER_NAME = "filesystem"
 # Write tools on the filesystem MCP that bypass pre_write_code. Blocked here
@@ -107,22 +118,133 @@ def _auto_generate_adg(repo_root: Path) -> bool:
         return False
 
 
-def _is_sqlite_locked(repo_root: Path) -> bool:
+def _get_sidecar_diagnostics(db_path: Path) -> dict:
     """
-    Check if any adg_indexed_*.sqlite has a companion .sqlite-wal file
-    (WAL mode write lock indicator) or .sqlite-journal (rollback journal).
-    These indicate an active write transaction.
+    Gather diagnostic info about WAL/SHM/journal sidecars.
+    Used for logging only — NOT for lock decisions.
+    """
+    diag: dict = {"db": str(db_path)}
+    for suffix in ("-wal", "-shm", "-journal"):
+        sidecar = db_path.parent / (db_path.name + suffix)
+        if sidecar.exists():
+            diag[suffix.lstrip("-")] = sidecar.stat().st_size
+        else:
+            diag[suffix.lstrip("-")] = None
+    return diag
+
+
+def _probe_sqlite_read(db_path: Path) -> tuple[bool, str]:
+    """
+    Attempt to open the DB and execute a trivial read.
+    Returns (ok, reason).  ok=True means reads are fine.
+    """
+    canonical = str(db_path.resolve())
+    try:
+        conn = sqlite3.connect(
+            f"file:{canonical}?mode=ro",
+            uri=True,
+            timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0,
+        )
+        try:
+            conn.execute("SELECT 1")
+            return True, "read_ok"
+        except sqlite3.OperationalError as exc:
+            return False, f"read_failed: {exc}"
+        finally:
+            conn.close()
+    except sqlite3.OperationalError as exc:
+        return False, f"open_failed: {exc}"
+    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+        return False, f"unexpected: {exc}"
+
+
+def _probe_sqlite_write(db_path: Path) -> tuple[bool, str]:
+    """
+    Probe for actual write contention using BEGIN IMMEDIATE.
+    Returns (ok, reason).  ok=True means no active writer.
+    """
+    canonical = str(db_path.resolve())
+    try:
+        conn = sqlite3.connect(
+            canonical,
+            timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0,
+        )
+        try:
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute("ROLLBACK")
+            return True, "write_ok"
+        except sqlite3.OperationalError as exc:
+            msg = str(exc).lower()
+            if "locked" in msg or "busy" in msg:
+                return False, f"SQLITE_BUSY: {exc}"
+            return False, f"write_probe_failed: {exc}"
+        finally:
+            conn.close()
+    except sqlite3.OperationalError as exc:
+        return False, f"open_failed: {exc}"
+    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+        return False, f"unexpected: {exc}"
+
+
+def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]:
+    """
+    Check SQLite accessibility using real connection probes.
+    Returns (blocked, reason).  blocked=True means the tool should be denied.
+
+    For read-only tools: allow if DB opens and a trivial read succeeds.
+    For write tools: additionally probe BEGIN IMMEDIATE for contention.
+
+    WAL/SHM/journal sidecar existence is logged but NEVER used as the
+    lock verdict — these files are normal in WAL mode.
     """
     adg_dir = repo_root / "artifacts" / "adg"
     if not adg_dir.exists():
-        return False
+        return False, "no_artifacts_dir"
 
-    for sqlite_file in adg_dir.glob("adg_indexed_*.sqlite"):
-        if (sqlite_file.parent / (sqlite_file.name + "-wal")).exists():
-            return True
-        if (sqlite_file.parent / (sqlite_file.name + "-journal")).exists():
-            return True
-    return False
+    sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+    if not sqlite_files:
+        return False, "no_sqlite_files"
+
+    for db_path in sqlite_files:
+        canonical = db_path.resolve()
+        diag = _get_sidecar_diagnostics(canonical)
+
+        # Read probe (required for all tools)
+        read_ok, read_reason = _probe_sqlite_read(canonical)
+
+        # Determine journal_mode for diagnostics
+        journal_mode = "unknown"
+        try:
+            c = sqlite3.connect(str(canonical), timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0)
+            row = c.execute("PRAGMA journal_mode").fetchone()
+            journal_mode = row[0] if row else "unknown"
+            c.close()
+        except Exception:  # guardian: allow-broad-exception -- diagnostic only, must not crash
+            pass
+
+        diag["journal_mode"] = journal_mode
+        diag["read_probe"] = read_reason
+
+        if not read_ok:
+            diag["decision"] = "BLOCK"
+            print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
+            return True, f"read probe failed on {canonical.name}: {read_reason}"
+
+        if needs_write:
+            write_ok, write_reason = _probe_sqlite_write(canonical)
+            diag["write_probe"] = write_reason
+            if not write_ok:
+                diag["decision"] = "BLOCK"
+                print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
+                return True, f"write contention on {canonical.name}: {write_reason}"
+            diag["decision"] = "ALLOW"
+        else:
+            diag["write_probe"] = "skipped (read-only tool)"
+            diag["decision"] = "ALLOW"
+
+        print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
+
+    return False, "all_probes_passed"
 
 
 def _get_latest_snapshot_age_seconds(repo_root: Path) -> float | None:
@@ -163,7 +285,7 @@ def check_filesystem_write_gate(tool_name: str) -> int:
     return 0
 
 
-def check_adg_gate(repo_root: Path) -> int:
+def check_adg_gate(repo_root: Path, tool_name: str = "") -> int:
     """Check ADG-specific gates. Return 0 (allow) or 2 (block)."""
     if not _has_adg_sqlite(repo_root):
         print(
@@ -176,10 +298,18 @@ def check_adg_gate(repo_root: Path) -> int:
                 "Run 'python tools/generate_full_adg.py' manually to bootstrap ADG.",
             )
 
-    if _is_sqlite_locked(repo_root):
+    needs_write = tool_name in ADG_WRITE_TOOLS
+    blocked, reason = _check_sqlite_access(repo_root, needs_write=needs_write)
+    if blocked:
+        if needs_write:
+            return _exit_block(
+                f"ADG SQLite write contention detected ({reason}). "
+                "An active writer holds the database. Wait or call "
+                "mcp1_adg_close_connections first.",
+            )
         return _exit_block(
-            "ADG SQLite is locked (WAL/journal file detected). "
-            "Call mcp1_adg_close_connections before retrying ADG tools.",
+            f"ADG SQLite is inaccessible ({reason}). "
+            "The database may be corrupted or locked by another process.",
         )
 
     age = _get_latest_snapshot_age_seconds(repo_root)
@@ -226,7 +356,7 @@ def main() -> int:
         # where the gate blocks the only tools that can restore health.
         return 0
 
-    return check_adg_gate(REPO_ROOT)
+    return check_adg_gate(REPO_ROOT, tool_name)
 
 
 if __name__ == "__main__":
