@@ -301,6 +301,21 @@ def _print_defect_table(
         except Exception:  # guardian: allow-silent-swallow -- non-critical: category query failure
             pass
 
+    # --- SC/AP audit violation counts for defect table ---
+    _sc_ap_counts: dict[str, int] = {}
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            with sqlite3.connect(str(sqlite_path)) as _sa_conn:
+                _sa_rows = _sa_conn.execute(
+                    "SELECT category, COUNT(*) FROM violations "
+                    "WHERE violation_class IN ('structural_conformance', 'agentic_antipattern') "
+                    "GROUP BY category",
+                ).fetchall()
+                for _cat, _cnt in _sa_rows:
+                    _sc_ap_counts[_cat] = _cnt
+        except sqlite3.OperationalError:
+            pass
+
     _H = "+-----+------------------------------+-------+-------+-------+-------+-------+---------+----------------------------------+"
     _HDR = "| P#  | Description / Category       | Gross | Guard |   Net | Files | Prod% | Density | Top Hotspot (AP\u00d7FI)             |"
     print("\n[ADG] Defect Summary:")
@@ -331,6 +346,31 @@ def _print_defect_table(
         f"|     |  dynamic_execution            | {_p0_dynamic_count:5} |       |       |       |       |         |                                  |"
     )
     print(_H)
+
+    # --- SC/AP audit rows ---
+    if _sc_ap_counts:
+        _sc_total = sum(v for k, v in _sc_ap_counts.items() if k.startswith("SC-"))
+        _ap_total = sum(v for k, v in _sc_ap_counts.items() if k.startswith("AP-"))
+        if _sc_total > 0:
+            print(
+                f"| SC~ | [SC] Structural conformance  |       |       | {_sc_total:5} |       |       |         | audit-mode watch                 |"
+            )
+            for _ck, _cv in sorted(_sc_ap_counts.items()):
+                if _ck.startswith("SC-"):
+                    print(
+                        f"|     |  {_ck:<28}| {_cv:5} |       | {_cv:5} |       |       |         |                                  |"
+                    )
+            print(_H)
+        if _ap_total > 0:
+            print(
+                f"| AP~ | [AP] Agentic anti-patterns   |       |       | {_ap_total:5} |       |       |         | audit-mode watch                 |"
+            )
+            for _ck, _cv in sorted(_sc_ap_counts.items()):
+                if _ck.startswith("AP-"):
+                    print(
+                        f"|     |  {_ck:<28}| {_cv:5} |       | {_cv:5} |       |       |         |                                  |"
+                    )
+            print(_H)
 
     def _print_sev_block(label, p_tag, count, sev_key, ceiling, gate_sym):
         _files = _sev_files.get(sev_key, 0)
@@ -407,7 +447,16 @@ def _print_defect_table(
     }
     if sqlite_path is not None and sqlite_path.exists():
         try:
-            _sev_to_band = {"CRITICAL": "P0", "HIGH": "P1", "MEDIUM": "P2", "LOW": "P3"}
+            _sev_to_band = {
+                "CRITICAL": "P0",
+                "HIGH": "P1",
+                "MEDIUM": "P2",
+                "LOW": "P3",
+                "P0": "P0",
+                "P1": "P1",
+                "P2": "P2",
+                "P3": "P3",
+            }
             with sqlite3.connect(str(sqlite_path)) as _bc_conn:
                 _bc_rows = _bc_conn.execute(
                     "SELECT violation_class, severity, COUNT(*) FROM violations "

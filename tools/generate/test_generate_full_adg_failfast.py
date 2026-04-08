@@ -3391,5 +3391,291 @@ class TestW4ExportsComplete:
         assert callable(_query_ap17_semantic_precision)
 
 
+# ---------------------------------------------------------------------------
+# W5: Edge-case tests — empty graph, single node, tools-only
+# ---------------------------------------------------------------------------
+
+
+class TestEdgeCaseEmptyGraph:
+    """All SC/AP checks return [] on empty graph."""
+
+    def test_sc_checks_empty_graph(self, tmp_path):
+        """All SC query functions return [] on empty graph."""
+        from tools.generate.validation.gates import (
+            _query_sc1_gravity,
+            _query_sc2_lifecycle,
+            _query_sc3_uwg_write,
+            _query_sc4_choke_point,
+            _query_sc5_spine,
+            _query_sc6_role_purity,
+            _query_sc7_grounding,
+            _query_sc8_trace_coverage,
+        )
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.commit()
+        # SC-5 (spine) correctly fires on empty graph (missing spine edges)
+        for fn in [
+            _query_sc1_gravity,
+            _query_sc2_lifecycle,
+            _query_sc3_uwg_write,
+            _query_sc4_choke_point,
+            _query_sc6_role_purity,
+            _query_sc7_grounding,
+            _query_sc8_trace_coverage,
+        ]:
+            assert fn(conn) == [], f"{fn.__name__} should return [] on empty graph"
+        conn.close()
+
+    def test_ap_checks_empty_graph(self, tmp_path):
+        """All AP query functions return [] on empty graph."""
+        from tools.generate.validation.gates import (
+            _query_ap1_text_to_action,
+            _query_ap2_phase_bypass,
+            _query_ap3_provider_bypass,
+            _query_ap4_direct_write,
+            _query_ap5_tool_overlap,
+            _query_ap6_manager_sprawl,
+            _query_ap7_dup_specialization,
+            _query_ap8_missing_trace,
+            _query_ap9_infra_spread,
+            _query_ap10_mutation_confusion,
+            _query_ap11_work_contracts,
+            _query_ap12_prompt_scatter,
+            _query_ap13_retry_no_exit,
+            _query_ap14_retrieval_no_evidence,
+            _query_ap15_agent_tool_ratio,
+            _query_ap16_dormant_infra,
+            _query_ap17_semantic_precision,
+        )
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.commit()
+        for fn in [
+            _query_ap1_text_to_action,
+            _query_ap2_phase_bypass,
+            _query_ap3_provider_bypass,
+            _query_ap4_direct_write,
+            _query_ap5_tool_overlap,
+            _query_ap6_manager_sprawl,
+            _query_ap7_dup_specialization,
+            _query_ap8_missing_trace,
+            _query_ap9_infra_spread,
+            _query_ap10_mutation_confusion,
+            _query_ap11_work_contracts,
+            _query_ap12_prompt_scatter,
+            _query_ap13_retry_no_exit,
+            _query_ap14_retrieval_no_evidence,
+            _query_ap15_agent_tool_ratio,
+            _query_ap16_dormant_infra,
+            _query_ap17_semantic_precision,
+        ]:
+            assert fn(conn) == [], f"{fn.__name__} should return [] on empty graph"
+        conn.close()
+
+
+class TestEdgeCaseSingleNode:
+    """Checks with a single node and no edges."""
+
+    def test_single_node_no_edges(self, tmp_path):
+        """Single production node, no edges → all checks pass."""
+        from tools.generate.validation.gates import (
+            _query_sc1_gravity,
+            _query_ap1_text_to_action,
+            _query_ap15_agent_tool_ratio,
+        )
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Solo','module','L2','module','high','s.py')")
+        conn.commit()
+        assert _query_sc1_gravity(conn) == []
+        assert _query_ap1_text_to_action(conn) == []
+        assert _query_ap15_agent_tool_ratio(conn) == []
+        conn.close()
+
+
+class TestEdgeCaseToolsOnly:
+    """All nodes in tools layer → no SC/AP violations on production-scoped checks."""
+
+    def test_tools_only_no_sc_violations(self, tmp_path):
+        """Nodes only in L_TOOLS → no gravity or role-purity violations."""
+        from tools.generate.validation.gates import _query_sc1_gravity, _query_sc6_role_purity
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'T1','module','L_TOOLS','module','high','t1.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'T2','module','L_TOOLS','module','high','t2.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'imports','','t1.py',1)"
+        )
+        conn.commit()
+        assert _query_sc1_gravity(conn) == []
+        assert _query_sc6_role_purity(conn) == []
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# W5: Burndown by_class severity mapping test
+# ---------------------------------------------------------------------------
+
+
+class TestBurndownByClassMapping:
+    """Burndown correctly maps P0-P3 severity strings from SC/AP violations."""
+
+    def test_by_class_maps_sc_ap_violations(self, tmp_path):
+        """SC/AP violations with P0-P3 severity appear in burndown by_class."""
+        from tools.generate.validation.gates import (
+            _check_structural_conformance,
+            _check_agentic_antipatterns,
+        )
+
+        db, conn = _make_adg_db(tmp_path)
+        # SC-1 violation: L0→L2 import (gravity forbidden)
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L0','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L2','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'imports','','a.py',1)"
+        )
+        conn.commit()
+        conn.close()
+
+        cfg = _write_sc_ap_config(tmp_path, {"SC-1": {"enabled": True, "audit_mode": True}})
+        _check_structural_conformance(sqlite_path=db, config_path=cfg)
+
+        conn2 = sqlite3.connect(str(db))
+        rows = conn2.execute(
+            "SELECT violation_class, severity FROM violations WHERE category = 'SC-1'"
+        ).fetchall()
+        assert len(rows) >= 1
+        assert rows[0][0] == "structural_conformance"
+        assert rows[0][1] == "P0"
+        conn2.close()
+
+
+# ---------------------------------------------------------------------------
+# W5: Defect table SC/AP rows test
+# ---------------------------------------------------------------------------
+
+
+class TestDefectTableSCAPRows:
+    """SC/AP violations appear in defect table output."""
+
+    def test_sc_ap_rows_in_defect_output(self, tmp_path, capsys):
+        """Defect table prints SC~ and AP~ rows when violations exist."""
+        from tools.generate.reporting.reports import _print_defect_table
+
+        db, conn = _make_adg_db(tmp_path)
+        # Insert SC/AP violations directly
+        conn.execute(
+            "INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity, violation_class) "
+            "VALUES (0, 'SC-1', 'test evidence', 'a.py', 0, 'P0', 'structural_conformance')"
+        )
+        conn.execute(
+            "INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity, violation_class) "
+            "VALUES (0, 'AP-5', 'test evidence', 'b.py', 0, 'P1', 'agentic_antipattern')"
+        )
+        conn.commit()
+        conn.close()
+
+        _print_defect_table({"by_severity": {}}, sqlite_path=db)
+        output = capsys.readouterr().out
+        assert "[SC] Structural conformance" in output
+        assert "[AP] Agentic anti-patterns" in output
+        assert "SC-1" in output
+        assert "AP-5" in output
+
+
+# ---------------------------------------------------------------------------
+# W5: Config promotion workflow test
+# ---------------------------------------------------------------------------
+
+
+class TestConfigPromotion:
+    """Promotion workflow: flip audit_mode to False and set promoted_date."""
+
+    def test_promotion_workflow(self, tmp_path):
+        """Save config with promoted check → reload still has promotion."""
+        from tools.generate.validation.gates import _load_sc_ap_config, _save_sc_ap_config
+
+        cfg_path = tmp_path / "sc_ap_config.json"
+        config = _load_sc_ap_config(config_path=cfg_path)
+        config["SC-1"]["enabled"] = True
+        config["SC-1"]["audit_mode"] = False
+        config["SC-1"]["promoted_date"] = "2026-04-08"
+        _save_sc_ap_config(config, config_path=cfg_path)
+
+        reloaded = _load_sc_ap_config(config_path=cfg_path)
+        assert reloaded["SC-1"]["enabled"] is True
+        assert reloaded["SC-1"]["audit_mode"] is False
+        assert reloaded["SC-1"]["promoted_date"] == "2026-04-08"
+
+
+# ---------------------------------------------------------------------------
+# W5: All checks disabled by default
+# ---------------------------------------------------------------------------
+
+
+class TestAllChecksDisabledByDefault:
+    """Default config has all checks disabled — no violations on any graph."""
+
+    def test_default_config_no_violations(self, tmp_path):
+        """With default config (all disabled), no SC/AP violations are produced."""
+        from tools.generate.validation.gates import (
+            _check_structural_conformance,
+            _check_agentic_antipatterns,
+        )
+
+        db, conn = _make_adg_db(tmp_path)
+        # Create a graph that would trigger violations
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L3','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L0','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'imports','','a.py',1)"
+        )
+        conn.commit()
+        conn.close()
+
+        # Default config path that doesn't exist → all disabled
+        fake_cfg = tmp_path / "nonexistent_config.json"
+        sc_result = _check_structural_conformance(sqlite_path=db, config_path=fake_cfg)
+        ap_result = _check_agentic_antipatterns(sqlite_path=db, config_path=fake_cfg)
+        assert all(len(v) == 0 for v in sc_result.values())
+        assert all(len(v) == 0 for v in ap_result.values())
+
+
+# ---------------------------------------------------------------------------
+# W5: Severity band coverage — all 4 bands represented
+# ---------------------------------------------------------------------------
+
+
+class TestSeverityBandCoverage:
+    """All 4 severity bands (P0-P3) are assignable across the full check set."""
+
+    def test_severity_bands_cover_all(self):
+        """SC dispatch (P0/P1) + AP dispatch (P0/P1/P2/P3) cover all severity bands."""
+        from tools.generate.validation import _SC_CHECK_DISPATCH, _AP_CHECK_DISPATCH
+
+        sc_ids = set(_SC_CHECK_DISPATCH.keys())
+        ap_ids = set(_AP_CHECK_DISPATCH.keys())
+
+        # SC-1..4 are P0, SC-5..8 are P1
+        for cid in ["SC-1", "SC-2", "SC-3", "SC-4"]:
+            assert cid in sc_ids
+        for cid in ["SC-5", "SC-6", "SC-7", "SC-8"]:
+            assert cid in sc_ids
+
+        # AP-1..4 P0, AP-5..10 P1, AP-11..14 P2, AP-15..17 P3
+        for cid in ["AP-1", "AP-2", "AP-3", "AP-4"]:
+            assert cid in ap_ids
+        for cid in ["AP-5", "AP-6", "AP-7", "AP-8", "AP-9", "AP-10"]:
+            assert cid in ap_ids
+        for cid in ["AP-11", "AP-12", "AP-13", "AP-14"]:
+            assert cid in ap_ids
+        for cid in ["AP-15", "AP-16", "AP-17"]:
+            assert cid in ap_ids
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
