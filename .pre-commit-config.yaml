@@ -137,7 +137,8 @@ repos:
       # Detects Python files that became hollow after edits. --changed-only = staged only.
       - id: hollow-file-gate
         name: "T4: Hollow File Gate — AST Semantic Verification"
-        entry: PYTHONPATH=. py ops_scripts/ci/hollow_file_gate.py --changed-only
+        entry: py ops_scripts/ci/hollow_file_gate.py --changed-only
+        env: ["PYTHONPATH=."]
         language: system
         types: [python]
         pass_filenames: false
@@ -147,7 +148,8 @@ repos:
       # -- T5: MCP Config Sovereignty ---------------------------------------------------
       - id: mcp-config-sovereignty
         name: "T5: MCP Config Sovereignty"
-        entry: PYTHONPATH=. py ops_scripts/ci/check_mcp_config_sovereignty.py
+        entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         files: ^mcp_config\.json$
@@ -195,7 +197,8 @@ repos:
 
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty"
-        entry: PYTHONPATH=. py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
+        entry: py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -204,7 +207,8 @@ repos:
 
       - id: check-dedup-violations
         name: "CI: Dedup Guard"
-        entry: PYTHONPATH=. py ops_scripts/ci/check_dedup_violations.py
+        entry: py ops_scripts/ci/check_dedup_violations.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -213,7 +217,8 @@ repos:
 
       - id: check-script-sprawl
         name: "CI: Script Sprawl Guard"
-        entry: PYTHONPATH=. py ops_scripts/ci/check_script_sprawl.py
+        entry: py ops_scripts/ci/check_script_sprawl.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -222,7 +227,8 @@ repos:
 
       - id: check-shim-discipline
         name: "CI: Shim Discipline"
-        entry: PYTHONPATH=. py ops_scripts/ci/check_shim_discipline.py
+        entry: py ops_scripts/ci/check_shim_discipline.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true
@@ -231,7 +237,8 @@ repos:
 
       - id: check-rollback-checkpoints
         name: "CI: Rollback Gate"
-        entry: PYTHONPATH=. py ops_scripts/ci/check_rollback_checkpoints.py
+        entry: py ops_scripts/ci/check_rollback_checkpoints.py
+        env: ["PYTHONPATH=."]
         language: system
         pass_filenames: false
         always_run: true

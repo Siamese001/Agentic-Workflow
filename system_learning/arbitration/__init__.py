@@ -1,4 +1,5 @@
 """Arbitration module for deterministic multi-agent proposal selection."""
+
 from agentic_core.L0_routing.config.path_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
@@ -9,5 +10,3 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-
-

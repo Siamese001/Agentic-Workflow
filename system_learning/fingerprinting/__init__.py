@@ -1,4 +1,5 @@
 """Failure fingerprinting module for deterministic failure clustering."""
+
 from agentic_core.L0_routing.config.path_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
@@ -9,5 +10,3 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-
-

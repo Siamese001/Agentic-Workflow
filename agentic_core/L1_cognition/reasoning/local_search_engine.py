@@ -159,7 +159,7 @@ class LocalSearchEngine:
 
             response = SearchResponse(
                 query=query,
-                results=filtered_results[:query.max_results],
+                results=filtered_results[: query.max_results],
                 total_found=len(filtered_results),
                 total_returned=min(len(filtered_results), query.max_results),
                 search_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
@@ -231,7 +231,8 @@ class LocalSearchEngine:
             for entity in current_level:
                 # Get relationships (sync call)
                 relationships = self.graph_store.get_relationships(
-                    entity.id, direction="both",
+                    entity.id,
+                    direction="both",
                 )
 
                 for rel in relationships:
@@ -287,10 +288,10 @@ class LocalSearchEngine:
 
             # Combined score
             combined_score = (
-                text_score * self.config.text_similarity_weight +
-                proximity_score * self.config.graph_proximity_weight +
-                community_score * self.config.community_coherence_weight +
-                recency_score * self.config.recency_weight
+                text_score * self.config.text_similarity_weight
+                + proximity_score * self.config.graph_proximity_weight
+                + community_score * self.config.community_coherence_weight
+                + recency_score * self.config.recency_weight
             )
 
             # Create search result
@@ -472,17 +473,17 @@ def create_local_search_engine_with_sqlite(
     config: LocalSearchConfig | None = None,
 ) -> LocalSearchEngine:
     """Create a local search engine with SQLiteGraphStore backend.
-    
+
     Convenience function that creates a SQLiteGraphStore instance
     and initializes a LocalSearchEngine with it.
-    
+
     Args:
         db_path: Path to ADG SQLite database. If None, uses default path.
         config: Local search configuration
-    
+
     Returns:
         LocalSearchEngine instance with SQLiteGraphStore backend
-    
+
     Raises:
         FileNotFoundError: If ADG database not found
     """

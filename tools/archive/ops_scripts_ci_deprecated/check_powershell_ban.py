@@ -43,7 +43,6 @@ class PowerShellBanChecker:
         r"\bpwsh\.exe\b",
         r"\bpwsh\b",
         r"\bpowershell\b",
-
         # High-confidence PowerShell cmdlets (hyphenated Verb-Noun form — unique to PS)
         r"\bStart-Process\b",
         r"\bInvoke-Expression\b",
@@ -65,38 +64,47 @@ class PowerShellBanChecker:
         r"\bMove-Item\b",
         r"\bTest-Path\b",
         r"\bMeasure-Object\b",
-
         # PowerShell script file extensions — only as executable path, not string values
         r'["\']?[\w./\\]+\.ps1["\']?\s*[,;)]',
         r"\.psm1\b",
         r"\.psd1\b",
-
         # subprocess with powershell/pwsh as argument (Python code calling PS)
         r'subprocess\.[^\n]*["\'](?:powershell|pwsh)["\']',
     ]
 
     # File extensions to check
-    CHECK_EXTENSIONS = {'.py', '.yml', '.yaml', '.md', '.txt', '.json', '.cfg', '.ini', '.toml'}
+    CHECK_EXTENSIONS = {".py", ".yml", ".yaml", ".md", ".txt", ".json", ".cfg", ".ini", ".toml"}
 
     # Directories to exclude
     EXCLUDE_DIRS = {
-        '.git', '__pycache__', '.pytest_cache', '.mypy_cache',
-        'node_modules', '.venv', 'venv', '.vscode', '.idea',
-        '.windsurf',  # rules/plans/workflows are documentation, not code
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        "node_modules",
+        ".venv",
+        "venv",
+        ".vscode",
+        ".idea",
+        ".windsurf",  # rules/plans/workflows are documentation, not code
     }
 
     # Individual files to exclude (documentation or config that legitimately references PS)
     EXCLUDE_FILES = {
-        '.pre-commit-config.yaml',
-        'pyproject.toml',
-        'priority_definitions.json',
+        ".pre-commit-config.yaml",
+        "pyproject.toml",
+        "priority_definitions.json",
     }
 
     def __init__(self):
         self.violations: list[dict[str, Any]] = []
-        self.compiled_patterns = [re.compile(pattern, re.IGNORECASE | re.MULTILINE) for pattern in self.POWERSHELL_PATTERNS]
+        self.compiled_patterns = [
+            re.compile(pattern, re.IGNORECASE | re.MULTILINE) for pattern in self.POWERSHELL_PATTERNS
+        ]
 
-    def check_repository(self, max_files: int = 1000, target_files: list[Path] | None = None) -> list[dict[str, Any]]:
+    def check_repository(
+        self, max_files: int = 1000, target_files: list[Path] | None = None
+    ) -> list[dict[str, Any]]:
         """Check repository for PowerShell usage with file limit.
 
         If target_files is provided, only those files are scanned.
@@ -120,7 +128,7 @@ class PowerShellBanChecker:
                     files_checked += 1
 
                     if files_checked % 100 == 0:
-                        print(f"Scanned {files_checked} files...", end='\r')
+                        print(f"Scanned {files_checked} files...", end="\r")
                 except OSError as e:
                     print(f"Could not read {file_path}: {e}", file=sys.stderr)
 
@@ -142,7 +150,7 @@ class PowerShellBanChecker:
             return False
 
         # Skip binary files
-        if file_path.suffix.lower() in ['.exe', '.dll', '.so', '.dylib', '.png', '.jpg', '.gif', '.pdf']:
+        if file_path.suffix.lower() in [".exe", ".dll", ".so", ".dylib", ".png", ".jpg", ".gif", ".pdf"]:
             return False
 
         # Check specific extensions or common config files
@@ -150,7 +158,7 @@ class PowerShellBanChecker:
             return True
 
         # Check common script/automation files by name
-        script_patterns = ['script', 'setup', 'install', 'build', 'deploy', 'run', 'execute']
+        script_patterns = ["script", "setup", "install", "build", "deploy", "run", "execute"]
         filename_lower = file_path.name.lower()
         if any(pattern in filename_lower for pattern in script_patterns):
             return True
@@ -160,13 +168,13 @@ class PowerShellBanChecker:
     def _check_file(self, file_path: Path) -> None:
         """Check a single file for PowerShell usage."""
         try:
-            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
 
             for i, pattern in enumerate(self.compiled_patterns):
                 matches = pattern.finditer(content)
 
                 for match in matches:
-                    line_num = content[:match.start()].count('\n') + 1
+                    line_num = content[: match.start()].count("\n") + 1
                     line_content = self._get_line_content(content, line_num)
 
                     # Skip false positives
@@ -177,7 +185,7 @@ class PowerShellBanChecker:
                         "type": "powershell_usage",
                         "file": str(file_path.relative_to(PROJECT_ROOT)),
                         "line": line_num,
-                        "column": match.start() - content.rfind('\n', 0, match.start()),
+                        "column": match.start() - content.rfind("\n", 0, match.start()),
                         "pattern": self.POWERSHELL_PATTERNS[i],
                         "match": match.group(),
                         "line_content": line_content.strip(),
@@ -187,13 +195,14 @@ class PowerShellBanChecker:
                     }
 
                     self.violations.append(violation)
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure skipped silently
+        except (
+            Exception
+        ):  # guardian: allow-silent-swallow -- non-critical: file read failure skipped silently
             pass
-
 
     def _get_line_content(self, content: str, line_num: int) -> str:
         """Extract the content of a specific line."""
-        lines = content.split('\n')
+        lines = content.split("\n")
         if 1 <= line_num <= len(lines):
             return lines[line_num - 1]
         return ""
@@ -201,22 +210,23 @@ class PowerShellBanChecker:
     def _is_false_positive(self, match: str, line_content: str, file_path: Path) -> bool:
         """Check if this is a false positive."""
         # Skip comments mentioning PowerShell
-        if line_content.strip().startswith('#') and 'powershell' in line_content.lower():
+        if line_content.strip().startswith("#") and "powershell" in line_content.lower():
             return True
 
         # Skip lines in code fences in markdown (indented or fenced — these are examples)
-        if file_path.suffix == '.md':
+        if file_path.suffix == ".md":
             stripped = line_content.strip()
             # Allow actual PS cmdlet detection in .md only if it's inside a code block
             # For simplicity: skip all .md false positives on 'powershell'/'pwsh' word matches
             # since those are almost always documentation references
-            if any(p in match.lower() for p in ['powershell', 'pwsh']) and \
-               not any(c in match for c in ['Start-Process', 'Invoke-', 'Get-ChildItem']):
+            if any(p in match.lower() for p in ["powershell", "pwsh"]) and not any(
+                c in match for c in ["Start-Process", "Invoke-", "Get-ChildItem"]
+            ):
                 return True
 
         # Skip commented-out lines
         stripped = line_content.strip()
-        if stripped.startswith('#') or stripped.startswith('//'):
+        if stripped.startswith("#") or stripped.startswith("//"):
             return True
 
         return False
@@ -243,11 +253,11 @@ class PowerShellBanChecker:
             if pattern.lower() in match.lower():
                 return suggestion
 
-        if match.startswith('$'):
+        if match.startswith("$"):
             return "Use Python variables without $ prefix"
-        elif match.endswith('.ps1'):
+        elif match.endswith(".ps1"):
             return "Convert PowerShell script to Python"
-        elif '|' in match and '-' in match:
+        elif "|" in match and "-" in match:
             return "Use Python pipes and functions instead of PowerShell pipeline"
         else:
             return "Replace with equivalent Python operation"
@@ -260,8 +270,8 @@ class PowerShellBanChecker:
             file_path = PROJECT_ROOT / violation["file"]
 
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
-                lines = content.split('\n')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
+                lines = content.split("\n")
                 line_idx = violation["line"] - 1
 
                 if 0 <= line_idx < len(lines):
@@ -271,7 +281,7 @@ class PowerShellBanChecker:
                     new_line = self._fix_line(line, violation["match"])
                     if new_line != line:
                         lines[line_idx] = new_line
-                        file_path.write_text('\n'.join(lines), encoding='utf-8')
+                        file_path.write_text("\n".join(lines), encoding="utf-8")
                         print(f"Fixed PowerShell usage in {violation['file']}:{violation['line']}")
                         fixed_count += 1
                         self.violations.remove(violation)
@@ -295,7 +305,7 @@ class PowerShellBanChecker:
                 return line.replace(powershell_cmd, python_cmd)
 
         # Variable substitution (simple cases)
-        if re.match(r'\$[a-zA-Z_][a-zA-Z0-9_]*', match):
+        if re.match(r"\$[a-zA-Z_][a-zA-Z0-9_]*", match):
             return line.replace(match, match[1:])  # Remove $ prefix
 
         return line
@@ -369,7 +379,9 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", help="Output in JSON format")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--stats", action="store_true", help="Show statistics")
-    parser.add_argument("files", nargs="*", help="Optional list of files to scan (pre-commit passes staged files)")
+    parser.add_argument(
+        "files", nargs="*", help="Optional list of files to scan (pre-commit passes staged files)"
+    )
 
     args = parser.parse_args()
 
@@ -390,11 +402,16 @@ def main() -> int:
         print()
 
     if args.json:
-        print(json.dumps({
-            "status": "failed" if violations else "passed",
-            "violations": violations,
-            "statistics": checker.get_statistics(),
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "status": "failed" if violations else "passed",
+                    "violations": violations,
+                    "statistics": checker.get_statistics(),
+                },
+                indent=2,
+            )
+        )
     else:
         checker.print_report(args.verbose)
 

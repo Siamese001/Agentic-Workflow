@@ -20,9 +20,9 @@ _DEFAULT_ADG_DB_PATH = "artifacts/adg/adg_indexed.sqlite"
 
 def get_default_adg_db_path() -> Path | None:
     """Get the default ADG SQLite database path.
-    
+
     Checks for the ADG database in the standard artifacts location.
-    
+
     Returns:
         Path to the ADG SQLite database, or None if not found
     """
@@ -51,13 +51,13 @@ def create_sqlite_graph_store(
     db_path: str | Path | None = None,
 ) -> SQLiteGraphStore:
     """Create a SQLiteGraphStore instance.
-    
+
     Args:
         db_path: Path to the ADG SQLite database. If None, uses default path.
-    
+
     Returns:
         SQLiteGraphStore instance
-    
+
     Raises:
         FileNotFoundError: If the database file doesn't exist
     """
@@ -83,12 +83,12 @@ def create_sqlite_graph_store_or_none(
     db_path: str | Path | None = None,
 ) -> SQLiteGraphStore | None:
     """Create a SQLiteGraphStore instance, returning None if database not found.
-    
+
     This is a convenience function for optional graph store initialization.
-    
+
     Args:
         db_path: Path to the ADG SQLite database. If None, uses default path.
-    
+
     Returns:
         SQLiteGraphStore instance, or None if database not found
     """

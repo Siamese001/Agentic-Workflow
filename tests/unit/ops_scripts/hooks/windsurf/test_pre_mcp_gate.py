@@ -20,6 +20,9 @@ Plan requirements verified:
   - Flat payload: handled
   - Multiple sqlite files, only one locked: still blocks
   - Lock detection: both -wal and -journal
+  - ADG MCP + no SQLite file at all → auto-generate; exit 0 on success, exit 2 on failure
+  - _has_adg_sqlite: returns False when dir missing, empty, or no adg_indexed_* file
+  - _auto_generate_adg: invokes subprocess with shell=False, check=False, timeout=300; returns True/False
 """
 
 import json
@@ -38,7 +41,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 from ops_scripts.hooks.windsurf.pre_mcp_gate import (
     ADG_RECOVERY_TOOLS,
     FILESYSTEM_WRITE_TOOLS,
+    _auto_generate_adg,
     _get_latest_snapshot_age_seconds,
+    _has_adg_sqlite,
     _is_sqlite_locked,
     check_adg_gate,
     check_filesystem_write_gate,
@@ -158,6 +163,7 @@ class TestCheckAdgGate:
     def test_fresh_snapshot_no_lock_allowed(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         (adg / "adg_snapshot_now.json").write_text("{}")
         assert check_adg_gate(tmp_path) == 0
 
@@ -180,21 +186,29 @@ class TestCheckAdgGate:
     def test_stale_snapshot_blocks(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         snap = adg / "adg_snapshot_old.json"
         snap.write_text("{}")
         os.utime(str(snap), (time.time() - 3700, time.time() - 3700))
         assert check_adg_gate(tmp_path) == 2
 
     def test_missing_snapshot_allowed(self, tmp_path):
-        (tmp_path / "artifacts" / "adg").mkdir(parents=True)
+        adg = tmp_path / "artifacts" / "adg"
+        adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         assert check_adg_gate(tmp_path) == 0
 
-    def test_missing_artifacts_dir_allowed(self, tmp_path):
-        assert check_adg_gate(tmp_path) == 0
+    def test_missing_artifacts_dir_no_sqlite_triggers_autogen(self, tmp_path):
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate._auto_generate_adg",
+            return_value=True,
+        ):
+            assert check_adg_gate(tmp_path) == 0
 
     def test_exactly_30min_old_snapshot_allowed(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         snap = adg / "adg_snapshot_borderline.json"
         snap.write_text("{}")
         # Exactly at threshold — 29min59s = allowed
@@ -205,6 +219,7 @@ class TestCheckAdgGate:
     def test_just_over_30min_old_snapshot_blocks(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         snap = adg / "adg_snapshot_borderline.json"
         snap.write_text("{}")
         t = time.time() - (30 * 60 + 5)
@@ -276,6 +291,7 @@ class TestMain:
     def test_adg_with_fresh_snapshot_allowed(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         (adg / "adg_snapshot_now.json").write_text("{}")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_nodes_by_layer"}}
         assert self._run(payload, tmp_path) == 0
@@ -292,15 +308,20 @@ class TestMain:
     def test_adg_with_stale_snapshot_blocked(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
+        (adg / "adg_indexed_x.sqlite").write_text("")
         snap = adg / "adg_snapshot_old.json"
         snap.write_text("{}")
         os.utime(str(snap), (time.time() - 3700, time.time() - 3700))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_edge_fanout"}}
         assert self._run(payload, tmp_path) == 2
 
-    def test_adg_no_artifacts_dir_allowed(self, tmp_path):
+    def test_adg_no_artifacts_dir_autogen_triggered(self, tmp_path):
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_health"}}
-        assert self._run(payload, tmp_path) == 0
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate._auto_generate_adg",
+            return_value=True,
+        ):
+            assert self._run(payload, tmp_path) == 0
 
     # Payload structure variants
     def test_flat_payload_no_tool_info(self):

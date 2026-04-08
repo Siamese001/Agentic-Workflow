@@ -704,7 +704,7 @@ All Python file I/O MUST use `encoding="utf-8"`. Evidence files are raw executio
 
 **RCA Status Lifecycle:**
 - ❌ OPEN — violation documented, corrective actions NOT executed
-- 🔄 IN PROGRESS — corrective actions partially executed  
+- 🔄 IN PROGRESS — corrective actions partially executed
 - ✅ RESOLVED — all immediate corrective actions completed with evidence
 
 **FORBIDDEN:** Creating RCA and leaving it unresolved. User should never have to ask for closure.
@@ -2038,9 +2038,9 @@ trigger:
 ---
 # Pytest Configuration SSOT Enforcement
 
-**Status**: ACTIVE  
-**Rule ID**: RULE-PYTEST-SSOT-001  
-**Enforcement**: CI Gate + Pre-commit Hook  
+**Status**: ACTIVE
+**Rule ID**: RULE-PYTEST-SSOT-001
+**Enforcement**: CI Gate + Pre-commit Hook
 **Scope**: `pytest.ini` ↔ `pyproject.toml` consistency
 
 ---
@@ -2053,7 +2053,7 @@ trigger:
 | **REFERENCE** | `pyproject.toml` | Build/package metadata + fallback defaults |
 
 ### Key Constraint
-`pytest.ini` values **MUST** be equal or stricter than `pyproject.toml` values.  
+`pytest.ini` values **MUST** be equal or stricter than `pyproject.toml` values.
 `pyproject.toml` can have broader defaults; `pytest.ini` provides IDE-optimized runtime values.
 
 ---
@@ -2411,4 +2411,3 @@ This is a **behavioral rule** enforced during AI execution. No pre-commit hook c
 
 
 ---
-

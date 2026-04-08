@@ -8,5 +8,3 @@ __all__ = [
     "RepoSignalAdapter",
     "RepoSignalSnapshot",
 ]
-
-

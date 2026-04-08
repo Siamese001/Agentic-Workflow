@@ -1,4 +1,5 @@
 """Risk correlation module for deterministic multi-signal correlation."""
+
 from agentic_core.L0_routing.config.path_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
@@ -9,5 +10,3 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-
-

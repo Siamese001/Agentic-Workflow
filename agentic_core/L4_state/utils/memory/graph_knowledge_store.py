@@ -35,7 +35,7 @@ class SQLiteGraphStore(IGraphStore):
 
         Args:
             db_path: Path to the ADG SQLite database.
-        
+
         Raises:
             FileNotFoundError: If db_path does not exist or is not a file.
             sqlite3.OperationalError: If database is corrupted or invalid.
@@ -52,7 +52,7 @@ class SQLiteGraphStore(IGraphStore):
 
     def _get_connection(self) -> sqlite3.Connection:
         """Get or create a database connection.
-        
+
         Raises:
             sqlite3.OperationalError: If database is corrupted or invalid.
         """
@@ -159,7 +159,9 @@ class SQLiteGraphStore(IGraphStore):
         )
 
     def get_relationships(
-        self, entity_id: str, direction: str = "both",
+        self,
+        entity_id: str,
+        direction: str = "both",
     ) -> list[GraphRelationship]:
         """Get relationships for an entity.
 
