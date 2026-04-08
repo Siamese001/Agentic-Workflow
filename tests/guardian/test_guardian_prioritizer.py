@@ -15,15 +15,18 @@ class TestGuardianPrioritizer:
 
     def test_guardian_prioritizer_imports(self):
         """Test guardian_prioritizer module imports."""
-        from agentic_core import guardian_prioritizer
-        assert guardian_prioritizer is not None
+        import importlib
+        mod = importlib.import_module("agentic_core.adg.applications.guardian_prioritizer")
+        assert mod is not None
 
     def test_guardian_prioritizer_class(self):
         """Test GuardianPrioritizer class exists."""
-        from agentic_core import GuardianPrioritizer
-        assert GuardianPrioritizer is not None
+        import importlib
+        mod = importlib.import_module("agentic_core.adg.applications.guardian_prioritizer")
+        assert hasattr(mod, "GuardianPrioritizer")
 
     def test_guardian_prioritizer_callable(self):
         """Test guardian_prioritizer functions are callable."""
-        from agentic_core import validate_guardian_prioritizer
-        assert callable(validate_guardian_prioritizer)
+        import importlib
+        mod = importlib.import_module("agentic_core.adg.applications.guardian_prioritizer")
+        assert callable(mod.GuardianPrioritizer)

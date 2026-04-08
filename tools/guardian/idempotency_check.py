@@ -44,13 +44,15 @@ def _check_justification_quality(line: str) -> str | None:
         # Accept both ' -- ' (canonical) and ' - ' (legacy) as separators
         if "--" in after:
             justification = after.split("--", 1)[-1].strip()
-        elif " - " in after:
-            justification = after.split(" - ", 1)[-1].strip()
         else:
-            justification = ""
+            _m = re.search(r"(?<!-) - (?!-)", after)
+            if _m:
+                justification = after[_m.end():].strip()
+            else:
+                justification = ""
         has_justification = len(justification) > 3
         if not has_justification:
-            return f"Missing justification — add '# guardian: allow-<type> -- <specific justification>'"
+            return "Missing justification — add '# guardian: allow-<type> -- <specific justification>'"
         for generic in _GENERIC_JUSTIFICATIONS:
             if justification == generic or justification.startswith(generic + " "):
                 return f"Generic justification '{generic}' is forbidden — be specific about why this exemption is needed"
@@ -62,17 +64,22 @@ def scan_file(filepath: Path) -> list[dict]:
     Scan a single Python file for guardian idempotency violations.
     Returns list of {file, line, line_no, issue} dicts.
     """
-    issues = []
+    issues: list[dict] = []
     try:
         lines = filepath.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError:
         return issues
 
+    try:
+        rel_path = str(filepath.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        rel_path = str(filepath).replace("\\", "/")
+
     for i, line in enumerate(lines, 1):
         guardian_count = _count_guardians_on_line(line)
         if guardian_count > 1:
             issues.append({
-                "file": str(filepath.relative_to(ROOT)).replace("\\", "/"),
+                "file": rel_path,
                 "line_no": i,
                 "line": line.strip(),
                 "issue": f"DUPLICATE: {guardian_count} guardian annotations on one line",
@@ -81,7 +88,7 @@ def scan_file(filepath: Path) -> list[dict]:
             quality_err = _check_justification_quality(line)
             if quality_err:
                 issues.append({
-                    "file": str(filepath.relative_to(ROOT)).replace("\\", "/"),
+                    "file": rel_path,
                     "line_no": i,
                     "line": line.strip(),
                     "issue": f"WEAK_JUSTIFICATION: {quality_err}",
@@ -118,7 +125,10 @@ def scan_new_string(new_string: str, existing_content: str | None = None) -> lis
             for m in _GUARDIAN_RE.finditer(line):
                 tag = m.group(0).strip()
                 if tag in existing_guardians:
-                    pass
+                    violations.append(
+                        f"Duplicate guardian tag '{tag}' already exists in file — "
+                        "each guardian annotation must be unique per file."
+                    )
 
     return violations
 

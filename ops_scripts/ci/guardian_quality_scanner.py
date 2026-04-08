@@ -59,8 +59,17 @@ def _load_ratchet() -> dict:
     if RATCHET_FILE.exists():
         try:
             return json.loads(RATCHET_FILE.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            pass
+        except json.JSONDecodeError as exc:
+            print(
+                f"[guardian-quality] WARNING: ratchet file corrupt ({exc}); treating as empty — "
+                "run with GUARDIAN_INIT=1 to reinitialise",
+                file=sys.stderr,
+            )
+        except OSError as exc:
+            print(
+                f"[guardian-quality] WARNING: cannot read ratchet file ({exc})",
+                file=sys.stderr,
+            )
     return {}
 
 
