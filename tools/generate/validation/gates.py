@@ -481,6 +481,10 @@ _SC_CHECK_DISPATCH: dict[str, str] = {
     "SC-2": "_query_sc2_lifecycle",
     "SC-3": "_query_sc3_uwg_write",
     "SC-4": "_query_sc4_choke_point",
+    "SC-5": "_query_sc5_spine",
+    "SC-6": "_query_sc6_role_purity",
+    "SC-7": "_query_sc7_grounding",
+    "SC-8": "_query_sc8_trace_coverage",
 }
 
 
@@ -607,11 +611,115 @@ def _query_sc4_choke_point(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     return violations
 
 
+def _query_sc5_spine(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-5: Agentic spine completeness — verify end-to-end path L1→L0→L2."""
+    violations: list[dict[str, Any]] = []
+    spine_edges = {
+        "pulls_context",
+        "generates_prompt",
+        "consumes_prompt",
+        "packages_execution_trace",
+    }
+    found = set()
+    for (rt,) in conn.execute(
+        "SELECT DISTINCT relation_type FROM edges "
+        "WHERE relation_type IN ('pulls_context','generates_prompt','consumes_prompt','packages_execution_trace')"
+    ).fetchall():
+        found.add(rt)
+    missing = spine_edges - found
+    if missing:
+        violations.append(
+            {
+                "source_file": "",
+                "line_no": 0,
+                "evidence": f"Agentic spine missing edge types: {', '.join(sorted(missing))}",
+            }
+        )
+    return violations
+
+
+_ROLE_FORBIDDEN_EDGES: dict[str, list[str]] = {
+    "L0": ["invokes_provider", "writes_to", "orchestrates_healing"],
+    "L1": ["invokes_provider", "writes_to", "commits_mutation_durable"],
+    "L6": ["invokes_provider", "writes_to", "commits_mutation_durable"],
+}
+
+
+def _query_sc6_role_purity(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-6: Role purity for L0, L1, L6 — these layers should not have action edges."""
+    violations: list[dict[str, Any]] = []
+    for layer, forbidden in _ROLE_FORBIDDEN_EDGES.items():
+        placeholders = ",".join(["?"] * len(forbidden))
+        rows = conn.execute(
+            "SELECT e.source_file, e.line_no, e.relation_type, n_src.adg_name "
+            "FROM edges e JOIN nodes n_src ON e.src_id = n_src.id "
+            f"WHERE n_src.layer = ? AND e.relation_type IN ({placeholders})",
+            [layer, *forbidden],
+        ).fetchall()
+        for src_file, line_no, rel_type, adg_name in rows:
+            violations.append(
+                {
+                    "source_file": src_file or "",
+                    "line_no": line_no or 0,
+                    "evidence": f"{adg_name} ({layer}) has forbidden edge: {rel_type}",
+                }
+            )
+    return violations
+
+
+def _query_sc7_grounding(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-7: Grounding contract — consumes_prompt + invokes_provider requires pulls_context."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT DISTINCT e.src_id, n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type = 'consumes_prompt' "
+        "  AND e.src_id IN ("
+        "    SELECT e2.src_id FROM edges e2 WHERE e2.relation_type = 'invokes_provider'"
+        "  ) "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e3.src_id FROM edges e3 WHERE e3.relation_type = 'pulls_context'"
+        "  )",
+    ).fetchall()
+    for _src_id, adg_name, resolved_path in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} consumes prompt and invokes provider without pulls_context",
+            }
+        )
+    return violations
+
+
+def _query_sc8_trace_coverage(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-8: Trace/replay/eval surface coverage — action modules need trace edges."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT DISTINCT n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type IN ('invokes_provider', 'writes_to') "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ('packages_execution_trace', 'triggered_telemetry', 'scores_groundedness')"
+        "  )",
+    ).fetchall()
+    for adg_name, resolved_path in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} action-capable without trace/eval coverage",
+            }
+        )
+    return violations
+
+
 def _check_structural_conformance(
     sqlite_path: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Run structural conformance checks (SC-1 through SC-4, more in future waves).
+    """Run structural conformance checks (SC-1 through SC-8).
 
     In audit mode (default), violations are logged and inserted into the violations table
     but do NOT cause sys.exit. When audit_mode is False for a check, violations cause sys.exit(1).
@@ -651,12 +759,15 @@ def _check_structural_conformance(
                     except sqlite3.OperationalError:
                         pass
 
+            sc_num = int(check_id.split("-")[1]) if "-" in check_id else 0
+            severity = "P0" if sc_num <= 4 else "P1"
+
             for v in violations:
                 _insert_sc_ap_violation(
                     conn,
                     check_id,
                     CLASS_STRUCTURAL,
-                    "P0",
+                    severity,
                     v.get("source_file", ""),
                     v.get("line_no", 0),
                     v.get("evidence", ""),
@@ -683,6 +794,12 @@ _AP_CHECK_DISPATCH: dict[str, str] = {
     "AP-2": "_query_ap2_phase_bypass",
     "AP-3": "_query_ap3_provider_bypass",
     "AP-4": "_query_ap4_direct_write",
+    "AP-5": "_query_ap5_tool_overlap",
+    "AP-6": "_query_ap6_manager_sprawl",
+    "AP-7": "_query_ap7_dup_specialization",
+    "AP-8": "_query_ap8_missing_trace",
+    "AP-9": "_query_ap9_infra_spread",
+    "AP-10": "_query_ap10_mutation_confusion",
 }
 
 
@@ -802,11 +919,174 @@ def _query_ap4_direct_write(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     return violations
 
 
+def _query_ap5_tool_overlap(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-5: Tool overlap / ambiguous tool surfaces — nodes sharing >70% imports."""
+    violations: list[dict[str, Any]] = []
+    provider_nodes = conn.execute(
+        "SELECT DISTINCT e.src_id, n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type = 'invokes_provider'",
+    ).fetchall()
+    if len(provider_nodes) < 2:
+        return violations
+    import_map: dict[int, set[int]] = {}
+    for src_id, _, _ in provider_nodes:
+        targets = conn.execute(
+            "SELECT dst_id FROM edges WHERE src_id = ? AND relation_type = 'imports'",
+            (src_id,),
+        ).fetchall()
+        import_map[src_id] = {t[0] for t in targets}
+    checked: set[tuple[int, int]] = set()
+    for i, (id_a, name_a, path_a) in enumerate(provider_nodes):
+        for j, (id_b, name_b, _path_b) in enumerate(provider_nodes):
+            if i >= j:
+                continue
+            pair = (min(id_a, id_b), max(id_a, id_b))
+            if pair in checked:
+                continue
+            checked.add(pair)
+            set_a = import_map.get(id_a, set())
+            set_b = import_map.get(id_b, set())
+            if not set_a or not set_b:
+                continue
+            shared = len(set_a & set_b)
+            total = min(len(set_a), len(set_b))
+            if total > 0 and shared / total > 0.7:
+                violations.append(
+                    {
+                        "source_file": path_a or "",
+                        "line_no": 0,
+                        "evidence": f"{name_a} and {name_b} share >{int(shared / total * 100)}% imports",
+                    }
+                )
+    return violations
+
+
+def _query_ap6_manager_sprawl(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-6: Premature multi-agent / manager sprawl — excessive routes_to_agent fan-out."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT n.adg_name, n.resolved_path, COUNT(*) as cnt "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type IN ('routes_to_agent', 'dispatches_agent') "
+        "GROUP BY e.src_id "
+        "HAVING cnt > 5",
+    ).fetchall()
+    for adg_name, resolved_path, cnt in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} routes/dispatches to {cnt} agents (>5 threshold)",
+            }
+        )
+    return violations
+
+
+def _query_ap7_dup_specialization(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-7: Duplicate specialization — sibling agents with >80% overlapping imports."""
+    violations: list[dict[str, Any]] = []
+    agent_nodes = conn.execute(
+        "SELECT id, adg_name, resolved_path, layer FROM nodes "
+        "WHERE entity_type IN ('agent', 'class') "
+        "  AND adg_name LIKE '%Agent%'",
+    ).fetchall()
+    if len(agent_nodes) < 2:
+        return violations
+    import_map: dict[int, set[int]] = {}
+    for nid, _, _, _ in agent_nodes:
+        targets = conn.execute(
+            "SELECT dst_id FROM edges WHERE src_id = ? AND relation_type = 'imports'",
+            (nid,),
+        ).fetchall()
+        import_map[nid] = {t[0] for t in targets}
+    checked: set[tuple[int, int]] = set()
+    for i, (id_a, name_a, path_a, layer_a) in enumerate(agent_nodes):
+        for j, (id_b, name_b, _path_b, layer_b) in enumerate(agent_nodes):
+            if i >= j or layer_a != layer_b:
+                continue
+            pair = (min(id_a, id_b), max(id_a, id_b))
+            if pair in checked:
+                continue
+            checked.add(pair)
+            set_a = import_map.get(id_a, set())
+            set_b = import_map.get(id_b, set())
+            if not set_a or not set_b:
+                continue
+            shared = len(set_a & set_b)
+            total = min(len(set_a), len(set_b))
+            if total > 0 and shared / total > 0.8:
+                violations.append(
+                    {
+                        "source_file": path_a or "",
+                        "line_no": 0,
+                        "evidence": f"{name_a} and {name_b} ({layer_a}) share >{int(shared / total * 100)}% imports",
+                    }
+                )
+    return violations
+
+
+def _query_ap8_missing_trace(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-8: Missing trace/eval on action-capable paths — same as SC-8 as anti-pattern."""
+    return _query_sc8_trace_coverage(conn)
+
+
+def _query_ap9_infra_spread(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-9: Infrastructure spread — infra modules imported from >3 distinct layers."""
+    violations: list[dict[str, Any]] = []
+    infra_nodes = conn.execute(
+        "SELECT id, adg_name, resolved_path FROM nodes "
+        "WHERE LOWER(adg_name) LIKE '%redis%' "
+        "   OR LOWER(adg_name) LIKE '%cache%' "
+        "   OR LOWER(adg_name) LIKE '%vector%' "
+        "   OR LOWER(adg_name) LIKE '%embedding%'",
+    ).fetchall()
+    for nid, adg_name, resolved_path in infra_nodes:
+        layers = conn.execute(
+            "SELECT DISTINCT n.layer FROM edges e JOIN nodes n ON e.src_id = n.id "
+            "WHERE e.dst_id = ? AND e.relation_type IN ('imports', 'reads_from')",
+            (nid,),
+        ).fetchall()
+        layer_count = len(layers)
+        if layer_count > 3:
+            violations.append(
+                {
+                    "source_file": resolved_path or "",
+                    "line_no": 0,
+                    "evidence": f"{adg_name} imported from {layer_count} layers (>3 threshold)",
+                }
+            )
+    return violations
+
+
+def _query_ap10_mutation_confusion(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-10: Live/future mutation confusion — L6 writing to non-L6 execution modules."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, n_src.adg_name, n_dst.layer "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "JOIN nodes n_dst ON e.dst_id = n_dst.id "
+        "WHERE n_src.layer = 'L6' "
+        "  AND e.relation_type IN ('writes_to', 'controls_flow') "
+        "  AND n_dst.layer != 'L6'",
+    ).fetchall()
+    for src_file, line_no, adg_name, dst_layer in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} (L6) mutates {dst_layer} execution-time module",
+            }
+        )
+    return violations
+
+
 def _check_agentic_antipatterns(
     sqlite_path: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Run agentic anti-pattern checks (AP-1 through AP-4, more in future waves).
+    """Run agentic anti-pattern checks (AP-1 through AP-10, more in future waves).
 
     In audit mode (default), violations are logged and inserted into the violations table
     but do NOT cause sys.exit. When audit_mode is False for a check, violations cause sys.exit(1).
@@ -846,12 +1126,15 @@ def _check_agentic_antipatterns(
                     except sqlite3.OperationalError:
                         pass
 
+            ap_num = int(check_id.split("-")[1]) if "-" in check_id else 0
+            severity = "P0" if ap_num <= 4 else "P1"
+
             for v in violations:
                 _insert_sc_ap_violation(
                     conn,
                     check_id,
                     CLASS_AGENTIC,
-                    "P0",
+                    severity,
                     v.get("source_file", ""),
                     v.get("line_no", 0),
                     v.get("evidence", ""),
