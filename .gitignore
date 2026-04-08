@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-08T10:15:54.582212
+# Last generated: 2026-04-08T10:16:56.572722
 
 
 # Build & Cache
@@ -44,6 +44,7 @@
 .sovereign_healing_backup/
 /archive/
 /archives/
+/artifacts/
 
 # IDE & Editor
 .DS_Store/
@@ -67,8 +68,6 @@
 # Other
 .hypothesis/
 /_compat/
-/artifacts/adg/
-/artifacts/guardian_quality_ratchet.json/
 
 # File Patterns
 *.dll
