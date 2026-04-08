@@ -306,13 +306,15 @@ def _print_defect_table(
     if sqlite_path is not None and sqlite_path.exists():
         try:
             with sqlite3.connect(str(sqlite_path)) as _sa_conn:
-                _sa_rows = _sa_conn.execute(
-                    "SELECT category, COUNT(*) FROM violations "
-                    "WHERE violation_class IN ('structural_conformance', 'agentic_antipattern') "
-                    "GROUP BY category",
-                ).fetchall()
-                for _cat, _cnt in _sa_rows:
-                    _sc_ap_counts[_cat] = _cnt
+                _sa_cols = {r[1] for r in _sa_conn.execute("PRAGMA table_info(violations)").fetchall()}
+                if "violation_class" in _sa_cols:
+                    _sa_rows = _sa_conn.execute(
+                        "SELECT category, COUNT(*) FROM violations "
+                        "WHERE violation_class IN ('structural_conformance', 'agentic_antipattern') "
+                        "GROUP BY category",
+                    ).fetchall()
+                    for _cat, _cnt in _sa_rows:
+                        _sc_ap_counts[_cat] = _cnt
         except sqlite3.OperationalError:
             pass
 

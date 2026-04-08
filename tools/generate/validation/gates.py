@@ -444,8 +444,11 @@ def _ensure_violation_class_column(conn: sqlite3.Connection) -> None:
     """Add violation_class column to violations table if it does not exist.
 
     Handles live DBs that predate the SC/AP violation_class column.
+    No-op if the violations table does not exist at all.
     """
     cols = {r[1] for r in conn.execute("PRAGMA table_info(violations)").fetchall()}
+    if not cols:
+        return  # violations table does not exist
     if "violation_class" not in cols:
         conn.execute("ALTER TABLE violations ADD COLUMN violation_class TEXT NOT NULL DEFAULT 'hygiene'")
 
@@ -472,7 +475,6 @@ def _insert_sc_ap_violation(
         line_no: Line number (0 if not applicable).
         evidence: Human-readable evidence string.
     """
-    _ensure_violation_class_column(conn)
     conn.execute(
         "INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity, violation_class) "
         "VALUES (0, ?, ?, ?, ?, ?, ?)",
@@ -756,6 +758,7 @@ def _check_structural_conformance(
         return results
 
     with sqlite3.connect(str(sqlite_path)) as conn:
+        _ensure_violation_class_column(conn)
         for check_id, check_cfg in sorted(sc_checks.items()):
             audit = check_cfg.get("audit_mode", True)
             label = check_cfg.get("label", check_id)
@@ -767,8 +770,10 @@ def _check_structural_conformance(
                 if query_fn is not None:
                     try:
                         violations = query_fn(conn)
-                    except sqlite3.OperationalError:
-                        pass
+                    except sqlite3.OperationalError as _sc_err:
+                        print(f"[ADG] WARNING: {check_id} query failed: {_sc_err}")
+                else:
+                    print(f"[ADG] WARNING: {check_id} dispatch function '{query_fn_name}' not found")
 
             sc_num = int(check_id.split("-")[1]) if "-" in check_id else 0
             severity = "P0" if sc_num <= 4 else "P1"
@@ -1302,6 +1307,7 @@ def _check_agentic_antipatterns(
         return results
 
     with sqlite3.connect(str(sqlite_path)) as conn:
+        _ensure_violation_class_column(conn)
         for check_id, check_cfg in sorted(ap_checks.items()):
             audit = check_cfg.get("audit_mode", True)
             label = check_cfg.get("label", check_id)
@@ -1313,8 +1319,10 @@ def _check_agentic_antipatterns(
                 if query_fn is not None:
                     try:
                         violations = query_fn(conn)
-                    except sqlite3.OperationalError:
-                        pass
+                    except sqlite3.OperationalError as _ap_err:
+                        print(f"[ADG] WARNING: {check_id} query failed: {_ap_err}")
+                else:
+                    print(f"[ADG] WARNING: {check_id} dispatch function '{query_fn_name}' not found")
 
             ap_num = int(check_id.split("-")[1]) if "-" in check_id else 0
             if ap_num <= 4:

@@ -3677,5 +3677,179 @@ class TestSeverityBandCoverage:
             assert cid in ap_ids
 
 
+# ---------------------------------------------------------------------------
+# W6-residual: Gate orchestrator enforce-mode exit
+# ---------------------------------------------------------------------------
+
+
+class TestGateEnforceModeExit:
+    """Gate orchestrator calls sys.exit(1) when audit_mode=False and violations exist."""
+
+    def test_sc_gate_enforce_exits(self, tmp_path):
+        """SC gate in enforce mode exits on violation."""
+        from tools.generate.validation.gates import _check_structural_conformance
+
+        db, conn = _make_adg_db(tmp_path)
+        # L0→L2 import is gravity-forbidden
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L0','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L2','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'imports','','a.py',1)"
+        )
+        conn.commit()
+        conn.close()
+
+        cfg = _write_sc_ap_config(tmp_path, {"SC-1": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_structural_conformance(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+    def test_ap_gate_enforce_exits(self, tmp_path):
+        """AP gate in enforce mode exits on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        # AP-17 fires on generic edge_kind ('call') with non-import relation_type
+        conn.execute("INSERT INTO nodes VALUES (1,'X','module','L2','module','high','x.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'Y','module','L2','module','high','y.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'controls_flow','call','x.py',1)"
+        )
+        conn.commit()
+        conn.close()
+
+        cfg = _write_sc_ap_config(tmp_path, {"AP-17": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W6-residual: Bad dispatch warning
+# ---------------------------------------------------------------------------
+
+
+class TestBadDispatchWarning:
+    """Gate warns when dispatch table references a non-existent function."""
+
+    def test_sc_bad_dispatch_warns(self, tmp_path, capsys, monkeypatch):
+        """SC gate prints warning when dispatch function is not found."""
+        from tools.generate.validation import gates as gates_mod
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L2','module','high','a.py')")
+        conn.commit()
+        conn.close()
+
+        # Inject a bad dispatch entry
+        original = gates_mod._SC_CHECK_DISPATCH.copy()
+        monkeypatch.setattr(gates_mod, "_SC_CHECK_DISPATCH", {"SC-99": "_query_sc99_nonexistent"})
+
+        cfg = _write_sc_ap_config(tmp_path, {"SC-99": {"enabled": True, "audit_mode": True, "label": "Fake"}})
+        gates_mod._check_structural_conformance(sqlite_path=db, config_path=cfg)
+        output = capsys.readouterr().out
+        assert "WARNING" in output
+        assert "_query_sc99_nonexistent" in output
+
+
+# ---------------------------------------------------------------------------
+# W6-residual: _ensure_violation_class_column migration
+# ---------------------------------------------------------------------------
+
+
+class TestMigrationViolationClassColumn:
+    """_ensure_violation_class_column adds column to DBs that lack it."""
+
+    def test_adds_column_when_missing(self, tmp_path):
+        """Column is added to old-schema violations table."""
+        from tools.generate.validation.gates import _ensure_violation_class_column
+
+        db = tmp_path / "old.sqlite"
+        conn = sqlite3.connect(str(db))
+        conn.execute(
+            "CREATE TABLE violations ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "edge_id INTEGER, category TEXT, evidence TEXT, "
+            "file_path TEXT, line_no INTEGER, severity TEXT)"
+        )
+        conn.commit()
+
+        cols_before = {r[1] for r in conn.execute("PRAGMA table_info(violations)").fetchall()}
+        assert "violation_class" not in cols_before
+
+        _ensure_violation_class_column(conn)
+
+        cols_after = {r[1] for r in conn.execute("PRAGMA table_info(violations)").fetchall()}
+        assert "violation_class" in cols_after
+        conn.close()
+
+    def test_noop_when_column_exists(self, tmp_path):
+        """No error when column already exists."""
+        from tools.generate.validation.gates import _ensure_violation_class_column
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.commit()
+        # violations table in _make_adg_db already has violation_class
+        _ensure_violation_class_column(conn)  # should not raise
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(violations)").fetchall()}
+        assert "violation_class" in cols
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# W6-residual: Malformed config JSON handling
+# ---------------------------------------------------------------------------
+
+
+class TestMalformedConfigHandling:
+    """_load_sc_ap_config fails gracefully on malformed JSON."""
+
+    def test_malformed_json_raises(self, tmp_path):
+        """Malformed JSON config file raises json.JSONDecodeError."""
+        import json as json_mod
+        from tools.generate.validation.gates import _load_sc_ap_config
+
+        cfg_path = tmp_path / "bad_config.json"
+        cfg_path.write_text("{broken json", encoding="utf-8")
+        with pytest.raises(json_mod.JSONDecodeError):
+            _load_sc_ap_config(config_path=cfg_path)
+
+
+# ---------------------------------------------------------------------------
+# W6-residual: Defect table resilience on old DB without violation_class
+# ---------------------------------------------------------------------------
+
+
+class TestDefectTableOldDB:
+    """Defect table handles DB without violation_class column gracefully."""
+
+    def test_no_crash_on_old_schema(self, tmp_path, capsys):
+        """_print_defect_table does not crash when violation_class column is absent."""
+        from tools.generate.reporting.reports import _print_defect_table
+
+        db = tmp_path / "old.sqlite"
+        conn = sqlite3.connect(str(db))
+        conn.execute(
+            "CREATE TABLE violations ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "edge_id INTEGER, category TEXT, evidence TEXT, "
+            "file_path TEXT, line_no INTEGER, severity TEXT)"
+        )
+        conn.execute(
+            "INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity) "
+            "VALUES (0, 'SC-1', 'test', 'a.py', 0, 'P0')"
+        )
+        conn.commit()
+        conn.close()
+
+        # Should not raise — SC/AP rows just won't appear
+        _print_defect_table({"by_severity": {}}, sqlite_path=db)
+        output = capsys.readouterr().out
+        # No SC/AP rows since column is absent
+        assert "[SC]" not in output
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
