@@ -24,7 +24,7 @@ def get_sovereign_decision() -> str:
 
 
 @pytest.mark.xfail(
-    os.environ.get("W4_NEGCTRL_TAMPER", "0") == "1",
+    condition=os.environ.get("W4_NEGCTRL_TAMPER", "0") == "1",
     reason="This test is expected to fail in tamper mode to prove detection.",
     strict=True,  # The test MUST fail in tamper mode, not pass.
 )

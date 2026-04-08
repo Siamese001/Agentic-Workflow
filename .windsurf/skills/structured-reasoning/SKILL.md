@@ -100,7 +100,29 @@ Step-by-step. Name each step. State tool. Check result before next step.
 
 ### Step 6 — Emit SR_SUMMARY
 
-After execution: what changed, what was verified, what remains uncertain, rollback note, next step.
+After execution, emit this block with all fields:
+
+```
+## SR_SUMMARY
+What changed:
+  - <file or artifact> — <what was done>
+
+What was verified:
+  - <test run / health check / diff review>
+
+What remains uncertain:
+  - <item> — <why uncertain>
+  - NONE (if fully resolved)
+
+Rollback / repair note:
+  - <git reset or file restore command>
+  - N/A (if no destructive changes)
+
+Recommended next step:
+  - <concrete action — who, what, when>
+```
+
+Then update task: `mcp13_update_task` with `status=done` and `lessons_learned`.
 
 ---
 
@@ -163,9 +185,9 @@ Each revision must:
 
 ---
 
-## Evidence Standards
+## Structured Reasoning Evidence Standards
 
-Evidence is weak if:
+These evidence rules apply when this skill is used:
 - Based on text search alone (no ADG confirmation)
 - Assumes relationships without graph proof
 - Relies on stale session context (>30 min since last `mem_recall`)

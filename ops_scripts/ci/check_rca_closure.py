@@ -21,17 +21,23 @@ def check_rca_status(file_path: Path) -> bool:
     return True
 
 def main():
-    """Main function to check RCA files in a given directory."""
-    if len(sys.argv) != 2:
-        print("Usage: python check_rca_closure.py <directory_path>")
-        sys.exit(1)
+    """Main function to check RCA files.
 
-    rca_dir = Path(sys.argv[1])
-    if not rca_dir.is_dir():
-        print(f"ERROR: Directory not found: {rca_dir}")
-        sys.exit(1)
+    Supports:
+    - No args: scan repository for RCA_*.md
+    - One dir arg: scan that directory for RCA_*.md
+    - File args (pre-commit): scan provided RCA markdown files
+    """
+    args = sys.argv[1:]
 
-    files_to_check = list(rca_dir.glob('RCA_*.md'))
+    if not args:
+        print("INFO: No RCA files provided; skipping RCA closure check.")
+        return
+    elif len(args) == 1 and Path(args[0]).is_dir():
+        files_to_check = list(Path(args[0]).glob("RCA_*.md"))
+    else:
+        files_to_check = [Path(p) for p in args if Path(p).is_file() and Path(p).name.startswith("RCA_") and Path(p).suffix.lower() == ".md"]
+
     all_passed = True
 
     for file_path in files_to_check:

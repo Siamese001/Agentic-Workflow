@@ -1,7 +1,7 @@
 {
   "repo_root": "C:/Git/Agentic-Workflow",
   "schema_version": "1.0.0",
-  "last_updated": "2026-04-04",
+  "last_updated": "2026-04-08",
   "description": "Canonical MCP server and tool configuration for Agentic-Workflow",
   "servers": {
     "gitkraken": {
@@ -167,59 +167,6 @@
         }
       }
     },
-    "brave_search": {
-      "name": "Brave Search",
-      "prefix": "mcp2",
-      "enabled": true,
-      "target_layer": "L2",
-      "description": "Web search, local search, news, video, and image search",
-      "command": "npx.cmd",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-brave-search"
-      ],
-      "cwd": "C:/Git/Agentic-Workflow",
-      "env": {
-        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
-      },
-      "capabilities": [
-        "web_search",
-        "local_search",
-        "news_search",
-        "video_search",
-        "image_search",
-        "real_time_data"
-      ],
-      "tools": {
-        "brave_search": {
-          "target": "mcp2_brave_web_search",
-          "aliases": [
-            "brave_web_search"
-          ],
-          "description": "Search the web"
-        },
-        "brave_local_search": {
-          "target": "mcp2_brave_local_search",
-          "description": "Search for local businesses and places"
-        },
-        "brave_news": {
-          "target": "mcp2_brave_news_search",
-          "description": "Search for news articles"
-        },
-        "brave_video": {
-          "target": "mcp2_brave_video_search",
-          "description": "Search for videos"
-        },
-        "brave_image": {
-          "target": "mcp2_brave_image_search",
-          "description": "Search for images"
-        },
-        "brave_summarizer": {
-          "target": "mcp2_brave_summarizer",
-          "description": "Get AI summary of search results"
-        }
-      }
-    },
     "deepwiki": {
       "name": "DeepWiki",
       "prefix": "mcp3",
@@ -324,7 +271,7 @@
         "file_search",
         "media_handling"
       ],
-      "_comment": "Constitutional Rule #0: Filesystem server provides access to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Read-sensitive: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py",
+      "_comment": "Constitutional Rule #0: Filesystem server provides access to repo root only.",
       "tools": {
         "read_file": {
           "target": "mcp5_read_text_file",
@@ -442,52 +389,6 @@
         "mem_recall": {
           "target": "mcp6_mem_recall_session_start",
           "description": "Recall persistent project context"
-        }
-      }
-    },
-    "playwright": {
-      "name": "Playwright",
-      "prefix": "mcp7",
-      "enabled": true,
-      "target_layer": "L2",
-      "description": "Browser automation, web scraping, and UI interaction for testing/debugging",
-      "command": "npx.cmd",
-      "args": [
-        "-y",
-        "@executeautomation/playwright-mcp"
-      ],
-      "cwd": "C:/Git/Agentic-Workflow",
-      "capabilities": [
-        "browser_automation",
-        "web_scraping",
-        "ui_interaction",
-        "screenshot_capture",
-        "page_navigation"
-      ],
-      "tools": {
-        "playwright_navigate": {
-          "target": "mcp7_navigate",
-          "description": "Navigate to a URL in browser"
-        },
-        "playwright_click": {
-          "target": "mcp7_click",
-          "description": "Click an element on the page"
-        },
-        "playwright_screenshot": {
-          "target": "mcp7_screenshot",
-          "description": "Take a screenshot of current page"
-        },
-        "playwright_fill": {
-          "target": "mcp7_fill",
-          "description": "Fill form fields"
-        },
-        "playwright_get_text": {
-          "target": "mcp7_get_text",
-          "description": "Extract text from page"
-        },
-        "playwright_evaluate": {
-          "target": "mcp7_evaluate",
-          "description": "Execute JavaScript in browser context"
         }
       }
     },
@@ -769,8 +670,7 @@
     }
   },
   "tool_aliases": {
-    "fetch": "http_get",
-    "brave_web_search": "brave_search"
+    "fetch": "http_get"
   },
   "validation": {
     "required_fields": [
@@ -793,12 +693,10 @@
     "valid_prefixes": [
       "mcp0",
       "mcp1",
-      "mcp2",
       "mcp3",
       "mcp4",
       "mcp5",
       "mcp6",
-      "mcp7",
       "mcp8",
       "mcp9",
       "mcp10",

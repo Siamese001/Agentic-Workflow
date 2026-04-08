@@ -168,10 +168,8 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 | MCP health returns error after code change | Stale `.pyc` bytecode | Clear `__pycache__` in affected module |
 | `ADGNode.id Input should be str, got int` | SQLite INTEGER PRIMARY KEY not coerced to str | 2D |
 | `ADGEdge.id Input should be str, got int` | Same root cause — edge ids also int | 2D |
-| `mcp7_sequentialthinking` hangs indefinitely | Windows: `npx` not resolved — must use `npx.cmd` in config | 6A |
-| `mcp7_sequentialthinking` hangs indefinitely | Zombie node.exe processes from prior failed starts | 6B |
-| `mcp7_sequentialthinking` returns error immediately | npx/Node.js environment broken or not installed | 6C |
-| Any npx-based MCP hangs (filesystem, memory, deepwiki, brave) | Same root cause — `npx` vs `npx.cmd` on Windows | 6A |
+| `sequentialthinking` tool (any error) | `@modelcontextprotocol/server-sequential-thinking` permanently retired — do not recover | 6 (tombstone) |
+| Any npx-based MCP hangs (filesystem, memory, deepwiki, brave) | Same root cause — `npx` vs `npx.cmd` on Windows | Restart MCP in Windsurf |
 | `mcp11_discover_tests` errors | pytest_server.py missing or pytest not installed | 7 |
 | `mcp9_otel_status` errors | otel_mcp_server.py missing or OTel collector not running | 8 |
 
@@ -188,7 +186,7 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 - Skill: `.windsurf/skills/structured-reasoning/SKILL.md`
 - Reference: `docs/mcp/sequential-thinking-replacement.md`
 
-**If you see `mcp7_sequentialthinking` calls in old code or logs**: These are stale references. Update them to use the SR_INTAKE + SR_PLAN pattern described in the skill.
+**If you see `sequentialthinking` tool calls in old code or logs**: These are stale references to the retired `@modelcontextprotocol/server-sequential-thinking` package. Update them to use the SR_INTAKE + SR_PLAN pattern described in the skill.
 
 **If zombie node.exe processes remain from old invocations:**
 // turbo

@@ -19,17 +19,22 @@ def check_hitl_record(file_path: Path) -> bool:
     return True # For now, we don't fail the build, just warn
 
 def main():
-    """Main function to check files in a directory for HITL records."""
-    if len(sys.argv) != 2:
-        print("Usage: python check_hitl_decision_record.py <directory_path>")
-        sys.exit(1)
+    """Main function to check files for HITL records.
 
-    target_dir = Path(sys.argv[1])
-    if not target_dir.is_dir():
-        print(f"ERROR: Directory not found: {target_dir}")
-        sys.exit(1)
+    Supports:
+    - No args: scan markdown files under current working directory
+    - One dir arg: scan markdown files in that directory
+    - File args (pre-commit): scan provided markdown files only
+    """
+    args = sys.argv[1:]
 
-    files_to_check = list(target_dir.glob('*.md'))
+    if not args:
+        files_to_check = list(Path.cwd().rglob("*.md"))
+    elif len(args) == 1 and Path(args[0]).is_dir():
+        files_to_check = list(Path(args[0]).glob("*.md"))
+    else:
+        files_to_check = [Path(p) for p in args if Path(p).suffix.lower() == ".md" and Path(p).is_file()]
+
     all_passed = True
 
     for file_path in files_to_check:

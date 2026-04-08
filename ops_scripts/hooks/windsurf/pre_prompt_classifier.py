@@ -8,16 +8,17 @@ Reads JSON payload from stdin. Payload field:
 Classifies the prompt as T0/T1/T2/T3 based on keyword heuristics and writes
 tier tag + any warnings to stderr for Cascade context seeding.
 
-ALWAYS exits 0 — this is a classifier, not a gate. It never blocks prompts.
-Fail policy: OPEN — any error → exit 0 silently.
+Exits 0 for T0/T1. Exits 2 for T2/T3 when ADG health is absent/stale (hard gate).
+Fail policy: OPEN for infrastructure errors, CLOSED for T2/T3 with red ADG.
 Zero hardcoded paths.
 """
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
-FAIL_POLICY = "open"
+FAIL_POLICY = "closed_for_t2t3_adg"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -74,12 +75,47 @@ def check_plan_exists(tier: str) -> bool:
     return any(plans_dir.glob("*.md"))
 
 
-def check_adg_health_stale(repo_root: Path) -> bool:
-    """Return True if ADG snapshots are absent (health unknown/stale proxy)."""
-    adg_dir = repo_root / "artifacts" / "adg"
-    if not adg_dir.exists():
-        return True
-    return not any(adg_dir.glob("adg_snapshot_*.json"))
+def check_adg_health_red(repo_root: Path) -> bool:
+    """
+    Return True if the adg_sqlite MCP server fails a real liveness probe.
+
+    Invokes mcp_health_check.py --server adg_sqlite --json with a 5s timeout.
+    Fail-open: any infrastructure error (timeout, missing script, etc.) returns
+    False so the gate does not block on probe unavailability.
+    """
+    probe_script = repo_root / "ops_scripts" / "ci" / "mcp_health_check.py"
+    if not probe_script.exists():
+        return False  # fail-open: no probe script available
+
+    try:
+        result = subprocess.run(
+            [sys.executable, str(probe_script), "--server", "adg_sqlite", "--json"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+            cwd=str(repo_root),
+        )
+    except (subprocess.TimeoutExpired, OSError):
+        return False  # fail-open: probe could not run
+
+    if result.returncode == 2:
+        return False  # config error — fail-open
+
+    try:
+        # JSON block may be preceded by human-readable lines; find the first '{'
+        stdout = result.stdout
+        json_start = stdout.find("{")
+        if json_start < 0:
+            return False  # no JSON — fail-open
+        data = json.loads(stdout[json_start:])
+        servers = data.get("servers", [])
+        for srv in servers:
+            if srv.get("name") == "adg_sqlite":
+                return bool(srv.get("status") != "ok")
+        return False  # server not in output — fail-open
+    except (json.JSONDecodeError, KeyError):
+        return False  # parse error — fail-open
 
 
 def main() -> int:
@@ -93,7 +129,7 @@ def main() -> int:
         return 0
 
     tool_info = payload.get("tool_info", payload)
-    prompt = tool_info.get("prompt", "")
+    prompt = tool_info.get("user_prompt", "") or tool_info.get("prompt", "")
 
     if not prompt:
         return 0
@@ -108,12 +144,13 @@ def main() -> int:
                 "in .windsurf/plans/ — consider creating a plan per constitutional §10.",
                 file=sys.stderr,
             )
-        if check_adg_health_stale(REPO_ROOT):
+        if check_adg_health_red(REPO_ROOT):
             print(
-                f"[pre_prompt_classifier] WARNING: {tier} prompt detected but no ADG snapshot found — "
-                "run mcp1_adg_health per constitutional §13.",
+                f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but adg_sqlite MCP is red. "
+                "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
                 file=sys.stderr,
             )
+            return 2
 
     return 0
 

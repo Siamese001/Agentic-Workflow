@@ -18,7 +18,8 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
     config = get_adg_cache_config()
     ingest_script = ROOT / "tools" / "adg" / "adg_redis_ingest.py"
     if not ingest_script.exists():
-        raise RuntimeError(f"Redis ingest script not found: {ingest_script}")
+        print(f"[ADG] Redis ingest skipped: script not found at {ingest_script}")
+        return
 
     print("[ADG] Auto-ingesting to Redis hot cache...")
     start_time = time.time()

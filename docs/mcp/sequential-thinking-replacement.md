@@ -89,7 +89,7 @@ Each MCP has exactly one functional role. No single MCP is an opaque reasoning b
 | DeepWiki | `mcp3` | External lookup — repo docs | Low (remote URL, network dependent) |
 | Redis MCP | `mcp12` | Cache / state inspection | Medium (depends on Redis server running) |
 | Playwright | `mcp10` | External lookup / browser automation | Low (heavy, use only when needed) |
-| Figma | mcp6 | External lookup — design assets | Low (requires API key, use only when needed) |
+| Figma | `mcp6` | External lookup — design assets | Low (requires API key, use only when needed) |
 
 **Fallback chain for evidence failure:**
 1. ADG MCP fails → `/mcp-failure-rca` → do NOT grep
@@ -100,8 +100,11 @@ Each MCP has exactly one functional role. No single MCP is an opaque reasoning b
 
 ## Invocation Examples
 
-### Example 1 — T2 Scoped Refactor
+### Example 1 — T2 Scoped Refactor (complete A→F cycle)
 
+This example shows every phase in sequence. Real output would contain actual tool results.
+
+**PHASE A — Intake**
 ```
 /structured-reasoning
 
@@ -114,18 +117,89 @@ Assumptions:
   - Shared pool is at agentic_core/L4_memory/redis_pool.py (to confirm)
 Tier: T2
 Complexity: medium
+```
 
+**PHASE B — Plan**
+```
 ## SR_PLAN
 1. mcp1_adg_health — confirm ADG healthy
 2. mcp9_mem_recall_session_start — load session context
 3. mcp1_adg_nodes_by_file on L3 orchestration files — find RedisClient nodes
 4. mcp1_adg_edge_fanout — find what depends on current Redis usage
-5. Read agentic_core/L4_memory/redis_pool.py
-6. Edit L3 file to use pool
-7. pytest tests/unit/agentic_core/L3_orchestration/ -q
+5. Read agentic_core/L4_memory/redis_pool.py — confirm pool API exists
+6. Edit L3 file: replace inline RedisClient with pool.get_client()
+7. mcp11_run_tests tests/unit/agentic_core/L3_orchestration/ -q
+
+Tools needed: mcp1_adg_health, mcp1_adg_nodes_by_file, mcp1_adg_edge_fanout,
+              mcp9_mem_recall_session_start, read_file, mcp11_run_tests
+Missing information: None
+Risks: Pool API may differ from inline client — STOP if pool.get_client() not found
 ```
 
-### Example 2 — T3 Architecture Decision
+**PHASE C — Evidence Pull (reads only)**
+```
+[mcp1_adg_health → OK]
+[mcp9_mem_recall_session_start → session loaded]
+[mcp1_adg_nodes_by_file: agentic_core/L3_orchestration/broker.py →
+  found: RedisClient at line 14 (constructor), line 87 (publish call)]
+[mcp1_adg_edge_fanout from broker.py →
+  dependents: tests/unit/agentic_core/L3_orchestration/test_broker.py]
+[read_file: agentic_core/L4_memory/redis_pool.py →
+  found: get_client() → redis.Redis, confirmed pool exists]
+
+## SR_EVIDENCE_SUMMARY
+Evidence gathered: 5 items
+Plan still valid: YES
+Revision needed: NONE — pool API confirmed as get_client(), matches plan
+Branch selected: NONE — single clear path
+Missing gaps resolved: YES
+```
+
+**PHASE D — Approval Gate**
+```
+SR_APPROVAL: APPROVED — proceeding to execution
+```
+
+**PHASE E — Execution**
+```
+## EXECUTING Step 6 — Edit L3 file
+Tool: edit (agentic_core/L3_orchestration/broker.py)
+Change: replace `self._redis = RedisClient(host=..., port=...)` with
+        `self._redis = redis_pool.get_client()`
+Import added: `from agentic_core.L4_memory.redis_pool import redis_pool`
+[mcp13_update_task → step 6 done]
+
+## EXECUTING Step 7 — Run scoped tests
+Tool: mcp11_run_tests tests/unit/agentic_core/L3_orchestration/ -q
+Result: 12 passed, 0 failed, 0 errors
+[mcp13_update_task → step 7 done, task complete]
+```
+
+**PHASE F — Summary**
+```
+## SR_SUMMARY
+What changed:
+  - agentic_core/L3_orchestration/broker.py — replaced inline RedisClient
+    with redis_pool.get_client(); added import
+
+What was verified:
+  - 12 unit tests passed (tests/unit/agentic_core/L3_orchestration/)
+  - No new ADG layer violations (L3→L4 direction preserved)
+
+What remains uncertain:
+  - Integration test coverage for pool exhaustion / reconnect behavior
+    (not in scope of this change)
+
+Rollback / repair note:
+  - git revert HEAD -- agentic_core/L3_orchestration/broker.py
+
+Recommended next step:
+  - Add integration test for pool exhaustion path in test_broker.py
+```
+
+---
+
+### Example 2 — T3 Architecture Decision (with branching)
 
 ```
 /structured-reasoning

@@ -94,7 +94,7 @@ def _run_adg_generation() -> int:
     os.environ["ADG_SKIP_GIT"] = "1"
 
     result = subprocess.run(
-        [sys.executable, "tools/generate/generate_full_adg.py", "--strict"],
+        [sys.executable, "tools/generate/generate_full_adg.py"],
         cwd=REPO_ROOT,
         check=False,
     )

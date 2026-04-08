@@ -17,9 +17,9 @@ trigger: always_on
 
 Structured reasoning is now provided by:
 - **Cascade native reasoning** - The model's inherent problem-solving capabilities
-- **Task Manager MCP (mcp10)** - For task decomposition, step tracking, and progress preservation
-- **Playwright MCP (mcp7)** - For browser automation and web interaction when needed
-- **Filesystem MCP (mcp5)** - For file operations and codebase navigation
+- **Task Manager MCP (mcp13)** - For task decomposition, step tracking, and progress preservation
+- **Memory MCP (mcp9)** - For session context recall at task start
+- **Filesystem MCP (mcp7)** - For file reads and codebase navigation
 - **Git MCP (mcp0)** - For version control operations
 
 This approach is more reliable than a pure "reasoning MCP" because each server does one concrete job well, and Cascade's native reasoning is more robust than forcing all reasoning through a separate abstraction layer.
@@ -63,17 +63,20 @@ This approach is more reliable than a pure "reasoning MCP" because each server d
 
 ## §SR-3: How to Invoke Structured Reasoning
 
+**Full protocol**: invoke `/structured-reasoning` workflow (`.windsurf/workflows/structured-reasoning.md`) for the complete A→F sequence: Intake → Plan → Evidence → Approval → Execute → Summary.
+
 **Required pattern at start of T2/T3 task:**
 
 Use Task Manager MCP to create a structured task list:
 ```
-mcp10_create_task(
+mcp13_create_task(
+  title: "Clear task title",
   description: "Clear task description",
-  metadata: {
-    "tier": "T2" or "T3",
-    "estimated_complexity": "simple/medium/complex",
-    "dependencies": ["task1", "task2"]
-  }
+  goal: "What must be true when this task is complete",
+  criticalPath: true,
+  definitionsOfDone: ["criterion 1", "criterion 2"],
+  uncertaintyAreas: [],
+  estimatedComplexity: {"level": "low, may benefit from decomposition before execution", "description": "brief complexity note"}
 )
 ```
 

@@ -369,7 +369,7 @@ def _generate_standardized_reports(
     reports_dir = adg_dir
     sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
     if not sqlite_path.exists():
-        from agentic_core.adg.io.ArtifactWriter import write_all_artifacts
+        from agentic_core.adg.artifact.multi_writer import write_all_artifacts
         write_all_artifacts(artifact, out_dir=adg_dir, ts=ts)
 
     layer_report: dict[str, object] = {
@@ -889,10 +889,7 @@ def _generate_standardized_reports(
 
     from tools.generate.generate_full_adg import _json_dumps  # type: ignore[attr-defined]
 
-    try:
-        from agentic_core.adg.io.BufferedWriter import BufferedFileWriter
-    except ImportError:
-        from agentic_core.adg.io.ArtifactWriter import BufferedFileWriter  # type: ignore[no-redef]
+    from agentic_core.L2_execution.utils.async_file_ops import BufferedFileWriter
 
     reports = [
         (f"layer_coverage_report_{ts}.json", layer_report),

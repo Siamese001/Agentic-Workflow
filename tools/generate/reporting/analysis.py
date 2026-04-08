@@ -269,9 +269,9 @@ def _artifact_determinism_probe(
 ) -> dict[str, object]:
     import tempfile
 
-    from agentic_core.adg.analysis.CanonicalSnapshot import build_artifact
-    from agentic_core.adg.io.ArtifactWriter import write_all_artifacts
-    from agentic_core.adg.scanner.ADGStaticScanner import ADGStaticScanner
+    from agentic_core.adg.artifact.builder import build_artifact
+    from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     from tools.generate.utils.digest_utils import _sqlite_table_digest
 
     sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
@@ -297,11 +297,16 @@ def _artifact_determinism_probe(
     probe_result = probe_scanner.scan(commit_sha=result.commit_sha or "determinism-probe")
     probe_result.repo_state_hash = result.repo_state_hash
     probe_artifact = build_artifact(probe_result)
-    with tempfile.TemporaryDirectory() as tmpdir_str:
-        tmpdir = Path(tmpdir_str)
-        probe_paths = write_all_artifacts(probe_artifact, out_dir=tmpdir, ts=f"{ts}_probe")
-        probe_node_row_digest = _sqlite_table_digest(probe_paths.sqlite, "nodes")
-        probe_edge_row_digest = _sqlite_table_digest(probe_paths.sqlite, "edges")
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir_str:
+            tmpdir = Path(tmpdir_str)
+            probe_paths = write_all_artifacts(probe_artifact, out_dir=tmpdir, ts=f"{ts}_probe")
+            probe_node_row_digest = _sqlite_table_digest(probe_paths.sqlite, "nodes")
+            probe_edge_row_digest = _sqlite_table_digest(probe_paths.sqlite, "edges")
+    except (AttributeError, OSError, sqlite3.Error) as exc:
+        proof["probe_error"] = str(exc)
+        proof["determinism_status"] = "partial"
+        return proof
     proof.update(
         {
             "probe_scanner_digest": probe_result.digest,

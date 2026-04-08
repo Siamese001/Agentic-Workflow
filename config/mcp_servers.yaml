@@ -168,50 +168,6 @@ servers:
         description: "Get anti-pattern violations"
 
   # ==========================================================================
-  # Brave Search (mcp2_*) - Web and content search
-  # ==========================================================================
-  brave_search:
-    windsurf_name: "brave-search"
-    name: "Brave Search"
-    prefix: "mcp2"
-    enabled: true
-    target_layer: "L2"
-    description: "Web search, local search, news, video, and image search"
-    command: "npx"
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-brave-search@0.6.2"
-    env:
-      BRAVE_API_KEY: "${BRAVE_API_KEY}"
-    capabilities:
-      - web_search
-      - local_search
-      - news_search
-      - video_search
-      - image_search
-      - real_time_data
-    tools:
-      brave_search:
-        target: "mcp2_brave_web_search"
-        aliases: ["brave_web_search"]
-        description: "Search the web"
-      brave_local_search:
-        target: "mcp2_brave_local_search"
-        description: "Search for local businesses and places"
-      brave_news:
-        target: "mcp2_brave_news_search"
-        description: "Search for news articles"
-      brave_video:
-        target: "mcp2_brave_video_search"
-        description: "Search for videos"
-      brave_image:
-        target: "mcp2_brave_image_search"
-        description: "Search for images"
-      brave_summarizer:
-        target: "mcp2_brave_summarizer"
-        description: "Get AI summary of search results"
-
-  # ==========================================================================
   # DeepWiki (mcp3_*) - Repository documentation
   # ==========================================================================
   deepwiki:
@@ -397,123 +353,6 @@ servers:
       mem_recall:
         target: "mcp6_mem_recall_session_start"
         description: "Recall persistent project context"
-
-  # ==========================================================================
-  # Playwright (mcp10_*) - Browser automation and web interaction
-  # ==========================================================================
-  playwright:
-    name: "Playwright"
-    prefix: "mcp10"
-    enabled: true
-    target_layer: "L2"
-    description: "Browser automation, web scraping, and UI interaction for testing/debugging"
-    command: "npx"
-    args:
-      - "-y"
-      - "@executeautomation/playwright-mcp-server@1.0.5"
-    capabilities:
-      - browser_automation
-      - web_scraping
-      - ui_interaction
-      - screenshot_capture
-      - page_navigation
-    tools:
-      playwright_navigate:
-        target: "mcp9_playwright_navigate"
-        description: "Navigate to a URL in browser"
-      playwright_click:
-        target: "mcp9_playwright_click"
-        description: "Click an element on the page"
-      playwright_screenshot:
-        target: "mcp9_playwright_screenshot"
-        description: "Take a screenshot of current page"
-      playwright_fill:
-        target: "mcp9_playwright_fill"
-        description: "Fill form fields"
-      playwright_get_text:
-        target: "mcp9_playwright_get_visible_text"
-        description: "Extract text from page"
-      playwright_evaluate:
-        target: "mcp9_playwright_evaluate"
-        description: "Execute JavaScript in browser context"
-
-  # ==========================================================================
-  # Fetch (no Windsurf prefix) - Web content retrieval
-  # ==========================================================================
-  fetch:
-    name: "Fetch"
-    prefix: "mcp5"
-    enabled: true
-    target_layer: "L2"
-    description: "Web content retrieval and URL fetching"
-    command: "uvx"
-    args:
-      - "mcp-server-fetch"
-    capabilities:
-      - url_fetching
-      - web_content_retrieval
-    tools:
-      fetch_url:
-        target: "mcp8_fetch"
-        description: "Fetch content from a URL"
-
-  # ==========================================================================
-  # Figma (no Windsurf prefix) - Design file access
-  # ==========================================================================
-  figma:
-    name: "Figma"
-    prefix: "mcp6"
-    enabled: true
-    target_layer: "L2"
-    description: "Figma design file access and asset export"
-    command: "npx"
-    args:
-      - "-y"
-      - "figma-mcp-pro@latest"
-    env:
-      FIGMA_API_KEY: "${FIGMA_API_KEY}"
-      FIGMA_TEAM_ID: "${FIGMA_TEAM_ID}"
-    capabilities:
-      - design_access
-      - asset_export
-      - component_inspection
-    tools:
-      figma_get_data:
-        target: "mcp13_get_figma_data"
-        description: "Get Figma design data"
-      figma_download_assets:
-        target: "mcp13_download_design_assets"
-        description: "Download design assets"
-
-  # ==========================================================================
-  # GitHub (no Windsurf prefix) - GitHub API operations
-  # ==========================================================================
-  github:
-    name: "GitHub"
-    prefix: "mcp8"
-    enabled: true
-    target_layer: "L0"
-    description: "GitHub API for issues, PRs, and repository management"
-    command: "npx"
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-github@0.6.2"
-    env:
-      GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-    capabilities:
-      - issue_management
-      - pull_request_management
-      - repository_access
-    tools:
-      github_create_issue:
-        target: "mcp14_create_issue"
-        description: "Create a GitHub issue"
-      github_list_issues:
-        target: "mcp14_list_issues"
-        description: "List GitHub issues"
-      github_create_pr:
-        target: "mcp14_create_pull_request"
-        description: "Create a pull request"
 
   # ==========================================================================
   # Vector DB (mcp16_*) - Embeddings and semantic search
@@ -756,7 +595,6 @@ servers:
 # ============================================================================
 tool_aliases:
   fetch: http_get              # mcp4_http_get
-  brave_web_search: brave_search  # mcp2_brave_web_search
 
 # ============================================================================
 # VALIDATION RULES

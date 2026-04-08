@@ -14,17 +14,12 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
-from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
-    HollowFileClassification,
-    HollowFileDetector,
-)
+from agentic_core.L5_safety.validators.hollow_file_detector_validator import BehavioralNodeCounter
 
 
 def count_behavioral_nodes(tree: ast.AST) -> int:
     """Count behavioral nodes (functions, classes with methods) in AST."""
-    detector = HollowFileDetector()
-    counter = detector._node_counter
-    counter.reset()
+    counter = BehavioralNodeCounter()
     counter.visit(tree)
     return counter.behavioral_functions + counter.behavioral_classes
 
@@ -179,7 +174,7 @@ def main() -> int:
 
     # Output results
     if neutered_files:
-        print(f"\n❌ Found {len(neutered_files)} neutered files:")
+        print(f"\n[FAIL] Found {len(neutered_files)} neutered files:")
         for file_path in neutered_files:
             result = results[file_path]
             print(f"  {file_path}")
@@ -192,17 +187,17 @@ def main() -> int:
             print(f"  {cmd}")
 
         if args.strict:
-            print("\n❌ Zero-loss refactor verification failed!")
+            print("\n[FAIL] Zero-loss refactor verification failed!")
             print("   Remove neutered files or use --no-strict to bypass")
             return 1
     else:
-        print(f"✅ No neutered files found in {len(files_to_check)} checked files")
+        print(f"[OK] No neutered files found in {len(files_to_check)} checked files")
 
     # Write report if requested
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, indent=2))
-        print(f"\n📄 Report written to {args.report}")
+        print(f"\n[REPORT] Written to {args.report}")
 
     return 0
 

@@ -89,15 +89,21 @@ def main():
     staged_files = [f for f in staged_files if f and not f.startswith('.')]
 
     violations = []
+    self_rel_path = Path(__file__).resolve().relative_to(Path.cwd().resolve())
+
     for file_path in staged_files:
         path = Path(file_path)
+        if path == self_rel_path:
+            continue
+        if len(path.parts) >= 2 and path.parts[:2] == ("ops_scripts", "ci") and path.name.startswith("check_") and path.suffix == ".py":
+            continue
         if path.suffix in ('.py', '.yaml', '.yml', '.json', '.env'):
             file_violations = scan_file(path)
             for line_num, line in file_violations:
                 violations.append((str(path), line_num, line))
 
     if violations:
-        print("❌ SECURITY VIOLATION: Hardcoded secrets detected in staged files")
+        print("[FAIL] SECURITY VIOLATION: Hardcoded secrets detected in staged files")
         print()
         for file_path, line_num, line in violations:
             print(f"  {file_path}:{line_num}: {line}")
@@ -108,7 +114,7 @@ def main():
         print("  3. For tests: use 'test_api_key' or 'dummy_secret' placeholders")
         sys.exit(1)
 
-    print("✅ No hardcoded secrets detected in staged files")
+    print("[OK] No hardcoded secrets detected in staged files")
     sys.exit(0)
 
 

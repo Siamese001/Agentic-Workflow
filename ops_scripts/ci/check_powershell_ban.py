@@ -99,12 +99,20 @@ class PowerShellBanChecker:
         self.violations: list[dict[str, Any]] = []
         self.compiled_patterns = [re.compile(pattern, re.IGNORECASE | re.MULTILINE) for pattern in self.POWERSHELL_PATTERNS]
 
-    def check_repository(self, max_files: int = 1000) -> list[dict[str, Any]]:
-        """Check repository for PowerShell usage with file limit."""
+    def check_repository(self, max_files: int = 1000, target_files: list[Path] | None = None) -> list[dict[str, Any]]:
+        """Check repository for PowerShell usage with file limit.
+
+        If target_files is provided, only those files are scanned.
+        """
         self.violations = []
         files_checked = 0
 
-        for file_path in PROJECT_ROOT.rglob("*"):
+        if target_files is not None:
+            files_to_scan = target_files
+        else:
+            files_to_scan = PROJECT_ROOT.rglob("*")
+
+        for file_path in files_to_scan:
             if files_checked >= max_files:
                 print(f"Reached file limit ({max_files}), stopping scan")
                 break
@@ -361,16 +369,18 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", help="Output in JSON format")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--stats", action="store_true", help="Show statistics")
+    parser.add_argument("files", nargs="*", help="Optional list of files to scan (pre-commit passes staged files)")
 
     args = parser.parse_args()
 
     checker = PowerShellBanChecker()
-    violations = checker.check_repository()
+    target_files = [Path(p) for p in args.files] if args.files else None
+    violations = checker.check_repository(target_files=target_files)
 
     if args.fix:
         print("Attempting to fix PowerShell violations...")
         checker.fix_violations()
-        violations = checker.check_repository()  # Re-check
+        violations = checker.check_repository(target_files=target_files)  # Re-check
 
     if args.stats:
         stats = checker.get_statistics()

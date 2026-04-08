@@ -263,7 +263,7 @@ def _eval_m1(cur: dict, base: dict) -> tuple[bool, str]:
     rng_delta = rng_cur - rng_base
     if wc_delta > 0 and det_delta <= 0 and rng_delta <= 0:
         return False, (
-            f"uses_wall_clock +{wc_delta} ({wc_base}→{wc_cur}) with no determinism injection "
+            f"uses_wall_clock +{wc_delta} ({wc_base}->{wc_cur}) with no determinism injection "
             f"(emits_determinism_digest delta={det_delta}, seeds_rng delta={rng_delta})"
         )
     return True, f"OK: uses_wall_clock delta={wc_delta}, det_injection delta={det_delta + rng_delta}"
@@ -279,7 +279,7 @@ def _eval_m2(cur: dict, base: dict) -> tuple[bool, str]:
     aea_delta = aea_cur - aea_base
     if gad_delta > 0 and aea_delta <= 0:
         return False, (
-            f"invokes_getattr_dynamic +{gad_delta} ({gad_base}→{gad_cur}) with no typed dispatch added "
+            f"invokes_getattr_dynamic +{gad_delta} ({gad_base}->{gad_cur}) with no typed dispatch added "
             f"(agent_executes_agent delta={aea_delta})"
         )
     return True, f"OK: getattr_dynamic delta={gad_delta}, typed_dispatch delta={aea_delta}"
@@ -295,7 +295,7 @@ def _eval_m3(cur: dict, base: dict) -> tuple[bool, str]:
     wth_delta = wth_cur - wth_base
     if wt_delta > 0 and wth_delta <= 0:
         return False, (
-            f"writes_to +{wt_delta} ({wt_base}→{wt_cur}) with no UWG writes added "
+            f"writes_to +{wt_delta} ({wt_base}->{wt_cur}) with no UWG writes added "
             f"(writes_through delta={wth_delta})"
         )
     return True, f"OK: writes_to delta={wt_delta}, writes_through delta={wth_delta}"
@@ -331,8 +331,8 @@ def _eval_m6(cur: dict, base: dict) -> tuple[bool, str]:
     erk_cur = cur.get("emits_replay_key", 0)
     delta = erk_cur - erk_base
     if delta < 0:
-        return False, f"emits_replay_key regressed: {erk_base}→{erk_cur} (delta={delta})"
-    return True, f"OK: emits_replay_key {erk_base}→{erk_cur} (delta={delta})"
+        return False, f"emits_replay_key regressed: {erk_base}->{erk_cur} (delta={delta})"
+    return True, f"OK: emits_replay_key {erk_base}->{erk_cur} (delta={delta})"
 
 
 def _eval_m7(cur: dict, base: dict) -> tuple[bool, str]:
@@ -493,13 +493,13 @@ def cmd_check() -> int:
         label = GATE_DEFS[gid]["label"]
 
         if passed:
-            print(f"  [{gid}] {label}: PASS — {msg}")
+            print(f"  [{gid}] {label}: PASS - {msg}")
         else:
             if effective_mode == "enforce":
-                print(f"  [{gid}] {label}: FAIL — {msg}")
+                print(f"  [{gid}] {label}: FAIL - {msg}")
                 failed_enforce.append(gid)
             else:
-                print(f"  [{gid}] {label}: WARN — {msg}", file=sys.stderr)
+                print(f"  [{gid}] {label}: WARN - {msg}", file=sys.stderr)
                 warned.append(gid)
 
     print()

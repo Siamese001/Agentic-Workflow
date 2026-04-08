@@ -25,6 +25,15 @@ FAIL_POLICY = "closed"
 ADG_SERVER_NAME = "adg_sqlite"
 STALE_THRESHOLD_SECONDS = 30 * 60  # 30 minutes
 
+# Recovery tools that MUST pass even when ADG is stale/locked.
+# Without this whitelist, the gate blocks the very tools needed to recover.
+ADG_RECOVERY_TOOLS = {
+    "adg_health",       # mcp1_adg_health — liveness probe
+    "adg_status",       # mcp1_adg_status — snapshot status
+    "adg_close_connections",  # needed to release SQLite locks
+    "adg_reopen_connections",  # needed after lock release
+}
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 
@@ -106,6 +115,12 @@ def main() -> int:
     server_name = tool_info.get("mcp_server_name", "")
 
     if server_name != ADG_SERVER_NAME:
+        return 0
+
+    tool_name = tool_info.get("mcp_tool_name", "")
+    if tool_name in ADG_RECOVERY_TOOLS:
+        # Always allow recovery probes — blocking them creates a dead loop
+        # where the gate blocks the only tools that can restore health.
         return 0
 
     return check_adg_gate(REPO_ROOT)

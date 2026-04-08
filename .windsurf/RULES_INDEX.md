@@ -61,8 +61,9 @@ python tools/windsurf/preprocess_rules.py --check
 | 3 | **operational-gates** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` | T3a-rollback | ✅ ENFORCED |
 | 4 | **testing-framework** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py` | T3a-skip | ✅ ENFORCED |
 | 5 | **artifact-management** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b | ✅ ENFORCED |
+| 6 | **structured-reasoning** | Windsurf | Before work | Behavioural | None (behavioral) | None | ✅ ENFORCED |
 
-**Note**: 30 individual skills consolidated into these 5 canonical skills per SVP Engineering principles. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
+**Note**: 30 individual skills consolidated into 5 canonical skills (2026-04-03). `structured-reasoning` added 2026-04-07 to replace retired Sequential Thinking MCP. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
 
 **Key**:
 - **Layer**: Windsurf (AI-time only) | Pre-commit (commit-time only) | Both (dual enforcement)
@@ -283,6 +284,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-04-11
 
 **Changelog**:
+- 2026-04-07: **SEQUENTIAL THINKING MCP RETIRED** — Permanently removed Sequential Thinking MCP from active roster. Root causes: stdio fragility on Windows, zombie node.exe processes, opaque tool surface, no reliable timeout, architectural mismatch. Replacement: native Cascade reasoning + compositional MCP pattern. New artifacts: `.windsurf/workflows/structured-reasoning.md`, `.windsurf/skills/structured-reasoning/SKILL.md` (+ checklist, plan-template, verification-template, failure-template), `docs/mcp/sequential-thinking-replacement.md`. Updated `mcp-failure-rca.md` STEP 6 to tombstone. Updated RULES_INDEX skills table with skill #6.
 - 2026-04-04: **RCA FIX — WAVE/MICRO-WAVE PLAN MODEL NOT AUTO-EMPLOYED** — Root cause: §10 was reactive (validated existing plans) with no proactive trigger at plan-creation time; micro-wave discipline (≤15 modules/wave) was never codified in any rule file; template wave table columns mismatched §10.1 spec. Fix: Added Constitutional Rule #13 to `.windsurfrules` floor + §10.0 "Plan Creation Protocol" pre-draft trigger section (fires before any content is drafted) + same rule (#11) to `.windsurfrules.consolidated` + §10 section appended to consolidated file + template updated to §10.1 column spec with micro-wave sub-table example + RULES_INDEX updated with §10.0 entry.
 - 2026-04-03: **SKILLS CONSOLIDATION** — Archived 30 individual skills to `tools/archive/.windsurf/skills/`. Consolidated into 5 canonical skills per SVP Engineering principle: `graph-analysis` (replaces dependency-graph-analysis, scope-guard, dedup-guard), `boundary-enforcement` (replaces layer-boundary-guard, import-hygiene, shim-discipline), `operational-gates` (replaces rollback-gate, mcp-tool-verify), `testing-framework` (replaces test-rigor-enforcement, pytest-integrity), `artifact-management` (replaces evidence-bundle, ssot-write-gate, progress-display). Updated Skills table to show 5 consolidated skills. Coverage remains 100%.
 - 2026-03-25: **PROGRESS DISPLAY ENFORCEMENT** — Added `progress-display` skill with mandatory colored progress bars and percentage displays for all operations >5s. Updated §5.3 with detailed progress reporting requirements including ANSI color codes, ETA display, and standardized progress bar formats. Skill provides terminal protocol, color scheme reference, and implementation guide for integration across all Windsurf operations.
