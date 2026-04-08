@@ -36,12 +36,12 @@ default_language_version:
 # Last generated: 2026-04-06T05:27:34.834350
 exclude: |
   (?x)^(
-    .*.debug.log|
+    .*\.debug\.log|
     .*/logs/.*|
-    .*_sites.txt|
+    .*_sites\.txt|
     .backup/guardian_tests/.*|
     .tmp/.*|
-    .tmp_.*sites.txt|
+    .tmp_.*sites\.txt|
     0[0-9]_[^/]*/.*|
     _capture_.*|
     _make_.*|
@@ -52,22 +52,22 @@ exclude: |
     _temp_cmd.*|
     _typed_.*|
     _typed_emitted_.*|
-    artifacts/adg_ci_lane_gate_result.json|
-    artifacts/bypass_audit.jsonl|
-    artifacts/healing/healing_events.jsonl|
-    artifacts/import_health/import_health_report.json|
-    artifacts/windsurf/*|
+    artifacts/adg_ci_lane_gate_result\.json|
+    artifacts/bypass_audit\.jsonl|
+    artifacts/healing/healing_events\.jsonl|
+    artifacts/import_health/import_health_report\.json|
+    artifacts/windsurf/.*|
     core/.*|
     docs/store/.*|
-    guardian_.*.(txt|json)|
-    pytestdebug.log|
-    runtime_state.*.json|
+    guardian_.*\.(txt|json)|
+    pytestdebug\.log|
+    runtime_state.*\.json|
     temp_[^/]*/.*|
-    temp_complete_rules.*.md|
+    temp_complete_rules.*\.md|
     tmp.*|
-    v15_d_evidence_.*.json|
-    v15_d_inventory_p4.json|
-    v15_p2_evidence_temp.json
+    v15_d_evidence_.*\.json|
+    v15_d_inventory_p4\.json|
+    v15_p2_evidence_temp\.json
   )
 
 repos:
@@ -135,8 +135,7 @@ repos:
       # Detects Python files that became hollow after edits. --changed-only = staged only.
       - id: hollow-file-gate
         name: "T6: Hollow File Gate — AST Semantic Verification"
-        entry: py ops_scripts/ci/hollow_file_gate.py --changed-only
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py ops_scripts/ci/hollow_file_gate.py --changed-only
         language: system
         types: [python]
         pass_filenames: false
@@ -158,8 +157,7 @@ repos:
       # -- T11: MCP Config Sovereignty --------------------------------------------
       - id: mcp-config-sovereignty
         name: "T11: MCP Config Sovereignty"
-        entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py ops_scripts/ci/check_mcp_config_sovereignty.py
         language: system
         pass_filenames: false
         files: ^mcp_config\.json$
@@ -207,8 +205,7 @@ repos:
 
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty"
-        entry: py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
         language: system
         pass_filenames: false
         always_run: true
@@ -217,8 +214,7 @@ repos:
 
       - id: check-dedup-violations
         name: "CI: Dedup Guard"
-        entry: py ops_scripts/ci/check_dedup_violations.py
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py ops_scripts/ci/check_dedup_violations.py
         language: system
         pass_filenames: false
         always_run: true
@@ -227,8 +223,7 @@ repos:
 
       - id: check-script-sprawl
         name: "CI: Script Sprawl Guard"
-        entry: py ops_scripts/ci/check_script_sprawl.py
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py ops_scripts/ci/check_script_sprawl.py
         language: system
         pass_filenames: false
         always_run: true
@@ -237,8 +232,7 @@ repos:
 
       - id: check-shim-discipline
         name: "CI: Shim Discipline"
-        entry: py ops_scripts/ci/check_shim_discipline.py
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py ops_scripts/ci/check_shim_discipline.py
         language: system
         pass_filenames: false
         always_run: true
@@ -247,8 +241,7 @@ repos:
 
       - id: check-rollback-checkpoints
         name: "CI: Rollback Gate"
-        entry: py ops_scripts/ci/check_rollback_checkpoints.py
-        env: ["PYTHONPATH=."]
+        entry: PYTHONPATH=. py ops_scripts/ci/check_rollback_checkpoints.py
         language: system
         pass_filenames: false
         always_run: true
