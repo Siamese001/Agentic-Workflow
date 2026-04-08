@@ -14,6 +14,7 @@ Zero hardcoded paths.
 """
 
 import json
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -113,6 +114,20 @@ def check_plan_exists(tier: str) -> bool:
     return any(plans_dir.glob("*.md"))
 
 
+def check_redis_down() -> bool:
+    """
+    Return True if Redis is not reachable on localhost:6379.
+    Fail-open: any socket error other than connection refused returns False.
+    """
+    try:
+        with socket.create_connection(("localhost", 6379), timeout=2):
+            return False  # connected — Redis is up
+    except ConnectionRefusedError:
+        return True  # Redis is down
+    except OSError:
+        return False  # fail-open: network unavailable, don't block
+
+
 def check_adg_health_red(repo_root: Path) -> bool:
     """
     Return True if the adg_sqlite MCP server fails a real liveness probe.
@@ -186,6 +201,14 @@ def main() -> int:
             print(
                 f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but adg_sqlite MCP is red. "
                 "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13). "
+                "ADG + Redis health check is MANDATORY before any T2/T3 refactoring.",
+                file=sys.stderr,
+            )
+            return 2
+        if check_redis_down():
+            print(
+                f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but Redis is not reachable "
+                "on localhost:6379. Start Redis before proceeding (constitutional §13). "
                 "ADG + Redis health check is MANDATORY before any T2/T3 refactoring.",
                 file=sys.stderr,
             )
