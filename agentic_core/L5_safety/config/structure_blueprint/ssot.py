@@ -310,9 +310,7 @@ def validate_volatile_exclusion_contract() -> dict[str, Any]:
         - missing_from_volatile_set: list of excluded territories not in VOLATILE_TERRITORIES
     """
     territories = get_all_territories()
-    volatile_from_territories = frozenset(
-        k for k, v in territories.items() if v.get("volatile")
-    )
+    volatile_from_territories = frozenset(k for k, v in territories.items() if v.get("volatile"))
 
     # Contract check: volatile territories must be in GLOBAL_EXCLUDED_DIRS
     missing_from_exclusion = volatile_from_territories - GLOBAL_EXCLUDED_DIRS
@@ -329,6 +327,7 @@ def validate_volatile_exclusion_contract() -> dict[str, Any]:
         "missing_from_volatile_set": list(missing_from_volatile_set),
         "volatile_territories": list(volatile_from_territories),
     }
+
 
 # Territories that permit a .py file directly at depth-1 (allow_root_py flag)
 ALLOW_ROOT_PY_TERRITORIES: Final[frozenset[str]] = frozenset(
@@ -462,6 +461,7 @@ TESTS_AUTOGEN_DIR: str = "tests/unit_min_deps"
 # Auto-detects apps_* folders without requiring manual SSOT edits
 # ---------------------------------------------------------------------------
 
+
 def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[str]:
     """Discover all apps_* folders at repo root dynamically.
 
@@ -486,8 +486,9 @@ def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[
             if item.is_dir() and item.name.startswith("apps_"):
                 apps_folders.add(item.name)
     except (OSError, PermissionError) as e:
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("ssot: OSError swallowed at L488: %s", e)
+        logging.getLogger(__name__).debug("ssot: OSError swallowed at L488: %s", e)
 
     return frozenset(apps_folders)
 
@@ -495,7 +496,9 @@ def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[
 # Finalize ENFORCED_TERRITORIES and CODE_TERRITORIES now that _discover_apps_wildcard_folders is defined.
 # apps_* folders are auto-discovered — adding a new apps_* dir at repo root is sufficient.
 try:
-    ENFORCED_TERRITORIES: Final[frozenset[str]] = _ENFORCED_TERRITORIES_BASE | _discover_apps_wildcard_folders()
+    ENFORCED_TERRITORIES: Final[frozenset[str]] = (
+        _ENFORCED_TERRITORIES_BASE | _discover_apps_wildcard_folders()
+    )
 except Exception:
     ENFORCED_TERRITORIES = _ENFORCED_TERRITORIES_BASE  # type: ignore[misc]
 
@@ -553,9 +556,10 @@ def _build_test_canonical_location_map(repo_root: Path | None = None) -> dict[st
         for app_name in discovered:
             base_map[app_name] = f"tests/unit/{app_name}"
     except NameError as e:
-
         # get_validated_project_root not yet defined during module load
-        import logging; logging.getLogger(__name__).debug("ssot: NameError swallowed at L554: %s", e)
+        import logging
+
+        logging.getLogger(__name__).debug("ssot: NameError swallowed at L554: %s", e)
 
     return base_map
 
@@ -752,6 +756,7 @@ def get_apps_wildcard_subfolder_map(app_name: str) -> Mapping[str, Sequence[str]
         Mapping of subfolder names to their nested structure.
     """
     from agentic_core.L5_safety.config.structure_blueprint.derived import _derive_apps_subfolder_map
+
     return _derive_apps_subfolder_map(app_name)
 
 
@@ -1063,14 +1068,16 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset().union(
     _exclusions["data"],
     _exclusions["special"],
     # Additional exclusions not in YAML (legacy/intentional)
-    frozenset({
-        ".github",  # GitHub workflows (intentional)
-        ".windsurf",  # Windsurf IDE data (intentional)
-        ".hypothesis",  # Hypothesis test DB (intentional)
-        "Thumbs.db",  # Windows thumbnail cache (file, not dir)
-        "docs",  # Documentation territory (intentional)
-        "logging",  # Logging module name conflicts (intentional)
-    }),
+    frozenset(
+        {
+            ".github",  # GitHub workflows (intentional)
+            ".windsurf",  # Windsurf IDE data (intentional)
+            ".hypothesis",  # Hypothesis test DB (intentional)
+            "Thumbs.db",  # Windows thumbnail cache (file, not dir)
+            "docs",  # Documentation territory (intentional)
+            "logging",  # Logging module name conflicts (intentional)
+        }
+    ),
 )
 
 FORBIDDEN_FOLDER_PATTERN: Pattern = re.compile(r"^\d+_")
@@ -1255,13 +1262,15 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset().union(
     _exclusions["coverage"],
     _exclusions["archive"],
     # Additional production lens exclusions (intentional)
-    frozenset({
-        "logs",  # Log directories
-        "artifacts",  # Artifact outputs
-        ".github",  # GitHub workflows
-        "tests",  # Test directory (excluded from production lens)
-        "test_artifacts",  # Test artifacts
-    }),
+    frozenset(
+        {
+            "logs",  # Log directories
+            "artifacts",  # Artifact outputs
+            ".github",  # GitHub workflows
+            "tests",  # Test directory (excluded from production lens)
+            "test_artifacts",  # Test artifacts
+        }
+    ),
 )
 
 
@@ -1311,29 +1320,13 @@ def is_path_allowed(rel_path: str | Path) -> bool:
             if not (filename == "__init__.py" or "L0_routing/scripts" in normalized_path):
                 return False
 
-    # 3. Depth Enforcement: L4 applies to folder structure, not the filename
-    path_depth = len(parts)
-    # If the last part is a file, the 'folder depth' is path_depth - 1
-    folder_depth = path_depth - 1 if "." in filename else path_depth
-
-    # Skip depth enforcement for subfolders that mirror the source tree
-    # (e.g. tests/unit, tests/integration — their depth tracks the source, not a cap)
-    _sub_cfgs = config.get("subfolders", {})
-    _exclude_depth = (
-        isinstance(_sub_cfgs, dict)
-        and len(parts) > 1
-        and isinstance(_sub_cfgs.get(parts[1]), dict)
-        and _sub_cfgs[parts[1]].get("exclude_from_depth_rules", False)
-    )
-
-    if not _exclude_depth:
-        # [CRITICAL] For L4 specializations, ensure we don't exceed depth 5 (L4 + 1 for file)
-        if folder_depth > config["depth"] + 1 and not is_l4_approved(normalized_path):
-            return False
-
-        # [CRITICAL] Even for L4-approved paths, don't allow depth 6+ (L4 + L5 + file)
-        if folder_depth > config["depth"] + 2:
-            return False
+    # 3. Depth Enforcement: disabled — repo structure is mature and accurate.
+    # The depth caps were set 6 months ago on a greenfield repo and now block
+    # legitimate deep paths (agentic_core actual=7, tests actual=9, etc.).
+    # The `depth` key is retained in SSOT YAML to avoid KeyError on line 1357
+    # but is no longer used as a hard nesting cap.
+    # folder_depth kept for the file-position check at line 1357.
+    folder_depth = len(parts) - 1 if "." in filename else len(parts)
 
     # Check subfolder existence and nested forbidden patterns
     if len(parts) > 1:

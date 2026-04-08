@@ -24,11 +24,12 @@ Plan requirements verified:
 
 import json
 import os
+import subprocess
 import sys
 import time
 from io import StringIO
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 

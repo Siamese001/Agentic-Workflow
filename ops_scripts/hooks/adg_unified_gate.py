@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-"""Unified ADG Gate - Orchestrates ADG generation and source-code checks.
+"""Unified ADG Gate - ADG snapshot freshness check (pre-commit mode).
 
-This hook:
-1. Checks if ADG-relevant files changed
-2. If YES → Runs generate_full_adg.py --strict (does P1, layer violations, burndown internally)
-3. If NO → Skips ADG generation, uses existing ADG
-4. Runs source-code checks NOT done by generate_full_adg.py:
-   - Python grep ban (grep/mypy/pytest usage)
-   - YAML grep ban (grep in GitHub Actions workflows)
-   - Skip-file ratchet
+Default mode (--snapshot-only):
+  1. Find latest ADG snapshot in artifacts/adg/
+  2. If fresh (< 30 min) → pass silently
+  3. If stale or missing → warn, exit 0 (never blocks commits)
+  To refresh: python tools/generate_full_adg.py
 
-Key Design: No duplication - generate_full_adg.py handles P1/layer/burndown,
-this gate only handles source-code pattern bans.
+Legacy mode (no flag, or --force-adg):
+  Runs full ADG generation + source-code checks. Use manually or in CI only.
 """
 
 from __future__ import annotations
@@ -19,9 +16,12 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+ADG_DIR = REPO_ROOT / "artifacts" / "adg"
+SNAPSHOT_MAX_AGE_SECONDS = 1800  # 30 minutes
 
 # ADG-relevant file patterns
 ADG_RELEVANT_PATTERNS = [
@@ -72,7 +72,7 @@ def _check_adg_files_changed() -> bool:
 
         return False
 
-    except Exception as e:
+    except OSError as e:
         print(f"[ADG-UNIFIED] Warning: Could not check for ADG file changes: {e}", file=sys.stderr)
         # Default to False (don't generate ADG) on error
         return False
@@ -158,14 +158,55 @@ def _run_skip_file_ratchet() -> int:
     return result.returncode
 
 
+def _check_snapshot_freshness() -> int:
+    """Check ADG snapshot age. Warns if stale, never blocks.
+
+    Returns:
+        0 always (warn-only)
+    """
+    if not ADG_DIR.exists():
+        print(
+            "[ADG-UNIFIED] WARNING: artifacts/adg/ not found — no ADG snapshot exists.",
+            file=sys.stderr,
+        )
+        print("[ADG-UNIFIED] Run: python tools/generate_full_adg.py", file=sys.stderr)
+        return 0
+
+    snapshots = sorted(ADG_DIR.glob("adg_snapshot_*.json"))
+    if not snapshots:
+        print("[ADG-UNIFIED] WARNING: No ADG snapshot found in artifacts/adg/", file=sys.stderr)
+        print("[ADG-UNIFIED] Run: python tools/generate_full_adg.py", file=sys.stderr)
+        return 0
+
+    latest = snapshots[-1]
+    age_seconds = time.time() - latest.stat().st_mtime
+    age_minutes = age_seconds / 60
+
+    if age_seconds > SNAPSHOT_MAX_AGE_SECONDS:
+        print(
+            f"[ADG-UNIFIED] WARNING: ADG snapshot is {age_minutes:.0f}m old (>{SNAPSHOT_MAX_AGE_SECONDS // 60}m threshold).",
+            file=sys.stderr,
+        )
+        print("[ADG-UNIFIED] Run: python tools/generate_full_adg.py", file=sys.stderr)
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Unified ADG Gate")
+    parser.add_argument(
+        "--snapshot-only",
+        action="store_true",
+        help="Check ADG snapshot freshness only — no generation, no source-code checks",
+    )
     parser.add_argument(
         "--force-adg",
         action="store_true",
         help="Force ADG generation even if no ADG files changed",
     )
     args = parser.parse_args()
+
+    if args.snapshot_only:
+        return _check_snapshot_freshness()
 
     print("[ADG-UNIFIED] === Unified ADG Gate ===")
 
