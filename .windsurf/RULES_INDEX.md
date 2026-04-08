@@ -1,6 +1,6 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-04-04
+**Last Updated**: 2026-04-08
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
 > **2026-04-04 SSOT RESTRUCTURE**: `.windsurfrules` is now auto-generated from modular rule sources in `.windsurf/rules/*.md`. The preprocessor (`tools/windsurf/preprocess_rules.py`) consolidates all modular rules into a single file. Do not edit `.windsurfrules` directly — edit the source `.md` files and regenerate.
