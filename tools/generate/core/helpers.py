@@ -71,10 +71,6 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
             f"layer_coverage_report_{ts}.json",
             f"edge_density_report_{ts}.json",
             f"provenance_report_{ts}.json",
-            f"replay_determinism_report_{ts}.json",
-            f"boundary_report_{ts}.json",
-            f"mutation_integrity_report_{ts}.json",
-            f"test_surface_coverage_{ts}.json",
             f"closure_validation_report_{ts}.json",
         ]
         missing_reports = [rf for rf in report_files if not (adg_artifacts_dir / rf).exists()]

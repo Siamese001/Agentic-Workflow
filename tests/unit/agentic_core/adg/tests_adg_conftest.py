@@ -72,7 +72,8 @@ def adg_fixture_db():
             category TEXT NOT NULL,
             evidence TEXT NOT NULL DEFAULT '',
             file_path TEXT NOT NULL DEFAULT '',
-            line_no INTEGER NOT NULL DEFAULT 0
+            line_no INTEGER NOT NULL DEFAULT 0,
+            violation_class TEXT NOT NULL DEFAULT 'hygiene'
         )
     """)
 

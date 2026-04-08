@@ -7,6 +7,7 @@ Verifies edge_kind-based severity assignment:
 - retry_without_backoff / blocking_call_in_async / global_state_mutation → LOW
 - non-antipattern edges → MEDIUM (violates default)
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -55,7 +56,8 @@ def _make_db_with_edges(edges: list[dict]) -> Path:
             file_path TEXT DEFAULT '',
             line_no INTEGER DEFAULT 0,
             severity TEXT NOT NULL DEFAULT 'MEDIUM',
-            disposition TEXT NOT NULL DEFAULT 'untriaged'
+            disposition TEXT NOT NULL DEFAULT 'untriaged',
+            violation_class TEXT NOT NULL DEFAULT 'hygiene'
         )""",
     )
     for e in edges:
@@ -138,9 +140,11 @@ _LOW_KINDS = [
 @pytest.mark.parametrize("source_file", _CRITICAL_LAYERS)
 def test_high_antipattern_in_critical_layer(edge_kind: str, source_file: str) -> None:
     """Exception handling antipatterns in critical layers must be HIGH."""
-    db = _make_db_with_edges([
-        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
-    ])
+    db = _make_db_with_edges(
+        [
+            {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
+        ]
+    )
     assert _get_severity(db, edge_kind, source_file) == "HIGH"
     Path(db).unlink(missing_ok=True)
 
@@ -149,9 +153,11 @@ def test_high_antipattern_in_critical_layer(edge_kind: str, source_file: str) ->
 @pytest.mark.parametrize("source_file", _NON_CRITICAL_LAYERS)
 def test_medium_antipattern_in_non_critical_layer(edge_kind: str, source_file: str) -> None:
     """Exception handling antipatterns outside critical layers must be MEDIUM."""
-    db = _make_db_with_edges([
-        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
-    ])
+    db = _make_db_with_edges(
+        [
+            {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
+        ]
+    )
     assert _get_severity(db, edge_kind, source_file) == "MEDIUM"
     Path(db).unlink(missing_ok=True)
 
@@ -160,18 +166,26 @@ def test_medium_antipattern_in_non_critical_layer(edge_kind: str, source_file: s
 def test_low_antipattern_false_positive_prone_kinds(edge_kind: str) -> None:
     """False-positive-prone antipattern kinds must stay LOW regardless of layer."""
     source_file = "agentic_core/L0_routing/foo.py"
-    db = _make_db_with_edges([
-        {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
-    ])
+    db = _make_db_with_edges(
+        [
+            {"relation_type": "antipattern", "edge_kind": edge_kind, "source_file": source_file},
+        ]
+    )
     assert _get_severity(db, edge_kind, source_file) == "LOW"
     Path(db).unlink(missing_ok=True)
 
 
 def test_violates_edge_defaults_to_medium() -> None:
     """violates edges (layer violations) default to MEDIUM via ELSE branch."""
-    db = _make_db_with_edges([
-        {"relation_type": "violates", "edge_kind": "layer_boundary_cross", "source_file": "agentic_core/L0_routing/x.py"},
-    ])
+    db = _make_db_with_edges(
+        [
+            {
+                "relation_type": "violates",
+                "edge_kind": "layer_boundary_cross",
+                "source_file": "agentic_core/L0_routing/x.py",
+            },
+        ]
+    )
     conn = sqlite3.connect(str(db))
     row = conn.execute("SELECT severity FROM violations WHERE category='violates'").fetchone()
     conn.close()
@@ -185,13 +199,15 @@ def test_symbol_like_pattern_no_longer_drives_severity() -> None:
     New edge_kind logic: if edge_kind is not in the HIGH set, it must be LOW.
     This regression test ensures the old symbol-based fallback is gone.
     """
-    db = _make_db_with_edges([
-        {
-            "relation_type": "antipattern",
-            "edge_kind": "retry_without_backoff",
-            "source_file": "apps_rg/engines/foo.py",
-            "symbol": "except:Exception",
-        },
-    ])
+    db = _make_db_with_edges(
+        [
+            {
+                "relation_type": "antipattern",
+                "edge_kind": "retry_without_backoff",
+                "source_file": "apps_rg/engines/foo.py",
+                "symbol": "except:Exception",
+            },
+        ]
+    )
     assert _get_severity(db, "retry_without_backoff", "apps_rg/engines/foo.py") == "LOW"
     Path(db).unlink(missing_ok=True)

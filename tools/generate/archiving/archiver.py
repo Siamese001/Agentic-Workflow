@@ -91,6 +91,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         "*_report_*.json",
         "test_surface_coverage_*.json",
         "repair_log_*.json",
+        "p1_ratchet.json",
         "p2_ratchet.json",
     ]:
         for path in adg_dir.glob(pattern):
@@ -217,4 +218,5 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
     # Delegate cleanup of validation packages and MANIFEST files
     from tools.generate.reporting.analysis import _cleanup_validation_files
+
     _cleanup_validation_files(adg_dir, current_ts)

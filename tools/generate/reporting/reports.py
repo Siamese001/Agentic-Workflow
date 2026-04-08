@@ -15,10 +15,10 @@ def _print_defect_table(
     semantic_warnings: list[str] | None = None,
     sqlite_path: Path | None = None,
 ) -> None:
-    """Print P1-P4 defect table in terminal output."""
+    """Print P0-P3 defect table in terminal output."""
     by_severity = routing_summary.get("by_severity", {})
 
-    p1_count = 0
+    p0_count = 0
     _violation_rows: list = []
     if sqlite_path is not None and sqlite_path.exists():
         try:
@@ -33,19 +33,19 @@ def _print_defect_table(
                         _file_lines = _src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
                         _check = _file_lines[max(0, _line_no - 2) : _line_no]
                         if not any("guardian: allow-layer-violation" in _ln for _ln in _check):
-                            p1_count += 1
+                            p0_count += 1
                     else:
-                        p1_count += 1
+                        p0_count += 1
                 except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure counts violation as unapproved
-                    p1_count += 1
+                    p0_count += 1
         except (
             Exception
         ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to 0
             pass
 
+    p1_antipattern = 0
     p2_antipattern = 0
     p3_antipattern = 0
-    p4_antipattern = 0
     if sqlite_path is not None and sqlite_path.exists():
         try:
             with sqlite3.connect(str(sqlite_path)) as _conn:
@@ -53,46 +53,54 @@ def _print_defect_table(
                     "SELECT severity, COUNT(*) FROM violations WHERE category='antipattern' GROUP BY severity",
                 ).fetchall()
                 _sev_map = {r[0]: r[1] for r in rows}
-                p2_antipattern = _sev_map.get("HIGH", 0)
-                p3_antipattern = _sev_map.get("MEDIUM", 0)
-                p4_antipattern = _sev_map.get("LOW", 0)
+                p1_antipattern = _sev_map.get("HIGH", 0)
+                p2_antipattern = _sev_map.get("MEDIUM", 0)
+                p3_antipattern = _sev_map.get("LOW", 0)
         except (
             Exception
         ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
             pass
 
-    _p2_ratchet_file = ROOT / "artifacts" / "adg" / "p2_ratchet.json"
-    _p2_ceiling = p2_antipattern
+    _p1_ratchet_file = ROOT / "artifacts" / "adg" / "p1_ratchet.json"
+    if not _p1_ratchet_file.exists():
+        _legacy = ROOT / "artifacts" / "adg" / "p2_ratchet.json"
+        if _legacy.exists():
+            _p1_ratchet_file = _legacy
+    _p1_ceiling = p1_antipattern
     try:
-        if _p2_ratchet_file.exists():
-            _p2_data = json.loads(_p2_ratchet_file.read_text(encoding="utf-8"))
-            _p2_ceiling = _p2_data.get(
-                "high_severity_ceiling", _p2_data.get("p2_antipattern_ceiling", p2_antipattern)
+        if _p1_ratchet_file.exists():
+            _p1_data = json.loads(_p1_ratchet_file.read_text(encoding="utf-8"))
+            _p1_ceiling = _p1_data.get(
+                "high_severity_ceiling", _p1_data.get("p2_antipattern_ceiling", p1_antipattern)
             )
     except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure shows raw count
         pass
-    _p2_delta = max(0, p2_antipattern - _p2_ceiling)
-    p2_count = p2_antipattern
+    _p1_delta = max(0, p1_antipattern - _p1_ceiling)
+    p1_count = p1_antipattern
 
-    _p3_ratchet_file = Path("artifacts/adg/p3_ratchet.json")
-    _p3_ceiling: int | None = None
+    _p2_ratchet_file = ROOT / "artifacts" / "adg" / "p2_ratchet.json"
+    if not _p2_ratchet_file.exists():
+        _legacy2 = ROOT / "artifacts" / "adg" / "p3_ratchet.json"
+        if _legacy2.exists():
+            _p2_ratchet_file = _legacy2
+    _p2_ceiling: int | None = None
     try:
-        if _p3_ratchet_file.exists():
-            _p3_data = json.loads(_p3_ratchet_file.read_text(encoding="utf-8"))
-            _p3_ceiling = _p3_data.get("exception_swallow_ceiling")
+        if _p2_ratchet_file.exists():
+            _p2_data = json.loads(_p2_ratchet_file.read_text(encoding="utf-8"))
+            _p2_ceiling = _p2_data.get("exception_swallow_ceiling")
     except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure
         pass
-    p3_count = p3_antipattern
+    p2_count = p2_antipattern
 
-    p4_count = p4_antipattern + by_severity.get("low", 0)
+    p3_count = p3_antipattern + by_severity.get("low", 0)
     if semantic_warnings:
-        p4_count += len(semantic_warnings)
+        p3_count += len(semantic_warnings)
 
-    total = p1_count + p2_count + p3_count + p4_count
+    total = p0_count + p1_count + p2_count + p3_count
 
-    _p1_layer_pairs: list = []
-    _p1_cycle_count = 0
-    _p1_dynamic_count = 0
+    _p0_layer_pairs: list = []
+    _p0_cycle_count = 0
+    _p0_dynamic_count = 0
     _cat_data: dict[str, list[tuple]] = {"HIGH": [], "MEDIUM": [], "LOW": []}
     _sev_files: dict[str, int] = {}
     _sev_top_layer: dict[str, str] = {}
@@ -120,7 +128,7 @@ def _print_defect_table(
                 "L_RUNTIME",
             )
             with sqlite3.connect(str(sqlite_path)) as _cc:
-                _p1_layer_pairs = _cc.execute("""
+                _p0_layer_pairs = _cc.execute("""
                     SELECT n_src.layer, n_dst.layer, COUNT(*)
                     FROM edges e
                     JOIN nodes n_src ON e.src_id = n_src.id
@@ -128,10 +136,10 @@ def _print_defect_table(
                     WHERE e.relation_type='violates'
                     GROUP BY 1,2 ORDER BY 3 DESC
                 """).fetchall()
-                _p1_cycle_count = _cc.execute(
+                _p0_cycle_count = _cc.execute(
                     "SELECT COUNT(*) FROM edges WHERE relation_type='in_cycle'",
                 ).fetchone()[0]
-                _p1_dynamic_count = _cc.execute(
+                _p0_dynamic_count = _cc.execute(
                     "SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'",
                 ).fetchone()[0]
 
@@ -219,7 +227,7 @@ def _print_defect_table(
                     ).fetchone()[0]
                     or 1
                 )
-                _sev_counts = {"HIGH": p2_antipattern, "MEDIUM": p3_antipattern, "LOW": p4_antipattern}
+                _sev_counts = {"HIGH": p1_antipattern, "MEDIUM": p2_antipattern, "LOW": p3_antipattern}
                 for _sk, _sc in _sev_counts.items():
                     _base = _total_prod_nodes if _sk == "HIGH" else _total_all_nodes
                     _d = _sc * 100 / _base if _base else 0
@@ -300,27 +308,27 @@ def _print_defect_table(
     print(_HDR)
     print(_H)
 
-    _p1_gate = "BLOCKS" if p1_count > 0 else "PASS"
-    _p1_viol = sum(c for _, _, c in _p1_layer_pairs) if _p1_layer_pairs else 0
-    _p1_exempt = len(_violation_rows) - p1_count if _violation_rows else 0
-    _p1_gross = p1_count + _p1_exempt
+    _p0_gate = "BLOCKS" if p0_count > 0 else "PASS"
+    _p0_viol = sum(c for _, _, c in _p0_layer_pairs) if _p0_layer_pairs else 0
+    _p0_exempt = len(_violation_rows) - p0_count if _violation_rows else 0
+    _p0_gross = p0_count + _p0_exempt
     print(
-        f"| P1* | CRITICAL (blocks on any > 0) | {_p1_gross:5} | {_p1_exempt:5} | {p1_count:5} | {'':5} | {'':5} | {'':7} | {'':32} |"
+        f"| P0* | CRITICAL (blocks on any > 0) | {_p0_gross:5} | {_p0_exempt:5} | {p0_count:5} | {'':5} | {'':5} | {'':7} | {'':32} |"
     )
-    _viol_label = f"{_p1_viol}" if _p1_viol else "0"
+    _viol_label = f"{_p0_viol}" if _p0_viol else "0"
     print(
-        f"|     |  layer_violation              | {_viol_label:>5} | {_p1_exempt:5} | {p1_count:5} |       |       |         |                                  |"
+        f"|     |  layer_violation              | {_viol_label:>5} | {_p0_exempt:5} | {p0_count:5} |       |       |         |                                  |"
     )
-    for _src_l, _dst_l, _cnt in _p1_layer_pairs:
+    for _src_l, _dst_l, _cnt in _p0_layer_pairs:
         _pair = f"    {_src_l or '?'} -> {_dst_l or '?'}"
         print(
             f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |         |                                  |"
         )
     print(
-        f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |       |       |         |                                  |"
+        f"|     |  circular_import              | {_p0_cycle_count:5} |       |       |       |       |         |                                  |"
     )
     print(
-        f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |       |       |         |                                  |"
+        f"|     |  dynamic_execution            | {_p0_dynamic_count:5} |       |       |       |       |         |                                  |"
     )
     print(_H)
 
@@ -357,17 +365,17 @@ def _print_defect_table(
             )
         print(_H)
 
-    _p2_gate_sym = "*" if _p2_delta > 0 else "^"
-    _print_sev_block("HIGH antipatterns", "P2", p2_count, "HIGH", _p2_ceiling, _p2_gate_sym)
+    _p1_gate_sym = "*" if _p1_delta > 0 else "^"
+    _print_sev_block("HIGH antipatterns", "P1", p1_count, "HIGH", _p1_ceiling, _p1_gate_sym)
 
-    _p3_delta_val = max(0, p3_count - _p3_ceiling) if _p3_ceiling is not None else 0
-    _p3_gate_sym = "*" if _p3_delta_val > 0 else "^"
-    _print_sev_block("MEDIUM antipatterns", "P3", p3_count, "MEDIUM", _p3_ceiling, _p3_gate_sym)
+    _p2_delta_val = max(0, p2_count - _p2_ceiling) if _p2_ceiling is not None else 0
+    _p2_gate_sym = "*" if _p2_delta_val > 0 else "^"
+    _print_sev_block("MEDIUM antipatterns", "P2", p2_count, "MEDIUM", _p2_ceiling, _p2_gate_sym)
 
-    _print_sev_block("LOW style / warnings", "P4", p4_count, "LOW", None, "~")
+    _print_sev_block("LOW style / warnings", "P3", p3_count, "LOW", None, "~")
     if semantic_warnings:
         _sw = len(semantic_warnings)
-        _pct = f"{_sw * 100 // p4_count}%" if p4_count else "  "
+        _pct = f"{_sw * 100 // p3_count}%" if p3_count else "  "
         print(
             f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |         |                                  |"
         )
@@ -385,23 +393,46 @@ def _print_defect_table(
     )
     print("  Gate: *=BLOCKS (halts ADG)  ^=ratchet (blocks on increase)  ~=watch only")
 
-    _p2_ratchet_label = "stable" if _p2_delta == 0 else "REGRESSION"
-    print(f"[ADG] P2 ratchet: {p2_count}/{_p2_ceiling} ({_p2_delta:+d} \u2014 {_p2_ratchet_label})")
-    if _p3_ceiling is not None:
-        _p3_label = "stable" if _p3_delta_val == 0 else "REGRESSION"
-        print(f"[ADG] P3 ratchet: {p3_count}/{_p3_ceiling} ({_p3_delta_val:+d} \u2014 {_p3_label})")
+    _p1_ratchet_label = "stable" if _p1_delta == 0 else "REGRESSION"
+    print(f"[ADG] P1 ratchet: {p1_count}/{_p1_ceiling} ({_p1_delta:+d} \u2014 {_p1_ratchet_label})")
+    if _p2_ceiling is not None:
+        _p2_label = "stable" if _p2_delta_val == 0 else "REGRESSION"
+        print(f"[ADG] P2 ratchet: {p2_count}/{_p2_ceiling} ({_p2_delta_val:+d} \u2014 {_p2_label})")
+
+    # --- Query violation_class breakdown for burndown v2.0 ---
+    _by_class: dict[str, dict[str, int]] = {
+        "hygiene": {"P0": p0_count, "P1": p1_count, "P2": p2_count, "P3": p3_count},
+        "structural_conformance": {"P0": 0, "P1": 0, "P2": 0, "P3": 0},
+        "agentic_antipattern": {"P0": 0, "P1": 0, "P2": 0, "P3": 0},
+    }
+    if sqlite_path is not None and sqlite_path.exists():
+        try:
+            _sev_to_band = {"CRITICAL": "P0", "HIGH": "P1", "MEDIUM": "P2", "LOW": "P3"}
+            with sqlite3.connect(str(sqlite_path)) as _bc_conn:
+                _bc_rows = _bc_conn.execute(
+                    "SELECT violation_class, severity, COUNT(*) FROM violations "
+                    "WHERE violation_class IN ('structural_conformance', 'agentic_antipattern') "
+                    "GROUP BY violation_class, severity",
+                ).fetchall()
+                for _vc, _sv, _cnt in _bc_rows:
+                    _band = _sev_to_band.get(_sv, "P3")
+                    if _vc in _by_class and _band in _by_class[_vc]:
+                        _by_class[_vc][_band] = _cnt
+        except sqlite3.OperationalError:
+            pass
 
     _burndown: dict = {
-        "schema_version": "1.0",
-        "P0_layer_violations": p1_count,
-        "P1_anti_patterns": p2_count,
-        "P2_anti_patterns": p3_count,
-        "P3_style": p4_count,
-        "p0_clean": p1_count == 0,
-        "p1_no_ratchet": _p2_delta == 0,
+        "schema_version": "2.0",
+        "P0_layer_violations": p0_count,
+        "P1_anti_patterns": p1_count,
+        "P2_anti_patterns": p2_count,
+        "P3_style": p3_count,
+        "p0_clean": p0_count == 0,
+        "p1_no_ratchet": _p1_delta == 0,
+        "by_class": _by_class,
         "structural_metrics": {
-            "cycle_count": _p1_cycle_count,
-            "dynamic_exec_count": _p1_dynamic_count,
+            "cycle_count": _p0_cycle_count,
+            "dynamic_exec_count": _p0_dynamic_count,
             "guardian_exemptions": _guardian_total,
         },
     }
@@ -531,35 +562,9 @@ def _generate_standardized_reports(
 
     total_nodes = cur.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
     total_modules = cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0]
-    node_names = {row[0] for row in cur.execute("SELECT adg_name FROM nodes").fetchall()}
     type_surface_count = cur.execute(
         "SELECT COUNT(*) FROM nodes WHERE type_surface IS NOT NULL AND type_surface != ''",
     ).fetchone()[0]
-    test_node_types = ["test_suite", "test_case", "invariant_family"]
-    test_node_counts = {
-        node_type: cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = ?", (node_type,)).fetchone()[0]
-        for node_type in test_node_types
-    }
-    test_edge_types = [
-        "defines_test_case",
-        "defines_test_suite",
-        "defines_invariant",
-        "emits_test_result",
-        "records_validation_outcome",
-        "links_to_execution_trace",
-        "gates_promotion",
-        "detects_regression",
-    ]
-    test_edge_counts = {edge_type: stored_edge_counts.get(edge_type, 0) for edge_type in test_edge_types}
-    test_coverage_by_layer = dict(
-        cur.execute(
-            "SELECT n.layer, COUNT(*) as count "
-            "FROM nodes n "
-            "WHERE n.entity_type IN ('test_suite', 'test_case', 'invariant_family') "
-            "GROUP BY n.layer",
-        ).fetchall(),
-    )
-
     provenance_report: dict[str, object] = {
         "timestamp": ts,
         "schema_version": meta_data.get("schema_version", "4.0.0"),
@@ -597,184 +602,6 @@ def _generate_standardized_reports(
         repo_root,
         enable_determinism_probe,
     )
-    determinism_report: dict[str, object] = {
-        "timestamp": ts,
-        "schema_version": "2.0",
-        "determinism_metrics": {
-            "determinism_digest_edges": stored_edge_counts.get("emits_determinism_digest", 0),
-            "determinism_seed_edges": stored_edge_counts.get("determinism_seed", 0),
-            "replay_key_edges": stored_edge_counts.get("emits_replay_key", 0),
-            "snapshot_state_edges": stored_edge_counts.get("snapshots_state", 0),
-        },
-        "determinism_coverage": {
-            "modules_with_determinism_digest": cur.execute(
-                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_determinism_digest'",
-            ).fetchone()[0],
-            "modules_with_replay_keys": cur.execute(
-                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_replay_key'",
-            ).fetchone()[0],
-            "determinism_score": _ratio(
-                sum(
-                    1
-                    for key in (
-                        "scanner_digest_match",
-                        "artifact_digest_match",
-                        "node_row_digest_match",
-                        "edge_row_digest_match",
-                    )
-                    if determinism_proof.get(key)
-                ),
-                4,
-            ),
-        },
-        "validation": {
-            "has_determinism_edges": stored_edge_counts.get("emits_determinism_digest", 0) > 0,
-            "has_seed_edges": stored_edge_counts.get("determinism_seed", 0) > 0,
-            "determinism_status": determinism_proof["determinism_status"],
-        },
-        "proof": determinism_proof,
-    }
-
-    boundary_edge_types = [
-        "internal_to_internal",
-        "internal_to_external",
-        "external_to_internal",
-        "unresolved_boundary",
-    ]
-
-    unresolved_imports_by_prefix = {"agentic_core/L0_": 0, "agentic_core/L2_": 0, "agentic_core/L5_": 0}
-    apps_prefixes = [
-        "apps_lic",
-        "apps_rg",
-        "apps_eval",
-        "apps_exec",
-        "apps_research",
-        "apps_rfp",
-        "apps_shared",
-    ]
-    for app in apps_prefixes:
-        unresolved_imports_by_prefix[app] = 0
-    total_unresolved = 0
-    critical_path_unresolved = 0
-
-    try:
-        _orig_row_factory = conn.row_factory
-        conn.row_factory = sqlite3.Row
-        cursor = conn.execute(
-            """
-            SELECT e.src_id, e.dst_id, e.symbol, n.adg_name, n.layer, n.resolved_path
-            FROM edges e
-            JOIN nodes n ON e.src_id = n.id
-            WHERE e.relation_type = 'imports'
-            AND e.dst_id NOT IN (SELECT id FROM nodes WHERE entity_type = 'module')
-            LIMIT 1000
-            """,
-        )
-        rows = cursor.fetchall()
-        conn.row_factory = _orig_row_factory
-        for row in rows:
-            total_unresolved += 1
-            adg_name = row["adg_name"] or ""
-            layer = row["layer"] or ""
-            resolved_path = row["resolved_path"] or ""
-
-            if layer == "L0_routing" or adg_name.startswith("L0_"):
-                unresolved_imports_by_prefix["agentic_core/L0_"] += 1
-                critical_path_unresolved += 1
-            elif layer == "L2_execution" or adg_name.startswith("L2_"):
-                unresolved_imports_by_prefix["agentic_core/L2_"] += 1
-                critical_path_unresolved += 1
-            elif layer == "L5_safety" or adg_name.startswith("L5_"):
-                unresolved_imports_by_prefix["agentic_core/L5_"] += 1
-                critical_path_unresolved += 1
-
-            for app in apps_prefixes:
-                if app in adg_name or app in resolved_path:
-                    unresolved_imports_by_prefix[app] += 1
-                    break
-    except Exception as e:  # guardian: allow-broad-exception -- non-critical: unresolved imports query failure should not block ADG generation
-        print(f"[ADG] Warning: Failed to query unresolved imports: {e}")
-
-    boundary_report: dict[str, object] = {
-        "timestamp": ts,
-        "schema_version": "1.0",
-        "boundary_edge_counts": {
-            edge_type: stored_edge_counts.get(edge_type, 0) for edge_type in boundary_edge_types
-        },
-        "unresolved_imports": unresolved_imports_by_prefix,
-        "core_path_analysis": {
-            "agentic_core/L0_": {"total_imports": unresolved_imports_by_prefix.get("agentic_core/L0_", 0)},
-            "agentic_core/L2_": {"total_imports": unresolved_imports_by_prefix.get("agentic_core/L2_", 0)},
-            "agentic_core/L5_": {"total_imports": unresolved_imports_by_prefix.get("agentic_core/L5_", 0)},
-            "apps_packages": {app: unresolved_imports_by_prefix.get(app, 0) for app in apps_prefixes},
-        },
-        "boundary_metrics": {
-            "total_unresolved": total_unresolved,
-            "critical_path_unresolved": critical_path_unresolved,
-            "boundary_completeness": "complete" if total_unresolved == 0 else "has_violations",
-        },
-    }
-
-    module_entity_count = len([entity for entity in artifact.entities if entity.entity_type == "module"])
-    mutation_edges = {
-        "mutation_signature": stored_edge_counts.get("mutation_signature", 0),
-        "parent_snapshot_hash": stored_edge_counts.get("parent_snapshot_hash", 0),
-        "replay_key": stored_edge_counts.get("emits_replay_key", 0),
-        "policy_hash": stored_edge_counts.get("references_policy_hash", 0),
-    }
-    mutation_report: dict[str, object] = {
-        "timestamp": ts,
-        "schema_version": "2.0",
-        "mutation_integrity_metrics": mutation_edges,
-        "replay_guarantees": {
-            "determinism_status": determinism_proof["determinism_status"],
-            "replay_completeness": "closed"
-            if determinism_proof.get("edge_row_digest_match")
-            and determinism_proof.get("node_row_digest_match")
-            else "partial",
-            "signature_coverage": "closed" if mutation_edges["mutation_signature"] > 0 else "incomplete",
-        },
-        "signature_coverage": {
-            "modules_with_signatures": mutation_edges["mutation_signature"],
-            "total_modules": module_entity_count,
-            "coverage_percentage": (mutation_edges["mutation_signature"] / module_entity_count * 100)  # type: ignore[operator]
-            if module_entity_count > 0
-            else 0,
-        },
-        "snapshot_lineage": {
-            "parent_snapshot_hash_edges": mutation_edges["parent_snapshot_hash"],
-            "replay_key_edges": mutation_edges["replay_key"],
-        },
-    }
-
-    test_surface_report: dict[str, object] = {
-        "timestamp": ts,
-        "schema_version": "1.0",
-        "test_surface_nodes": test_node_counts,
-        "test_surface_edges": test_edge_counts,
-        "test_coverage_metrics": {
-            "total_test_nodes": sum(test_node_counts.values()),
-            "total_test_edges": sum(test_edge_counts.values()),
-            "test_edge_types_found": sum(1 for count in test_edge_counts.values() if count > 0),
-            "test_edge_types_total": len(test_edge_types),
-            "test_edge_coverage_percentage": (
-                sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100
-            )
-            if test_edge_types
-            else 0,
-        },
-        "test_coverage_by_layer": test_coverage_by_layer,
-        "critical_path_linkage": {
-            "test_cases_with_execution_trace": test_edge_counts.get("links_to_execution_trace", 0),
-            "test_cases_with_validation": test_edge_counts.get("records_validation_outcome", 0),
-            "test_cases_with_regression_detection": test_edge_counts.get("detects_regression", 0),
-            "test_cases_with_promotion_gates": test_edge_counts.get("gates_promotion", 0),
-            "critical_path_completeness": "partial"
-            if test_edge_counts.get("links_to_execution_trace", 0) > 0
-            else "missing",
-        },
-    }
-
     closure_report = None
     if result is not None:
         audited = {
@@ -1021,10 +848,6 @@ def _generate_standardized_reports(
         (f"layer_coverage_report_{ts}.json", layer_report),
         (f"edge_density_report_{ts}.json", edge_report),
         (f"provenance_report_{ts}.json", provenance_report),
-        (f"replay_determinism_report_{ts}.json", determinism_report),
-        (f"boundary_report_{ts}.json", boundary_report),
-        (f"mutation_integrity_report_{ts}.json", mutation_report),
-        (f"test_surface_coverage_{ts}.json", test_surface_report),
     ]
     if closure_report is not None:
         reports.append((f"closure_validation_report_{ts}.json", closure_report))

@@ -91,13 +91,15 @@ from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularizatio
     _perform_wal_checkpoint,
 )
 from tools.generate.validation import (  # noqa: E402  # M.3 modularization
+    _check_agentic_antipatterns,
     _check_artifact_consistency,
     _check_artifact_validity,
     _check_dead_production_imports,
-    _check_p1_defects,
-    _check_p2_antipatterns,
-    _check_p3_ratchet,
+    _check_p0_violations,
+    _check_p1_ratchet,
+    _check_p2_ratchet,
     _check_sqlite_integrity,
+    _check_structural_conformance,
 )
 
 # M.4: _print_defect_table extracted to tools.generate.reporting.reports
@@ -278,7 +280,7 @@ def generate_full_adg(
 
         # --- Tier-1: Structural integrity gates (block on temp SQLite) ---
         # These gates protect artifact correctness. A corrupt artifact must never reach production.
-        _check_p3_ratchet(sqlite_path=temp_paths.sqlite)
+        _check_p2_ratchet(sqlite_path=temp_paths.sqlite)
 
         # --- Tier-1 passed: commit artifacts to final production location ---
         print("[ADG] Tier-1 gates passed - committing artifacts to final location...")
@@ -302,9 +304,13 @@ def generate_full_adg(
     production_sqlite = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
     prod_sqlite_path = production_sqlite[-1] if production_sqlite else None
 
-    _check_p1_defects(routing_summary, sqlite_path=prod_sqlite_path)
-    _check_p2_antipatterns(sqlite_path=prod_sqlite_path)
+    _check_p0_violations(routing_summary, sqlite_path=prod_sqlite_path)
+    _check_p1_ratchet(sqlite_path=prod_sqlite_path)
     _check_dead_production_imports(sqlite_path=prod_sqlite_path)
+
+    # --- Tier-2b: Structural conformance & agentic anti-pattern gates ---
+    _check_structural_conformance(sqlite_path=prod_sqlite_path)
+    _check_agentic_antipatterns(sqlite_path=prod_sqlite_path)
 
     # --- Repair orchestrator: classify + fix remaining issues ---
     print("[ADG] Running repair orchestrator on committed artifacts...")
@@ -453,15 +459,11 @@ def generate_full_adg(
         paths.sqlite,
     ]
 
-    # Add Wave 6 standardized reports + test surface report
+    # Add high-signal reports to zip archive
     report_files = [
         adg_artifacts_dir / f"layer_coverage_report_{ts}.json",
         adg_artifacts_dir / f"edge_density_report_{ts}.json",
         adg_artifacts_dir / f"provenance_report_{ts}.json",
-        adg_artifacts_dir / f"replay_determinism_report_{ts}.json",
-        adg_artifacts_dir / f"boundary_report_{ts}.json",
-        adg_artifacts_dir / f"mutation_integrity_report_{ts}.json",
-        adg_artifacts_dir / f"test_surface_coverage_{ts}.json",
         adg_artifacts_dir / f"closure_validation_report_{ts}.json",
     ]
 

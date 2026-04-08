@@ -312,11 +312,13 @@ CREATE TABLE IF NOT EXISTS violations (
     disposition   TEXT NOT NULL DEFAULT 'untriaged',
     disposition_source TEXT DEFAULT '',
     disposition_date TEXT DEFAULT '',
-    severity      TEXT NOT NULL DEFAULT 'MEDIUM'
+    severity      TEXT NOT NULL DEFAULT 'MEDIUM',
+    violation_class TEXT NOT NULL DEFAULT 'hygiene'
 );
 CREATE INDEX IF NOT EXISTS idx_violations_cat  ON violations(category);
 CREATE INDEX IF NOT EXISTS idx_violations_file ON violations(file_path);
 CREATE INDEX IF NOT EXISTS idx_violations_disp ON violations(disposition);
+CREATE INDEX IF NOT EXISTS idx_violations_class ON violations(violation_class);
 
 CREATE VIEW IF NOT EXISTS edge_view AS
     SELECT
@@ -491,6 +493,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
 
         # Force garbage collection to release file handles on Windows
         import gc
+
         gc.collect()
 
     # Atomic rename: only move to final path after successful commit and close
@@ -516,6 +519,7 @@ def _create_latest_symlinks(
     On Windows, creates copies instead of symlinks if symlink creation fails.
     """
     import shutil
+
     # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling
     symlink_map = {
         "adg_LATEST.sqlite": sqlite_path,
