@@ -1,0 +1,25 @@
+name: Infrastructure Wiring Check
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  infra-wiring-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run infrastructure wiring scan
+        run: python ops_scripts/ci/infra_wiring_scan.py
+
+      - name: Check compliance score
+        run: |
+          python -c "import json; data=json.load(open('artifacts/infra_wiring_scorecard.json')); assert data['compliance_score'] == 100, f'Compliance score {data[\"compliance_score\"]}% < 100%'"
