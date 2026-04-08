@@ -107,52 +107,6 @@ def _auto_generate_adg(repo_root: Path) -> bool:
         return False
 
 
-def _has_adg_sqlite(repo_root: Path) -> bool:
-    """
-    Return True if at least one adg_indexed_*.sqlite file exists in artifacts/adg/.
-    An empty (no-sqlite) state means ADG has never been generated or was wiped.
-    """
-    adg_dir = repo_root / "artifacts" / "adg"
-    if not adg_dir.exists():
-        return False
-    return any(adg_dir.glob("adg_indexed_*.sqlite"))
-
-
-def _auto_generate_adg(repo_root: Path) -> bool:
-    """
-    Invoke ``python tools/generate_full_adg.py`` synchronously to bootstrap the
-    ADG SQLite when none exists.  Returns True on success, False on failure.
-
-    Constitutional §3.2: shell=False.  §14: timeout= is mandatory.
-    """
-    script = repo_root / "tools" / "generate_full_adg.py"
-    try:
-        result = subprocess.run(
-            [sys.executable, str(script)],
-            shell=False,
-            check=False,
-            timeout=300,
-            capture_output=True,
-            text=True,
-            cwd=str(repo_root),
-        )
-        if result.returncode != 0:
-            print(
-                f"[pre_mcp_gate] ADG auto-generation failed (exit {result.returncode}): "
-                f"{result.stderr.strip()}",
-                file=sys.stderr,
-            )
-            return False
-        print("[pre_mcp_gate] ADG auto-generation succeeded.", file=sys.stderr)
-        return True
-    except subprocess.TimeoutExpired:
-        print("[pre_mcp_gate] ADG auto-generation timed out (300 s).", file=sys.stderr)
-        return False
-    except OSError as exc:
-        print(f"[pre_mcp_gate] ADG auto-generation OSError: {exc}", file=sys.stderr)
-        return False
-
-
 def _is_sqlite_locked(repo_root: Path) -> bool:
     """
     Check if any adg_indexed_*.sqlite has a companion .sqlite-wal file

@@ -448,6 +448,10 @@ class TestPreMcpGateRecoveryToolCaseSensitivity:
     def _run_adg(self, tool_name: str, repo_root: Path) -> int:
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
+        # Provision a dummy sqlite so _has_adg_sqlite returns True.
+        adg_dir = repo_root / "artifacts" / "adg"
+        adg_dir.mkdir(parents=True, exist_ok=True)
+        (adg_dir / "adg_indexed_test.sqlite").write_text("")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": tool_name}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", repo_root):
@@ -482,8 +486,10 @@ class TestPreMcpGateStalenessThresholds:
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
-        adg_dir.mkdir(parents=True)
-        snap = adg_dir / "adg_snapshot_20260101_0000.json"
+        adg_dir.mkdir(parents=True, exist_ok=True)
+        # Dummy sqlite — makes _has_adg_sqlite return True so auto-gen is skipped.
+        (adg_dir / "adg_indexed_test.sqlite").write_text("")
+        snap = adg_dir / "adg_snapshot_test.json"
         snap.write_text("{}")
         mtime = time.time() - age_seconds
         os.utime(snap, (mtime, mtime))
@@ -511,6 +517,8 @@ class TestPreMcpGateStalenessThresholds:
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
+        # Sqlite present → auto-gen skipped. No snapshot → staleness check skipped → 0.
+        (adg_dir / "adg_indexed_test.sqlite").write_text("")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
@@ -521,6 +529,7 @@ class TestPreMcpGateStalenessThresholds:
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
+        (adg_dir / "adg_indexed_test.sqlite").write_text("")
         old_snap = adg_dir / "adg_snapshot_20260101_0000.json"
         new_snap = adg_dir / "adg_snapshot_20260101_0001.json"
         old_snap.write_text("{}")
