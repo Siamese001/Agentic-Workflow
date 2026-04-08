@@ -152,7 +152,6 @@ repos:
         name: "T5: ADG Snapshot Freshness Check"
         entry: py ops_scripts/hooks/adg_unified_gate.py --snapshot-only
         language: system
-        types: [python]
         pass_filenames: false
         always_run: false
         require_serial: true
