@@ -469,11 +469,149 @@ def _insert_sc_ap_violation(
     )
 
 
+_GRAVITY_FORBIDDEN: dict[str, set[str]] = {
+    "L0": {"L1", "L2", "L3", "L6"},
+    "L1": {"L2", "L3", "L6"},
+    "L2": {"L0", "L1", "L6"},
+    "L6": {"L2"},
+}
+
+_SC_CHECK_DISPATCH: dict[str, str] = {
+    "SC-1": "_query_sc1_gravity",
+    "SC-2": "_query_sc2_lifecycle",
+    "SC-3": "_query_sc3_uwg_write",
+    "SC-4": "_query_sc4_choke_point",
+}
+
+
+def _query_sc1_gravity(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-1: Gravity import / illegal layer reach."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, n_src.layer, n_dst.layer, e.relation_type "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "JOIN nodes n_dst ON e.dst_id = n_dst.id "
+        "WHERE e.relation_type IN ('imports', 'reads_from', 'controls_flow', 'flows_to') "
+        "  AND n_src.layer IS NOT NULL AND n_src.layer != '' "
+        "  AND n_dst.layer IS NOT NULL AND n_dst.layer != '' "
+        "  AND n_src.layer != n_dst.layer",
+    ).fetchall()
+    for src_file, line_no, src_layer, dst_layer, rel_type in rows:
+        forbidden = _GRAVITY_FORBIDDEN.get(src_layer, set())
+        if dst_layer in forbidden:
+            violations.append(
+                {
+                    "source_file": src_file or "",
+                    "line_no": line_no or 0,
+                    "evidence": f"{src_layer}->{dst_layer} via {rel_type}",
+                }
+            )
+    return violations
+
+
+def _query_sc2_lifecycle(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-2: L2 execution lifecycle conformance (E1-E5 phases)."""
+    violations: list[dict[str, Any]] = []
+    exec_modules = conn.execute(
+        "SELECT DISTINCT e.src_id, n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE n.layer = 'L2' "
+        "  AND e.relation_type IN ('invokes_provider', 'resolves_callsite')",
+    ).fetchall()
+    for src_id, adg_name, resolved_path in exec_modules:
+        phase_edges = conn.execute(
+            "SELECT DISTINCT e.relation_type FROM edges e WHERE e.src_id = ? "
+            "AND e.relation_type IN ("
+            "  'enters_sandbox', 'stamps_work_contract',"
+            "  'validates_uwg_intent', 'checks_capability_set',"
+            "  'invokes_provider', 'resolves_callsite',"
+            "  'orchestrates_healing', 'heals',"
+            "  'packages_execution_trace', 'applies_hmac_seal'"
+            ")",
+            (src_id,),
+        ).fetchall()
+        found_phases = set()
+        for (rt,) in phase_edges:
+            if rt in ("enters_sandbox", "stamps_work_contract"):
+                found_phases.add("E1")
+            elif rt in ("validates_uwg_intent", "checks_capability_set"):
+                found_phases.add("E2")
+            elif rt in ("invokes_provider", "resolves_callsite"):
+                found_phases.add("E3")
+            elif rt in ("orchestrates_healing", "heals"):
+                found_phases.add("E4")
+            elif rt in ("packages_execution_trace", "applies_hmac_seal"):
+                found_phases.add("E5")
+        missing = {"E1", "E2", "E3", "E4", "E5"} - found_phases
+        if len(missing) >= 2:
+            violations.append(
+                {
+                    "source_file": resolved_path or "",
+                    "line_no": 0,
+                    "evidence": f"{adg_name} missing phases: {', '.join(sorted(missing))}",
+                }
+            )
+    return violations
+
+
+def _query_sc3_uwg_write(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-3: UWG-only durable write conformance."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, n_src.layer, n_src.adg_name "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "WHERE e.relation_type IN ('writes_to', 'writes_through') "
+        "  AND n_src.layer IN ('L2', 'L6') "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ('validates_uwg_intent', 'commits_mutation_durable')"
+        "  )",
+    ).fetchall()
+    for src_file, line_no, layer, adg_name in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} ({layer}) writes without UWG governance",
+            }
+        )
+    return violations
+
+
+def _query_sc4_choke_point(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """SC-4: Capability/tool/provider choke-point conformance."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, n_src.layer, n_src.adg_name "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "WHERE e.relation_type = 'invokes_provider' "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ("
+        "      'enters_sandbox', 'issues_capability_token', "
+        "      'checks_capability_set', 'validates_capability'"
+        "    )"
+        "  )",
+    ).fetchall()
+    for src_file, line_no, layer, adg_name in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} ({layer}) invokes provider without capability gate",
+            }
+        )
+    return violations
+
+
 def _check_structural_conformance(
     sqlite_path: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Run structural conformance checks (SC-1 through SC-8).
+    """Run structural conformance checks (SC-1 through SC-4, more in future waves).
 
     In audit mode (default), violations are logged and inserted into the violations table
     but do NOT cause sys.exit. When audit_mode is False for a check, violations cause sys.exit(1).
@@ -492,43 +630,183 @@ def _check_structural_conformance(
 
     config = _load_sc_ap_config(config_path)
 
-    # SC checks will be implemented in Wave 2+.
-    # This function provides the infrastructure: config loading, audit/enforce dispatch.
     sc_checks = {k: v for k, v in config.items() if k.startswith("SC-") and v.get("enabled", False)}
 
     if not sc_checks:
         print("[ADG] Structural conformance: no checks enabled")
         return results
 
-    for check_id, check_cfg in sorted(sc_checks.items()):
-        audit = check_cfg.get("audit_mode", True)
-        label = check_cfg.get("label", check_id)
-        violations: list[dict[str, Any]] = []
+    with sqlite3.connect(str(sqlite_path)) as conn:
+        for check_id, check_cfg in sorted(sc_checks.items()):
+            audit = check_cfg.get("audit_mode", True)
+            label = check_cfg.get("label", check_id)
+            violations: list[dict[str, Any]] = []
 
-        # Placeholder: Wave 2+ will add query logic per check_id here.
-        # Each check populates `violations` list with dicts:
-        #   {"source_file": str, "line_no": int, "evidence": str}
+            query_fn_name = _SC_CHECK_DISPATCH.get(check_id)
+            if query_fn_name:
+                query_fn = globals().get(query_fn_name)
+                if query_fn is not None:
+                    try:
+                        violations = query_fn(conn)
+                    except sqlite3.OperationalError:
+                        pass
 
-        results[check_id] = violations
-        count = len(violations)
+            for v in violations:
+                _insert_sc_ap_violation(
+                    conn,
+                    check_id,
+                    CLASS_STRUCTURAL,
+                    "P0",
+                    v.get("source_file", ""),
+                    v.get("line_no", 0),
+                    v.get("evidence", ""),
+                )
+            conn.commit()
 
-        if count > 0:
-            mode_tag = "[AUDIT]" if audit else "[BLOCK]"
-            print(f"{mode_tag} {check_id} ({label}): {count} violation(s)")
-            if not audit:
-                print(f"[ERROR] {check_id} structural conformance check FAILED")
-                sys.exit(1)
-        else:
-            print(f"[ADG] {check_id} ({label}): PASSED")
+            results[check_id] = violations
+            count = len(violations)
+
+            if count > 0:
+                mode_tag = "[AUDIT]" if audit else "[BLOCK]"
+                print(f"{mode_tag} {check_id} ({label}): {count} violation(s)")
+                if not audit:
+                    print(f"[ERROR] {check_id} structural conformance check FAILED")
+                    sys.exit(1)
+            else:
+                print(f"[ADG] {check_id} ({label}): PASSED")
 
     return results
+
+
+_AP_CHECK_DISPATCH: dict[str, str] = {
+    "AP-1": "_query_ap1_text_to_action",
+    "AP-2": "_query_ap2_phase_bypass",
+    "AP-3": "_query_ap3_provider_bypass",
+    "AP-4": "_query_ap4_direct_write",
+}
+
+
+def _query_ap1_text_to_action(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-1: Unsafe text-to-action path — flows_to reaching invokes_provider without guardrail."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT DISTINCT e.source_file, e.line_no, n_src.adg_name "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "WHERE e.relation_type = 'flows_to' "
+        "  AND e.dst_id IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ('invokes_provider', 'writes_to')"
+        "  ) "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e3.src_id FROM edges e3 "
+        "    WHERE e3.relation_type IN ('applies_guardrail', 'validates_uwg_intent')"
+        "  )",
+    ).fetchall()
+    for src_file, line_no, adg_name in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} flows to action without guardrail",
+            }
+        )
+    return violations
+
+
+def _query_ap2_phase_bypass(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-2: L2 phase bypass — execution without validate (E2) or seal (E5)."""
+    violations: list[dict[str, Any]] = []
+    exec_modules = conn.execute(
+        "SELECT DISTINCT e.src_id, n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE n.layer = 'L2' "
+        "  AND e.relation_type IN ('invokes_provider', 'resolves_callsite')",
+    ).fetchall()
+    for src_id, adg_name, resolved_path in exec_modules:
+        phase_edges = conn.execute(
+            "SELECT DISTINCT e.relation_type FROM edges e WHERE e.src_id = ? "
+            "AND e.relation_type IN ("
+            "  'validates_uwg_intent', 'checks_capability_set',"
+            "  'packages_execution_trace', 'applies_hmac_seal'"
+            ")",
+            (src_id,),
+        ).fetchall()
+        has_validate = any(rt in ("validates_uwg_intent", "checks_capability_set") for (rt,) in phase_edges)
+        has_seal = any(rt in ("packages_execution_trace", "applies_hmac_seal") for (rt,) in phase_edges)
+        if not has_validate or not has_seal:
+            missing = []
+            if not has_validate:
+                missing.append("E2-validate")
+            if not has_seal:
+                missing.append("E5-seal")
+            violations.append(
+                {
+                    "source_file": resolved_path or "",
+                    "line_no": 0,
+                    "evidence": f"{adg_name} executes without {', '.join(missing)}",
+                }
+            )
+    return violations
+
+
+def _query_ap3_provider_bypass(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-3: Provider/tool bypass — SC-4 scoped to production layers (agentic_core/)."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, n_src.layer, n_src.adg_name "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "WHERE e.relation_type = 'invokes_provider' "
+        "  AND e.source_file LIKE 'agentic_core/%' "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ("
+        "      'enters_sandbox', 'issues_capability_token', "
+        "      'checks_capability_set', 'validates_capability'"
+        "    )"
+        "  )",
+    ).fetchall()
+    for src_file, line_no, layer, adg_name in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} ({layer}) invokes provider in agentic_core/ without capability gate",
+            }
+        )
+    return violations
+
+
+def _query_ap4_direct_write(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-4: Direct durable write breach — any layer writing to state without governed path."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, n_src.layer, n_src.adg_name "
+        "FROM edges e "
+        "JOIN nodes n_src ON e.src_id = n_src.id "
+        "WHERE e.relation_type IN ('writes_to', 'writes_through') "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ('validates_uwg_intent', 'commits_mutation_durable')"
+        "  )",
+    ).fetchall()
+    for src_file, line_no, layer, adg_name in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} ({layer}) direct durable write without governed path",
+            }
+        )
+    return violations
 
 
 def _check_agentic_antipatterns(
     sqlite_path: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Run agentic anti-pattern checks (AP-1 through AP-17).
+    """Run agentic anti-pattern checks (AP-1 through AP-4, more in future waves).
 
     In audit mode (default), violations are logged and inserted into the violations table
     but do NOT cause sys.exit. When audit_mode is False for a check, violations cause sys.exit(1).
@@ -553,23 +831,43 @@ def _check_agentic_antipatterns(
         print("[ADG] Agentic anti-patterns: no checks enabled")
         return results
 
-    for check_id, check_cfg in sorted(ap_checks.items()):
-        audit = check_cfg.get("audit_mode", True)
-        label = check_cfg.get("label", check_id)
-        violations: list[dict[str, Any]] = []
+    with sqlite3.connect(str(sqlite_path)) as conn:
+        for check_id, check_cfg in sorted(ap_checks.items()):
+            audit = check_cfg.get("audit_mode", True)
+            label = check_cfg.get("label", check_id)
+            violations: list[dict[str, Any]] = []
 
-        # Placeholder: Wave 2+ will add query logic per check_id here.
+            query_fn_name = _AP_CHECK_DISPATCH.get(check_id)
+            if query_fn_name:
+                query_fn = globals().get(query_fn_name)
+                if query_fn is not None:
+                    try:
+                        violations = query_fn(conn)
+                    except sqlite3.OperationalError:
+                        pass
 
-        results[check_id] = violations
-        count = len(violations)
+            for v in violations:
+                _insert_sc_ap_violation(
+                    conn,
+                    check_id,
+                    CLASS_AGENTIC,
+                    "P0",
+                    v.get("source_file", ""),
+                    v.get("line_no", 0),
+                    v.get("evidence", ""),
+                )
+            conn.commit()
 
-        if count > 0:
-            mode_tag = "[AUDIT]" if audit else "[BLOCK]"
-            print(f"{mode_tag} {check_id} ({label}): {count} violation(s)")
-            if not audit:
-                print(f"[ERROR] {check_id} agentic anti-pattern check FAILED")
-                sys.exit(1)
-        else:
-            print(f"[ADG] {check_id} ({label}): PASSED")
+            results[check_id] = violations
+            count = len(violations)
+
+            if count > 0:
+                mode_tag = "[AUDIT]" if audit else "[BLOCK]"
+                print(f"{mode_tag} {check_id} ({label}): {count} violation(s)")
+                if not audit:
+                    print(f"[ERROR] {check_id} agentic anti-pattern check FAILED")
+                    sys.exit(1)
+            else:
+                print(f"[ADG] {check_id} ({label}): PASSED")
 
     return results
