@@ -17,17 +17,11 @@ Exit codes:
 
 import argparse
 
-# Force UTF-8 encoding for Windows compatibility
-import io
 import json
 import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
-
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Ensure project root is in path
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -260,7 +254,7 @@ class PowerShellBanChecker:
             file_path = PROJECT_ROOT / violation["file"]
 
             try:
-                content = file_path.read_text(encoding='utf-8')
+                content = file_path.read_text(encoding='utf-8', errors='ignore')
                 lines = content.split('\n')
                 line_idx = violation["line"] - 1
 
@@ -330,11 +324,11 @@ class PowerShellBanChecker:
             print()
 
         print("Python alternatives:")
-        print("   • subprocess.run() for shell commands")
-        print("   • Path.read_text()/write_text() for file operations")
-        print("   • print() for output")
-        print("   • logging module for structured logging")
-        print("   • Built-in Python functions for data processing")
+        print("   - subprocess.run() for shell commands")
+        print("   - Path.read_text()/write_text() for file operations")
+        print("   - print() for output")
+        print("   - logging module for structured logging")
+        print("   - Built-in Python functions for data processing")
         print()
         print("Reference: User preference - NEVER use PowerShell")
 
@@ -374,6 +368,7 @@ def main() -> int:
     args = parser.parse_args()
 
     checker = PowerShellBanChecker()
+    # Handle both None (not provided) and empty list [] (no matching staged files)
     target_files = [Path(p) for p in args.files] if args.files else None
     violations = checker.check_repository(target_files=target_files)
 
@@ -399,11 +394,11 @@ def main() -> int:
 
     # Fail build if any PowerShell usage found
     if violations:
-        print(f"\n❌ POWERSHELL BAN GUARDRAIL: {len(violations)} violations found")
+        print(f"\n[FAIL] POWERSHELL BAN GUARDRAIL: {len(violations)} violations found")
         print("Build FAILED - PowerShell usage violates user preference")
         return 1
     else:
-        print("\n✅ POWERSHELL BAN GUARDRAIL: No violations found")
+        print("\n[OK] POWERSHELL BAN GUARDRAIL: No violations found")
         return 0
 
 
