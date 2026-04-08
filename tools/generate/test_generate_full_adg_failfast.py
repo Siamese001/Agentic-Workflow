@@ -1754,7 +1754,7 @@ class TestW2ExportsComplete:
         assert callable(_query_ap4_direct_write)
 
     def test_dispatch_tables_cover_all_checks(self):
-        """Dispatch tables map all W2+W3 checks to query functions."""
+        """Dispatch tables map all W2+W3+W4 checks to query functions."""
         from tools.generate.validation import _AP_CHECK_DISPATCH, _SC_CHECK_DISPATCH
 
         assert set(_SC_CHECK_DISPATCH.keys()) == {
@@ -1778,6 +1778,13 @@ class TestW2ExportsComplete:
             "AP-8",
             "AP-9",
             "AP-10",
+            "AP-11",
+            "AP-12",
+            "AP-13",
+            "AP-14",
+            "AP-15",
+            "AP-16",
+            "AP-17",
         }
 
 
@@ -2716,6 +2723,672 @@ class TestW3ExportsComplete:
         assert callable(_query_ap8_missing_trace)
         assert callable(_query_ap9_infra_spread)
         assert callable(_query_ap10_mutation_confusion)
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-11 Poorly Scoped Work Contracts
+# ---------------------------------------------------------------------------
+
+
+class TestAP11WorkContracts:
+    """AP-11: Poorly scoped work contracts."""
+
+    def test_contract_present_passes(self, tmp_path):
+        """L2 module with stamps_work_contract → passes."""
+        from tools.generate.validation.gates import _query_ap11_work_contracts
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Exec','module','L2','module','high','e.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','','e.py',1)"
+        )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'stamps_work_contract','','e.py',2)"
+        )
+        conn.commit()
+        assert _query_ap11_work_contracts(conn) == []
+        conn.close()
+
+    def test_missing_contract_detected(self, tmp_path):
+        """L2 module executing without stamps_work_contract → flagged."""
+        from tools.generate.validation.gates import _query_ap11_work_contracts
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Exec','module','L2','module','high','e.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','','e.py',1)"
+        )
+        conn.commit()
+        result = _query_ap11_work_contracts(conn)
+        assert len(result) >= 1
+        assert "without stamps_work_contract" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Exec','module','L2','module','high','e.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','','e.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-11": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-11"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Exec','module','L2','module','high','e.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','','e.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-11": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-12 Prompt Scatter
+# ---------------------------------------------------------------------------
+
+
+class TestAP12PromptScatter:
+    """AP-12: Prompt scatter — >3 generates_prompt edges."""
+
+    def test_low_prompt_count_passes(self, tmp_path):
+        """≤3 generates_prompt edges → passes."""
+        from tools.generate.validation.gates import _query_ap12_prompt_scatter
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'M','module','L2','module','high','m.py')")
+        for i in range(2, 5):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'T{i}','module','L3','module','high','t{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'generates_prompt','','m.py',{i})"
+            )
+        conn.commit()
+        assert _query_ap12_prompt_scatter(conn) == []
+        conn.close()
+
+    def test_high_prompt_count_detected(self, tmp_path):
+        """>3 generates_prompt flagged."""
+        from tools.generate.validation.gates import _query_ap12_prompt_scatter
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'M','module','L2','module','high','m.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'T{i}','module','L3','module','high','t{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'generates_prompt','','m.py',{i})"
+            )
+        conn.commit()
+        result = _query_ap12_prompt_scatter(conn)
+        assert len(result) == 1
+        assert ">3 threshold" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'M','module','L2','module','high','m.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'T{i}','module','L3','module','high','t{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'generates_prompt','','m.py',{i})"
+            )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-12": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-12"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'M','module','L2','module','high','m.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'T{i}','module','L3','module','high','t{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'generates_prompt','','m.py',{i})"
+            )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-12": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-13 Retry/Heal Without Exit Criteria
+# ---------------------------------------------------------------------------
+
+
+class TestAP13RetryNoExit:
+    """AP-13: Retry/heal without clear exit criteria."""
+
+    def test_sealed_healing_passes(self, tmp_path):
+        """Healing with execution trace seal → passes."""
+        from tools.generate.validation.gates import _query_ap13_retry_no_exit
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Healer','module','L2','module','high','h.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'T','module','L3','module','high','t.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'orchestrates_healing','','h.py',1)"
+        )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'packages_execution_trace','','h.py',2)"
+        )
+        conn.commit()
+        assert _query_ap13_retry_no_exit(conn) == []
+        conn.close()
+
+    def test_unsealed_healing_detected(self, tmp_path):
+        """Healing without seal → flagged."""
+        from tools.generate.validation.gates import _query_ap13_retry_no_exit
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Healer','module','L2','module','high','h.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'T','module','L3','module','high','t.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'orchestrates_healing','','h.py',1)"
+        )
+        conn.commit()
+        result = _query_ap13_retry_no_exit(conn)
+        assert len(result) == 1
+        assert "without execution trace seal" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Healer','module','L2','module','high','h.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'T','module','L3','module','high','t.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'orchestrates_healing','','h.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-13": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-13"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Healer','module','L2','module','high','h.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'T','module','L3','module','high','t.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'orchestrates_healing','','h.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-13": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-14 Retrieval Without Evidence Contract
+# ---------------------------------------------------------------------------
+
+
+class TestAP14RetrievalNoEvidence:
+    """AP-14: Retrieval without evidence contract."""
+
+    def test_guarded_retrieval_passes(self, tmp_path):
+        """Retrieval with applies_guardrail → passes."""
+        from tools.generate.validation.gates import _query_ap14_retrieval_no_evidence
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'R','module','L2','module','high','r.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        for rt in ["pulls_context", "invokes_provider", "applies_guardrail"]:
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                "VALUES (1,2,?,'','r.py',1)",
+                (rt,),
+            )
+        conn.commit()
+        assert _query_ap14_retrieval_no_evidence(conn) == []
+        conn.close()
+
+    def test_unguarded_retrieval_detected(self, tmp_path):
+        """Retrieval + provider invoke without guardrail → flagged."""
+        from tools.generate.validation.gates import _query_ap14_retrieval_no_evidence
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'R','module','L2','module','high','r.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        for rt in ["pulls_context", "invokes_provider"]:
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                "VALUES (1,2,?,'','r.py',1)",
+                (rt,),
+            )
+        conn.commit()
+        result = _query_ap14_retrieval_no_evidence(conn)
+        assert len(result) >= 1
+        assert "without guardrail" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'R','module','L2','module','high','r.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        for rt in ["pulls_context", "invokes_provider"]:
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                "VALUES (1,2,?,'','r.py',1)",
+                (rt,),
+            )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-14": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-14"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'R','module','L2','module','high','r.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        for rt in ["pulls_context", "invokes_provider"]:
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                "VALUES (1,2,?,'','r.py',1)",
+                (rt,),
+            )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-14": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-15 Agent Count Outrunning Tool Surfaces
+# ---------------------------------------------------------------------------
+
+
+class TestAP15AgentToolRatio:
+    """AP-15: Agent count outrunning tool surfaces (>3:1)."""
+
+    def test_balanced_ratio_passes(self, tmp_path):
+        """Agent:tool ratio ≤3:1 → passes."""
+        from tools.generate.validation.gates import _query_ap15_agent_tool_ratio
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Mgr','module','L0','module','high','m.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'A1','agent','L2','module','high','a1.py')")
+        conn.execute("INSERT INTO nodes VALUES (3,'A2','agent','L2','module','high','a2.py')")
+        conn.execute("INSERT INTO nodes VALUES (4,'Tool','module','L3','module','high','t.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'routes_to_agent','','m.py',1)"
+        )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,3,'routes_to_agent','','m.py',2)"
+        )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (2,4,'invokes_provider','','a1.py',3)"
+        )
+        conn.commit()
+        assert _query_ap15_agent_tool_ratio(conn) == []
+        conn.close()
+
+    def test_high_ratio_detected(self, tmp_path):
+        """Agent:tool ratio >3:1 → flagged."""
+        from tools.generate.validation.gates import _query_ap15_agent_tool_ratio
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Mgr','module','L0','module','high','m.py')")
+        conn.execute("INSERT INTO nodes VALUES (10,'Tool','module','L3','module','high','t.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'A{i}','agent','L2','module','high','a{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'routes_to_agent','','m.py',{i})"
+            )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (2,10,'invokes_provider','','a2.py',1)"
+        )
+        conn.commit()
+        result = _query_ap15_agent_tool_ratio(conn)
+        assert len(result) == 1
+        assert "3:1 threshold" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Mgr','module','L0','module','high','m.py')")
+        conn.execute("INSERT INTO nodes VALUES (10,'Tool','module','L3','module','high','t.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'A{i}','agent','L2','module','high','a{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'routes_to_agent','','m.py',{i})"
+            )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (2,10,'invokes_provider','','a2.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-15": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-15"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Mgr','module','L0','module','high','m.py')")
+        conn.execute("INSERT INTO nodes VALUES (10,'Tool','module','L3','module','high','t.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'A{i}','agent','L2','module','high','a{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'routes_to_agent','','m.py',{i})"
+            )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (2,10,'invokes_provider','','a2.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-15": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-16 Dormant Infrastructure
+# ---------------------------------------------------------------------------
+
+
+class TestAP16DormantInfra:
+    """AP-16: Dormant infrastructure — infra modules with <3 imports."""
+
+    def test_well_connected_infra_passes(self, tmp_path):
+        """Infra module with ≥3 imports → passes."""
+        from tools.generate.validation.gates import _query_ap16_dormant_infra
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'redis_client','module','L4','module','high','r.py')")
+        for i in range(10, 13):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'M{i}','module','L2','module','high','m{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES ({i},1,'imports','','m{i}.py',1)"
+            )
+        conn.commit()
+        assert _query_ap16_dormant_infra(conn) == []
+        conn.close()
+
+    def test_dormant_infra_detected(self, tmp_path):
+        """Infra module with <3 imports → flagged."""
+        from tools.generate.validation.gates import _query_ap16_dormant_infra
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'redis_client','module','L4','module','high','r.py')")
+        conn.execute("INSERT INTO nodes VALUES (10,'M','module','L2','module','high','m.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (10,1,'imports','','m.py',1)"
+        )
+        conn.commit()
+        result = _query_ap16_dormant_infra(conn)
+        assert len(result) >= 1
+        assert "<3 threshold" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'redis_client','module','L4','module','high','r.py')")
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-16": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-16"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'redis_client','module','L4','module','high','r.py')")
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-16": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: AP-17 Semantic Precision Gaps
+# ---------------------------------------------------------------------------
+
+
+class TestAP17SemanticPrecision:
+    """AP-17: Agentic semantic precision gaps."""
+
+    def test_domain_edge_kind_passes(self, tmp_path):
+        """Non-generic edge_kind → passes."""
+        from tools.generate.validation.gates import _query_ap17_semantic_precision
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L2','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L3','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','provider_call','a.py',1)"
+        )
+        conn.commit()
+        assert _query_ap17_semantic_precision(conn) == []
+        conn.close()
+
+    def test_generic_edge_kind_detected(self, tmp_path):
+        """Generic edge_kind 'call' → flagged."""
+        from tools.generate.validation.gates import _query_ap17_semantic_precision
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L2','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L3','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','call','a.py',5)"
+        )
+        conn.commit()
+        result = _query_ap17_semantic_precision(conn)
+        assert len(result) >= 1
+        assert "generic edge_kind 'call'" in result[0]["evidence"]
+        conn.close()
+
+    def test_audit_mode_does_not_exit(self, tmp_path, capsys):
+        """Audit mode logs but does not block."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L2','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L3','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','write','a.py',5)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-17": {"enabled": True, "audit_mode": True}})
+        result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert len(result["AP-17"]) >= 1
+        assert "[AUDIT]" in capsys.readouterr().out
+
+    def test_enforce_mode_exits(self, tmp_path):
+        """Enforce mode sys.exit(1) on violation."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'A','module','L2','module','high','a.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'B','module','L3','module','high','b.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','read','a.py',5)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-17": {"enabled": True, "audit_mode": False}})
+        with pytest.raises(SystemExit) as exc_info:
+            _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        assert exc_info.value.code == 1
+
+
+# ---------------------------------------------------------------------------
+# W4: Severity insertion verification
+# ---------------------------------------------------------------------------
+
+
+class TestW4SeverityInsertion:
+    """W4: Verify P2/P3 severity for AP-11+ violations."""
+
+    def test_ap11_inserts_p2_severity(self, tmp_path):
+        """AP-11 violations insert with severity='P2'."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Exec','module','L2','module','high','e.py')")
+        conn.execute("INSERT INTO nodes VALUES (2,'P','module','L3','module','high','p.py')")
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (1,2,'invokes_provider','','e.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-11": {"enabled": True, "audit_mode": True}})
+        _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        conn2 = sqlite3.connect(str(db))
+        rows = conn2.execute("SELECT severity FROM violations WHERE category = 'AP-11'").fetchall()
+        assert len(rows) >= 1
+        assert all(r[0] == "P2" for r in rows)
+        conn2.close()
+
+    def test_ap15_inserts_p3_severity(self, tmp_path):
+        """AP-15 violations insert with severity='P3'."""
+        from tools.generate.validation.gates import _check_agentic_antipatterns
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute("INSERT INTO nodes VALUES (1,'Mgr','module','L0','module','high','m.py')")
+        conn.execute("INSERT INTO nodes VALUES (10,'Tool','module','L3','module','high','t.py')")
+        for i in range(2, 7):
+            conn.execute(f"INSERT INTO nodes VALUES ({i},'A{i}','agent','L2','module','high','a{i}.py')")
+            conn.execute(
+                "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+                f"VALUES (1,{i},'routes_to_agent','','m.py',{i})"
+            )
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
+            "VALUES (2,10,'invokes_provider','','a2.py',1)"
+        )
+        conn.commit()
+        conn.close()
+        cfg = _write_sc_ap_config(tmp_path, {"AP-15": {"enabled": True, "audit_mode": True}})
+        _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
+        conn2 = sqlite3.connect(str(db))
+        rows = conn2.execute("SELECT severity FROM violations WHERE category = 'AP-15'").fetchall()
+        assert len(rows) >= 1
+        assert all(r[0] == "P3" for r in rows)
+        conn2.close()
+
+
+# ---------------------------------------------------------------------------
+# W4: Exports verification
+# ---------------------------------------------------------------------------
+
+
+class TestW4ExportsComplete:
+    """W4: Verify all W4 query functions are exported."""
+
+    def test_all_w4_exports_importable(self):
+        """All W4 exports must be importable from tools.generate.validation."""
+        from tools.generate.validation import (
+            _GENERIC_EDGE_KINDS,
+            _query_ap11_work_contracts,
+            _query_ap12_prompt_scatter,
+            _query_ap13_retry_no_exit,
+            _query_ap14_retrieval_no_evidence,
+            _query_ap15_agent_tool_ratio,
+            _query_ap16_dormant_infra,
+            _query_ap17_semantic_precision,
+        )
+
+        assert "call" in _GENERIC_EDGE_KINDS
+        assert callable(_query_ap11_work_contracts)
+        assert callable(_query_ap12_prompt_scatter)
+        assert callable(_query_ap13_retry_no_exit)
+        assert callable(_query_ap14_retrieval_no_evidence)
+        assert callable(_query_ap15_agent_tool_ratio)
+        assert callable(_query_ap16_dormant_infra)
+        assert callable(_query_ap17_semantic_precision)
 
 
 if __name__ == "__main__":

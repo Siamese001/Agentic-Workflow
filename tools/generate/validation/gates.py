@@ -800,6 +800,13 @@ _AP_CHECK_DISPATCH: dict[str, str] = {
     "AP-8": "_query_ap8_missing_trace",
     "AP-9": "_query_ap9_infra_spread",
     "AP-10": "_query_ap10_mutation_confusion",
+    "AP-11": "_query_ap11_work_contracts",
+    "AP-12": "_query_ap12_prompt_scatter",
+    "AP-13": "_query_ap13_retry_no_exit",
+    "AP-14": "_query_ap14_retrieval_no_evidence",
+    "AP-15": "_query_ap15_agent_tool_ratio",
+    "AP-16": "_query_ap16_dormant_infra",
+    "AP-17": "_query_ap17_semantic_precision",
 }
 
 
@@ -1082,11 +1089,183 @@ def _query_ap10_mutation_confusion(conn: sqlite3.Connection) -> list[dict[str, A
     return violations
 
 
+def _query_ap11_work_contracts(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-11: Poorly scoped work contracts — L2 execution without stamps_work_contract."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT DISTINCT n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE n.layer = 'L2' "
+        "  AND e.relation_type IN ('resolves_callsite', 'invokes_provider') "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 WHERE e2.relation_type = 'stamps_work_contract'"
+        "  )",
+    ).fetchall()
+    for adg_name, resolved_path in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} (L2) executes without stamps_work_contract",
+            }
+        )
+    return violations
+
+
+def _query_ap12_prompt_scatter(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-12: Prompt scatter — modules generating >3 prompts without reuse."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT n.adg_name, n.resolved_path, COUNT(*) as cnt "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type = 'generates_prompt' "
+        "GROUP BY e.src_id "
+        "HAVING cnt > 3",
+    ).fetchall()
+    for adg_name, resolved_path, cnt in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} generates {cnt} prompts (>3 threshold)",
+            }
+        )
+    return violations
+
+
+def _query_ap13_retry_no_exit(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-13: Retry/heal without clear exit criteria — orchestrates_healing without seal."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT DISTINCT n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type = 'orchestrates_healing' "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e2.src_id FROM edges e2 "
+        "    WHERE e2.relation_type IN ('packages_execution_trace', 'applies_hmac_seal')"
+        "  )",
+    ).fetchall()
+    for adg_name, resolved_path in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} orchestrates healing without execution trace seal",
+            }
+        )
+    return violations
+
+
+def _query_ap14_retrieval_no_evidence(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-14: Retrieval without evidence contract — pulls_context without guardrail."""
+    violations: list[dict[str, Any]] = []
+    rows = conn.execute(
+        "SELECT DISTINCT n.adg_name, n.resolved_path "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        "WHERE e.relation_type IN ('retrieves_via', 'pulls_context') "
+        "  AND e.src_id IN ("
+        "    SELECT e2.src_id FROM edges e2 WHERE e2.relation_type = 'invokes_provider'"
+        "  ) "
+        "  AND e.src_id NOT IN ("
+        "    SELECT e3.src_id FROM edges e3 WHERE e3.relation_type = 'applies_guardrail'"
+        "  )",
+    ).fetchall()
+    for adg_name, resolved_path in rows:
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": f"{adg_name} retrieves context and invokes provider without guardrail",
+            }
+        )
+    return violations
+
+
+def _query_ap15_agent_tool_ratio(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-15: Agent count outrunning tool surfaces — ratio >3:1."""
+    violations: list[dict[str, Any]] = []
+    agent_count = conn.execute(
+        "SELECT COUNT(DISTINCT dst_id) FROM edges WHERE relation_type IN ('routes_to_agent', 'dispatches_agent')",
+    ).fetchone()[0]
+    tool_count = conn.execute(
+        "SELECT COUNT(DISTINCT dst_id) FROM edges WHERE relation_type = 'invokes_provider'",
+    ).fetchone()[0]
+    if tool_count > 0 and agent_count / tool_count > 3:
+        violations.append(
+            {
+                "source_file": "",
+                "line_no": 0,
+                "evidence": f"Agent/tool ratio {agent_count}:{tool_count} exceeds 3:1 threshold",
+            }
+        )
+    elif tool_count == 0 and agent_count > 0:
+        violations.append(
+            {
+                "source_file": "",
+                "line_no": 0,
+                "evidence": f"{agent_count} agents with 0 tool surfaces",
+            }
+        )
+    return violations
+
+
+def _query_ap16_dormant_infra(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-16: Dormant infrastructure — infra modules with <3 incoming imports."""
+    violations: list[dict[str, Any]] = []
+    infra_nodes = conn.execute(
+        "SELECT id, adg_name, resolved_path FROM nodes "
+        "WHERE LOWER(adg_name) LIKE '%redis%' "
+        "   OR LOWER(adg_name) LIKE '%cache%' "
+        "   OR LOWER(adg_name) LIKE '%vector%' "
+        "   OR LOWER(adg_name) LIKE '%embedding%' "
+        "   OR LOWER(adg_name) LIKE '%eval%'",
+    ).fetchall()
+    for nid, adg_name, resolved_path in infra_nodes:
+        import_count = conn.execute(
+            "SELECT COUNT(*) FROM edges WHERE dst_id = ? AND relation_type = 'imports'",
+            (nid,),
+        ).fetchone()[0]
+        if import_count < 3:
+            violations.append(
+                {
+                    "source_file": resolved_path or "",
+                    "line_no": 0,
+                    "evidence": f"{adg_name} has only {import_count} incoming imports (<3 threshold)",
+                }
+            )
+    return violations
+
+
+_GENERIC_EDGE_KINDS = {"call", "read", "write"}
+
+
+def _query_ap17_semantic_precision(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-17: Agentic semantic precision gaps — generic edge_kind where domain-specific exists."""
+    violations: list[dict[str, Any]] = []
+    placeholders = ",".join(["?"] * len(_GENERIC_EDGE_KINDS))
+    rows = conn.execute(
+        "SELECT e.source_file, e.line_no, e.edge_kind, e.relation_type, n.adg_name "
+        "FROM edges e JOIN nodes n ON e.src_id = n.id "
+        f"WHERE e.edge_kind IN ({placeholders}) "
+        "  AND e.relation_type NOT IN ('imports', 'violates')",
+        list(_GENERIC_EDGE_KINDS),
+    ).fetchall()
+    for src_file, line_no, edge_kind, relation_type, adg_name in rows:
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{adg_name} uses generic edge_kind '{edge_kind}' for {relation_type}",
+            }
+        )
+    return violations
+
+
 def _check_agentic_antipatterns(
     sqlite_path: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Run agentic anti-pattern checks (AP-1 through AP-10, more in future waves).
+    """Run agentic anti-pattern checks (AP-1 through AP-17).
 
     In audit mode (default), violations are logged and inserted into the violations table
     but do NOT cause sys.exit. When audit_mode is False for a check, violations cause sys.exit(1).
@@ -1127,7 +1306,14 @@ def _check_agentic_antipatterns(
                         pass
 
             ap_num = int(check_id.split("-")[1]) if "-" in check_id else 0
-            severity = "P0" if ap_num <= 4 else "P1"
+            if ap_num <= 4:
+                severity = "P0"
+            elif ap_num <= 10:
+                severity = "P1"
+            elif ap_num <= 14:
+                severity = "P2"
+            else:
+                severity = "P3"
 
             for v in violations:
                 _insert_sc_ap_violation(
