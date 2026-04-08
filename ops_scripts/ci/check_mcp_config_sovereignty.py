@@ -21,6 +21,10 @@ import json
 import sys
 from pathlib import Path
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -210,7 +214,7 @@ def validate_mcp_sovereignty(config_path: Path) -> list[str]:
         with open(config_path, encoding="utf-8") as fh:
             raw = fh.read()
         config = json.loads(raw)
-    except (OSError, json.JSONDecodeError) as exc:    # guardian: Add error context logging
+    except (OSError, json.JSONDecodeError) as exc:  # guardian: Add error context logging
         violations.append(f"PARSE_ERROR: cannot read {config_path}: {exc}")
         return violations
 

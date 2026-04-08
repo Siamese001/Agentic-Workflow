@@ -30,10 +30,15 @@ import warnings
 from pathlib import Path
 from typing import Any
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 # Try to import ADG Query Bridge for ADG-powered dedup validation
 try:
     sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools" / "adg"))
     from adg_query_bridge import ADGQueryBridge, Node
+
     ADG_AVAILABLE = True
 except ImportError as e:
     warnings.warn(f"ADG Query Bridge unavailable, falling back to regex: {e}")
@@ -173,7 +178,9 @@ def _check_agents_with_adg(diff_content: str) -> list[str]:
                 # Check if similar agent exists in ADG
                 similar_agents = _find_similar_agents_in_adg(bridge, class_name)
                 if similar_agents:
-                    violations.append(f"Potential duplicate agent '{class_name}' - similar to: {', '.join(similar_agents)}")
+                    violations.append(
+                        f"Potential duplicate agent '{class_name}' - similar to: {', '.join(similar_agents)}"
+                    )
                 else:
                     violations.append(f"New agent '{class_name}' - no ADG duplicates found")
 
@@ -192,9 +199,11 @@ def _find_similar_agents_in_adg(bridge: ADGQueryBridge, agent_name: str) -> list
         for layer in ["L1", "L2", "L3", "L4", "L5"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if ("Agent" in node.label and
-                    agent_name.lower() in node.label.lower() or
-                    node.label.lower() in agent_name.lower()):
+                if (
+                    "Agent" in node.label
+                    and agent_name.lower() in node.label.lower()
+                    or node.label.lower() in agent_name.lower()
+                ):
                     similar.append(f"{node.label} ({node.layer})")
 
         # Remove exact matches (same name)
@@ -250,7 +259,9 @@ def _check_mixins_with_adg(diff_content: str) -> list[str]:
                 # Check if similar mixin exists in ADG
                 similar_mixins = _find_similar_mixins_in_adg(bridge, class_name)
                 if similar_mixins:
-                    violations.append(f"Potential duplicate mixin '{class_name}' - similar to: {', '.join(similar_mixins)}")
+                    violations.append(
+                        f"Potential duplicate mixin '{class_name}' - similar to: {', '.join(similar_mixins)}"
+                    )
                 else:
                     violations.append(f"New mixin '{class_name}' - no ADG duplicates found")
 
@@ -269,9 +280,9 @@ def _find_similar_mixins_in_adg(bridge: ADGQueryBridge, mixin_name: str) -> list
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if ("Mixin" in node.label and
-                    (mixin_name.lower() in node.label.lower() or
-                     node.label.lower() in mixin_name.lower())):
+                if "Mixin" in node.label and (
+                    mixin_name.lower() in node.label.lower() or node.label.lower() in mixin_name.lower()
+                ):
                     similar.append(f"{node.label} ({node.layer})")
 
         # Remove exact matches
@@ -327,7 +338,9 @@ def _check_utilities_with_adg(diff_content: str) -> list[str]:
                 # Check if similar utility exists in ADG
                 similar_utilities = _find_similar_utilities_in_adg(bridge, func_name)
                 if similar_utilities:
-                    violations.append(f"Potential duplicate utility '{func_name}' - similar to: {', '.join(similar_utilities)}")
+                    violations.append(
+                        f"Potential duplicate utility '{func_name}' - similar to: {', '.join(similar_utilities)}"
+                    )
                 else:
                     violations.append(f"New utility '{func_name}' - no ADG duplicates found")
 
@@ -346,9 +359,11 @@ def _find_similar_utilities_in_adg(bridge: ADGQueryBridge, utility_name: str) ->
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if ("utility" in node.label.lower() and
-                    utility_name.lower() in node.label.lower() or
-                    node.label.lower() in utility_name.lower()):
+                if (
+                    "utility" in node.label.lower()
+                    and utility_name.lower() in node.label.lower()
+                    or node.label.lower() in utility_name.lower()
+                ):
                     similar.append(f"{node.label} ({node.layer})")
 
         # Remove exact matches

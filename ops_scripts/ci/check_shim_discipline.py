@@ -27,6 +27,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
@@ -90,11 +94,7 @@ def _get_staged_files() -> dict[str, list[str]]:
         check=False,
     )
     if result.returncode == 0:
-        files["added"] = [
-            line.strip()
-            for line in result.stdout.splitlines()
-            if line.strip().endswith(".py")
-        ]
+        files["added"] = [line.strip() for line in result.stdout.splitlines() if line.strip().endswith(".py")]
 
     # Renamed files
     result = subprocess.run(
@@ -120,9 +120,7 @@ def _get_staged_files() -> dict[str, list[str]]:
     )
     if result.returncode == 0:
         files["deleted"] = [
-            line.strip()
-            for line in result.stdout.splitlines()
-            if line.strip().endswith(".py")
+            line.strip() for line in result.stdout.splitlines() if line.strip().endswith(".py")
         ]
 
     return files
@@ -215,8 +213,7 @@ def main() -> int:
         old_shim_path = old_path.replace(".py", "_shim.py")
         if old_shim_path not in staged_files["added"]:
             violations.append(
-                f"Module moved without shim: {old_path} -> {new_path}\n"
-                f"  Expected shim at: {old_shim_path}",
+                f"Module moved without shim: {old_path} -> {new_path}\n  Expected shim at: {old_shim_path}",
             )
 
     # Check for deleted canonical modules without shims
