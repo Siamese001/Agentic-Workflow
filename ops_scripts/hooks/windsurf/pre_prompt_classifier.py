@@ -23,24 +23,62 @@ FAIL_POLICY = "closed_for_t2t3_adg"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 T3_KEYWORDS = {
-    "architecture", "architectural", "cross-layer", "refactor", "modularize",
-    "wave", "governance", "tier", "migration", "extract", "consolidate",
-    "redesign", "restructure", "multi-file", "blast radius",
+    "architecture",
+    "architectural",
+    "cross-layer",
+    "refactor",
+    "modularize",
+    "wave",
+    "governance",
+    "tier",
+    "migration",
+    "extract",
+    "consolidate",
+    "redesign",
+    "restructure",
+    "multi-file",
+    "blast radius",
 }
 
 T2_KEYWORDS = {
-    "update", "modify", "fix", "debug", "add test", "change", "rename",
-    "move", "edit", "patch", "implement", "create", "write",
+    "update",
+    "modify",
+    "fix",
+    "debug",
+    "add test",
+    "change",
+    "rename",
+    "move",
+    "edit",
+    "patch",
+    "implement",
+    "create",
+    "write",
 }
 
 T1_KEYWORDS = {
-    "typo", "docstring", "comment", "whitespace", "format", "rename variable",
-    "single line", "one line", "trivial",
+    "typo",
+    "docstring",
+    "comment",
+    "whitespace",
+    "format",
+    "rename variable",
+    "single line",
+    "one line",
+    "trivial",
 }
 
 T0_KEYWORDS = {
-    "explain", "what is", "how does", "describe", "list", "show me",
-    "review", "summarize", "tell me", "what are",
+    "explain",
+    "what is",
+    "how does",
+    "describe",
+    "list",
+    "show me",
+    "review",
+    "summarize",
+    "tell me",
+    "what are",
 }
 
 
@@ -146,11 +184,12 @@ def main() -> int:
             )
         if check_adg_health_red(REPO_ROOT):
             print(
-                f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but adg_sqlite MCP is red. "
+                f"[pre_prompt_classifier] WARNING: {tier} prompt detected but adg_sqlite MCP is red. "
                 "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
                 file=sys.stderr,
             )
-            return 2
+            # Advisory only — classifier never blocks (plan Phase 1.4, H-6 policy).
+            # Hard ADG health enforcement lives in pre_mcp_gate.py.
 
     return 0
 

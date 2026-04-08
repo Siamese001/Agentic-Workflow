@@ -24,21 +24,23 @@ def _print_defect_table(
         try:
             with sqlite3.connect(str(sqlite_path)) as _conn:
                 _violation_rows = _conn.execute(
-                    "SELECT source_file, line_no FROM edges WHERE relation_type='violates'"
+                    "SELECT source_file, line_no FROM edges WHERE relation_type='violates'",
                 ).fetchall()
             for _src_file, _line_no in _violation_rows:
                 try:
                     _src_path = ROOT / _src_file
                     if _src_path.exists() and _line_no and _line_no > 0:
                         _file_lines = _src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-                        _check = _file_lines[max(0, _line_no - 2):_line_no]
+                        _check = _file_lines[max(0, _line_no - 2) : _line_no]
                         if not any("guardian: allow-layer-violation" in _ln for _ln in _check):
                             p1_count += 1
                     else:
                         p1_count += 1
                 except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure counts violation as unapproved
                     p1_count += 1
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to 0
+        except (
+            Exception
+        ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to 0
             pass
 
     p2_antipattern = 0
@@ -54,7 +56,9 @@ def _print_defect_table(
                 p2_antipattern = _sev_map.get("HIGH", 0)
                 p3_antipattern = _sev_map.get("MEDIUM", 0)
                 p4_antipattern = _sev_map.get("LOW", 0)
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
+        except (
+            Exception
+        ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
             pass
 
     _p2_ratchet_file = ROOT / "artifacts" / "adg" / "p2_ratchet.json"
@@ -62,8 +66,9 @@ def _print_defect_table(
     try:
         if _p2_ratchet_file.exists():
             _p2_data = json.loads(_p2_ratchet_file.read_text(encoding="utf-8"))
-            _p2_ceiling = _p2_data.get("high_severity_ceiling",
-                          _p2_data.get("p2_antipattern_ceiling", p2_antipattern))
+            _p2_ceiling = _p2_data.get(
+                "high_severity_ceiling", _p2_data.get("p2_antipattern_ceiling", p2_antipattern)
+            )
     except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure shows raw count
         pass
     _p2_delta = max(0, p2_antipattern - _p2_ceiling)
@@ -102,8 +107,17 @@ def _print_defect_table(
     if sqlite_path is not None and sqlite_path.exists():
         try:
             _prod_layers = (
-                "L0", "L1", "L2", "L3", "L4", "L5", "L6",
-                "L_SHARED", "L_SL", "L_PG", "L_RUNTIME",
+                "L0",
+                "L1",
+                "L2",
+                "L3",
+                "L4",
+                "L5",
+                "L6",
+                "L_SHARED",
+                "L_SL",
+                "L_PG",
+                "L_RUNTIME",
             )
             with sqlite3.connect(str(sqlite_path)) as _cc:
                 _p1_layer_pairs = _cc.execute("""
@@ -115,54 +129,64 @@ def _print_defect_table(
                     GROUP BY 1,2 ORDER BY 3 DESC
                 """).fetchall()
                 _p1_cycle_count = _cc.execute(
-                    "SELECT COUNT(*) FROM edges WHERE relation_type='in_cycle'"
+                    "SELECT COUNT(*) FROM edges WHERE relation_type='in_cycle'",
                 ).fetchone()[0]
                 _p1_dynamic_count = _cc.execute(
-                    "SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'"
+                    "SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'",
                 ).fetchone()[0]
 
                 for _sev in ("HIGH", "MEDIUM", "LOW"):
-                    _cat_data[_sev] = _cc.execute(f"""
+                    _cat_data[_sev] = _cc.execute(
+                        f"""
                         SELECT e.edge_kind, COUNT(*) cnt,
-                               SUM(CASE WHEN n.layer IN ({','.join('?' for _ in _prod_layers)})
+                               SUM(CASE WHEN n.layer IN ({",".join("?" for _ in _prod_layers)})
                                         THEN 1 ELSE 0 END) prod_cnt
                         FROM violations v
                         JOIN edges e ON v.edge_id=e.id
                         JOIN nodes n ON e.src_id=n.id
                         WHERE v.severity=? AND v.category='antipattern'
                         GROUP BY e.edge_kind ORDER BY cnt DESC
-                    """, (*_prod_layers, _sev)).fetchall()
+                    """,
+                        (*_prod_layers, _sev),
+                    ).fetchall()
                     _sev_files[_sev] = _cc.execute(
                         "SELECT COUNT(DISTINCT e.source_file) FROM violations v "
                         "JOIN edges e ON v.edge_id=e.id "
-                        f"WHERE v.severity='{_sev}' AND v.category='antipattern'"
+                        f"WHERE v.severity='{_sev}' AND v.category='antipattern'",
                     ).fetchone()[0]
                     _r = _cc.execute(
                         "SELECT n.layer FROM violations v JOIN edges e ON v.edge_id=e.id "
                         "JOIN nodes n ON e.src_id=n.id "
                         f"WHERE v.severity='{_sev}' AND v.category='antipattern' "
-                        "AND n.layer IS NOT NULL GROUP BY n.layer ORDER BY COUNT(*) DESC LIMIT 1"
+                        "AND n.layer IS NOT NULL GROUP BY n.layer ORDER BY COUNT(*) DESC LIMIT 1",
                     ).fetchone()
                     _sev_top_layer[_sev] = _r[0] if _r else "N/A"
                     _total_sev = _cc.execute(
-                        f"SELECT COUNT(*) FROM violations WHERE severity='{_sev}' AND category='antipattern'"
+                        f"SELECT COUNT(*) FROM violations WHERE severity='{_sev}' AND category='antipattern'",
                     ).fetchone()[0]
-                    _top10 = _cc.execute(
-                        "SELECT SUM(c) FROM (SELECT COUNT(*) c FROM violations v "
-                        "JOIN edges e ON v.edge_id=e.id "
-                        f"WHERE v.severity='{_sev}' AND v.category='antipattern' "
-                        "GROUP BY e.source_file ORDER BY c DESC LIMIT 10)"
-                    ).fetchone()[0] or 0
+                    _top10 = (
+                        _cc.execute(
+                            "SELECT SUM(c) FROM (SELECT COUNT(*) c FROM violations v "
+                            "JOIN edges e ON v.edge_id=e.id "
+                            f"WHERE v.severity='{_sev}' AND v.category='antipattern' "
+                            "GROUP BY e.source_file ORDER BY c DESC LIMIT 10)",
+                        ).fetchone()[0]
+                        or 0
+                    )
                     _hotspot_pct[_sev] = (_top10 * 100 // _total_sev) if _total_sev else 0
 
                 _meta_row = _cc.execute(
-                    "SELECT value FROM meta WHERE key='guardian_exemptions'"
+                    "SELECT value FROM meta WHERE key='guardian_exemptions'",
                 ).fetchone()
                 _guardian_total = int(_meta_row[0]) if _meta_row else 0
 
-                _high_kinds = ('broad_exception_catch', 'silent_exception_swallow',
-                               'log_and_swallow', 'return_none_swallow')
-                _prod_prefixes = ('agentic_core/', 'system_learning/')
+                _high_kinds = (
+                    "broad_exception_catch",
+                    "silent_exception_swallow",
+                    "log_and_swallow",
+                    "return_none_swallow",
+                )
+                _prod_prefixes = ("agentic_core/", "system_learning/")
                 _exempt_rows = _cc.execute("""
                     SELECT e.edge_kind, e.source_file
                     FROM edges e
@@ -181,13 +205,20 @@ def _print_defect_table(
                         _guardian_by_kind[_s] = {}
                     _guardian_by_kind[_s][_ek] = _guardian_by_kind[_s].get(_ek, 0) + 1
 
-                _total_prod_nodes = _cc.execute(
-                    "SELECT COUNT(*) FROM nodes WHERE layer IN (%s)"
-                    % ",".join("?" for _ in _prod_layers), _prod_layers
-                ).fetchone()[0] or 1
-                _total_all_nodes = _cc.execute(
-                    "SELECT COUNT(*) FROM nodes WHERE layer IS NOT NULL AND layer != ''"
-                ).fetchone()[0] or 1
+                _total_prod_nodes = (
+                    _cc.execute(
+                        "SELECT COUNT(*) FROM nodes WHERE layer IN (%s)"
+                        % ",".join("?" for _ in _prod_layers),
+                        _prod_layers,
+                    ).fetchone()[0]
+                    or 1
+                )
+                _total_all_nodes = (
+                    _cc.execute(
+                        "SELECT COUNT(*) FROM nodes WHERE layer IS NOT NULL AND layer != ''",
+                    ).fetchone()[0]
+                    or 1
+                )
                 _sev_counts = {"HIGH": p2_antipattern, "MEDIUM": p3_antipattern, "LOW": p4_antipattern}
                 for _sk, _sc in _sev_counts.items():
                     _base = _total_prod_nodes if _sk == "HIGH" else _total_all_nodes
@@ -205,7 +236,8 @@ def _print_defect_table(
                     _fan_in_map[_fip] = _fic
 
                 for _sk in ("HIGH", "MEDIUM", "LOW"):
-                    _hs_rows = _cc.execute("""
+                    _hs_rows = _cc.execute(
+                        """
                         SELECT e_ap.source_file,
                                COUNT(DISTINCT e_ap.id) ap_cnt
                         FROM edges e_ap
@@ -214,7 +246,9 @@ def _print_defect_table(
                         GROUP BY 1
                         ORDER BY ap_cnt DESC
                         LIMIT 20
-                    """, (_sk,)).fetchall()
+                    """,
+                        (_sk,),
+                    ).fetchall()
                     _best = None
                     for _hsf, _hsa in _hs_rows:
                         _hsfi = _fan_in_map.get(_hsf, 0)
@@ -225,7 +259,7 @@ def _print_defect_table(
                     if _hs_row:
                         _hf, _ha, _hfi = _hs_row
                         _short = _hf.rsplit("/", 1)[-1] if "/" in _hf else _hf
-                        _risk_tag = f" [{_ha}x{_hfi}={_ha*_hfi}]"
+                        _risk_tag = f" [{_ha}x{_hfi}={_ha * _hfi}]"
                         _max_name = 32 - len(_risk_tag)
                         _trunc = _short[:_max_name]
                         _sev_top_hotspot[_sk] = f"{_trunc}{_risk_tag}"
@@ -259,7 +293,7 @@ def _print_defect_table(
         except Exception:  # guardian: allow-silent-swallow -- non-critical: category query failure
             pass
 
-    _H   = "+-----+------------------------------+-------+-------+-------+-------+-------+---------+----------------------------------+"
+    _H = "+-----+------------------------------+-------+-------+-------+-------+-------+---------+----------------------------------+"
     _HDR = "| P#  | Description / Category       | Gross | Guard |   Net | Files | Prod% | Density | Top Hotspot (AP\u00d7FI)             |"
     print("\n[ADG] Defect Summary:")
     print(_H)
@@ -270,14 +304,24 @@ def _print_defect_table(
     _p1_viol = sum(c for _, _, c in _p1_layer_pairs) if _p1_layer_pairs else 0
     _p1_exempt = len(_violation_rows) - p1_count if _violation_rows else 0
     _p1_gross = p1_count + _p1_exempt
-    print(f"| P1* | CRITICAL (blocks on any > 0) | {_p1_gross:5} | {_p1_exempt:5} | {p1_count:5} | {'':5} | {'':5} | {'':7} | {'':32} |")
+    print(
+        f"| P1* | CRITICAL (blocks on any > 0) | {_p1_gross:5} | {_p1_exempt:5} | {p1_count:5} | {'':5} | {'':5} | {'':7} | {'':32} |"
+    )
     _viol_label = f"{_p1_viol}" if _p1_viol else "0"
-    print(f"|     |  layer_violation              | {_viol_label:>5} | {_p1_exempt:5} | {p1_count:5} |       |       |         |                                  |")
+    print(
+        f"|     |  layer_violation              | {_viol_label:>5} | {_p1_exempt:5} | {p1_count:5} |       |       |         |                                  |"
+    )
     for _src_l, _dst_l, _cnt in _p1_layer_pairs:
         _pair = f"    {_src_l or '?'} -> {_dst_l or '?'}"
-        print(f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |         |                                  |")
-    print(f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |       |       |         |                                  |")
-    print(f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |       |       |         |                                  |")
+        print(
+            f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |         |                                  |"
+        )
+    print(
+        f"|     |  circular_import              | {_p1_cycle_count:5} |       |       |       |       |         |                                  |"
+    )
+    print(
+        f"|     |  dynamic_execution            | {_p1_dynamic_count:5} |       |       |       |       |         |                                  |"
+    )
     print(_H)
 
     def _print_sev_block(label, p_tag, count, sev_key, ceiling, gate_sym):
@@ -295,16 +339,22 @@ def _print_defect_table(
             _dv = max(0, count - ceiling)
             _delta_str = f" ({_dv:+d})" if _dv != 0 else " (=)"
         _tag = f"{p_tag}{gate_sym}"
-        print(f"| {_tag:<4}| {label:<29}| {_gross:5} | {_guard_sev:5} | {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_dens:>5}/c | {_hs:<32} |")
+        print(
+            f"| {_tag:<4}| {label:<29}| {_gross:5} | {_guard_sev:5} | {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_dens:>5}/c | {_hs:<32} |"
+        )
         for _kind, _cnt, _prod in _cats:
             _gk = _guard_kinds.get(_kind, 0)
             _gross_k = _cnt + _gk
             _share = f"{_gross_k * 100 // _gross}%" if _gross else "  "
             _ppct = f"{_prod * 100 // _cnt}%" if _cnt else "  "
-            print(f"|     |  {_kind:<28}  | {_gross_k:5} | {_gk:5} | {_cnt:5} | {_share:>5} | {_ppct:>5} |         |                                  |")
+            print(
+                f"|     |  {_kind:<28}  | {_gross_k:5} | {_gk:5} | {_cnt:5} | {_share:>5} | {_ppct:>5} |         |                                  |"
+            )
         _hp = _hotspot_pct.get(sev_key, 0)
         if _hp > 0:
-            print(f"|     |  (top-10 files = {_hp}% of net)   |       |       |       |       |       |         |                                  |")
+            print(
+                f"|     |  (top-10 files = {_hp}% of net)   |       |       |       |       |       |         |                                  |"
+            )
         print(_H)
 
     _p2_gate_sym = "*" if _p2_delta > 0 else "^"
@@ -318,15 +368,21 @@ def _print_defect_table(
     if semantic_warnings:
         _sw = len(semantic_warnings)
         _pct = f"{_sw * 100 // p4_count}%" if p4_count else "  "
-        print(f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |         |                                  |")
+        print(
+            f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |         |                                  |"
+        )
         print(_H)
 
     _total_gross = total + _guardian_total
-    print(f"| TOT | ALL defects                  | {_total_gross:5} | {_guardian_total:5} | {total:5} |       |       |         |                                  |")
+    print(
+        f"| TOT | ALL defects                  | {_total_gross:5} | {_guardian_total:5} | {total:5} |       |       |         |                                  |"
+    )
     print(_H)
 
     print("  Gross=total edges  Guard=exempted  Net=actionable  Density=APs per 100 nodes (/c=per centum)")
-    print("  Prod%=production layers (L0-L6+shared)  Top Hotspot=riskiest file (antipattern_count \u00d7 fan_in)")
+    print(
+        "  Prod%=production layers (L0-L6+shared)  Top Hotspot=riskiest file (antipattern_count \u00d7 fan_in)"
+    )
     print("  Gate: *=BLOCKS (halts ADG)  ^=ratchet (blocks on increase)  ~=watch only")
 
     _p2_ratchet_label = "stable" if _p2_delta == 0 else "REGRESSION"
@@ -335,6 +391,28 @@ def _print_defect_table(
         _p3_label = "stable" if _p3_delta_val == 0 else "REGRESSION"
         print(f"[ADG] P3 ratchet: {p3_count}/{_p3_ceiling} ({_p3_delta_val:+d} \u2014 {_p3_label})")
 
+    _burndown: dict = {
+        "schema_version": "1.0",
+        "P0_layer_violations": p1_count,
+        "P1_anti_patterns": p2_count,
+        "P2_anti_patterns": p3_count,
+        "P3_style": p4_count,
+        "p0_clean": p1_count == 0,
+        "p1_no_ratchet": _p2_delta == 0,
+        "structural_metrics": {
+            "cycle_count": _p1_cycle_count,
+            "dynamic_exec_count": _p1_dynamic_count,
+            "guardian_exemptions": _guardian_total,
+        },
+    }
+    _burndown_path = ROOT / "artifacts" / "adg" / "adg_burndown_table.json"
+    try:
+        _burndown_path.parent.mkdir(parents=True, exist_ok=True)
+        _burndown_path.write_text(json.dumps(_burndown, indent=2, sort_keys=True), encoding="utf-8")
+        print(f"[ADG] Burndown artifact: {_burndown_path.name}")
+    except OSError as e:
+        print(f"[ADG] WARNING: Could not write burndown artifact: {e}")
+
     if _refactor_top5:
         print("\n[ADG] Refactoring Priority (risk = antipatterns \u00d7 fan-in):")
         _RH = "+------+------+------+----------+-----------------------------------------------------+"
@@ -342,7 +420,7 @@ def _print_defect_table(
         print("| Risk |   AP | FanI | Layer    | File                                                |")
         print(_RH)
         for _risk, _rf, _rl, _ra, _rfi in _refactor_top5:
-            _rf_short = _rf if len(_rf) <= 51 else "..." + _rf[-(51-3):]
+            _rf_short = _rf if len(_rf) <= 51 else "..." + _rf[-(51 - 3) :]
             print(f"| {_risk:4} | {_ra:4} | {_rfi:4} | {_rl or '?':<8} | {_rf_short:<51} |")
         print(_RH)
         print("  AP=antipattern count in file  FanI=distinct importers/callers  Risk=AP\u00d7FanI")
@@ -370,6 +448,7 @@ def _generate_standardized_reports(
     sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
     if not sqlite_path.exists():
         from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+
         write_all_artifacts(artifact, out_dir=adg_dir, ts=ts)
 
     layer_report: dict[str, object] = {
@@ -511,7 +590,12 @@ def _generate_standardized_reports(
     }
 
     determinism_proof = _artifact_determinism_probe(
-        adg_dir, ts, artifact, result, repo_root, enable_determinism_probe,
+        adg_dir,
+        ts,
+        artifact,
+        result,
+        repo_root,
+        enable_determinism_probe,
     )
     determinism_report: dict[str, object] = {
         "timestamp": ts,
@@ -739,7 +823,8 @@ def _generate_standardized_reports(
                 "denominator": max(result.manifest.discovered_module_count, 1),
                 "ratio": _ratio(result.manifest.parsed_module_count, result.manifest.discovered_module_count),
                 "threshold": 0.99,
-                "passed": _ratio(result.manifest.parsed_module_count, result.manifest.discovered_module_count) >= 0.99,
+                "passed": _ratio(result.manifest.parsed_module_count, result.manifest.discovered_module_count)
+                >= 0.99,
             },
             {
                 "id": 2,
@@ -755,15 +840,27 @@ def _generate_standardized_reports(
                 "id": 3,
                 "capability": "DETERMINISM (ARTIFACT LEVEL)",
                 "numerator": sum(
-                    1 for key in ("scanner_digest_match", "artifact_digest_match",
-                                  "node_row_digest_match", "edge_row_digest_match")
+                    1
+                    for key in (
+                        "scanner_digest_match",
+                        "artifact_digest_match",
+                        "node_row_digest_match",
+                        "edge_row_digest_match",
+                    )
                     if determinism_proof.get(key)
                 ),
                 "denominator": 4,
                 "ratio": _ratio(
-                    sum(1 for key in ("scanner_digest_match", "artifact_digest_match",
-                                      "node_row_digest_match", "edge_row_digest_match")
-                        if determinism_proof.get(key)),
+                    sum(
+                        1
+                        for key in (
+                            "scanner_digest_match",
+                            "artifact_digest_match",
+                            "node_row_digest_match",
+                            "edge_row_digest_match",
+                        )
+                        if determinism_proof.get(key)
+                    ),
                     4,
                 ),
                 "threshold": 1.0,
@@ -775,9 +872,16 @@ def _generate_standardized_reports(
                 "capability": "NODE GRANULARITY (BLOCK / EXPRESSION)",
                 "numerator": stored_edge_counts.get("decomposes_into", 0),
                 "denominator": max(result.manifest.decomposes_into_expected_count, 1),
-                "ratio": _ratio(stored_edge_counts.get("decomposes_into", 0), result.manifest.decomposes_into_expected_count),
+                "ratio": _ratio(
+                    stored_edge_counts.get("decomposes_into", 0),
+                    result.manifest.decomposes_into_expected_count,
+                ),
                 "threshold": 0.95,
-                "passed": _ratio(stored_edge_counts.get("decomposes_into", 0), result.manifest.decomposes_into_expected_count) >= 0.95,
+                "passed": _ratio(
+                    stored_edge_counts.get("decomposes_into", 0),
+                    result.manifest.decomposes_into_expected_count,
+                )
+                >= 0.95,
             },
             {
                 "id": 5,
@@ -803,25 +907,36 @@ def _generate_standardized_reports(
                 "denominator": max(result.manifest.flows_to_expected_count, 1),
                 "ratio": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count),
                 "threshold": 0.95,
-                "passed": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count) >= 0.95,
+                "passed": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count)
+                >= 0.95,
             },
             {
                 "id": 7,
                 "capability": "CONTROL FLOW",
                 "numerator": semantic_stats["controls_flow_total"],
                 "denominator": max(result.manifest.controls_flow_expected_count, 1),
-                "ratio": _ratio(semantic_stats["controls_flow_total"], result.manifest.controls_flow_expected_count),
+                "ratio": _ratio(
+                    semantic_stats["controls_flow_total"], result.manifest.controls_flow_expected_count
+                ),
                 "threshold": 0.95,
-                "passed": _ratio(semantic_stats["controls_flow_total"], result.manifest.controls_flow_expected_count) >= 0.95,
+                "passed": _ratio(
+                    semantic_stats["controls_flow_total"], result.manifest.controls_flow_expected_count
+                )
+                >= 0.95,
             },
             {
                 "id": 8,
                 "capability": "SIDE EFFECT MODELING",
                 "numerator": semantic_stats["side_effect_total"],
                 "denominator": max(result.manifest.emits_side_effect_expected_count, 1),
-                "ratio": _ratio(semantic_stats["side_effect_total"], result.manifest.emits_side_effect_expected_count),
+                "ratio": _ratio(
+                    semantic_stats["side_effect_total"], result.manifest.emits_side_effect_expected_count
+                ),
                 "threshold": 0.95,
-                "passed": _ratio(semantic_stats["side_effect_total"], result.manifest.emits_side_effect_expected_count) >= 0.95,
+                "passed": _ratio(
+                    semantic_stats["side_effect_total"], result.manifest.emits_side_effect_expected_count
+                )
+                >= 0.95,
             },
             {
                 "id": 9,
@@ -837,9 +952,14 @@ def _generate_standardized_reports(
                 "capability": "CALLSITE RESOLUTION",
                 "numerator": semantic_stats["callsite_total"],
                 "denominator": max(result.manifest.resolves_callsite_expected_count, 1),
-                "ratio": _ratio(semantic_stats["callsite_total"], result.manifest.resolves_callsite_expected_count),
+                "ratio": _ratio(
+                    semantic_stats["callsite_total"], result.manifest.resolves_callsite_expected_count
+                ),
                 "threshold": 0.95,
-                "passed": _ratio(semantic_stats["callsite_total"], result.manifest.resolves_callsite_expected_count) >= 0.95,
+                "passed": _ratio(
+                    semantic_stats["callsite_total"], result.manifest.resolves_callsite_expected_count
+                )
+                >= 0.95,
             },
             {
                 "id": 11,
@@ -855,9 +975,16 @@ def _generate_standardized_reports(
                 "capability": "TEST \u2192 EXECUTION LINKAGE",
                 "numerator": stored_edge_counts.get("tests_execution_of", 0),
                 "denominator": max(result.manifest.tests_execution_of_expected_count, 1),
-                "ratio": _ratio(stored_edge_counts.get("tests_execution_of", 0), result.manifest.tests_execution_of_expected_count),
+                "ratio": _ratio(
+                    stored_edge_counts.get("tests_execution_of", 0),
+                    result.manifest.tests_execution_of_expected_count,
+                ),
                 "threshold": 0.95,
-                "passed": _ratio(stored_edge_counts.get("tests_execution_of", 0), result.manifest.tests_execution_of_expected_count) >= 0.95,
+                "passed": _ratio(
+                    stored_edge_counts.get("tests_execution_of", 0),
+                    result.manifest.tests_execution_of_expected_count,
+                )
+                >= 0.95,
             },
             {
                 "id": 13,
@@ -887,9 +1014,8 @@ def _generate_standardized_reports(
 
     conn.close()
 
-    from tools.generate.generate_full_adg import _json_dumps  # type: ignore[attr-defined]
-
     from agentic_core.L2_execution.utils.async_file_ops import BufferedFileWriter
+    from tools.generate.generate_full_adg import _json_dumps  # type: ignore[attr-defined]
 
     reports = [
         (f"layer_coverage_report_{ts}.json", layer_report),

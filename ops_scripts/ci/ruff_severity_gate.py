@@ -56,10 +56,11 @@ def _run_ruff(select: str, extra_args: list[str], files: list[str]) -> int:
 
 
 def main() -> int:
-    # Files passed by pre-commit via stdin / positional args.
-    # pre-commit sets pass_filenames: false so we target the whole repo
-    # (ruff will respect its own exclude settings).
+    # Files passed by pre-commit via positional args (pass_filenames: true).
+    # Exit early when no Python files are staged — avoids whole-repo fallback scan.
     files: list[str] = sys.argv[1:]
+    if not files:
+        return 0
 
     # --- Pass 1: BLOCKING (P0 + P1) ---
     rc_blocking = _run_ruff(_BLOCKING_RULES, [], files)
