@@ -1,9 +1,10 @@
 ---
 name: boundary-enforcement
 description: Consolidated layer boundary and import hygiene enforcement. Replaces layer-boundary-guard, import-hygiene, and shim-discipline. Enforces layer gravity rules, import hygiene, and backward compatibility discipline.
-enforcement_layer: pre-commit
-enforcement_timing: after_work
-enforcement_type: structural
+metadata:
+  enforcement_layer: pre-commit
+  enforcement_timing: after_work
+  enforcement_type: structural
 ---
 
 # Boundary Enforcement Skill (Consolidated)

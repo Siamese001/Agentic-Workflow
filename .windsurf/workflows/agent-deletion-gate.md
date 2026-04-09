@@ -74,5 +74,5 @@ Include ALL required markers in commit message per format above.
 
 ## References
 
-- Constitutional Rule: `.windsurfrules` §1.6
+- Constitutional Rule: `.windsurf/rules/constitutional.md` §1.6
 - Pre-commit hook: `guard-agent-deletion`

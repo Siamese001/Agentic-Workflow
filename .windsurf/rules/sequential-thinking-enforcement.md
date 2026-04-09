@@ -38,7 +38,7 @@ This approach is more reliable than a pure "reasoning MCP" because each server d
 - **Test strategy** — designing test suites, coverage planning, test architecture
 - **Multi-step reasoning** — any task requiring systematic decomposition
 
-**Tier reference:** See `.windsurfrules` §0 DEFAULT ANALYSIS MODE for T2/T3 classification:
+**Tier reference:** See `.windsurf/rules/constitutional.md` §0 DEFAULT ANALYSIS MODE for T2/T3 classification:
 - **T2 — Scoped**: 2–5 files, single layer
 - **T3 — Architectural**: >5 files, cross-layer, governance, or new feature
 

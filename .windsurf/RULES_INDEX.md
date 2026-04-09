@@ -1,9 +1,9 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-04-08
+**Last Updated**: 2026-04-09
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
-> **2026-04-04 SSOT RESTRUCTURE**: `.windsurfrules` is now auto-generated from modular rule sources in `.windsurf/rules/*.md`. The preprocessor (`tools/windsurf/preprocess_rules.py`) consolidates all modular rules into a single file. Do not edit `.windsurfrules` directly — edit the source `.md` files and regenerate.
+> **2026-04-09 SSOT CLARIFICATION**: Windsurf discovers rules directly from `.windsurf/rules/*.md` (one file per rule, 12,000 char limit each). There is no preprocessor — rule files ARE the source of truth. The previously generated `.windsurfrules` aggregate has been deleted.
 
 ---
 
@@ -11,24 +11,14 @@
 
 | File | Type | Role | Editable |
 |------|------|------|----------|
-| `.windsurf/rules/*.md` | **Source** (9 files) | Modular rule definitions | ✅ YES |
-| `.windsurf/rules/_variables.yaml` | **Config** | Variable definitions for expansion | ✅ YES |
-| `.windsurf/rules/.windsurfrules` | **Generated** | Consolidated output read by Windsurf | ❌ NO (auto-generated) |
+| `.windsurf/rules/*.md` | **Source** (13 files) | Modular rule definitions — discovered directly by Windsurf | ✅ YES |
 
 ### Maintenance Workflow
 
 ```bash
-# Edit modular rules
+# Edit any rule file directly — no preprocessing step required
 vim .windsurf/rules/hitl-enforcement.md
-
-# Validate variables
-python tools/windsurf/preprocess_rules.py --validate
-
-# Regenerate consolidated file
-python tools/windsurf/preprocess_rules.py --process
-
-# Verify freshness (CI check)
-python tools/windsurf/preprocess_rules.py --check
+# Windsurf picks up changes automatically on next session
 ```
 
 ---
@@ -41,7 +31,7 @@ python tools/windsurf/preprocess_rules.py --check
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
 | **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
 | **§8.5: HITL Enforcement** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` | ✅ ENFORCED |
-| **§10.0: Wave/Micro-Wave Plan Model** | Windsurf | Before plan draft | Behavioural | `.windsurfrules` §10.0 + Constitutional Rule #13 | ✅ ENFORCED |
+| **§10.0: Wave/Micro-Wave Plan Model** | Windsurf | Before plan draft | Behavioural | `.windsurf/rules/plan-location.md` + Constitutional Rule #13 | ✅ ENFORCED |
 | **Plan Location Rule** | Pre-commit | After work | Structural | `.windsurf/rules/plan-location.md` | ✅ ENFORCED |
 
 **Notes**:
@@ -280,10 +270,11 @@ Include justification keywords in commit message:
 
 **Review Frequency**: Monthly
 **Owner**: Platform Team
-**Last Audit**: 2026-04-08
-**Next Audit**: 2026-05-08
+**Last Audit**: 2026-04-09
+**Next Audit**: 2026-05-09
 
 **Changelog**:
+- 2026-04-09: **WINDSURF DRIFT CLEANUP** — Deleted `.windsurf/rules/.windsurfrules` (90KB aggregate, not a documented Windsurf rule artifact, preprocessor archived). Deleted `.windsurf/rules/_variables.yaml` (orphaned config for archived preprocessor). Relocated `pytest-optimization.md` from `.windsurf/` root to `docs/` (no activation path at root). Flattened `.windsurf/plans/plans/` and `.windsurf/plans/tasks/` subdirs into `.windsurf/plans/` per plan-location.md SSOT. Archived `_show_diffs.py` to `tools/archive/`. Updated RULES_INDEX.md: removed dead preprocessor workflow, corrected file count (9→13), fixed `.windsurfrules` status claim. All 6 `SKILL.md` files: moved non-standard frontmatter fields (`enforcement_layer`, `enforcement_timing`, `enforcement_type`) into `metadata:` block per Agent Skills spec.
 - 2026-04-08: **POWERSHELL-BAN CI GATE FIXED** — Root cause: `check_powershell_ban.py` had 20 over-broad regex patterns (`$var`, `|pipe|`, `if(){`) generating 7,244 false-positive violations per commit, overflowing Windsurf context and causing internal error `170ba0ebe0fc4955bb7b3ae6ada485f7`. Fix: replaced with 17 precise `\bVerb-Noun\b` patterns scoped to unambiguous PS cmdlets only. Also fixed `pre_run_gate.py` which blocked running the checker itself (substring match on script filename containing "powershell"). Now 0 violations. Committed: `8c1719c99a`.
 - 2026-04-08: **MCP ROSTER CLEANUP + GLOBAL CONFIG FIXES** — Deleted 5 redundant/broken MCP servers (Playwright, Figma, Brave Search, Fetch, GitHub MCP) dropping ~50 tools. Fixed Redis MCP env vars from bash `${VAR:-default}` syntax (broken on Windows) to literal values. Removed `disabledTools: [read_file]` from filesystem MCP. Removed web allowlist restriction (all sites now accessible). Added turbo allow/deny lists and global `files.exclude` patterns.
 - 2026-04-07: **SEQUENTIAL THINKING MCP RETIRED** — Permanently removed Sequential Thinking MCP from active roster. Root causes: stdio fragility on Windows, zombie node.exe processes, opaque tool surface, no reliable timeout, architectural mismatch. Replacement: native Cascade reasoning + compositional MCP pattern. New artifacts: `.windsurf/workflows/structured-reasoning.md`, `.windsurf/skills/structured-reasoning/SKILL.md` (+ checklist, plan-template, verification-template, failure-template), `docs/mcp/sequential-thinking-replacement.md`. Updated `mcp-failure-rca.md` STEP 6 to tombstone. Updated RULES_INDEX skills table with skill #6.

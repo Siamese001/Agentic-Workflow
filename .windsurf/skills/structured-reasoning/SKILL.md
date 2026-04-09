@@ -1,9 +1,10 @@
 ---
 name: structured-reasoning
 description: Teaches Cascade how to handle complex multi-step tasks consistently using native reasoning + current MCPs. Replaces Sequential Thinking MCP. Enforces plan-first, execute-second discipline with explicit branching, revision, and evidence validation.
-enforcement_layer: windsurf
-enforcement_timing: before_work
-enforcement_type: behavioural
+metadata:
+  enforcement_layer: windsurf
+  enforcement_timing: before_work
+  enforcement_type: behavioural
 ---
 
 # Structured Reasoning Skill

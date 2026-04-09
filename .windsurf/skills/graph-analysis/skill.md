@@ -1,9 +1,10 @@
 ---
 name: graph-analysis
 description: Unified AST dependency graph analysis for tier-aware investigation, impact analysis, scope validation, and duplicate prevention. Replaces dependency-graph-analysis, scope-guard, and dedup-guard. Enforces graph-first discipline and fail-closed error handling for all T2/T3 operations.
-enforcement_layer: both
-enforcement_timing: before_work
-enforcement_type: behavioural_primary_structural_secondary
+metadata:
+  enforcement_layer: both
+  enforcement_timing: before_work
+  enforcement_type: behavioural_primary_structural_secondary
 ---
 
 # Graph Analysis Skill (Consolidated)

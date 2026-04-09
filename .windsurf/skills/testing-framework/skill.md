@@ -1,9 +1,10 @@
 ---
 name: testing-framework
 description: Consolidated testing enforcement covering test rigor, collection integrity, execution counts, and skip management. Replaces test-rigor-enforcement and pytest-integrity. Enforces constitutional testing requirements with mandatory AST dependency graph backing.
-enforcement_layer: pre-commit
-enforcement_timing: after_work
-enforcement_type: structural
+metadata:
+  enforcement_layer: pre-commit
+  enforcement_timing: after_work
+  enforcement_type: structural
 ---
 
 # Testing Framework Skill (Consolidated)

@@ -166,10 +166,10 @@ Anti-patterns create technical debt and maintenance burden. HITL approval ensure
 
 - `.pre-commit-config.yaml` - T3a hook enforces ratchet
 - `ops_scripts/ci/_adg_burndown_gate.py` - Gate implementation
-- `.windsurfrules` - Constitutional authority
+- `.windsurf/rules/constitutional.md` - Constitutional authority
 - This file - Procedural enforcement
 
 ## See Also
 
 - `docs/architecture/ADG_BURNDOWN_DISCIPLINE.md` - Full burndown strategy
-- `.windsurf/rules/.windsurfrules` - Constitutional rules
+- `.windsurf/rules/constitutional.md` - Constitutional rules

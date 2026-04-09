@@ -1,9 +1,10 @@
 ---
 name: artifact-management
 description: Consolidated artifact management including evidence capture, path validation, and progress display. Replaces evidence-bundle, ssot-write-gate, and progress-display. Enforces SSOT path validation, evidence standards, and bounded operations with progress reporting.
-enforcement_layer: pre-commit
-enforcement_timing: after_work
-enforcement_type: structural
+metadata:
+  enforcement_layer: pre-commit
+  enforcement_timing: after_work
+  enforcement_type: structural
 ---
 
 # Artifact Management Skill (Consolidated)

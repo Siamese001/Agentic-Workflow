@@ -5,7 +5,6 @@ Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
 """
 
-
 import json
 import logging
 from datetime import datetime
@@ -174,7 +173,7 @@ def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
     """Generate normalized finding ID: {validator}:{path}:{rule}:{index}.
 
     Per hostile audit Section B3: Finding IDs must be normalized and deterministic.
-    Per .windsurfrules §1.7: Identical input → identical output.
+    Per .windsurf/rules/constitutional.md §1.7: Identical input → identical output.
     """
     import uuid as _uuid  # noqa: PLC0415
 
@@ -198,13 +197,17 @@ def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
 
 
 def _write_pre_validation_json(
-    violations: list[dict], trace_id: str, territory: str, validators_used: list[str], output_dir: Path,
+    violations: list[dict],
+    trace_id: str,
+    territory: str,
+    validators_used: list[str],
+    output_dir: Path,
 ) -> None:
     """Write pre_validation.json before any healing occurs.
 
     Per hostile audit Section C2: Pre-heal state must be captured in structured artifact.
     Per hostile audit Section B3: Findings must have normalized IDs and validator provenance.
-    Per .windsurfrules §2.2: Evidence must be deterministic, ASCII-only.
+    Per .windsurf/rules/constitutional.md §2.2: Evidence must be deterministic, ASCII-only.
     """
     from datetime import timezone
 
@@ -257,7 +260,11 @@ def _write_pre_validation_json(
 
 
 def _write_post_validation_json(
-    pre_validation_path: Path, phase3_result: dict, trace_id: str, territory: str, output_dir: Path,
+    pre_validation_path: Path,
+    phase3_result: dict,
+    trace_id: str,
+    territory: str,
+    output_dir: Path,
 ) -> None:
     """Write post_validation.json after Phase 3 revalidation.
 
@@ -310,7 +317,11 @@ def _write_post_validation_json(
 
 
 def _write_run_manifest_json(
-    trace_id: str, execution_mode: str, territories: list[str], agents_executed: list[str], output_dir: Path,
+    trace_id: str,
+    execution_mode: str,
+    territories: list[str],
+    agents_executed: list[str],
+    output_dir: Path,
 ) -> None:
     """E6: Write run_manifest.json with run metadata and execution summary.
 
@@ -381,7 +392,10 @@ def _write_artifact_integrity_json(trace_id: str, output_dir: Path) -> None:
         try:
             content = artifact_path.read_bytes()
             sha256_hash = hashlib.sha256(content).hexdigest()
-            artifacts[artifact_path.name] = {"sha256": sha256_hash, "size_bytes": len(content)}    # guardian: File operations with encoding need error-specific handling
+            artifacts[artifact_path.name] = {
+                "sha256": sha256_hash,
+                "size_bytes": len(content),
+            }  # guardian: File operations with encoding need error-specific handling
         except (OSError, UnicodeDecodeError) as e:
             logger.warning(f"[ARTIFACT-INTEGRITY] Failed to hash {artifact_path.name}: {e}")
     integrity = {

@@ -27,11 +27,52 @@ We will track a single rider—the token [_bank]—as it drops down the layers, 
 
 
 ====================================================================================================================================
+                           CRITICAL SCOPE NOTE: SAME LOCAL SEQUENCE, DIFFERENT REAL-WORLD SCOPE
+====================================================================================================================================
+This toy sentence is reused ONLY to show how attention visibility differs at the token [_bank].
+It does NOT mean embedding ingestion and LLM generation usually consume the same amount of text.
+
+[ EMBEDDING / RETRIEVAL SIDE ]
+Offline ingestion works chunk-by-chunk, not corpus-all-at-once:
+
+   corpus
+     ├─> chunk_001 -> embed -> vector_001
+     ├─> chunk_002 -> embed -> vector_002
+     ├─> chunk_003 -> embed -> vector_003
+     └─> ...
+
+Rule:
+- The embedding encoder sees the FULL visible text of the CURRENT CHUNK/WINDOW.
+- It does NOT attend across the entire corpus in one forward pass.
+- Corpus-wide behavior appears later when a query vector is compared against MANY stored chunk vectors.
+
+[ GENERATION / LLM SIDE ]
+Live generation works on the CURRENT PROMPT / PREFIX:
+
+   current visible prompt/prefix (up to context window)
+      -> transformer forward pass
+      -> next-token probabilities
+      -> append chosen token
+      -> repeat
+
+Rule:
+- The LLM can read the FULL CURRENT PREFIX, which may be much larger than one sentence.
+- But generation remains CAUSAL: each token can only use left-context/self at its position.
+
+
+====================================================================================================================================
                                  DIVERGENCE POINT 1: THE RULES OF THE RIDE (DIRECTIONALITY)
 ====================================================================================================================================
 Before the drop, note that the 👁️ GUARDS have different vision rules depending on the model architecture. 
 Both parks start with the same rider construction process. The fork happens only when the guards decide what each rider is allowed to see.
 Every token occurrence gets reshaped by its OWN visible context—but *what* context it can see depends on the park.
+
+[ LOCAL MASK DEMO ONLY ]
+We now reuse the SAME local token sequence for both models ONLY to isolate one question:
+   "At the token [_bank], what positions are visible to attention?"
+
+This is a MASK / DIRECTIONALITY demonstration.
+It is NOT claiming that the embedding job and the generation job normally ingest the same overall amount of text.
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 [ ENCODER-ONLY PARK (RETRIEVAL / EMBEDDING) ] 
@@ -205,5 +246,27 @@ from everything up to that point ONLY.
 
 🌐 System Use:
    The LLM uses the context to generate the future.
+
+
+====================================================================================================================================
+                                 DECODER-ONLY GENERATION LOOP (AUTOREGRESSIVE GROWTH)
+====================================================================================================================================
+
+Step 1:
+[She] [_sat] [_by] [_the] [_bank] [_of] [_the] [_riv] [er] [.]
+   -> predict next token, e.g. [across]
+
+Step 2:
+[She] [_sat] [_by] [_the] [_bank] [_of] [_the] [_riv] [er] [.] [across]
+   -> predict next token, e.g. [the]
+
+Step 3:
+[She] [_sat] [_by] [_the] [_bank] [_of] [_the] [_riv] [er] [.] [across] [the]
+   -> predict next token, e.g. [marsh]
+
+Rule:
+- The visible prefix grows one token at a time.
+- Each new token is generated from the current frontier state.
+- Generation is iterative, not one-shot chunk embedding.
 
 *(Note on ENCODER-DECODER Models: These feature 2 Parks. Input ──► [Encoder Park] ──► (Sky Bridge Guards) ──► [Decoder Park] ──► Output. Decoders inspect encoders during generation.)*
