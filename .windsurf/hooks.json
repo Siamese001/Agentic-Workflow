@@ -62,6 +62,13 @@
         "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
       }
+    ],
+    "post_setup_worktree": [
+      {
+        "command": "python ops_scripts/hooks/windsurf/post_setup_worktree.py",
+        "working_directory": "C:/Git/Agentic-Workflow",
+        "show_output": true
+      }
     ]
   }
 }
