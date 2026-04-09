@@ -1,0 +1,671 @@
+"""Post-generation ADG enrichment: infrastructure wiring violation views.
+
+Materializes SQL views into the ADG SQLite database that detect
+infrastructure wiring violations per the ownership matrix defined in
+docs/reports/plans/infra_ownership_matrix.md.
+
+Called by generate_full_adg.py after artifact write and before Redis ingest.
+"""
+
+from __future__ import annotations
+
+import sqlite3
+from pathlib import Path
+
+# Forbidden raw infra packages
+_RAW_INFRA_PACKAGES = (
+    "redis",
+    "chromadb",
+    "sqlite3",
+    "boto3",
+    "openai",
+    "anthropic",
+    "httpx",
+    "requests",
+)
+
+# Approved adapter files (canonical wrappers that MUST import raw infra)
+# Each entry requires formal justification:
+#   redis_cache_client.py       — canonical Redis adapter (L_SHARED, cross-cutting)
+#   chroma_client.py            — canonical ChromaDB adapter (L4 state)
+#   embedding_factory.py        — canonical embedding adapter (L2/L_SHARED)
+#   infrastructure/sdks_mcps/   — provider SDK control plane (boundary layer)
+#   enhanced_http_server.py     — MCP HTTP server (process-boundary, no Python imports)
+#   sqlite_memory_store.py      — canonical SQLite memory adapter (tools)
+#   canonical_store.py          — canonical filesystem store (L4, process-boundary)
+#   sovereign_redis_orchestrator.py — L3 sovereign Redis orchestrator with MCP routing,
+#                                     fail-closed semantics, and trace emission. Approved
+#                                     per infra_ownership_matrix.md §Redis/L3.
+#   repo_signal_adapter.py      — L_APP read-only ADG/signal adapter. Uses sqlite3 for
+#                                 SELECT COUNT(*) introspection only (no mutations).
+#                                 Uses path.open("r") for line counting (read-only).
+#                                 Approved per infra_ownership_matrix.md §SQLite/L_APP.
+_APPROVED_ADAPTER_PATHS = (
+    "agentic_core/cache/redis_cache_client.py",
+    "agentic_core/L4_state/utils/client/chroma_client.py",
+    "agentic_core/embeddings/embedding_factory.py",
+    "infrastructure/sdks_mcps/__init__.py",
+    "tools/mcp/enhanced_http_server.py",
+    "tools/memory/sqlite_memory_store.py",
+    "agentic_core/L4_state/utils/memory/canonical_store.py",
+    "agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py",
+    "apps_shared/data_adapters/repo_signal_adapter.py",
+)
+
+# Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
+# rather than via Python import. These will always show zero `imports` callers in the ADG
+# and are formally exempt from P1-7 (zero-caller) and P1-8 (not-on-spine) checks.
+# Documented in infra_ownership_matrix.md §Process-Boundary Adapters.
+_PROCESS_BOUNDARY_ADAPTERS = (
+    "infrastructure/sdks_mcps/__init__.py",  # Provider SDK MCP server — launched as process
+    "tools/mcp/enhanced_http_server.py",  # HTTP MCP server — launched as process
+    "agentic_core/L4_state/utils/memory/canonical_store.py",  # Filesystem store — accessed via path
+    "agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py",  # Redis orchestrator — instantiated via registry
+    "apps_shared/data_adapters/repo_signal_adapter.py",  # Signal reader — instantiated by signal collection scripts
+)
+
+# Provider SDKs that must route through infrastructure/sdks_mcps
+_PROVIDER_SDKS = ("openai", "anthropic", "google")
+
+# Paths exempt from provider bypass check
+_PROVIDER_EXEMPT_PREFIXES = (
+    "infrastructure/sdks_mcps/",
+    "tools/",
+    "system_learning/",
+    "agentic_core/embeddings/",
+)
+
+
+def _build_infra_name_clause() -> str:
+    """Build SQL IN clause for raw infra package names."""
+    names = ", ".join(f"'{p}'" for p in _RAW_INFRA_PACKAGES)
+    return f"({names})"
+
+
+def _build_adapter_path_clause() -> str:
+    """Build SQL IN clause for approved adapter resolved_path values."""
+    paths = ", ".join(f"'{p}'" for p in _APPROVED_ADAPTER_PATHS)
+    return f"({paths})"
+
+
+def _build_process_boundary_clause() -> str:
+    """Build SQL IN clause for process-boundary adapter paths (exempt from P1 checks)."""
+    paths = ", ".join(f"'{p}'" for p in _PROCESS_BOUNDARY_ADAPTERS)
+    return f"({paths})"
+
+
+def _build_provider_name_clause() -> str:
+    """Build SQL IN clause for provider SDK names."""
+    names = ", ".join(f"'{p}'" for p in _PROVIDER_SDKS)
+    return f"({names})"
+
+
+# --- View definitions ---
+
+_VIEW_P0_APPS_DIRECT_INFRA = """
+CREATE VIEW IF NOT EXISTS v_p0_apps_direct_infra AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P0: apps_* direct infra import' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND n_dst.adg_name IN ({infra_adg_names})
+  AND n_src.resolved_path LIKE 'apps_%'
+  AND n_src.resolved_path NOT LIKE 'apps_shared/%'
+"""
+
+
+_VIEW_P0_PROVIDER_BYPASS = """
+CREATE VIEW IF NOT EXISTS v_p0_provider_bypass AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P0: provider control plane bypass' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND n_dst.adg_name IN ({provider_adg_names})
+  AND n_src.resolved_path NOT LIKE 'infrastructure/sdks_mcps/%'
+  AND n_src.resolved_path NOT LIKE 'tools/%'
+  AND n_src.resolved_path NOT LIKE 'system_learning/%'
+  AND n_src.resolved_path NOT LIKE 'agentic_core/embeddings/%'
+"""
+
+
+# P1-7: Critical infra adapter with no approved runtime callers.
+# Checks BOTH module-level imports (dst_id = module node) AND symbol-level imports
+# (dst_id = any symbol node whose resolved_path matches the adapter).
+# This fixes the false positive where callers use `from adapter import Symbol` —
+# those create an imports edge to the symbol node, not the module node.
+# Architecture rule: every approved adapter must have at least one caller in the graph.
+_VIEW_P1_ZERO_CALLER_INFRA = """
+CREATE VIEW IF NOT EXISTS v_p1_zero_caller_infra AS
+SELECT adapter_id, adapter_file, adapter_name, caller_count, violation_type
+FROM (
+    SELECT
+        n_adapter.id            AS adapter_id,
+        n_adapter.resolved_path AS adapter_file,
+        n_adapter.adg_name      AS adapter_name,
+        (
+            SELECT COUNT(*)
+            FROM edges e
+            JOIN nodes n_node ON e.dst_id = n_node.id
+            WHERE e.relation_type = 'imports'
+              AND n_node.resolved_path = n_adapter.resolved_path
+        ) AS caller_count,
+        'P1: infra adapter with no callers' AS violation_type
+    FROM nodes n_adapter
+    WHERE n_adapter.resolved_path IN {adapter_paths}
+      AND n_adapter.resolved_path NOT IN {process_boundary_paths}
+      AND n_adapter.entity_type = 'module'
+)
+WHERE caller_count = 0
+"""
+
+
+_VIEW_P2_MIXED_USAGE = """
+CREATE VIEW IF NOT EXISTS v_p2_mixed_usage AS
+SELECT
+    n_infra.adg_name AS infra_name,
+    COUNT(DISTINCT CASE
+        WHEN n_consumer.resolved_path NOT IN {adapter_paths}
+         AND n_consumer.resolved_path NOT LIKE 'tools/%'
+         AND n_consumer.resolved_path NOT LIKE 'infrastructure/%'
+        THEN n_consumer.id
+    END) AS direct_count,
+    COUNT(DISTINCT CASE
+        WHEN n_consumer.resolved_path IN {adapter_paths}
+        THEN n_consumer.id
+    END) AS wrapped_count,
+    'P2: mixed direct and wrapped usage' AS violation_type
+FROM edges e
+JOIN nodes n_consumer ON e.src_id = n_consumer.id
+JOIN nodes n_infra ON e.dst_id = n_infra.id
+WHERE e.relation_type = 'imports'
+  AND n_infra.adg_name IN ({infra_adg_names})
+GROUP BY n_infra.adg_name
+HAVING direct_count > 0 AND wrapped_count > 0
+"""
+
+
+# P0-3: Durable write bypass outside UWG
+# Only flags files that BOTH import raw infra AND have writes_to/writes_through edges.
+# This filters out plain filesystem I/O (config writes, logging, artifact generation)
+# and only surfaces true infra write bypasses (e.g. writing directly to Redis/Chroma/SQLite
+# without going through the UWG adapter chain).
+# Architecture rule: writes_to/writes_through on a file that imports raw infra = bypass.
+# Precision mechanism: t_infra_importers materialized table (injected at view creation time).
+_VIEW_P0_WRITE_BYPASS_UWG = """
+CREATE VIEW IF NOT EXISTS v_p0_write_bypass_uwg AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS writer_id,
+    n_src.resolved_path AS writer_file,
+    n_src.layer  AS writer_layer,
+    e.symbol     AS write_symbol,
+    e.line_no    AS write_line,
+    'P0: durable write bypass outside UWG' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN t_infra_importers ti ON ti.resolved_path = n_src.resolved_path
+WHERE e.relation_type IN ('writes_to', 'writes_through')
+  AND n_src.resolved_path NOT LIKE '%UniversalWrite%'
+  AND n_src.resolved_path NOT LIKE '%write_gateway%'
+  AND n_src.resolved_path NOT LIKE '%uwg%'
+  AND n_src.resolved_path NOT LIKE '%mutation_prohibition%'
+  AND n_src.resolved_path NOT LIKE 'tools/%'
+  AND n_src.resolved_path NOT LIKE 'tests/%'
+  AND n_src.resolved_path NOT LIKE 'ops_scripts/%'
+  AND n_src.resolved_path NOT LIKE 'infrastructure/%'
+  AND n_src.layer IN ('L0', 'L1', 'L3', 'L_APP')
+  AND e.symbol NOT LIKE '%_wg.write_text%'
+  AND e.symbol NOT LIKE '%assert_no_persistent_write%'
+"""
+
+
+# P0-4: L1 direct execution infra use
+_VIEW_P0_L1_DIRECT_INFRA = """
+CREATE VIEW IF NOT EXISTS v_p0_l1_direct_infra AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P0: L1 direct execution infra use' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND n_src.layer = 'L1'
+  AND n_dst.adg_name IN ({infra_adg_names})
+"""
+
+
+# P0-5: L6 live mutation path
+# L6 should be observability only — no durable infra writes except telemetry stores.
+# Only flags L6 files that BOTH import raw infra AND have writes_to/writes_through edges.
+# Observability report writes (file I/O, CSV, JSON) are NOT violations — only writes that
+# touch raw infra (Redis, SQLite, ChromaDB) without going through the UWG chain.
+# Architecture rule: L6 + infra import + durable write = live mutation violation.
+# Precision mechanism: t_infra_importers materialized table (injected at view creation time).
+_VIEW_P0_L6_MUTATION = """
+CREATE VIEW IF NOT EXISTS v_p0_l6_mutation AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS writer_id,
+    n_src.resolved_path AS writer_file,
+    n_src.layer  AS writer_layer,
+    e.symbol     AS write_symbol,
+    e.line_no    AS write_line,
+    'P0: L6 live mutation path' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN t_infra_importers ti ON ti.resolved_path = n_src.resolved_path
+WHERE e.relation_type IN ('writes_to', 'writes_through')
+  AND n_src.layer = 'L6'
+  AND n_src.resolved_path NOT LIKE '%telemetry_store%'
+  AND n_src.resolved_path NOT LIKE '%otel%'
+  AND e.symbol NOT LIKE '%_wg.write_text%'
+  AND e.symbol NOT LIKE '%assert_no_persistent_write%'
+"""
+
+
+# P0-6: L0 route authority collapsing into raw infra execution
+_VIEW_P0_L0_RAW_EXECUTION = """
+CREATE VIEW IF NOT EXISTS v_p0_l0_raw_execution AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P0: L0 raw infra execution' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND n_src.layer = 'L0'
+  AND n_dst.adg_name IN ({infra_adg_names})
+"""
+
+
+# P1-7: Critical infra has no approved runtime caller (zero incoming imports)
+# Already exists as v_p1_zero_caller_infra
+
+# P1-8: Critical infra not on sanctioned L0-L6 spine.
+# Checks that at least one SPINE caller (L0-L6) imports the adapter — checking
+# BOTH module node AND symbol nodes for the same reason as P1-7.
+# Architecture rule: every approved adapter must be reachable from L0-L6 spine.
+_VIEW_P1_NOT_ON_SPINE = """
+CREATE VIEW IF NOT EXISTS v_p1_not_on_spine AS
+SELECT adapter_id, adapter_file, adapter_layer, adapter_name, spine_caller_count, violation_type
+FROM (
+    SELECT
+        n_adapter.id            AS adapter_id,
+        n_adapter.resolved_path AS adapter_file,
+        n_adapter.layer         AS adapter_layer,
+        n_adapter.adg_name      AS adapter_name,
+        (
+            SELECT COUNT(*)
+            FROM edges e2
+            JOIN nodes n_caller ON e2.src_id = n_caller.id
+            JOIN nodes n_node   ON e2.dst_id = n_node.id
+            WHERE e2.relation_type = 'imports'
+              AND n_node.resolved_path = n_adapter.resolved_path
+              AND n_caller.layer IN ('L0','L1','L2','L3','L4','L5','L6','L_APP','L_SHARED')
+        ) AS spine_caller_count,
+        'P1: infra not on sanctioned L0-L6 spine' AS violation_type
+    FROM nodes n_adapter
+    WHERE n_adapter.resolved_path IN {adapter_paths}
+      AND n_adapter.resolved_path NOT IN {process_boundary_paths}
+      AND n_adapter.entity_type = 'module'
+)
+WHERE spine_caller_count = 0
+"""
+
+
+# P1-9: Infra imported through ad hoc / service-locator style paths
+# Detects infra imports via dynamic resolution (invokes_dynamic relation)
+_VIEW_P1_AD_HOC_IMPORTS = """
+CREATE VIEW IF NOT EXISTS v_p1_ad_hoc_imports AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P1: ad hoc / service-locator infra import' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND e.edge_kind = 'dead_import'
+  AND n_dst.adg_name IN ({infra_adg_names})
+  AND n_src.resolved_path NOT LIKE 'tests/%'
+  AND n_src.resolved_path NOT LIKE 'tools/%'
+  AND n_src.resolved_path NOT LIKE 'archives/%'
+"""
+
+
+# P1-10: Retrieval/governance/telemetry infra not wired to expected owning layer
+# Checks that infra adapters live in their declared owner layer
+_VIEW_P1_MIS_LAYERED_INFRA = """
+CREATE VIEW IF NOT EXISTS v_p1_mis_layered_infra AS
+SELECT
+    n.id           AS adapter_id,
+    n.resolved_path AS adapter_file,
+    n.layer        AS actual_layer,
+    'P1: infra adapter not in expected owner layer' AS violation_type
+FROM nodes n
+WHERE n.entity_type = 'module'
+  AND (
+    (n.resolved_path = 'agentic_core/cache/redis_cache_client.py' AND n.layer NOT IN ('L2', 'L_SHARED'))
+    OR (n.resolved_path = 'agentic_core/L4_state/utils/client/chroma_client.py' AND n.layer != 'L4')
+    OR (n.resolved_path = 'agentic_core/L4_state/utils/memory/canonical_store.py' AND n.layer != 'L4')
+    OR (n.resolved_path = 'agentic_core/embeddings/embedding_factory.py' AND n.layer NOT IN ('L2', 'L_SHARED'))
+  )
+"""
+
+
+# P2-11: Infra duplicated across multiple adapter patterns
+# Detects infra surface with more than one approved adapter
+_VIEW_P2_DUPLICATED_ADAPTERS = """
+CREATE VIEW IF NOT EXISTS v_p2_duplicated_adapters AS
+SELECT
+    n_infra.adg_name AS infra_name,
+    COUNT(DISTINCT n_adapter.resolved_path) AS adapter_count,
+    GROUP_CONCAT(DISTINCT n_adapter.resolved_path) AS adapter_files,
+    'P2: duplicated infra adapters' AS violation_type
+FROM edges e
+JOIN nodes n_adapter ON e.src_id = n_adapter.id
+JOIN nodes n_infra ON e.dst_id = n_infra.id
+WHERE e.relation_type = 'imports'
+  AND n_infra.adg_name IN ({infra_adg_names})
+  AND n_adapter.resolved_path IN {adapter_paths}
+GROUP BY n_infra.adg_name
+HAVING adapter_count > 1
+"""
+
+
+# P2-13: Dormant infra in production tree with ambiguous ownership
+# Infra adapter with zero callers AND zero outgoing infra imports
+_VIEW_P2_DORMANT_AMBIGUOUS = """
+CREATE VIEW IF NOT EXISTS v_p2_dormant_ambiguous AS
+SELECT
+    n.id           AS adapter_id,
+    n.resolved_path AS adapter_file,
+    n.layer        AS adapter_layer,
+    (SELECT COUNT(*) FROM edges e_in
+     WHERE e_in.dst_id = n.id AND e_in.relation_type = 'imports') AS incoming_count,
+    'P2: dormant infra with ambiguous ownership' AS violation_type
+FROM nodes n
+WHERE n.resolved_path IN {adapter_paths}
+  AND n.entity_type = 'module'
+  AND (SELECT COUNT(*) FROM edges e_in WHERE e_in.dst_id = n.id AND e_in.relation_type = 'imports') = 0
+  AND (SELECT COUNT(*) FROM edges e_out
+       JOIN nodes n_tgt ON e_out.dst_id = n_tgt.id
+       WHERE e_out.src_id = n.id
+         AND e_out.relation_type = 'imports'
+         AND n_tgt.identity_kind = 'external_module') = 0
+"""
+
+
+# P3-14: Isolated experimental infra outside production path
+_VIEW_P3_ISOLATED_EXPERIMENTAL = """
+CREATE VIEW IF NOT EXISTS v_p3_isolated_experimental AS
+SELECT
+    n.id           AS node_id,
+    n.resolved_path AS file_path,
+    n.layer        AS layer,
+    (SELECT COUNT(*) FROM edges e_in
+     WHERE e_in.dst_id = n.id AND e_in.relation_type = 'imports') AS incoming_count,
+    'P3: isolated experimental infra' AS violation_type
+FROM nodes n
+WHERE n.entity_type = 'module'
+  AND n.resolved_path NOT LIKE 'tests/%'
+  AND (
+    n.resolved_path LIKE '%playground%'
+    OR n.resolved_path LIKE '%experiment%'
+    OR n.resolved_path LIKE '%sandbox%'
+    OR n.resolved_path LIKE '%prototype%'
+  )
+  AND (SELECT COUNT(*) FROM edges e_in
+       WHERE e_in.dst_id = n.id AND e_in.relation_type = 'imports') = 0
+"""
+
+
+# Summary view that unions all P0 violations for easy querying
+_VIEW_INFRA_VIOLATIONS_SUMMARY = """
+CREATE VIEW IF NOT EXISTS v_infra_violations_summary AS
+SELECT violation_edge_id, consumer_file, consumer_layer, import_symbol, import_line, violation_type
+FROM v_p0_apps_direct_infra
+UNION ALL
+SELECT violation_edge_id, consumer_file, consumer_layer, import_symbol, import_line, violation_type
+FROM v_p0_provider_bypass
+UNION ALL
+SELECT violation_edge_id, writer_file AS consumer_file, writer_layer AS consumer_layer,
+       write_symbol AS import_symbol, write_line AS import_line, violation_type
+FROM v_p0_write_bypass_uwg
+UNION ALL
+SELECT violation_edge_id, consumer_file, consumer_layer, import_symbol, import_line, violation_type
+FROM v_p0_l1_direct_infra
+UNION ALL
+SELECT violation_edge_id, writer_file AS consumer_file, writer_layer AS consumer_layer,
+       write_symbol AS import_symbol, write_line AS import_line, violation_type
+FROM v_p0_l6_mutation
+UNION ALL
+SELECT violation_edge_id, consumer_file, consumer_layer, import_symbol, import_line, violation_type
+FROM v_p0_l0_raw_execution
+"""
+
+
+def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
+    """Create infrastructure wiring violation views in the ADG SQLite.
+
+    Returns a dict of view_name -> row_count for each view.
+    """
+    # First, discover the actual adg_name values for raw infra nodes
+    conn = sqlite3.connect(str(sqlite_path))
+    conn.execute("PRAGMA journal_mode=WAL")
+    cursor = conn.cursor()
+
+    # Find ADG node names for raw infra packages (they use ADG::Symbol:: prefix)
+    infra_adg_names = []
+    for pkg in _RAW_INFRA_PACKAGES:
+        cursor.execute(
+            "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+            (f"ADG::Symbol::{pkg}",),
+        )
+        rows = cursor.fetchall()
+        for (name,) in rows:
+            infra_adg_names.append(name)
+
+    # Find ADG node names for provider SDKs
+    provider_adg_names = []
+    for pkg in _PROVIDER_SDKS:
+        cursor.execute(
+            "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+            (f"ADG::Symbol::{pkg}",),
+        )
+        rows = cursor.fetchall()
+        for (name,) in rows:
+            provider_adg_names.append(name)
+
+    # Drop existing views (idempotent recreation) — order matters for dependencies
+    for vname in (
+        "v_infra_violations_summary",  # depends on P0 views, drop first
+        "v_p0_apps_direct_infra",
+        "v_p0_provider_bypass",
+        "v_p0_write_bypass_uwg",
+        "v_p0_l1_direct_infra",
+        "v_p0_l6_mutation",
+        "v_p0_l0_raw_execution",
+        "v_p1_zero_caller_infra",
+        "v_p1_not_on_spine",
+        "v_p1_ad_hoc_imports",
+        "v_p1_mis_layered_infra",
+        "v_p2_mixed_usage",
+        "v_p2_duplicated_adapters",
+        "v_p2_dormant_ambiguous",
+        "v_p3_isolated_experimental",
+    ):
+        cursor.execute(f"DROP VIEW IF EXISTS {vname}")
+
+    # Build parameterized SQL for IN clauses
+    infra_in = ", ".join(f"'{n}'" for n in infra_adg_names) if infra_adg_names else "'__none__'"
+    provider_in = ", ".join(f"'{n}'" for n in provider_adg_names) if provider_adg_names else "'__none__'"
+    adapter_paths_clause = _build_adapter_path_clause()
+    process_boundary_clause = _build_process_boundary_clause()
+
+    # Materialize t_infra_importers: the set of resolved_path values that import raw infra.
+    # This is used by P0-3 (write bypass) and P0-5 (L6 mutation) to scope those views to
+    # files that actually touch raw infra packages, excluding plain filesystem I/O.
+    # Using a real table (not a VIEW) so it can be JOINed efficiently without correlated subqueries.
+    cursor.execute("DROP TABLE IF EXISTS t_infra_importers")
+    cursor.execute(
+        """
+        CREATE TABLE t_infra_importers AS
+        SELECT DISTINCT n_src.resolved_path
+        FROM edges e
+        JOIN nodes n_src ON e.src_id = n_src.id
+        JOIN nodes n_dst ON e.dst_id = n_dst.id
+        WHERE e.relation_type = 'imports'
+          AND n_dst.adg_name IN ({infra_adg_names})
+          AND n_src.resolved_path NOT IN {adapter_paths}
+    """.format(infra_adg_names=infra_in, adapter_paths=adapter_paths_clause)
+    )
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_t_infra_importers_path ON t_infra_importers(resolved_path)"
+    )
+
+    # Create all views with actual node names
+    # P0 views
+    cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in))
+    cursor.execute(_VIEW_P0_PROVIDER_BYPASS.format(provider_adg_names=provider_in))
+    cursor.execute(_VIEW_P0_WRITE_BYPASS_UWG.format(infra_adg_names=infra_in))
+    cursor.execute(_VIEW_P0_L1_DIRECT_INFRA.format(infra_adg_names=infra_in))
+    cursor.execute(_VIEW_P0_L6_MUTATION.format(infra_adg_names=infra_in))
+    cursor.execute(_VIEW_P0_L0_RAW_EXECUTION.format(infra_adg_names=infra_in))
+    # P1 views
+    cursor.execute(
+        _VIEW_P1_ZERO_CALLER_INFRA.format(
+            adapter_paths=adapter_paths_clause, process_boundary_paths=process_boundary_clause
+        )
+    )
+    cursor.execute(
+        _VIEW_P1_NOT_ON_SPINE.format(
+            adapter_paths=adapter_paths_clause, process_boundary_paths=process_boundary_clause
+        )
+    )
+    cursor.execute(_VIEW_P1_AD_HOC_IMPORTS.format(infra_adg_names=infra_in))
+    cursor.execute(_VIEW_P1_MIS_LAYERED_INFRA)
+    # P2 views
+    cursor.execute(
+        _VIEW_P2_MIXED_USAGE.format(
+            adapter_paths=adapter_paths_clause,
+            infra_adg_names=infra_in,
+        )
+    )
+    cursor.execute(
+        _VIEW_P2_DUPLICATED_ADAPTERS.format(
+            adapter_paths=adapter_paths_clause,
+            infra_adg_names=infra_in,
+        )
+    )
+    cursor.execute(_VIEW_P2_DORMANT_AMBIGUOUS.format(adapter_paths=adapter_paths_clause))
+    # P3 view
+    cursor.execute(_VIEW_P3_ISOLATED_EXPERIMENTAL)
+    # Summary view (must be last — depends on P0 views)
+    cursor.execute(_VIEW_INFRA_VIOLATIONS_SUMMARY)
+
+    conn.commit()
+
+    # Query row counts for all views
+    _ALL_VIEW_NAMES = (
+        "v_p0_apps_direct_infra",
+        "v_p0_provider_bypass",
+        "v_p0_write_bypass_uwg",
+        "v_p0_l1_direct_infra",
+        "v_p0_l6_mutation",
+        "v_p0_l0_raw_execution",
+        "v_p1_zero_caller_infra",
+        "v_p1_not_on_spine",
+        "v_p1_ad_hoc_imports",
+        "v_p1_mis_layered_infra",
+        "v_p2_mixed_usage",
+        "v_p2_duplicated_adapters",
+        "v_p2_dormant_ambiguous",
+        "v_p3_isolated_experimental",
+        "v_infra_violations_summary",
+    )
+    counts: dict[str, int] = {}
+    for vname in _ALL_VIEW_NAMES:
+        cursor.execute(f"SELECT COUNT(*) FROM {vname}")
+        (count,) = cursor.fetchone()
+        counts[vname] = count
+
+    conn.close()
+
+    return counts
+
+
+def enrich_and_report(sqlite_path: Path) -> None:
+    """Enrich ADG SQLite with infra views and print summary."""
+    print("[ADG] Materializing infrastructure wiring views (14 checks)...")
+    counts = materialize_infra_views(sqlite_path)
+
+    p0_views = [
+        "v_p0_apps_direct_infra",
+        "v_p0_provider_bypass",
+        "v_p0_write_bypass_uwg",
+        "v_p0_l1_direct_infra",
+        "v_p0_l6_mutation",
+        "v_p0_l0_raw_execution",
+    ]
+    p1_views = [
+        "v_p1_zero_caller_infra",
+        "v_p1_not_on_spine",
+        "v_p1_ad_hoc_imports",
+        "v_p1_mis_layered_infra",
+    ]
+    p2_views = ["v_p2_mixed_usage", "v_p2_duplicated_adapters", "v_p2_dormant_ambiguous"]
+    p3_views = ["v_p3_isolated_experimental"]
+
+    total_p0 = sum(counts.get(v, 0) for v in p0_views)
+    total_p1 = sum(counts.get(v, 0) for v in p1_views)
+    total_p2 = sum(counts.get(v, 0) for v in p2_views)
+    total_p3 = sum(counts.get(v, 0) for v in p3_views)
+
+    print(f"[ADG] Infra wiring: P0={total_p0} P1={total_p1} P2={total_p2} P3={total_p3}")
+    for v in p0_views:
+        c = counts.get(v, 0)
+        if c > 0:
+            print(f"[ADG]   {v}: {c}")
+    for v in p1_views:
+        c = counts.get(v, 0)
+        if c > 0:
+            print(f"[ADG]   {v}: {c}")
+    for v in p2_views:
+        c = counts.get(v, 0)
+        if c > 0:
+            print(f"[ADG]   {v}: {c}")
+    for v in p3_views:
+        c = counts.get(v, 0)
+        if c > 0:
+            print(f"[ADG]   {v}: {c}")

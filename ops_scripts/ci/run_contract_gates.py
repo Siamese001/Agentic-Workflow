@@ -94,12 +94,25 @@ def main():
 
     # Gate: No archives/ imports in production code (Rule 12)
     print("🔍 Checking for archives/ imports in production code...")
-    returncode, stdout, stderr = run_cmd([sys.executable, str(ROOT / "ops_scripts/ci/check_no_archives_imports.py")], cwd=ROOT)
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(ROOT / "ops_scripts/ci/check_no_archives_imports.py")], cwd=ROOT
+    )
     if returncode != 0:
         print(stdout)
         print(stderr)
         sys.exit(1)
     print("✅ No archives/ imports found")
+
+    # Gate: Infrastructure wiring scan (Rule: no raw infra in forbidden layers)
+    print("🔍 Running infrastructure wiring scan...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(ROOT / "ops_scripts/ci/infra_wiring_scan.py")], cwd=ROOT
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Infrastructure wiring scan passed")
 
     # Continue with existing logic...
     return 0

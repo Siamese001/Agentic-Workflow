@@ -35,13 +35,37 @@ FAIL_POLICY = "closed"
 ADG_SERVER_NAME = "adg_sqlite"
 STALE_THRESHOLD_SECONDS = 30 * 60  # 30 minutes
 
-# Recovery tools that MUST pass even when ADG is stale/locked.
+# Additional MCP servers requiring health gates
+PYTEST_SERVER_NAME = "pytest_mcp"
+REDIS_SERVER_NAME = "redis_mcp"
+MEMORY_SERVER_NAME = "memory"
+TASK_MANAGER_SERVER_NAME = "task_manager"
+
+# Recovery tools that MUST pass even when MCP is unhealthy.
 # Without this whitelist, the gate blocks the very tools needed to recover.
 ADG_RECOVERY_TOOLS = {
     "adg_health",  # mcp1_adg_health — liveness probe
     "adg_status",  # mcp1_adg_status — snapshot status
     "adg_close_connections",  # needed to release SQLite locks
     "adg_reopen_connections",  # needed after lock release
+}
+
+PYTEST_RECOVERY_TOOLS = {
+    "list_pytest_config",  # mcp12_list_pytest_config — health probe
+    "discover_tests",  # mcp12_discover_tests — basic discovery
+}
+
+REDIS_RECOVERY_TOOLS = {
+    "redis_health",  # mcp11_redis_health — liveness probe
+}
+
+MEMORY_RECOVERY_TOOLS = {
+    "mem_recall",  # mcp6_mem_recall_session_start — session context
+    "mem_stats",  # mcp6_mem_get_stats — health metrics
+}
+
+TASK_MANAGER_RECOVERY_TOOLS = {
+    "task_list",  # mcp10_list_tasks — health probe (lightweight)
 }
 
 # Write-affecting ADG tools that mutate DB state.
@@ -323,6 +347,160 @@ def check_adg_gate(repo_root: Path, tool_name: str = "") -> int:
     return 0
 
 
+def check_pytest_gate(repo_root: Path) -> int:
+    """
+    Check Pytest MCP health by verifying pytest is available.
+    Return 0 (allow) or 2 (block).
+    """
+    # Check that pytest is importable (core requirement for pytest_mcp)
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", "import pytest; print('pytest_ok')"],
+            shell=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        if result.returncode != 0:
+            return _exit_block(
+                "Pytest MCP health check failed: pytest not installed or importable. "
+                "Install with: pip install pytest",
+            )
+    except subprocess.TimeoutExpired:
+        return _exit_block("Pytest MCP health check timed out (10s).")
+    except OSError as exc:
+        return _exit_block(f"Pytest MCP health check OSError: {exc}")
+
+    # Check that pytest.ini exists (configuration sanity)
+    pytest_ini = repo_root / "pytest.ini"
+    pyproject_toml = repo_root / "pyproject.toml"
+    if not pytest_ini.exists() and not pyproject_toml.exists():
+        # Advisory only — config may be elsewhere
+        print(
+            "[pre_mcp_gate] WARNING: No pytest.ini or pyproject.toml found — "
+            "pytest configuration may be incomplete.",
+            file=sys.stderr,
+        )
+
+    return 0
+
+
+def check_redis_gate() -> int:
+    """
+    Check Redis MCP health by attempting a connection to Redis.
+    Return 0 (allow) or 2 (block).
+    """
+    import os
+
+    host = os.getenv("REDIS_HOST", "localhost")
+    port = int(os.getenv("REDIS_PORT", "6379"))
+    db = int(os.getenv("REDIS_DB", "0"))
+    timeout = int(os.getenv("REDIS_TIMEOUT", "5"))
+
+    try:
+        import redis as redis_lib
+    except ImportError:
+        return _exit_block(
+            "Redis MCP health check failed: redis package not installed. Install with: pip install redis",
+        )
+
+    try:
+        client = redis_lib.Redis(
+            host=host,
+            port=port,
+            db=db,
+            socket_timeout=timeout,
+            socket_connect_timeout=timeout,
+        )
+        if not client.ping():
+            return _exit_block(
+                f"Redis MCP health check failed: Redis at {host}:{port} not responding to PING.",
+            )
+    except redis_lib.ConnectionError as exc:
+        return _exit_block(
+            f"Redis MCP health check failed: Cannot connect to Redis at {host}:{port}. Error: {exc}",
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+        return _exit_block(f"Redis MCP health check unexpected error: {exc}")
+
+    return 0
+
+
+def check_memory_gate(repo_root: Path) -> int:
+    """
+    Check Memory MCP health by verifying SQLite DB is accessible.
+    Return 0 (allow) or 2 (block).
+    """
+    memory_db = repo_root / "artifacts" / "memory" / "knowledge_graph.sqlite"
+
+    # Check if DB file exists (it's created on first use, so non-existence is OK)
+    if not memory_db.exists():
+        # Directory should exist
+        memory_dir = memory_db.parent
+        if not memory_dir.exists():
+            try:
+                memory_dir.mkdir(parents=True, exist_ok=True)
+            except OSError as exc:
+                return _exit_block(
+                    f"Memory MCP health check failed: Cannot create memory directory: {exc}",
+                )
+        return 0  # DB will be created on first use — this is normal
+
+    # Probe that DB is readable
+    try:
+        conn = sqlite3.connect(
+            str(memory_db),
+            timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0,
+        )
+        try:
+            conn.execute("SELECT 1")
+        finally:
+            conn.close()
+    except sqlite3.OperationalError as exc:
+        return _exit_block(
+            f"Memory MCP health check failed: SQLite DB inaccessible: {exc}",
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+        return _exit_block(f"Memory MCP health check unexpected error: {exc}")
+
+    return 0
+
+
+def check_task_manager_gate() -> int:
+    """
+    Check Task Manager MCP health.
+    Task Manager is an npx-based MCP; we verify Node.js is available.
+    Return 0 (allow) or 2 (block).
+    """
+    # Verify Node.js is available (required for npx)
+    try:
+        result = subprocess.run(
+            ["node", "--version"],
+            shell=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        if result.returncode != 0:
+            return _exit_block(
+                "Task Manager MCP health check failed: Node.js not available. "
+                "Task Manager requires Node.js for npx execution.",
+            )
+    except FileNotFoundError:
+        return _exit_block(
+            "Task Manager MCP health check failed: Node.js not found in PATH. "
+            "Install Node.js to use Task Manager MCP.",
+        )
+    except subprocess.TimeoutExpired:
+        return _exit_block("Task Manager MCP health check timed out (10s).")
+    except OSError as exc:
+        return _exit_block(f"Task Manager MCP health check OSError: {exc}")
+
+    return 0
+
+
 def main() -> int:
     raw = sys.stdin.read()
     if not raw.strip():
@@ -346,17 +524,43 @@ def main() -> int:
     server_name = tool_info.get("mcp_server_name", "")
     tool_name = tool_info.get("mcp_tool_name", "")
 
+    # Filesystem MCP: block write tools (must go through pre_write_code)
     if server_name == FILESYSTEM_SERVER_NAME:
         return check_filesystem_write_gate(tool_name)
 
-    if server_name != ADG_SERVER_NAME:
-        return 0
-    if tool_name in ADG_RECOVERY_TOOLS:
-        # Always allow recovery probes — blocking them creates a dead loop
-        # where the gate blocks the only tools that can restore health.
-        return 0
+    # ADG SQLite MCP: health, lock, and staleness checks
+    if server_name == ADG_SERVER_NAME:
+        if tool_name in ADG_RECOVERY_TOOLS:
+            # Always allow recovery probes — blocking them creates a dead loop
+            return 0
+        return check_adg_gate(REPO_ROOT, tool_name)
 
-    return check_adg_gate(REPO_ROOT, tool_name)
+    # Pytest MCP: verify pytest is available
+    if server_name == PYTEST_SERVER_NAME:
+        if tool_name in PYTEST_RECOVERY_TOOLS:
+            return 0
+        return check_pytest_gate(REPO_ROOT)
+
+    # Redis MCP: verify Redis connectivity
+    if server_name == REDIS_SERVER_NAME:
+        if tool_name in REDIS_RECOVERY_TOOLS:
+            return 0
+        return check_redis_gate()
+
+    # Memory MCP: verify SQLite DB is accessible
+    if server_name == MEMORY_SERVER_NAME:
+        if tool_name in MEMORY_RECOVERY_TOOLS:
+            return 0
+        return check_memory_gate(REPO_ROOT)
+
+    # Task Manager MCP: verify Node.js is available
+    if server_name == TASK_MANAGER_SERVER_NAME:
+        if tool_name in TASK_MANAGER_RECOVERY_TOOLS:
+            return 0
+        return check_task_manager_gate()
+
+    # All other MCPs: fail-open (no hard gate)
+    return 0
 
 
 if __name__ == "__main__":
