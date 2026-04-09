@@ -59,8 +59,6 @@ def _create_real_sqlite(adg_dir: Path, name: str = "adg_indexed_test.sqlite") ->
 class TestPreRunGatePayloadShapes:
     """Non-standard payload shapes must never crash — fail-closed or allow."""
 
-    from ops_scripts.hooks.windsurf.pre_run_gate import main as _main
-
     def _run(self, raw: str) -> int:
         from ops_scripts.hooks.windsurf.pre_run_gate import main
 
@@ -491,14 +489,13 @@ class TestPreMcpGateRecoveryToolCaseSensitivity:
 
 
 class TestPreMcpGateStalenessThresholds:
-    """Exact boundary behaviour for the 30-min stale threshold."""
+    """Snapshot age is advisory-only — never blocks regardless of age."""
 
     def _run_with_snapshot_age(self, age_seconds: float, tmp_path: Path) -> int:
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True, exist_ok=True)
-        # Real sqlite — makes _has_adg_sqlite return True and probes pass.
         _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         snap = adg_dir / "adg_snapshot_test.json"
         snap.write_text("{}")
@@ -509,26 +506,26 @@ class TestPreMcpGateStalenessThresholds:
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
                 return main()
 
-    def test_age_exactly_1799s_not_blocked(self, tmp_path):
-        # 1799 < threshold (1800s) — clearly not stale; avoids float-drift at boundary
-        assert self._run_with_snapshot_age(1799.0, tmp_path) == 0
-
-    def test_age_1801s_blocked(self, tmp_path):
-        assert self._run_with_snapshot_age(1801.0, tmp_path) == 2
-
-    def test_age_3600s_blocked(self, tmp_path):
-        assert self._run_with_snapshot_age(3600.0, tmp_path) == 2
-
     def test_age_60s_allowed(self, tmp_path):
         assert self._run_with_snapshot_age(60.0, tmp_path) == 0
 
+    def test_age_1801s_allowed(self, tmp_path):
+        # Previously blocked at 30 min — now advisory only
+        assert self._run_with_snapshot_age(1801.0, tmp_path) == 0
+
+    def test_age_3600s_allowed(self, tmp_path):
+        # 1 hour old — still valid, user refreshes manually
+        assert self._run_with_snapshot_age(3600.0, tmp_path) == 0
+
+    def test_age_24h_allowed(self, tmp_path):
+        # 24 hours old — advisory warning emitted, never blocks
+        assert self._run_with_snapshot_age(86400.0, tmp_path) == 0
+
     def test_no_snapshot_file_always_allowed(self, tmp_path):
-        # No snapshot → age=None → skipped → allow
         from ops_scripts.hooks.windsurf.pre_mcp_gate import main as _mcp_main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
-        # Real sqlite present → auto-gen skipped. No snapshot → staleness check skipped → 0.
         _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
@@ -545,14 +542,13 @@ class TestPreMcpGateStalenessThresholds:
         new_snap = adg_dir / "adg_snapshot_20260101_0001.json"
         old_snap.write_text("{}")
         new_snap.write_text("{}")
-        # Old snap is 2 hours old, new snap is 5 minutes old
         now = time.time()
         os.utime(old_snap, (now - 7200, now - 7200))
         os.utime(new_snap, (now - 300, now - 300))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
             with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
-                assert main() == 0  # newest is fresh → allowed
+                assert main() == 0  # newest snapshot reported, always allowed
 
 
 class TestPreMcpGateLockDetection:
@@ -657,11 +653,15 @@ class TestPrePromptClassifierFieldAliasing:
                 "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red", return_value=False
             ):
                 with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down", return_value=False
+                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_up", return_value=True
                 ):
-                    stderr_cap = io.StringIO()
-                    with patch("sys.stderr", stderr_cap):
-                        rc = main()
+                    with patch(
+                        "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_adg_hot",
+                        return_value=True,
+                    ):
+                        stderr_cap = io.StringIO()
+                        with patch("sys.stderr", stderr_cap):
+                            rc = main()
         return rc, stderr_cap.getvalue()
 
     def test_user_prompt_field_used(self):
@@ -756,15 +756,19 @@ class TestPrePromptClassifierPlanWarning:
                 "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red", return_value=False
             ):
                 with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down", return_value=False
+                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_up", return_value=True
                 ):
                     with patch(
-                        "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_plan_exists",
-                        return_value=plans_exist,
+                        "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_adg_hot",
+                        return_value=True,
                     ):
-                        stderr_cap = io.StringIO()
-                        with patch("sys.stderr", stderr_cap):
-                            rc = main()
+                        with patch(
+                            "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_plan_exists",
+                            return_value=plans_exist,
+                        ):
+                            stderr_cap = io.StringIO()
+                            with patch("sys.stderr", stderr_cap):
+                                rc = main()
         return rc, stderr_cap.getvalue()
 
     def test_missing_plan_warns_not_blocks(self):

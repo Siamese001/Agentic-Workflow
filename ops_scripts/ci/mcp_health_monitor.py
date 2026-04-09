@@ -12,6 +12,7 @@ Run manually or as CI gate:
   python ops_scripts/ci/mcp_health_monitor.py --probe
   python ops_scripts/ci/mcp_health_monitor.py --watch  # Continuous monitoring
 """
+
 import argparse
 import json
 import subprocess
@@ -20,7 +21,7 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-REPO_ROOT = Path(r"C:\Git\Agentic-Workflow")
+REPO_ROOT = Path(__file__).resolve().parents[2]
 USER_GLOBAL_CONFIG = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
 
 # Health probes for each MCP
@@ -46,7 +47,12 @@ HEALTH_PROBES = {
     "sequential_thinking": {
         "method": "tool_call",
         "tool": "sequentialthinking",
-        "args": {"thought": "Health check", "nextThoughtNeeded": False, "thoughtNumber": 1, "totalThoughts": 1},
+        "args": {
+            "thought": "Health check",
+            "nextThoughtNeeded": False,
+            "thoughtNumber": 1,
+            "totalThoughts": 1,
+        },
         "timeout": 10,
     },
     "redis_mcp": {
@@ -72,6 +78,7 @@ HEALTH_PROBES = {
 
 class MCPHealthResult:
     """Result of a health check."""
+
     def __init__(self, name: str):
         self.name = name
         self.startup_ok: bool | None = None
@@ -107,7 +114,7 @@ def probe_mcp_stdio(name: str, config: dict) -> MCPHealthResult:
     command = config.get("command", "")
     args = config.get("args", [])
     cwd = config.get("cwd", str(Path.home()))
-    env = {**dict(__import__('os').environ), **config.get("env", {})}
+    env = {**dict(__import__("os").environ), **config.get("env", {})}
 
     # Windows pre-flight: bare 'npx' is not executable, catches misconfiguration early
     if sys.platform == "win32" and command == "npx":
@@ -116,16 +123,8 @@ def probe_mcp_stdio(name: str, config: dict) -> MCPHealthResult:
         return result
 
     # Classify MCP type for appropriate probe strategy
-    is_local_python = (
-        command in ("python", "py") and
-        args and
-        str(args[0]).startswith(str(REPO_ROOT))
-    )
-    is_local_python_inline = (
-        command in ("python", "py") and
-        args and
-        args[0] == "-c"
-    )
+    is_local_python = command in ("python", "py") and args and str(args[0]).startswith(str(REPO_ROOT))
+    is_local_python_inline = command in ("python", "py") and args and args[0] == "-c"
     is_npx = command in ("npx", "npx.cmd")
 
     if not is_local_python and not is_local_python_inline and not is_npx:

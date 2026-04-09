@@ -43,7 +43,7 @@ N. [Verification step]
 
 Tools needed:
   - mcp1_adg_health (ADG scope check)
-  - mcp9_mem_recall_session_start (session context)
+  - mcp5_mem_recall_session_start (session context)
   - read_file / mcp7_read_text_file (evidence pull)
   - <additional tools justified by plan>
 
@@ -74,7 +74,7 @@ Execute only read/query tool calls. No writes. No edits.
 
 Checklist before proceeding:
 - [ ] `mcp1_adg_health` called — status confirmed
-- [ ] `mcp9_mem_recall_session_start` called — session context loaded
+- [ ] `mcp5_mem_recall_session_start` called — session context loaded
 - [ ] All files relevant to plan read
 - [ ] ADG fanout/fanin queried for any cross-file changes
 - [ ] Constitutional rules checked (pre-commit hooks, layer constraints)
@@ -163,20 +163,21 @@ Recommended next step:
   - <concrete action>
 ```
 
-Update task to done: `mcp13_update_task` with status=done and lessons learned.
+Update task to done: `task_manager` → `update_task` with status=done and lessons learned.
 
 ---
 
 ## MCP Failure Routing Table
 
-| MCP | Role | Fallback if down |
-|-----|------|-----------------|
-| `mcp1_adg_health` (ADG SQLite) | Scope/blast radius | Run `/mcp-failure-rca` STEP 1; DO NOT grep |
-| `mcp9_mem_recall_session_start` (Memory) | Session context | Proceed; note `[MEMORY UNAVAILABLE]` |
-| `mcp13_create_task` (Task Manager) | Step tracking | Use `todo_list` tool as fallback |
-| `mcp7_*` (Filesystem) | File reads | Use `read_file` Windsurf native |
-| `mcp2_brave_web_search` (Brave) | External lookup | Use `mcp5_fetch` as fallback |
-| `mcp0_git_status` (GitKraken) | Git state | Use `run_command` with git CLI |
+| MCP (YAML name) | Role | Fallback if down |
+|-----------------|------|-----------------|
+| **adg_sqlite** `adg_health` | Scope/blast radius | Run `/mcp-failure-rca` STEP 1; DO NOT grep |
+| **memory** `mem_recall_session_start` | Session context | Proceed; note `[MEMORY UNAVAILABLE]` |
+| **task_manager** `create_task` | Step tracking | Use `todo_list` native tool |
+| **filesystem** `read_text_file` | File reads | Use `read_file` Windsurf native |
+| **enhanced_http** `http_get` | External lookup / fetch | Use `read_url_content` native tool |
+| **gitkraken** `git_status` | Git state | Use `run_command` with git CLI |
+| **pytest_mcp** `run_tests` | Test execution | Use `run_command` with pytest CLI |
 
 ---
 
@@ -214,7 +215,7 @@ Complexity: medium
 
 ## SR_PLAN
 1. Call mcp1_adg_health — confirm ADG MCP is healthy
-2. Call mcp9_mem_recall_session_start — load session context
+2. Call mcp5_mem_recall_session_start — load session context
 3. Read system_learning/confidence/engine.py
 4. Run mcp1_adg_nodes_by_file on engine.py — identify all Redis call nodes
 5. Run mcp1_adg_edge_fanout — find downstream dependents
@@ -224,7 +225,7 @@ Complexity: medium
 9. Verify no layer violations introduced
 
 Tools needed: mcp1_adg_health, mcp1_adg_nodes_by_file, mcp1_adg_edge_fanout,
-              mcp9_mem_recall_session_start, read_file, mcp11_run_tests
+              mcp5_mem_recall_session_start, read_file, pytest_mcp_run_tests
 
 Missing information: None
 Risks: Layer inversion if cache layer is at wrong L → STOP if ADG shows violation

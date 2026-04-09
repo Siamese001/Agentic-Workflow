@@ -16,7 +16,7 @@ Complexity: simple | medium | complex
 
 ## SR_PLAN
 1. Call mcp1_adg_health — confirm ADG MCP is healthy
-2. Call mcp9_mem_recall_session_start — load session context
+2. Call mcp5_mem_recall_session_start — load session context
 3. 
 4. 
 5. 
@@ -24,7 +24,7 @@ N. Verification: run scoped tests / check git diff / confirm no layer violations
 
 Tools needed:
   - mcp1_adg_health
-  - mcp9_mem_recall_session_start
+  - mcp5_mem_recall_session_start
   - mcp13_create_task
   - 
 

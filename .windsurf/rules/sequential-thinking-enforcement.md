@@ -17,8 +17,8 @@ trigger: always_on
 
 Structured reasoning is now provided by:
 - **Cascade native reasoning** - The model's inherent problem-solving capabilities
-- **Task Manager MCP (mcp13)** - For task decomposition, step tracking, and progress preservation
-- **Memory MCP (mcp9)** - For session context recall at task start
+- **Task Manager MCP (task_manager)** - For task decomposition, step tracking, and progress preservation
+- **Memory MCP (mcp6)** - For session context recall at task start (`mcp5_mem_recall_session_start`)
 - **Filesystem MCP (mcp7)** - For file reads and codebase navigation
 - **Git MCP (mcp0)** - For version control operations
 

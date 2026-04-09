@@ -91,11 +91,12 @@ T0_KEYWORDS = {
 _SR_MANDATE = """
 [pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
-  1. Call mcp8_create_task to register this task with goal + definitions of done
-  2. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
-  3. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
-  4. Emit SR_APPROVAL: APPROVED before any writes
-  Sequential Thinking MCP is RETIRED. Use: Task Manager (mcp8) + native Cascade reasoning.
+  1. Call mcp5_mem_recall_session_start — load persistent project context (ArchitectureLayer, ConstitutionalRule)
+  2. Call mcp8_create_task to register this task with goal + definitions of done
+  3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
+  4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
+  5. Emit SR_APPROVAL: APPROVED before any writes
+  Sequential Thinking MCP is RETIRED. Use: Memory (mcp5) + Task Manager (mcp8) + native Cascade reasoning.
   Rule: .windsurf/rules/sequential-thinking-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
@@ -141,18 +142,46 @@ def check_plan_exists(tier: str) -> bool:
     return any(plans_dir.glob("*.md"))
 
 
-def check_redis_down() -> bool:
+def check_redis_up() -> bool:
     """
-    Return True if Redis is not reachable on localhost:6379.
-    Fail-open: any socket error other than connection refused returns False.
+    Return True if Redis is reachable on localhost:6379.
+    Fail-open: any socket error other than connection refused returns True (don't block).
     """
     try:
         with socket.create_connection(("localhost", 6379), timeout=2):
-            return False  # connected — Redis is up
+            return True  # connected — Redis is up
     except ConnectionRefusedError:
-        return True  # Redis is down
+        return False  # Redis is explicitly down
     except OSError:
-        return False  # fail-open: network unavailable, don't block
+        return True  # fail-open: network unavailable, don't block
+
+
+def check_redis_adg_hot() -> bool:
+    """
+    Return True if the ADG hot cache sentinel key exists in Redis.
+    This means ADG was fully ingested into Redis and is ready for queries.
+    Fail-open: any error returns False (falls back to ADG MCP probe).
+    """
+    try:
+        import redis
+
+        client = redis.from_url(
+            "redis://localhost:6379/0",
+            decode_responses=True,
+            socket_connect_timeout=2,
+            socket_timeout=2,
+        )
+        # Find any sentinel key matching adg:v1:*:_hot
+        cursor = 0
+        while True:
+            cursor, keys = client.scan(cursor=cursor, match="adg:v1:*:_hot", count=10)
+            if keys:
+                return True  # hot cache confirmed
+            if cursor == 0:
+                break
+        return False  # no sentinel found — cache is cold
+    except Exception:  # guardian: allow-broad-exception -- startup probe, fail-open
+        return False
 
 
 def check_adg_health_red(repo_root: Path) -> bool:
@@ -230,22 +259,42 @@ def main() -> int:
                 "in .windsurf/plans/ — consider creating a plan per constitutional §10.",
                 file=sys.stderr,
             )
-        if check_adg_health_red(REPO_ROOT):
+
+        # --- ADG health check: Redis first (preferred), ADG MCP as fallback ---
+        if check_redis_up():
+            if check_redis_adg_hot():
+                # Redis is up AND ADG hot cache is populated — preferred path, no ADG MCP probe needed
+                print(
+                    f"[pre_prompt_classifier] {tier}: Redis ADG hot cache confirmed — proceeding.",
+                    file=sys.stderr,
+                )
+            else:
+                # Redis is up but ADG cache is cold — warn and fall back to ADG MCP probe
+                print(
+                    f"[pre_prompt_classifier] WARNING: {tier}: Redis is up but ADG cache is cold. "
+                    "Run: python tools/adg/adg_redis_ingest.py --force",
+                    file=sys.stderr,
+                )
+                if check_adg_health_red(REPO_ROOT):
+                    print(
+                        f"[pre_prompt_classifier] BLOCKED: {tier} prompt — adg_sqlite MCP is also red. "
+                        "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
+                        file=sys.stderr,
+                    )
+                    return 2
+        else:
+            # Redis is down — fall back entirely to ADG MCP probe
             print(
-                f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but adg_sqlite MCP is red. "
-                "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13). "
-                "ADG + Redis health check is MANDATORY before any T2/T3 refactoring.",
+                f"[pre_prompt_classifier] WARNING: {tier}: Redis is down — falling back to adg_sqlite MCP probe.",
                 file=sys.stderr,
             )
-            return 2
-        if check_redis_down():
-            print(
-                f"[pre_prompt_classifier] BLOCKED: {tier} prompt detected but Redis is not reachable "
-                "on localhost:6379. Start Redis before proceeding (constitutional §13). "
-                "ADG + Redis health check is MANDATORY before any T2/T3 refactoring.",
-                file=sys.stderr,
-            )
-            return 2
+            if check_adg_health_red(REPO_ROOT):
+                print(
+                    f"[pre_prompt_classifier] BLOCKED: {tier} prompt — Redis is down AND adg_sqlite MCP is red. "
+                    "Start Redis or run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
+                    file=sys.stderr,
+                )
+                return 2
 
         # Infrastructure healthy — inject structured reasoning mandate into Cascade context.
         # show_output: true in hooks.json ensures Cascade sees this before responding.

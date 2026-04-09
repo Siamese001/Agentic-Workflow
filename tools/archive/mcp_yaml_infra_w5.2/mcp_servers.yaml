@@ -360,7 +360,7 @@ servers:
   vector_db:
     name: "Vector DB"
     prefix: "mcp16"
-    enabled: false
+    enabled: true
     target_layer: "L4"
     description: "Vector database for embeddings and semantic search"
     command: "python"
@@ -408,7 +408,7 @@ servers:
   otel_mcp:
     name: "OpenTelemetry MCP"
     prefix: "mcp17"
-    enabled: false
+    enabled: true
     target_layer: "L6"
     description: "Runtime ADG tracing, OTel span queries, Prometheus metrics, healing chain analysis"
     command: "python"

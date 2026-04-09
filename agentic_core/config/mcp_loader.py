@@ -1,141 +1,55 @@
 """MCP Configuration Loader - Single Source of Truth for MCP Servers.
 
-This module provides the canonical interface for loading and accessing MCP server
-configuration from config/mcp_servers.yaml. All components should use this loader
-instead of hardcoded configurations.
+Reads .windsurf/mcp_config.json (Windsurf mcpServers format) — the single SSOT
+for all MCP server definitions.  Do NOT read config/mcp_servers.yaml (archived).
 
 Example:
     from agentic_core.config.mcp_loader import MCPLoader
 
     loader = MCPLoader()
-    config = loader.load()
-
-    # Get tool mapping
-    tool_fn = loader.get_tool_function("http_get")
-
-    # Get server by prefix
-    http_server = loader.get_server_by_prefix("mcp4")
+    servers = loader.list_servers()   # ["GitKraken", "adg_sqlite", ...]
+    entry   = loader.get_server("adg_sqlite")  # {"command": ..., "args": ...}
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
-try:
-    import yaml
-except ImportError:
-    yaml = None
 
-try:
-    from pydantic import BaseModel, Field, validator
-except ImportError:
-    BaseModel = object
-    def Field(*a, **k):
-        return None
-
-    def validator(*a, **k):
-        def decorator(f):
-            return f
-        return decorator
+# SSOT: .windsurf/mcp_config.json  (Windsurf mcpServers format)
+# agentic_core/config/mcp_loader.py -> ../../.windsurf/mcp_config.json
+DEFAULT_CONFIG_PATH = Path(__file__).parent.parent.parent / ".windsurf" / "mcp_config.json"
 
 
-# Default path to the SSOT configuration
-# Calculate from this file's location: agentic_core/config/mcp_loader.py -> ../../config/mcp_servers.yaml
-DEFAULT_CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "mcp_servers.yaml"
+# ---------------------------------------------------------------------------
+# Windsurf mcpServers entry — matches .windsurf/mcp_config.json schema exactly
+# ---------------------------------------------------------------------------
+class MCPServerEntry:
+    """A single mcpServers entry from .windsurf/mcp_config.json."""
 
-
-class MCPTool(BaseModel):
-    """Individual MCP tool definition."""
-
-    target: str
-    description: str
-    aliases: list[str] = Field(default_factory=list)
-
-    class Config:
-        extra = "forbid"
-
-
-class MCPServer(BaseModel):
-    """MCP server configuration."""
-
-    name: str
-    prefix: str
-    enabled: bool = True
-    target_layer: str
-    description: str
-    command: str | None = None
-    args: list[str] = Field(default_factory=list)
-    cwd: str | None = None
-    env: dict[str, str] = Field(default_factory=dict)
-    capabilities: list[str] = Field(default_factory=list)
-    tools: dict[str, MCPTool] = Field(default_factory=dict)
-
-    @validator("prefix")
-    def validate_prefix(cls, v: str) -> str:
-        """Ensure prefix follows mcpN format."""
-        if not v.startswith("mcp") or not v[3:].isdigit():
-            raise ValueError(f"Invalid prefix format: {v}. Expected mcpN format.")
-        return v
-
-    @validator("target_layer")
-    def validate_layer(cls, v: str) -> str:
-        """Ensure layer is valid L0-L6."""
-        valid_layers = {f"L{i}" for i in range(7)}
-        if v not in valid_layers:
-            raise ValueError(f"Invalid layer: {v}. Must be one of {valid_layers}")
-        return v
-
-    def get_tool(self, name: str) -> MCPTool | None:
-        """Get tool by name or alias."""
-        # Direct lookup
-        if name in self.tools:
-            return self.tools[name]
-
-        # Search aliases
-        for tool in self.tools.values():
-            if name in tool.aliases:
-                return tool
-
-        return None
-
-    class Config:
-        extra = "allow"  # Allow _comment fields
-
-
-class MCPConfig(BaseModel):
-    """Root MCP configuration."""
-
-    schema_version: str
-    last_updated: str
-    description: str
-    servers: dict[str, MCPServer]
-    tool_aliases: dict[str, str] = Field(default_factory=dict)
-    validation: dict[str, Any] | None = None
+    def __init__(self, name: str, data: dict[str, Any]) -> None:
+        self.name = name
+        self.command: str | None = data.get("command")
+        self.url: str | None = data.get("url")
+        self.args: list[str] = data.get("args", [])
+        self.env: dict[str, str] = data.get("env", {})
+        self.disabled: bool = data.get("disabled", False)
 
     @property
-    def total_tools(self) -> int:
-        """Count total tools across all servers."""
-        return sum(len(s.tools) for s in self.servers.values())
-
-    @property
-    def enabled_servers(self) -> dict[str, MCPServer]:
-        """Get only enabled servers."""
-        return {k: v for k, v in self.servers.items() if v.enabled}
-
-    class Config:
-        extra = "forbid"
+    def enabled(self) -> bool:
+        return not self.disabled
 
 
 class MCPLoader:
-    """Loader for MCP configuration from YAML SSOT.
+    """Loader for MCP configuration from .windsurf/mcp_config.json (Windsurf format).
 
-    This class provides caching, validation, and convenient access methods
-    for MCP server configuration.
+    Reads the mcpServers dict directly — no YAML, no schema translation.
 
     Args:
-        config_path: Path to mcp_servers.yaml. Defaults to config/mcp_servers.yaml
-        hot_reload: If True, checks file modification time on each load()
+        config_path: Path to mcp_config.json. Defaults to .windsurf/mcp_config.json
+        hot_reload: If True, re-reads on mtime change
         cache_enabled: If True, caches loaded config in memory
     """
 
@@ -148,214 +62,88 @@ class MCPLoader:
         self.config_path = Path(config_path) if config_path else DEFAULT_CONFIG_PATH
         self.hot_reload = hot_reload
         self.cache_enabled = cache_enabled
-        self._cache: MCPConfig | None = None
+        self._cache: dict[str, MCPServerEntry] | None = None
         self._last_mtime: float | None = None
 
         if not self.config_path.exists():
             raise FileNotFoundError(
-                f"MCP config not found: {self.config_path}\n"
-                f"Expected SSOT at: {DEFAULT_CONFIG_PATH}",
+                f"MCP config not found: {self.config_path}\nExpected SSOT at: {DEFAULT_CONFIG_PATH}",
             )
 
-    def load(self) -> MCPConfig:
-        """Load and validate MCP configuration from YAML.
+    def load(self) -> dict[str, MCPServerEntry]:
+        """Load mcpServers from .windsurf/mcp_config.json.
 
         Returns:
-            Validated MCPConfig object
-
-        Raises:
-            FileNotFoundError: If config file doesn't exist
-            ValueError: If config is invalid
-            yaml.YAMLError: If YAML parsing fails
+            Dict mapping server name -> MCPServerEntry
         """
-        # Check if we can use cached version
         if self.cache_enabled and self._cache is not None:
             if not self.hot_reload:
                 return self._cache
-
-            # Hot reload: check modification time
-            current_mtime = self.config_path.stat().st_mtime
-            if current_mtime == self._last_mtime:
+            if self.config_path.stat().st_mtime == self._last_mtime:
                 return self._cache
 
-        # Load from disk
-        with open(self.config_path, encoding='utf-8') as f:
-            raw_yaml = f.read()
+        with open(self.config_path, encoding="utf-8") as f:
+            data = json.load(f)
 
-        data = yaml.safe_load(raw_yaml) if yaml else self._manual_parse(raw_yaml)
+        raw_servers: dict[str, Any] = data.get("mcpServers", {})
+        entries = {
+            name: MCPServerEntry(name, cfg) for name, cfg in raw_servers.items() if isinstance(cfg, dict)
+        }
 
-        # Strip top-level keys not accepted by MCPConfig (e.g. repo_root, last_updated)
-        known_keys = {"schema_version", "last_updated", "description", "servers", "tool_aliases", "validation"}
-        data = {k: v for k, v in data.items() if k in known_keys}
-
-        # Validate with Pydantic
-        config = MCPConfig(**data)
-
-        # Update cache
         if self.cache_enabled:
-            self._cache = config
+            self._cache = entries
             self._last_mtime = self.config_path.stat().st_mtime
 
-        return config
+        return entries
 
-    def reload(self) -> MCPConfig:
+    def reload(self) -> dict[str, MCPServerEntry]:
         """Force reload from disk, bypassing cache."""
         self._cache = None
         self._last_mtime = None
         return self.load()
 
-    def get_server(self, name: str) -> MCPServer | None:
-        """Get server by name."""
-        config = self.load()
-        return config.servers.get(name)
+    def get_server(self, name: str) -> MCPServerEntry | None:
+        """Get a server entry by name (e.g. 'adg_sqlite')."""
+        return self.load().get(name)
 
-    def get_server_by_prefix(self, prefix: str) -> MCPServer | None:
-        """Get server by prefix (e.g., 'mcp4')."""
-        config = self.load()
-        for server in config.servers.values():
-            if server.prefix == prefix:
-                return server
-        return None
+    def list_servers(self) -> list[str]:
+        """Return names of all servers (enabled and disabled)."""
+        return list(self.load().keys())
 
-    def get_servers_by_layer(self, layer: str) -> list[MCPServer]:
-        """Get all servers assigned to a specific layer (L0-L6)."""
-        config = self.load()
-        return [s for s in config.servers.values() if s.target_layer == layer and s.enabled]
-
-    def get_servers_by_capability(self, capability: str) -> list[MCPServer]:
-        """Get all servers providing a specific capability."""
-        config = self.load()
-        return [
-            s for s in config.servers.values()
-            if capability in s.capabilities and s.enabled
-        ]
-
-    def get_tool_mapping(self) -> dict[str, str]:
-        """Build complete tool dispatch table.
-
-        Returns:
-            Dictionary mapping logical tool names to MCP tool function names
-            (e.g., {"http_get": "mcp4_http_get", ...})
-        """
-        config = self.load()
-        mapping = {}
-
-        for server in config.servers.values():
-            if not server.enabled:
-                continue
-
-            for tool_name, tool in server.tools.items():
-                # Add primary mapping
-                mapping[tool_name] = tool.target
-
-                # Add aliases
-                for alias in tool.aliases:
-                    mapping[alias] = tool.target
-
-        # Add global aliases
-        for alias, target_name in config.tool_aliases.items():
-            # Resolve target name to actual function
-            if target_name in mapping:
-                mapping[alias] = mapping[target_name]
-
-        return mapping
-
-    def get_tool_function(self, tool_name: str) -> str | None:
-        """Get the MCP function name for a logical tool.
-
-        Args:
-            tool_name: Logical tool name (e.g., "http_get")
-
-        Returns:
-            MCP function name (e.g., "mcp4_http_get") or None
-        """
-        mapping = self.get_tool_mapping()
-        return mapping.get(tool_name)
-
-    def resolve_tool(self, tool_name: str) -> str | None:
-        """Alias for get_tool_function."""
-        return self.get_tool_function(tool_name)
+    def list_enabled_servers(self) -> list[str]:
+        """Return names of enabled servers only."""
+        return [n for n, e in self.load().items() if e.enabled]
 
     def validate(self) -> list[str]:
-        """Validate the configuration and return list of issues.
-
-        Returns:
-            List of validation error messages (empty if valid)
-        """
-        issues = []
-
+        """Return list of validation issues (empty = valid)."""
+        issues: list[str] = []
         try:
-            config = self.load()
-        except FileNotFoundError as e:
-            return [f"Config file not found: {e}"]
-        except ImportError as e:
-            return [f"Missing dependency: {e}"]
-        except ValueError as e:
-            return [f"Config validation error: {e}"]
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            # Catch YAML parsing errors and other unexpected issues
-            if "yaml" in type(e).__module__.lower():
-                return [f"YAML parsing error: {e}"]
-            raise  # Re-raise unexpected exceptions
+            entries = self.load()
+        except FileNotFoundError as exc:
+            return [f"Config file not found: {exc}"]
+        except ValueError as exc:
+            return [f"Config parse error: {exc}"]
 
-        # Check for duplicate tool names
-        tool_names: dict[str, str] = {}
-        for server_name, server in config.servers.items():
-            for tool_name in server.tools.keys():
-                if tool_name in tool_names:
-                    issues.append(
-                        f"Duplicate tool name '{tool_name}' in {server_name} "
-                        f"(first defined in {tool_names[tool_name]})",
-                    )
-                else:
-                    tool_names[tool_name] = server_name
-
-        # Check for orphaned aliases
-        for alias, target in config.tool_aliases.items():
-            found = False
-            for server in config.servers.values():
-                if target in server.tools or any(
-                    target in t.aliases for t in server.tools.values()
-                ):
-                    found = True
-                    break
-            if not found:
-                issues.append(f"Orphaned alias '{alias}' -> '{target}' (target not found)")
-
+        for name, entry in entries.items():
+            if not entry.command and not entry.url:
+                issues.append(f"Server '{name}' has neither 'command' nor 'url'")
         return issues
 
-    def _manual_parse(self, raw: str) -> dict[str, Any]:
-        """Fallback parser if PyYAML not available (basic implementation)."""
-        raise ImportError(
-            "PyYAML is required for MCP config loading.\n"
-            "Install: pip install pyyaml",
-        )
 
+# Convenience functions
 
-# Convenience functions for direct usage
 
 def get_loader() -> MCPLoader:
     """Get default loader instance."""
     return MCPLoader()
 
 
-def get_tool_mapping() -> dict[str, str]:
-    """Get complete tool dispatch table."""
-    return get_loader().get_tool_mapping()
-
-
-def resolve_tool(tool_name: str) -> str | None:
-    """Resolve logical tool name to MCP function name."""
-    return get_loader().resolve_tool(tool_name)
-
-
 # Module-level cache for performance
-_loader_instance: MCPLoader | None = None
+_loader_cache: dict[str, MCPLoader] = {}
 
 
 def get_cached_loader() -> MCPLoader:
     """Get or create cached loader instance."""
-    global _loader_instance
-    if _loader_instance is None:
-        _loader_instance = MCPLoader(cache_enabled=True)
-    return _loader_instance
+    if "default" not in _loader_cache:
+        _loader_cache["default"] = MCPLoader(cache_enabled=True)
+    return _loader_cache["default"]

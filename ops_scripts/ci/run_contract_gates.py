@@ -53,6 +53,39 @@ def validate_mcp_health():
     """Validate MCP server health and hung process detection."""
     print("\n[MCP HEALTH CHECK]")
 
+    # Gate: gate constants ↔ mcp_config.json key sync (prevents silent miss on new servers)
+    returncode, stdout, stderr = run_cmd(
+        ["python", "ops_scripts/ci/check_mcp_gate_sync.py"],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ MCP gate sync check failed")
+        print(stdout or stderr)
+        return False
+    print("✅ MCP gate sync validated")
+
+    # Gate: mcp_config.json sovereignty rules (filesystem scoping, _comment, no out-of-repo paths)
+    returncode, stdout, stderr = run_cmd(
+        ["python", "ops_scripts/ci/check_mcp_config_sovereignty.py"],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ MCP config sovereignty check failed")
+        print(stdout or stderr)
+        return False
+    print("✅ MCP config sovereignty validated")
+
+    # Gate: local Python MCP startup invariants (cwd, PYTHONPATH, env vars)
+    returncode, stdout, stderr = run_cmd(
+        ["python", "ops_scripts/ci/check_mcp_startup_invariant.py"],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ MCP startup invariant check failed")
+        print(stdout or stderr)
+        return False
+    print("✅ MCP startup invariants validated")
+
     # Check MCP PyTest coverage
     returncode, stdout, stderr = run_cmd(
         ["python", "ops_scripts/ci/check_mcp_pytest_coverage.py"],

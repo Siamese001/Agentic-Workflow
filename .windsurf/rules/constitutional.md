@@ -17,7 +17,7 @@ trigger: always_on
 > 10. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
 > 11. **TERMINAL PROCESS LIFECYCLE MANAGEMENT.** All terminal processes spawned via `run_command` or `subprocess` MUST be explicitly terminated when the query completes. Non-blocking commands MUST set `WaitMsBeforeAsync` or implement explicit process cleanup. Hanging terminal processes after query finish = CONSTITUTIONAL VIOLATION. Gate: `ops_scripts/ci/check_terminal_cleanup.py`.
 > 12. **NO IMPORTS FROM ARCHIVES/ IN PRODUCTION CODE.** The `archives/` directory is a backup graveyard — imports from it are FORBIDDEN in production code (`agentic_core/`, `apps_*/`, `system_learning/`). During module migration, imports MUST be updated to canonical locations, not left pointing to archived copies. CI blocks any commit with active `from archives.` or `import archives.` statements. Gate: `ops_scripts/ci/check_no_archives_imports.py`.
-> 13. **MCP GREEN LIGHT PREREQUISITE.** Before beginning ANY T2/T3 work, call `mcp1_adg_health`. If the result is unhealthy or stale (>30 min), run `/mcp-failure-rca` and wait for recovery. NEVER begin multi-file work with unhealthy MCPs. Hard gate enforced at session start by `pre_user_prompt` hook (exits 2 for T2/T3 with absent/stale ADG) and at ADG tool call time by `pre_mcp_tool_use` hook.
+> 13. **MCP GREEN LIGHT PREREQUISITE.** Before beginning ANY T2/T3 work, check ADG health in priority order: (1) **Preferred** — check Redis hot cache sentinel (`python tools/adg/adg_redis_ingest.py --check`); if hot, proceed immediately. (2) **Fallback** — if Redis is down or cache is cold, call `mcp1_adg_health`. If `mcp1_adg_health` is unhealthy, run `/mcp-failure-rca` and wait for recovery. NEVER begin multi-file work when BOTH Redis cache is cold AND ADG MCP is unhealthy. Hard gate enforced at session start by `pre_prompt_classifier.py` (Redis-first probe, ADG MCP fallback, exits 2 only if both are red).
 > 14. **SUBPROCESS TIMEOUT DISCIPLINE.** ALL subprocess calls MUST include `timeout=`. No exceptions. `subprocess.run(argv, shell=False, timeout=30)` is the REQUIRED pattern. Omitting `timeout=` is a constitutional violation — runaway subprocesses are PP-9 zombie sources. PowerShell (`powershell`, `pwsh`) is FORBIDDEN — use `subprocess.run(argv, shell=False)`. Reinforced at runtime by `pre_run_command` hook (Wave 1 Phase 1.1). Policy SSOT: `global_rules.md` Section Subprocess Timeout Discipline.
 > 15. **EXCEPTION HANDLING — COLUMN 5 PRECISE EXCEPTIONS.** Catch specific exception types with specific recovery. `except:` (bare) is FORBIDDEN. `except Exception` without `# guardian: allow-broad-exception -- <specific justification>` is FORBIDDEN. Guardian exemptions require HITL approval (§8). Enforced by `pre_write_gate.py` (Wave 1 Phase 1.2). Reference: `docs/reference/Python/Error & Exception Handling.md`.
 
@@ -425,16 +425,23 @@ Before committing any plan document:
 
 ### 13.1 Rule
 
-Before beginning ANY T2/T3 work, the MCP health check MUST pass:
+Before beginning ANY T2/T3 work, the ADG health check MUST pass in this priority order:
 
 ```
-1. Call mcp1_adg_health
-2. If result is unhealthy or last_check > 30 minutes ago → STOP
-3. Run /mcp-failure-rca
-4. Wait for recovery confirmation before proceeding
+1. (Preferred) Check Redis hot cache:
+       python tools/adg/adg_redis_ingest.py --check
+   → exit 0 (HOT): proceed immediately — Redis is the fast in-memory path
+   → exit 1 (COLD): continue to step 2
+
+2. (Fallback) If Redis is down or cache is cold, call mcp1_adg_health
+   → healthy: proceed (ADG available via SQLite fallback)
+   → unhealthy: STOP → run /mcp-failure-rca → wait for recovery
+
+3. BLOCKED only when BOTH Redis is cold AND mcp1_adg_health is red.
 ```
 
-**NEVER begin multi-file work with unhealthy MCPs.** Silent MCP failures cascade into broken analysis, corrupt ADG queries, and wasted repair sessions.
+**NEVER begin multi-file work when both Redis cache is cold AND ADG MCP is unhealthy.**
+Redis is the preferred ADG source — faster, in-memory, no file lock contention. SQLite is the canonical fallback. ADG staleness is NOT a blocker — the snapshot is valid until manually refreshed via `python tools/generate_full_adg.py` (which auto-ingests to Redis on completion).
 
 ### 13.2 Scope
 
@@ -448,12 +455,18 @@ Before beginning ANY T2/T3 work, the MCP health check MUST pass:
 ### 13.3 Runtime Enforcement
 
 This behavioral rule is reinforced at runtime by:
-- **Wave 1 Phase 1.3**: `pre_mcp_tool_use` hook blocks ADG calls when SQLite is locked or health is stale (>30 min)
-- **Wave 1 Phase 1.8**: `post_cascade_response` hook attempts `adg_close_connections` as response-tail cleanup
+- **`pre_prompt_classifier.py`**: Redis sentinel probe first → ADG MCP fallback → exits 2 only if both are red
+- **`pre_mcp_gate.py`**: blocks ADG calls when SQLite is locked or unreadable (staleness is advisory-only)
+- **`adg_redis_ingest.py`**: auto-invoked by `generate_full_adg.py` to keep Redis hot after every refresh
 
 ### 13.4 Recovery Escalation
 
-If `mcp1_adg_health` is unhealthy:
+If Redis cache is cold:
+```
+python tools/adg/adg_redis_ingest.py --force
+```
+
+If `mcp1_adg_health` is also unhealthy:
 ```
 1. python ops_scripts/ci/mcp_health_monitor.py --probe
 2. Check ~/adg_mcp_server.log for errors

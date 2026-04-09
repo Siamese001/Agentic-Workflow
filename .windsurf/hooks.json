@@ -34,6 +34,12 @@
         "command": "python ops_scripts/hooks/windsurf/post_write_audit.py",
         "working_directory": "C:/Git/Agentic-Workflow",
         "show_output": false
+      },
+      {
+        "command": "python ops_scripts/hooks/windsurf/post_write_mcp_config_sync.py",
+        "working_directory": "C:/Git/Agentic-Workflow",
+        "show_output": true,
+        "file_pattern": ".*mcp_config\\.json$"
       }
     ],
     "post_run_command": [

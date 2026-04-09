@@ -21,7 +21,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
-SNAPSHOT_MAX_AGE_SECONDS = 1800  # 30 minutes
 
 # ADG-relevant file patterns
 ADG_RELEVANT_PATTERNS = [
@@ -159,10 +158,13 @@ def _run_skip_file_ratchet() -> int:
 
 
 def _check_snapshot_freshness() -> int:
-    """Check ADG snapshot age. Warns if stale, never blocks.
+    """Report ADG snapshot age. Informational only — never blocks.
+
+    ADG snapshots are valid until manually refreshed via
+    python tools/generate_full_adg.py (which auto-ingests to Redis).
 
     Returns:
-        0 always (warn-only)
+        0 always
     """
     if not ADG_DIR.exists():
         print(
@@ -179,15 +181,12 @@ def _check_snapshot_freshness() -> int:
         return 0
 
     latest = snapshots[-1]
-    age_seconds = time.time() - latest.stat().st_mtime
-    age_minutes = age_seconds / 60
-
-    if age_seconds > SNAPSHOT_MAX_AGE_SECONDS:
-        print(
-            f"[ADG-UNIFIED] WARNING: ADG snapshot is {age_minutes:.0f}m old (>{SNAPSHOT_MAX_AGE_SECONDS // 60}m threshold).",
-            file=sys.stderr,
-        )
-        print("[ADG-UNIFIED] Run: python tools/generate_full_adg.py", file=sys.stderr)
+    age_minutes = (time.time() - latest.stat().st_mtime) / 60
+    print(
+        f"[ADG-UNIFIED] INFO: ADG snapshot is {age_minutes:.0f}m old — "
+        "refresh when convenient: python tools/generate_full_adg.py",
+        file=sys.stderr,
+    )
     return 0
 
 

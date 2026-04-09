@@ -8,7 +8,7 @@ Plan requirements verified:
   - ADG MCP + recovery tools: always exit 0 (whitelist)
   - ADG MCP + real SQLite read probe failure: exit 2 (block)
   - ADG MCP + real SQLite write contention (BEGIN IMMEDIATE → BUSY): exit 2 (block)
-  - ADG MCP + stale snapshot (>30 min): exit 2 (block)
+  - ADG MCP + stale snapshot: exit 0 (advisory only — never blocks)
   - ADG MCP + fresh snapshot + healthy DB: exit 0 (allow)
   - ADG MCP + no snapshot at all: exit 0 (allow — fail-open on missing)
   - ADG MCP + no artifacts/adg dir: exit 0 (allow — fail-open)
@@ -41,10 +41,16 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
+import ops_scripts.hooks.windsurf.pre_mcp_gate as _gate_module
 from ops_scripts.hooks.windsurf.pre_mcp_gate import (
     ADG_RECOVERY_TOOLS,
     ADG_WRITE_TOOLS,
     FILESYSTEM_WRITE_TOOLS,
+    MEMORY_RECOVERY_TOOLS,
+    OTEL_MCP_RECOVERY_TOOLS,
+    PYTEST_RECOVERY_TOOLS,
+    TASK_MANAGER_RECOVERY_TOOLS,
+    VECTOR_DB_RECOVERY_TOOLS,
     _auto_generate_adg,
     _check_sqlite_access,
     _get_latest_snapshot_age_seconds,
@@ -56,6 +62,15 @@ from ops_scripts.hooks.windsurf.pre_mcp_gate import (
     check_filesystem_write_gate,
     main,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clear_probe_cache():
+    """Clear _PROBE_CACHE before every test so subprocess mocks are not shadowed by
+    cached results from earlier tests in the same process."""
+    _gate_module._PROBE_CACHE.clear()
+    yield
+    _gate_module._PROBE_CACHE.clear()
 
 
 def _create_real_sqlite(adg_dir: Path, name: str = "adg_indexed_20260101.sqlite") -> Path:
@@ -385,14 +400,14 @@ class TestCheckAdgGate:
             holder.rollback()
             holder.close()
 
-    def test_stale_snapshot_blocks(self, tmp_path):
+    def test_stale_snapshot_advisory_only(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
         _create_real_sqlite(adg, "adg_indexed_x.sqlite")
         snap = adg / "adg_snapshot_old.json"
         snap.write_text("{}")
         os.utime(str(snap), (time.time() - 3700, time.time() - 3700))
-        assert check_adg_gate(tmp_path) == 2
+        assert check_adg_gate(tmp_path) == 0  # stale snapshot is advisory only, never blocks
 
     def test_missing_snapshot_allowed(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
@@ -407,25 +422,25 @@ class TestCheckAdgGate:
         ):
             assert check_adg_gate(tmp_path) == 0
 
-    def test_exactly_30min_old_snapshot_allowed(self, tmp_path):
+    def test_old_snapshot_advisory_only_not_blocked(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
         _create_real_sqlite(adg, "adg_indexed_x.sqlite")
-        snap = adg / "adg_snapshot_borderline.json"
+        snap = adg / "adg_snapshot_old.json"
         snap.write_text("{}")
-        t = time.time() - (29 * 60 + 59)
+        t = time.time() - (30 * 60 + 5)  # 30+ minutes old
         os.utime(str(snap), (t, t))
-        assert check_adg_gate(tmp_path) == 0
+        assert check_adg_gate(tmp_path) == 0  # advisory warning only, never blocks
 
-    def test_just_over_30min_old_snapshot_blocks(self, tmp_path):
+    def test_very_old_snapshot_still_not_blocked(self, tmp_path):
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
         _create_real_sqlite(adg, "adg_indexed_x.sqlite")
-        snap = adg / "adg_snapshot_borderline.json"
+        snap = adg / "adg_snapshot_very_old.json"
         snap.write_text("{}")
-        t = time.time() - (30 * 60 + 5)
+        t = time.time() - (24 * 60 * 60)  # 24 hours old
         os.utime(str(snap), (t, t))
-        assert check_adg_gate(tmp_path) == 2
+        assert check_adg_gate(tmp_path) == 0  # stale ADG is valid until manually refreshed
 
     def test_reopen_connections_cycle_does_not_block_reads(self, tmp_path):
         """Simulates close→reopen cycle: WAL sidecars recreated, reads still pass."""
@@ -477,18 +492,58 @@ class TestMain:
         payload = {"tool_info": {"mcp_server_name": "filesystem", "mcp_tool_name": "edit_file"}}
         assert self._run(payload) == 2
 
-    # Non-ADG, non-filesystem MCPs — always allowed
-    def test_memory_mcp_allowed(self):
-        assert self._run({"tool_info": {"mcp_server_name": "memory"}}) == 0
-
+    # Non-ADG, non-filesystem MCPs with no local infra needed — always allowed
     def test_gitkraken_mcp_allowed(self):
         assert self._run({"tool_info": {"mcp_server_name": "gitkraken"}}) == 0
 
-    def test_task_manager_mcp_allowed(self):
-        assert self._run({"tool_info": {"mcp_server_name": "task_manager"}}) == 0
-
     def test_deepwiki_mcp_allowed(self):
-        assert self._run({"tool_info": {"mcp_server_name": "deepwiki"}}) == 0
+        """DeepWiki is fail-open regardless of network — mock socket to avoid DNS."""
+        with patch("socket.create_connection") as mock_conn:
+            mock_conn.__enter__ = MagicMock(return_value=mock_conn)
+            mock_conn.__exit__ = MagicMock(return_value=False)
+            assert self._run({"tool_info": {"mcp_server_name": "deepwiki"}}) == 0
+
+    def test_deepwiki_unreachable_still_allowed(self):
+        """DeepWiki gate is always fail-open — even if DNS fails, gate returns 0."""
+        with patch("socket.create_connection", side_effect=OSError("network unreachable")):
+            assert self._run({"tool_info": {"mcp_server_name": "deepwiki"}}) == 0
+
+    def test_memory_recovery_tool_always_allowed(self, tmp_path):
+        """Recovery tools bypass gate even if DB doesn't exist yet."""
+        for tool in ["mem_recall_session_start", "mem_get_stats", "search_nodes"]:
+            payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": tool}}
+            assert self._run(payload, tmp_path) == 0, f"Recovery tool '{tool}' must always be allowed"
+
+    def test_memory_nonexistent_db_allowed(self, tmp_path):
+        """Memory gate allows when DB doesn't exist yet (created on first use)."""
+        payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": "open_nodes"}}
+        assert self._run(payload, tmp_path) == 0
+
+    def test_memory_healthy_db_allowed(self, tmp_path):
+        mem_dir = tmp_path / "artifacts" / "memory"
+        mem_dir.mkdir(parents=True)
+        db = mem_dir / "knowledge_graph.sqlite"
+        conn = sqlite3.connect(str(db))
+        conn.execute("CREATE TABLE entities (id INTEGER)")
+        conn.commit()
+        conn.close()
+        payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": "open_nodes"}}
+        assert self._run(payload, tmp_path) == 0
+
+    def test_task_manager_recovery_tool_allowed(self):
+        """Recovery tools bypass the Node.js probe entirely."""
+        for tool in TASK_MANAGER_RECOVERY_TOOLS:
+            payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": tool}}
+            assert self._run(payload) == 0, f"Recovery tool '{tool}' must always be allowed"
+
+    def test_task_manager_node_not_found_blocked(self):
+        """If Node.js is not in PATH, task_manager gate must block non-recovery tools."""
+        payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "decompose_task"}}
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            side_effect=FileNotFoundError("node not found"),
+        ):
+            assert self._run(payload) == 2
 
     def test_empty_server_name_allowed(self):
         assert self._run({"tool_info": {}}) == 0
@@ -542,7 +597,8 @@ class TestMain:
             holder.rollback()
             holder.close()
 
-    def test_adg_with_stale_snapshot_blocked(self, tmp_path):
+    def test_adg_with_stale_snapshot_advisory_only(self, tmp_path):
+        """Stale ADG snapshot emits advisory warning but never blocks."""
         adg = tmp_path / "artifacts" / "adg"
         adg.mkdir(parents=True)
         _create_real_sqlite(adg, "adg_indexed_x.sqlite")
@@ -550,7 +606,7 @@ class TestMain:
         snap.write_text("{}")
         os.utime(str(snap), (time.time() - 3700, time.time() - 3700))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_edge_fanout"}}
-        assert self._run(payload, tmp_path) == 2
+        assert self._run(payload, tmp_path) == 0  # advisory only, never blocks
 
     def test_adg_full_cycle_health_fanout_close_reopen_fanout(self, tmp_path):
         """End-to-end: health → fanout → close → reopen → fanout all pass."""
@@ -670,3 +726,341 @@ class TestCheckFilesystemWriteGate:
         check_filesystem_write_gate("write_file")
         captured = capsys.readouterr()
         assert "write_to_file" in captured.err or "edit" in captured.err
+
+
+# ---------------------------------------------------------------------------
+# check_vector_db_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckVectorDbGate:
+    """Gate: chromadb importable (hard block) + HTTP instance probe (advisory/fail-open)."""
+
+    def _gate(self):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_vector_db_gate
+
+        return check_vector_db_gate
+
+    def test_chromadb_installed_no_http_server_allowed(self):
+        """chromadb importable + no HTTP server = advisory only, not blocked."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            with patch("socket.create_connection", side_effect=ConnectionRefusedError):
+                assert self._gate()() == 0
+
+    def test_chromadb_installed_http_server_running_allowed(self):
+        """chromadb importable + HTTP server running = allowed."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_conn = MagicMock()
+        mock_conn.__enter__ = MagicMock(return_value=mock_conn)
+        mock_conn.__exit__ = MagicMock(return_value=False)
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            with patch("socket.create_connection", return_value=mock_conn):
+                assert self._gate()() == 0
+
+    def test_chromadb_not_installed_blocked(self):
+        """chromadb not importable = hard block."""
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_result.stderr = "No module named chromadb"
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            assert self._gate()() == 2
+
+    def test_chromadb_probe_timeout_blocked(self):
+        """subprocess timeout on library probe = hard block."""
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            side_effect=subprocess.TimeoutExpired(cmd="python", timeout=10),
+        ):
+            assert self._gate()() == 2
+
+    def test_recovery_tools_bypass_gate(self):
+        """vector_stats and list_collections always pass even if chromadb missing."""
+        mock_result = MagicMock()
+        mock_result.returncode = 1  # chromadb missing
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            for tool in VECTOR_DB_RECOVERY_TOOLS:
+                payload = {"tool_info": {"mcp_server_name": "vector_db", "mcp_tool_name": tool}}
+                raw = json.dumps(payload)
+                with patch("sys.stdin", StringIO(raw)):
+                    assert main() == 0, f"Recovery tool '{tool}' must bypass vector_db gate"
+
+    def test_advisory_message_emitted_when_no_http_server(self, capsys):
+        """When HTTP server absent, advisory INFO message is printed."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            with patch("socket.create_connection", side_effect=ConnectionRefusedError):
+                self._gate()()
+        captured = capsys.readouterr()
+        assert "ChromaDB" in captured.err or "embedded" in captured.err.lower()
+
+
+# ---------------------------------------------------------------------------
+# check_otel_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckOtelGate:
+    """Gate: opentelemetry SDK importable (hard block) + OTLP collector probe (advisory/fail-open)."""
+
+    def _gate(self):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_otel_gate
+
+        return check_otel_gate
+
+    def test_otel_sdk_installed_no_collector_allowed(self):
+        """SDK importable + no OTLP collector = advisory only, not blocked."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            with patch("socket.create_connection", side_effect=ConnectionRefusedError):
+                assert self._gate()() == 0
+
+    def test_otel_sdk_installed_collector_running_allowed(self):
+        """SDK importable + collector running = allowed."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_conn = MagicMock()
+        mock_conn.__enter__ = MagicMock(return_value=mock_conn)
+        mock_conn.__exit__ = MagicMock(return_value=False)
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            with patch("socket.create_connection", return_value=mock_conn):
+                assert self._gate()() == 0
+
+    def test_otel_sdk_not_installed_blocked(self):
+        """opentelemetry SDK not importable = hard block."""
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_result.stderr = "No module named opentelemetry"
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            assert self._gate()() == 2
+
+    def test_otel_probe_timeout_blocked(self):
+        """subprocess timeout on SDK probe = hard block."""
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            side_effect=subprocess.TimeoutExpired(cmd="python", timeout=10),
+        ):
+            assert self._gate()() == 2
+
+    def test_recovery_tools_bypass_gate(self):
+        """otel_status and otel_metrics_summary always pass even if SDK missing."""
+        mock_result = MagicMock()
+        mock_result.returncode = 1  # SDK missing
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            for tool in OTEL_MCP_RECOVERY_TOOLS:
+                payload = {"tool_info": {"mcp_server_name": "otel_mcp", "mcp_tool_name": tool}}
+                raw = json.dumps(payload)
+                with patch("sys.stdin", StringIO(raw)):
+                    assert main() == 0, f"Recovery tool '{tool}' must bypass otel gate"
+
+    def test_advisory_message_emitted_when_no_collector(self, capsys):
+        """When OTLP collector absent, advisory INFO message is printed."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            with patch("socket.create_connection", side_effect=ConnectionRefusedError):
+                self._gate()()
+        captured = capsys.readouterr()
+        assert "OTLP" in captured.err or "collector" in captured.err.lower() or "runtime_adg" in captured.err
+
+
+# ---------------------------------------------------------------------------
+# check_redis_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckRedisGate:
+    """Gate: Redis TCP PING (hard block on ConnectionRefusedError)."""
+
+    def _gate(self):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_redis_gate
+
+        return check_redis_gate
+
+    def test_redis_up_allowed(self):
+        import redis as redis_lib
+
+        mock_client = MagicMock()
+        mock_client.ping.return_value = True
+        with patch.object(redis_lib, "Redis", return_value=mock_client):
+            assert self._gate()() == 0
+
+    def test_redis_not_installed_blocked(self):
+        with patch.dict("sys.modules", {"redis": None}):
+            assert self._gate()() == 2
+
+    def test_redis_connection_refused_blocked(self):
+        import redis as redis_lib
+
+        mock_client = MagicMock()
+        mock_client.ping.side_effect = redis_lib.ConnectionError("Connection refused")
+        with patch.object(redis_lib, "Redis", return_value=mock_client):
+            assert self._gate()() == 2
+
+    def test_recovery_tool_bypasses_gate(self):
+        """redis_health bypasses gate even when Redis is down.
+        Server name MUST be 'redis' (matches .windsurf/mcp_config.json key exactly)."""
+        import redis as redis_lib
+
+        mock_client = MagicMock()
+        mock_client.ping.side_effect = redis_lib.ConnectionError("down")
+        with patch.object(redis_lib, "Redis", return_value=mock_client):
+            payload = {"tool_info": {"mcp_server_name": "redis", "mcp_tool_name": "redis_health"}}
+            raw = json.dumps(payload)
+            with patch("sys.stdin", StringIO(raw)):
+                assert main() == 0
+
+
+# ---------------------------------------------------------------------------
+# check_memory_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckMemoryGate:
+    """Gate: knowledge_graph.sqlite accessible (hard block on OperationalError)."""
+
+    def _gate(self, tmp_path):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_memory_gate
+
+        return lambda: check_memory_gate(tmp_path)
+
+    def test_no_db_file_allowed(self, tmp_path):
+        """DB doesn't exist yet — allowed (created on first use)."""
+        assert self._gate(tmp_path)() == 0
+
+    def test_memory_dir_missing_created_and_allowed(self, tmp_path):
+        """artifacts/memory dir missing — gate creates it and allows."""
+        assert self._gate(tmp_path)() == 0
+        assert (tmp_path / "artifacts" / "memory").exists()
+
+    def test_healthy_db_allowed(self, tmp_path):
+        mem = tmp_path / "artifacts" / "memory"
+        mem.mkdir(parents=True)
+        db = mem / "knowledge_graph.sqlite"
+        conn = sqlite3.connect(str(db))
+        conn.execute("CREATE TABLE entities (id INTEGER)")
+        conn.commit()
+        conn.close()
+        assert self._gate(tmp_path)() == 0
+
+    def test_corrupted_db_blocked(self, tmp_path):
+        mem = tmp_path / "artifacts" / "memory"
+        mem.mkdir(parents=True)
+        (mem / "knowledge_graph.sqlite").write_bytes(b"not a sqlite file\x00")
+        assert self._gate(tmp_path)() == 2
+
+    def test_recovery_tools_always_bypass(self, tmp_path):
+        """mem_recall_session_start etc. bypass even if DB is corrupted."""
+        mem = tmp_path / "artifacts" / "memory"
+        mem.mkdir(parents=True)
+        (mem / "knowledge_graph.sqlite").write_bytes(b"corrupted")
+        for tool in MEMORY_RECOVERY_TOOLS:
+            payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": tool}}
+            raw = json.dumps(payload)
+            with patch("sys.stdin", StringIO(raw)):
+                with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+                    assert main() == 0, f"Recovery tool '{tool}' must bypass memory gate"
+
+
+# ---------------------------------------------------------------------------
+# check_pytest_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckPytestGate:
+    """Gate: pytest importable (hard block) + pytest.ini advisory."""
+
+    def _gate(self, tmp_path):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_pytest_gate
+
+        return lambda: check_pytest_gate(tmp_path)
+
+    def test_pytest_installed_with_ini_allowed(self, tmp_path):
+        (tmp_path / "pytest.ini").write_text("[pytest]")
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            assert self._gate(tmp_path)() == 0
+
+    def test_pytest_installed_no_ini_advisory_only_allowed(self, tmp_path, capsys):
+        """No pytest.ini is advisory only — gate still allows."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            result = self._gate(tmp_path)()
+        assert result == 0
+        captured = capsys.readouterr()
+        assert "pytest" in captured.err.lower()
+
+    def test_pytest_not_installed_blocked(self, tmp_path):
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            assert self._gate(tmp_path)() == 2
+
+    def test_recovery_tools_bypass_gate(self):
+        """list_pytest_config and discover_tests bypass gate."""
+        mock_result = MagicMock()
+        mock_result.returncode = 1  # pytest not installed
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            for tool in PYTEST_RECOVERY_TOOLS:
+                payload = {"tool_info": {"mcp_server_name": "pytest_mcp", "mcp_tool_name": tool}}
+                raw = json.dumps(payload)
+                with patch("sys.stdin", StringIO(raw)):
+                    assert main() == 0, f"Recovery tool '{tool}' must bypass pytest gate"
+
+
+# ---------------------------------------------------------------------------
+# check_task_manager_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestCheckTaskManagerGate:
+    """Gate: Node.js in PATH (hard block on FileNotFoundError)."""
+
+    def _gate(self):
+        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_task_manager_gate
+
+        return check_task_manager_gate
+
+    def test_node_available_allowed(self):
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            assert self._gate()() == 0
+
+    def test_node_not_in_path_blocked(self):
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            side_effect=FileNotFoundError("node not found"),
+        ):
+            assert self._gate()() == 2
+
+    def test_node_returns_nonzero_blocked(self):
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+            assert self._gate()() == 2
+
+    def test_node_probe_timeout_blocked(self):
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            side_effect=subprocess.TimeoutExpired(cmd="node", timeout=10),
+        ):
+            assert self._gate()() == 2
+
+    def test_recovery_tools_bypass_gate(self):
+        """list_tasks, decompose_task, task_info always bypass the Node.js probe."""
+        with patch(
+            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            side_effect=FileNotFoundError("node not found"),
+        ):
+            for tool in TASK_MANAGER_RECOVERY_TOOLS:
+                payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": tool}}
+                raw = json.dumps(payload)
+                with patch("sys.stdin", StringIO(raw)):
+                    assert main() == 0, f"Recovery tool '{tool}' must bypass task_manager gate"

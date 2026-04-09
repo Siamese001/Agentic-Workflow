@@ -12,10 +12,13 @@ This file is the single source of truth for these policy topics.
 
 ## MCP Green Light
 
-Before starting ANY T2/T3 work, call `mcp1_adg_health`.
-If result is unhealthy or stale (>30 min): run `/mcp-failure-rca` and wait for recovery.
-NEVER begin multi-file work with unhealthy MCPs.
-Tier 1 enforcement: `pre_mcp_gate.py` blocks ADG calls when SQLite locked or health stale.
+Before starting ANY T2/T3 work, check ADG health in this order:
+1. **Preferred**: Check Redis hot cache — `python tools/adg/adg_redis_ingest.py --check` (exit 0 = hot, fast in-memory path)
+2. **Fallback**: If Redis is down or cache is cold, call `mcp1_adg_health`
+3. If `mcp1_adg_health` is unhealthy: run `/mcp-failure-rca` and wait for recovery.
+
+NEVER begin multi-file work with both Redis cold AND ADG MCP unhealthy.
+Tier 1 enforcement: `pre_prompt_classifier.py` checks Redis sentinel first, falls back to ADG MCP probe.
 
 ---
 

@@ -15,7 +15,7 @@ REASONING LAYER
 
 ROUTING LAYER
 [ ] mcp1_adg_health called — result: OK | DEGRADED | FAILED
-[ ] mcp9_mem_recall_session_start called — result: OK | UNAVAILABLE
+[ ] mcp5_mem_recall_session_start called — result: OK | UNAVAILABLE
 [ ] mcp13_create_task created — task ID: <id>
 [ ] All required MCPs identified and confirmed healthy (or fallback documented)
 

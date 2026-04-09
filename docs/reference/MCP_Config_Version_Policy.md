@@ -15,26 +15,26 @@ break all MCP tool calls for the session.
 
 ---
 
-## Version Fields
+## Required Fields
 
-Each MCP server entry in `config/mcp_servers.yaml` MUST include:
+Each entry in `.windsurf/mcp_config.json` under `mcpServers` MUST include:
 
-```yaml
-servers:
-  adg_sqlite:
-    version: "1.0"          # semantic version of this config entry
-    last_validated: "2026-04-07"   # ISO date of last successful validation
-    transport: stdio        # stdio | sse | url
-    command: python
-    args: [...]
-    env: {}
+```json
+{
+  "mcpServers": {
+    "adg_sqlite": {
+      "command": "python",
+      "args": ["..."],
+      "disabled": false
+    }
+  }
+}
 ```
 
 Required fields:
-- `version` — semantic version string (MAJOR.MINOR)
-- `transport` — must be one of: `stdio`, `sse`, `url`
-- `command` — executable path or name
-- `args` — argument list (may be empty)
+- `command` OR `url` — at least one must be present
+- `args` — argument list (may be empty array)
+- `disabled` — explicit boolean (default `false`)
 
 ---
 
@@ -42,20 +42,19 @@ Required fields:
 
 | Check | Severity | Action |
 |-------|----------|--------|
-| Missing `transport` field | CRITICAL | Block deploy |
-| Unknown `transport` value | CRITICAL | Block deploy |
-| Missing `command` field | CRITICAL | Block deploy |
-| API key as literal string (not `${VAR}`) | CRITICAL | Block deploy |
-| `version` field missing | WARNING | Log, allow |
+| Neither `command` nor `url` present | CRITICAL | Block deploy |
+| API key as literal string (not `${env:VAR}`) | CRITICAL | Block deploy |
+| Invalid JSON syntax | CRITICAL | Block deploy |
+| `mcpServers` key missing | CRITICAL | Block deploy |
 | Server count decreased by >2 | WARNING | Log, require confirmation |
 
 ---
 
 ## Enforcement Points
 
-1. **Post-write audit** (`post_write_audit.py`): Lints `mcp_config.json` writes for schema issues, logs to `artifacts/windsurf/mcp_lint_audit.jsonl`
-2. **CI validation**: `python ops_scripts/ci/validate_mcp_yaml.py` — runs on every change to `config/mcp_servers.yaml`
-3. **Pre-commit**: `mcp-config-sync` hook validates before commit
+1. **Post-write audit** (`post_write_audit.py`): Lints `.windsurf/mcp_config.json` writes for schema issues, logs to `artifacts/windsurf/mcp_lint_audit.jsonl`
+2. **CI validation**: `python ops_scripts/ci/validate_mcp_config.py` — runs on every change to `.windsurf/mcp_config.json`
+3. **Sovereignty check**: `python ops_scripts/ci/check_mcp_config_sovereignty.py` — validates filesystem server is present and scoped to repo root
 
 ---
 
@@ -64,10 +63,10 @@ Required fields:
 When modifying MCP server configuration:
 
 ```
-1. Edit config/mcp_servers.yaml  (SSOT — never edit global JSON directly)
-2. Run: python ops_scripts/ci/validate_mcp_yaml.py
-3. If valid: python tools/adg/sync_yaml_to_global.py
-4. Commit both yaml + any generated changes
+1. Edit .windsurf/mcp_config.json  (SSOT — single file, mcpServers format)
+2. Run: python ops_scripts/ci/validate_mcp_config.py
+3. If valid: copy to global — python -c "import shutil,pathlib; shutil.copy('.windsurf/mcp_config.json', str(pathlib.Path.home()/'.codeium/windsurf/mcp_config.json'))"
+4. Commit .windsurf/mcp_config.json
 5. Restart Windsurf to pick up new config
 ```
 
@@ -78,9 +77,9 @@ When modifying MCP server configuration:
 If a bad MCP config is deployed:
 
 ```
-1. git log config/mcp_servers.yaml   -- find last good commit
-2. git checkout <good-sha> -- config/mcp_servers.yaml
-3. python tools/adg/sync_yaml_to_global.py
+1. git log .windsurf/mcp_config.json   -- find last good commit
+2. git checkout <good-sha> -- .windsurf/mcp_config.json
+3. Copy to global: python -c "import shutil,pathlib; shutil.copy('.windsurf/mcp_config.json', str(pathlib.Path.home()/'.codeium/windsurf/mcp_config.json'))"
 4. Restart Windsurf
 ```
 
@@ -92,6 +91,6 @@ with timestamped records of every config write — use this to trace when drift 
 ## References
 
 - MCP Registry: `docs/reference/MCP_Registry.md`
-- YAML SSOT rule: `.windsurf/rules/mcp-config-ssot.md`
-- Sync workflow: `.windsurf/workflows/mcp-config-sync.md`
+- SSOT rule: `.windsurf/rules/mcp-config-ssot.md`
 - Audit log: `artifacts/windsurf/mcp_lint_audit.jsonl`
+- Archive (YAML infra — do not restore): `tools/archive/mcp_yaml_infra_w5.2/`

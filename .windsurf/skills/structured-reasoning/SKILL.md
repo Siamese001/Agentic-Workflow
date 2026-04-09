@@ -82,7 +82,7 @@ Risks / stop conditions: [list]
 
 Execute only query/read calls. Confirm:
 - ADG MCP healthy (`mcp1_adg_health`)
-- Session context loaded (`mcp9_mem_recall_session_start`)
+- Session context loaded (`mcp5_mem_recall_session_start`)
 - All relevant files read
 - Blast radius confirmed via ADG fanout/fanin
 
@@ -168,18 +168,23 @@ Each revision must:
 
 ## MCP Role Mapping
 
-| MCP | Functional Role | Failure fallback |
-|-----|----------------|-----------------|
-| `mcp1` ADG SQLite | Context / evidence (primary) | `/mcp-failure-rca` — STOP if unresolvable |
-| `mcp9` Memory | Memory / checkpointing | Proceed; note `[MEMORY UNAVAILABLE]` |
-| `mcp13` Task Manager | Plan tracking / decomposition | Use `todo_list` native tool |
-| `mcp7` / `read_file` | Context / evidence (file reads) | `read_file` always available natively |
-| `mcp11` Pytest | Validation / verification | `run_command` with pytest CLI |
-| `mcp0` GitKraken | Validation / version control | `run_command` with git CLI |
-| `mcp2` Brave Search | External lookup | `mcp5_fetch` as fallback |
-| `mcp4` Enhanced HTTP | External lookup | `mcp5_fetch` as fallback |
-| `mcp3` DeepWiki | External lookup (repo docs) | `mcp5_fetch` as fallback |
-| `mcp12` Redis | Cache / state inspection | Note `[REDIS UNAVAILABLE]`; proceed |
+> **Note on prefixes:** Declared prefix fields in `config/mcp_servers.yaml` and `.windsurf/mcp_config.json`
+> are documentation metadata. Windsurf assigns live `mcp0`/`mcp1`/`mcp2`... numbers by load order from
+> `~/.codeium/windsurf/mcp_config.json`. Use the tool names visible in your session, not these prefix labels.
+
+| MCP (YAML name) | When to invoke | Failure fallback |
+|-----------------|---------------|-----------------|
+| **adg_sqlite** | Dependency analysis, blast radius, layer violations, node/edge lookup — required before any T2/T3 edit | `/mcp-failure-rca` — STOP if unresolvable |
+| **memory** | Session start context (`mem_recall_session_start`), store durable architectural decisions, cross-session continuity | Proceed; note `[MEMORY UNAVAILABLE]` |
+| **task_manager** | T2/T3 task decomposition (`create_task`, `decompose_task`, `update_task`) — one task per SR session | Use `todo_list` native tool |
+| **filesystem** | File reads (`read_text_file`, `list_directory`, etc.) — write tools BLOCKED by gate, use native `edit`/`write_to_file` | `read_file` native tool always available |
+| **pytest_mcp** | Scoped test runs, test discovery, coverage — prefer over `run_command pytest` for structured output | `run_command` with pytest CLI |
+| **gitkraken** | Git status, log, commit, branch, PR/issue ops — prefer over `run_command git` | `run_command` with git CLI |
+| **redis_mcp** | ADG hot cache inspection, namespace stats, sentinel key check — primary ADG health path per constitutional §13 | Note `[REDIS UNAVAILABLE]`; fall back to adg_sqlite probe |
+| **enhanced_http** | External API calls, URL fetching with POST/headers/auth, batch HTTP — use when `read_url_content` is insufficient | `read_url_content` native tool |
+| **deepwiki** | Questions about external GitHub repos, third-party lib docs — not for this repo | `read_url_content` as fallback |
+| **vector_db** | Similarity search against ChromaDB embeddings — any retrieval requiring "find facts similar to X" (RAG, duplicate detection) | Note `[VECTOR_DB UNAVAILABLE]`; proceed without semantic retrieval |
+| **otel_mcp** | Runtime observability — query live spans, metrics, anomalies, healing chains, policy decisions. Use when evaluating *what happened at runtime* | Note `[OTEL UNAVAILABLE]`; read runtime_adg SQLite directly |
 
 **No single MCP is an opaque reasoning black box.** Each has one concrete job.
 

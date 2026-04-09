@@ -176,62 +176,48 @@ _emit_invokes_eval("p1", "mcp_manager", "eval_call")
 _emit_proposal_commits_routing("p1", "mcp_manager", "routing_commit")
 
 
-# Import the MCP loader for YAML SSOT
+# Import the MCP loader (.windsurf/mcp_config.json SSOT)
 try:
-    from agentic_core.config.mcp_loader import MCPLoader, get_cached_loader
+    from agentic_core.config.mcp_loader import get_cached_loader
+
     _MCP_LOADER_AVAILABLE = True
 except ImportError:
     _MCP_LOADER_AVAILABLE = False
-    MCPLoader = None
     get_cached_loader = None
 
 Logger: Any = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# MCP Tool Registry - Dynamic loading from config/mcp_servers.yaml (SSOT)
-#
-# The _TOOL_DISPATCH table is now loaded dynamically from the YAML configuration
-# to ensure all MCP references come from a single source of truth.
-#
-# Legacy hardcoded prefixes (for reference):
-#   mcp0_* = GitKraken (git, issues, PRs)
-#   mcp1_* = adg_sqlite (ADG graph operations)
-#   mcp2_* = brave-search (web, local, news, video, image search)
-#   mcp3_* = deepwiki (repo documentation)
-#   mcp4_* = enhanced_http (HTTP requests)
-#   mcp5_* = filesystem (file operations)
-#   mcp6_* = memory (knowledge graph)
-#   mcp7_* = sequential-thinking (problem solving)
-#   mcp8_* = vector_db (embeddings, collections)
+# MCP Server Registry — loaded from .windsurf/mcp_config.json (SSOT)
 # ---------------------------------------------------------------------------
 
-# Cache for the tool dispatch mapping
-_TOOL_DISPATCH_CACHE: dict[str, str] | None = None
+# Cache for the server dispatch mapping (populated once, never None)
+_TOOL_DISPATCH_CACHE: dict[str, str] = {}
 
 
 def _get_tool_dispatch() -> dict[str, str]:
-    """Get tool dispatch table, loading from YAML if necessary.
+    """Get enabled server names from .windsurf/mcp_config.json.
 
     Returns:
-        Dictionary mapping logical tool names to MCP function names.
-        Falls back to empty dict if loader unavailable.
+        Dict of server_name -> server_name (identity map used for presence
+        checks). Falls back to empty dict if loader unavailable.
     """
-    global _TOOL_DISPATCH_CACHE
-
-    if _TOOL_DISPATCH_CACHE is not None:
+    if _TOOL_DISPATCH_CACHE:
         return _TOOL_DISPATCH_CACHE
 
     if _MCP_LOADER_AVAILABLE and get_cached_loader:
         try:
             loader = get_cached_loader()
-            _TOOL_DISPATCH_CACHE = loader.get_tool_mapping()
-            Logger.debug(f"[MCPManager] Loaded {len(_TOOL_DISPATCH_CACHE)} tools from YAML SSOT")
-            return _TOOL_DISPATCH_CACHE
-        except Exception as e:
-            Logger.warning(f"[MCPManager] Failed to load from YAML: {e}. Using fallback.")
+            servers = loader.list_enabled_servers()
+            _TOOL_DISPATCH_CACHE.update({s: s for s in servers})
+            Logger.debug(
+                "[MCPManager] Loaded %d servers from .windsurf/mcp_config.json", len(_TOOL_DISPATCH_CACHE)
+            )
+        except (FileNotFoundError, ValueError, OSError) as e:
+            Logger.warning(
+                "[MCPManager] Failed to load from .windsurf/mcp_config.json: %s. Using fallback.", e
+            )
 
-    # Fallback: return empty dict (tools won't resolve, but won't crash)
-    _TOOL_DISPATCH_CACHE = {}
     return _TOOL_DISPATCH_CACHE
 
 
@@ -249,7 +235,7 @@ def _resolve_tool(tool_name: str) -> Any:
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_resolve_tool", "p0_governance")
 
-    # Get dispatch table from YAML SSOT (cached)
+    # Get dispatch table from .windsurf/mcp_config.json SSOT (cached)
     tool_dispatch = _get_tool_dispatch()
     mapped = tool_dispatch.get(tool_name)
 
@@ -296,7 +282,9 @@ class MCPConnectionManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "MCPConnectionManager.connect",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "MCPConnectionManager.connect",
         )
 
         self._role = role

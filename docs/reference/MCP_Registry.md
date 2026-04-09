@@ -132,4 +132,4 @@ Before adding a new MCP server:
 2. If overlap: document the authority decision here before adding
 3. HITL approval required (Constitutional §HITL-1.5 Dependency Addition)
 4. Update this registry after approval
-5. Sync `config/mcp_servers.yaml` via `/mcp-config-sync` workflow
+5. Save `.windsurf/mcp_config.json` — `post_write_mcp_config_sync.py` hook auto-copies to global. Restart Windsurf to apply.

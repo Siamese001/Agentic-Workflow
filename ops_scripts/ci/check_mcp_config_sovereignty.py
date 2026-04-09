@@ -169,7 +169,7 @@ _emit_hard_fails_untranscripted("p1", "check_mcp_config_sovereignty")
 _emit_gated_by_confidence("p1", "check_mcp_config_sovereignty", "confidence_gate")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MCP_CONFIG_PATH = REPO_ROOT / "mcp_config.json"
+MCP_CONFIG_PATH = REPO_ROOT / ".windsurf" / "mcp_config.json"
 
 # guardian: allow-config-with-logic
 FORBIDDEN_OUT_OF_REPO_FRAGMENTS = [
