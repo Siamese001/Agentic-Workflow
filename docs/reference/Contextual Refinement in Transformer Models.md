@@ -1,5 +1,5 @@
 ====================================================================================================================================
-                                      DEEP DIVE: THE ARCHITECTURE OF CONTEXTUAL REFINEMENT v4
+                                      CONTEXTUAL REFINEMENT - RETRIEVAL (EMBEDDING) vs. GENERATION (LLM)
 ====================================================================================================================================
 
 [ RAW TEXT STRING ]: "She sat by the bank of the river."
@@ -123,7 +123,7 @@ Model: Large Language Models (GPT, Gemini)             Model: Embedding Models (
    "What word logically comes next?"                      "What does this entire chunk mean?"
 
 ⚙️ Action:                                             ⚙️ Action:
-   Takes the final vector of the *last* Takes the final vectors of *every*
+   Takes the final vector of the *last*                   Takes the final vectors of *every*
    token and multiplies it against the                    token in the chunk and averages them
    master vocabulary matrix.                              together (Mean Pooling).
 
