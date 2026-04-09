@@ -108,7 +108,7 @@ class ExplanationGenerator:
         """
         start_time = time.time()
 
-        logger.info(f"Generating decision explanation for {context.action_type}")
+        logger.info("Generating decision explanation for %s", context.action_type)
 
         # Generate explanation components
         components = []
@@ -173,7 +173,7 @@ class ExplanationGenerator:
         """
         start_time = time.time()
 
-        logger.info(f"Generating analysis explanation for depth {analysis_result.analysis_depth.value}")
+        logger.info("Generating analysis explanation for depth %s", analysis_result.analysis_depth.value)
 
         components = []
 

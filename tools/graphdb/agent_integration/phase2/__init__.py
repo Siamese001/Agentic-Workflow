@@ -14,5 +14,4 @@ __all__ = [
     "CollaborativeIntelligence",
     "PredictiveAnalytics",
     "ExplanationGenerator",
-    "Phase2CompletionGates",
 ]
