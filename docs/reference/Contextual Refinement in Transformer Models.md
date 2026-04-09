@@ -6,11 +6,17 @@
 [ REALISTIC TOKENS]: [She] [_sat] [_by] [_the] [_bank] [_of] [_the] [_riv] [er] [.]  <-- (Note realistic subword chunking)
 
 In a real Transformer, words are split into Byte-Pair Encoding (BPE) subwords (smaller subword units learned from text frequency patterns). "river" might become [_riv] and [er]. 
-We will track a single rider—the token [_bank]—as it drops down the layers, examining its precise interactions.
+
+THE ANALOGY: THE TWIN CASCADING SLIDES
+Imagine two massive, parallel waterpark rides. 
+- SLIDE 1 (Left) is the Embedding/Retrieval ride, consisting of N cascading slide sections (Transformer layers).
+- SLIDE 2 (Right) is the LLM/Generation ride, also consisting of N cascading slide sections.
+
+The starting vector baseline is released at the very top. As the rider drops, the vector gets progressively perturbed, mixed, and optimized along each set of transformers in the large cascading slide. We will track a single rider—the token [_bank]—examining its precise interactions.
 
 [07:55 AM] DAWN: THE STAGING AREA (Token to Embedding + Position)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   Token [_bank] (and all other tokens simultaneously)
+   Token [_bank] (and all other tokens simultaneously wait at the top of the slides)
          │
          ▼
   🗄️ EMBEDDING CLERK: Looks up the exact coordinate row for Vocabulary ID #5932 ("_bank").
@@ -64,8 +70,8 @@ Rule:
                                  DIVERGENCE POINT 1: THE RULES OF THE RIDE (DIRECTIONALITY)
 ====================================================================================================================================
 Before the drop, note that the 👁️ GUARDS have different vision rules depending on the model architecture. 
-Both parks start with the same rider construction process. The fork happens only when the guards decide what each rider is allowed to see.
-Every token occurrence gets reshaped by its OWN visible context—but *what* context it can see depends on the park.
+Both parks start with the same rider construction process at the top. The fork happens only when the guards decide what each rider is allowed to see on their respective slide.
+Every token occurrence gets reshaped by its OWN visible context—but *what* context it can see depends on the slide.
 
 [ LOCAL MASK DEMO ONLY ]
 We now reuse the SAME local token sequence for both models ONLY to isolate one question:
@@ -75,7 +81,7 @@ This is a MASK / DIRECTIONALITY demonstration.
 It is NOT claiming that the embedding job and the generation job normally ingest the same overall amount of text.
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-[ ENCODER-ONLY PARK (RETRIEVAL / EMBEDDING) ] 
+[ SLIDE 1 (LEFT): ENCODER-ONLY PARK (RETRIEVAL / EMBEDDING) ] 
 Model: Embedding / encoder models used for retrieval
 
 👀 VISION: 360° (Bidirectional)
@@ -92,7 +98,7 @@ Model: Embedding / encoder models used for retrieval
    Captures the entire slide simultaneously, seeing every twist, turn, and rider from top to bottom at once.
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-[ DECODER-ONLY PARK (GENERATION / LLM) ]
+[ SLIDE 2 (RIGHT): DECODER-ONLY PARK (GENERATION / LLM) ]
 Model: Large Language Models (GPT, Gemini)
 
 👀 VISION: Causal (Blind to the future)
@@ -115,17 +121,17 @@ from everything up to that point ONLY.
 
 [08:05 AM] LAYER 1: THE INITIAL CONTEXT MIX (The Full Slide Anatomy)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  The [_bank] vector drops into Slide 1. The internal mechanisms execute complex, targeted mathematics.
+  The [_bank] vector drops into Layer 1 of its respective slide. The internal mechanisms execute complex, targeted mathematics.
 
   *(The Micro-Sequence: Token ID ──► Embedding Row ──► +Position ──► Q/K/V Generation ──► Apply Mask ──► Attention Update ──► Residual Connection)*
 
   👁️ GUARDS (Self-Attention Heads): "Let's see who is mathematically relevant to you right now, based on who you are allowed to look at."
      
      --- HOW VISION CHANGES THE MATH ---
-     If RETRIEVAL: The Guard lets [_bank] see everything. 
+     If SLIDE 1 (RETRIEVAL): The Guard lets [_bank] see everything. 
      It attends heavily to [_riv] and [er]. The vector is pulled aggressively toward "nature/water".
 
-     If GENERATION: The Guard blocks [_bank] from seeing the right. 
+     If SLIDE 2 (GENERATION): The Guard blocks [_bank] from seeing the right. 
      It attends heavily to [_sat]. The vector is pulled toward a concrete, physical-situation reading rather than finance.
      -----------------------------------
      
@@ -136,13 +142,13 @@ from everything up to that point ONLY.
      │
      ├─ 🧮 SCORING BOOTH: Dot product (a mathematical multiplication that measures similarity) of Q and K determines the Attention Weight (importance score). But the MASK acts as the strict gatekeeper.
      │    
-     │    If RETRIEVAL (Mask = 1 for all):
+     │    If SLIDE 1 (RETRIEVAL, Mask = 1 for all):
      │    (0.5 * 0.4) + (0.1 * 0.2) = 0.22 (High relevance to [_riv]! They lock on).
      │
-     │    If GENERATION (Mask = 0 for future tokens):
+     │    If SLIDE 2 (GENERATION, Mask = 0 for future tokens):
      │    The mask removes [_riv] from the legal attention set, so its effective attention weight becomes zero after masking and softmax. It redistributes attention across the allowed left-context tokens, often giving more weight to tokens like [_sat].
      │
-     └─ 🤝 MERGE BOOTH *(Assuming RETRIEVAL for the continued math below)*: Because the score is high, [_bank] absorbs the Value (V) of [_riv].
+     └─ 🤝 MERGE BOOTH *(Assuming SLIDE 1 RETRIEVAL for the continued math below)*: Because the score is high, [_bank] absorbs the Value (V) of [_riv].
           Value (V) of [_riv]: [  0.08 |  0.30 |  0.15 ]  <-- (This is the context update vector)
 
   🛡️ SAFETY RAILING (Residual Connection, or bypass lane): Keeps the prior self alive. The vector is edited, not erased.
@@ -184,10 +190,10 @@ from everything up to that point ONLY.
   [  0.41 | -0.32 |  0.79 ]  <-- (Updated Vector 6: Compounded signal. Sentence role awareness locked)
 
 
-[05:00 PM] LAYER 24: THE SPLASH POOL (FINAL REFINEMENT)
+[05:00 PM] LAYER N: THE SPLASH POOL (FINAL REFINEMENT)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  After 24 distinct rounds of this Guard/Coach/Mechanic loop, the vector has been ruthlessly pruned of all ambiguity.
-  Because EVERY rider around "_bank" has also been changing, this Slide 24 output is vastly different from Slide 2.
+  After N distinct rounds of this Guard/Coach/Mechanic loop cascading down the slide, the vector has been ruthlessly pruned of all ambiguity.
+  Because EVERY rider around "_bank" has also been changing, this Slide N output is vastly different from Slide 1.
 
   🗄️ 👁️ ⚖️ 🛠️ FINAL POLISH:
      └─ Interpretation: The representation now strongly, heavily favors the physical riverbank in this specific context 
@@ -203,15 +209,15 @@ from everything up to that point ONLY.
 ====================================================================================================================================
                               DIVERGENCE POINT 2: THE CRUCIAL FORK (WHAT HAPPENS NEXT?)
 ====================================================================================================================================
-  In this teaching example, both models pass tokens through the same kind of stacked transformer blocks to reach this highly refined state.
-  But what happens at the bottom of the slide changes entirely based on the model's architectural purpose.
+  In this teaching example, both models pass tokens through the same kind of N stacked transformer blocks to reach this highly refined state at the bottom of the slides.
+  But what happens in the splash pool changes entirely based on the model's architectural purpose.
 
-                              [ CONTEXTUALIZED TOKEN STATES (Output of Layer 24) ]
+                              [ CONTEXTUALIZED TOKEN STATES (Output of Layer N) ]
                                                      |
                                                      ▼
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-[ ENCODER-ONLY PARK (RETRIEVAL) ]                      
+[ BOTTOM OF SLIDE 1 (LEFT): ENCODER-ONLY PARK (RETRIEVAL) ]                      
 ⛴️ THE POOLING FERRY (Projection)                      
 
 ❓ Core Question:                                      
@@ -230,7 +236,7 @@ from everything up to that point ONLY.
    based on semantic similarity.              
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-[ DECODER-ONLY PARK (GENERATION) ]
+[ BOTTOM OF SLIDE 2 (RIGHT): DECODER-ONLY PARK (GENERATION) ]
 🚪 THE VOCABULARY EXIT GATE (Unembedding, converting math back to words)
 
 ❓ Core Question:

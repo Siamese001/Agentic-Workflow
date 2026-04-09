@@ -297,34 +297,26 @@ CREATE TABLE edges (
 
 ### 3.2 ADG Integration Points
 
-**Option A: ADG as Post-Filter (Minimal Change)**
-1. Query ChromaDB for semantic matches
-2. Extract ADG node IDs from metadata
-3. Query ADG for structural relationships
-4. Filter/rerank results based on ADG constraints
+ask_user_question(
+  question="""Recommended: Hybrid Graph + Vector (Option C)
+Why it wins: Delivers comprehensive retrieval by fusing ADG structural context, ChromaDB semantic similarity, and BM25 lexical search in parallel — achieving best-of-all-worlds coverage with measurable governance enforcement.
+What you are optimizing for: Maximum retrieval completeness with architectural traceability and governance enforcement.
+What is being traded off: Higher implementation complexity and synchronization requirements versus simpler but incomplete alternatives.
+Candidates evaluated: 3 | Surfaced: 2 | Suppressed (low confidence): 1 | Suppressed (non-distinct): 0""",
+  options=[
+    {
+      "label": "⭐ Option C — Hybrid Graph + Vector [0.90 HIGH]",
+      "description": "decision_thesis: Fuses ADG structural context (callers, imports, layer), ChromaDB semantic similarity, and BM25 lexical search in parallel with weighted scoring and L4E parent-child expansion. value_to_goal: Achieves comprehensive retrieval with full architectural traceability and governance constraint enforcement — leverages all 624K ADG edges including 334K structural edges. key_tradeoffs: Gains retrieval completeness and governance enforcement, but requires synchronization across three data sources and complex query orchestration; implementation effort ~3 weeks. execution_impact: Touches ingestion pipeline (adds ADG node ID metadata), retrieval engine (hybrid fusion scoring), and governance layer (constraint enforcement); adds 3 new modules. risk_profile: Primary failure mode is synchronization drift between ADG and ChromaDB — detectable via consistency checks; complexity increases debug surface; reversible by falling back to ChromaDB-only. time_to_value: Near-term — requires schema updates and fusion engine before improvement is visible. ⭐ RECOMMENDED"
+    },
+    {
+      "label": "Option A — ADG as Post-Filter [0.72 MEDIUM]",
+      "description": "decision_thesis: Queries ChromaDB first for semantic matches, then extracts ADG node IDs from metadata to query structural relationships for filtering/reranking. value_to_goal: Minimal ingestion changes — adds ADG filtering as post-processing layer without disrupting existing ChromaDB pipeline. key_tradeoffs: Gains ADG structural awareness with low implementation risk, but adds query latency and requires ongoing metadata synchronization; cannot leverage structural context for initial retrieval — only for filtering. execution_impact: Limited to retrieval layer only; ingestion unchanged; adds one filter module. risk_profile: Primary failure mode is metadata staleness causing incorrect filtering — detectable via validation queries; latency impact measurable via timing telemetry. time_to_value: Immediate — single session integration. recommendation_delta: Ranks below Option C because it treats ADG as secondary rather than core retrieval signal; structural context only used for filtering, not initial retrieval."
+    }
+  ],
+  allowMultiple=false
+)
 
-**Pros**: Minimal ingestion changes
-**Cons**: Requires metadata sync, additional query latency
-
-**Option B: ADG as Pre-Filter (Structural First)**
-1. Query ADG for structural matches (callers, imports, layer)
-2. Use results to filter ChromaDB collection
-3. Apply semantic search on filtered subset
-4. Fuse results with BM25
-
-**Pros**: Faster for structural queries, better governance
-**Cons**: Complex query orchestration
-
-**Option C: Hybrid Graph + Vector (⭐ RECOMMENDED)**
-1. Query ADG for structural context (parallel)
-2. Query ChromaDB for semantic similarity (parallel)
-3. Query BM25 for lexical matches (parallel)
-4. Fuse all results with weighted scoring
-5. Apply parent-child expansion from L4E
-6. Enforce governance constraints from ADG
-
-**Pros**: Best of all worlds, comprehensive retrieval
-**Cons**: Highest complexity, requires synchronization
+**Note**: Option B (ADG as Pre-Filter) suppressed — score 0.68 (below 0.72 surface_threshold). Pre-filtering by ADG structural matches before ChromaDB semantic search creates an unnecessary bottleneck; structural queries alone miss semantic nuance requiring fallback to full collection scan.
 
 ### 3.3 Recommended Implementation: Option C
 

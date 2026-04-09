@@ -1,0 +1,174 @@
+10c_req_id,10a_req_id,covered_by_10a,10a_coverage_type,coverage_gap_reason
+10C-REQ-001,REQ-025,partial,Semantic extraction present but corpus-level vs row-level,10a REQ-025 covers chunking generally but not row-level modality detect requirement
+10C-REQ-002,None,no,Not extracted,10a baseline started at REQ-001 skipping corpus ingestion details
+10C-REQ-003,REQ-026,partial,Semantic extraction present but missing row-level dedupe details,10a REQ-026 covers lifecycle generally but not specific dedupe checksum version compare tombstone reindex sequence
+10C-REQ-004,REQ-025,yes,REQ-025 covers chunking policy generally,Full semantic coverage of corpus-aware chunking in 10a
+10C-REQ-005,REQ-022,yes,REQ-022 covers metadata binding with six required fields,Full semantic coverage of pre-embedding metadata binding
+10C-REQ-006,REQ-027,partial,REQ-027 mentions dual vectors but not row-level dual path details,10a covers dual vectors generally but not raw_text_vector contextual_text_vector explicit separation
+10C-REQ-007,None,no,Not extracted - Model-role separation not in 28 baseline,10a 28 requirements focused on runtime layers missing embedding/LLM distinction
+10C-REQ-008,REQ-027,yes,REQ-027 covers five storage surfaces,Full semantic coverage of published surfaces
+10C-REQ-009,REQ-019,partial,REQ-019 mentions metrics but not specific index eval feedback loop,10a has metrics but not tied to ingestion feedback loop specifically
+10C-REQ-010,REQ-027,partial,REQ-027 mentions five surfaces but not explicit handoff contract,10a covers surfaces but not handoff readiness verification
+10C-REQ-011,N/A,N/A,Explanatory only - Pedagogical legend,Not a normative requirement - excluded from 10a
+10C-REQ-012,REQ-025,partial,REQ-025 covers chunking generally but not extraction stage details,10a corpus-level extraction missing
+10C-REQ-013,REQ-025,partial,REQ-025 covers chunking but not four strategy details at row level,10a has strategies but not as explicit row-level requirements
+10C-REQ-014,REQ-025,partial,REQ-025 covers semantic enrichment but not dual rail output details,10a enrichment mentioned but raw+contextual rails not explicit
+10C-REQ-015,REQ-022,yes,REQ-022 covers metadata binding including doc_id chunk_id parent_id,Full semantic coverage of metadata binding
+10C-REQ-016,None,no,Not extracted - Token-to-vector mechanics not in baseline,10a 28 requirements missing embedding generation internals
+10C-REQ-017,None,no,Not extracted - Vector record assembly not in baseline,10a missing record assembly invariant details
+10C-REQ-018,None,no,Not extracted - Vector index write not explicit in baseline,10a missing ChromaDB pgvector FAISS specific requirements
+10C-REQ-019,None,no,Not extracted - Canonical sidecar write not explicit,10a missing explicit ChunkManifest ParentChildIndex sparse terms storage
+10C-REQ-020,REQ-027,partial,REQ-027 covers surfaces but not four shelves explicit naming,10a surfaces covered but dense sparse lineage canonical shelf naming not explicit
+10C-REQ-021,None,no,Not extracted - Tokenizer load not in baseline,10a missing token-to-vector internals
+10C-REQ-022,None,no,Not extracted - Tokenization not in baseline,10a missing tokenizer details
+10C-REQ-023,None,no,Not extracted - Model checkpoint resolution not in baseline,10a missing BGE-m3 HuggingFace checkpoint details
+10C-REQ-024,None,no,Not extracted - Weight load not in baseline,10a missing RAM allocation weight import details
+10C-REQ-025,None,no,Not extracted - Forward pass not in baseline,10a missing transformer block execution details
+10C-REQ-026,None,no,Not extracted - Pooling projection not in baseline,10a missing mean pool CLS pool projection details
+10C-REQ-027,None,no,Not extracted - Normalization not in baseline,10a missing L2 normalization for cosine search
+10C-REQ-028,None,no,Not extracted - Output contract not in baseline,10a missing chunk_id vector schema text hash metadata pointer contract
+10C-REQ-029,REQ-027,partial,REQ-027 covers vector store but not UUID->fact_vec sidecar UUID->metadata refs explicit,10a missing vector store internals
+10C-REQ-030,None,no,Not extracted - Canonical metadata store details not in baseline,10a missing ChunkManifest ParentChild AccessCtrl SearchSurfs Anchors details
+10C-REQ-031,REQ-027,partial,REQ-027 covers surfaces generally but not C3 published surfaces explicit,10a missing retrieval surfaces publication details
+10C-REQ-032,REQ-007,partial,REQ-007 covers C0 generally but not C0.1 retrieval plan scope ACL freshness explicit,10a has C0 stages but not explicit row-level C0.1-0.4
+10C-REQ-033,REQ-007,partial,REQ-007 covers C0 generally but not dense+sparse+graph+meta fetch explicit,10a C0 evidence fetch not at row level
+10C-REQ-034,REQ-007,partial,REQ-007 covers evidence shaping but not dedupe rerank contradiction retain explicit,10a evidence shaping at high level only
+10C-REQ-035,REQ-008,partial,REQ-008 covers prompt assembly PA.1-PA.4 but not HMAC signing explicit,10a PA.4 mentioned but HMAC replay metadata not explicit requirement
+10C-REQ-036,None,no,Not extracted - Sparse normalize not in baseline,10a missing sparse index stages
+10C-REQ-037,None,no,Not extracted - Sparse extract not in baseline,10a missing term extraction details
+10C-REQ-038,None,no,Not extracted - Sparse tokenize not in baseline,10a missing phrase symbol tokenization
+10C-REQ-039,None,no,Not extracted - Sparse weight not in baseline,10a missing title field boost
+10C-REQ-040,None,no,Not extracted - Inverted index build not in baseline,10a missing term->postings mapping
+10C-REQ-041,None,no,Not extracted - Sparse store not in baseline,10a missing postings lists storage
+10C-REQ-042,None,no,Not extracted - Canonical store for sparse not in baseline,10a missing raw text metadata storage alongside sparse
+10C-REQ-043,None,no,Not extracted - Sparse query path not in baseline,10a missing literal quoted ID search path
+10C-REQ-044,None,no,Not extracted - Dense query path not in baseline,10a missing semantic paraphrase search path
+10C-REQ-045,None,no,Not extracted - Hybrid merge not in baseline,10a missing union rerank sparse priority
+10C-REQ-046,REQ-023,partial,REQ-023 covers ACL prefilter but not governance filters on merged candidates explicit,10a has ACL prefilter but not post-hybrid-merge ACL check
+10C-REQ-047,REQ-007,partial,REQ-007 covers hydration but not explicit hydrate from canonical after governance filter,10a hydration sequence not explicit
+10C-REQ-048,REQ-007,partial,REQ-007 covers C0 output but not verified chunks ready for prompt explicit,10a output contract not explicit at row level
+10C-REQ-049,REQ-001,partial,REQ-001 covers ingress invariant but not at ASCII diagram prose block level,10a has ingress envelope but no-semantic-routing as explicit row missing
+10C-REQ-050,REQ-001,partial,REQ-001 covers E1-E6 but not as explicit row-level requirements,10a E1-E6 in REQ-001 generally
+10C-REQ-051,REQ-001,partial,REQ-001 covers auth generally but not E2 as row-level requirement,10a E2 library cards not explicit row
+10C-REQ-052,REQ-001,partial,REQ-001 covers quota but not E3 as row-level requirement,10a E3 daily limits not explicit row
+10C-REQ-053,REQ-001,partial,REQ-001 covers schema but not E4 as row-level requirement,10a E4 form validation not explicit row
+10C-REQ-054,REQ-001,partial,REQ-001 covers normalization but not E5 as row-level requirement,10a E5 messy handwriting not explicit row
+10C-REQ-055,REQ-001 REQ-002,partial,REQ-001 and REQ-002 cover stamping but not E6 as row-level requirement,10a E6 stamping not explicit row
+10C-REQ-056,REQ-003,partial,REQ-003 covers L1 plan but not I1 as row-level requirement,10a I1 patron want parsing not explicit row
+10C-REQ-057,REQ-003,partial,REQ-003 covers rules loading but not I2 as row-level requirement,10a I2 their rules not explicit row
+10C-REQ-058,REQ-003,partial,REQ-003 covers details but not I3 as row-level requirement,10a I3 specific details not explicit row
+10C-REQ-059,REQ-003,partial,REQ-003 covers job type but not I4 as row-level requirement,10a I4 job classification not explicit row
+10C-REQ-060,REQ-004,partial,REQ-004 covers rules/priors but not M1-M4 as row-level requirements,10a M1-M4 loading not explicit as rows
+10C-REQ-061,REQ-004,partial,REQ-004 covers policy loading but not M2 as row-level requirement,10a M2 safety policy not explicit row
+10C-REQ-062,REQ-004,partial,REQ-004 covers examples but not M3 as row-level requirement,10a M3 past examples not explicit row
+10C-REQ-063,REQ-004,partial,REQ-004 covers templates but not M4 as row-level requirement,10a M4 pre-approved templates not explicit row
+10C-REQ-064,REQ-003,partial,REQ-003 covers L1 invariant but not at prose block level,10a thinking desk invariant not explicit row
+10C-REQ-065,REQ-003,partial,REQ-003 covers plan synthesis but not P1 as row-level requirement,10a P1 baby steps not explicit row
+10C-REQ-066,REQ-003,partial,REQ-003 covers ordering but not P2 as row-level requirement,10a P2 put in order not explicit row
+10C-REQ-067,REQ-003,partial,REQ-003 covers route proposal but not P3 as row-level requirement,10a P3 pick aisles not explicit row
+10C-REQ-068,REQ-003,yes,REQ-003 covers plan output contract,Full semantic coverage of L1 plan contract
+10C-REQ-069,REQ-003,partial,REQ-003 covers validation but not V1 as row-level requirement,10a V1 did we listen not explicit row
+10C-REQ-070,REQ-003,partial,REQ-003 covers safety validation but not V2 as row-level requirement,10a V2 is it safe not explicit row
+10C-REQ-071,REQ-003,partial,REQ-003 covers logic validation but not V3 as row-level requirement,10a V3 does it make sense not explicit row
+10C-REQ-072,REQ-003,partial,REQ-003 covers simplicity but not V4 as row-level requirement,10a V4 can it be simpler not explicit row
+10C-REQ-073,REQ-003,partial,REQ-003 covers abstain but not V5 as row-level requirement,10a V5 abstain clarify not explicit row
+10C-REQ-074,REQ-003,yes,REQ-003 covers L1 plan output contract,Full semantic coverage of output contract
+10C-REQ-075,REQ-005,yes,REQ-005 covers pre-routing gate,Full semantic coverage of pre-routing ACL freshness filters
+10C-REQ-076,REQ-006,partial,REQ-006 covers routing paths but not R1A as row-level requirement,10a R1A exact cache not explicit row
+10C-REQ-077,REQ-006,partial,REQ-006 covers routing paths but not R1B as row-level requirement,10a R1B semantic cache not explicit row
+10C-REQ-078,REQ-006 REQ-007,partial,REQ-006 and REQ-007 cover R3 but not as explicit row-level requirement,10a R3 grounded retrieval not explicit row
+10C-REQ-079,REQ-006,partial,REQ-006 covers routing paths but not R4 as row-level requirement,10a R4 outside help not explicit row
+10C-REQ-080,REQ-006,partial,REQ-006 covers R5 but not as explicit row-level requirement,10a R5 safe default not explicit row
+10C-REQ-081,REQ-007,partial,REQ-007 covers C0 generally but not C0.1 as row-level requirement,10a C0.1 retrieval plan not explicit row
+10C-REQ-082,REQ-007,partial,REQ-007 covers C0 generally but not C0.2 as row-level requirement,10a C0.2 evidence fetch not explicit row
+10C-REQ-083,REQ-007,partial,REQ-007 covers C0 generally but not C0.3 as row-level requirement,10a C0.3 evidence shaping not explicit row
+10C-REQ-084,REQ-007,partial,REQ-007 covers C0 generally but not C0.4 as row-level requirement,10a C0.4 evidence contract not explicit row
+10C-REQ-085,REQ-008,partial,REQ-008 covers PA.1 but not as explicit row-level requirement,10a PA.1 load static blocks not explicit row
+10C-REQ-086,REQ-008,partial,REQ-008 covers PA.2 but not slot C0 before U0 explicit,10a C0-before-U0 ordering not explicit requirement
+10C-REQ-087,REQ-008,partial,REQ-008 covers PA.3 but not overflow->abstain explicit,10a overflow abstain not explicit requirement
+10C-REQ-088,REQ-008,partial,REQ-008 covers PA.4 but not HMAC signing explicit,10a HMAC signing not explicit row requirement
+10C-REQ-089,None,no,Not extracted - L2 invariants not explicit in baseline,10a missing L2 invariants at prose block level
+10C-REQ-090,REQ-009,partial,REQ-009 covers E1 generally but not as explicit row-level requirement,10a E1 pre-commit not explicit row
+10C-REQ-091,REQ-009,partial,REQ-009 covers validation but not E2 multi-dim check explicit,10a E2 validation dimensions not explicit row
+10C-REQ-092,REQ-009,partial,REQ-009 covers execute but not E3 as row-level requirement,10a E3 execute not explicit row
+10C-REQ-093,REQ-010,partial,REQ-010 covers heal loop but not E4 as explicit row-level requirement,10a E4 heal loop details not explicit row
+10C-REQ-094,REQ-011,partial,REQ-011 covers sealed output but not E5 as row-level requirement,10a E5 seal not explicit row
+10C-REQ-095,REQ-012,partial,REQ-012 covers exit eval but not X1A as row-level requirement,10a X1A rules rubrics not explicit row
+10C-REQ-096,REQ-012,partial,REQ-012 covers exit eval but not X1B as row-level requirement,10a X1B did we answer not explicit row
+10C-REQ-097,REQ-012,partial,REQ-012 covers exit eval but not X1C as row-level requirement,10a X1C is it safe not explicit row
+10C-REQ-098,REQ-012,partial,REQ-012 covers exit eval but not X1D as row-level requirement,10a X1D is answer good not explicit row
+10C-REQ-099,REQ-012,partial,REQ-012 covers exit gates but not X2 as row-level requirement,10a X2 final gates not explicit row
+10C-REQ-100,REQ-013,partial,REQ-013 covers HITL but not H1 as row-level requirement,10a H1 freeze not explicit row
+10C-REQ-101,REQ-013,partial,REQ-013 covers HITL but not H2 as row-level requirement,10a H2 materialize not explicit row
+10C-REQ-102,REQ-013,partial,REQ-013 covers HITL but not H3/H4 as row-level requirement,10a H3/H4 review not explicit row
+10C-REQ-103,REQ-013,partial,REQ-013 covers re-clearance but not H5 routing explicit,10a H5 re-clearance routing not explicit row
+10C-REQ-104,REQ-021,partial,REQ-021 covers shadow eval but not S1A as row-level requirement,10a S1A gather logs not explicit row
+10C-REQ-105,REQ-021,partial,REQ-021 covers shadow eval but not S1B as row-level requirement,10a S1B normalize not explicit row
+10C-REQ-106,REQ-021,partial,REQ-021 covers shadow eval but not S2A as row-level requirement,10a S2A outcome evals not explicit row
+10C-REQ-107,REQ-021,partial,REQ-021 covers shadow eval but not S2B as row-level requirement,10a S2B trajectory evals not explicit row
+10C-REQ-108,REQ-021,partial,REQ-021 covers shadow eval but not S2C as row-level requirement,10a S2C governance regressions not explicit row
+10C-REQ-109,REQ-021,partial,REQ-021 covers shadow eval but not S2D as row-level requirement,10a S2D human calibration not explicit row
+10C-REQ-110,None,no,Not extracted - C0 governance G1 not in baseline,10a missing C0 governance plane
+10C-REQ-111,None,no,Not extracted - C0 G2 not in baseline,10a missing authority context
+10C-REQ-112,None,no,Not extracted - C0 G3 not in baseline,10a missing structure check
+10C-REQ-113,None,no,Not extracted - C0 G4 not in baseline,10a missing registry validation
+10C-REQ-114,None,no,Not extracted - C0 G5 not in baseline,10a missing classify shape
+10C-REQ-115,None,no,Not extracted - C0 G6 not in baseline,10a missing policy chokepoint
+10C-REQ-116,None,no,Not extracted - C0 G7 not in baseline,10a missing sovereign egress
+10C-REQ-117,None,no,Not extracted - C1 replay envelope not in baseline,10a missing C1 replay plane
+10C-REQ-118,None,no,Not extracted - C1 freeze propagation not in baseline,10a missing freeze signal propagation
+10C-REQ-119,None,no,Not extracted - C1 determinism surface not in baseline,10a missing determinism surface details
+10C-REQ-120,None,no,Not extracted - C1 replay guard not in baseline,10a missing replay guard wrapping
+10C-REQ-121,None,no,Not extracted - C1 seal digest not in baseline,10a missing determinism digest seal
+10C-REQ-122,None,no,Not extracted - C4 UWG only not in baseline,10a missing C4 write governance
+10C-REQ-123,None,no,Not extracted - C4 verify not in baseline,10a missing signature/hash verification
+10C-REQ-124,None,no,Not extracted - C4 catalog not in baseline,10a missing RBAC blast radius diff validation
+10C-REQ-125,None,no,Not extracted - C4 lock not in baseline,10a missing write lock ghost prevention
+10C-REQ-126,None,no,Not extracted - C4 commit not in baseline,10a missing ledger write hash-chain
+10C-REQ-127,None,no,Not extracted - C4 refresh not in baseline,10a missing alias swap cache clear
+10C-REQ-128,None,no,Not extracted - C2 L6 read not in baseline,10a missing C2 observability plane
+10C-REQ-129,None,no,Not extracted - C2 S1 time audit not in baseline,10a missing time audit
+10C-REQ-130,None,no,Not extracted - C2 S2 isolation not in baseline,10a missing isolation check
+10C-REQ-131,None,no,Not extracted - C2 S3 drift not in baseline,10a missing drift detection
+10C-REQ-132,None,no,Not extracted - C2 S4 seal not in baseline,10a missing packet seal
+10C-REQ-133,None,no,Not extracted - C2 BUS D/E not in baseline,10a missing live control signals
+10C-REQ-134,None,no,Not extracted - C2 BUS T not in baseline,10a missing trace telemetry
+10C-REQ-135,None,no,Not extracted - C3 failure signal not in baseline,10a missing C3 healing plane
+10C-REQ-136,None,no,Not extracted - C3 local heal not in baseline,10a missing deterministic rule fix
+10C-REQ-137,None,no,Not extracted - C3 heal confidence not in baseline,10a missing model tier routing
+10C-REQ-138,None,no,Not extracted - C3 sovereign not in baseline,10a missing sovereign gateway
+10C-REQ-139,None,no,Not extracted - C3 secure room not in baseline,10a missing secure reading room
+10C-REQ-140,None,no,Not extracted - C3 zero-loss not in baseline,10a missing failure containment
+10C-REQ-141,None,no,Not extracted - C5 offline catalog not in baseline,10a missing C5 retrieval prompt assembly plane
+10C-REQ-142,REQ-007,partial,REQ-007 covers C0 but not C5 C0.1 explicit,10a missing C5-specific C0 stages
+10C-REQ-143,REQ-007,partial,REQ-007 covers C0 but not C5 C0.2 explicit,10a missing C5-specific C0 stages
+10C-REQ-144,REQ-007,partial,REQ-007 covers C0 but not C5 C0.3 explicit,10a missing C5-specific C0 stages
+10C-REQ-145,REQ-007,partial,REQ-007 covers C0 but not C5 C0.4 explicit,10a missing C5-specific C0 stages
+10C-REQ-146,None,no,Not extracted - C6 phase 1 exit not in baseline,10a missing C6 evaluation plane
+10C-REQ-147,None,no,Not extracted - C6 L6 analysis not in baseline,10a missing L6 analysis core
+10C-REQ-148,None,no,Not extracted - C6 E signal not in baseline,10a missing signal aggregator
+10C-REQ-149,None,no,Not extracted - C6 archive freeze not in baseline,10a missing archive freeze
+10C-REQ-150,None,no,Not extracted - C6 case file not in baseline,10a missing case compilation
+10C-REQ-151,None,no,Not extracted - C6 investigation not in baseline,10a missing investigation
+10C-REQ-152,None,no,Not extracted - C6 rule drafting not in baseline,10a missing rule drafting
+10C-REQ-153,None,no,Not extracted - C6 gauntlet not in baseline,10a missing commandant gauntlet
+10C-REQ-154,None,no,Not extracted - C6 knowledge extract not in baseline,10a missing knowledge extraction
+10C-REQ-155,None,no,Not extracted - C7 G1 not in baseline,10a missing C7 capability plane
+10C-REQ-156,None,no,Not extracted - C7 G2 not in baseline,10a missing registry validation
+10C-REQ-157,None,no,Not extracted - C7 G3 not in baseline,10a missing lane routing
+10C-REQ-158,None,no,Not extracted - C7 G4 not in baseline,10a missing access ticket
+10C-REQ-159,None,no,Not extracted - C7 G5 not in baseline,10a missing call interception
+10C-REQ-160,None,no,Not extracted - C7 G6 not in baseline,10a missing sovereign egress
+10C-REQ-161,None,no,Not extracted - C7 G7 not in baseline,10a missing invocation record
+10C-REQ-162,N/A,N/A,Explanatory only pedagogical,Not a normative requirement
+10C-REQ-163,None,no,Not extracted - CRITICAL SCOPE NOTE not in baseline,10a missing chunk-by-chunk embedding note
+10C-REQ-164,None,no,Not extracted - CRITICAL SCOPE NOTE not in baseline,10a missing current prompt prefix generation note
+10C-REQ-165,None,no,Not extracted - Divergence point not in baseline,10a missing encoder/decoder directionality distinction
+10C-REQ-166,None,no,Not extracted - Crucial fork not in baseline,10a missing pooling ferry vs vocabulary exit distinction
+10C-REQ-167,None,no,Not extracted - L5 policy plane not explicit in baseline,10a missing cross-cutting authority explicit statement
+10C-REQ-168,REQ-001,partial,REQ-001 covers intake but not v29 explicit,10a missing process mapping v29 specific
+10C-REQ-169,REQ-003,partial,REQ-003 covers L1 but not v29 explicit,10a missing process mapping v29 specific
+10C-REQ-170,REQ-006,partial,REQ-006 covers routing but not v29 explicit,10a missing process mapping v29 specific
+10C-REQ-171,REQ-009,partial,REQ-009 covers L2 but not v29 explicit,10a missing process mapping v29 specific
+10C-REQ-172,REQ-012,partial,REQ-012 covers exit but not v29 explicit,10a missing process mapping v29 specific
+10C-REQ-173,REQ-021,partial,REQ-021 covers shadow eval but not v29 explicit,10a missing process mapping v29 specific

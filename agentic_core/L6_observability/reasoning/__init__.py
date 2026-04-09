@@ -144,3 +144,16 @@ _emit_captures_evaluation_metric("p4", "__init__", "eval_metric")
 _emit_stores_embedding("p4", "__init__", "embedding_store")
 _emit_updates_meta_learning_state("p4", "__init__", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "__init__", "exec_snapshot_link")
+
+# 10C C2 Observability modules
+from .trace_reader import TraceReader, ExecutionTrace, ExitDisposition
+from .verify_spine import VerifySpine, SpineStage, SpineResult
+
+__all__ = [
+    "TraceReader",
+    "ExecutionTrace",
+    "ExitDisposition",
+    "VerifySpine",
+    "SpineStage",
+    "SpineResult",
+]

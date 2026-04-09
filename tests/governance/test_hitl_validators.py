@@ -253,7 +253,7 @@ class TestValidateFile:
             Candidates evaluated: 3 | Surfaced: 1 | Suppressed (low confidence): 2 | Suppressed (non-distinct): 0\"\"\",
               options=[
                 {
-                  label: "Option A [0.91 HIGH]",
+                  label: "⭐ Option A [0.91 HIGH]",
                   description: "decision_thesis: Fixes the root cause at source."
                 }
               ],

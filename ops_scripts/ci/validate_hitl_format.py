@@ -32,7 +32,14 @@ _PACKET_HEADER_FIELDS = [
 ]
 
 # Confidence score pattern in option labels: [0.NN HIGH] or [0.NN MEDIUM]
+# LOW band is suppressed and should never appear in surfaced options
 _CONFIDENCE_LABEL_RE = re.compile(r"\[0\.\d{2}\s+(HIGH|MEDIUM)\]")
+
+# Star marker for recommended option
+_STAR_MARKER_RE = re.compile(r'"⭐\s+[^"]+\[0\.\d{2}\s+HIGH\]"')
+
+# Banned LOW confidence band (should be suppressed, not surfaced)
+_LOW_CONFIDENCE_RE = re.compile(r"\[0\.\d{2}\s+LOW\]")
 
 # §HITL-10 required field in option description
 _DECISION_THESIS_RE = re.compile(r"decision_thesis:")
@@ -110,6 +117,45 @@ def validate_file(file_path: Path) -> List[Tuple[int, str, str]]:
                             "ask_user_question block has option descriptions but none contain decision_thesis:",
                         )
                     )
+
+                # Check for LOW confidence band (should be suppressed, not surfaced)
+                low_conf_matches = _LOW_CONFIDENCE_RE.findall(block_text)
+                if low_conf_matches:
+                    violations.append(
+                        (
+                            block_start,
+                            "LOW_CONFIDENCE_SURFACED",
+                            f"LOW confidence band options should be suppressed (below 0.72 threshold), not surfaced: {low_conf_matches}",
+                        )
+                    )
+
+                # Check for ⭐ star marker on highest-confidence option
+                # The recommended option (highest confidence) MUST have ⭐ prefix in label
+                if "label:" in block_text and _CONFIDENCE_LABEL_RE.search(block_text):
+                    # Extract all confidence scores to find the highest
+                    scores = []
+                    for match in _CONFIDENCE_LABEL_RE.finditer(block_text):
+                        score_str = match.group(0).split("[")[1].split()[0]
+                        try:
+                            score = float(score_str)
+                            scores.append((score, match.start()))
+                        except ValueError:
+                            pass
+
+                    if scores:
+                        max_score = max(scores, key=lambda x: x[0])[0]
+                        # If highest score >= 0.85 (HIGH band), check for star marker
+                        if max_score >= 0.85:
+                            # Look for star marker in the label text near the highest score
+                            has_star = _STAR_MARKER_RE.search(block_text)
+                            if not has_star:
+                                violations.append(
+                                    (
+                                        block_start,
+                                        "MISSING_STAR_MARKER",
+                                        f"Recommended option (highest confidence {max_score}) MUST have ⭐ prefix in label: e.g., label: \"⭐ Option Title [{max_score} HIGH]\"",
+                                    )
+                                )
 
                 in_hitl_block = False
                 block_lines = []
