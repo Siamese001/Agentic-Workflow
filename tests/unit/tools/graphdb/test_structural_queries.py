@@ -30,9 +30,21 @@ class TestGravityImportViolations:
 
     def test_violation_has_required_keys(self, gravity_violation_graph: nx.DiGraph):
         violations = StructuralQueries(gravity_violation_graph).gravity_import_violations()
-        required_keys = {"type", "from_node", "to_node", "from_layer", "to_layer", "violation"}
-        for v in violations:
-            assert required_keys.issubset(v.keys())
+        v = violations[0]
+        assert "type" in v
+        assert "from_node" in v
+        assert "to_node" in v
+        assert "from_layer" in v
+        assert "to_layer" in v
+        assert "from_level" in v
+        assert "to_level" in v
+        assert "violation" in v
+        assert v["from_layer"] == "L0"
+        assert v["to_layer"] == "L3"
+        assert v["from_level"] == 0
+        assert v["to_level"] == 3
+        assert "L0" in v["violation"]
+        assert "L3" in v["violation"]
 
     def test_same_layer_import_is_not_violation(self):
         g = nx.DiGraph()

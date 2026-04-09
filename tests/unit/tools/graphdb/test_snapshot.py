@@ -132,6 +132,32 @@ class TestSnapshotIndex:
         assert "injected" not in s2
 
 
+class TestSnapshotPartialCorruption:
+    def test_load_raises_if_graph_file_missing(
+        self,
+        snapshot_manager: SnapshotManager,
+        minimal_graph: nx.DiGraph,
+        sample_metadata: SnapshotMetadata,
+    ):
+        snapshot_manager.save_snapshot(minimal_graph, sample_metadata)
+        graph_file = snapshot_manager.projections_dir / sample_metadata.commit_sha / "graph.pkl"
+        graph_file.unlink()
+        with pytest.raises(FileNotFoundError):
+            snapshot_manager.load_snapshot(sample_metadata.commit_sha)
+
+    def test_load_raises_if_metadata_file_missing(
+        self,
+        snapshot_manager: SnapshotManager,
+        minimal_graph: nx.DiGraph,
+        sample_metadata: SnapshotMetadata,
+    ):
+        snapshot_manager.save_snapshot(minimal_graph, sample_metadata)
+        meta_file = snapshot_manager.metadata_dir / f"{sample_metadata.commit_sha}.json"
+        meta_file.unlink()
+        with pytest.raises(FileNotFoundError):
+            snapshot_manager.load_snapshot(sample_metadata.commit_sha)
+
+
 class TestSnapshotDelete:
     def test_delete_removes_from_index(
         self,

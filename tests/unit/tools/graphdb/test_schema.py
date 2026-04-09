@@ -91,7 +91,7 @@ class TestEdgeTypeMapping:
         assert not missing, f"Missing edge types from A3 spec: {missing}"
 
     def test_mapping_values_are_upper_snake(self):
-        for adg_type, graph_type in EDGE_TYPE_MAPPING.items():
+        for _adg_type, graph_type in EDGE_TYPE_MAPPING.items():
             assert graph_type == graph_type.upper(), f"Edge type '{graph_type}' must be UPPER_SNAKE_CASE"
 
     def test_no_duplicate_values(self):
@@ -140,9 +140,15 @@ class TestPropertySchemas:
         assert "version" in get_node_properties("package")
         assert "import_name" in get_node_properties("third_party_package")
 
-    def test_get_node_properties_unknown_returns_empty(self):
-        props = get_node_properties("module")
-        assert isinstance(props, list)
+    def test_get_node_properties_unknown_raises_for_unmapped_type(self):
+        with pytest.raises(ValueError, match="Unknown node type"):
+            get_node_properties("totally_unmapped_type_xyz")
+
+    def test_get_node_properties_mapped_but_no_schema_returns_empty(self):
+        no_schema_types = [k for k, v in NODE_TYPE_MAPPING.items() if v not in NODE_PROPERTIES]
+        if no_schema_types:
+            result = get_node_properties(no_schema_types[0])
+            assert result == [], f"Type '{no_schema_types[0]}' has no NODE_PROPERTIES entry; expected []"
 
     def test_get_edge_properties_imports(self):
         props = get_edge_properties("imports")

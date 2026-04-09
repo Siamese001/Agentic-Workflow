@@ -53,6 +53,12 @@ class TestProjectGraph:
     def test_returns_networkx_graph(self, minimal_sqlite: Path):
         graph = GraphProjector(minimal_sqlite).project_graph()
         assert isinstance(graph, nx.Graph)
+        assert not graph.is_directed(), "project_graph() must return undirected nx.Graph, not DiGraph"
+
+    def test_edges_accessible_undirected(self, minimal_sqlite: Path):
+        graph = GraphProjector(minimal_sqlite).project_graph()
+        assert graph.has_edge("mod_l0", "mod_l1")
+        assert graph.has_edge("mod_l1", "mod_l0"), "undirected graph must expose both directions"
 
     def test_nodes_loaded_from_entities(self, minimal_sqlite: Path):
         graph = GraphProjector(minimal_sqlite).project_graph()
@@ -103,6 +109,24 @@ class TestProjectGraph:
         graph = GraphProjector(db).project_graph()
         assert "n1" in graph
         assert "n2" not in graph
+
+    def test_unknown_relation_type_skipped(self, tmp_path: Path):
+        db = tmp_path / "unknown_rel.sqlite"
+        with sqlite3.connect(db) as conn:
+            conn.execute("CREATE TABLE entities (id TEXT, type TEXT, name TEXT, properties TEXT)")
+            conn.execute(
+                "CREATE TABLE relations (id TEXT, from_id TEXT, to_id TEXT, type TEXT, properties TEXT)"
+            )
+            conn.execute("CREATE TABLE metadata (key TEXT, value TEXT)")
+            conn.execute("INSERT INTO entities VALUES (?, ?, ?, ?)", ("n1", "module", "a", json.dumps({})))
+            conn.execute("INSERT INTO entities VALUES (?, ?, ?, ?)", ("n2", "module", "b", json.dumps({})))
+            conn.execute(
+                "INSERT INTO relations VALUES (?, ?, ?, ?, ?)",
+                ("r1", "n1", "n2", "totally_unknown_relation_xyz", json.dumps({})),
+            )
+        graph = GraphProjector(db).project_graph()
+        assert graph.number_of_nodes() == 2
+        assert graph.number_of_edges() == 0, "unknown relation type must be skipped, not raise"
 
     def test_edge_skipped_if_node_missing(self, tmp_path: Path):
         db = tmp_path / "missing_node.sqlite"
@@ -183,3 +207,13 @@ class TestValidateProjection:
         graph = projector.project_graph()
         warnings = projector.validate_projection(graph)
         assert isinstance(warnings, list)
+
+    def test_isolated_node_produces_warning(self, minimal_sqlite: Path):
+        projector = GraphProjector(minimal_sqlite)
+        g = nx.Graph()
+        g.add_node("orphan", adg_id="orphan", adg_type="module", graph_type="Module", name="orphan")
+        g.add_node("connected_a", adg_id="ca", adg_type="module", graph_type="Module", name="ca")
+        g.add_node("connected_b", adg_id="cb", adg_type="module", graph_type="Module", name="cb")
+        g.add_edge("connected_a", "connected_b", adg_id="r1", adg_type="imports", graph_type="IMPORTS")
+        warnings = projector.validate_projection(g)
+        assert any("isolated" in w.lower() for w in warnings)

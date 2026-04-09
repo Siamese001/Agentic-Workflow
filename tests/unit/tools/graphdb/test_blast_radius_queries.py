@@ -48,6 +48,7 @@ class TestTransitiveDependents:
         assert "A" in result["dependents"]
         assert "B" in result["dependents"]
         assert "C" in result["dependents"]
+        assert "D" not in result["dependents"], "queried node must not appear in its own dependents"
 
     def test_leaf_node_has_no_dependents(self, chain_graph: nx.DiGraph):
         bq = BlastRadiusQueries(chain_graph)
