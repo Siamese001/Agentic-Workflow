@@ -17,6 +17,7 @@ Covers:
 from __future__ import annotations
 
 import importlib
+import json
 import sys
 from dataclasses import field
 from datetime import datetime, timezone
@@ -141,6 +142,18 @@ class TestTrendResult:
         t.update(current_gross=8, current_hotspots=[])
         assert t.consecutive_increases == 0
 
+    def test_update_equal_gross_resets_consecutive(self):
+        """G3: equal gross (not strictly greater) must reset consecutive_increases to 0."""
+        from ops_scripts.ci.adg_gates.gate_policy import TrendResult
+
+        t = TrendResult()
+        t.update(current_gross=10, current_hotspots=[])
+        t.update(current_gross=12, current_hotspots=[])  # increase → consecutive=1
+        t.update(current_gross=12, current_hotspots=[])  # equal → must reset to 0
+        assert t.consecutive_increases == 0, (
+            f"Equal gross should reset consecutive_increases; got {t.consecutive_increases}"
+        )
+
     def test_evaluate_promotion_below_threshold(self):
         from ops_scripts.ci.adg_gates.gate_policy import TrendResult
 
@@ -166,6 +179,20 @@ class TestTrendResult:
         t.consecutive_increases = 5
         t.evaluate_promotion(near_critical_path=False)
         assert t.promotion_candidate is False
+
+    def test_evaluate_promotion_sticky_flag_not_reset_by_false(self):
+        """G4: promotion_candidate is sticky — evaluate_promotion(False) does NOT clear it."""
+        from ops_scripts.ci.adg_gates.gate_policy import TrendResult
+
+        t = TrendResult()
+        t.consecutive_increases = 3
+        t.hotspot_modules = ["routing"]
+        t.evaluate_promotion(near_critical_path=True)  # sets to True
+        assert t.promotion_candidate is True
+        t.evaluate_promotion(near_critical_path=False)  # should NOT clear it
+        assert t.promotion_candidate is True, (
+            "promotion_candidate must remain True once set; calling with False is not a reset"
+        )
 
     def test_from_dict_to_dict_round_trip(self):
         from ops_scripts.ci.adg_gates.gate_policy import TrendResult
@@ -380,6 +407,23 @@ class TestComputeRatchet:
         assert result.net == 0
         assert result.new == 0
         assert result.resolved == 0
+        # G1 fix: save MUST be called when not blocked
+        mock_save.assert_called_once()
+
+    def test_resolved_count_when_violations_disappear(self, tmp_path):
+        """G1: resolved > 0 when baseline has violations that are now gone."""
+        gate = self._make_gate()
+        v1 = self._make_violation("v1")
+        # baseline had v1 + v2; current only has v1 → v2 resolved
+        with (
+            patch.object(gate, "_load_baseline", return_value={"violation_ids": ["v1", "v2"]}),
+            patch.object(gate, "_save_baseline"),
+        ):
+            result = gate._compute_ratchet([v1], "test_key")
+        assert result.blocked is False
+        assert result.net == -1
+        assert result.resolved == 1
+        assert result.new == 0
 
     def test_net_regression_blocks(self, tmp_path):
         gate = self._make_gate()
@@ -598,6 +642,160 @@ class TestGateSSotCatalog:
 
 
 # ---------------------------------------------------------------------------
+# _write_artifacts artifact_policy branch tests
+# ---------------------------------------------------------------------------
+
+
+class TestWriteArtifacts:
+    def _make_concrete_gate(self, tmp_path: Path, policy_name: str) -> Any:
+        from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult
+        from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
+
+        class _ArtGate(ADGGateBase):
+            gate_family = "art_test"
+            severity = "P1"
+            source_views = []
+            execution_policy = ExecutionPolicy(
+                stage="full",
+                repairability="manual_only",
+                gate_action="halt",
+                artifact_policy=policy_name,
+                signal_source="canonical_policy",
+                evidence_tier="truth",
+            )
+
+            def _find_latest_sqlite(self):
+                return Path("/dev/null")
+
+            def _connect(self):
+                pass
+
+            def _close(self):
+                pass
+
+            def _get_snapshot_id(self):
+                return "snap_art"
+
+            def _execute_gate_logic(self) -> GateResult:
+                return GateResult(
+                    gate_family=self.gate_family,
+                    severity=self.severity,
+                    snapshot_id="snap_art",
+                    timestamp="2026-01-01T00:00:00Z",
+                    status="passed",
+                    violations=[],
+                    summary={},
+                    policy=self.execution_policy,
+                    stage="full",
+                )
+
+        import ops_scripts.ci.adg_gates.gate_base as gb
+
+        original = gb.CI_ARTIFACTS_DIR
+        gb.CI_ARTIFACTS_DIR = tmp_path / "ci_gates"
+        gate = _ArtGate()
+        gate._artifact_dir_override = tmp_path / "ci_gates"
+        gb.CI_ARTIFACTS_DIR = original
+        return gate
+
+    def test_trend_only_policy_emits_trend_json(self, tmp_path):
+        """G5: trend_only policy must write a *_trend.json file with trend key."""
+        from ops_scripts.ci.adg_gates.gate_base import GateResult
+        from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy, TrendResult
+        import ops_scripts.ci.adg_gates.gate_base as gb
+
+        original_dir = gb.CI_ARTIFACTS_DIR
+        gb.CI_ARTIFACTS_DIR = tmp_path / "ci_gates"
+        try:
+            gate = self._make_concrete_gate(tmp_path, "trend_only")
+            trend = TrendResult(consecutive_increases=2, hotspot_modules=["foo"])
+            result = GateResult(
+                gate_family="art_test",
+                severity="P3",
+                snapshot_id="snap_art",
+                timestamp="2026-01-01T00:00:00Z",
+                status="passed",
+                violations=[],
+                summary={},
+                policy=ExecutionPolicy(
+                    stage="full",
+                    repairability="suggest_only",
+                    gate_action="watch",
+                    artifact_policy="trend_only",
+                    signal_source="canonical_policy",
+                    evidence_tier="truth",
+                ),
+                trend=trend,
+                stage="full",
+            )
+            artifact_dir = gate._write_artifacts(result)
+            trend_files = list(artifact_dir.glob("*_trend.json"))
+            assert len(trend_files) == 1, f"Expected 1 trend JSON; got {trend_files}"
+            data = json.loads(trend_files[0].read_text())
+            assert "trend" in data
+            assert data["trend"]["consecutive_increases"] == 2
+            assert data["gate_family"] == "art_test"
+        finally:
+            gb.CI_ARTIFACTS_DIR = original_dir
+
+    def test_minimal_failure_policy_emits_compact_json(self, tmp_path):
+        """G5 adjacent: minimal_failure_artifact must NOT emit full findings.txt."""
+        from ops_scripts.ci.adg_gates.gate_base import GateResult, GateViolation
+        from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
+        import ops_scripts.ci.adg_gates.gate_base as gb
+
+        original_dir = gb.CI_ARTIFACTS_DIR
+        gb.CI_ARTIFACTS_DIR = tmp_path / "ci_gates"
+        try:
+            gate = self._make_concrete_gate(tmp_path, "minimal_failure_artifact")
+            v = GateViolation(
+                violation_id="v_min",
+                source_view="mv",
+                source_node="n",
+                source_edge=None,
+                file="x.py",
+                line=1,
+                layer_src="L0",
+                layer_dst="L3",
+                path_id="p1",
+                first_illegal_hop="L0->L3",
+                path_criticality=1.0,
+                in_modified_area=True,
+                message="test violation",
+                structured_action_required=True,
+                approval_required=True,
+            )
+            result = GateResult(
+                gate_family="art_test",
+                severity="P0",
+                snapshot_id="snap_art",
+                timestamp="2026-01-01T00:00:00Z",
+                status="blocked",
+                violations=[v],
+                summary={},
+                policy=ExecutionPolicy(
+                    stage="preflight",
+                    repairability="manual_only",
+                    gate_action="halt",
+                    artifact_policy="minimal_failure_artifact",
+                    signal_source="sqlite_mv_ci",
+                    evidence_tier="truth",
+                ),
+                stage="preflight",
+            )
+            artifact_dir = gate._write_artifacts(result)
+            minimal_files = list(artifact_dir.glob("*_minimal_failure.json"))
+            findings_files = list(artifact_dir.glob("*_findings.txt"))
+            assert len(minimal_files) == 1, f"Expected 1 minimal JSON; got {minimal_files}"
+            assert len(findings_files) == 0, "minimal_failure must NOT emit findings.txt"
+            data = json.loads(minimal_files[0].read_text())
+            assert data["violations"][0]["structured_action_required"] is True
+            assert data["violations"][0]["approval_required"] is True
+        finally:
+            gb.CI_ARTIFACTS_DIR = original_dir
+
+
+# ---------------------------------------------------------------------------
 # adg_critical_defect_gate importability
 # ---------------------------------------------------------------------------
 
@@ -616,6 +814,39 @@ class TestCriticalDefectGate:
         monkeypatch.setattr(m, "_get_repo_root", lambda: tmp_path)
         rc = m.main()
         assert rc == 0, "With no SQLite file, gate should return 0 (no violations to block on)"
+
+    def test_sqlite_error_degrades_to_empty_and_returns_0(self, tmp_path, monkeypatch):
+        """G6: sqlite3.Error during query is caught; _get_critical_violations returns [] and main() returns 0."""
+        import sqlite3
+
+        import ops_scripts.ci.adg_critical_defect_gate as m
+
+        # Provide a real-looking sqlite file so the glob finds it, then error on connect
+        fake_sqlite = tmp_path / "artifacts" / "adg" / "adg_indexed_20260101.sqlite"
+        fake_sqlite.parent.mkdir(parents=True)
+        fake_sqlite.touch()
+        monkeypatch.setattr(m, "_get_repo_root", lambda: tmp_path)
+
+        with patch("sqlite3.connect", side_effect=sqlite3.Error("db locked")):
+            violations = m._get_critical_violations()
+
+        assert violations == [], f"Expected [] on sqlite3.Error; got {violations}"
+
+    def test_main_returns_0_on_sqlite_error(self, tmp_path, monkeypatch):
+        """G6: main() returns 0 (not crash) when sqlite3.Error is raised during query."""
+        import sqlite3
+
+        import ops_scripts.ci.adg_critical_defect_gate as m
+
+        fake_sqlite = tmp_path / "artifacts" / "adg" / "adg_indexed_20260101.sqlite"
+        fake_sqlite.parent.mkdir(parents=True, exist_ok=True)
+        fake_sqlite.touch()
+        monkeypatch.setattr(m, "_get_repo_root", lambda: tmp_path)
+
+        with patch("sqlite3.connect", side_effect=sqlite3.Error("db locked")):
+            rc = m.main()
+
+        assert rc == 0, "main() must return 0 when sqlite3.Error degrades to no violations"
 
 
 # ---------------------------------------------------------------------------
