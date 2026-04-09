@@ -1,0 +1,357 @@
+"""Base class for ADG materialized-view-driven CI gates.
+
+All gates consume materialized views from the canonical ADG SQLite database
+and emit actionable artifacts with provenance, first-hop detection, and
+snapshot-aware operation.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sqlite3
+import sys
+import tempfile
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+ADG_DIR = REPO_ROOT / "artifacts" / "adg"
+CI_RATchet_DIR = ADG_DIR / "ci_ratchets"
+CI_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "ci_gates"
+
+
+@dataclass
+class GateViolation:
+    """Single violation record with full provenance."""
+
+    violation_id: str
+    source_view: str
+    source_node: str | None
+    source_edge: str | None
+    file: str | None
+    line: int | None
+    layer_src: str | None
+    layer_dst: str | None
+    path_id: str | None
+    first_illegal_hop: str | None
+    path_criticality: float
+    in_modified_area: bool
+    message: str
+    extra: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class GateResult:
+    """Result from a single gate execution."""
+
+    gate_family: str
+    severity: str  # P0, P1, P2
+    snapshot_id: str
+    timestamp: str
+    status: str  # blocked, passed, warn
+    violations: list[GateViolation]
+    summary: dict[str, Any]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "gate_family": self.gate_family,
+            "severity": self.severity,
+            "snapshot_id": self.snapshot_id,
+            "timestamp": self.timestamp,
+            "status": self.status,
+            "violations": [
+                {
+                    "violation_id": v.violation_id,
+                    "source_view": v.source_view,
+                    "source_node": v.source_node,
+                    "source_edge": v.source_edge,
+                    "file": v.file,
+                    "line": v.line,
+                    "layer_src": v.layer_src,
+                    "layer_dst": v.layer_dst,
+                    "path_id": v.path_id,
+                    "first_illegal_hop": v.first_illegal_hop,
+                    "path_criticality": v.path_criticality,
+                    "in_modified_area": v.in_modified_area,
+                    "message": v.message,
+                    "extra": v.extra,
+                }
+                for v in self.violations
+            ],
+            "summary": self.summary,
+        }
+
+
+class ADGGateBase(ABC):
+    """Base class for all ADG materialized-view-driven CI gates.
+
+    Subclasses must implement:
+        - gate_family: str — unique gate identifier
+        - severity: str — P0, P1, or P2
+        - source_views: list[str] — materialized views to query
+        - _execute_gate_logic() — perform the actual gate check
+    """
+
+    gate_family: str = ""
+    severity: str = ""
+    source_views: list[str] = []
+
+    def __init__(self, sqlite_path: Path | None = None, modified_files: list[str] | None = None):
+        """Initialize gate with SQLite path and optional modified file list.
+
+        Args:
+            sqlite_path: Path to ADG SQLite database. If None, finds latest.
+            modified_files: List of files in current change set for modified-area focus.
+        """
+        self.sqlite_path = sqlite_path or self._find_latest_sqlite()
+        self.modified_files = set(modified_files or [])
+        self.conn: sqlite3.Connection | None = None
+        self._snapshot_id: str = ""
+
+    def _find_latest_sqlite(self) -> Path:
+        """Find the latest ADG SQLite file."""
+        files = sorted(ADG_DIR.glob("adg_indexed_*.sqlite"))
+        if not files:
+            raise RuntimeError("No ADG SQLite file found in artifacts/adg/")
+        return files[-1]
+
+    def _connect(self) -> None:
+        """Establish SQLite connection."""
+        self.conn = sqlite3.connect(str(self.sqlite_path))
+        self.conn.row_factory = sqlite3.Row
+        self.conn.execute("PRAGMA journal_mode=WAL")
+
+    def _close(self) -> None:
+        """Close SQLite connection."""
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+
+    def _get_snapshot_id(self) -> str:
+        """Get snapshot ID from meta table."""
+        if not self.conn:
+            return ""
+        try:
+            cur = self.conn.execute("SELECT COALESCE(value, '') FROM meta WHERE key='commit_sha' LIMIT 1")
+            row = cur.fetchone()
+            return row[0] if row else ""
+        except sqlite3.Error:
+            return ""
+
+    def _is_in_modified_area(self, file_path: str | None) -> bool:
+        """Check if a file is in the modified area."""
+        if not file_path or not self.modified_files:
+            return False
+        # Normalize path for comparison
+        normalized = file_path.replace("\\", "/")
+        return any(normalized.endswith(mf) or mf.endswith(normalized) for mf in self.modified_files)
+
+    def _load_baseline(self, baseline_name: str) -> dict[str, Any]:
+        """Load ratchet baseline from file."""
+        baseline_file = CI_RATchet_DIR / f"{baseline_name}_baseline.json"
+        if not baseline_file.exists():
+            return {}
+        try:
+            data: dict[str, Any] = json.loads(baseline_file.read_text(encoding="utf-8"))
+            return data
+        except (OSError, json.JSONDecodeError):
+            return {}
+
+    def _save_baseline(self, baseline_name: str, data: dict[str, Any]) -> None:
+        """Save ratchet baseline atomically."""
+        CI_RATchet_DIR.mkdir(parents=True, exist_ok=True)
+        baseline_file = CI_RATchet_DIR / f"{baseline_name}_baseline.json"
+
+        content = json.dumps(data, indent=2, sort_keys=True) + "\n"
+        fd, tmp = tempfile.mkstemp(dir=str(CI_RATchet_DIR), prefix=f".{baseline_name}_", suffix=".tmp")
+        try:
+            os.write(fd, content.encode("utf-8"))
+            os.close(fd)
+            if sys.platform == "win32" and baseline_file.exists():
+                baseline_file.unlink()
+            Path(tmp).replace(baseline_file)
+        except OSError:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
+
+    def _load_trend(self, trend_name: str) -> dict[str, Any]:
+        """Load trend tracking data for P2 gates."""
+        trend_file = CI_RATchet_DIR / f"{trend_name}_trend.json"
+        if not trend_file.exists():
+            return {"history": [], "consecutive_increases": 0}
+        try:
+            data: dict[str, Any] = json.loads(trend_file.read_text(encoding="utf-8"))
+            return data
+        except (OSError, json.JSONDecodeError):
+            return {"history": [], "consecutive_increases": 0}
+
+    def _save_trend(self, trend_name: str, data: dict[str, Any]) -> None:
+        """Save trend tracking data atomically."""
+        CI_RATchet_DIR.mkdir(parents=True, exist_ok=True)
+        trend_file = CI_RATchet_DIR / f"{trend_name}_trend.json"
+
+        content = json.dumps(data, indent=2, sort_keys=True) + "\n"
+        fd, tmp = tempfile.mkstemp(dir=str(CI_RATchet_DIR), prefix=f".{trend_name}_", suffix=".tmp")
+        try:
+            os.write(fd, content.encode("utf-8"))
+            os.close(fd)
+            if sys.platform == "win32" and trend_file.exists():
+                trend_file.unlink()
+            Path(tmp).replace(trend_file)
+        except OSError:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
+
+    def _write_artifacts(self, result: GateResult) -> Path:
+        """Write gate result artifacts to disk."""
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        artifact_dir = CI_ARTIFACTS_DIR / ts
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+
+        # Main artifact
+        artifact_file = artifact_dir / f"gate_{result.gate_family}.json"
+        artifact_file.write_text(json.dumps(result.to_dict(), indent=2), encoding="utf-8")
+
+        # Human-readable findings
+        findings_file = artifact_dir / f"gate_{result.gate_family}_findings.txt"
+        findings = self._format_findings(result)
+        findings_file.write_text(findings, encoding="utf-8")
+
+        # Provenance linkage
+        provenance = {
+            "gate_family": result.gate_family,
+            "snapshot_id": result.snapshot_id,
+            "sqlite_path": str(self.sqlite_path),
+            "source_views": self.source_views,
+            "violation_count": len(result.violations),
+            "violations_with_provenance": [
+                {
+                    "violation_id": v.violation_id,
+                    "source_view": v.source_view,
+                    "source_node": v.source_node,
+                    "source_edge": v.source_edge,
+                }
+                for v in result.violations
+            ],
+        }
+        provenance_file = artifact_dir / f"gate_{result.gate_family}_provenance.json"
+        provenance_file.write_text(json.dumps(provenance, indent=2), encoding="utf-8")
+
+        return artifact_dir
+
+    def _format_findings(self, result: GateResult) -> str:
+        """Format human-readable findings."""
+        lines = [
+            f"{'=' * 60}",
+            f"Gate: {result.gate_family} [{result.severity}]",
+            f"Status: {result.status.upper()}",
+            f"Snapshot: {result.snapshot_id[:16]}..."
+            if len(result.snapshot_id) > 16
+            else f"Snapshot: {result.snapshot_id}",
+            f"Timestamp: {result.timestamp}",
+            f"{'=' * 60}",
+            "",
+            f"Total Violations: {len(result.violations)}",
+            f"In Modified Area: {sum(1 for v in result.violations if v.in_modified_area)}",
+            "",
+        ]
+
+        if result.violations:
+            lines.append("Violations:")
+            lines.append("-" * 40)
+            for v in result.violations[:20]:  # Show first 20
+                loc = f"{v.file}:{v.line}" if v.line else v.file
+                flag = " [MODIFIED]" if v.in_modified_area else ""
+                lines.append(f"  {v.violation_id}: {v.message}{flag}")
+                lines.append(f"    Location: {loc}")
+                if v.first_illegal_hop:
+                    lines.append(f"    First Illegal Hop: {v.first_illegal_hop}")
+                lines.append(f"    Criticality Score: {v.path_criticality:.2f}")
+                lines.append("")
+            if len(result.violations) > 20:
+                lines.append(f"  ... and {len(result.violations) - 20} more violations")
+                lines.append("")
+
+        lines.append("-" * 40)
+        lines.append(f"Summary: {result.summary}")
+        lines.append("")
+
+        return "\n".join(lines)
+
+    @abstractmethod
+    def _execute_gate_logic(self) -> GateResult:
+        """Execute the gate-specific logic.
+
+        Must be implemented by subclasses. Should:
+        1. Query relevant materialized views
+        2. Detect violations
+        3. Build GateViolation records with full provenance
+        4. Return GateResult with status determined by severity/rules
+        """
+        pass
+
+    def run(self, emit_artifacts: bool = True) -> GateResult:
+        """Execute the gate and optionally emit artifacts.
+
+        Args:
+            emit_artifacts: If True, write artifacts to disk.
+
+        Returns:
+            GateResult with full violation details.
+        """
+        try:
+            self._connect()
+            self._snapshot_id = self._get_snapshot_id()
+
+            result = self._execute_gate_logic()
+
+            if emit_artifacts:
+                self._write_artifacts(result)
+
+            return result
+        finally:
+            self._close()
+
+    def run_and_exit(self) -> int:
+        """Execute gate and exit with appropriate code for CI.
+
+        Returns:
+            0 = passed (no blocking violations)
+            1 = blocked (P0/P1 enforce-mode violations)
+            2 = error (gate execution failure)
+        """
+        try:
+            result = self.run(emit_artifacts=True)
+
+            if result.status == "blocked":
+                print(f"\n[CI-GATE] BLOCKED: {self.gate_family}", file=sys.stderr)
+                print(f"[CI-GATE] Violations: {len(result.violations)}", file=sys.stderr)
+                print(f"[CI-GATE] Artifacts: {CI_ARTIFACTS_DIR}", file=sys.stderr)
+                return 1
+            else:
+                print(
+                    f"[CI-GATE] PASSED: {self.gate_family} ({len(result.violations)} violations, non-blocking)"
+                )
+                return 0
+
+        except (sqlite3.Error, OSError, RuntimeError) as e:
+            print(f"\n[CI-GATE] ERROR: {self.gate_family} failed to execute: {e}", file=sys.stderr)
+            return 2
