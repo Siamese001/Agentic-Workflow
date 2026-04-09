@@ -41,11 +41,7 @@ class TestSkillsContract(unittest.TestCase):
     def test_skill_files_have_frontmatter(self):
         """Happy path: each SKILL.md has parsable frontmatter."""
         for skill_name in EXPECTED_SKILLS:
-            skill_file = (
-                SKILLS_ROOT
-                / skill_name
-                / ("SKILL.md" if skill_name == "structured-reasoning" else "skill.md")
-            )
+            skill_file = SKILLS_ROOT / skill_name / "skill.md"
             self.assertTrue(skill_file.is_file(), f"Missing SKILL.md for {skill_name}")
             content = skill_file.read_text(encoding="utf-8")
             try:
@@ -56,11 +52,7 @@ class TestSkillsContract(unittest.TestCase):
     def test_required_frontmatter_fields(self):
         """Happy path: name and description present."""
         for skill_name in EXPECTED_SKILLS:
-            skill_file = (
-                SKILLS_ROOT
-                / skill_name
-                / ("SKILL.md" if skill_name == "structured-reasoning" else "skill.md")
-            )
+            skill_file = SKILLS_ROOT / skill_name / "skill.md"
             content = skill_file.read_text(encoding="utf-8")
             fm = _parse_frontmatter(content)
             self.assertIn("name", fm, f"Missing 'name' in {skill_name}")
@@ -70,11 +62,7 @@ class TestSkillsContract(unittest.TestCase):
         """Happy path: enforcement_* fields moved to metadata block after A6."""
         non_standard = {"enforcement_layer", "enforcement_timing", "enforcement_type"}
         for skill_name in EXPECTED_SKILLS:
-            skill_file = (
-                SKILLS_ROOT
-                / skill_name
-                / ("SKILL.md" if skill_name == "structured-reasoning" else "skill.md")
-            )
+            skill_file = SKILLS_ROOT / skill_name / "skill.md"
             content = skill_file.read_text(encoding="utf-8")
             fm = _parse_frontmatter(content)
             # Ensure no non-standard keys at top level
