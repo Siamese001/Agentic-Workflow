@@ -39,11 +39,11 @@ class TriageResult:
 
 class TriageSelector:
     """C0 G1: Triage mode selector.
-    
+
     10C-REQ-110: Classify access type read tool model network memory write
     determine appropriate governance level.
     """
-    
+
     def __init__(self) -> None:
         self._level_rules: dict[AccessType, TriageLevel] = {
             AccessType.READ: TriageLevel.STATIC,
@@ -53,11 +53,11 @@ class TriageSelector:
             AccessType.MEMORY: TriageLevel.RUNTIME,
             AccessType.WRITE: TriageLevel.MAXIMUM,
         }
-    
+
     def triage(self, access_type: AccessType, risk_score: float = 0.0) -> TriageResult:
         """Select governance level for access request."""
         base_level = self._level_rules.get(access_type, TriageLevel.RUNTIME)
-        
+
         # Elevate based on risk score
         if risk_score > 0.8 and base_level.value < TriageLevel.MAXIMUM.value:
             final_level = TriageLevel.MAXIMUM
@@ -68,22 +68,22 @@ class TriageSelector:
         else:
             final_level = base_level
             reason = "default_rule"
-        
+
         return TriageResult(
             level=final_level,
             access_type=access_type,
             requires_authority=final_level in (TriageLevel.RUNTIME, TriageLevel.MAXIMUM),
             reason=reason,
         )
-    
+
     def set_level_rule(self, access_type: AccessType, level: TriageLevel) -> None:
         """Set governance level for an access type."""
         self._level_rules[access_type] = level
-    
+
     def classify_request(self, request: dict[str, Any]) -> AccessType:
         """Classify request to access type."""
         operation = request.get("operation", "").lower()
-        
+
         if "write" in operation or "commit" in operation:
             return AccessType.WRITE
         elif "tool" in operation or "execute" in operation:

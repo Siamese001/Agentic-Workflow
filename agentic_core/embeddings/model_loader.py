@@ -26,32 +26,32 @@ class ModelManifest:
 
 class ModelLoader:
     """B2-B3: Model checkpoint resolution and weight load.
-    
+
     10C-REQ-101/102: Resolve checkpoint, load weights, verify dtype/device.
-    
+
     **HITL-10C-001**: bge-m3 checkpoint (multilingual dense+sparse).
     """
-    
+
     DEFAULT_MODEL = "BAAI/bge-m3"  # HITL-10C-001 selection
     EMBEDDING_DIM = 1024
-    
+
     def __init__(self, model_name: str | None = None, device: str = "cpu") -> None:
         self._model_name = model_name or self.DEFAULT_MODEL
         self._device = device
         self._model: Any | None = None
         self._manifest: ModelManifest | None = None
-    
+
     def resolve_checkpoint(self, cache_dir: str | None = None) -> ModelManifest:
         """B2: Resolve model checkpoint."""
         # In production, this would check HF cache or download
         cache_path = cache_dir or f"~/.cache/huggingface/hub/{self._model_name}"
-        
+
         # Generate placeholder SHA (would be actual file hash in production)
         sha = hashlib.sha256(self._model_name.encode()).hexdigest()[:16]
-        
+
         # bge-m3 specs
         param_count = 568_000_000  # 568M parameters
-        
+
         self._manifest = ModelManifest(
             model_name=self._model_name,
             checkpoint_path=cache_path,
@@ -61,40 +61,40 @@ class ModelLoader:
             sha256=sha,
             loaded=False,
         )
-        
+
         return self._manifest
-    
+
     def load_weights(self) -> bool:
         """B3: Load weights into memory."""
         if not self._manifest:
             self.resolve_checkpoint()
-        
+
         try:
             from sentence_transformers import SentenceTransformer
             self._model = SentenceTransformer(self._model_name, device=self._device)
-            
+
             if self._manifest:
                 self._manifest.loaded = True
-            
+
             return True
         except ImportError:
             # Model not available - use placeholder
             self._model = None
             return False
-    
+
     def verify_dtype_device(self) -> bool:
         """Verify model is on correct dtype and device."""
         if self._model is None:
             return False
-        
+
         # Check device placement
         # (Implementation depends on framework - torch, onnx, etc.)
         return True
-    
+
     def get_model(self) -> Any | None:
         """Get loaded model."""
         return self._model
-    
+
     def get_manifest(self) -> ModelManifest | None:
         """Get checkpoint manifest."""
         return self._manifest

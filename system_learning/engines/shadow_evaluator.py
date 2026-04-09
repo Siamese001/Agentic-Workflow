@@ -50,14 +50,14 @@ class AggregatedSignal:
 
 class ShadowEvaluator:
     """C6 Shadow Evaluator.
-    
+
     10C-REQ-163/164: L6 analysis and signal aggregation.
     """
-    
+
     def __init__(self) -> None:
         self._divergences: list[Divergence] = []
         self._anomaly_bursts: dict[str, list[float]] = {}
-    
+
     def analyze(
         self,
         expected: dict[str, Any],
@@ -66,7 +66,7 @@ class ShadowEvaluator:
     ) -> list[Divergence]:
         """Analyze for divergence between expected and actual."""
         divergences: list[Divergence] = []
-        
+
         # Check output mismatch
         if expected.get("output") != actual.get("output"):
             divergences.append(Divergence(
@@ -77,7 +77,7 @@ class ShadowEvaluator:
                 root_cause_tags=["output_diff", "logic_error"],
                 trace_id=trace_id,
             ))
-        
+
         # Check timing drift
         expected_time = expected.get("execution_time", 0)
         actual_time = actual.get("execution_time", 0)
@@ -92,7 +92,7 @@ class ShadowEvaluator:
                     root_cause_tags=["performance_drift", "resource_contention"],
                     trace_id=trace_id,
                 ))
-        
+
         # Check determinism
         if actual.get("determinism_digest") != expected.get("determinism_digest"):
             divergences.append(Divergence(
@@ -103,10 +103,10 @@ class ShadowEvaluator:
                 root_cause_tags=["nondeterminism", "entropy_leak", "clock_drift"],
                 trace_id=trace_id,
             ))
-        
+
         self._divergences.extend(divergences)
         return divergences
-    
+
     def aggregate_anomaly_burst(
         self,
         anomaly_type: str,
@@ -114,9 +114,9 @@ class ShadowEvaluator:
     ) -> AggregatedSignal:
         """Aggregate anomaly burst into promotion/demotion signal."""
         self._anomaly_bursts[anomaly_type] = occurrences
-        
+
         burst_count = len(occurrences)
-        
+
         if burst_count >= 10:
             # High burst - investigate and potentially demote
             return AggregatedSignal(
@@ -148,14 +148,14 @@ class ShadowEvaluator:
                 confidence=0.60,
                 recommended_action="monitor",
             )
-    
+
     def get_divergence_stats(self) -> dict[str, Any]:
         """Get divergence statistics."""
         by_type: dict[str, int] = {}
         for d in self._divergences:
             key = d.divergence_type.name
             by_type[key] = by_type.get(key, 0) + 1
-        
+
         return {
             "total_divergences": len(self._divergences),
             "by_type": by_type,

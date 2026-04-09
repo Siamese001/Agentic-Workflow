@@ -25,12 +25,12 @@ class RoutingDecision:
 
 class HealingRouter:
     """C3 Healing router based on confidence tiers.
-    
+
     10C-REQ-137: High->Local Agent Medium->Qwen_vLLM Low->Gemini_2.5_Pro.
-    
+
     **HITL DECISION REQUIRED**: Model assignments and resource limits.
     """
-    
+
     # HITL-10C-003: Model assignments require stakeholder approval
     TIER_CONFIG: dict[HealTier, dict[str, Any]] = {
         HealTier.HIGH: {
@@ -58,16 +58,16 @@ class HealingRouter:
             "sandbox": False,
         },
     }
-    
+
     def __init__(self) -> None:
         self._tier_stats: dict[HealTier, int] = {tier: 0 for tier in HealTier}
-    
+
     def route(self, score: ConfidenceScore, signal: FailureSignal) -> RoutingDecision:
         """Route healing to appropriate tier."""
         config = self.TIER_CONFIG.get(score.tier, self.TIER_CONFIG[HealTier.HITL])
-        
+
         self._tier_stats[score.tier] += 1
-        
+
         return RoutingDecision(
             tier=score.tier,
             target_model=config["model"],
@@ -76,11 +76,11 @@ class HealingRouter:
             requires_sandbox=config["sandbox"],
             reasoning=score.reasoning,
         )
-    
+
     def get_tier_stats(self) -> dict[str, int]:
         """Get routing statistics by tier."""
         return {tier.name: count for tier, count in self._tier_stats.items()}
-    
+
     def update_tier_config(
         self,
         tier: HealTier,
@@ -89,7 +89,7 @@ class HealingRouter:
         max_tokens: int | None = None,
     ) -> None:
         """Update tier configuration.
-        
+
         HITL-10C-003: Changes require approval.
         """
         if model:

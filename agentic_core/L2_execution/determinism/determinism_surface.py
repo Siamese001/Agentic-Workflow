@@ -52,7 +52,7 @@ class StateMode(Enum):
 @dataclass
 class DeterminismSurface:
     """Determinism surface configuration.
-    
+
     10C-REQ-119: Enforces the six determinism constraints:
     1. Run Clock Only
     2. Seeded Only
@@ -66,13 +66,13 @@ class DeterminismSurface:
     id_mode: IDMode = IDMode.STABLE
     network_mode: NetworkMode = NetworkMode.PHOTOCOPY
     state_mode: StateMode = StateMode.ONE_SNAPSHOT
-    
+
     # Frozen values for deterministic execution
     frozen_timestamp: float | None = None
     entropy_seed: int = 42
     id_counter: int = 0
     snapshot_id: str = ""
-    
+
     def get_timestamp(self) -> float:
         """Get deterministic timestamp."""
         if self.clock_mode == ClockMode.FROZEN and self.frozen_timestamp:
@@ -81,7 +81,7 @@ class DeterminismSurface:
             return self.frozen_timestamp or time.time()
         else:
             raise RuntimeError("Wall clock access prohibited in determinism surface")
-    
+
     def get_random(self) -> random.Random:
         """Get deterministic random generator."""
         if self.random_mode == RandomMode.SEEDED:
@@ -90,7 +90,7 @@ class DeterminismSurface:
             return random.Random(0)  # Fixed
         else:
             raise RuntimeError("Raw random access prohibited in determinism surface")
-    
+
     def generate_id(self, prefix: str = "") -> str:
         """Generate deterministic ID."""
         if self.id_mode == IDMode.STABLE:
@@ -102,7 +102,7 @@ class DeterminismSurface:
             return hashlib.sha256(data.encode()).hexdigest()[:16]
         else:
             raise RuntimeError("UUID4 access prohibited in determinism surface")
-    
+
     def validate_network_access(self, url: str) -> bool:
         """Validate network access is allowed."""
         if self.network_mode == NetworkMode.LIVE:
@@ -112,24 +112,24 @@ class DeterminismSurface:
 
 class DeterminismEnforcer:
     """Enforces determinism surface on execution."""
-    
+
     def __init__(self, surface: DeterminismSurface | None = None) -> None:
         self.surface = surface or DeterminismSurface()
         self._original_time = None
         self._original_random = None
         self._original_uuid = None
-    
+
     def __enter__(self) -> DeterminismSurface:
         """Enter determinism context."""
         # Save originals
         self._original_time = time.time
         self._original_random = random.random
         self._original_uuid = uuid.uuid4
-        
+
         # Override with deterministic versions
         # Note: In production, this would use more sophisticated patching
         return self.surface
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
         """Exit determinism context."""
         # Restore originals

@@ -25,27 +25,27 @@ class RefreshResult:
 
 class UWGRefresher:
     """UWG Stage U6: Refresh read surfaces.
-    
+
     10C-REQ-127: Execute alias swap clear retrieval caches ensure very next
     request sees updated state.
     """
-    
+
     def __init__(self) -> None:
         self._aliases: dict[str, str] = {}  # alias -> current_target
         self._cache_clear_handlers: list[Callable[[], bool]] = []
         self._read_surface_refresh_handlers: list[Callable[[], bool]] = []
-    
+
     def refresh(self, request: WriteRequest) -> RefreshResult:
         """Execute alias swap and cache clearing."""
         # Perform alias swap for affected path
         alias_swapped = self._perform_alias_swap(request.path)
-        
+
         # Clear all registered caches
         cleared_caches = self._clear_caches()
-        
+
         # Refresh read surfaces
         updated_surfaces = self._refresh_read_surfaces()
-        
+
         return RefreshResult(
             alias_swap_completed=alias_swapped,
             caches_cleared=cleared_caches,
@@ -53,10 +53,10 @@ class UWGRefresher:
             timestamp=time.time(),
             next_request_sees_update=True,
         )
-    
+
     def _perform_alias_swap(self, path: str) -> bool:
         """Perform alias swap for a path.
-        
+
         The alias swap pattern:
         - Current alias points to active copy
         - Write goes to shadow copy
@@ -71,10 +71,10 @@ class UWGRefresher:
                 self._aliases[alias] = shadow_target
                 return True
         return False
-    
+
     def _get_shadow_target(self, target: str) -> str:
         """Get shadow target for a given target.
-        
+
         Alternates between _a and _b suffixes.
         """
         if target.endswith("_a"):
@@ -83,7 +83,7 @@ class UWGRefresher:
             return target[:-2] + "_a"
         else:
             return target + "_a"
-    
+
     def _clear_caches(self) -> list[str]:
         """Clear all registered caches."""
         cleared: list[str] = []
@@ -94,7 +94,7 @@ class UWGRefresher:
             except (RuntimeError, OSError, ValueError):
                 continue  # Continue even if one cache clear fails
         return cleared
-    
+
     def _refresh_read_surfaces(self) -> list[str]:
         """Refresh all registered read surfaces."""
         refreshed: list[str] = []
@@ -105,19 +105,19 @@ class UWGRefresher:
             except (RuntimeError, OSError, ValueError):
                 continue  # Continue even if one refresh fails
         return refreshed
-    
+
     def register_alias(self, alias: str, target: str) -> None:
         """Register an alias pointing to a target."""
         self._aliases[alias] = target
-    
+
     def register_cache_clear_handler(self, handler: Callable[[], bool]) -> None:
         """Register a cache clearing handler."""
         self._cache_clear_handlers.append(handler)
-    
+
     def register_read_surface_refresh_handler(self, handler: Callable[[], bool]) -> None:
         """Register a read surface refresh handler."""
         self._read_surface_refresh_handlers.append(handler)
-    
+
     def get_alias_target(self, alias: str) -> str | None:
         """Get current target for an alias."""
         return self._aliases.get(alias)

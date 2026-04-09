@@ -28,15 +28,15 @@ class VectorRecord:
 
 class EmbeddingPipeline:
     """B7-B8: Metadata binding and vector index write.
-    
+
     10C-REQ-106/107: Full embedding pipeline with provenance.
     """
-    
+
     def __init__(self, collection_name: str = "default") -> None:
         self._collection = collection_name
         self._records: list[VectorRecord] = []
         self._index_path: Path | None = None
-    
+
     def bind_metadata(
         self,
         text: str,
@@ -50,7 +50,7 @@ class EmbeddingPipeline:
         # Generate deterministic ID
         content = f"{source_uri}:{chunk_index}:{text[:100]}"
         record_id = hashlib.sha256(content.encode()).hexdigest()[:16]
-        
+
         metadata = {
             "source_uri": source_uri,
             "chunk_index": chunk_index,
@@ -59,10 +59,10 @@ class EmbeddingPipeline:
             "embedding_dim": len(embedding),
             "has_sparse": sparse is not None,
         }
-        
+
         if extra_meta:
             metadata.update(extra_meta)
-        
+
         return VectorRecord(
             id=record_id,
             embedding=embedding,
@@ -72,11 +72,11 @@ class EmbeddingPipeline:
             chunk_index=chunk_index,
             created_at=time.time(),
         )
-    
+
     def stage_record(self, record: VectorRecord) -> None:
         """Stage record for batch write."""
         self._records.append(record)
-    
+
     def write_index(
         self,
         index_path: str | None = None,
@@ -84,11 +84,11 @@ class EmbeddingPipeline:
         """B8: Write to vector index."""
         path = index_path or f"vector_store/{self._collection}"
         self._index_path = Path(path)
-        
+
         # In production, this would write to ChromaDB/FAISS
         # For now, simulate with JSONL
         self._index_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         records_data = []
         for r in self._records:
             records_data.append({
@@ -97,19 +97,19 @@ class EmbeddingPipeline:
                 "metadata": r.metadata,
                 "source_uri": r.source_uri,
             })
-        
+
         # Write to file
         index_file = self._index_path.with_suffix(".jsonl")
         with open(index_file, "w", encoding="utf-8") as f:
             for rec in records_data:
                 f.write(json.dumps(rec) + "\n")
-        
+
         return {
             "index_path": str(index_file),
             "records_written": len(self._records),
             "collection": self._collection,
         }
-    
+
     def process_document(
         self,
         text: str,
@@ -119,7 +119,7 @@ class EmbeddingPipeline:
         """Full pipeline: encode + bind + stage."""
         # Encode
         result = encoder.encode(text, return_sparse=True)
-        
+
         # Bind metadata
         record = self.bind_metadata(
             text=text,
@@ -127,12 +127,12 @@ class EmbeddingPipeline:
             sparse=result.sparse_vector,
             source_uri=source_uri,
         )
-        
+
         # Stage
         self.stage_record(record)
-        
+
         return record
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get pipeline statistics."""
         return {

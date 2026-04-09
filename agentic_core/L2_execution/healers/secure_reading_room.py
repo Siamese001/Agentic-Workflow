@@ -33,18 +33,18 @@ class HITLDecision:
 
 class SecureReadingRoom:
     """C3 Secure Reading Room for human review.
-    
+
     10C-REQ-139: Bounded packet ONLY no free-form bypass to live ops.
-    
+
     **HITL DESIGN NOTE**: This implements the "secure reading room" pattern
     where humans review bounded packets without direct live system access.
     """
-    
+
     def __init__(self) -> None:
         self._pending_reviews: dict[str, dict[str, Any]] = {}
         self._decisions: dict[str, HITLDecision] = {}
         self._packet_counter: int = 0
-    
+
     def create_bounded_packet(
         self,
         signal: FailureSignal,
@@ -52,13 +52,13 @@ class SecureReadingRoom:
         context: dict[str, Any],
     ) -> str:
         """Create bounded packet for HITL review.
-        
+
         10C-REQ-139: Packet is bounded - contains only relevant info,
         no full system access.
         """
         self._packet_counter += 1
         packet_id = f"PACKET-{self._packet_counter:08d}"
-        
+
         # Bounded packet - limited context, no live system access
         bounded_packet = {
             "packet_id": packet_id,
@@ -81,10 +81,10 @@ class SecureReadingRoom:
                 "disable_governance",
             ],
         }
-        
+
         self._pending_reviews[packet_id] = bounded_packet
         return packet_id
-    
+
     def submit_decision(
         self,
         packet_id: str,
@@ -94,14 +94,14 @@ class SecureReadingRoom:
         modification: dict[str, Any] | None = None,
     ) -> HITLDecision:
         """Submit HITL decision for packet.
-        
+
         10C-REQ-139: APPROVE, MODIFY, or REJECT only.
         """
         import time
-        
+
         if packet_id not in self._pending_reviews:
             raise ValueError(f"Packet {packet_id} not found")
-        
+
         hitl_decision = HITLDecision(
             decision=decision,
             reviewer_id=reviewer_id,
@@ -110,22 +110,22 @@ class SecureReadingRoom:
             reason=reason,
             bounded_packet_id=packet_id,
         )
-        
+
         self._decisions[packet_id] = hitl_decision
-        
+
         # Remove from pending
         del self._pending_reviews[packet_id]
-        
+
         return hitl_decision
-    
+
     def get_pending_packets(self) -> list[dict[str, Any]]:
         """Get all pending review packets."""
         return list(self._pending_reviews.values())
-    
+
     def get_decision(self, packet_id: str) -> HITLDecision | None:
         """Get decision for packet."""
         return self._decisions.get(packet_id)
-    
+
     def is_approved(self, packet_id: str) -> bool:
         """Check if packet was approved."""
         decision = self._decisions.get(packet_id)

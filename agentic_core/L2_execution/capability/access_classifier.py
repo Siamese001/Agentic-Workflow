@@ -31,10 +31,10 @@ class ClassificationResult:
 
 class AccessClassifier:
     """C7 G1: Access classifier.
-    
+
     10C-REQ-155: Classify access type read tool model network memory write.
     """
-    
+
     def __init__(self) -> None:
         self._type_keywords: dict[AccessType, list[str]] = {
             AccessType.READ: ["read", "get", "fetch", "load", "retrieve"],
@@ -44,16 +44,16 @@ class AccessClassifier:
             AccessType.MEMORY: ["memory", "store", "cache", "vector", "index"],
             AccessType.WRITE: ["write", "commit", "save", "persist", "mutate"],
         }
-    
+
     def classify(self, request: dict[str, Any]) -> ClassificationResult:
         """Classify request to access type."""
         operation = request.get("operation", "").lower()
         intent = request.get("intent", "").lower()
         target = request.get("target", "").lower()
-        
+
         # Score each access type
         scores: dict[AccessType, int] = {t: 0 for t in AccessType}
-        
+
         for access_type, keywords in self._type_keywords.items():
             for keyword in keywords:
                 if keyword in operation:
@@ -62,7 +62,7 @@ class AccessClassifier:
                     scores[access_type] += 2
                 if keyword in target:
                     scores[access_type] += 1
-        
+
         # Select highest scoring type
         if not scores or max(scores.values()) == 0:
             # Default based on target hints
@@ -79,14 +79,14 @@ class AccessClassifier:
                 reason="default_low_confidence",
                 requires_ticket=False,
             )
-        
+
         best_type = max(scores, key=scores.get)
         best_score = scores[best_type]
-        
+
         # Calculate confidence
         total_score = sum(scores.values())
         confidence = best_score / total_score if total_score > 0 else 0.5
-        
+
         # Determine if ticket required
         requires_ticket = best_type in (
             AccessType.TOOL,
@@ -94,14 +94,14 @@ class AccessClassifier:
             AccessType.NETWORK,
             AccessType.WRITE,
         )
-        
+
         return ClassificationResult(
             access_type=best_type,
             confidence=confidence,
             reason=f"keyword_match:{best_score}",
             requires_ticket=requires_ticket,
         )
-    
+
     def add_keywords(self, access_type: AccessType, keywords: list[str]) -> None:
         """Add classification keywords for an access type."""
         self._type_keywords[access_type].extend(keywords)

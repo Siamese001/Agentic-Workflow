@@ -33,11 +33,11 @@ class BusMessage:
 
 class TelemetryBus:
     """C2 Telemetry buses for real-time control and async learning.
-    
+
     10C-REQ-133: BUS D Deviation and BUS E Anomaly - real-time control signals.
     10C-REQ-134: BUS T - async telemetry data for learning.
     """
-    
+
     def __init__(self) -> None:
         self._queues: dict[BusType, queue.Queue[BusMessage]] = {
             bus: queue.Queue(maxsize=10000) for bus in BusType
@@ -46,7 +46,7 @@ class TelemetryBus:
             bus: [] for bus in BusType
         }
         self._drop_counts: dict[BusType, int] = {bus: 0 for bus in BusType}
-    
+
     def publish(
         self,
         bus_type: BusType,
@@ -64,20 +64,20 @@ class TelemetryBus:
             trace_id=trace_id,
             priority=priority,
         )
-        
+
         q = self._queues[bus_type]
-        
+
         try:
             q.put_nowait(msg)
-            
+
             if bus_type in (BusType.DEVIATION, BusType.ANOMALY):
                 self._notify_handlers(bus_type, msg)
-            
+
             return True
         except queue.Full:
             self._drop_counts[bus_type] += 1
             return False
-    
+
     def _notify_handlers(self, bus_type: BusType, msg: BusMessage) -> None:
         """Notify handlers for real-time buses."""
         for handler in self._handlers[bus_type]:
@@ -85,7 +85,7 @@ class TelemetryBus:
                 handler(msg)
             except (RuntimeError, ValueError, TypeError, KeyError):
                 pass  # Continue notifying other handlers
-    
+
     def subscribe(
         self,
         bus_type: BusType,
@@ -93,21 +93,21 @@ class TelemetryBus:
     ) -> None:
         """Subscribe to bus messages."""
         self._handlers[bus_type].append(handler)
-    
+
     def drain(self, bus_type: BusType, max_messages: int = 100) -> list[BusMessage]:
         """Drain messages from async bus (T) for learning."""
         messages: list[BusMessage] = []
         q = self._queues[bus_type]
-        
+
         for _ in range(max_messages):
             try:
                 msg = q.get_nowait()
                 messages.append(msg)
             except queue.Empty:
                 break
-        
+
         return messages
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get bus statistics."""
         return {

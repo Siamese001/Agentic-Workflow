@@ -26,19 +26,19 @@ class WriteLock:
 
 class UWGLocker:
     """UWG Stage U4: Write lock manager.
-    
+
     10C-REQ-125: Prevent ghost writes overlapping mutations
     claim exclusive write-access to knowledge substrate.
     """
-    
+
     def __init__(self) -> None:
         self._active_locks: dict[str, WriteLock] = {}  # path -> lock
         self._lock_mutex: threading.Lock = threading.Lock()
         self._lock_timeout: float = 30.0  # seconds
-    
+
     def acquire(self, request: WriteRequest) -> WriteLock | None:
         """Acquire write lock for path.
-        
+
         Returns lock if acquired, None if path already locked.
         """
         with self._lock_mutex:
@@ -51,7 +51,7 @@ class UWGLocker:
                     del self._active_locks[request.path]
                 else:
                     return None  # Path locked by another request
-            
+
             # Acquire lock
             lock = WriteLock(
                 request_hash=request.request_hash,
@@ -60,10 +60,10 @@ class UWGLocker:
             )
             self._active_locks[request.path] = lock
             return lock
-    
+
     def release(self, lock: WriteLock) -> bool:
         """Release write lock.
-        
+
         Returns True if released, False if lock not found.
         """
         with self._lock_mutex:
@@ -73,7 +73,7 @@ class UWGLocker:
                     del self._active_locks[lock.path]
                     return True
             return False
-    
+
     def is_locked(self, path: str) -> bool:
         """Check if path is currently locked."""
         with self._lock_mutex:
@@ -85,7 +85,7 @@ class UWGLocker:
                     return False
                 return True
             return False
-    
+
     def get_lock_holder(self, path: str) -> str | None:
         """Get actor_id holding lock on path, if any."""
         with self._lock_mutex:
@@ -94,10 +94,10 @@ class UWGLocker:
                 if time.time() - lock.acquired_at <= self._lock_timeout:
                     return lock.actor_id
             return None
-    
+
     def release_all_for_actor(self, actor_id: str) -> int:
         """Release all locks held by actor.
-        
+
         Returns number of locks released.
         """
         with self._lock_mutex:
@@ -108,7 +108,7 @@ class UWGLocker:
             for path in to_release:
                 del self._active_locks[path]
             return len(to_release)
-    
+
     def set_timeout(self, seconds: float) -> None:
         """Set lock timeout in seconds."""
         self._lock_timeout = max(1.0, seconds)

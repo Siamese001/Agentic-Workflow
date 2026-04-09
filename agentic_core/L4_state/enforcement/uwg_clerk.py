@@ -47,22 +47,22 @@ class WriteReceipt:
 
 class UWGClerk:
     """Singleton UWG clerk - the only clerk with the master pen.
-    
+
     10C-REQ-122: Only one clerk exists with master pen, strictly serialized
     write queue prevent race conditions.
     """
-    
+
     _instance: UWGClerk | None = None
     _lock: threading.Lock = threading.Lock()
     _initialized: bool = False
-    
+
     def __new__(cls) -> UWGClerk:
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
         return cls._instance
-    
+
     def __init__(self) -> None:
         if UWGClerk._initialized:
             return
@@ -72,17 +72,17 @@ class UWGClerk:
         self._ledger_lock: threading.Lock = threading.Lock()
         self._pending_diffs: dict[str, bytes] = {}
         UWGClerk._initialized = True
-    
+
     def submit(self, request: WriteRequest) -> WriteReceipt | None:
         """Submit write request to serialized queue.
-        
+
         Returns receipt if processed, None if rejected.
         """
         with self._queue_lock:
             self._queue.append(request)
             # Process immediately (serialized)
             return self._process_request(request)
-    
+
     def _process_request(self, request: WriteRequest) -> WriteReceipt | None:
         """Process request through UWG pipeline."""
         # This is a stub - actual implementation calls verifier, catalog, locker, committer
@@ -91,23 +91,23 @@ class UWGClerk:
             commit_hash = hashlib.sha256(
                 f"{request.request_hash}:{self._ledger_index}".encode()
             ).hexdigest()
-            
+
             return WriteReceipt(
                 request_hash=request.request_hash,
                 commit_hash=commit_hash,
                 ledger_index=self._ledger_index,
                 timestamp=time.time(),
             )
-    
+
     def get_pending_diffs(self) -> dict[str, bytes]:
         """Get pending diffs for zero-loss containment."""
         return self._pending_diffs.copy()
-    
+
     def lock_pending_diffs(self) -> None:
         """Lock pending diffs - 10C-REQ-140 zero-loss containment."""
         # Locks diffs from being modified during failure containment
         pass
-    
+
     @property
     def is_singleton(self) -> bool:
         """Verify this is the singleton instance."""

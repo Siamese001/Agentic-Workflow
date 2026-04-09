@@ -12,6 +12,6 @@ from .bm25_scorer import BM25Scorer
 
 __all__ = [
     "SparseIndex",
-    "HybridMerger", 
+    "HybridMerger",
     "BM25Scorer",
 ]

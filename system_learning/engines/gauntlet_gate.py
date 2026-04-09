@@ -38,18 +38,18 @@ class StageStatus:
 
 class GauntletGate:
     """C6 Gauntlet Gate.
-    
+
     10C-REQ-165/166/167: Three-stage promotion pipeline.
     """
-    
+
     def __init__(self) -> None:
         self._stages: dict[str, dict[GauntletStage, StageStatus]] = {}
         self._sme_registry: set[str] = set()
-    
+
     def register_sme(self, sme_id: str) -> None:
         """Register authorized SME for sign-off."""
         self._sme_registry.add(sme_id)
-    
+
     def submit_stage(
         self,
         rule_id: str,
@@ -63,10 +63,10 @@ class GauntletGate:
         # Validate SME for Stage 3
         if stage == GauntletStage.SME_SIGN_OFF and validator not in self._sme_registry:
             raise PermissionError(f"Validator {validator} not in SME registry")
-        
+
         if rule_id not in self._stages:
             self._stages[rule_id] = {}
-        
+
         status = StageStatus(
             stage=stage,
             result=result,
@@ -74,35 +74,35 @@ class GauntletGate:
             validated_by=validator,
             validated_at=timestamp,
         )
-        
+
         self._stages[rule_id][stage] = status
         return status
-    
+
     def check_promotion_ready(self, rule_id: str) -> bool:
         """Check if rule passed all three gauntlet stages."""
         stages = self._stages.get(rule_id, {})
-        
+
         required = [
             GauntletStage.SHADOW_REPLAY,
             GauntletStage.REGRESSION_PASS,
             GauntletStage.SME_SIGN_OFF,
         ]
-        
+
         for stage in required:
             status = stages.get(stage)
             if not status or status.result != GauntletResult.PASS:
                 return False
-        
+
         return True
-    
+
     def get_stage_status(self, rule_id: str, stage: GauntletStage) -> StageStatus | None:
         """Get status of specific stage for rule."""
         return self._stages.get(rule_id, {}).get(stage)
-    
+
     def get_gauntlet_summary(self, rule_id: str) -> dict[str, Any]:
         """Get gauntlet summary for rule."""
         stages = self._stages.get(rule_id, {})
-        
+
         return {
             "rule_id": rule_id,
             "shadow_replay": stages.get(GauntletStage.SHADOW_REPLAY, None),
