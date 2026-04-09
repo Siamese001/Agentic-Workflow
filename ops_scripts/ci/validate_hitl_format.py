@@ -2,9 +2,12 @@
 """
 HITL Format Compliance Validator
 
-Validates that HITL (Human-In-The-Loop) decision points in plan files
-include the required ⭐ star marker for recommendations and Pros/Cons
-for options, as specified in .windsurf/rules/hitl-enforcement.md.
+Validates that HITL ask_user_question calls in plan files comply with
+the confidence-gated §HITL-10 format: packet header, confidence score
+in option labels, and decision_thesis field in option descriptions.
+
+DEPRECATED CHECKS REMOVED: **Pros**/**Cons** and bare ⭐ star markers
+are no longer the required format (see §HITL-10 in hitl-enforcement.md).
 
 Usage:
     python ops_scripts/ci/validate_hitl_format.py --path .windsurf/plans
@@ -19,9 +22,39 @@ from pathlib import Path
 from typing import List, Tuple
 
 
+# Packet header required fields (§HITL-0 format)
+_PACKET_HEADER_FIELDS = [
+    "Recommended:",
+    "Why it wins:",
+    "What you are optimizing for:",
+    "What is being traded off:",
+    "Candidates evaluated:",
+]
+
+# Confidence score pattern in option labels: [0.NN HIGH] or [0.NN MEDIUM]
+_CONFIDENCE_LABEL_RE = re.compile(r"\[0\.\d{2}\s+(HIGH|MEDIUM)\]")
+
+# §HITL-10 required field in option description
+_DECISION_THESIS_RE = re.compile(r"decision_thesis:")
+
+# Banned patterns from old format
+_BANNED_PATTERNS = [
+    re.compile(r"^\*\*Pros\*\*:", re.MULTILINE),
+    re.compile(r"^\*\*Cons\*\*:", re.MULTILINE),
+    re.compile(r"Pros:\s"),
+    re.compile(r"Cons:\s"),
+]
+
+
 def validate_file(file_path: Path) -> List[Tuple[int, str, str]]:
     """
-    Validate a single markdown file for HITL format compliance.
+    Validate a single markdown file for HITL §HITL-10 format compliance.
+
+    Checks:
+    - ask_user_question blocks have packet header with required fields
+    - Option labels contain confidence score band [0.NN HIGH|MEDIUM]
+    - Option descriptions contain decision_thesis:
+    - Banned old-format patterns (**Pros**/**Cons**) are absent
 
     Returns:
         List of (line_number, issue_type, message) tuples for violations
@@ -30,55 +63,68 @@ def validate_file(file_path: Path) -> List[Tuple[int, str, str]]:
     content = file_path.read_text(encoding="utf-8")
     lines = content.split("\n")
 
-    # Patterns to detect
-    option_pattern = re.compile(r"^\*\*Option [A-D]:.*\(Recommended\)")
-    option_with_star_pattern = re.compile(r"^\*\*Option [A-D]:.*\(⭐ RECOMMENDED\)")
-    recommended_text_pattern = re.compile(r"Recommendation:(?!.*⭐)")
-    pros_pattern = re.compile(r"^\*\*Pros\*\*:")
-    cons_pattern = re.compile(r"^\*\*Cons\*\*:")
-
-    has_options = False
-    has_pros = False
-    has_cons = False
+    # Detect ask_user_question blocks
+    in_hitl_block = False
+    block_start = 0
+    block_lines: List[str] = []
 
     for i, line in enumerate(lines, start=1):
-        # Check for option declarations
-        if option_pattern.match(line):
-            has_options = True
-            if not option_with_star_pattern.match(line):
-                violations.append(
-                    (
-                        i,
-                        "MISSING_STAR",
-                        f'Option declaration has "(Recommended)" but missing ⭐ marker: {line.strip()}',
-                    )
-                )
+        if "ask_user_question" in line:
+            in_hitl_block = True
+            block_start = i
+            block_lines = [line]
+            continue
+        if in_hitl_block:
+            block_lines.append(line)
+            # End of block at closing paren on its own line
+            if line.strip() in (")", ")") or (line.strip().startswith(")") and len(block_lines) > 3):
+                block_text = "\n".join(block_lines)
 
-        # Check for "Recommendation:" text without ⭐
-        if recommended_text_pattern.search(line) and "⭐" not in line:
+                # Check packet header fields
+                for field in _PACKET_HEADER_FIELDS:
+                    if field not in block_text:
+                        violations.append(
+                            (
+                                block_start,
+                                "MISSING_PACKET_HEADER",
+                                f"ask_user_question block missing packet header field: {field!r}",
+                            )
+                        )
+
+                # Check confidence score in at least one label
+                if "label:" in block_text and not _CONFIDENCE_LABEL_RE.search(block_text):
+                    violations.append(
+                        (
+                            block_start,
+                            "MISSING_CONFIDENCE_SCORE",
+                            "ask_user_question block has option labels but none contain confidence score [0.NN HIGH|MEDIUM]",
+                        )
+                    )
+
+                # Check decision_thesis in description
+                if "description:" in block_text and not _DECISION_THESIS_RE.search(block_text):
+                    violations.append(
+                        (
+                            block_start,
+                            "MISSING_DECISION_THESIS",
+                            "ask_user_question block has option descriptions but none contain decision_thesis:",
+                        )
+                    )
+
+                in_hitl_block = False
+                block_lines = []
+
+    # Check banned old-format patterns anywhere in file
+    for pattern in _BANNED_PATTERNS:
+        for match in pattern.finditer(content):
+            line_num = content[: match.start()].count("\n") + 1
             violations.append(
                 (
-                    i,
-                    "MISSING_STAR",
-                    f'"Recommendation:" text found without ⭐ marker: {line.strip()}',
+                    line_num,
+                    "BANNED_OLD_FORMAT",
+                    f"Banned old-format pattern found: {match.group().strip()!r} — use §HITL-10 decision_thesis shape instead",
                 )
             )
-
-        # Check for Pros/Cons
-        if pros_pattern.match(line):
-            has_pros = True
-        if cons_pattern.match(line):
-            has_cons = True
-
-    # If options exist but no Pros/Cons, flag it
-    if has_options and not (has_pros and has_cons):
-        violations.append(
-            (
-                0,
-                "MISSING_PROS_CONS",
-                "File has option declarations but missing **Pros** or **Cons** sections",
-            )
-        )
 
     return violations
 

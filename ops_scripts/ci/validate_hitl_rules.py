@@ -85,7 +85,7 @@ def validate_no_hardcoded_2to4(filepath: Path) -> list[str]:
     required_patterns = [
         "surface_threshold = 0.72",
         "dominance rule",
-        "Surface 1–N options",
+        "Surface 1\u2013N options",
         "LOW_CONFIDENCE_AMBIGUITY",
     ]
 
