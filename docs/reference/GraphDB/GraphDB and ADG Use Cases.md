@@ -1,82 +1,104 @@
-┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ LAYER 1: CANONICAL ADG IN SQLITE (THE SOURCE OF TRUTH)                               │
-│                                                                                      │
-│ Purpose: CI truth, deterministic artifact storage, exact counts, rule enforcement.   │
-│                                                                                      │
-│                              ┌─────────────────┐                                     │
-│                              │   PROVENANCE    │ ◀─ (Source code, config files,      │
-│                              │                 │     and commit metadata)            │
-│                              └────────┬────────┘                                     │
-│                                       │ feeds into                                   │
-│                                       ▼                                              │
-│ ┌─────────────────┐          ┌─────────────────┐          ┌─────────────────┐        │
-│ │    COVERAGE     │ scope    │                 │ tracks   │                 │        │
-│ │ (Defines what   │─────────▶│    SNAPSHOTS    │◀─────────│    RATCHETS     │        │
-│ │  was scanned    │          │                 │          │ (Enforces CI    │        │
-│ │  for this run)  │          └────────┬────────┘          │  gates to stop  │        │
-│ └─────────────────┘                   │ contains          │  regressions)   │        │
-│                                       │                   └────────▲────────┘        │
-│                                       │                            │                 │
-│ ┌─────────────────────────────────────┼────────────────────────────┼──────────┐      │
-│ │ THE GRAPH PAYLOAD                   ▼                            │ enforces │      │
-│ │                            ┌─────────────────┐                   │          │      │
-│ │                     ┌─────▶│      NODES      │◀─────┐            │          │      │
-│ │                     │      │ (Entities like  │      │            │          │      │
-│ │                     │      │  DBs, APIs,     │      │            │          │      │
-│ │                     │      │  gateways)      │      │            │          │      │
-│ │            source / │      └────────┬────────┘      │            │          │      │
-│ │              target │               │               │ refers     │          │      │
-│ │                     │               ▼               │ to         │          │      │
-│ │                     │      ┌─────────────────┐      │            │          │      │
-│ │                     └──────│      EDGES      │──────┘            │          │      │
-│ │                            │ (Connections /  │                   │          │      │
-│ │                            │  permissions)   │                   │          │      │
-│ │                            └────────┬────────┘                   │          │      │
-│ └─────────────────────────────────────┼────────────────────────────┼──────────┘      │
-│                                       │                            │                 │
-│                            results in │                            │                 │
-│                                       ▼                            │                 │
-│                              ┌─────────────────┐                   │                 │
-│                              │   VIOLATIONS    │                   │                 │
-│                              │ (Rules broken   │                   │                 │
-│                              │  by specific    │                   │                 │
-│                              │  nodes & edges) │                   │                 │
-│                              └────────┬────────┘                   │                 │
-│                                       │                            │                 │
-│                            aggregated │                            │                 │
-│                                  into │                            │                 │
-│                                       ▼                            │                 │
-│                              ┌─────────────────┐                   │                 │
-│                              │     REPORTS     │───────────────────┘                 │
-│                              │ (Deterministic  │ evaluated by                        │
-│                              │  rollups)       │                                     │
-│                              └─────────────────┘                                     │
-└───────────────────────────────────────┬──────────────────────────────────────────────┘
-                                        │
-                                        │
-             deterministic projection   │ (extracts only Snapshots, Nodes, and Edges
-             from SQLite payload        │  and re-shapes them for traversal)
-                                        │
-                                        ▼
-┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ LAYER 2: GRAPH DB PROJECTION (THE TRAVERSAL SURFACE)                                 │
-│                                                                                      │
-│ Purpose: Path explanation, blast-radius, neighborhood mapping, subgraph extraction.  │
-│                                                                                      │
-│     ┌────────────────────────────────┐    ┌────────────────────────────────────┐     │
-│     │ TOPOLOGY PROJECTION            │    │ GRAPH-NATIVE CAPABILITIES          │     │
-│     │                                │    │                                    │     │
-│     │  (Node) ──────[Edge]─────▶ (Node)   │  • Find shortest illegal hop       │     │
-│     │   │             │           │  │    │  • Extract k-hop neighborhood      │     │
-│     │ Label         Typed       Label│    │  • Calculate node centrality       │     │
-│     │ Index       Traversal     Index│    │  • Map exact ingress-to-sink path  │     │
-│     │                                │    │  • Diff topology between Snapshots │     │
-│     └────────────────────────────────┘    └────────────────────────────────────┘     │
-└───────────────────────────────────────┬──────────────────────────────────────────────┘
-                                        │
-                                        │
-                                        │ queried interactively by
-                                        ▼
-                       ┌─────────────────────────────────┐
-                       │   ANALYST / AGENT / REVIEWER    │
-                       └─────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│                    LAYER 1: CANONICAL ADG IN SQLITE (LEDGER OF TRUTH)                      │
+│                                                                                            │
+│ Purpose: deterministic artifact, CI truth, canonical counts, canonical relations,          │
+│          baseline comparison, rule enforcement inputs.                                     │
+│                                                                                            │
+│ Core Mental Model: SQLite tells you what exists. SQLite decides.                           │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
+
+        [ source code ]   [ configs ]   [ repo metadata ]   [ commit / run metadata ]
+               │               │               │                        │
+               └───────────────┴───────────────┴────────────────────────┘
+                                               │
+                                               ▼
+                              ┌────────────────────────────────┐
+                              │  CANONICAL ADG SUBSTRATE       │
+                              │                                │
+                              │  • SNAPSHOT METADATA           │
+                              │    - snapshot_id               │
+                              │    - commit_sha                │
+                              │    - schema_version            │
+                              │    - digests / lineage         │
+                              │                                │
+                              │  • PROVENANCE / COVERAGE       │
+                              │    - what was scanned          │
+                              │    - where facts came from     │
+                              │                                │
+                              │  • NODES                       │
+                              │    - modules, symbols, tools,  │
+                              │      providers, gateways, etc. │
+                              │                                │
+                              │  • EDGES                       │
+                              │    - imports, calls, routes,   │
+                              │      reads, writes, guards     │
+                              └───────────────┬────────────────┘
+                                              │
+                    policy rules evaluate     │
+                    canonical payload         │
+                                              ▼
+                              ┌────────────────────────────────┐
+                              │  DERIVED CI / POLICY SURFACES  │
+                              │                                │
+                              │  • VIOLATIONS                  │
+                              │    - which node/edge/path      │
+                              │      broke which rule          │
+                              │                                │
+                              │  • REPORTS                     │
+                              │    - deterministic rollups     │
+                              │    - scorecards / summaries    │
+                              │                                │
+                              │  • RATCHETS / BASELINES        │
+                              │    - current vs prior snapshot │
+                              │    - block / ratchet / watch   │
+                              └───────────────┬────────────────┘
+                                              │
+                                              │ canonical truth stays here
+                                              │
+══════════════════════════════════════════════╪═══════════════════════════════════════════════
+                                              │
+                                              │ deterministic projection
+                                              ▼
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│               LAYER 2: GRAPH DB PROJECTION (NON-SOVEREIGN TRAVERSAL SURFACE)               │
+│                                                                                            │
+│ Purpose: Path traversal, neighborhood extraction, blast-radius analysis,                   │
+│          topology diffing, exact path explanation.                                         │
+│                                                                                            │
+│ Core Mental Model: GraphDB tells you how it connects. GraphDB explains.                    │
+└─────────────────┬────────────────────────────────────────────────────────┬─────────────────┘
+                  │                                                        │
+         ┌────────▼────────┐                                      ┌────────▼────────┐
+         │ PROJECTION FEED │                                      │ EXCLUSION ZONE  │
+         │                 │                                      │ (Does NOT Own)  │
+         │ ├─ Nodes        │       ┌───────────────────┐          │                 │
+         │ ├─ Edges        │──────▶│ THE GRAPH ENGINE  │          │  × Source Truth │
+         │ ├─ Snapshots    │──────▶│                   │          │  × Policy Truth │
+         │ ├─ Provenance   │       │  (Node)─[Edge]─▶  │          │  × Ratchets     │
+         │   (selected)    │       └─────────┬─────────┘          └─────────────────┘
+         └─────────────────┘                 │
+                                             │   makes these questions materially
+                                             │   easier, faster, and more explainable
+                                             ▼
+         ┌─────────────────────────────────────────────────────────────────────────┐
+         │                         GRAPH-NATIVE CAPABILITIES                       │
+         │                                                                         │
+         │ ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐        │
+         │ │ EXACT PATHING    │  │ BLAST RADIUS     │  │ TOPOLOGY DIFF    │        │
+         │ │ ├─ Violating Path│  │ ├─ k-hop limits  │  │ ├─ Snapshot A vs │        │
+         │ │ └─ 1st Illegal   │  │ └─ Gateway Impact│  │ └─ Snapshot B    │        │
+         │ │    Hop           │  │                  │  │                  │        │
+         │ └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘        │
+         │          │                     │                     │                  │
+         │          │            ┌────────▼─────────┐           │                  │
+         │          └───────────▶│ SUBGRAPH ENGINE  ◀───────────┘                  │
+         │                       │ ├─ By Layer/Agent│                              │
+         │                       │ └─ Centrality &  │                              │
+         │                       │    Hotspots      │                              │
+         │                       └──────────────────┘                              │
+         └─────────────────────────────┬───────────────────────────────────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │ ANALYST / AGENT / REVIEWER│
+                         └───────────────────────────┘
