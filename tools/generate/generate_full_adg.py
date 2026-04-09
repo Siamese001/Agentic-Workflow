@@ -91,6 +91,7 @@ from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularizatio
     _perform_wal_checkpoint,
 )
 from tools.generate.infra_wiring_views import enrich_and_report as _enrich_infra_views  # noqa: E402
+from tools.generate.materialized_views import materialize_all_views as _materialize_adg_views  # noqa: E402
 from tools.generate.validation import (  # noqa: E402  # M.3 modularization
     _check_agentic_antipatterns,
     _check_artifact_consistency,
@@ -315,6 +316,9 @@ def generate_full_adg(
 
     # --- Infrastructure wiring enrichment: materialize violation views ---
     _enrich_infra_views(paths.sqlite)
+
+    # --- ADG materialized views: structural/authority/trace/snapshot visibility ---
+    _materialize_adg_views(paths.sqlite)
 
     # --- Repair orchestrator: classify + fix remaining issues ---
     print("[ADG] Running repair orchestrator on committed artifacts...")
