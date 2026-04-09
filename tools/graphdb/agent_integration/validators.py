@@ -43,7 +43,7 @@ class GateResult:
     details: Dict[str, Any]
     issues: List[str]
     recommendations: List[str]
-    execution_time_seconds: float
+    execution_time_seconds: float = 0.0
 
 
 class CompletionGates:
@@ -63,14 +63,14 @@ class CompletionGates:
         self.guardrails = guardrails
         self.cache = cache
 
-        # Gate definitions
+        # Gate definitions (stored as method names so patch.object works in tests)
         self.gates = {
-            "query_integration": self._validate_query_integration,
-            "guardrail_effectiveness": self._validate_guardrail_effectiveness,
-            "cache_performance": self._validate_cache_performance,
-            "test_coverage": self._validate_test_coverage,
-            "architectural_integrity": self._validate_architectural_integrity,
-            "performance_benchmarks": self._validate_performance_benchmarks,
+            "query_integration": "_validate_query_integration",
+            "guardrail_effectiveness": "_validate_guardrail_effectiveness",
+            "cache_performance": "_validate_cache_performance",
+            "test_coverage": "_validate_test_coverage",
+            "architectural_integrity": "_validate_architectural_integrity",
+            "performance_benchmarks": "_validate_performance_benchmarks",
         }
 
         logger.info("CompletionGates initialized with 6 validation gates")
@@ -86,11 +86,12 @@ class CompletionGates:
         results = {}
         overall_start = time.time()
 
-        for gate_name, gate_func in self.gates.items():
+        for gate_name, method_name in self.gates.items():
             logger.info(f"Running gate: {gate_name}")
             start_time = time.time()
 
             try:
+                gate_func = getattr(self, method_name)
                 result = gate_func()
                 result.execution_time_seconds = time.time() - start_time
                 results[gate_name] = result
@@ -371,7 +372,9 @@ class CompletionGates:
             gate_name="cache_performance",
             status=GateStatus.PASSED if score >= 0.8 else GateStatus.FAILED,
             score=score,
-            details={"performance_ops_per_second": 200 / elapsed if "elapsed" in locals() else 0},
+            details={
+                "performance_ops_per_second": 200 / elapsed if "elapsed" in locals() and elapsed > 0 else 0
+            },
             issues=issues,
             recommendations=recommendations,
             execution_time_seconds=0.0,

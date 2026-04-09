@@ -168,7 +168,7 @@ class ArchitecturalGuardrails:
             if "UWG bypass" in warning:
                 modifications.append("Route writes through approved UWG gateways")
             elif "blast radius" in warning:
-                modifications.append("Reduce scope or implement in phases")
+                modifications.append("Reduce blast radius: reduce scope or implement in phases")
 
         # Add modifications based on alternatives
         for alt in decision_result.alternatives:
@@ -178,9 +178,9 @@ class ArchitecturalGuardrails:
 
     def _get_timestamp(self) -> str:
         """Get current timestamp for logging."""
-        from datetime import datetime
+        from datetime import datetime, timezone
 
-        return datetime.utcnow().isoformat() + "Z"
+        return datetime.now(timezone.utc).isoformat()
 
     def get_guardrail_statistics(self) -> Dict[str, Any]:
         """Get statistics on guardrail actions."""
@@ -197,11 +197,11 @@ class ArchitecturalGuardrails:
 
     def _is_recent(self, timestamp: str, hours: int = 24) -> bool:
         """Check if timestamp is within recent hours."""
-        from datetime import datetime, timedelta
+        from datetime import datetime, timedelta, timezone
 
         try:
             action_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-            cutoff = datetime.utcnow() - timedelta(hours=hours)
+            cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
             return action_time > cutoff
         except (ValueError, AttributeError):
             return False

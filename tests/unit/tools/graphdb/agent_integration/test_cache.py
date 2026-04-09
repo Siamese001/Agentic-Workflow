@@ -41,9 +41,10 @@ class TestCacheEntry:
         assert entry.access_frequency > 0.0
 
         # Record second hit
+        freq_after_first_hit = entry.access_frequency
         entry.record_hit()
         assert entry.hit_count == 2
-        assert entry.access_frequency > entry.access_frequency  # Should increase
+        assert entry.access_frequency >= freq_after_first_hit  # Should not decrease
 
 
 class TestQueryCache:

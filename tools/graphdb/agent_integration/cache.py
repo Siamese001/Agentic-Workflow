@@ -265,7 +265,7 @@ class SmartQueryCache(QueryCache):
         # Use shorter TTL for frequently changing queries
         if avg_access_interval < 60:  # Very frequent access
             multiplier *= 0.5
-        elif avg_access_interval > 3600:  # Infrequent access
+        elif avg_access_interval >= 3600:  # Infrequent access
             multiplier *= 2.0
 
         return self.default_ttl * multiplier

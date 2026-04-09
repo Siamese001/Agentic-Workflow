@@ -237,6 +237,8 @@ class TestCompletionGates:
 
     def test_validate_cache_performance_success(self, completion_gates, mock_cache):
         """Test successful cache performance validation."""
+        mock_cache.get.return_value = {"test": "data"}
+
         result = completion_gates._validate_cache_performance()
 
         assert result.gate_name == "cache_performance"
@@ -264,14 +266,11 @@ class TestCompletionGates:
 
     def test_validate_test_coverage_success(self, completion_gates):
         """Test successful test coverage validation."""
-        with (
-            patch("pathlib.Path.exists", return_value=True),
-            patch("builtins.__import__", side_effect=ImportError("No pytest")),
-        ):
+        with patch("pathlib.Path.exists", return_value=True):
             result = completion_gates._validate_test_coverage()
 
-            # Should pass even without pytest (just checks file existence)
-            assert result.score >= 0.7  # Small deduction for missing pytest
+            # All test files exist and pytest is importable → should pass fully
+            assert result.score >= 0.7
 
     def test_validate_test_coverage_missing_files(self, completion_gates):
         """Test test coverage validation with missing files."""
