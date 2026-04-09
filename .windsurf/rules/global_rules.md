@@ -88,4 +88,3 @@ Known authority assignments:
 - File reads: `filesystem` (local), `github` (remote)
 - HTTP requests: `enhanced_http` (primary), `fetch` (fallback/simple)
 - Project context: `adg_sqlite` (structural), `memory` (episodic)
-- Web search: `brave-search` (primary)

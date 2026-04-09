@@ -1,0 +1,30 @@
+# .codeiumignore — Windsurf indexing exclusions
+# Excludes binary files, runtime artifacts, and archive graveyards
+# that add index noise without retrieval value.
+# Created by Windsurf Config Audit (CHG-008).
+
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# Binary / database files
+**/*.sqlite
+**/*.db
+
+# Runtime log artifacts (JSONL audit logs, session summaries)
+**/*.jsonl
+artifacts/windsurf/
+
+# Protobuf session data
+**/*.pb
+.codeium/windsurf/cascade/
+
+# Archive graveyard — do not index archived/deleted code
+tools/archive/
+
+# Memory database (binary SQLite)
+artifacts/memory/
+
+# ADG cache directory (binary cache files)
+tools/adg/cache/

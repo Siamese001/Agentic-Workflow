@@ -90,10 +90,10 @@
       ],
       "disabled": false,
       "env": {
-        "REDIS_DB": "${REDIS_DB:-0}",
-        "REDIS_HOST": "${REDIS_HOST:-localhost}",
-        "REDIS_PORT": "${REDIS_PORT:-6379}",
-        "REDIS_TIMEOUT": "${REDIS_TIMEOUT:-5}"
+        "REDIS_DB": "0",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379",
+        "REDIS_TIMEOUT": "5"
       }
     },
     "pytest_mcp": {

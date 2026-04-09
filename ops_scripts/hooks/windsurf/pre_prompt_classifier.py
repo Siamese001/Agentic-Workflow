@@ -91,12 +91,12 @@ T0_KEYWORDS = {
 _SR_MANDATE = """
 [pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
-  1. Call mcp5_mem_recall_session_start — load persistent project context (ArchitectureLayer, ConstitutionalRule)
-  2. Call mcp8_create_task to register this task with goal + definitions of done
+  1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
+  2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
   4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
   5. Emit SR_APPROVAL: APPROVED before any writes
-  Sequential Thinking MCP is RETIRED. Use: Memory (mcp5) + Task Manager (mcp8) + native Cascade reasoning.
+  Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Cascade reasoning.
   Rule: .windsurf/rules/sequential-thinking-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
