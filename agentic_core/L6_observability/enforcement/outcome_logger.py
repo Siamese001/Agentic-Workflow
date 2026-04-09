@@ -64,7 +64,11 @@ class OutcomeRecord:
         canonical_json = json.dumps(canonical_data, sort_keys=True, separators=(",", ":"))
         record_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
         return cls(
-            trace_id=trace_id, cid=cid, status=status, manifest_hash=manifest_hash, record_hash=record_hash,
+            trace_id=trace_id,
+            cid=cid,
+            status=status,
+            manifest_hash=manifest_hash,
+            record_hash=record_hash,
         )
 
 
@@ -115,6 +119,26 @@ class OutcomeLogger:
             pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return record
 
+    def append_gate_result(self, gate_result: object) -> "OutcomeRecord":
+        """Append an ExitGateResult disposition to the outcome log.
+
+        Adapts ExitGateResult → OutcomeRecord without coupling to L5 internals
+        beyond the ExitGateResult.to_dict() contract.
+
+        Args:
+            gate_result: ExitGateResult from ExitControlGate.evaluate().
+
+        Returns:
+            Created OutcomeRecord (immutable).
+        """
+        d = gate_result.to_dict()
+        return self.append(
+            trace_id=d["trace_id"],
+            cid=d["trace_id"],
+            status=d["disposition"],
+            manifest_hash=hashlib.sha256((d.get("policy_hash") or d["trace_id"]).encode()).hexdigest()[:16],
+        )
+
     def records(self) -> tuple[OutcomeRecord, ...]:
         """
         Get immutable snapshot of all records.
@@ -142,7 +166,10 @@ class OutcomeReconciler:
     """
 
     def reconcile(
-        self, *, observed: tuple[OutcomeRecord, ...], expected_hashes: tuple[str, ...],
+        self,
+        *,
+        observed: tuple[OutcomeRecord, ...],
+        expected_hashes: tuple[str, ...],
     ) -> ReconcileResult:
         """
         Reconcile observed records against expected hashes.

@@ -67,7 +67,9 @@ def _get_performance_emitter():
         StageStatus,
         record_reasoning_performance,
     )
+
     return StageStatus, record_reasoning_performance
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
@@ -233,11 +235,11 @@ def reason_and_record(
         )
 
         reasoning_plan = create_reasoning_plan(
-            reasoning_context=plan_context,    # guardian: ReasoningPlanError should be handled with specific context
+            reasoning_context=plan_context,  # guardian: ReasoningPlanError should be handled with specific context
             goal_payload=str(prompt_payload)[:200],  # Truncate for goal
             evidence_bundle=retrieved_context,
             planning_policy=planning_policy,
-        )    # guardian: ReasoningPlanError should be handled with specific context
+        )  # guardian: ReasoningPlanError should be handled with specific context
 
         logger.debug(
             "REASONING_PLAN_CREATED plan_id=%s run_id=%s trace_id=%s",
@@ -246,7 +248,7 @@ def reason_and_record(
             reasoning_context.trace_id,
         )
 
-    except ReasoningPlanError as _rpe:    # guardian: ReasoningPlanError should be handled with specific context
+    except ReasoningPlanError as _rpe:  # guardian: ReasoningPlanError should be handled with specific context
         logger.warning(
             "REASONING_PLAN_FAILED: %s, continuing without plan",
             _rpe,
@@ -368,11 +370,11 @@ def reason_and_record(
 
     # 10. P2/L1: Evaluate reasoning step — bind evaluation to completed trace
     try:
-        _rubric = ReasoningEvaluationRubric(    # guardian: OrphanReasoningEvaluationError should be handled with specific context
+        _rubric = ReasoningEvaluationRubric(  # guardian: OrphanReasoningEvaluationError should be handled with specific context
             relevance=1.0,
             consistency=1.0,
             policy_compliance=1.0 if reasoning_context.policy_hash else 0.0,
-            coherence=1.0,    # guardian: OrphanReasoningEvaluationError should be handled with specific context
+            coherence=1.0,  # guardian: OrphanReasoningEvaluationError should be handled with specific context
             actionability=1.0,
         )
         evaluate_reasoning_step_from_trace(
@@ -381,7 +383,9 @@ def reason_and_record(
             evaluator_id=reasoning_context.model_id or "ReasoningChokepoint",
             outcome=ReasoningEvaluationOutcome.PASS,
         )
-    except OrphanReasoningEvaluationError as _oee:    # guardian: OrphanReasoningEvaluationError should be handled with specific context
+    except (
+        OrphanReasoningEvaluationError
+    ) as _oee:  # guardian: OrphanReasoningEvaluationError should be handled with specific context
         logger.warning("reason_and_record: orphan evaluation guard triggered: %s", _oee)
     except Exception as _ee:  # guardian: allow-silent-swallow
         logger.debug("reason_and_record: evaluation emission failed: %s", _ee)
@@ -449,8 +453,39 @@ def reason_and_record(
     return output, trace
 
 
+def validate_plan_contract(plan_contract: Any) -> None:
+    """Enforce L1PlanContract completeness before the plan is handed to L0.
+
+    This is a mandatory chokepoint gate: L0 must not receive an L1 plan that
+    has not passed this check.  Raises PlanContractViolation on any violation.
+
+    Args:
+        plan_contract: Expected to be an L1PlanContract instance.
+
+    Raises:
+        PlanContractViolation: if the contract is missing, invalid, or
+                               fails its own internal validation.
+    """
+    from agentic_core.L1_cognition.types.plan_contract_types import (  # noqa: PLC0415
+        L1PlanContract,
+        PlanContractViolation,
+    )
+
+    if plan_contract is None:
+        raise PlanContractViolation(
+            "validate_plan_contract: received None — L1 must produce an L1PlanContract."
+        )
+    if not isinstance(plan_contract, L1PlanContract):
+        raise PlanContractViolation(
+            f"validate_plan_contract: expected L1PlanContract, got {type(plan_contract).__name__}. "
+            "All L1 reasoning paths must produce a typed L1PlanContract."
+        )
+    plan_contract.validate()
+
+
 __all__ = [
     "reason_and_record",
+    "validate_plan_contract",
     "MissingReasoningTranscript",
     "MissingReasoningTrace",
 ]
