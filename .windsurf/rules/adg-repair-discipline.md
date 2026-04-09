@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: model_decision
 ---
 # ADG Repair Discipline — Constitutional Rule §ADG-1
 

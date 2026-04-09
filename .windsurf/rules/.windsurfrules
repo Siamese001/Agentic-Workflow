@@ -1,7 +1,7 @@
 # adg-repair-discipline.md
 
 ---
-trigger: always_on
+trigger: model_decision
 ---
 # ADG Repair Discipline — Constitutional Rule §ADG-1
 
@@ -316,8 +316,7 @@ python tools/adg/adg_test_accelerator.py report --out docs/reports/plans/adg_tes
 # anti-pattern-hitl-gate.md
 
 ---
-trigger:
-  - file_change
+trigger: model_decision
 ---
 # Anti-Pattern HITL Gate
 
@@ -1608,9 +1607,11 @@ Restart Windsurf after saving to apply the new config.
 # mcp-pytest-enforcement.md
 
 ---
-trigger:
-  - file_change
-  - pre_commit
+trigger: glob
+globs:
+  - "**/*.py"
+  - "pytest.ini"
+  - "pyproject.toml"
 ---
 # MCP PyTest Enforcement Rule
 
@@ -1735,7 +1736,7 @@ All MCP PyTest checks are enforced via:
 # memory-management.md
 
 ---
-trigger: always_on
+trigger: model_decision
 ---
 # Memory Management Rules
 
@@ -1880,8 +1881,9 @@ When updating an existing plan: **silently overwrite** `.windsurf/plans/<filenam
 # plan_ci_enforcement.md
 
 ---
-trigger:
-  - file_change
+trigger: glob
+globs:
+  - ".windsurf/plans/**"
 ---
 # Plan CI Enforcement Rules
 
@@ -2011,8 +2013,11 @@ Plans affecting code structure must include ADG impact assessment.
 # pytest-config-ssot.md
 
 ---
-trigger:
-  - file_change
+trigger: glob
+globs:
+  - "pytest.ini"
+  - "pyproject.toml"
+  - "setup.cfg"
 ---
 # Pytest Configuration SSOT Enforcement
 
@@ -2164,9 +2169,9 @@ If drift is detected:
 # security-hardening.md
 
 ---
-trigger:
-  - file_change
-  - pre_commit
+trigger: glob
+globs:
+  - "**/*.py"
 ---
 # Security Hardening Rule
 
