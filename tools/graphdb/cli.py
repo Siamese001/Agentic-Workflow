@@ -63,7 +63,7 @@ def cmd_query(args: argparse.Namespace) -> int:
         blast_radius = BlastRadiusQueries(graph)
         analyst = AnalystQueries(graph)
 
-        results = {}
+        results: Dict[str, Any] = {}
 
         # Execute requested queries
         if args.query_type == "structural":
@@ -277,7 +277,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
         print(f"Density: {nx.density(graph):.4f}")
 
         # Node type distribution
-        node_types = {}
+        node_types: Dict[str, int] = {}
         for _, attrs in graph.nodes(data=True):
             node_type = attrs.get("graph_type", "Unknown")
             node_types[node_type] = node_types.get(node_type, 0) + 1
@@ -287,7 +287,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
             print(f"  {node_type}: {count}")
 
         # Edge type distribution
-        edge_types = {}
+        edge_types: Dict[str, int] = {}
         for _, _, attrs in graph.edges(data=True):
             edge_type = attrs.get("graph_type", "Unknown")
             edge_types[edge_type] = edge_types.get(edge_type, 0) + 1

@@ -49,7 +49,7 @@ class GraphProjector:
                 cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
                 existing_tables = {row[0] for row in cursor.fetchall()}
 
-                missing_tables = required_tables - existing_tables
+                missing_tables = [table for table in required_tables if table not in existing_tables]
                 if missing_tables:
                     raise ValueError(f"ADG SQLite missing required tables: {missing_tables}")
 
@@ -246,12 +246,12 @@ class GraphProjector:
         graph = self.project_graph()
 
         # Count nodes and edges by type
-        node_type_counts = {}
+        node_type_counts: Dict[str, int] = {}
         for _, attrs in graph.nodes(data=True):
             node_type = attrs.get("graph_type", "Unknown")
             node_type_counts[node_type] = node_type_counts.get(node_type, 0) + 1
 
-        edge_type_counts = {}
+        edge_type_counts: Dict[str, int] = {}
         for _, _, attrs in graph.edges(data=True):
             edge_type = attrs.get("graph_type", "Unknown")
             edge_type_counts[edge_type] = edge_type_counts.get(edge_type, 0) + 1
