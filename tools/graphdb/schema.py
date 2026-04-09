@@ -6,7 +6,7 @@ graph projection node/edge types, along with property schemas.
 
 from __future__ import annotations
 
-from typing import Dict, List, Literal
+from typing import Dict, List
 
 # ---------------------------------------------------------------------------
 # Node Type Mapping
@@ -14,14 +14,21 @@ from typing import Dict, List, Literal
 
 NODE_TYPE_MAPPING: Dict[str, str] = {
     # Core entities
+    "file": "File",
     "module": "Module",
     "symbol": "Symbol",
     "layer": "Layer",
+    "package": "Package",
+    "third_party_package": "ThirdPartyPackage",
     "agent": "Agent",
     "tool": "Tool",
     "gateway": "Gateway",
     "provider": "Provider",
     "datastore": "DataStore",
+    "sink": "Sink",
+    "ingress": "Ingress",
+    "trace_surface": "TraceSurface",
+    "evaluator": "Evaluator",
     # Governance entities
     "policy": "PolicySurface",
     "decision": "DecisionPoint",
@@ -167,9 +174,16 @@ EDGE_TYPE_MAPPING: Dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 NODE_PROPERTIES: Dict[str, List[str]] = {
+    "File": ["file_path", "extension", "size_bytes", "line_count"],
     "Module": ["file_path", "layer", "is_test", "is_production", "line_count"],
     "Symbol": ["name", "symbol_type", "file_path", "line_number", "is_exported"],
     "Layer": ["name", "level", "description"],
+    "Package": ["name", "version", "file_path"],
+    "ThirdPartyPackage": ["name", "version", "import_name"],
+    "Sink": ["name", "sink_type", "endpoint", "is_durable"],
+    "Ingress": ["name", "ingress_type", "endpoint"],
+    "TraceSurface": ["name", "trace_type", "emitter"],
+    "Evaluator": ["name", "eval_type", "metric"],
     "Agent": ["name", "file_path", "class_name"],
     "Tool": ["name", "module_path"],
     "Gateway": ["name", "class_name", "file_path"],
@@ -240,8 +254,8 @@ EDGE_PROPERTIES: Dict[str, List[str]] = {
 # Type Aliases
 # ---------------------------------------------------------------------------
 
-GraphNodeType = Literal[tuple(NODE_TYPE_MAPPING.values())]
-GraphEdgeType = Literal[tuple(EDGE_TYPE_MAPPING.values())]
+GraphNodeType = str
+GraphEdgeType = str
 
 # ---------------------------------------------------------------------------
 # Validation Functions

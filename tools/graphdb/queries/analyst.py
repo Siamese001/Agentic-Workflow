@@ -51,12 +51,12 @@ class AnalystQueries:
         subgraph = self.graph.subgraph(layer_nodes)
 
         # Analyze the subgraph
-        node_types = {}
+        node_types: Dict[str, int] = {}
         for node, attrs in subgraph.nodes(data=True):
             node_type = attrs.get("graph_type", "Unknown")
             node_types[node_type] = node_types.get(node_type, 0) + 1
 
-        edge_types = {}
+        edge_types: Dict[str, int] = {}
         for u, v, attrs in subgraph.edges(data=True):
             edge_type = attrs.get("graph_type", "Unknown")
             edge_types[edge_type] = edge_types.get(edge_type, 0) + 1
@@ -69,10 +69,13 @@ class AnalystQueries:
 
         # Find connected components
         try:
-            components = list(nx.connected_components(subgraph))
+            if subgraph.is_directed():
+                components = list(nx.weakly_connected_components(subgraph))
+            else:
+                components = list(nx.connected_components(subgraph))
             num_components = len(components)
             largest_component_size = max(len(comp) for comp in components) if components else 0
-        except nx.NetworkXError:
+        except (nx.NetworkXError, nx.NetworkXNotImplemented):
             num_components = 0
             largest_component_size = 0
 
@@ -317,7 +320,7 @@ class AnalystQueries:
                 all_related_nodes.add(v)
 
             # Analyze invoker types
-            invoker_types = {}
+            invoker_types: Dict[str, int] = {}
             for u, v, _ in invokers:
                 u_attrs = self.graph.nodes[u]
                 invoker_type = u_attrs.get("graph_type", "Unknown")
@@ -499,12 +502,12 @@ class AnalystQueries:
 
             if change_score > 0:
                 # Analyze the types of changes
-                added_types = {}
+                added_types: Dict[str, int] = {}
                 for neighbor in added_neighbors:
                     neighbor_type = to_graph.nodes[neighbor].get("graph_type", "Unknown")
                     added_types[neighbor_type] = added_types.get(neighbor_type, 0) + 1
 
-                removed_types = {}
+                removed_types: Dict[str, int] = {}
                 for neighbor in removed_neighbors:
                     neighbor_type = from_graph.nodes[neighbor].get("graph_type", "Unknown")
                     removed_types[neighbor_type] = removed_types.get(neighbor_type, 0) + 1
