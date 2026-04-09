@@ -14,13 +14,13 @@ from typing import Optional
 
 import networkx as nx
 
-from tools.graphdb.project_graph import project_graph
-from tools.graphdb.projection import GraphProjector
-from tools.graphdb.queries.analyst import AnalystQueries
-from tools.graphdb.queries.blast_radius import BlastRadiusQueries
-from tools.graphdb.queries.historical import HistoricalQueries
-from tools.graphdb.queries.structural import StructuralQueries
-from tools.graphdb.snapshot import SnapshotManager
+from .project_graph import project_graph
+from .projection import GraphProjector
+from .queries.analyst import AnalystQueries
+from .queries.blast_radius import BlastRadiusQueries
+from .queries.historical import HistoricalQueries
+from .queries.structural import StructuralQueries
+from .snapshot import SnapshotManager
 
 
 def cmd_project(args: argparse.Namespace) -> int:

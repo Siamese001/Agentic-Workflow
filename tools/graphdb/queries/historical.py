@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
 
-from tools.graphdb.snapshot import SnapshotManager
+from ..snapshot import SnapshotManager
 
 
 class HistoricalQueries:

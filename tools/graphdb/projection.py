@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Tuple
 
 import networkx as nx
 
-from tools.graphdb.schema import (
+from .schema import (
     EDGE_TYPE_MAPPING,
     NODE_TYPE_MAPPING,
     get_edge_properties,

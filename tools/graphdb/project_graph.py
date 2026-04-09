@@ -17,9 +17,9 @@ from typing import Optional
 
 import networkx as nx
 
-from tools.graphdb.projection import GraphProjector
-from tools.graphdb.schema import NODE_TYPE_MAPPING, EDGE_TYPE_MAPPING
-from tools.graphdb.snapshot import SnapshotManager, SnapshotMetadata
+from .projection import GraphProjector
+from .schema import NODE_TYPE_MAPPING, EDGE_TYPE_MAPPING
+from .snapshot import SnapshotManager, SnapshotMetadata
 
 
 def get_git_info(repo_root: Path) -> tuple[str, str]:
