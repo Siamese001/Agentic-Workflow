@@ -6,9 +6,10 @@ NetworkX graph projections with proper node/edge typing and metadata.
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import networkx as nx
 
@@ -112,8 +113,6 @@ class GraphProjector:
                     properties = {}
                     if properties_json:
                         try:
-                            import json
-
                             properties = json.loads(properties_json)
                         except json.JSONDecodeError:
                             print(f"Warning: Invalid JSON in properties for entity {entity_id}")
@@ -166,8 +165,6 @@ class GraphProjector:
                     properties = {}
                     if properties_json:
                         try:
-                            import json
-
                             properties = json.loads(properties_json)
                         except json.JSONDecodeError:
                             print(f"Warning: Invalid JSON in properties for relation {relation_id}")

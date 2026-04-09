@@ -10,7 +10,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict
 
 import networkx as nx
 
@@ -26,15 +26,15 @@ from .snapshot import SnapshotManager
 def cmd_project(args: argparse.Namespace) -> int:
     """Handle project command."""
     try:
-        graph, metadata = project_graph(
+        graph, _metadata = project_graph(
             sqlite_path=args.sqlite,
             output_dir=args.output_dir,
             run_id=args.run_id,
         )
 
-        print(f"✓ Projection complete: {metadata.node_count} nodes, {metadata.edge_count} edges")
-        print(f"  Commit: {metadata.commit_sha}")
-        print(f"  Run ID: {metadata.run_id}")
+        print(f"✓ Projection complete: {_metadata.node_count} nodes, {_metadata.edge_count} edges")
+        print(f"  Commit: {_metadata.commit_sha}")
+        print(f"  Run ID: {_metadata.run_id}")
 
         return 0
     except (FileNotFoundError, RuntimeError, ValueError) as e:
@@ -49,10 +49,10 @@ def cmd_query(args: argparse.Namespace) -> int:
         if args.snapshot:
             # Load from snapshot
             snapshot_manager = SnapshotManager(args.output_dir)
-            graph, metadata = snapshot_manager.load_snapshot(args.snapshot)
+            graph, _metadata = snapshot_manager.load_snapshot(args.snapshot)
         else:
             # Project from SQLite
-            graph, metadata = project_graph(
+            graph, _metadata = project_graph(
                 sqlite_path=args.sqlite,
                 output_dir=args.output_dir,
                 run_id=args.run_id,
@@ -171,7 +171,7 @@ def cmd_diff(args: argparse.Namespace) -> int:
 
         historical = HistoricalQueries(snapshot_manager)
 
-        results = {}
+        results: Dict[str, Any] = {}
         if args.new_violations:
             results["new_forbidden_edges"] = historical.new_forbidden_edges(args.from_commit, args.to_commit)
         if args.new_writes:
