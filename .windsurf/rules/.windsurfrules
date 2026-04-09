@@ -508,7 +508,7 @@ trigger: always_on
 > 3. **No agent deletion without authorization.** Deleting *Agent.py files requires AGENT-DELETION-AUTHORIZED marker, justification, replacement, deprecation period (90 days), and zero references. §1.6.
 > 4. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 > 5. **ADG ARTIFACTS MUST BE FULLY INGESTED BEFORE ANY QUERY OR REFACTORING.** The directory `artifacts/adg` contains the canonical ADG artifacts. ALL operating modes MUST ingest these before any query, analysis, or code change: (1) `adg_indexed_<timestamp>.sqlite` — PRIMARY queryable DB; (2) `adg_snapshot_<timestamp>.json` — metrics/counts; (3) `adg_file_graph_<timestamp>.json` + `adg_symbol_graph_<timestamp>.json` — import/call chains; (4) `adg_governance_graph_<timestamp>.json` — layer violations. NEVER begin work without loading these. Regenerate after refactoring: `python tools/generate_full_adg.py`.
-> 6. **HITL (Human-In-The-Loop) DISCIPLINE.** When facing decisions with multiple valid approaches, STOP and present 2-4 concrete options with trade-offs. Wait for explicit user selection (A/B/C/D) before proceeding. NEVER assume defaults, proceed with "best" option, or ask for permission instead of choice. Workflow: `/hitl-decision-gate`. Rule: `.windsurf/rules/hitl-enforcement.md`.
+> 6. **HITL (Human-In-The-Loop) DISCIPLINE.** When facing decisions with genuine ambiguity, run the confidence-gated pipeline: generate candidates → score (0.00–1.00) → filter at threshold 0.72 → apply dominance rule → surface 1–N options. Surface only options that clear the threshold and are materially distinct. A single dominant option (≥ 0.85, gap ≥ 0.12 to next) surfaces alone. No candidate above threshold → emit LOW_CONFIDENCE_AMBIGUITY and route to clarify/replan/abstain. NEVER pad options to reach a count. NEVER use generic pros/cons — use executive-grade §HITL-10 option shape. Wait for explicit user selection before proceeding. Workflow: `/hitl-decision-gate`. Rule: `.windsurf/rules/hitl-enforcement.md`.
 > 7. **RCA AUTO-CLOSURE.** When creating an RCA document, AUTOMATICALLY execute corrective actions and update RCA status to RESOLVED with evidence artifacts. NEVER create RCA and leave it unresolved. User should not have to ask for closure.
 > 8. **GUARDIAN EXEMPTION DISCIPLINE.** NEVER add `# guardian: allow-*` to silence the anti-pattern scanner without a real, specific justification. The format is `# guardian: allow-<type> -- <specific justification>`. Generic words ("needed", "required", "temporary", "legacy") are FORBIDDEN as justifications. Every new exemption in production code (`agentic_core/`, `apps_*/`, `system_learning/`) requires explicit HITL approval before the comment is added. The `guardian_exemption_gate.py` ratchet enforces this at commit time — new exemptions that exceed the ceiling will BLOCK the commit. Cascade MUST present a HITL prompt before adding any guardian comment. Gate: `ops_scripts/ci/guardian_exemption_gate.py`. Init after approval: `ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py`.
 > 9. **SVP ENGINEERING PERSONA — ARCHITECTURAL DECISIONS.** When facing high-level design choices (technology selection, dependency reduction, infrastructure consolidation, migration strategies), explicitly invoke the "SVP Engineering" persona. This persona prioritizes: (a) operational simplicity — reduce moving parts, (b) dependency hygiene — eliminate redundant libraries, (c) archival over deletion — preserve history in `tools/archive/`, (d) documentation — ADRs in `docs/architecture/adr/`, (e) zero-regression validation — full test pass before commit. Apply this lens to all T3 architectural decisions.
@@ -931,13 +931,22 @@ trigger: always_on
 
 ## §HITL-0: Core Principle
 
-**HITL (Human-In-The-Loop) means Cascade MUST present you with options to choose from rather than just proceeding with significant actions.**
+**HITL (Human-In-The-Loop) means Cascade MUST surface only high-signal, confidence-gated options rather than manufacturing choices to fill a minimum count.**
 
-When facing a decision point with multiple valid approaches, Cascade MUST:
+When facing a decision point, Cascade MUST run the following pipeline:
 1. **STOP before taking action**
-2. **Present 2-4 concrete options** with trade-offs
-3. **Wait for explicit user selection**
-4. **Execute only the chosen option**
+2. **Generate candidates** — identify all plausible approaches
+3. **Score each candidate** — assign `confidence_score ∈ [0.00, 1.00]`
+4. **Filter by confidence** — suppress any candidate below `surface_threshold = 0.72`
+5. **Apply dominance rule** — if top option scores ≥ 0.85 AND gap to next ≥ 0.12 (or no other option clears threshold), surface only the top option
+6. **Apply material-distinctness rule** — collapse cosmetic variants; only surface options that differ on execution path, risk profile, reversibility, expected outcome, dependency set, time/cost tradeoff, or governance consequence
+7. **Surface 1–N options** to the user — where N is however many survive filtering (may be 1)
+8. **Wait for explicit user selection**
+9. **Execute only the chosen option**
+
+**If no candidate clears the threshold:** emit a `LOW_CONFIDENCE_AMBIGUITY` packet. Do not fabricate options.
+
+**If policy requires approval and only one option survives:** surface that option plus Reject / Ask-for-revision controls. Do not invent weak alternatives to populate the menu.
 
 ### §HITL-0.1: Continuous Execution Mandate
 
@@ -953,36 +962,29 @@ When facing a decision point with multiple valid approaches, Cascade MUST:
 **REQUIRED BEHAVIORS**:
 - ✅ Execute all deterministic steps continuously
 - ✅ Chain tool calls without interruption when path is clear
-- ✅ Only stop when multiple valid approaches exist
+- ✅ Only stop when genuine decision ambiguity exists after scoring
 - ✅ Present clickable options via `ask_user_question` tool
-- ✅ Include pros/cons/recommendation in option descriptions
+- ✅ Include executive-grade decision analysis in option descriptions (see §HITL-10)
+- ✅ Surface 1 option when dominance rule fires — do not pad
 
 **CLICKABLE CASCADE OPTIONS FORMAT**:
 When HITL is required, use `ask_user_question` tool with:
-- **Question**: Clear decision point description
-- **Options** (2-4): Each with label + description including:
-  - What the option does
-  - **Pros**: Benefits/advantages
-  - **Cons**: Drawbacks/risks
-  - **Recommendation**: ⭐ marker if this is the recommended choice
+- **Question**: Clear decision point description + packet header (recommended, why it wins, optimization target, cost, suppression telemetry)
+- **Options** (1–N, confidence-filtered): Each using the §HITL-10 option shape with confidence score and band in label
 - **allowMultiple**: false (single selection required)
 
-**EXAMPLE**:
+**SINGLE-OPTION EXAMPLE** (dominance rule fired — score 0.91, gap 0.19):
 ```
 ask_user_question(
-  question="Wave 2 getattr migration found only 11 patterns. How should we proceed?",
+  question="""Recommended: Root-cause ADG detection fix
+Why it wins: Only path that eliminates the 11-pattern detection gap at its source.
+What you are optimizing for: Accurate blast-radius analysis before Wave 3 begins.
+What is being traded off: ~45 min of investigation before Wave 3 can start.
+Candidates evaluated: 3 | Surfaced: 1 | Suppressed (low confidence): 2 | Suppressed (non-distinct): 0""",
   options=[
     {
-      label: "Investigate ADG detection patterns",
-      description: "Analyze what patterns ADG actually detects vs what AST tool catches. Pros: Root cause understanding, better tool. Cons: Takes time, delays other waves. ⭐ RECOMMENDED"
-    },
-    {
-      label: "Continue to Wave 3 (clock)",
-      description: "Defer getattr work, proceed with clock elimination. Pros: Immediate progress on clearer target. Cons: Leaves 2,966 getattr sites unaddressed."
-    },
-    {
-      label: "Manual getattr review",
-      description: "Sample 20 getattr sites and fix manually. Pros: Quick validation. Cons: Doesn't scale, no automation."
+      label: "⭐ Investigate ADG detection patterns [0.91 HIGH]",
+      description: "decision_thesis: Traces why the AST scanner returns 11 matches where ADG returns 0, fixing the graph source rather than patching downstream call sites. value_to_goal: Wave 3 clock-elimination scope depends on accurate getattr attribution; proceeding on stale data risks misjudging blast radius by ~2,900 sites. key_tradeoffs: Gains accurate dependency graph for all subsequent waves, but delays Wave 3 start by one investigation session. execution_impact: Read-only analysis phase; no production edits until root cause confirmed. risk_profile: Primary failure mode is inconclusive probe — blast radius is zero because no code changes occur; fully reversible. time_to_value: Immediate graph quality improvement within one session. ⭐ RECOMMENDED"
     }
   ],
   allowMultiple=false
@@ -1390,27 +1392,34 @@ ask_user_question(
 ### 2.1 Required Elements
 
 Every HITL prompt MUST include:
-1. **Context**: Brief description of the decision point
-2. **Options**: 2-4 concrete alternatives (A, B, C, D)
-3. **Trade-offs**: Pros/cons or impact for each option
-4. **Question**: Explicit "Which approach/option/strategy?"
+1. **Packet header** — recommended option, why it wins, optimization target, cost of winning path, suppression telemetry
+2. **Options**: 1 to N surviving candidates (N is confidence-gated, NOT a fixed floor)
+3. **Executive-grade analysis** for each option using the §HITL-10 shape (not generic pros/cons)
+4. **Confidence score and band** on every option label
 
 ### 2.2 Forbidden Patterns
 
 **NEVER**:
-- Present only one option and ask for confirmation
-- Proceed with "default" option without user choice
-- Ask open-ended "what should I do?" without concrete options
-- Hide trade-offs or present biased options
+- Generate a minimum of 2, 3, or 4 options to satisfy a count
+- Add a "keep current" option when the action is already decided
+- Pad with options that are cosmetically different but operationally identical
+- Use generic pros/cons ("more flexible", "higher risk") without tying to specific code path, architecture, or governance consequence
+- Proceed with "default" option without user selection (when HITL is required by policy)
 - Make the decision and then ask for approval
+- Use the same tradeoff language across multiple options
+- Label multiple options as Recommended
 
 ### 2.3 Option Quality Standards
 
-Each option MUST:
-- Be **actionable** — clear what Cascade will do
-- Be **distinct** — meaningfully different from other options
-- Include **impact** — what changes, what's affected
-- Be **honest** — real trade-offs, not strawman alternatives
+Each surfaced option MUST:
+- Clear `surface_threshold = 0.72`
+- Be **materially distinct** from every other surfaced option (≥1 of: execution path, risk profile, reversibility, expected outcome, dependency set, time/cost tradeoff, governance consequence)
+- Use the **§HITL-10 option shape** — no generic pros/cons
+- Have **case-specific analysis** — every claim tied to this repo, packet, routing path, or specific decision
+
+### 2.4 LOW\_CONFIDENCE\_AMBIGUITY Packet
+
+When no candidate clears `surface_threshold = 0.72`: emit a bounded packet with best candidate score/rationale and route to clarify/replan/abstain. Do not fabricate options.
 
 ---
 

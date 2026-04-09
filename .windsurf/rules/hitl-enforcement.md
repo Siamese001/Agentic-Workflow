@@ -11,13 +11,22 @@ trigger: always_on
 
 ## §HITL-0: Core Principle
 
-**HITL (Human-In-The-Loop) means Cascade MUST present you with options to choose from rather than just proceeding with significant actions.**
+**HITL (Human-In-The-Loop) means Cascade MUST surface only high-signal, confidence-gated options rather than manufacturing choices to fill a minimum count.**
 
-When facing a decision point with multiple valid approaches, Cascade MUST:
+When facing a decision point, Cascade MUST run the following pipeline:
 1. **STOP before taking action**
-2. **Present 2-4 concrete options** with trade-offs
-3. **Wait for explicit user selection**
-4. **Execute only the chosen option**
+2. **Generate candidates** — identify all plausible approaches
+3. **Score each candidate** — assign `confidence_score ∈ [0.00, 1.00]`
+4. **Filter by confidence** — suppress any candidate below `surface_threshold = 0.72`
+5. **Apply dominance rule** — if top option scores ≥ 0.85 AND gap to next ≥ 0.12 (or no other option clears threshold), surface only the top option
+6. **Apply material-distinctness rule** — collapse cosmetic variants; only surface options that differ on execution path, risk profile, reversibility, expected outcome, dependency set, time/cost tradeoff, or governance consequence
+7. **Surface 1–N options** to the user — where N is however many survive filtering (may be 1)
+8. **Wait for explicit user selection**
+9. **Execute only the chosen option**
+
+**If no candidate clears the threshold:** emit a `LOW_CONFIDENCE_AMBIGUITY` packet. Do not fabricate options. Route to clarify / replan / abstain.
+
+**If policy requires approval and only one option survives:** surface that option plus Reject / Ask-for-revision control actions. Do not invent weak alternatives to populate the menu.
 
 ### §HITL-0.1: Continuous Execution Mandate
 
@@ -33,64 +42,78 @@ When facing a decision point with multiple valid approaches, Cascade MUST:
 **REQUIRED BEHAVIORS**:
 - ✅ Execute all deterministic steps continuously
 - ✅ Chain tool calls without interruption when path is clear
-- ✅ Only stop when multiple valid approaches exist
+- ✅ Only stop when genuine decision ambiguity exists after scoring
 - ✅ Present clickable options via `ask_user_question` tool
-- ✅ Include pros/cons/recommendation in option descriptions
+- ✅ Include executive-grade decision analysis in option descriptions (see §HITL-10)
+- ✅ Surface 1 option when dominance rule fires — do not pad
 
 **CLICKABLE CASCADE OPTIONS FORMAT**:
 When HITL is required, use `ask_user_question` tool with:
-- **Question**: Clear decision point description
-- **Options** (2-4): Each with label + description including:
-  - What the option does
-  - **Pros**: Benefits/advantages
-  - **Cons**: Drawbacks/risks
-  - **Recommendation**: ⭐ marker if this is the recommended choice
+- **Question**: Clear decision point description + header packet (see below)
+- **Options** (1–N, confidence-filtered): Each with label + description using the §HITL-10 option shape
 - **allowMultiple**: false (single selection required)
+
+**PACKET HEADER** — include at the top of the `question` field:
+```
+Recommended: <option_title>
+Why it wins: <one sentence — case-specific, not generic>
+What you are optimizing for: <the actual goal this decision serves>
+What is being traded off: <the precise cost of the winning path>
+Candidates evaluated: <N total> | Surfaced: <M> | Suppressed (low confidence): <X> | Suppressed (non-distinct): <Y>
+```
 
 **⚠️ CRITICAL ANTI-PATTERN — FORBIDDEN**:
 ```
-# WRONG: presenting STAR/pros/cons in chat prose, then sending a bare ask_user_question
-# This is a two-step split that loses the structured content from the clickable UI
-
+# WRONG: presenting analysis in chat prose, then sending a bare ask_user_question
 chat: "Option A pros: X. Option B pros: Y. ⭐ Recommended: A"
-ask_user_question(options=[{label:"A", description:"short summary"}, ...])  ← BARE, NO PROS/CONS
+ask_user_question(options=[{label:"A", description:"short summary"}, ...])  ← BARE
 ```
-**The `ask_user_question` call IS the HITL prompt. ALL structured content MUST be inside the description field of each option — never in surrounding chat prose.**
+**The `ask_user_question` call IS the HITL prompt. ALL analysis MUST be inside the description field — never in surrounding chat prose.**
 
-**REQUIRED FORMAT** — description field must contain Pros/Cons/⭐ inline:
+**ALSO FORBIDDEN — padding options to reach a count:**
+```
+# WRONG: inventing a weak third option because two feel like too few
+options=[
+  {label: "A", ...},   ← genuine
+  {label: "B", ...},   ← genuine
+  {label: "C — Keep current", description: "No change. Pros: Safe. Cons: Issue persists."}  ← FILLER
+]
+```
+
+**SINGLE-OPTION EXAMPLE** (dominance rule fired — score 0.91, gap 0.19):
 ```
 ask_user_question(
-  question="<decision point>",
+  question="""Recommended: Root-cause ADG detection fix
+Why it wins: Only path that eliminates the 11-pattern detection gap at its source rather than treating symptoms at call sites.
+What you are optimizing for: Accurate blast-radius analysis before Wave 3 begins.
+What is being traded off: ~45 min of investigation before Wave 3 can start.
+Candidates evaluated: 3 | Surfaced: 1 | Suppressed (low confidence): 2 | Suppressed (non-distinct): 0""",
   options=[
     {
-      label: "Option A — short title",
-      description: "What it does. Pros: <benefit 1>, <benefit 2>. Cons: <drawback 1>. ⭐ RECOMMENDED — <reason>"
-    },
-    {
-      label: "Option B — short title",
-      description: "What it does. Pros: <benefit>. Cons: <drawback 1>, <drawback 2>."
+      label: "⭐ Investigate ADG detection patterns [0.91 HIGH]",
+      description: "decision_thesis: Traces why the AST scanner returns 11 matches where ADG returns 0, fixing the graph source rather than patching downstream call sites. value_to_goal: Wave 3 clock-elimination scope depends on accurate getattr attribution; proceeding on stale data risks misjudging blast radius by ~2,900 sites. key_tradeoffs: Gains accurate dependency graph for all subsequent waves, but delays Wave 3 start by one investigation session. execution_impact: Read-only analysis phase; no production edits until root cause confirmed. risk_profile: Primary failure mode is inconclusive probe — blast radius is zero because no code changes occur until root cause is established; fully reversible. time_to_value: Immediate graph quality improvement; Wave 3 scope becomes trustworthy within one session. ⭐ RECOMMENDED"
     }
   ],
   allowMultiple=false
 )
 ```
 
-**EXAMPLE**:
+**TWO-OPTION EXAMPLE** (both above threshold, materially distinct, no dominance):
 ```
 ask_user_question(
-  question="Wave 2 getattr migration found only 11 patterns. How should we proceed?",
+  question="""Recommended: Filter-only refactor
+Why it wins: Delivers user-visible HITL quality improvement in one session without touching the planner or candidate generator.
+What you are optimizing for: Immediate review-surface quality with minimal regression surface.
+What is being traded off: Candidate over-generation upstream persists; threshold tuning will require a second pass.
+Candidates evaluated: 3 | Surfaced: 2 | Suppressed (low confidence): 1 | Suppressed (non-distinct): 0""",
   options=[
     {
-      label: "Investigate ADG detection patterns",
-      description: "Analyze what patterns ADG actually detects vs what AST tool catches. Pros: Root cause understanding, better tool. Cons: Takes time, delays other waves. ⭐ RECOMMENDED — addresses root cause"
+      label: "⭐ Filter-only refactor [0.84 HIGH]",
+      description: "decision_thesis: Inserts confidence filtering and new option shape at packet-build time only, leaving the candidate generator and planner untouched. value_to_goal: Suppresses weak HITL options immediately with no upstream risk. key_tradeoffs: Gains immediate review-surface improvement but leaves upstream generation overhead in place; minimizes blast radius to serializer + tests only but delays full pipeline cleanness. execution_impact: Changes limited to HITL packet assembly; planner, routing, and L1 inference untouched. risk_profile: Primary failure mode is partial compliance where scores are assigned but threshold logic has an off-by-one; blast radius is one file plus its test; detectable via acceptance test suite. time_to_value: Immediate — surfaced within one coding session. ⭐ RECOMMENDED"
     },
     {
-      label: "Continue to Wave 3 (clock)",
-      description: "Defer getattr work, proceed with clock elimination. Pros: Immediate progress on clearer target. Cons: Leaves 2,966 getattr sites unaddressed."
-    },
-    {
-      label: "Manual getattr review",
-      description: "Sample 20 getattr sites and fix manually. Pros: Quick validation. Cons: Doesn't scale, no automation."
+      label: "Full pipeline refactor [0.76 HIGH]",
+      description: "decision_thesis: Restructures the entire candidate path into generate → score → filter → surface stages, eliminating over-generation at the source. value_to_goal: Creates a clean, auditable pipeline where threshold tuning in §HITL-9 config propagates automatically to all generation sites. key_tradeoffs: Gains architectural cleanliness and future tunability, but requires touching planner, scorer, serializer, and tests in one session — higher regression surface. execution_impact: Cross-cutting change affecting candidate generation, scoring, filtering, and packet serialization; requires schema migration for new option fields. risk_profile: Primary failure mode is partial refactor leaving some generation sites unpatched; blast radius spans 4–6 files; regression detectable via existing HITL tests. time_to_value: Near-term — requires a full session plus test updates before improvement is visible. recommendation_delta: Ranks below the filter-only option because the architectural cleanness gain does not justify the wider blast radius in a single session; cleanest as a follow-on wave."
     }
   ],
   allowMultiple=false
@@ -103,33 +126,34 @@ ask_user_question(
 
 ### 1.1 Code Architecture Decisions
 
-**TRIGGER**: When multiple architectural approaches are viable
+**TRIGGER**: When multiple architectural approaches are viable AND at least one candidate clears `surface_threshold = 0.72`
 
-**REQUIRED PROMPT (STAR Format)**:
+**REQUIRED PIPELINE**:
+1. Generate candidate architectural approaches
+2. Score each: weigh SVP priorities (operational simplicity, dependency hygiene, zero-regression) against blast radius, reversibility, and test surface
+3. Filter by `surface_threshold = 0.72`; apply dominance rule
+4. Present surviving options using the §HITL-10 option shape with §HITL-0 packet header
 
-> **SITUATION**: Facing architectural choice for `<task>` with multiple valid approaches.
->
-> **TASK**: Select the optimal approach aligned with SVP Engineering priorities.
->
-> **OPTIONS**:
->
-> **Option A**: `<approach>`
->   - **Pros**: `<benefits>`
->   - **Cons**: `<drawbacks>`
->
-> **Option B**: `<approach>`
->   - **Pros**: `<benefits>`
->   - **Cons**: `<drawbacks>`
->
-> **Option C**: `<approach>` (if applicable)
->   - **Pros**: `<benefits>`
->   - **Cons**: `<drawbacks>`
->
-> **⭐ RECOMMENDED**: Option A — SVP priority: (a) operational simplicity through reduced moving parts, (b) dependency hygiene, (c) archival discipline, (d) documentation, (e) zero-regression validation.
->
-> **RESULT**: Execute chosen approach with full test coverage.
->
-> Which approach should I use? (A/B/C)
+**If only one approach survives scoring:** surface it alone. Do not append a strawman "keep current" option.
+
+**Example of correctly scored single-option HITL (dominance rule fired)**:
+
+```
+ask_user_question(
+  question="""Recommended: Composition over inheritance for <component>
+Why it wins: Inheritance would couple <SubClass> to <BaseClass> internal state, which is mutated by three other callers in L3; composition isolates the change to one new wrapper.
+What you are optimizing for: Zero blast-radius addition that does not touch existing callers.
+What is being traded off: Slightly more boilerplate in the new wrapper vs a one-line subclass declaration.
+Candidates evaluated: 2 | Surfaced: 1 | Suppressed (low confidence): 1 | Suppressed (non-distinct): 0""",
+  options=[
+    {
+      label: "⭐ Composition — new wrapper class [0.88 HIGH]",
+      description: "decision_thesis: Wraps <target> without modifying its interface, leaving all three existing callers in L3 untouched. value_to_goal: Implements the feature in one file with zero ripple to existing routing logic. key_tradeoffs: Gains full caller isolation, but adds one new class to maintain; the class will be trivial if <target> interface is stable. execution_impact: One new file in L<X>; no changes to existing callers; test surface is the wrapper only. risk_profile: Primary failure mode is interface drift in <target> breaking the wrapper silently; detectable via wrapper unit tests; fully reversible by deleting the wrapper. time_to_value: Immediate — single session. ⭐ RECOMMENDED"
+    }
+  ],
+  allowMultiple=false
+)
+```
 
 **EXAMPLES**:
 - Choosing between inheritance vs composition
@@ -139,357 +163,164 @@ ask_user_question(
 
 ### 1.2 Refactoring Scope
 
-**TRIGGER**: When refactoring could affect multiple files or modules
+**TRIGGER**: When refactoring could affect multiple files and scope genuinely varies in risk/coverage
 
-**REQUIRED PROMPT (STAR Format)**:
+**REQUIRED PIPELINE**:
+1. Generate scope candidates (minimal / moderate / comprehensive) only where each is a *genuinely different risk profile*
+2. Score each by: blast radius, reversibility, test surface change, dependencies to update, and time to validate
+3. Filter and apply dominance rule — if minimal scope clearly dominates (score ≥ 0.85, gap ≥ 0.12), surface only minimal
+4. Do not fabricate a "keep current" option — if refactoring is already decided, the scope question is between real candidates only
 
-> **SITUATION**: Refactoring `<target>` can be scoped at multiple levels with varying risk.
->
-> **TASK**: Select scope balancing risk, time, and SVP operational simplicity priority.
->
-> **OPTIONS**:
->
-> **Option A**: Minimal — `<files>`
->   - **Pros**: Lowest risk, fast validation, minimal blast radius
->   - **Cons**: May leave related technical debt, requires follow-up
->
-> **Option B**: Moderate — `<files>`
->   - **Pros**: Comprehensive within module/layer, addresses related issues
->   - **Cons**: Higher risk, longer validation time, potential for regression
->
-> **Option C**: Comprehensive — `<files>`
->   - **Pros**: Complete elimination of pattern, future-proof
->   - **Cons**: Maximum risk, extended validation period, may touch unrelated systems
->
-> **⭐ RECOMMENDED**: Option A (Minimal) — SVP priority: operational simplicity through incremental, low-risk changes with full test validation at each step.
->
-> **RESULT**: Execute scoped refactoring with zero-regression validation.
->
-> Which scope should I target? (A/B/C)
+**Scoring guidance for scope candidates**:
+- Minimal scope: penalize if it leaves the root cause intact; reward if blast radius is verifiably contained
+- Comprehensive scope: penalize proportionally to cross-layer coupling and test surface expansion
+- If two scope options have the same risk profile with different file counts, collapse into one — they are not materially distinct
 
 **EXAMPLES**:
-- Renaming widely-used function
-- Moving module between layers
-- Consolidating duplicate code
-- Changing interface signatures
+- Renaming widely-used function (scope = single call site vs all callers vs full rename + shim)
+- Moving module between layers (scope = move only vs move + update all imports vs move + shim + update)
+- Consolidating duplicate code (scope = one instance vs all instances in one layer vs all instances cross-layer)
 
 ### 1.3 Anti-Pattern Introduction
 
-**TRIGGER**: Before introducing any anti-pattern instance
+**TRIGGER**: Before introducing any anti-pattern instance (pre_write_gate has already blocked; this HITL determines the resolution path)
 
-**REQUIRED PROMPT (STAR Format)**:
+**REQUIRED PIPELINE**:
+1. Assess whether the specific anti-pattern can be narrowed without a guardian comment (e.g., replace `except Exception` with the 1-2 actual exception types that can occur here)
+2. If narrowing is feasible — score it at ≥ 0.85 (no guardian debt, no ratchet impact, passes scanner) — dominance rule will fire; surface only that option
+3. If narrowing is genuinely infeasible (e.g., third-party interface raises undocumented exceptions) — then `guardian: allow-*` becomes a scored candidate
+4. Do NOT generate all four historical options reflexively; generate only the candidates that are actually viable for this specific call site
 
-> **SITUATION**: This change will introduce `<N>` new `<category>` instance(s) in `<file>`, which the anti-pattern scanner will flag.
->
-> **TASK**: Select approach that balances immediate need against architectural integrity.
->
-> **OPTIONS**:
->
-> **Option A**: Narrow the exception type
->   - **Pros**: No guardian comment needed, proper exception handling, passes scanner
->   - **Cons**: Requires understanding the specific error types that may occur
->
-> **Option B**: Add `# guardian: allow-<category>`
->   - **Pros**: Quick exemption, unblocks immediate work
->   - **Cons**: Technical debt, requires HITL approval, tracked in ratchet ceiling, may hide real issues
->
-> **Option C**: Restructure to avoid the pattern entirely
->   - **Pros**: Cleanest solution, aligns with SVP dependency hygiene priority
->   - **Cons**: May require significant redesign, longer implementation time
->
-> **Option D**: Proceed as-is and accept the ratchet increase
->   - **Pros**: No code changes needed, preserves current approach
->   - **Cons**: Violates architectural standards, increases anti-pattern debt, may block CI
->
-> **⭐ RECOMMENDED**: Option A (Narrow the exception type) — SVP priority: dependency hygiene through proper exception handling without introducing exemptions.
->
-> **RESULT**: Implement chosen approach with appropriate validation.
->
-> Which approach? (A/B/C/D)
+**If narrowing is feasible** (dominance rule fires — score 0.90, next best 0.62): surface only the narrow-exception option.
+
+**If narrowing is not feasible** (two candidates above threshold): surface guardian-comment vs restructure, with restructure scored lower if it requires significant redesign that is out of scope.
 
 **EXAMPLES**:
-- New `except Exception` block
-- New `os.path.*` call
-- String path concatenation
-- Silent exception swallower
+- New `except Exception` block at a specific call site
+- New `os.path.*` call in a module that already uses `pathlib`
+- Silent exception swallower in a utility function
 
 ### 1.4 Test Modification Strategy
 
-**TRIGGER**: When test failures could be fixed multiple ways
+**TRIGGER**: When a test failure has two or more genuinely credible repair paths with different correctness implications
 
-**REQUIRED PROMPT (STAR Format)**:
+**REQUIRED PIPELINE**:
+1. Identify the failure root cause first (read the test, read the production code, read the diff)
+2. Classify the root cause — is this a production bug, a stale reference, a semantic test update, or a policy regression?
+3. In most cases, root cause classification resolves the ambiguity — only one repair class will be correct; surface only that one
+4. HITL is only warranted when two repair classes are *both* plausible given the evidence (e.g., assertion mismatch where the correct value is genuinely ambiguous)
+5. Score each plausible repair class: weight by correctness confidence, regression risk, and reversibility
 
-> **SITUATION**: Test `<nodeid>` is failing. Multiple repair classes are applicable.
->
-> **TASK**: Select repair class aligned with root cause and SVP zero-regression priority.
->
-> **OPTIONS**:
->
-> **Option A**: `production_bug_fix`
->   - **Description**: `<description>`
->   - **Pros**: Addresses root cause, improves system quality, prevents recurrence
->   - **Cons**: Requires deeper analysis, may have broader impact
->
-> **Option B**: `stale_reference_fix`
->   - **Description**: `<description>`
->   - **Pros**: Quick fix, aligns with current architecture
->   - **Cons**: Doesn't validate if symbol/path change was intentional
->
-> **Option C**: `broken_test_fix` (semantic equivalence preserved)
->   - **Description**: `<description>`
->   - **Pros**: Maintains test intent while updating for changes
->   - **Cons**: Risk of weakening test coverage if not careful
->
-> **Option D**: `policy_regression_fix`
->   - **Description**: `<description>`
->   - **Pros**: Corrects governance/policy drift
->   - **Cons**: May change intended behavior, requires policy review
->
-> **⭐ RECOMMENDED**: Option A (production_bug_fix) — SVP priority: zero-regression validation through addressing root causes rather than symptom patching.
->
-> **RESULT**: Apply selected repair class with full test validation.
->
-> Which repair class should I apply? (A/B/C/D)
+**If root cause is unambiguous:** do not HITL. Fix it. One correct answer does not warrant a choice menu.
+
+**If two repair classes are both plausible** (e.g., score 0.81 vs 0.77): surface both with the §HITL-10 shape, explaining precisely why the ambiguity exists for *this specific test and failure*.
 
 **EXAMPLES**:
-- Assertion mismatch (fix code vs fix test)
-- Import path changed (update reference vs restore old path)
-- Expected error type changed
-- Threshold/policy drift
+- Assertion mismatch where expected value change may reflect intentional behavior change vs regression
+- Import path changed: update callers vs restore old path (only ambiguous if the rename was undocumented)
+- Threshold drift where the old value may have been wrong to begin with
 
 ### 1.5 Dependency Addition
 
-**TRIGGER**: Before adding new external dependencies
+**TRIGGER**: Before adding a new external dependency where in-house implementation is non-trivial or where an existing alternative may serve
 
-**REQUIRED PROMPT (STAR Format)**:
-
-> **SITUATION**: To implement `<feature>`, external dependency or in-house solution is needed.
->
-> **TASK**: Select approach aligned with SVP dependency hygiene priority.
->
-> **OPTIONS**:
->
-> **Option A**: Add dependency `<package>`
->   - **Pros**: Faster implementation, battle-tested, community support
->   - **Cons**: Increases dependency surface, supply chain risk, potential version conflicts
->
-> **Option B**: Implement in-house
->   - **Pros**: Reduces dependencies, full control, tailored to needs, aligns with SVP dependency hygiene
->   - **Cons**: Development time, maintenance burden, must meet testing standards
->
-> **Option C**: Use existing `<alternative>`
->   - **Pros**: No new dependencies, leverages known patterns
->   - **Cons**: May not fit perfectly, could require workarounds
->
-> **⭐ RECOMMENDED**: Option B (Implement in-house) — SVP priority: dependency hygiene through eliminating external dependencies unless critical capability gap exists.
->
-> **RESULT**: Implement chosen approach with full documentation (per SVP priority d).
->
-> Which approach? (A/B/C)
+**REQUIRED PIPELINE**:
+1. Check whether an existing dependency or in-repo utility already covers the need
+2. If an existing alternative fully covers the need — that is the answer; no HITL required
+3. If the capability gap is genuine, score: external package vs in-house implementation
+4. Score external package lower if: the feature surface used is narrow (wrapping a 3-line call), the package introduces transitive dependencies, or version conflicts exist
+5. Score in-house lower if: the capability requires cryptographic, protocol, or ML complexity that would take >1 session to implement safely
+6. Surface only the candidates that survive the `surface_threshold`; if in-house clearly dominates, surface only that
 
 **EXAMPLES**:
-- New PyPI package
-- New system dependency
-- New MCP server
-- New external API
+- New PyPI package where only one function is used (in-house likely dominates)
+- New MCP server where existing MCP already partially covers the capability
+- New system dependency where the alternative requires significant in-house work (both may survive threshold)
 
 ### 1.6 File/Module Deletion
 
-**TRIGGER**: Before deleting any production file
+**TRIGGER**: Before deleting or archiving any production file
 
-**REQUIRED PROMPT (STAR Format)**:
->
-> **SITUATION**: File `<path>` is candidate for removal. References and deprecation status must be evaluated.
->
-> **TASK**: Select disposition aligned with SVP archival priority.
->
-> **OPTIONS**:
->
-> **Option A**: Delete immediately
->   - **Description**: `<references>` migrated, `<deprecation_period>` elapsed
->   - **Pros**: Immediate cleanup, reduces clutter
->   - **Cons**: Irreversible, history lost, risk if references missed
->
-> **Option B**: Deprecate first
->   - **Description**: Add deprecation warning, set 90-day timer
->   - **Pros**: Graceful transition, time for migration, visibility of pending removal
->   - **Cons**: Code remains active during deprecation period
->
-> **Option C**: Keep as shim
->   - **Description**: Redirect to `<replacement>`, document in shim registry
->   - **Pros**: Backward compatibility preserved, clear migration path
->   - **Cons**: Maintenance burden of shim layer
->
-> **Option D**: Archive instead of delete
->   - **Description**: Move to `tools/archive/`, preserve history
->   - **Pros**: History preserved, can reference later, aligns with SVP archival discipline
->   - **Cons**: Repository size slightly larger
->
-> **⭐ RECOMMENDED**: Option D (Archive) — SVP priority: archival over deletion preserves history in `tools/archive/`.
->
-> **RESULT**: Execute chosen disposition with appropriate validation.
->
-> Which approach? (A/B/C/D)
+**REQUIRED PIPELINE**:
+1. Run reference check: any import, mention in CI gate, test fixture, or shim pointing to this file?
+2. Check deprecation status: has a 90-day deprecation period elapsed?
+3. Score disposition candidates based on reference count and deprecation state:
+   - If references remain: archive-with-shim or deprecate-first will score higher than immediate delete
+   - If zero references and deprecation elapsed: immediate archive/delete will score ≥ 0.85 (dominance likely fires)
+   - If zero references but no deprecation period: archive scores higher than delete (SVP archival priority)
+4. Do not generate all four dispositions reflexively — only generate the candidates that are plausible given reference count and deprecation state
+
+**If zero references + deprecation elapsed:** dominance rule will typically fire for archive. Surface only that option.
+
+**If active references remain:** HITL between deprecate-first and keep-as-shim; delete is not a credible candidate and should not be generated.
 
 **EXAMPLES**:
-- Agent deletion (§1.6 requirements)
-- Utility module consolidation
-- Dead code removal
-- Test file cleanup
+- Agent deletion (§1.6 requirements — additional authorization gate applies)
+- Utility module consolidation after migration
+- Dead code removal post-refactor
 
 ### 1.7 Configuration Changes
 
-**TRIGGER**: Before modifying governance/policy configuration
+**TRIGGER**: Before modifying governance/policy configuration where the change scope is genuinely ambiguous
 
-**REQUIRED PROMPT (STAR Format)**:
->
-> **SITUATION**: Configuration `<config_file>` requires update with potential governance impact.
->
-> **TASK**: Select change option balancing scope against SVP zero-regression priority.
->
-> **OPTIONS**:
->
-> **Option A**: `<change>` — affects `<scope>`
->   - **Pros**: `<benefits>`
->   - **Cons**: `<risks>`
->
-> **Option B**: `<change>` — affects `<scope>`
->   - **Pros**: `<benefits>`
->   - **Cons**: `<risks>`
->
-> **Option C**: Keep current — `<reason>`
->   - **Pros**: No risk of regression, stability maintained
->   - **Cons**: Issue persists, may accumulate technical debt
->
-> **⭐ RECOMMENDED**: Option A — SVP priority: zero-regression validation requires full test pass before any configuration commit.
->
-> **RESULT**: Apply configuration change with comprehensive test validation.
->
-> Which option? (A/B/C)
+**REQUIRED PIPELINE**:
+1. Determine if the change is already decided (user specified the new value) — if so, no HITL; just apply it
+2. If the scope or value is ambiguous, generate only the candidates that represent materially different values or rollout strategies
+3. Do not add a reflexive "keep current" option — if config change is the stated goal, keeping current is not a credible candidate
+4. Score by: gate coverage impact, backward compatibility, test surface affected, and rollback complexity
 
 **EXAMPLES**:
-- Confidence thresholds
-- Retry limits
-- Timeout values
-- Layer boundary rules
+- Confidence threshold change where the optimal value is unclear from available data
+- Retry limit change where two values have different operational tradeoffs
+- Layer boundary rule addition that may affect existing imports
 
 ### 1.8 Error Handling Strategy
 
-**TRIGGER**: When implementing error handling with multiple valid approaches
+**TRIGGER**: When the error handling strategy is genuinely ambiguous (fail-closed vs retry vs escalate each have credible arguments for this specific call site)
 
-**REQUIRED PROMPT (STAR Format)**:
->
-> **SITUATION**: Error `<error_type>` requires handling strategy selection.
->
-> **TASK**: Select strategy aligned with SVP operational simplicity through fail-closed discipline.
->
-> **OPTIONS**:
->
-> **Option A**: Fail-closed
->   - **Description**: Raise immediately, no fallback
->   - **Pros**: Maximum safety, no silent failures, clear error propagation
->   - **Cons**: User-facing errors, requires upstream handling
->
-> **Option B**: Fail-open with logging
->   - **Description**: Log + continue with degraded behavior
->   - **Pros**: User experience preserved, operation continues
->   - **Cons**: Risk of silent data corruption, log may be missed
->
-> **Option C**: Retry with backoff
->   - **Description**: `<retry_config>`
->   - **Pros**: Transient failures resolved automatically
->   - **Cons**: Complexity, latency, may mask real issues
->
-> **Option D**: Escalate to user
->   - **Description**: Prompt for manual intervention
->   - **Pros**: Human judgment applied, no automated wrong decisions
->   - **Cons**: Blocks automation, requires human availability
->
-> **⭐ RECOMMENDED**: Option A (Fail-closed) — SVP priority: operational simplicity through deterministic fail-closed behavior with clear error propagation.
->
-> **RESULT**: Implement chosen strategy with appropriate test coverage.
->
-> Which strategy? (A/B/C/D)
+**REQUIRED PIPELINE**:
+1. Classify the error type: transient infrastructure error, invalid input, missing configuration, resource exhaustion, or external API fault
+2. Apply the constitutional default: fail-closed scores highest by default unless the specific error type is demonstrably transient
+3. Transient errors (network timeouts, rate limits): retry-with-backoff becomes a credible second candidate — score both, surface if both clear threshold
+4. Invalid input / missing config: fail-closed dominates; do not generate retry or escalate as candidates
+5. Do not generate all four options reflexively — only generate candidates that are credible for this specific error type
 
 **EXAMPLES**:
-- External API failures
-- Missing configuration
-- Invalid user input
-- Resource exhaustion
+- External API failure: transient (retry credible) vs permanent (fail-closed dominates)
+- Missing configuration at startup: fail-closed dominates; single option HITL or no HITL
+- Resource exhaustion: fail-closed vs escalate (both credible if human intervention has value)
 
 ### 1.9 Performance Optimization Trade-offs
 
-**TRIGGER**: When optimization involves correctness/complexity trade-offs
+**TRIGGER**: Only when a performance optimization materially changes correctness risk or operational complexity, AND when two approaches have meaningfully different risk profiles
 
-**REQUIRED PROMPT (STAR Format)**:
->
-> **SITUATION**: Performance improvement opportunity requires balancing speed against complexity.
->
-> **TASK**: Select optimization approach aligned with SVP operational simplicity priority.
->
-> **OPTIONS**:
->
-> **Option A**: `<optimization>`
->   - **Speedup**: `<speedup>`
->   - **Pros**: Maximum performance gain
->   - **Cons**: `<complexity_increase>`, maintenance burden, risk of bugs
->
-> **Option B**: `<optimization>`
->   - **Speedup**: `<speedup>`
->   - **Pros**: Moderate gain with controlled complexity
->   - **Cons**: `<complexity_increase>`, some added complexity
->
-> **Option C**: Keep current
->   - **Pros**: Prioritizes simplicity, no new failure modes
->   - **Cons**: Performance gap remains
->
-> **⭐ RECOMMENDED**: Option B — SVP priority: operational simplicity over premature optimization unless performance is critical path.
->
-> **RESULT**: Implement chosen optimization with full regression testing.
->
-> Which approach? (A/B/C)
+**REQUIRED PIPELINE**:
+1. Check whether the optimization is already clearly superior (measured speedup with no correctness risk) — if so, no HITL; implement it
+2. Generate candidates only when: trade-offs are non-trivial (e.g., caching introduces staleness risk, parallelism introduces ordering risk)
+3. Score by: speedup magnitude, correctness risk, added complexity, reversibility, and test surface change
+4. Do not generate "keep current" as a candidate unless deferring the optimization is a genuinely credible choice for the session
 
 **EXAMPLES**:
-- Caching strategies
-- Batch processing
-- Parallel execution
-- Index optimization
+- Caching a computation that is called ×1000/request: cache vs recompute (staleness risk is the differentiator)
+- Parallelizing a pipeline stage: parallel vs sequential (ordering correctness is the differentiator)
+- Index optimization: only HITL if two index strategies have meaningfully different read/write tradeoffs
 
 ### 1.10 ADG Regeneration Timing
 
-**TRIGGER**: After code changes that may affect ADG
+**TRIGGER**: When ADG staleness creates a genuine risk of incorrect blast-radius analysis for the current task
 
-**REQUIRED PROMPT (STAR Format)**:
->
-> **SITUATION**: ADG may be stale after recent changes. Regeneration timing impacts current work velocity.
->
-> **TASK**: Select timing that balances immediate progress against analysis accuracy.
->
-> **OPTIONS**:
->
-> **Option A**: Regenerate now
->   - **Pros**: Guaranteed fresh analysis, accurate dependency graphs
->   - **Cons**: Blocks current work for ~30s, immediate delay
->
-> **Option B**: Defer to end of session
->   - **Pros**: Faster immediate progress, no current interruption
->   - **Cons**: Risk of stale analysis leading to incorrect decisions
->
-> **Option C**: Skip
->   - **Pros**: Maximum velocity, no regeneration time
->   - **Cons**: Analysis may be outdated, decisions based on stale graph
->
-> **⭐ RECOMMENDED**: Option A (Regenerate now) — SVP priority: zero-regression validation requires accurate dependency analysis for any significant change.
->
-> **RESULT**: Execute regeneration and continue with verified-fresh analysis.
->
-> Which timing? (A/B/C)
+**REQUIRED PIPELINE**:
+1. Check staleness: compare `adg_indexed_*.sqlite` mtime against most recent `git commit` mtime
+2. If ADG is fresh (newer than HEAD): no HITL — proceed
+3. If ADG is stale AND the current task requires accurate blast-radius analysis (T2/T3 refactoring, cross-layer scope): regenerate now without HITL — this is the only correct answer
+4. HITL is only warranted if regeneration would consume significant time AND the task can proceed safely with a known-stale graph (e.g., adding a new leaf file with no existing fanout)
+5. Do not generate "Skip" as a candidate — skip is not an acceptable option for T2/T3 work
+
+**Default behavior**: If ADG is stale during T2/T3 work, regenerate immediately. No HITL.
 
 **EXAMPLES**:
-- After refactoring imports
-- After moving files
-- After adding new modules
-- After test changes
+- After refactoring imports across multiple files (stale → regenerate now, no HITL)
+- After adding a single new leaf file with no callers (stale → may defer, HITL only if regeneration cost > 5 min)
 
 ---
 
@@ -498,27 +329,44 @@ ask_user_question(
 ### 2.1 Required Elements
 
 Every HITL prompt MUST include:
-1. **Context**: Brief description of the decision point
-2. **Options**: 2-4 concrete alternatives (A, B, C, D)
-3. **Trade-offs**: Pros/cons or impact for each option
-4. **Question**: Explicit "Which approach/option/strategy?"
+1. **Packet header** — recommended option, why it wins, optimization target, cost of winning path, suppression telemetry
+2. **Options**: 1 to N surviving candidates (N is confidence-gated, NOT a fixed floor)
+3. **Executive-grade analysis** for each option using the §HITL-10 shape (not generic pros/cons)
+4. **Confidence score and band** on every option label
 
 ### 2.2 Forbidden Patterns
 
 **NEVER**:
-- Present only one option and ask for confirmation
-- Proceed with "default" option without user choice
-- Ask open-ended "what should I do?" without concrete options
-- Hide trade-offs or present biased options
+- Generate a minimum of 2, 3, or 4 options to satisfy a count
+- Add a "keep current" option when the action is already decided
+- Pad with options that are cosmetically different but operationally identical
+- Use generic pros/cons ("more flexible", "higher risk", "easier to maintain") without tying the claim to the specific code path, architecture, or governance consequence
+- Proceed with "default" option without user selection (when HITL is required by policy)
 - Make the decision and then ask for approval
+- Use the same tradeoff language across multiple options
+- Label multiple options as Recommended
 
 ### 2.3 Option Quality Standards
 
-Each option MUST:
-- Be **actionable** — clear what Cascade will do
-- Be **distinct** — meaningfully different from other options
-- Include **impact** — what changes, what's affected
-- Be **honest** — real trade-offs, not strawman alternatives
+Each surfaced option MUST:
+- Clear `surface_threshold = 0.72`
+- Be **materially distinct** from every other surfaced option (different on ≥1 of: execution path, risk profile, reversibility, expected outcome, dependency set, time/cost tradeoff, governance consequence)
+- Use the **§HITL-10 option shape** — no generic pros/cons
+- Have **case-specific analysis** — every claim tied to this repo, this packet, this routing path, or this specific decision
+
+### 2.4 LOW\_CONFIDENCE\_AMBIGUITY Packet
+
+When no candidate clears `surface_threshold = 0.72`:
+
+```
+LOW_CONFIDENCE_AMBIGUITY
+Best candidate: <option_title> [<score> <band>]
+Rationale: <why no option is surfaced>
+Recommended action: clarify / replan / abstain
+Blocking question: <what information would resolve the ambiguity>
+```
+
+Do not fabricate options to fill this packet. Do not surface the best candidate as a real option. Route to clarify/replan/abstain.
 
 ---
 
@@ -558,8 +406,9 @@ HITL may be bypassed ONLY when:
 3. **Explicit user directive** — user said "just do X" with no ambiguity
 4. **Emergency rollback** — reverting broken commit
 5. **Auto-fixable violations** — ruff, trailing whitespace, etc.
+6. **Dominance rule fires** — one candidate scores ≥ 0.85 with gap ≥ 0.12 to next; surface that single option, do not treat as bypass (still requires user acknowledgment if policy-required)
 
-**All other cases require HITL.**
+**HITL is NOT required when**: scoring produces one clear answer. In that case, surface a single-option HITL packet rather than proceeding without user acknowledgment (if the decision has meaningful governance or irreversibility consequences), or proceed directly (if the action is low-risk and reversible).
 
 ---
 
@@ -645,10 +494,143 @@ HITL complements but does not replace:
 
 ---
 
+## §HITL-9: Confidence Policy Configuration
+
+All HITL thresholds are centralized here. Do not hardcode these values elsewhere.
+
+```yaml
+hitl_option_policy:
+  surface_threshold: 0.72          # minimum confidence to surface any option
+  high_confidence_band: 0.85       # threshold for HIGH band label
+  medium_confidence_band: 0.72     # threshold for MEDIUM band label (>= 0.72 and < 0.85)
+  low_confidence_band: 0.00        # anything below surface_threshold is suppressed
+  dominance_score_threshold: 0.85  # top option must score >= this to trigger dominance rule
+  dominance_delta: 0.12            # top - next_best must be >= this for dominance to fire
+  max_surface_options: 4           # hard cap; never show more than this
+  require_material_distinctness: true
+  allow_single_option_hitl: true   # single-option surface is explicitly allowed
+  telemetry_emission: true         # emit scoring/suppression stats in packet header
+```
+
+### Confidence Band Labels
+
+| Score | Band | Label in option title |
+|-------|------|-----------------------|
+| ≥ 0.85 | HIGH | `[0.87 HIGH]` |
+| 0.72–0.84 | MEDIUM | `[0.76 MEDIUM]` |
+| < 0.72 | LOW | suppressed — do not surface |
+
+### Scoring Guidance
+
+Confidence scores are not arbitrary. Anchor them to concrete evidence:
+- **≥ 0.85**: The approach is clearly correct for this situation, reversible, blast radius is contained, and SVP priorities align
+- **0.72–0.84**: The approach is credible and defensible but has non-trivial tradeoffs or unknowns
+- **< 0.72**: The approach has significant unknowns, high blast radius, or conflicts with constitutional constraints
+- **0.50 and below**: Do not generate this as a surfaced option; include in suppression telemetry only
+
+---
+
+## §HITL-10: Option Shape Contract
+
+Every surfaced HITL option MUST use the following fields. Generic pros/cons are FORBIDDEN.
+
+```
+option_title: <short imperative title>
+confidence_score: <float, e.g. 0.84>
+confidence_band: HIGH | MEDIUM
+recommendation_status: RECOMMENDED | ALTERNATIVE
+
+decision_thesis:
+  One sentence. What this option actually does and why someone would rationally choose it.
+  Must reference the actual system, component, or workflow being changed.
+
+value_to_goal:
+  What concrete value does this create for the stated objective?
+  Tie it to the current request, repo state, or execution path.
+
+key_tradeoffs:
+  3 to 5 precise tradeoffs, each framed as:
+  - Gains X, but increases Y because Z
+  - Reduces A, but constrains B in this part of the workflow
+  - Improves C now, but creates D follow-on work later
+  Every claim must be tied to this specific architecture, code path, or governance consequence.
+
+execution_impact:
+  What changes operationally if this option is chosen:
+  - which files/layers are touched
+  - localized vs cross-cutting
+  - test surface expansion
+  - config migration requirement
+  - backward compatibility considerations
+
+risk_profile:
+  Do not say only low/medium/high. State:
+  - primary failure mode (what specifically breaks or degrades)
+  - blast radius (which files, layers, callers are affected)
+  - detectability (how quickly would a regression surface)
+  - reversibility (what it takes to undo)
+
+dependencies_and_prereqs:
+  Only list prerequisites that materially matter:
+  - schema migration
+  - config centralization
+  - packet serializer change
+  - eval telemetry update
+  - backward-compat handling
+  No filler.
+
+time_to_value:
+  State whether value is immediate, near-term, or delayed and why:
+  - immediate: visible in this session
+  - near-term: requires test/consumer updates before improvement is live
+  - delayed: requires evaluation data before the change pays off
+
+why_not_default:
+  (Required for non-top options only)
+  Why this option should not automatically be chosen if it is not the top recommendation.
+
+recommendation_delta:
+  (Required for non-top options only)
+  Relative to the top option, explain precisely why this option ranks lower.
+  Do not repeat the same wording from the top option's analysis.
+```
+
+### Banned Weak Phrasing
+
+Do not use any of the following unless immediately followed by a *concrete, architecture-specific explanation*:
+- more flexible, more scalable, simpler, more robust, easier to maintain
+- higher effort, lower risk, better long-term, more extensible, cleaner
+- faster to implement (without specifying what implementation it replaces and why)
+
+**Instead, force specificity:**
+- centralizes threshold policy in one config surface, which reduces drift across hook generators
+- preserves backward compatibility for existing HITL packet consumers, but delays schema cleanup by one wave
+- minimizes code churn by changing only the option-filtering stage, but leaves candidate-generation inefficiency untouched
+
+---
+
+## §HITL-11: Telemetry for Evaluation Spine
+
+Every HITL invocation MUST emit structured telemetry in the packet header (not stored externally; included in the `question` field so it is visible in the audit trail):
+
+```
+Candidates evaluated: <N>
+Suppressed (low confidence): <X> (scored below 0.72)
+Suppressed (non-distinct): <Y> (collapsed into surviving option)
+Surfaced: <M>
+Top confidence score: <score>
+Confidence delta (top vs next): <delta or N/A if single option>
+```
+
+This telemetry is for future threshold tuning. It is logged but does not mutate live policy.
+
+---
+
 ## MAXIM
 
-- **When in doubt, ask.** Multiple valid paths → present options.
-- **Options, not permission.** Don't ask "may I?", ask "which way?"
-- **Concrete, not abstract.** Show exactly what each option does.
-- **Honest trade-offs.** Real pros/cons, not biased steering.
-- **Wait for choice.** No defaults, no assumptions, no proceeding without selection.
+- **Signal over count.** One strong option beats three padded alternatives.
+- **Dominance fires cleanly.** When the answer is clear, surface it and say so.
+- **Threshold gates confidence.** Below 0.72 means clarify, replan, or abstain — not fabricate.
+- **Distinctness is required.** Cosmetic variants do not warrant separate options.
+- **Analysis is executive-grade.** Every claim tied to the actual architecture, not generic software advice.
+- **Wait for choice.** When HITL fires, do not proceed without user selection.
