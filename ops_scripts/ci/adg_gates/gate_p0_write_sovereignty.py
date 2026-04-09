@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
 
 
 class WriteSovereigntyGate(ADGGateBase):
@@ -31,6 +32,88 @@ class WriteSovereigntyGate(ADGGateBase):
         "mv_write_sovereignty_paths",
         "mv_new_write_bypass_paths",
     ]
+    execution_policy = ExecutionPolicy(
+        stage="preflight+full",
+        repairability="manual_only",
+        gate_action="halt",
+        artifact_policy="minimal_failure_artifact",
+        signal_source="sqlite_mv_ci",
+        evidence_tier="truth",
+    )
+
+    def _execute_preflight_logic(self) -> GateResult:
+        """Preflight: detect direct write imports bypassing UWG via import edges."""
+        violations: list[GateViolation] = []
+        summary: dict[str, Any] = {
+            "total_violations": 0,
+            "preflight_mode": True,
+            "source": "import_edges",
+            "in_modified_area": 0,
+        }
+
+        if not self.conn:
+            return self._empty_result()
+
+        try:
+            cursor = self.conn.execute("""
+                SELECT DISTINCT src.node_id, src.file_path, src.layer,
+                                dst.file_path AS dst_file
+                FROM edges e
+                JOIN nodes src ON src.node_id = e.src_id
+                JOIN nodes dst ON dst.node_id = e.tgt_id
+                WHERE e.relation_type = 'imports'
+                  AND (
+                    dst.file_path LIKE '%sqlite%'
+                    OR dst.file_path LIKE '%redis%'
+                    OR dst.file_path LIKE '%storage%'
+                  )
+                  AND src.file_path NOT LIKE '%uwg%'
+                  AND src.file_path NOT LIKE '%write_gateway%'
+                LIMIT 100
+            """)
+            for row in cursor.fetchall():
+                src_node_id, src_file, layer, dst_file = row[0], row[1], row[2], row[3]
+                in_mod = self._is_in_modified_area(src_file)
+                if in_mod:
+                    summary["in_modified_area"] += 1
+                violations.append(
+                    GateViolation(
+                        violation_id=f"preflight_write_{src_node_id}",
+                        source_view="import_edges",
+                        source_node=str(src_node_id),
+                        source_edge=None,
+                        file=src_file,
+                        line=None,
+                        layer_src=layer,
+                        layer_dst=None,
+                        path_id=None,
+                        first_illegal_hop=f"{layer}->direct_write",
+                        path_criticality=4.0,
+                        in_modified_area=in_mod,
+                        message=(
+                            f"[PREFLIGHT] Direct storage import bypassing UWG: {src_file} -> {dst_file}"
+                        ),
+                        path_criticality_class="write",
+                        structured_action_required=True,
+                        approval_required=True,
+                    )
+                )
+        except sqlite3.Error:
+            pass
+
+        summary["total_violations"] = len(violations)
+        status = "blocked" if violations else "passed"
+        return GateResult(
+            gate_family=self.gate_family,
+            severity=self.severity,
+            snapshot_id=self._snapshot_id,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            status=status,
+            violations=violations,
+            summary=summary,
+            policy=self.execution_policy,
+            stage="preflight",
+        )
 
     def _execute_gate_logic(self) -> GateResult:
         """Execute write sovereignty check."""

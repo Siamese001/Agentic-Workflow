@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
 
 
 class TextToActionGate(ADGGateBase):
@@ -32,6 +33,82 @@ class TextToActionGate(ADGGateBase):
         "mv_actionable_surface_without_schema",
         "mv_structured_output_gaps",
     ]
+    execution_policy = ExecutionPolicy(
+        stage="preflight+full",
+        repairability="suggest_only",
+        gate_action="halt",
+        artifact_policy="minimal_failure_artifact",
+        signal_source="sqlite_mv_ci",
+        evidence_tier="truth",
+    )
+
+    def _execute_preflight_logic(self) -> GateResult:
+        """Preflight: detect action-capable files lacking schema imports via import edges."""
+        violations: list[GateViolation] = []
+        summary: dict[str, Any] = {
+            "total_violations": 0,
+            "preflight_mode": True,
+            "source": "import_edges",
+            "in_modified_area": 0,
+        }
+
+        if not self.conn:
+            return self._empty_result()
+
+        try:
+            cursor = self.conn.execute("""
+                SELECT DISTINCT n.node_id, n.file_path, n.layer
+                FROM nodes n
+                JOIN edges e ON e.src_id = n.node_id
+                WHERE e.relation_type = 'imports'
+                  AND n.file_path LIKE '%action%'
+                  AND n.file_path NOT LIKE '%schema%'
+                  AND n.file_path NOT LIKE '%validation%'
+                LIMIT 100
+            """)
+            for row in cursor.fetchall():
+                node_id, file_path, layer = row[0], row[1], row[2]
+                in_mod = self._is_in_modified_area(file_path)
+                if in_mod:
+                    summary["in_modified_area"] += 1
+                violations.append(
+                    GateViolation(
+                        violation_id=f"preflight_tta_{node_id}",
+                        source_view="import_edges",
+                        source_node=str(node_id),
+                        source_edge=None,
+                        file=file_path,
+                        line=None,
+                        layer_src=layer,
+                        layer_dst=None,
+                        path_id=None,
+                        first_illegal_hop=f"{layer}->unvalidated_text",
+                        path_criticality=3.0,
+                        in_modified_area=in_mod,
+                        message=(
+                            f"[PREFLIGHT] Action-capable module lacks schema/validation import: {file_path}"
+                        ),
+                        path_criticality_class="execution",
+                        structured_action_required=True,
+                        approval_required=False,
+                    )
+                )
+        except sqlite3.Error:
+            pass
+
+        summary["total_violations"] = len(violations)
+        status = "blocked" if violations else "passed"
+        return GateResult(
+            gate_family=self.gate_family,
+            severity=self.severity,
+            snapshot_id=self._snapshot_id,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            status=status,
+            violations=violations,
+            summary=summary,
+            policy=self.execution_policy,
+            stage="preflight",
+        )
 
     def _execute_gate_logic(self) -> GateResult:
         """Execute text-to-action safety check."""

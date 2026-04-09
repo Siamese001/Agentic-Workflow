@@ -147,6 +147,36 @@ def main():
         sys.exit(1)
     print("✅ Infrastructure wiring scan passed")
 
+    # Gate: P0 two-pass (preflight + full ADG enforcement)
+    print("\n[P0 TWO-PASS GATE]")
+    try:
+        from ops_scripts.ci.adg_gates.p0_runner import run_p0_two_pass
+
+        p0_rc = run_p0_two_pass(emit_artifacts=True)
+        if p0_rc == 1:
+            print("❌ P0 two-pass gate BLOCKED — commit rejected")
+            sys.exit(1)
+        elif p0_rc == 2:
+            print("⚠️  P0 two-pass gate ERROR — runner-level failure (see stderr)")
+            sys.exit(1)
+        else:
+            print("✅ P0 two-pass gate passed")
+    except ImportError as exc:
+        print(f"⚠️  P0 runner import failed — {exc} (continuing as warn)")
+
+    # Gate: P3 trend tracking (watch-only, never blocks)
+    print("\n[P3 TREND RUNNER]")
+    try:
+        from ops_scripts.ci.adg_gates.p3_trend_runner import run_p3_trend
+
+        p3_rc = run_p3_trend(emit_artifacts=True)
+        if p3_rc == 2:
+            print("⚠️  P3 trend runner ERROR — see stderr (non-blocking)")
+        else:
+            print("✅ P3 trend runner completed")
+    except ImportError as exc:
+        print(f"⚠️  P3 runner import failed — {exc} (non-blocking)")
+
     # Continue with existing logic...
     return 0
 

@@ -3,6 +3,10 @@
 All gates consume materialized views from the canonical ADG SQLite database
 and emit actionable artifacts with provenance, first-hop detection, and
 snapshot-aware operation.
+
+Extended by the P0-P3 execution policy enhancement wave to carry full
+operational context: stage, repairability, gate_action, artifact_policy,
+signal_source, evidence_tier, path-aware ratchet, and P3 trend/promotion.
 """
 
 from __future__ import annotations
@@ -17,6 +21,13 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from ops_scripts.ci.adg_gates.gate_policy import (
+    ExecutionPolicy,
+    RatchetResult,
+    TrendResult,
+    VALID_PATH_CRITICALITY_CLASSES,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
@@ -42,6 +53,9 @@ class GateViolation:
     in_modified_area: bool
     message: str
     extra: dict[str, Any] = field(default_factory=dict)
+    path_criticality_class: str = "unknown"
+    structured_action_required: bool = False
+    approval_required: bool = False
 
 
 @dataclass
@@ -49,20 +63,26 @@ class GateResult:
     """Result from a single gate execution."""
 
     gate_family: str
-    severity: str  # P0, P1, P2
+    severity: str  # P0, P1, P2, P3
     snapshot_id: str
     timestamp: str
     status: str  # blocked, passed, warn
     violations: list[GateViolation]
     summary: dict[str, Any]
+    policy: ExecutionPolicy = field(default_factory=ExecutionPolicy)
+    ratchet: RatchetResult | None = None
+    trend: TrendResult | None = None
+    stage: str = "full"  # mirrors policy.stage for fast access
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "gate_family": self.gate_family,
             "severity": self.severity,
             "snapshot_id": self.snapshot_id,
             "timestamp": self.timestamp,
             "status": self.status,
+            "stage": self.stage,
+            "policy": self.policy.to_dict(),
             "violations": [
                 {
                     "violation_id": v.violation_id,
@@ -76,7 +96,10 @@ class GateResult:
                     "path_id": v.path_id,
                     "first_illegal_hop": v.first_illegal_hop,
                     "path_criticality": v.path_criticality,
+                    "path_criticality_class": v.path_criticality_class,
                     "in_modified_area": v.in_modified_area,
+                    "structured_action_required": v.structured_action_required,
+                    "approval_required": v.approval_required,
                     "message": v.message,
                     "extra": v.extra,
                 }
@@ -84,6 +107,11 @@ class GateResult:
             ],
             "summary": self.summary,
         }
+        if self.ratchet is not None:
+            d["ratchet"] = self.ratchet.to_dict()
+        if self.trend is not None:
+            d["trend"] = self.trend.to_dict()
+        return d
 
 
 class ADGGateBase(ABC):
@@ -91,24 +119,38 @@ class ADGGateBase(ABC):
 
     Subclasses must implement:
         - gate_family: str — unique gate identifier
-        - severity: str — P0, P1, or P2
+        - severity: str — P0, P1, P2, or P3
         - source_views: list[str] — materialized views to query
+        - execution_policy: ExecutionPolicy — operational classification
         - _execute_gate_logic() — perform the actual gate check
+
+    Subclasses supporting preflight must also implement:
+        - _execute_preflight_logic() — lightweight seed-graph check
     """
 
     gate_family: str = ""
     severity: str = ""
     source_views: list[str] = []
+    execution_policy: ExecutionPolicy = field(default_factory=ExecutionPolicy)
 
-    def __init__(self, sqlite_path: Path | None = None, modified_files: list[str] | None = None):
+    def __init__(
+        self,
+        sqlite_path: Path | None = None,
+        modified_files: list[str] | None = None,
+        preflight_mode: bool = False,
+    ):
         """Initialize gate with SQLite path and optional modified file list.
 
         Args:
             sqlite_path: Path to ADG SQLite database. If None, finds latest.
             modified_files: List of files in current change set for modified-area focus.
+            preflight_mode: If True, run lightweight preflight logic instead of
+                full materialized-view logic. Only supported by gates whose
+                execution_policy.stage includes 'preflight'.
         """
         self.sqlite_path = sqlite_path or self._find_latest_sqlite()
         self.modified_files = set(modified_files or [])
+        self.preflight_mode = preflight_mode
         self.conn: sqlite3.Connection | None = None
         self._snapshot_id: str = ""
 
@@ -221,12 +263,59 @@ class ADGGateBase(ABC):
             raise
 
     def _write_artifacts(self, result: GateResult) -> Path:
-        """Write gate result artifacts to disk."""
+        """Write gate result artifacts to disk, shaped by artifact_policy."""
         ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         artifact_dir = CI_ARTIFACTS_DIR / ts
         artifact_dir.mkdir(parents=True, exist_ok=True)
 
-        # Main artifact
+        policy = result.policy.artifact_policy
+
+        if policy == "minimal_failure_artifact":
+            # Preflight P0 hit — emit compact artifact only
+            minimal: dict[str, Any] = {
+                "gate_family": result.gate_family,
+                "severity": result.severity,
+                "stage": result.stage,
+                "status": result.status,
+                "snapshot_id": result.snapshot_id,
+                "timestamp": result.timestamp,
+                "policy": result.policy.to_dict(),
+                "violations": [
+                    {
+                        "violation_id": v.violation_id,
+                        "file": v.file,
+                        "first_illegal_hop": v.first_illegal_hop,
+                        "path_criticality_class": v.path_criticality_class,
+                        "message": v.message,
+                        "structured_action_required": v.structured_action_required,
+                        "approval_required": v.approval_required,
+                    }
+                    for v in result.violations
+                ],
+                "run_metadata": {
+                    "sqlite_path": str(self.sqlite_path),
+                    "preflight_mode": self.preflight_mode,
+                },
+            }
+            out = artifact_dir / f"gate_{result.gate_family}_minimal_failure.json"
+            out.write_text(json.dumps(minimal, indent=2), encoding="utf-8")
+            return artifact_dir
+
+        if policy == "trend_only":
+            # P3 watch — emit trend artifact only
+            trend_data: dict[str, Any] = {
+                "gate_family": result.gate_family,
+                "severity": result.severity,
+                "timestamp": result.timestamp,
+                "policy": result.policy.to_dict(),
+                "trend": result.trend.to_dict() if result.trend else {},
+                "violation_count": len(result.violations),
+            }
+            out = artifact_dir / f"gate_{result.gate_family}_trend.json"
+            out.write_text(json.dumps(trend_data, indent=2), encoding="utf-8")
+            return artifact_dir
+
+        # Default: full_adg_report (and all other policies — include full payload)
         artifact_file = artifact_dir / f"gate_{result.gate_family}.json"
         artifact_file.write_text(json.dumps(result.to_dict(), indent=2), encoding="utf-8")
 
@@ -236,11 +325,12 @@ class ADGGateBase(ABC):
         findings_file.write_text(findings, encoding="utf-8")
 
         # Provenance linkage
-        provenance = {
+        provenance: dict[str, Any] = {
             "gate_family": result.gate_family,
             "snapshot_id": result.snapshot_id,
             "sqlite_path": str(self.sqlite_path),
             "source_views": self.source_views,
+            "preflight_mode": self.preflight_mode,
             "violation_count": len(result.violations),
             "violations_with_provenance": [
                 {
@@ -252,6 +342,8 @@ class ADGGateBase(ABC):
                 for v in result.violations
             ],
         }
+        if result.ratchet is not None:
+            provenance["ratchet"] = result.ratchet.to_dict()
         provenance_file = artifact_dir / f"gate_{result.gate_family}_provenance.json"
         provenance_file.write_text(json.dumps(provenance, indent=2), encoding="utf-8")
 
@@ -298,7 +390,7 @@ class ADGGateBase(ABC):
 
     @abstractmethod
     def _execute_gate_logic(self) -> GateResult:
-        """Execute the gate-specific logic.
+        """Execute the full gate logic against materialized views.
 
         Must be implemented by subclasses. Should:
         1. Query relevant materialized views
@@ -306,10 +398,86 @@ class ADGGateBase(ABC):
         3. Build GateViolation records with full provenance
         4. Return GateResult with status determined by severity/rules
         """
-        pass
+
+    def _execute_preflight_logic(self) -> GateResult:
+        """Execute lightweight preflight logic against seed graph.
+
+        Override in subclasses that support preflight mode
+        (execution_policy.stage includes 'preflight').
+
+        Default implementation returns a passed result — gates that do not
+        support preflight are never registered for preflight runs.
+        """
+        return GateResult(
+            gate_family=self.gate_family,
+            severity=self.severity,
+            snapshot_id=self._snapshot_id,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            status="passed",
+            violations=[],
+            summary={"preflight_supported": False},
+            policy=getattr(self, "execution_policy", ExecutionPolicy()),
+            stage="preflight",
+        )
+
+    def _compute_ratchet(
+        self,
+        violations: list[GateViolation],
+        baseline_key: str,
+    ) -> RatchetResult:
+        """Compute path-aware ratchet from current violations vs saved baseline.
+
+        Loads the baseline, computes gross/net/new/resolved/critical_* counts,
+        and saves the updated baseline if not blocked.
+        """
+        baseline = self._load_baseline(baseline_key)
+        baseline_ids: set[str] = set(baseline.get("violation_ids", []))
+        current_ids = {v.violation_id for v in violations}
+
+        new_violations = [v for v in violations if v.violation_id not in baseline_ids]
+        resolved_ids = baseline_ids - current_ids
+
+        critical_classes = {"sink", "write", "provider"}
+        critical_new = [v for v in new_violations if v.path_criticality_class in critical_classes]
+        critical_near_sink = [v for v in new_violations if v.path_criticality >= 0.8]
+        critical_cross_layer = [
+            v for v in new_violations if v.layer_src and v.layer_dst and v.layer_src != v.layer_dst
+        ]
+        modified_area_new = [v for v in new_violations if v.in_modified_area]
+
+        net = len(current_ids) - len(baseline_ids)
+        blocked = net > 0 or len(critical_new) > 0
+        reason = ""
+        if blocked:
+            parts = []
+            if net > 0:
+                parts.append(f"net regression={net}")
+            if critical_new:
+                parts.append(f"critical_new={len(critical_new)}")
+            reason = "; ".join(parts)
+
+        ratchet = RatchetResult(
+            gross=len(violations),
+            net=net,
+            new=len(new_violations),
+            resolved=len(resolved_ids),
+            critical_new=len(critical_new),
+            critical_near_sink=len(critical_near_sink),
+            critical_cross_layer=len(critical_cross_layer),
+            modified_area_count=len(modified_area_new),
+            blocked=blocked,
+            reason=reason,
+        )
+
+        if not blocked:
+            self._save_baseline(baseline_key, {"violation_ids": sorted(current_ids)})
+
+        return ratchet
 
     def run(self, emit_artifacts: bool = True) -> GateResult:
         """Execute the gate and optionally emit artifacts.
+
+        Dispatches to preflight or full logic based on self.preflight_mode.
 
         Args:
             emit_artifacts: If True, write artifacts to disk.
@@ -321,7 +489,12 @@ class ADGGateBase(ABC):
             self._connect()
             self._snapshot_id = self._get_snapshot_id()
 
-            result = self._execute_gate_logic()
+            if self.preflight_mode:
+                result = self._execute_preflight_logic()
+                result.stage = "preflight"
+            else:
+                result = self._execute_gate_logic()
+                result.stage = "full"
 
             if emit_artifacts:
                 self._write_artifacts(result)
