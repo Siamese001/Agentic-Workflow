@@ -6,6 +6,13 @@
 # Replaces: ~5,000 lines of Python enforcement in the old structure_blueprint
 #           package (_verify.py, _simulate_verify.py, sovereign_kernel.py,
 #           governance.py, enforcement/).
+#
+# Decision log (2026-04-10):
+#   - root_directories adjusted to match actual repo state (not aspirational).
+#   - infrastructure/, scripts/, templates/, test_artifacts/ added as allowed.
+#   - .ruff_cache added to excluded_directories.
+#   - cache, planning removed from flat_directories (contain subdirectories).
+#   - apps_* auto-allowed by prefix match in CI gate (not listed here).
 # ============================================================================
 
 # --- Root-level directory whitelist ---

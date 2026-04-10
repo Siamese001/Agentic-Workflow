@@ -90,12 +90,16 @@ def _check_flat_dirs(policy: dict[str, Any], verbose: bool = False) -> list[str]
         # Check if any of its ancestors are excluded
         if any(p.name in excluded for p in flat_dir.parents):
             continue
+        has_violation = False
         for child in flat_dir.iterdir():
             if child.is_dir() and child.name not in excluded:
+                has_violation = True
                 violations.append(
                     f"FLAT violation: {child.relative_to(_ROOT)}/ "
                     f"(subdirectory inside flat dir '{flat_dir.name}/')"
                 )
+        if verbose and not has_violation:
+            print(f"  OK  {flat_dir.relative_to(_ROOT)}/ (flat)")
 
     return violations
 
@@ -128,6 +132,8 @@ def _check_forbidden_root_dirs(policy: dict[str, Any], verbose: bool = False) ->
     for name in sorted(forbidden):
         if (_ROOT / name).is_dir():
             violations.append(f"FORBIDDEN dir exists: {name}/ (must be removed or archived)")
+        elif verbose:
+            print(f"  OK  {name}/ not present")
 
     return violations
 

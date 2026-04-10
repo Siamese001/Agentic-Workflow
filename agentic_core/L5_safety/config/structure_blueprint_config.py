@@ -104,11 +104,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (  # noqa: F4
     get_sovereign_territories,
     get_subfolder_metadata,
 )
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
-)
 
-_emit_records_execution_trace("p0", "evidence", "structure_blueprint_config")
 # __all__ mirrors the package's __all__ exactly (163 names).
 # The 18 backward-compat re-exports above are importable by explicit import
 # but are intentionally excluded from __all__ / import *.

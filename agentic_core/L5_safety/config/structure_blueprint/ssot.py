@@ -434,10 +434,8 @@ def get_canonical_test_path(source_path: Path, repo_root: Path) -> Path:
     source: apps_rg/engines/bar.py         →  tests/unit/apps_rg/engines/test_bar.py
     source: tools/mirror_tests.py          →  tests/unit_min_deps/test_mirror_tests.py
     """
-    from pathlib import Path as _Path
-
-    src = _Path(source_path)
-    root = _Path(repo_root)
+    src = Path(source_path)
+    root = Path(repo_root)
     try:
         rel = src.relative_to(root)
     except ValueError:
@@ -457,7 +455,7 @@ def get_canonical_test_path(source_path: Path, repo_root: Path) -> Path:
 
     sub_parts = parts[1:-1]  # directories between root and filename
     return (
-        root / mirror_base / _Path(*sub_parts) / f"test_{src.stem}.py"
+        root / mirror_base / Path(*sub_parts) / f"test_{src.stem}.py"
         if sub_parts
         else root / mirror_base / f"test_{src.stem}.py"
     )
