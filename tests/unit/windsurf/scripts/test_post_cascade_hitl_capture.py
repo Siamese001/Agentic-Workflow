@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".windsurf" / "scripts"))
 
 import post_cascade_hitl_capture as _m  # noqa: E402  (used for monkeypatching module globals)
 
