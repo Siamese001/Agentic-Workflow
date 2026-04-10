@@ -351,9 +351,6 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
                     "semantic": {"purpose": "Semantic search stores (BM25, embeddings)."},
                 },
             },
-            "storage": {
-                "purpose": "Persistent and filesystem-backed state storage implementations.",
-            },
         },
         "enforcement_subfolders": {
             "authority": {

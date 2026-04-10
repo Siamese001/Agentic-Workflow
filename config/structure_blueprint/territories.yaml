@@ -150,7 +150,13 @@ territories:
                   inference: {purpose: "Deterministic engine, replay harness, shadow logger"}
                   models: {purpose: "Layer-specific ML models and unified inference engine"}
           enforcement: {purpose: "Guardrails"}
-          utils: {purpose: "Helpers"}
+          utils:
+            purpose: "Helpers"
+            subfolders:
+              prompt_taxonomy:
+                purpose: "Prompt categorization taxonomy, loader, and Jinja2 templates"
+                subfolders:
+                  templates: {purpose: "Jinja2 prompt templates per category (C0, D0, I0, S0, U0)"}
       L2_execution:
         depth: 2
         purpose: "Tool execution, action orchestration"
@@ -213,6 +219,12 @@ territories:
             subfolders:
               client: {purpose: "External client wrappers (ChromaDB, etc.)"}
               commit: {purpose: "Two-phase commit and transactional coordination utilities"}
+              context: {purpose: "Execution context and freeze/unfreeze utilities"}
+              ledger: {purpose: "Ledger integrity validation utilities"}
+              lifecycle: {purpose: "State lifecycle management and policy application"}
+              retrieval: {purpose: "Context retrieval orchestration"}
+              storage: {purpose: "Persistent and filesystem-backed state storage implementations"}
+              versioning: {purpose: "State versioning, version manager, and versioned transition registry"}
       L5_safety:
         depth: 2
         purpose: "Guardrails, validation, policy enforcement"
