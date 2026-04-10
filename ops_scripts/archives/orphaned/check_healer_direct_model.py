@@ -1,0 +1,36 @@
+"""CI guard G18: healers must not invoke LLM models directly; only route_healing_tier()."""
+from __future__ import annotations
+
+import ast
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+HEALER_PATTERNS = ['*healer*', '*Healer*', '*healing*', '*Healing*']
+BLOCKED_CALLS = {'route_generation', 'generate_content', 'create_openai_client', 'create_anthropic_client', 'create_vertex_client'}
+ALLOWED_CALL = 'route_healing_tier'
+
+def main() -> int:
+    violations: list[str] = []
+    for pattern in HEALER_PATTERNS:
+        for path in REPO_ROOT.rglob(pattern + '.py'):
+            rel = path.relative_to(REPO_ROOT).as_posix()
+            if 'healing_tier_router' in rel:
+                continue
+            try:
+                tree = ast.parse(path.read_text(encoding='utf-8', errors='replace'))
+            except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+                continue
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                    if node.func.attr in BLOCKED_CALLS:
+                        violations.append(f"{rel}:{node.lineno}: healer calls '{node.func.attr}' directly — must use route_healing_tier()")
+    if violations:
+        print(f'FAIL: {len(violations)} healer direct model invocation(s):')
+        for v in violations:
+            print(f'  {v}')
+        return 1
+    print('OK: no healer direct model invocations')
+    return 0
+if __name__ == '__main__':
+    sys.exit(main())

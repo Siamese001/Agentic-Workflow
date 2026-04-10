@@ -1,0 +1,139 @@
+"""
+Qwen Enum Leakage Auditor - Prevent Direct Enum Usage Outside Choke Points
+
+CI enforcement script to prevent HealingTier.QWEN_VLLM enum leakage
+outside authorized choke point files.
+"""
+
+import sys
+from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    L0_MAINTENANCE_DIR,
+    L4_STATE_DIR,
+)
+
+ALLOWED_FILES = {
+    "healing_tier_router.py",
+    "healing_provider_adapters.py",
+    "healing_tier_dispatcher.py",
+    "healing_tier_types.py",
+}
+
+ALLOWED_TEST_PATTERNS = {"test_*.py", "*_test.py", "conftest.py"}
+
+
+def check_enum_leakage() -> None:
+    """Prevent direct enum usage outside choke points."""
+    violations = []
+
+    for py_file in Path(".").rglob("*.py"):
+        if any(py_file.name.startswith(pattern.rstrip("*")) for pattern in ALLOWED_TEST_PATTERNS):
+            continue  # Skip test files
+
+        if py_file.name in ALLOWED_FILES:
+            continue  # Skip allowed implementation files
+
+        try:
+            content = py_file.read_text(encoding="utf-8")
+            if "HealingTier.QWEN_VLLM" in content:
+                violations.append(str(py_file))
+        except (UnicodeDecodeError, OSError):    # guardian: File operations with encoding need error-specific handling
+            continue
+
+    if violations:
+        print("ERROR: HealingTier.QWEN_VLLM enum leakage detected:")
+        for file in violations:
+            print(f"  - {file}")
+        print("\nEnum usage only allowed in:", sorted(ALLOWED_FILES))
+        sys.exit(1)
+
+    print("OK: No enum leakage detected")
+
+
+def validate_embedding_governance_lock() -> None:
+    """Prevent Qwen/vLLM references in embedding architecture."""
+    embedding_files = [
+        "agentic_core/embeddings/embedding_factory.py",
+        "agentic_core/embeddings/embedding_input_guard.py",
+        "system_learning/engines/embedding_service_factory.py",
+    ]
+
+    forbidden_patterns = ["qwen", "vllm", "Qwen", "VLLM"]
+    violations = []
+
+    for file_path in embedding_files:
+        if not Path(file_path).exists():
+            continue
+
+        content = Path(file_path).read_text(encoding="utf-8")
+        for pattern in forbidden_patterns:
+            if pattern in content:
+                violations.append(f"{file_path}:{pattern}")
+
+    if violations:
+        print("ERROR: Embedding governance violations detected:")
+        for violation in violations:
+            print(f"  - {violation}")
+        print("\nQwen/vLLM references forbidden in embedding architecture")
+        sys.exit(1)
+
+    print("OK: Embedding governance lock validated")
+
+
+def validate_threshold_immutability() -> None:
+    """Ensure healing thresholds cannot be modified."""
+    try:
+        import agentic_core.L3_orchestration.healers.healing_tier_router as router
+
+        # These values must never change
+        assert hasattr(router, "HEALING_CONFIDENCE_X"), "HEALING_CONFIDENCE_X not found"
+        assert hasattr(router, "HEALING_CONFIDENCE_Y"), "HEALING_CONFIDENCE_Y not found"
+
+        assert router.HEALING_CONFIDENCE_X == 0.75, f"X threshold modified: {router.HEALING_CONFIDENCE_X}"
+        assert router.HEALING_CONFIDENCE_Y == 0.40, f"Y threshold modified: {router.HEALING_CONFIDENCE_Y}"
+
+        print("OK: Threshold immutability validated")
+    except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        print(f"ERROR: {e}")
+        sys.exit(1)
+    except ImportError as exc:
+        print(f"WARNING: Could not import healing router: {exc}")
+
+
+def validate_architectural_separation() -> None:
+    """Ensure Qwen logic stays within healing tier boundaries."""
+    forbidden_directories = [
+        L0_MAINTENANCE_DIR,
+        L4_STATE_DIR,
+        "agentic_core/embeddings",
+        "system_learning/engines/embedding_service_factory.py",
+    ]
+
+    qwen_patterns = ["qwen", "Qwen", "vllm", "VLLM"]
+
+    for directory in forbidden_directories:
+        if not Path(directory).exists():
+            continue
+
+        for py_file in Path(directory).rglob("*.py"):
+            try:
+                content = py_file.read_text(encoding="utf-8")
+                for pattern in qwen_patterns:
+                    if pattern in content:
+                        raise RuntimeError(f"Qwen pattern '{pattern}' found in forbidden location: {py_file}")
+            except (UnicodeDecodeError, OSError):    # guardian: File operations with encoding need error-specific handling
+                continue
+
+    print("OK: Architectural separation validated")
+
+
+if __name__ == "__main__":
+    print("Running Qwen sovereignty audits...")
+
+    check_enum_leakage()
+    validate_embedding_governance_lock()
+    validate_threshold_immutability()
+    validate_architectural_separation()
+
+    print("All Qwen sovereignty audits passed!")

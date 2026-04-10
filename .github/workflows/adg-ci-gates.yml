@@ -177,6 +177,57 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: M10 — Antipattern Regression Gate
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m10
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m10(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M10', 'warn')
+          print(f'M10 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M11 — Dead Import Regression Gate
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m11
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m11(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M11', 'warn')
+          print(f'M11 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
+      - name: M12 — Layer Gravity Gate
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from ops_scripts.ci._adg_ci_gates import _get_gpc, _load_baseline, _eval_m12
+          cur = _get_gpc()
+          bl = _load_baseline()
+          passed, msg = _eval_m12(cur, bl.get('snapshot', {}))
+          mode = bl.get('gate_modes', {}).get('M12', 'warn')
+          print(f'M12 [{mode}]: {\"PASS\" if passed else \"FAIL/WARN\"} — {msg}')
+          if not passed and mode == 'enforce':
+              sys.exit(1)
+          "
+        env:
+          PYTHONPATH: .
+
       - name: Full gate summary (exit 1 if any enforce-mode gate fails)
         run: python ops_scripts/ci/_adg_ci_gates.py
         env:

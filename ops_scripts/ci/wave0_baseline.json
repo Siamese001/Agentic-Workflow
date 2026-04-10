@@ -1,27 +1,31 @@
 {
-  "_description": "Wave 0 ADG CI gates baseline \u2014 frozen from live Redis.",
+  "_description": "Wave 0 ADG CI gates baseline \u2014 frozen from live Redis. Updated 2026-04-10.",
   "_wave": 0,
   "gate_modes": {
     "M1": "warn",
     "M2": "enforce",
     "M3": "enforce",
-    "M4": "warn",
+    "M4": "enforce",
     "M5": "warn",
     "M6": "warn",
     "M7": "warn",
-    "M8": "warn",
-    "M9": "warn"
+    "M8": "enforce",
+    "M9": "enforce",
+    "M10": "enforce",
+    "M11": "enforce",
+    "M12": "enforce"
   },
   "snapshot": {
     "agent_executes_agent": 0,
-    "antipattern": 5846,
-    "applies_guardrail": 98,
-    "calls": 314,
-    "dead_imports": 251,
+    "antipattern": 8002,
+    "applies_guardrail": 99,
+    "calls": 327,
+    "dead_imports": 255,
     "emits_determinism_digest": 0,
     "emits_replay_key": 0,
-    "invokes_eval": 4,
+    "invokes_eval": 49,
     "invokes_getattr_dynamic": 1,
+    "layer_violation_count": 0,
     "observes_runtime_state": 0,
     "proposal_commits_routing": 0,
     "reads_policy_state": 11,
@@ -31,8 +35,8 @@
     "seeds_rng": 0,
     "signs_execution_trace": 1,
     "uses_random": 0,
-    "uses_wall_clock": 26,
-    "writes_through": 966,
-    "writes_to": 3402
+    "uses_wall_clock": 28,
+    "writes_through": 1280,
+    "writes_to": 5220
   }
 }

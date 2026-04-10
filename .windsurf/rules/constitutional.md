@@ -35,6 +35,39 @@ trigger: always_on
 
 ADG graph is the **primary** analysis primitive. `grep_search` for dependency analysis is FORBIDDEN.
 
+### ADG-First Retrieval-Tool Decision Tree (§3.2 OpenDev pattern)
+
+**STOP before every `grep_search` call. Check these observable query features:**
+
+```
+IF query contains "import", "from X import", "who imports" → ADG fanin
+IF query targets a function/class/constant name in *.py   → ADG fanin
+IF query asks "what does X depend on"                      → ADG fanout
+IF query mentions "blast radius", "impact", "consumers"    → ADG fanin
+IF query mentions "references", "who uses", "who calls"    → ADG fanin
+IF query searches for an ALL_CAPS symbol name              → ADG fanin
+IF query asks about architectural layers (L0-L6)           → ADG nodes_by_layer
+ELSE (TODOs, FIXMEs, literal strings, non-Python content)  → grep_search OK
+```
+
+| Observable Feature | FORBIDDEN | REQUIRED |
+|---|---|---|
+| Query contains `from X import` or `import X` | `grep_search("from X import")` | `mcp1_adg_nodes_by_file` → `mcp1_adg_edge_fanin` |
+| Query targets a function name `Y(` | `grep_search("Y(")` | `mcp1_adg_edge_fanin(tgt_id=<Y_node>, relation_type="calls")` |
+| Query targets a class name `class Y` | `grep_search("class Y")` | `mcp1_adg_node(node_id=<Y>)` → `mcp1_adg_edge_fanin` |
+| Query asks outgoing deps of file Z | `grep_search("import", SearchPath=Z)` | `mcp1_adg_edge_fanout(src_id=<Z_node>, relation_type="imports")` |
+| Query mentions blast radius / impact | `grep_search("A", Includes=["*.py"])` | `mcp1_adg_edge_fanin(tgt_id=<A_node>)` |
+| Query targets ALL_CAPS constant | `grep_search("CONSTANT_NAME")` | `mcp1_adg_edge_fanin(tgt_id=<const_node>)` |
+| Literal text / TODO / non-code | `grep_search` ✅ ALLOWED | — |
+
+**Why grep fails at dependency analysis**: false positives (comments, dead code), false negatives (re-exports, aliases), no transitive closure, no layer awareness, context window pollution (70-80% of tokens wasted per OpenDev §3.1).
+
+Enforcement chain (4 layers):
+1. `graph-analysis` skill auto-invokes → loads `tool_routing_decision_tree.md` at maximum recency
+2. `pre_prompt_classifier.py` step 0 in SR_MANDATE (T2/T3 prompts)
+3. This always_on rule (system prompt — fades after ~15 tool calls per OpenDev §2.3.4)
+4. `post_cascade_adg_audit.py` retroactive detection → `artifacts/windsurf/adg_first_violations.jsonl`
+
 ## Quick Gates
 
 - Plan SSOT: `.windsurf/plans/<name>-<6hex>.md` — never `docs/reports/plans/` for plans

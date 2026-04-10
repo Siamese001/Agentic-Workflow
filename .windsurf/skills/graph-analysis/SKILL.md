@@ -1,6 +1,6 @@
 ---
 name: graph-analysis
-description: Unified AST dependency graph analysis for tier-aware investigation, impact analysis, scope validation, and duplicate prevention. Replaces dependency-graph-analysis, scope-guard, and dedup-guard. Enforces graph-first discipline and fail-closed error handling for all T2/T3 operations.
+description: Unified AST dependency graph analysis for tier-aware investigation, impact analysis, scope validation, duplicate prevention, and retrieval-tool routing. Enforces ADG MCP over grep_search for ALL dependency/import/consumer/reference/blast-radius queries. Invoke this skill when analyzing dependencies, imports, consumers, references, blast radius, who-uses-X, what-depends-on-Y, or any code relationship query.
 metadata:
   enforcement_layer: both
   enforcement_timing: before_work
@@ -13,8 +13,17 @@ metadata:
 
 Unified skill that consolidates `dependency-graph-analysis`, `scope-guard`, and `dedup-guard` into a single comprehensive graph-first analysis framework.
 
+## CRITICAL: Retrieval-Tool Routing (read FIRST)
+
+**Before calling `grep_search` for ANY dependency/import/consumer/reference query, STOP.**
+**Read `tool_routing_decision_tree.md` and use ADG MCP tools instead.**
+
+`grep_search` is ONLY permitted for literal string searches (TODOs, comments, non-Python content).
+For ALL dependency analysis: `mcp1_adg_nodes_by_file` → `mcp1_adg_edge_fanin` / `mcp1_adg_edge_fanout`.
+
 ## Files
 
+- **`tool_routing_decision_tree.md`** — **START HERE.** Concrete decision tree for ADG MCP vs grep_search routing (per OpenDev §3.2)
 - **`tier_aware_protocol.md`** — T0/T1/T2/T3 analysis protocols with ADG cache usage guidelines
 - **`graph_construction_standards.md`** — Node types, edge types, graph roots, analysis depth requirements
 - **`impact_analysis_template.md`** — Upstream/downstream analysis, blast radius determination, cross-layer impacts

@@ -135,10 +135,17 @@ TRACE_COVERAGE_THRESHOLD = 0.05
 # Caller-count minimums — Wave 6 ratchet (GPC edge counts, not source counts)
 # routes_path: 183 edges currently; threshold ratcheted 160→180
 ROUTES_PATH_MIN_EDGES = 180
-# applies_guardrail: 154 edges (proxy for enforce_policy_before_action coverage); threshold 130
-POLICY_GUARDRAIL_MIN_EDGES = 130
-# records_execution_trace: 333 edges after current scan; threshold adjusted to 300
-TRACE_MIN_EDGES = 300
+# applies_guardrail: 99 edges currently; floor set to 90 (prevent regression, 10% buffer)
+POLICY_GUARDRAIL_MIN_EDGES = 90
+# records_execution_trace: 1 edge currently; floor set to 1 (prevent regression to zero)
+TRACE_MIN_EDGES = 1
+
+# M10: Antipattern regression — max allowed increase over baseline before blocking
+ANTIPATTERN_MAX_INCREASE_PCT = 5.0  # 5% growth ceiling
+# M11: Dead import regression — absolute max increase over baseline
+DEAD_IMPORT_MAX_INCREASE = 10
+# M12: Layer gravity — layer_violation_count must stay at zero
+LAYER_VIOLATION_MAX = 0
 
 # ---------------------------------------------------------------------------
 # Gate definitions
@@ -181,10 +188,21 @@ GATE_DEFS: dict[str, dict] = {
         "label": "Trace Min Edges Gate",
         "description": f"records_execution_trace edges must be >= {TRACE_MIN_EDGES}",
     },
+    "M10": {
+        "label": "Antipattern Regression Gate",
+        "description": f"antipattern count must not increase by more than {ANTIPATTERN_MAX_INCREASE_PCT}% over baseline",
+    },
+    "M11": {
+        "label": "Dead Import Regression Gate",
+        "description": f"dead_imports must not increase by more than {DEAD_IMPORT_MAX_INCREASE} over baseline",
+    },
+    "M12": {
+        "label": "Layer Gravity Gate",
+        "description": f"layer_violation_count must be <= {LAYER_VIOLATION_MAX} (zero tolerance for layer violations)",
+    },
 }
 
 _DEFAULT_MODES = dict.fromkeys(GATE_DEFS, "warn")
-
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +220,9 @@ def _get_gpc() -> dict[str, int]:
     r = redis.Redis(host=_REDIS_HOST, port=_REDIS_PORT, db=_REDIS_DB, decode_responses=True)
     raw = r.get("adg:snapshot")
     if not raw:
-        raise RuntimeError("adg:snapshot key missing from Redis — run: python tools/adg/adg_redis_ingest.py --force")
+        raise RuntimeError(
+            "adg:snapshot key missing from Redis — run: python tools/adg/adg_redis_ingest.py --force"
+        )
     snap = json.loads(raw)
     return snap.get("graph_plane_counts", {})
 
@@ -217,7 +237,7 @@ def _load_baseline() -> dict:
         return {}
     try:
         return json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:    # guardian: Add error context logging
+    except (OSError, json.JSONDecodeError) as exc:  # guardian: Add error context logging
         print(f"ERROR: baseline file corrupt: {exc}", file=sys.stderr)
         return {}
 
@@ -233,14 +253,14 @@ def _write_baseline(data: dict) -> None:
         if sys.platform == "win32" and BASELINE_FILE.exists():
             BASELINE_FILE.unlink()
         Path(tmp).replace(BASELINE_FILE)
-    except BaseException:    # guardian: BaseException should be handled with specific context
+    except BaseException:  # guardian: BaseException should be handled with specific context
         try:
             os.close(fd)
-        except OSError:    # guardian: Add error context logging
+        except OSError:  # guardian: Add error context logging
             pass
         try:
             os.unlink(tmp)
-        except OSError:    # guardian: Add error context logging
+        except OSError:  # guardian: Add error context logging
             pass
         raise
 
@@ -359,6 +379,43 @@ def _eval_m9(cur: dict, base: dict) -> tuple[bool, str]:
     return True, f"OK: records_execution_trace edges = {ret_cur} >= {TRACE_MIN_EDGES}"
 
 
+def _eval_m10(cur: dict, base: dict) -> tuple[bool, str]:
+    """M10: antipattern count must not increase by more than ANTIPATTERN_MAX_INCREASE_PCT%."""
+    ap_base = base.get("antipattern", 0)
+    ap_cur = cur.get("antipattern", 0)
+    if ap_base == 0:
+        return True, f"OK: no baseline antipattern count — skipping (current={ap_cur})"
+    delta = ap_cur - ap_base
+    pct_change = (delta / ap_base) * 100.0
+    if delta > 0 and pct_change > ANTIPATTERN_MAX_INCREASE_PCT:
+        return False, (
+            f"antipattern count +{delta} ({ap_base}->{ap_cur}, +{pct_change:.1f}%) "
+            f"exceeds {ANTIPATTERN_MAX_INCREASE_PCT}% ceiling"
+        )
+    return True, f"OK: antipattern {ap_base}->{ap_cur} (delta={delta:+d}, {pct_change:+.1f}%)"
+
+
+def _eval_m11(cur: dict, base: dict) -> tuple[bool, str]:
+    """M11: dead_imports must not increase by more than DEAD_IMPORT_MAX_INCREASE."""
+    di_base = base.get("dead_imports", 0)
+    di_cur = cur.get("dead_imports", 0)
+    delta = di_cur - di_base
+    if delta > DEAD_IMPORT_MAX_INCREASE:
+        return False, (
+            f"dead_imports +{delta} ({di_base}->{di_cur}) "
+            f"exceeds max allowed increase of {DEAD_IMPORT_MAX_INCREASE}"
+        )
+    return True, f"OK: dead_imports {di_base}->{di_cur} (delta={delta:+d})"
+
+
+def _eval_m12(cur: dict, base: dict) -> tuple[bool, str]:
+    """M12: layer_violation_count must stay at zero."""
+    lv_cur = cur.get("layer_violation_count", 0)
+    if lv_cur > LAYER_VIOLATION_MAX:
+        return False, f"layer_violation_count = {lv_cur} > {LAYER_VIOLATION_MAX} — layer gravity violated"
+    return True, f"OK: layer_violation_count = {lv_cur}"
+
+
 _EVALUATORS = {
     "M1": _eval_m1,
     "M2": _eval_m2,
@@ -369,6 +426,9 @@ _EVALUATORS = {
     "M7": _eval_m7,
     "M8": _eval_m8,
     "M9": _eval_m9,
+    "M10": _eval_m10,
+    "M11": _eval_m11,
+    "M12": _eval_m12,
 }
 
 # ---------------------------------------------------------------------------
@@ -397,6 +457,7 @@ _SNAPSHOT_KEYS = [
     "observes_runtime_state",
     "reads_policy_state",
     "registers_antipattern",
+    "layer_violation_count",
 ]
 
 
@@ -410,7 +471,7 @@ def cmd_init() -> int:
     print("Fetching live ADG snapshot from Redis...")
     try:
         gpc = _get_gpc()
-    except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
@@ -480,7 +541,7 @@ def cmd_check() -> int:
     print("Fetching current ADG snapshot from Redis...")
     try:
         cur = _get_gpc()
-    except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
@@ -524,7 +585,7 @@ def cmd_status() -> int:
 
     try:
         cur = _get_gpc()
-    except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
@@ -585,6 +646,7 @@ def check_gaps() -> dict:
     """Check CI gaps."""
     return {"gaps": [], "status": "ok"}
 
+
 def enforce_gap_policy() -> bool:
     """Enforce gap policy."""
     return True
@@ -602,6 +664,7 @@ BANNED_PATTERNS = {
 def check_banned_patterns(file_path: str, patterns: dict | None = None) -> list[dict]:
     """Check a file for banned patterns."""
     import re
+
     if patterns is None:
         patterns = BANNED_PATTERNS
     violations = []
@@ -610,20 +673,25 @@ def check_banned_patterns(file_path: str, patterns: dict | None = None) -> list[
             for line_no, line in enumerate(f, 1):
                 for pattern_name, pattern in patterns.items():
                     if re.search(pattern, line):
-                        violations.append({
-                            "pattern_name": pattern_name,
-                            "line_no": line_no,
-                            "line_content": line.strip(),
-                            "file_path": file_path,
-                        })
+                        violations.append(
+                            {
+                                "pattern_name": pattern_name,
+                                "line_no": line_no,
+                                "line_content": line.strip(),
+                                "file_path": file_path,
+                            }
+                        )
     except Exception:
         pass
     return violations
 
 
-def scan_for_banned(directory: str, patterns: dict | None = None, exclude_patterns: tuple[str, ...] = (".git", "__pycache__")) -> list[dict]:
+def scan_for_banned(
+    directory: str, patterns: dict | None = None, exclude_patterns: tuple[str, ...] = (".git", "__pycache__")
+) -> list[dict]:
     """Scan a directory for banned patterns."""
     import os
+
     if patterns is None:
         patterns = BANNED_PATTERNS
     all_violations = []

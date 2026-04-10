@@ -69,7 +69,7 @@ Full rules: `.windsurf/rules/` and `.windsurf/RULES_INDEX.md`
 
 ## Windsurf Configuration Docs
 
-- Local docs: `docs/windsurf/llms-full.txt` (broad coverage), `docs/windsurf/changelog.html` (recent changes)
+- Local docs: `docs/windsurf/llms-full.txt` (broad coverage), `docs/windsurf/*.md` (per-topic Markdown)
 - Check local docs first. Use web search only for version-sensitive or newly-changed features.
 - Hooks: `command`, `show_output`, `working_directory` only — `file_pattern` is non-standard and FORBIDDEN.
 - Skills: entry file MUST be `SKILL.md` (uppercase). Supporting files live alongside it in the skill directory.

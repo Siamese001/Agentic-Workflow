@@ -1,0 +1,223 @@
+"""__init__.py Contract Check — CI Gate (Scan Mode + Shim Trap Protection).
+
+_emit_reads_through("l4", "init_contract_check", "urg_read_1")
+_emit_reads_through("l4", "init_contract_check", "urg_read_2")
+_emit_reads_through("l4", "init_contract_check", "urg_read_3")
+_emit_reads_through("l4", "init_contract_check", "urg_read_4")
+_emit_reads_through("l4", "init_contract_check", "urg_read_5")
+_emit_reads_through("l4", "init_contract_check", "urg_read_6")
+_emit_reads_through("l4", "init_contract_check", "urg_read_7")
+_emit_reads_through("l4", "init_contract_check", "urg_read_8")
+_emit_reads_through("l4", "init_contract_check", "urg_read_9")
+_emit_reads_through("l4", "init_contract_check", "urg_read_10")
+_emit_reads_through("l4", "init_contract_check", "urg_read_11")
+_emit_reads_through("l4", "init_contract_check", "urg_read_12")
+_emit_reads_through("l4", "init_contract_check", "urg_read_13")
+_emit_reads_through("l4", "init_contract_check", "urg_read_14")
+_emit_reads_through("l4", "init_contract_check", "urg_read_15")
+_emit_reads_through("l4", "init_contract_check", "urg_read_16")
+_emit_reads_through("l4", "init_contract_check", "urg_read_17")
+_emit_reads_through("l4", "init_contract_check", "urg_read_18")
+_emit_reads_through("l4", "init_contract_check", "urg_read_19")
+_emit_reads_through("l4", "init_contract_check", "urg_read_20")
+_emit_reads_through("l4", "init_contract_check", "urg_read_21")
+_emit_reads_through("l4", "init_contract_check", "urg_read_22")
+_emit_reads_through("l4", "init_contract_check", "urg_read_23")
+_emit_reads_through("l4", "init_contract_check", "urg_read_24")
+_emit_reads_through("l4", "init_contract_check", "urg_read_25")
+_emit_reads_through("l4", "init_contract_check", "urg_read_26")
+_emit_reads_through("l4", "init_contract_check", "urg_read_27")
+_emit_reads_through("l4", "init_contract_check", "urg_read_28")
+_emit_reads_through("l4", "init_contract_check", "urg_read_29")
+_emit_reads_through("l4", "init_contract_check", "urg_read_30")
+_emit_reads_through("l4", "init_contract_check", "urg_read_31")
+_emit_reads_through("l4", "init_contract_check", "urg_read_32")
+_emit_reads_through("l4", "init_contract_check", "urg_read_33")
+_emit_reads_through("l4", "init_contract_check", "urg_read_34")
+_emit_reads_through("l4", "init_contract_check", "urg_read_35")
+_emit_reads_through("l4", "init_contract_check", "urg_read_36")
+Dynamically discovers and validates ALL __init__.py files under governed
+subdirectories (engines/, reasoning/, validators/) within SCAN_ROOTS.
+
+Rules:
+  1. Must not import shim modules (no ClassDef or empty __all__).
+  2. Must not import more than MAX_EAGER_IMPORTS modules.
+  3. Must not import modules that do not exist on disk.
+  4. Must not import symbols not exported by target __all__ (when defined).
+  5. Must not import modules listed as shims in the consolidation manifest.
+
+Exit 0 = pass, exit 1 = violations found.
+
+Merge-ready gate.
+"""
+from __future__ import annotations
+
+import ast
+import json
+import sys
+from pathlib import Path
+
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
+
+SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
+GOVERNED_SUBDIRS = ['engines', 'reasoning', 'validators']
+MAX_EAGER_IMPORTS = 10
+SHIM_MANIFEST_PATH = 'artifacts/consolidation/target_manifest_v3.json'
+
+def _load_known_shim_files(project_root: Path) -> set[str]:
+    """Load set of repo-relative paths of known shim/merge files from v3 manifest."""
+    mpath = project_root / SHIM_MANIFEST_PATH
+    if not mpath.is_file():
+        return set()
+    data = json.loads(mpath.read_text(encoding='utf-8'))
+    entries = data.get('entries', [])
+    paths: set[str] = set()
+    for e in entries:
+        fp = e.get('file_path', '')
+        if fp:
+            paths.add(fp.replace('\\', '/'))
+    return paths
+
+def _has_classdef(filepath: Path) -> bool:
+    """Return True if the file contains at least one ClassDef."""
+    try:
+        source = filepath.read_text(encoding='utf-8', errors='replace')
+        tree = ast.parse(source, filename=str(filepath))
+    except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        return False
+    return any(isinstance(n, ast.ClassDef) for n in ast.walk(tree))
+
+def _has_empty_all(filepath: Path) -> bool:
+    """Return True if the file has __all__ = []."""
+    try:
+        source = filepath.read_text(encoding='utf-8', errors='replace')
+        tree = ast.parse(source, filename=str(filepath))
+    except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        return False
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == '__all__':
+                    if isinstance(node.value, (ast.List, ast.Tuple)):
+                        if len(node.value.elts) == 0:
+                            return True
+    return False
+
+def _get_all_exports(filepath: Path) -> set[str] | None:
+    """Return the set of names in __all__, or None if __all__ is not defined."""
+    try:
+        source = filepath.read_text(encoding='utf-8', errors='replace')
+        tree = ast.parse(source, filename=str(filepath))
+    except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == '__all__':
+                    if isinstance(node.value, (ast.List, ast.Tuple)):
+                        names: set[str] = set()
+                        for elt in node.value.elts:
+                            if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
+                                names.add(elt.value)
+                        return names
+    return None
+
+def _resolve_import_target(init_path: Path, module_name: str, level: int, project_root: Path) -> Path | None:
+    """Resolve an ImportFrom target to a file path."""
+    if level == 1:
+        parent = init_path.parent
+        candidate = parent / f'{module_name}.py'
+        if candidate.is_file():
+            return candidate
+        candidate = parent / module_name / '__init__.py'
+        if candidate.is_file():
+            return candidate
+    elif level == 0 and module_name:
+        parts = module_name.replace('.', '/')
+        candidate = project_root / f'{parts}.py'
+        if candidate.is_file():
+            return candidate
+        candidate = project_root / parts / '__init__.py'
+        if candidate.is_file():
+            return candidate
+    return None
+
+def check_init_file(init_path: Path, project_root: Path, known_shims: set[str] | None=None) -> list[str]:
+    """Return list of violation messages for a single __init__.py."""
+    violations: list[str] = []
+    rel = str(init_path.relative_to(project_root)).replace('\\', '/')
+    try:
+        source = init_path.read_text(encoding='utf-8', errors='replace')
+        tree = ast.parse(source, filename=str(init_path))
+    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        violations.append(f'{rel}: SyntaxError: {e}')
+        return violations
+    import_targets: list[tuple[str, int, int, list[str]]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            names = [alias.name for alias in node.names or []]
+            import_targets.append((node.module, node.level or 0, node.lineno, names))
+    if len(import_targets) > MAX_EAGER_IMPORTS:
+        violations.append(f'{rel}: imports {len(import_targets)} modules (exceeds ceiling {MAX_EAGER_IMPORTS})')
+    for mod_name, level, lineno, imported_names in import_targets:
+        target_file = _resolve_import_target(init_path, mod_name, level, project_root)
+        if target_file is None:
+            if level == 1:
+                violations.append(f"{rel}:{lineno} imports non-existent relative module '.{mod_name}'")
+            continue
+        if not _has_classdef(target_file) or _has_empty_all(target_file):
+            target_rel = str(target_file.relative_to(project_root)).replace('\\', '/')
+            violations.append(f'{rel}:{lineno} imports shim module {target_rel} (no ClassDef or empty __all__)')
+        if imported_names and target_file is not None:
+            target_all = _get_all_exports(target_file)
+            if target_all is not None:
+                for name in imported_names:
+                    if name not in target_all:
+                        target_rel = str(target_file.relative_to(project_root)).replace('\\', '/')
+                        violations.append(f"{rel}:{lineno} imports '{name}' from {target_rel} but '{name}' is not in __all__")
+        if target_file is not None:
+            target_rel = str(target_file.relative_to(project_root)).replace('\\', '/')
+            if target_rel in known_shims:
+                violations.append(f'{rel}:{lineno} imports manifest shim {target_rel} (listed in consolidation targeting manifest)')
+    return violations
+
+def _discover_governed_inits(project_root: Path) -> list[Path]:
+    """Find all __init__.py files under governed subdirectories."""
+    inits: list[Path] = []
+    seen: set[str] = set()
+    for scan_root in SCAN_ROOTS:
+        root_path = project_root / scan_root
+        if not root_path.is_dir():
+            continue
+        for subdir_name in GOVERNED_SUBDIRS:
+            for governed_dir in root_path.rglob(subdir_name):
+                if not governed_dir.is_dir():
+                    continue
+                if '__pycache__' in str(governed_dir):
+                    continue
+                init_file = governed_dir / '__init__.py'
+                if not init_file.is_file():
+                    continue
+                rel = str(init_file.relative_to(project_root)).replace('\\', '/')
+                if rel not in seen:
+                    seen.add(rel)
+                    inits.append(init_file)
+    return inits
+
+def main() -> int:
+    project_root = Path(__file__).resolve().parents[2]
+    all_violations: list[str] = []
+    known_shims = _load_known_shim_files(project_root)
+    init_files = _discover_governed_inits(project_root)
+    for init_path in init_files:
+        all_violations.extend(check_init_file(init_path, project_root, known_shims))
+    print(f'Init Contract Check (scan mode): checked {len(init_files)} __init__.py files')
+    if all_violations:
+        print(f'FAIL: {len(all_violations)} violation(s):')
+        for v in all_violations:
+            print(f'  - {v}')
+        return 1
+    print('PASS: 0 violations')
+    return 0
+if __name__ == '__main__':
+    sys.exit(main())

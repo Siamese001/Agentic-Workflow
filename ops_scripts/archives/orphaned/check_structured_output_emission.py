@@ -1,0 +1,81 @@
+"""CI guard: apps_* agent execute() must declare StructuredAgentOutput return type.
+
+Spec: AgentOutputContract [7], Guarantee #12.
+Scans apps_*/reasoning/ and apps_*/engines/ for classes with an `execute` method.
+Flags any execute() whose return annotation is not StructuredAgentOutput.
+
+Shim files (backward-compat re-exports with no ClassDef) are skipped.
+Classes without an execute() method are skipped (not agents).
+
+Exit code 1 on any violation.
+"""
+from __future__ import annotations
+
+import ast
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+EXPECTED_RETURN_ANNOTATIONS = {'StructuredAgentOutput'}
+SCAN_DIRS = ['apps_lic/reasoning', 'apps_lic/engines', 'apps_rg/reasoning', 'apps_rg/engines', 'apps_shared/reasoning', 'apps_shared/engines']
+ALLOWED_BASELINE: set[str] = {'apps_shared/reasoning/InfrastructureOrchestrator.py', 'apps_shared/reasoning/InfrastructureUpgradesOrchestrator.py', 'apps_shared/reasoning/PilotOrchestrator.py', 'apps_shared/reasoning/SovereignOrchestrator.py', 'apps_shared/reasoning/ToolRegistryOrchestrator.py', 'apps_shared/reasoning/dead_letter_queue.py', 'apps_shared/reasoning/event_bus_integration.py', 'apps_shared/reasoning/health_check.py', 'apps_shared/reasoning/bulkhead_manager.py', 'apps_lic/engines/control_plane.py', 'apps_lic/engines/hop_stage_registry.py', 'apps_lic/engines/lic_spine_adapter.py', 'apps_lic/engines/LICValidationExecutor.py', 'apps_lic/reasoning/DispatchOutreachToolsAgent.py', 'apps_lic/reasoning/LicCodeInterpreter.py', 'apps_lic/reasoning/LicReflectionAgent.py', 'apps_lic/reasoning/LicTemplateOptimizerAgent.py', 'apps_lic/reasoning/MessageComplianceAgent.py', 'apps_lic/reasoning/OutreachLearningAgent.py', 'apps_lic/reasoning/OutreachProactiveAgent.py', 'apps_lic/reasoning/OutreachSignalRouterAgent.py', 'apps_rg/engines/achievement_prioritizer_engine.py', 'apps_rg/engines/ats_compatibility_engine.py', 'apps_rg/engines/base_rg_engine.py', 'apps_rg/engines/brand_compliance_engine.py', 'apps_rg/engines/bullet_generation_task.py', 'apps_rg/engines/campaign_planner_engine.py', 'apps_rg/engines/clerk_extraction_engine.py', 'apps_rg/engines/cognition_relevance_engine.py', 'apps_rg/engines/competency_item.py', 'apps_rg/engines/contact_safety_engine.py', 'apps_rg/engines/content_optimizer_engine.py', 'apps_rg/engines/content_quality_engine.py', 'apps_rg/engines/content_strategy_engine.py', 'apps_rg/engines/coverage_gap_engine.py', 'apps_rg/engines/data_enrichment_engine.py', 'apps_rg/engines/dispatch_tools_engine.py', 'apps_rg/engines/effectiveness_scorer.py', 'apps_rg/engines/enhancement_orchestrator_engine.py', 'apps_rg/engines/executive_summary_engine.py', 'apps_rg/engines/experience_grouper_engine.py', 'apps_rg/engines/experience_weighting_engine.py', 'apps_rg/engines/fact_check_engine.py', 'apps_rg/engines/final_review_engine.py', 'apps_rg/engines/fit_score_calibrator.py', 'apps_rg/engines/format_compliance_engine.py', 'apps_rg/engines/gap_closure_engine.py', 'apps_rg/engines/generation_diagnostics_engine.py', 'apps_rg/engines/generation_history_engine.py', 'apps_rg/engines/hallucination_detector.py', 'apps_rg/engines/impact_quantifier_engine.py', 'apps_rg/engines/industry_decoder_engine.py', 'apps_rg/engines/intent_parser_engine.py', 'apps_rg/engines/interview_prep_engine.py', 'apps_rg/engines/job_pattern_matcher.py', 'apps_rg/engines/keyword_optimizer_engine.py', 'apps_rg/engines/leadership_evidence_engine.py', 'apps_rg/engines/length_optimizer_engine.py', 'apps_rg/engines/linkedin_strategy_engine.py', 'apps_rg/engines/message_generation_task.py', 'apps_rg/engines/multi_variant_engine.py', 'apps_rg/engines/networking_strategy_engine.py', 'apps_rg/engines/optimization_strategy_engine.py', 'apps_rg/engines/power_verb_engine.py', 'apps_rg/engines/proactive_engine.py', 'apps_rg/engines/profile_analyzer_engine.py', 'apps_rg/engines/quality_inspector_engine.py', 'apps_rg/engines/ranking_refiner_engine.py', 'apps_rg/engines/readability_engine.py', 'apps_rg/engines/recruiter_psychology_engine.py', 'apps_rg/engines/reflection_engine.py', 'apps_rg/engines/resume_assembly_engine.py', 'apps_rg/engines/resume_generation_task.py', 'apps_rg/engines/resume_history_engine.py', 'apps_rg/engines/resume_orchestrator_engine.py', 'apps_rg/engines/resume_planning_engine.py', 'apps_rg/engines/resume_scoring_engine.py', 'apps_rg/engines/rg_spine_adapter.py', 'apps_rg/engines/RGValidationExecutor.py', 'apps_rg/engines/role_decoder_engine.py', 'apps_rg/engines/salary_research_engine.py', 'apps_rg/engines/search_filter_builder.py', 'apps_rg/engines/section_balance_engine.py', 'apps_rg/engines/section_builder_engine.py', 'apps_rg/engines/section_integrator_engine.py', 'apps_rg/engines/section_ranker_engine.py', 'apps_rg/engines/service_invoker_engine.py', 'apps_rg/engines/skill_gap_analyzer_engine.py', 'apps_rg/engines/skill_ordering_engine.py', 'apps_rg/engines/skill_score_normalizer.py', 'apps_rg/engines/skill_taxonomy_engine.py', 'apps_rg/engines/strategic_planner_engine.py', 'apps_rg/engines/strategic_planning_engine.py', 'apps_rg/engines/template_engine.py', 'apps_rg/engines/template_optimizer_engine.py', 'apps_rg/engines/tone_calibrator_engine.py', 'apps_rg/engines/transferable_skills_engine.py', 'apps_rg/engines/user_preferences_engine.py', 'apps_rg/engines/value_proposition_engine.py', 'apps_rg/engines/version_control_engine.py', 'apps_rg/engines/visual_hierarchy_engine.py', 'apps_rg/engines/void_compliance_engine.py', 'apps_rg/engines/weight_adjustment_engine.py', 'apps_rg/engines/white_space_optimizer_engine.py', 'apps_rg/engines/writing_quality_engine.py', 'apps_rg/reasoning/ContentQualityAgent.py', 'apps_rg/reasoning/DispatchResumeToolsAgent.py', 'apps_rg/reasoning/HeadlineOutputAgent.py', 'apps_rg/reasoning/ProactiveAgent.py', 'apps_rg/reasoning/RGStrategyExecutor.py', 'apps_rg/reasoning/RGValidationExecutor.py', 'apps_rg/reasoning/RgReflectionAgent.py'}
+
+def _has_execute_without_structured_return(path: Path) -> list[str]:
+    """Return violation strings for classes whose execute() lacks StructuredAgentOutput."""
+    try:
+        source = path.read_text(encoding='utf-8', errors='replace')
+        tree = ast.parse(source, filename=str(path))
+    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        return []
+    violations: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ClassDef):
+            continue
+        for item in node.body:
+            if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            if item.name != 'execute':
+                continue
+            ret = item.returns
+            if ret is None:
+                violations.append(f'{node.name}.execute (line {item.lineno}): missing return type annotation (expected StructuredAgentOutput)')
+                continue
+            ann_name = None
+            if isinstance(ret, ast.Name):
+                ann_name = ret.id
+            elif isinstance(ret, ast.Attribute):
+                ann_name = ret.attr
+            elif isinstance(ret, ast.Constant) and isinstance(ret.value, str):
+                ann_name = ret.value
+            if ann_name not in EXPECTED_RETURN_ANNOTATIONS:
+                violations.append(f"{node.name}.execute (line {item.lineno}): return annotation is '{ann_name}', expected StructuredAgentOutput")
+    return violations
+
+def main() -> int:
+    all_violations: list[str] = []
+    files_scanned = 0
+    baseline_count = len(ALLOWED_BASELINE)
+    for scan_dir in SCAN_DIRS:
+        full_dir = REPO_ROOT / scan_dir
+        if not full_dir.exists():
+            continue
+        for path in sorted(full_dir.rglob('*.py')):
+            rel = path.relative_to(REPO_ROOT).as_posix()
+            if rel in ALLOWED_BASELINE:
+                continue
+            if path.name.startswith('__'):
+                continue
+            files_scanned += 1
+            violations = _has_execute_without_structured_return(path)
+            for v in violations:
+                all_violations.append(f'{rel}: {v}')
+    if all_violations:
+        print(f'FAIL: {len(all_violations)} StructuredAgentOutput emission violation(s):')
+        for v in all_violations:
+            print(f'  {v}')
+        print(f'files_scanned={files_scanned}, baseline_waivers={baseline_count}')
+        return 1
+    print(f'OK: all apps_* agent execute() methods comply with StructuredAgentOutput schema (scanned={files_scanned}, baseline_waivers={baseline_count})')
+    return 0
+if __name__ == '__main__':
+    sys.exit(main())

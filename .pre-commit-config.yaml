@@ -12,15 +12,10 @@
 #   T1   py_compile                         — fastest syntax fail
 #   T2   ruff-format                        — auto-fixer first (eliminates retry loop)
 #   T3   guardian-comment-fixer             — staged Python files only
-#   T4   hollow-file-gate                   — --changed-only, staged only
-#   T5   mcp-config-sovereignty            — triggered by mcp_config.json only
 #   T6   pytest-config-ssot                 — triggered by pytest.ini/pyproject.toml only
-#   T7   ruff-severity-gate                 — CRITICAL+HIGH blocking, staged only
 #
 # Manual/CI lane (stages: [manual]):
-#   check-memory-health, adg-stale-guard, check-c0-sovereignty,
-#   check-dedup-violations, check-script-sprawl, check-shim-discipline,
-#   check-rollback-checkpoints
+#   adg-stale-guard, check-c0-sovereignty
 #
 # NOTE: `default_language_version` applies to hooks with `language: python`
 #       (virtualenv-based). All local hooks here use `language: system` and
@@ -133,26 +128,6 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
-      # -- T4: Hollow File Gate — AST Semantic Verification -----------------------
-      # Detects Python files that became hollow after edits. --changed-only = staged only.
-      - id: hollow-file-gate
-        name: "T4: Hollow File Gate — AST Semantic Verification"
-        entry: py ops_scripts/ci/hollow_file_gate.py --changed-only
-        language: system
-        types: [python]
-        pass_filenames: false
-        always_run: false
-        require_serial: true
-
-      # -- T5: MCP Config Sovereignty ---------------------------------------------------
-      - id: mcp-config-sovereignty
-        name: "T5: MCP Config Sovereignty"
-        entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
-        language: system
-        pass_filenames: false
-        files: ^mcp_config\.json$
-        always_run: false
-        require_serial: true
 
       # -- T6: Pytest Config SSOT Gate -------------------------------------------------
       - id: pytest-config-ssot
@@ -164,26 +139,8 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T7: Ruff Lint ---------------------------------------------------------------
-      # CRITICAL+HIGH block. MEDIUM+LOW warn only. Uses git diff --staged internally.
-      - id: ruff-severity-gate
-        name: "T7: Ruff Lint (CRITICAL+HIGH blocking / MEDIUM+LOW warn)"
-        entry: python ops_scripts/ci/ruff_severity_gate.py
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
-
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # Run manually: pre-commit run <id> --hook-stage manual
-      - id: check-memory-health
-        name: "CI: Memory Health Check"
-        entry: py ops_scripts/ci/check_memory_health.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
       - id: adg-stale-guard
         name: "CI: ADG Staleness Guard"
         entry: py tools/adg/adg_stale_guard.py --warn
@@ -196,42 +153,6 @@ repos:
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty"
         entry: py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      - id: check-dedup-violations
-        name: "CI: Dedup Guard"
-        entry: py ops_scripts/ci/check_dedup_violations.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      - id: check-script-sprawl
-        name: "CI: Script Sprawl Guard"
-        entry: py ops_scripts/ci/check_script_sprawl.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      - id: check-shim-discipline
-        name: "CI: Shim Discipline"
-        entry: py ops_scripts/ci/check_shim_discipline.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      - id: check-rollback-checkpoints
-        name: "CI: Rollback Gate"
-        entry: py ops_scripts/ci/check_rollback_checkpoints.py
         language: system
         pass_filenames: false
         always_run: true

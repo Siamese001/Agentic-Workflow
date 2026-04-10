@@ -91,6 +91,14 @@ T0_KEYWORDS = {
 _SR_MANDATE = """
 [pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
+  0. ADG-FIRST TOOL ROUTING (MANDATORY — check BEFORE every grep_search call):
+     IF query involves import/from/consumer/reference/blast-radius/who-uses/depends-on → USE ADG MCP:
+       mcp1_adg_nodes_by_file(file_path) → mcp1_adg_edge_fanin(tgt_id, relation_type="imports")
+       mcp1_adg_edge_fanout(src_id, relation_type="imports") for outgoing deps
+     IF query targets a function/class/constant name in Python files → USE ADG MCP (not grep)
+     IF query is about TODOs/FIXMEs/literal strings/non-Python content → grep_search OK
+     The graph-analysis skill has the full decision tree in tool_routing_decision_tree.md.
+     NEVER grep_search for dependency analysis. Constitutional §ADG-First — no exceptions.
   1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
   2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity

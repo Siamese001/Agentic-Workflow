@@ -36,6 +36,13 @@ Dependency analysis MUST use ADG MCP tools - NOT grep or text search.
 
 `grep_search` for dependency analysis is FORBIDDEN. Use it only to confirm literals.
 
+**Why this matters**: `grep_search` is a native Cascade tool with NO pre-execution hook.
+Windsurf cannot programmatically block it. Enforcement relies on:
+1. This rule (always_on — loaded into system prompt)
+2. SR_MANDATE step 0 (injected by `pre_prompt_classifier.py` for T2/T3)
+3. Retroactive detection (`post_cascade_adg_audit.py` via `post_cascade_response` hook)
+Violations logged to: `artifacts/windsurf/adg_first_violations.jsonl`
+
 ---
 
 ## Subprocess Timeout Discipline
