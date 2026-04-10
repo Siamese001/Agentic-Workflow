@@ -756,10 +756,6 @@ territories:
       l4_state: {depth: 2, purpose: "L4 state management logs"}
       validation: {depth: 2, purpose: "Validation run logs"}
 
-  scripts:
-    depth: 1
-    purpose: "Top-level operational scripts (flat directory)"
-
   templates:
     depth: 2
     purpose: "Project templates"
