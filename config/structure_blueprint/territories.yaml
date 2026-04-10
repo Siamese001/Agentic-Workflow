@@ -166,9 +166,18 @@ territories:
         subfolders:
           config: {purpose: "Configuration"}
           types: {purpose: "Data models"}
-          reasoning: {purpose: "Decision agents"}
+          reasoning:
+            purpose: "Decision agents"
+            no_root_files: true
+            subfolders:
+              arbitration: {purpose: "Multi-advisor arbitration and decision arbitrator logic"}
+              engines: {purpose: "Orchestration engines and workflow processors"}
+              ptc: {purpose: "Prompt-to-completion tool registry, contract definitions, and invoker"}
           enforcement: {purpose: "Guardrails"}
-          utils: {purpose: "Helpers"}
+          utils:
+            purpose: "Helpers"
+            subfolders:
+              replay: {purpose: "Deterministic replay and state reconstruction for orchestration traces"}
           inference:
             depth: 2
             purpose: "Inference service integrations (vLLM, etc.)"
