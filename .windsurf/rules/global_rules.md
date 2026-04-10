@@ -93,5 +93,5 @@ Before adding a new MCP, verify no existing MCP covers the capability.
 
 Known authority assignments:
 - File reads: `filesystem` (local), `github` (remote)
-- HTTP requests: `enhanced_http` (primary), `fetch` (fallback/simple)
+- HTTP requests: `read_url_content` (simple GETs, native Cascade tool), `enhanced_http` (POST, auth, batch, advanced)
 - Project context: `adg_sqlite` (structural), `memory` (episodic)

@@ -21,11 +21,13 @@ import json
 import socket
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 FAIL_POLICY = "closed_for_t2t3_adg"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
 
 T3_KEYWORDS = {
     "architecture",
@@ -108,6 +110,20 @@ _SR_MANDATE = """
   Rule: .windsurf/rules/sequential-thinking-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
+
+
+def _write_session_state(tier: str) -> None:
+    """Persist current tier and reset task_created for this prompt turn."""
+    try:
+        SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
+        state = {
+            "current_tier": tier,
+            "task_created": False,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+    except OSError:
+        pass  # fail-open: don't block on state file write failure
 
 
 def classify_tier(prompt: str) -> str:
@@ -259,6 +275,9 @@ def main() -> int:
 
     tier = classify_tier(prompt)
     print(f"[pre_prompt_classifier] Tier: {tier}", file=sys.stderr)
+
+    # Persist tier and reset task_created flag for this prompt turn.
+    _write_session_state(tier)
 
     if tier in ("T2", "T3"):
         if not check_plan_exists(tier):

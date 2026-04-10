@@ -7,6 +7,7 @@ Reads JSON payload from stdin. Payload fields:
   tool_info.edits      — list of {old_string, new_string} dicts
 
 Blocks (exit 2) on:
+  - T2/T3 writes without a Task Manager task created in current session
   - Anti-patterns in new_string values:
       * bare 'except:' (no exception type)
       * 'except Exception' without '# guardian: allow-' on same line
@@ -30,6 +31,9 @@ from pathlib import Path
 
 FAIL_POLICY = "closed"
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+
 _BARE_EXCEPT_RE = re.compile(r"^\s*except\s*:", re.MULTILINE)
 _BROAD_EXCEPT_RE = re.compile(r"except\s+Exception(\s*:|\s+as\s+\w+\s*:)")
 _GUARDIAN_RE = re.compile(r"#\s*guardian:\s*allow-")
@@ -45,6 +49,41 @@ _RISKY_MCP_PATTERNS = [
     re.compile(r'"serverUrl"\s*:'),
     re.compile(r'"env"\s*:'),
 ]
+
+
+def check_task_exists(file_path: str) -> str | None:
+    """
+    Return a block reason if current session is T2/T3 and no task was created.
+    Returns None if write is allowed.
+    Fail-open: missing/corrupt state file allows the write.
+    """
+    # Only gate .py files in repo — don't block config/docs edits
+    if not file_path.endswith(".py"):
+        return None
+
+    # Writes to hook scripts themselves are exempt (bootstrap problem)
+    if ".windsurf/scripts/" in file_path.replace("\\", "/"):
+        return None
+
+    try:
+        if not SESSION_STATE.exists():
+            return None  # fail-open: no state file yet
+        state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None  # fail-open
+
+    tier = state.get("current_tier", "T0")
+    if tier not in ("T2", "T3"):
+        return None
+
+    if state.get("task_created", False):
+        return None
+
+    return (
+        f"{tier} write attempted without Task Manager task. "
+        "Call create_task (task_manager MCP) before editing files. "
+        "SR_MANDATE step 2 requires task registration for T2/T3 work."
+    )
 
 
 def _exit_block(reason: str) -> int:
@@ -233,6 +272,11 @@ def main() -> int:
     # Payload-level file type check (covers cases where argv is not provided).
     if not file_path.endswith(".py") and not file_path.endswith(MCP_CONFIG_SUFFIX):
         return 0
+
+    # --- Task existence check for T2/T3 (enforce plan-first discipline) ---
+    task_block = check_task_exists(file_path)
+    if task_block:
+        return _exit_block(task_block)
 
     violations = []
 

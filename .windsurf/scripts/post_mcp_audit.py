@@ -24,6 +24,20 @@ FAIL_POLICY = "open"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "mcp_tool_audit.jsonl"
+SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+
+
+def _mark_task_created() -> None:
+    """Set task_created=true in session state. Fail-open on any error."""
+    try:
+        if SESSION_STATE.exists():
+            state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        else:
+            state = {}
+        state["task_created"] = True
+        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+    except (OSError, json.JSONDecodeError):
+        pass  # fail-open: don't disrupt audit on state file error
 
 
 def _append_log(record: dict) -> None:
@@ -63,6 +77,10 @@ def main() -> int:
         "duration_ms": duration_ms,
     }
     _append_log(record)
+
+    # Mark task_created when Cascade calls create_task on the task_manager MCP.
+    if tool_name == "create_task" and "task" in server_name.lower():
+        _mark_task_created()
 
     return 0
 
