@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-10T10:45:03.493179
+# Last generated: 2026-04-10T10:49:48.259612
 
 
 # Build & Cache
@@ -79,6 +79,7 @@
 /data/ssot_artifacts/
 /data/store/
 /docs/reference/_archive/
+/docs/windsurf/
 
 # File Patterns
 *.dll
