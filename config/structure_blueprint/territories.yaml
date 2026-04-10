@@ -58,14 +58,30 @@ territories:
     type: "documentation"
     purpose: "Project documentation"
     subfolders:
+      architecture: {depth: 2, purpose: "Architecture decision records and layer diagrams"}
+      contracts: {depth: 2, purpose: "Interface contracts and API specifications"}
+      guides: {depth: 2, purpose: "Developer and operational guides"}
+      mcp: {depth: 2, purpose: "MCP server documentation"}
+      monitoring: {depth: 2, purpose: "Monitoring and observability documentation"}
+      policies: {depth: 2, purpose: "Policy documentation and governance rules"}
+      project: {depth: 2, purpose: "Project-level documentation"}
+      rca: {depth: 2, purpose: "Root cause analysis reports"}
+      reference: {depth: 2, purpose: "Reference documentation and technical specs"}
       reports:
         depth: 2
         purpose: "Evidence and reports"
         allowed_suffixes: [".md"]
+      rules: {depth: 2, purpose: "Rule documentation"}
+      runbooks: {depth: 2, purpose: "Operational runbooks"}
+      specs: {depth: 2, purpose: "Technical specifications"}
+      svp: {depth: 2, purpose: "SVP engineering review documents"}
+      technical: {depth: 2, purpose: "Technical deep-dive documentation"}
+      testing: {depth: 2, purpose: "Testing strategy and documentation"}
       tools:
         depth: 2
         purpose: "Tools documentation"
         allowed_suffixes: [".md"]
+      windsurf: {depth: 2, purpose: "Windsurf IDE configuration documentation"}
     allowed_suffixes: [".md", ".txt"]
     forbidden_suffixes: [".py", ".json", ".yaml", ".log"]
 
@@ -705,6 +721,57 @@ territories:
       setup: {depth: 3, purpose: "Setup scripts"}
       tools: {depth: 3, purpose: "Tool scripts"}
       verification: {depth: 3, purpose: "Verification scripts"}
+
+  artifacts:
+    depth: 2
+    volatile: true
+    purpose: "Runtime artifacts, ADG outputs, CI evidence, and generated reports"
+    subfolders:
+      adg: {depth: 2, purpose: "ADG graph artifacts (SQLite, JSON, split planes)"}
+      architecture: {depth: 2, purpose: "Architecture evidence snapshots"}
+      audits: {depth: 2, purpose: "Audit trail artifacts"}
+      ci: {depth: 2, purpose: "CI pipeline artifacts"}
+      ci_gates: {depth: 2, purpose: "CI gate evidence outputs"}
+      evidence: {depth: 2, purpose: "Evidence bundles for HITL and governance"}
+      generated: {depth: 2, purpose: "Auto-generated artifacts"}
+      guardian_analysis: {depth: 2, purpose: "Guardian exemption analysis outputs"}
+      hitl: {depth: 2, purpose: "HITL decision artifacts"}
+      import_health: {depth: 2, purpose: "Import health scan results"}
+      manifests: {depth: 2, purpose: "Build and deployment manifests"}
+      memory: {depth: 2, purpose: "Memory graph artifacts"}
+      outputs: {depth: 2, purpose: "General output artifacts"}
+      reports: {depth: 2, purpose: "Generated reports"}
+      runtime_adg: {depth: 2, purpose: "Runtime ADG behavioral indexing outputs"}
+      runtime_adg_snapshots: {depth: 2, purpose: "Runtime ADG snapshot history"}
+      ssot_scans: {depth: 2, purpose: "SSOT compliance scan results"}
+      structure: {depth: 2, purpose: "Structural analysis artifacts"}
+      windsurf: {depth: 2, purpose: "Windsurf-generated artifacts"}
+
+  logs:
+    depth: 2
+    volatile: true
+    purpose: "Runtime log outputs and compliance reports"
+    subfolders:
+      compliance_reports: {depth: 2, purpose: "Compliance report outputs"}
+      l4_state: {depth: 2, purpose: "L4 state management logs"}
+      validation: {depth: 2, purpose: "Validation run logs"}
+
+  scripts:
+    depth: 1
+    purpose: "Top-level operational scripts (flat directory)"
+
+  templates:
+    depth: 2
+    purpose: "Project templates"
+    subfolders:
+      prompts: {depth: 2, purpose: "Prompt templates"}
+
+  test_artifacts:
+    depth: 2
+    volatile: true
+    purpose: "Test run artifacts and e2e test outputs"
+    subfolders:
+      meta_learning_e2e: {depth: 2, purpose: "Meta-learning end-to-end test artifacts"}
 
 # Wildcard territories (pattern-based matching)
 wildcards:
