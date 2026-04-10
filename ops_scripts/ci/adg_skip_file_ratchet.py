@@ -81,7 +81,7 @@ def _load_baseline() -> int:
     try:
         data = json.loads(BUDGET_FILE.read_text(encoding="utf-8"))
         return int(data.get("baseline", 0))
-    except (json.JSONDecodeError, ValueError, TypeError):
+    except (json.JSONDecodeError, ValueError, TypeError, OSError):
         return 0
 
 

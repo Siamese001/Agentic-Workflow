@@ -155,6 +155,16 @@ class TestDetectAndCapture:
         assert "Minimal scope" in row[0]
         conn.close()
 
+    def test_extract_options_cap_at_six(self):
+        lines = "\n".join(f"Option {i}. Choice number {i}" for i in range(1, 10))
+        text = _HITL_PACKET + lines
+        conn = _make_in_memory_conn()
+        detect_and_capture(text, conn)
+        row = conn.execute("SELECT options_json FROM decisions").fetchone()
+        options = json.loads(row[0])
+        assert len(options) <= 6, "_extract_options must cap at 6 entries"
+        conn.close()
+
 
 # ---------------------------------------------------------------------------
 # _extract_response_text
@@ -270,8 +280,18 @@ class TestMain:
         monkeypatch.setattr(sys, "stdin", StringIO(payload))
         assert main() == 0
         db = tmp_path / "ledger.sqlite"
-        if db.exists():
-            conn = sqlite3.connect(str(db))
-            count = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
-            conn.close()
-            assert count == 0
+        # DB IS created by _init_db() even when no HITL packet is found;
+        # must assert unconditionally — conditional silently skips on _init_db failure
+        assert db.exists(), "_init_db() must create DB for non-empty text payload"
+        conn = sqlite3.connect(str(db))
+        count = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+        conn.close()
+        assert count == 0, "no HITL packet must produce zero records"
+
+    def test_init_db_returns_none_exits_0(self, monkeypatch, tmp_path):
+        monkeypatch.setattr(_m, "DB_DIR", tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", tmp_path / "ledger.sqlite")
+        monkeypatch.setattr(_m, "_init_db", lambda: None)
+        payload = json.dumps({"response": _HITL_PACKET})
+        monkeypatch.setattr(sys, "stdin", StringIO(payload))
+        assert main() == 0  # must not raise even when _init_db returns None
