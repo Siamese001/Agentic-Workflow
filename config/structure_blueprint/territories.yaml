@@ -203,13 +203,7 @@ territories:
       # Cross-cutting infrastructure
       mixins:
         depth: 2
-        purpose: "Shared capability mixins for agent composition"
-        subfolders:
-          config: {purpose: "Mixin configuration"}
-          tracing: {purpose: "Tracing and observability mixins"}
-          safety: {purpose: "Safety and validation mixins"}
-          healing: {purpose: "Healing and recovery mixins"}
-          caching: {purpose: "Caching and performance mixins"}
+        purpose: "Shared capability mixins for agent composition (flat — no subdirectories)"
       seams:
         depth: 2
         purpose: "Integration contracts and protocol seams"
@@ -220,7 +214,6 @@ territories:
       runtime: {depth: 2, purpose: "Runtime utilities and types"}
       config: {depth: 2, purpose: "Framework configuration"}
       utils: {depth: 2, purpose: "Framework utilities"}
-      types: {depth: 2, purpose: "Framework types"}
       gateway: {depth: 2, purpose: "Gateway implementations"}
       interfaces: {depth: 2, purpose: "Interface definitions"}
       L_CONTRACTS: {depth: 2, purpose: "Layer contracts and cross-layer enforcement contracts"}
@@ -290,22 +283,6 @@ territories:
       tests: {depth: 2, purpose: "Test suite"}
       tools: {depth: 2, purpose: "Utility tools"}
       utils: {depth: 2, purpose: "Helper utilities"}
-
-  apps_underwriting_ai:
-    depth: 2
-    layer: L_APP
-    purpose: "Underwriting AI application"
-    subfolders:
-      config: {depth: 2, purpose: "Configuration"}
-      engines: {depth: 2, purpose: "Execution engines"}
-      reasoning: {depth: 2, purpose: "Decision agents"}
-      types: {depth: 2, purpose: "Data models"}
-      validators: {depth: 2, purpose: "Validation logic"}
-      ingestion: {depth: 2, purpose: "Document ingestion"}
-      parsers: {depth: 2, purpose: "Financial parsers"}
-      integrations: {depth: 2, purpose: "External integrations"}
-      outputs: {depth: 2, purpose: "Output generators"}
-      tests: {depth: 2, purpose: "Test suite"}
 
   apps_lic:
     depth: 2
@@ -397,26 +374,9 @@ territories:
       validators: {depth: 2, purpose: "Shared validators"}
       scripts: {depth: 2, purpose: "Utility scripts"}
 
-  apps_research:
-    depth: 2
-    purpose: "Research application"
-    subfolders:
-      config: {depth: 2, purpose: "Configuration"}
-      engines: {depth: 2, purpose: "Research engines"}
-      reasoning: {depth: 2, purpose: "Decision agents"}
-      services: {depth: 2, purpose: "Research services"}
-      validators: {depth: 2, purpose: "Validation logic"}
-      types: {depth: 2, purpose: "Data models"}
-      integrations: {depth: 2, purpose: "External integrations"}
-      outputs: {depth: 2, purpose: "Output generators"}
-      scripts: {depth: 2, purpose: "Utility scripts"}
-      spine: {depth: 2, purpose: "Spine adapters"}
-      tests: {depth: 2, purpose: "Test suite"}
-      tools: {depth: 2, purpose: "Utility tools"}
-      utils: {depth: 2, purpose: "Helper utilities"}
-
   apps_underwriting_ai:
     depth: 2
+    layer: L_APP
     purpose: "Underwriting AI application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
@@ -455,6 +415,11 @@ territories:
       types: {depth: 2, purpose: "Data models"}
       reasoning: {depth: 2, purpose: "Decision agents"}
       utils: {depth: 2, purpose: "Helpers"}
+      sdks_mcps:
+        depth: 2
+        purpose: "SDK and MCP client wrappers, catalog, and configuration"
+        subfolders:
+          mcp_catalog: {depth: 3, purpose: "MCP server catalog and capability registry"}
 
   system_learning:
     depth: 2
@@ -511,13 +476,24 @@ territories:
     depth: 2
     purpose: "CI/CD and operational scripts"
     subfolders:
-      ci: {depth: 3, purpose: "CI scripts"}
-      dev_tools: {depth: 3, purpose: "Development tools"}
+      ci:
+        depth: 3
+        purpose: "CI scripts"
+        subfolders:
+          adg_gates: {depth: 4, purpose: "ADG gate scripts for CI invariant checks"}
+      dev_tools:
+        depth: 3
+        purpose: "Development tools"
+        subfolders:
+          L0_routing: {depth: 4, purpose: "L0 routing development utilities"}
+          L0_routing_scripts: {depth: 4, purpose: "L0 routing operational scripts"}
+          l0_scripts: {depth: 4, purpose: "L0 scripts (lowercase legacy alias)"}
+          L2_execution_scripts: {depth: 4, purpose: "L2 execution development scripts"}
+          L3_orchestration_scripts: {depth: 4, purpose: "L3 orchestration development scripts"}
       environment: {depth: 3, purpose: "Environment scripts"}
       enforcement: {depth: 3, purpose: "Enforcement scripts"}
       general: {depth: 3, purpose: "General scripts"}
       governance: {depth: 3, purpose: "Governance scripts"}
-      hooks: {depth: 3, purpose: "Git hooks"}
       maintenance: {depth: 3, purpose: "Maintenance scripts"}
       review: {depth: 3, purpose: "Review scripts"}
       root_scripts: {depth: 3, purpose: "Root-level scripts"}
