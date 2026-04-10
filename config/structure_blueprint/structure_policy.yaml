@@ -1,0 +1,124 @@
+# ============================================================================
+# Structure Policy — YAML-Only Enforcement (Method A)
+# ============================================================================
+# Single source of truth for repository structure validation.
+# Consumed by: ops_scripts/ci/check_structure_policy.py
+# Replaces: ~5,000 lines of Python enforcement in the old structure_blueprint
+#           package (_verify.py, _simulate_verify.py, sovereign_kernel.py,
+#           governance.py, enforcement/).
+# ============================================================================
+
+# --- Root-level directory whitelist ---
+# Only these directories are allowed at the repo root.
+# Any directory not listed here is a violation.
+root_directories:
+  # Core source
+  - agentic_core
+  - apps_eval
+  - apps_exec
+  - apps_lic
+  - apps_research
+  - apps_rfp
+  - apps_rg
+  - apps_shared
+  - ops_scripts
+  - system_learning
+  - tools
+  # Test / docs / data
+  - tests
+  - docs
+  - data
+  - config
+  # Infrastructure / generated
+  - archives
+  - artifacts
+  - infrastructure
+  - logs
+  - reports
+  - scripts
+  - templates
+  - test_artifacts
+  # Hidden / IDE / VCS
+  - .git
+  - .github
+  - .gravity_state
+  - .backup
+  - .vscode
+  - .windsurf
+
+# --- Root-level allowed file patterns ---
+# Files at root must match one of these globs.
+root_file_patterns:
+  - "*.py"
+  - "*.toml"
+  - "*.yaml"
+  - "*.yml"
+  - "*.md"
+  - "*.json"
+  - "*.ini"
+  - "*.txt"
+  - "*.bat"
+  - "*.sh"
+  - "*.csv"
+  - ".*"            # dotfiles (.gitignore, .env, etc.)
+
+# --- Layer structure ---
+# agentic_core must contain these L0-L6 layer roots.
+# Each layer root must have the listed LCD subfolders.
+layer_roots:
+  - L0_routing
+  - L1_cognition
+  - L2_execution
+  - L3_orchestration
+  - L4_state
+  - L5_safety
+  - L6_observability
+
+lcd_subfolders:
+  - config
+  - types
+  - reasoning
+  - enforcement
+  - validators
+  - utils
+
+# --- Flat directories ---
+# These directories must NOT contain subdirectories (only files).
+flat_directories:
+  - base_agents
+  - embeddings
+  - gateway
+  - interfaces
+  - mixins
+  - patterns
+
+# --- Excluded from scanning ---
+# Directories that are skipped entirely during validation.
+excluded_directories:
+  - __pycache__
+  - .git
+  - .ruff_cache
+  - .venv
+  - venv
+  - node_modules
+  - .pytest_cache
+  - .mypy_cache
+  - .hypothesis
+  - .tox
+  - dist
+  - build
+  - .egg-info
+  - archives
+  - logs
+  - artifacts
+  - .gravity_state
+  - .backup
+  - .windsurf
+
+# --- Forbidden root-level directories ---
+# Directories that must NEVER exist at the repo root.
+forbidden_root_directories:
+  - legacy_code
+  - legacy_engines
+  - legacy_resume_gen
+  - old_core
