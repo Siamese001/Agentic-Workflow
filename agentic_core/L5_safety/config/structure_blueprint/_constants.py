@@ -136,12 +136,10 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "*_types.py": "types",
             "*Agent.py": "reasoning",
         },
-        "extra_subfolders": {},
     },
     "L1_cognition": {
         "purpose": "Cognitive processing, reasoning, and thought patterns.",
         "notes": "LCD+ canonical skeleton. thought_engine/ and meta_learning/ DISSOLVED into 6 folders.",
-        "extra_subfolders": {},
         "reasoning_suffixes": [
             "_engine.py",
             "_manager.py",
@@ -174,20 +172,6 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "_agent.py",
         ],
         "enforcement_suffixes": ["_env.py", "_jail.py", "_container.py", "_sandbox.py", "_agent.py"],
-        "extra_subfolders": {
-            "audit": {
-                "purpose": "Execution audit trails and compliance logging.",
-            },
-            "capability": {
-                "purpose": "Capability token promotion and execution capability gates.",
-            },
-            "determinism": {
-                "purpose": "Determinism guards, replay guards, and canonical digest calculators.",
-            },
-            "healers": {
-                "purpose": "Self-healing strategies for execution failures.",
-            },
-        },
         "routing_rules": {
             "*_impl.py": "tools",
             "*_config.py": "config",
@@ -203,29 +187,6 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L3_orchestration": {
         "purpose": "The Conductor: Workflow Management, DAGs, and Coordination.",
         "notes": "LCD+ canonical skeleton. engine/orchestrators/routers/strategies/patterns/diagnostics DISSOLVED.",
-        "extra_subfolders": {
-            "arbitration": {
-                "purpose": "Multi-advisor arbitration and decision arbitrator logic.",
-            },
-            "coordination": {
-                "purpose": "Lease coordination and work bundle coordination.",
-            },
-            "engines": {
-                "purpose": "Orchestration engines and workflow processors.",
-            },
-            "ptc": {
-                "purpose": "Prompt-to-completion (PTC) tool registry, contract definitions, and invoker.",
-            },
-            "registry": {
-                "purpose": "Agent capability and dispatch registries.",
-            },
-            "replay": {
-                "purpose": "Deterministic replay and state reconstruction for orchestration traces.",
-            },
-            "scripts": {
-                "purpose": "Orchestration-layer operational scripts.",
-            },
-        },
         "reasoning_suffixes": [
             "_engine.py",
             "_manager.py",
@@ -282,26 +243,6 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "_edge.py",
         ],
         "utils_suffixes": ["_util.py", "_helper.py"],
-        "extra_subfolders": {
-            "cache": {
-                "purpose": "Caching layers and cache management strategies.",
-            },
-            "engines": {
-                "purpose": "State management engines: ghost mutation detector, replay bundle emitter, readonly retrieval orchestrator.",
-            },
-            "memory": {
-                "purpose": "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers.",
-                "allowed_suffixes": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
-                "subfolders": {
-                    "semantic": {"purpose": "Semantic search stores (BM25, embeddings)."},
-                },
-            },
-        },
-        "enforcement_subfolders": {
-            "authority": {
-                "purpose": "State and memory authority enforcement — run-scoped state, memory access control.",
-            },
-        },
         "routing_rules": {
             "*_store.py": "memory",
             "*_retriever.py": "memory",
@@ -318,59 +259,6 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L5_safety": {
         "purpose": "The Guardian: Safety, Security, and Governance.",
         "notes": "LCD+ canonical skeleton. guardrails/gravity/cognition/governance/security/policy_engine/red_teaming/runtime/human_review DISSOLVED into reasoning/enforcement.",
-        "extra_subfolders": {},
-        "reasoning_subfolders": {
-            "adaptation": {
-                "purpose": "Policy adaptation loop — runtime safety policy self-adjustment.",
-            },
-            "core_kernel": {
-                "purpose": "Zero-dependency safety kernel and foundational primitives.",
-            },
-            "file_classification": {
-                "purpose": "File classification sub-package: classification core, naming policy, validation rules.",
-            },
-        },
-        "validators_subfolders": {
-            "invariants": {
-                "purpose": "Runtime invariant checker.",
-            },
-            "static_checks": {
-                "purpose": "Static analysis invariant checks: determinism serialization, PowerShell ban, PTC invariants, write-gateway enforcement.",
-            },
-        },
-        "utils_subfolders": {
-            "runners": {
-                "purpose": "Orchestrator and agent runner utilities for safety layer agents.",
-            },
-        },
-        "enforcement_subfolders": {
-            "audit": {
-                "purpose": "Safety audit trail, registry, and AI check audit.",
-            },
-            "escalation": {
-                "purpose": "Human escalation and escalation orchestration.",
-            },
-            "gates": {
-                "purpose": "Tool safety gate and enforcement checkpoints.",
-            },
-            "governance": {
-                "purpose": "Governance policies, audit hooks, and compliance frameworks nested under safety enforcement.",
-            },
-            "hitl": {
-                "purpose": "Human-in-the-loop enforcement: decision logger, escalation activator, review queue.",
-            },
-            "retrieval": {
-                "purpose": "Retrieval safety gate.",
-            },
-            "security": {
-                "purpose": "Credential guards, injection gates, secret management, signature verification.",
-            },
-        },
-        "config_subfolders": {
-            "structure_blueprint": {
-                "purpose": "SSOT structure blueprint module — _constants.py, territories.py, ssot.py, derived.py, and enforcement/ snapshot baseline files.",
-            },
-        },
         "config_suffixes": ["_config.py", "_blueprint.py", "_settings.py"],
         "reasoning_suffixes": [
             "_agent.py",
@@ -453,6 +341,7 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L6_observability": {
         "purpose": "The Sensory Layer: Metrics, Logs, Tracing, and Dashboards.",
         "notes": "LCD+ canonical skeleton + dashboards/ nuance. metrics/logs/tracing/telemetry/reports/agents/engine DISSOLVED.",
+        # Subfolder trees removed — territories.yaml is SSOT for directory existence.
         "reasoning_suffixes": [
             "_agent.py",
             "_metrics.py",
@@ -469,33 +358,6 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "_context.py",
             "_propagator.py",
         ],
-        "extra_subfolders": {},
-        "utils_subfolders": {
-            "dashboard": {
-                "purpose": "Operational dashboard aggregator, analytics dashboard, and orchestrator.",
-            },
-            "engines": {
-                "purpose": "Observability engines and telemetry processors.",
-            },
-            "evaluation": {
-                "purpose": "Evaluation cache, learning bridge, provenance, signal integrators, and metric aggregation.",
-                "subfolders": {
-                    "golden": {"purpose": "Golden evaluation datasets and ground-truth evaluators."},
-                },
-            },
-            "metrics": {
-                "purpose": "Retrieval and observability metrics: NDCG, MRR, precision@k, recall@k, Prometheus.",
-            },
-            "performance": {
-                "purpose": "Performance emitter and registry for L6 observability.",
-            },
-            "telemetry": {
-                "purpose": "Reasoning outcome tracker and telemetry aggregation.",
-            },
-            "visualization": {
-                "purpose": "Workflow visualization and visualization state updates.",
-            },
-        },
         "routing_rules": {
             "*_metrics.py": "reasoning",
             "*_collector.py": "reasoning",
