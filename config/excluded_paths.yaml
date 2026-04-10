@@ -150,3 +150,4 @@ file_patterns:
   - "Thumbs.db"  # Windows thumbnail cache (file, not directory)
   - "*.sqlite"  # Local SQLite databases (runtime state, never committed)
   - "*_test/"  # Runtime test directories (never committed)
+  - "runtime_adg/"  # Live ChromaDB vector store directories (regenerated at runtime, never committed)

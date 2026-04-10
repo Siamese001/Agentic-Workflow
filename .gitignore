@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-10T10:49:48.259612
+# Last generated: 2026-04-10T11:14:09.041961
 
 
 # Build & Cache
@@ -94,3 +94,4 @@
 *_test/
 .coverage.*/
 /Thumbs.db/
+/runtime_adg//
