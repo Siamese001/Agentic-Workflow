@@ -18,11 +18,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint import ARCHIVES_DIR
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,

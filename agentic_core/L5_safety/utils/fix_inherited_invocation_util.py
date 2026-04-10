@@ -89,7 +89,7 @@ import ast
 import json
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint import AGENT_DISCOVERY_JSON
+from agentic_core.L0_routing.config.path_constants import AGENT_DISCOVERY_JSON
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

@@ -13,9 +13,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -129,16 +127,16 @@ from agentic_core.L0_routing.config import (
 )
 
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
-from agentic_core.L5_safety.config.structure_blueprint import (
+from agentic_core.L0_routing.config.path_constants import (
     ALLOWED_DUPLICATE_FILENAMES,
     CORE_SUBFOLDER_MAP,
     DEPTH_RULES,
-    ENFORCED_TERRITORIES,
     PROJECT_ROOT_WHITELIST,
     ROOT_PROTECTED_FILES,
     SOVEREIGN_EXCLUDED_FOLDERS,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
+from agentic_core.L5_safety.config.structure_blueprint import ENFORCED_TERRITORIES
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
     get_best_target_l1,

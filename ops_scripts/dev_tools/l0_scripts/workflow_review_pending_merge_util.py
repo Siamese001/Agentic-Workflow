@@ -77,7 +77,7 @@ from typing import Any
 Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR, SCRIPTS_DIR
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, SCRIPTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

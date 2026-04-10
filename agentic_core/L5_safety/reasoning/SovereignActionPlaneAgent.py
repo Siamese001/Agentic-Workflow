@@ -105,7 +105,7 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L5_safety.config.structure_blueprint import SCRIPTS_DIR
+from agentic_core.L0_routing.config.path_constants import SCRIPTS_DIR
 from agentic_core.L5_safety.enforcement.gates.tool_safety_gate import ToolSafetyGate
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

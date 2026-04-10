@@ -92,7 +92,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

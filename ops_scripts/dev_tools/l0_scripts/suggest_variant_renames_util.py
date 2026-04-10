@@ -7,10 +7,7 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint import (
-    SCRIPTS_DIR,
-    TESTS_DIR,
-)
+from agentic_core.L0_routing.config.path_constants import SCRIPTS_DIR, TESTS_DIR
 
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation

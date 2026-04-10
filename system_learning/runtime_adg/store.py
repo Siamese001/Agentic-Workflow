@@ -12,10 +12,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    L4_APPROVED_FOLDERS,
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.config.path_constants import L4_APPROVED_FOLDERS, get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,

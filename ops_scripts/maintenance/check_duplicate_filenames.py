@@ -2,11 +2,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def check_for_duplicates():

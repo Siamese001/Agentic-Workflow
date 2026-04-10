@@ -100,7 +100,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
+from agentic_core.L0_routing.config.path_constants import CORE_SUBFOLDER_MAP
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

@@ -10,10 +10,7 @@ This fixes ~10 critical L0 → L5 upward dependency violations.
 
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-    SCRIPTS_DIR,
-)
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, SCRIPTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

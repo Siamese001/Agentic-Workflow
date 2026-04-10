@@ -1,36 +1,94 @@
 """
-Structure Blueprint Package — Revamped SSOT (2026-04-10, Method A).
+Structure Blueprint Package — Thin Re-export Shim (Method A SSOT Revamp).
 
 YAML-only enforcement: structure validation now lives in:
   config/structure_blueprint/structure_policy.yaml  (policy declaration)
   ops_scripts/ci/check_structure_policy.py          (CI gate)
 
-This package retains the config constants consumed by 195+ production files.
-Archived modules (zero external consumers) moved to:
-  ops_scripts/archives/structure_blueprint_v1/
+This package is a backward-compatible re-export shim consumed by 87+ files.
+Canonical SSOT for constants/functions lives in:
+  agentic_core/L0_routing/config/path_constants.py        (constants, simple functions)
+  agentic_core/L5_safety/config/structure_enforcement_util.py  (complex enforcement functions)
 
-Active modules:
-  ssot.py           - Core constants, path utilities, whitelists, flat enforcement
+Remaining in-package modules (pending future migration to L0/utility):
+  ssot.py           - Constants not yet migrated to L0
   territories.py    - SOVEREIGN_TERRITORIES definition (YAML loader)
   _constants.py     - TypedDicts and base configuration
   derived.py        - Derived registries (computed from territories)
   classification.py - Suffix patterns, folder purity, naming rules (lazy-loaded)
   semantics.py      - AST signals, keyword affinity registries (lazy-loaded)
-  artifacts.py      - File patterns, artifact routing (lazy-loaded)
+  artifacts.py      - File patterns, artifact routing (lazy-loaded, mostly migrated)
 """
 
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+# L0 path_constants — canonical SSOT for constants migrated from ssot.py
+# ---------------------------------------------------------------------------
 from agentic_core.L0_routing.config.path_constants import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    AGENTIC_CORE_DIR,
+    ALLOW_ROOT_PY_TERRITORIES,
+    ALLOWED_DUPLICATE_FILENAMES,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
     BATCH_SIZE,
     BUFFER_SIZE,
+    DASHBOARD_DIR,
     DEFAULT_SLEEP,
     DEFAULT_TIMEOUT,
+    FLAT_DIRECTORIES,
+    FORBIDDEN_FOLDER_PATTERN,
+    FORBIDDEN_ROOT_FOLDERS,
+    GLOBAL_EXCLUDED_DIRS,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    LAYER_PREFIX_EXEMPT_TERRITORIES,
+    LAYER_ROOTS,
     MAX_DEPTH,
     MAX_FILES,
     MAX_RETRIES,
+    OPS_SCRIPTS_DIR,
+    PROJECT_ROOT_MARKERS,
+    PROJECT_ROOT_WHITELIST,
+    ROOT_ALLOWED_PATTERNS,
+    ROOT_PROTECTED_FILES,
+    ROOT_WHITELIST,
+    RUNTIME_STATE_JSON,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    TESTS_DIR,
+    TESTS_UNIT_DIR,
     THRESHOLD,
+    VARIABLE_DEPTH_SUBFOLDERS,
+    get_validated_project_root,
+    safe_path_join,
+    validate_flat_directory,
+    validate_path_within_project,
 )
+
+# ---------------------------------------------------------------------------
+# L5 structure_enforcement_util — complex enforcement functions
+# ---------------------------------------------------------------------------
+from agentic_core.L5_safety.config.structure_enforcement_util import (
+    check_forbidden_signals,
+    get_correct_app_path,
+    has_forbidden_layer_prefix,
+    is_app_specific_file,
+    is_path_allowed,
+    validate_artifact_routing,
+)
+
+# ---------------------------------------------------------------------------
+# _constants.py — TypedDicts and small config (kept in-package)
+# ---------------------------------------------------------------------------
 from agentic_core.L5_safety.config.structure_blueprint._constants import (
     AGENT_RESILIENCE_CONFIG,
     DOWNSTREAM_ROOTS,
@@ -44,74 +102,44 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (
     SubfolderDefinition,
     TerritoryDefinition,
 )
+
+# ---------------------------------------------------------------------------
+# ssot.py — remaining constants not yet migrated to L0
+# ---------------------------------------------------------------------------
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    AGENTIC_CORE_DIR,
-    ALLOW_ROOT_PY_TERRITORIES,
-    ALLOWED_DUPLICATE_FILENAMES,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    ARCHIVES_DIR,
     AUTONOMOUS_AGENT_WHITELIST,
     BLUEPRINT_SOVEREIGN_DIR,
     CODE_TERRITORIES,
     COVERAGE_HTML_DIR,
-    DASHBOARD_DIR,
     DISCOVERY_EXCLUDED_TERRITORIES,
     DOCS_REPORTS_PLANS,
     ENFORCED_TERRITORIES,
-    FLAT_DIRECTORIES,
-    FORBIDDEN_FOLDER_PATTERN,
     FORBIDDEN_PATTERNS,
-    FORBIDDEN_ROOT_FOLDERS,
     FORENSIC_DISCOVERY_INTEGRITY_HASH,
     FORENSIC_DISCOVERY_SCRIPT,
-    GLOBAL_EXCLUDED_DIRS,
-    L0_MAINTENANCE_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-    L5_SAFETY_DIR,
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
-    L6_OBSERVABILITY_DIR,
-    LAYER_PREFIX_EXEMPT_TERRITORIES,
-    LAYER_ROOTS,
     LEAF_DOMAINS_NO_LCD,
     NAMING_EXEMPT_DIRS,
     NAMING_EXEMPT_FILES,
-    OPS_SCRIPTS_DIR,
-    PROJECT_ROOT_MARKERS,
-    PROJECT_ROOT_WHITELIST,
     PROMPT_GOVERNANCE_DIR,
     PYTHON_STDLIB_MODULES,
     REPORTS_DIR,
     REQUIRED_LCD_SUBFOLDERS,
-    ROOT_ALLOWED_PATTERNS,
-    ROOT_PROTECTED_FILES,
-    ROOT_WHITELIST,
     RUNTIME_DIR,
-    RUNTIME_STATE_JSON,
     SCHEMAS_DIR,
     SCOPE_SUMMARY_EXCLUSIONS,
     SCRIPTS_FORBIDDEN_PATTERNS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
     STANDARD_LAYER_STRUCTURE,
     TEST_CANONICAL_LOCATION_MAP,
     TEST_MIRROR_BASE,
     TEST_MIRROR_ROOTS,
     TESTS_AUTOGEN_DIR,
-    TESTS_DIR,
     TESTS_E2E_DIR,
     TESTS_INTEGRATION_DIR,
     TESTS_ROOT_FILE_WHITELIST,
-    TESTS_UNIT_DIR,
     UTILS_DIR,
     VALIDATED_FILE_EXTENSIONS,
-    VARIABLE_DEPTH_SUBFOLDERS,
     VOLATILE_TERRITORIES,
     get_apps_lic_subfolder_map,
     get_apps_rg_subfolder_map,
@@ -120,21 +148,20 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     get_core_subfolder_map,
     get_sovereign_territories,
     get_subfolder_metadata,
-    get_validated_project_root,
     ignore_dirs,
     is_allowed_subfolder,
     is_l4_approved,
     is_layer_root,
-    is_path_allowed,
     protected_folders,
-    safe_path_join,
     safe_prefixed_filename,
     sovereign_ignored_folders,
-    validate_flat_directory,
     validate_no_duplicate_prefix,
     validate_no_nested_lcd,
-    validate_path_within_project,
 )
+
+# ---------------------------------------------------------------------------
+# territories.py — territory API (still functional)
+# ---------------------------------------------------------------------------
 from agentic_core.L5_safety.config.structure_blueprint.territories import (
     get_all_territories,
     get_territory_metadata,

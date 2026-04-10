@@ -1,10 +1,7 @@
 """Tests for structure blueprint yaml_loader module."""
 from __future__ import annotations
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    PROJECT_ROOT_WHITELIST,
-    ROOT_WHITELIST,
-)
+from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST, ROOT_WHITELIST
 from agentic_core.L5_safety.config.structure_blueprint.territories_loader import (
     build_territories_from_yaml,
     get_all_territories_yaml,
@@ -218,12 +215,14 @@ class TestBackwardCompatibility:
         assert "docs" in ROOT_WHITELIST
 
     def test_sovereign_registry_alias(self):
-        """Validation: SOVEREIGN_REGISTRY alias works in structure_blueprint_config."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_REGISTRY
+        """Validation: SOVEREIGN_TERRITORIES accessible via package (formerly SOVEREIGN_REGISTRY alias)."""
+        from agentic_core.L5_safety.config.structure_blueprint.territories import get_all_territories
 
-        # Verify SOVEREIGN_REGISTRY is accessible and has expected content
-        assert hasattr(SOVEREIGN_REGISTRY, "__getitem__")
-        assert "agentic_core" in SOVEREIGN_REGISTRY
+        # Verify SOVEREIGN_TERRITORIES is accessible and has expected content
+        # Note: SOVEREIGN_REGISTRY was an alias in the deprecated shim
+        sovereign_territories = get_all_territories()
+        assert hasattr(sovereign_territories, "__getitem__")
+        assert "agentic_core" in sovereign_territories
 
     def test_sovereign_territories_fallback(self):
         """Validation: SOVEREIGN_TERRITORIES accessible via __getattr__ fallback."""

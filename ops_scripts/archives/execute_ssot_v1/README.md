@@ -1,8 +1,17 @@
 # Archived: execute_ssot Pipeline
 
-**Archived**: 2026-04-10
+**Archived**: 2026-04-10  
 **Reason**: Pipeline delivered no end-to-end value. ADG analysis confirmed zero production fan-in for all pipeline files.
 **HITL Approval**: Full Archive approved by user.
+
+## Wave 3 Archive (2026-04-10): execute_ssot Pipeline
+
+This archive contains the complete execute_ssot pipeline that was deprecated as part of the SSOT revamp. The pipeline was an orchestration wrapper that called independent L5 agents.
+
+### Key Findings:
+- **Agent Independence Confirmed**: All agents (FileClassificationAgent, FileClassificationHealerAgent, etc.) have extensive fan-in outside the pipeline (7-14 consumers each)
+- **Minimal Impact**: Archiving removes only 1-2 consumers from agents with 7-14 total consumers
+- **Zero Production Value**: Pipeline files had zero/intra-pipeline fan-in only
 
 ## What Was Kept
 

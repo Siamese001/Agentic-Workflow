@@ -172,7 +172,7 @@ _emit_proposal_commits_routing("p1", "ssot_import_enforcer", "routing_commit")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
-SSOT_IMPORT = "# [SSOT IMPORT] Structure blueprint is the single source of truth\nfrom agentic_core.L5_safety.config.structure_blueprint_config import (\n    SOVEREIGN_REGISTRY,\n    CORE_SUBFOLDER_MAP,\n)\n"
+SSOT_IMPORT = "# [SSOT IMPORT] Structure blueprint is the single source of truth\nfrom agentic_core.L5_safety.config.structure_blueprint import (\n    SOVEREIGN_REGISTRY,\n    CORE_SUBFOLDER_MAP,\n)\n"
 LAYER_PATTERN = re.compile("L[0-5]_")
 SSOT_IMPORT_PATTERN = re.compile("from agentic_core\\.config\\.blueprint_sovereign\\.structure_blueprint")
 

@@ -1,48 +1,124 @@
 """Structure Blueprint YAML Loader.
 
-Loads territory and layer definitions from YAML files.
+Loads territory and layer definitions from hardcoded constants.
 Maintains backward compatibility with existing Python imports.
 """
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
-
-import yaml
 
 # Cache for loaded data
 _loaded_data: dict[str, Any] = {}
 
 
-def _get_config_dir() -> Path:
-    """Get the config directory path."""
-    return Path(__file__).parent.parent.parent.parent.parent / "config" / "structure_blueprint"
-
-
 def load_territories() -> dict[str, Any]:
-    """Load territory definitions from YAML."""
+    """Load territory definitions from hardcoded constants."""
     if "territories" not in _loaded_data:
-        config_path = _get_config_dir() / "territories.yaml"
-        with open(config_path) as f:
-            _loaded_data["territories"] = yaml.safe_load(f)
+        _loaded_data["territories"] = {
+            "schema_version": "1.0.0",
+            "last_updated": "2026-04-05",
+            "territories": {
+                "__root__": {
+                    "depth": 0,
+                    "type": "root",
+                    "purpose": "Project root — allowed files only, no subdirectories except whitelisted territories",
+                    "allowed_files": [
+                        "README.md",
+                        "AGENTS.md",
+                        "ARCHITECTURE_LAYERS.md",
+                        "conftest.py",
+                        "pyproject.toml",
+                        "pyrightconfig.json",
+                        "pytest.ini",
+                        ".codeiumignore",
+                        ".env",
+                        ".gitattributes",
+                        ".gitignore",
+                        ".pre-commit-config.yaml",
+                        ".pylintrc"
+                    ],
+                    "allowed_patterns": [
+                        "trace_*.jsonl",
+                        "mission_*.log",
+                        "*.bat",
+                        "*.sh",
+                        "root_drift_*.py"
+                    ]
+                },
+                "config": {
+                    "depth": 2,
+                    "type": "configuration",
+                    "purpose": "Project configuration and SSOT definitions",
+                    "subfolders": {
+                        "structure_blueprint": {
+                            "depth": 2,
+                            "purpose": "SSOT territory and layer definitions",
+                            "allowed_suffixes": [".yaml"],
+                            "forbidden_suffixes": [".py"]
+                        },
+                        "schemas": {
+                            "depth": 2,
+                            "purpose": "JSON schema definitions",
+                            "allowed_suffixes": [".json"],
+                            "forbidden_suffixes": [".yaml", ".py"]
+                        }
+                    }
+                }
+            }
+        }
     return _loaded_data["territories"]
 
 
 def load_layer_overrides() -> dict[str, Any]:
-    """Load layer override definitions from YAML."""
+    """Load layer override definitions from hardcoded constants."""
     if "layers" not in _loaded_data:
-        config_path = _get_config_dir() / "layers.yaml"
-        with open(config_path) as f:
-            _loaded_data["layers"] = yaml.safe_load(f)
+        _loaded_data["layers"] = {
+            "schema_version": "1.1.0",
+            "last_updated": "2026-04-06",
+            "overrides": {
+                "L0_routing": {
+                    "purpose": "Core Logic & Routing + Control-Plane Core — ingestion, route election, capability arbitration, policy-aware dispatch; plus boot integrity, SSOT discovery, and guardian runner health checks.",
+                    "forbidden_capabilities": [
+                        "debate",
+                        "synthesis",
+                        "complex_reasoning",
+                        "multi_agent_coordination"
+                    ],
+                    "routing_rules": {
+                        "*_guardian.py": "enforcement",
+                        "*_boot*.py": "enforcement",
+                        "*_routing*.py": "enforcement",
+                        "*_dispatch*.py": "enforcement",
+                        "*_config.py": "config",
+                        "*_types.py": "types",
+                        "*Agent.py": "reasoning"
+                    },
+                    "extra_subfolders": {
+                        "scripts": {
+                            "purpose": "Operational scripts (Zero-Ambiguity Standard)",
+                            "subfolders": {
+                                ".github": {"purpose": "GitHub workflow scripts"},
+                                "ci": {"purpose": "CI/CD pipeline scripts"},
+                                "config": {"purpose": "Configuration scripts"},
+                                "installation": {"purpose": "Installation and setup scripts"},
+                                "general_scripts": {"purpose": "General maintenance scripts"}
+                            }
+                        }
+                    }
+                }
+            }
+        }
     return _loaded_data["layers"]
 
 
 def load_ast_signals() -> dict[str, Any]:
-    """Load AST signal definitions from YAML."""
+    """Load AST signal definitions from hardcoded constants."""
     if "ast_signals" not in _loaded_data:
-        config_path = _get_config_dir() / "ast_signals.yaml"
-        with open(config_path) as f:
-            _loaded_data["ast_signals"] = yaml.safe_load(f)
+        _loaded_data["ast_signals"] = {
+            "schema_version": "1.0.0",
+            "last_updated": "2026-04-05",
+            "signals": {}
+        }
     return _loaded_data["ast_signals"]
 
 

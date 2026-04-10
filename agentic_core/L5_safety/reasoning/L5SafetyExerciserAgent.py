@@ -127,11 +127,8 @@ def _get_layer_entry():
 
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.config.structure_blueprint import (
-    get_validated_project_root,
-    has_forbidden_layer_prefix,
-    is_broken_backup_file,
-)
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint import has_forbidden_layer_prefix, is_broken_backup_file
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

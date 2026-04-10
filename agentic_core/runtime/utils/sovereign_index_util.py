@@ -79,10 +79,10 @@ import time
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 
 try:
-    from agentic_core.L5_safety.config.structure_blueprint import GLOBAL_EXCLUDED_DIRS
+    from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS
 
     _SSOT_EXCLUSIONS_AVAILABLE = True
 except ImportError as e:

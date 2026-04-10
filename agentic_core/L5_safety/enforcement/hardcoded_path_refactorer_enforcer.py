@@ -1,9 +1,5 @@
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -238,7 +234,7 @@ PATH_CONSTRUCTOR_MAP = {
 }
 
 # Required imports to add
-SSOT_IMPORT = """from agentic_core.L5_safety.config.structure_blueprint_config import (
+SSOT_IMPORT = """from agentic_core.L5_safety.config.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     AGENTIC_CORE_DIR,
@@ -283,7 +279,7 @@ def should_exclude_path(path: Path) -> bool:
 
 def has_ssot_import(content: str) -> bool:
     """Check if file already imports from structure_blueprint."""
-    return "from agentic_core.L5_safety.config.structure_blueprint_config import" in content
+    return "from agentic_core.L5_safety.config.structure_blueprint import" in content
 
 
 def add_ssot_import(content: str) -> str:

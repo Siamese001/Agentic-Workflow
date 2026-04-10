@@ -100,10 +100,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.config.structure_blueprint import (
-    ARCHIVES_DIR,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,

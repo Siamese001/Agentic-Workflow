@@ -26,7 +26,7 @@ from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
+from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     RegistryVerifier,
     VerificationResult,

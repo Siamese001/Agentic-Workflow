@@ -1,5 +1,9 @@
 """
-Structure Blueprint Config — Backward-Compatible Re-export Shim.
+Structure Blueprint Config — DEPRECATED Re-export Shim.
+
+DEPRECATED: Import from agentic_core.L0_routing.config.path_constants (constants)
+or agentic_core.L5_safety.config.structure_enforcement_util (enforcement functions).
+This shim will be removed after all 9 remaining consumers are migrated.
 
 SSOT: agentic_core.L5_safety.config.structure_blueprint/
 

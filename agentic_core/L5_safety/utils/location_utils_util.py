@@ -90,7 +90,7 @@ import os
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -230,7 +230,7 @@ def compute_module_path(file_path: Path, project_root: Path | None = None) -> st
         Module path string (e.g., 'agentic_core.L5_safety.reasoning.LocationAgent')
     """
     if project_root is None:
-        from agentic_core.L5_safety.config.structure_blueprint import get_validated_project_root
+        from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
         project_root = get_validated_project_root()
     try:
@@ -271,7 +271,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.config.structure_blueprint import (
+    from agentic_core.L0_routing.config.path_constants import (
         FORBIDDEN_FOLDER_PATTERN,
         FORBIDDEN_ROOT_FOLDERS,
         ROOT_WHITELIST,
@@ -306,7 +306,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     if expected_depth is not None:
         actual_depth = len(parts) - 1
         if actual_depth != expected_depth:
-            from agentic_core.L5_safety.config.structure_blueprint import VARIABLE_DEPTH_SUBFOLDERS
+            from agentic_core.L0_routing.config.path_constants import VARIABLE_DEPTH_SUBFOLDERS
 
             if root_folder == AGENTIC_CORE_DIR and len(parts) > 1:
                 subfolder = parts[1]

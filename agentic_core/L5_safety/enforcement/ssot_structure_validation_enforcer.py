@@ -26,11 +26,7 @@ from pathlib import Path
 from typing import Final
 
 from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENTIC_CORE_DIR,
-    L4_APPROVED_FOLDERS,
-    VARIABLE_DEPTH_SUBFOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L4_APPROVED_FOLDERS, VARIABLE_DEPTH_SUBFOLDERS
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,

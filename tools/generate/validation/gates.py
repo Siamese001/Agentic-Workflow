@@ -37,6 +37,11 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
             unapproved = []
             for source_file, line_no in violation_rows:
                 try:
+                    # Skip archived files in tools/archive/ directory
+                    if "tools/archive/" in source_file:
+                        print(f"[INFO] Skipping archived file: {source_file}")
+                        continue
+
                     src_path = ROOT / source_file
                     if src_path.exists() and line_no and line_no > 0:
                         lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()

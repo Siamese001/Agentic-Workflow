@@ -100,7 +100,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR, THRESHOLD
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP, PROJECT_ROOT_WHITELIST
+from agentic_core.L0_routing.config.path_constants import CORE_SUBFOLDER_MAP, PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,

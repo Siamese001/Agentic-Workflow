@@ -87,7 +87,7 @@ _emit_links_execution_to_snapshot("p4", "sovereignty_auditor", "exec_snapshot_li
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(REPO_ROOT))
-from agentic_core.L5_safety.config.structure_blueprint import (
+from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,

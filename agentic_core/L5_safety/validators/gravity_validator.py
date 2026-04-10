@@ -92,7 +92,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.config.structure_blueprint import (
+from agentic_core.L0_routing.config.path_constants import (
     CORE_SUBFOLDER_MAP,
     DEPTH_RULES,
     PROJECT_ROOT_WHITELIST,

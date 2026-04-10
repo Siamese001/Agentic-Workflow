@@ -20,16 +20,8 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENT_DISCOVERY_MANIFEST_JSON,
-    SCRIPTS_DIR,
-)
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import AGENT_DISCOVERY_JSON, AGENT_DISCOVERY_MANIFEST_JSON, SCRIPTS_DIR
+from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

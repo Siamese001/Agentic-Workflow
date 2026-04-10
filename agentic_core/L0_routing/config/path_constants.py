@@ -11,17 +11,14 @@ these for backward compatibility.
 
 from __future__ import annotations
 
+import os
+import re
+from collections.abc import Mapping, Sequence
 from functools import lru_cache
 from pathlib import Path
-from typing import Final
+from re import Pattern
+from typing import Any, Final
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_applies_guardrail,
-    _emit_records_execution_trace,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
-)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -89,21 +86,6 @@ def get_validated_project_root() -> Path:
     Walks up from CWD looking for PROJECT_ROOT_MARKERS.
     Caches result for performance.
     """
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_snapshots_state(str(_uuid.uuid4()), "get_validated_project_root", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
-
-    _tid = str(_uuid.uuid4())
-    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_applies_guardrail(str(_uuid.uuid4()), "get_validated_project_root", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
-
-    _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_validated_project_root")
     current = Path.cwd().resolve()
     for parent in [current, *current.parents]:
         if any((parent / marker).exists() for marker in PROJECT_ROOT_MARKERS):
@@ -505,6 +487,136 @@ APPS_RFP_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
 }
 
 # ============================================================================
+# ALLOWED DUPLICATE FILENAMES (migrated from L5 structure_blueprint)
+# ============================================================================
+# Files permitted to exist with the same name across multiple directories.
+ALLOWED_DUPLICATE_FILENAMES: frozenset[str] = frozenset(
+    {
+        "__init__.py",
+        "__main__.py",
+        "conftest.py",
+        "context.py",
+        "config.py",
+        "constants.py",
+        "exceptions.py",
+        "types.py",
+        "models.py",
+        "base.py",
+        "utils.py",
+        "helpers.py",
+        "common.py",
+        "observability.py",
+        "metrics.py",
+        "logging.py",
+        "tracing.py",
+        "proactive.py",
+        "autonomous.py",
+        "self_healing.py",
+        "prompts.py",
+        "templates.py",
+    },
+)
+
+# ============================================================================
+# FLAT DIRECTORIES (migrated from L5 structure_blueprint)
+# ============================================================================
+# Directories marked flat: files MUST live directly in them — no subdirectories.
+FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
+    {
+        "cache",
+        "config",
+        "embeddings",
+        "gateway",
+        "interfaces",
+        "mixins",
+        "patterns",
+        "planning",
+        "base_agents",
+    },
+)
+
+# ============================================================================
+# TERRITORY FLAGS (migrated from L5 structure_blueprint)
+# ============================================================================
+# Territories that permit a .py file directly at depth-1 (allow_root_py flag).
+# Currently empty — no territory has this flag set in YAML.
+ALLOW_ROOT_PY_TERRITORIES: Final[frozenset[str]] = frozenset()
+
+# Territories that use L0-L6 prefixes intentionally (layer_prefix_exempt flag).
+# Currently empty — no territory has this flag set in YAML.
+LAYER_PREFIX_EXEMPT_TERRITORIES: Final[frozenset[str]] = frozenset()
+
+# ============================================================================
+# FORBIDDEN PATTERNS (migrated from L5 structure_blueprint)
+# ============================================================================
+FORBIDDEN_FOLDER_PATTERN: Pattern = re.compile(r"^\d+_")
+
+FORBIDDEN_ROOT_FOLDERS: frozenset[str] = frozenset(
+    {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"},
+)
+
+
+# ============================================================================
+# PATH VALIDATION FUNCTIONS (migrated from L5 structure_blueprint)
+# ============================================================================
+
+
+def validate_path_within_project(path, project_root=None) -> bool:
+    """Validate that a path is within the project root."""
+    if project_root is None:
+        project_root = get_validated_project_root()
+
+    try:
+        path = Path(path).resolve()
+        project_root = Path(project_root).resolve()
+        path.relative_to(project_root)
+        return True
+    except ValueError:
+        return False
+
+
+def safe_path_join(project_root, *parts) -> Path:
+    """Safely join path parts and validate result is within project root."""
+    project_root = Path(project_root).resolve()
+    result = project_root.joinpath(*parts).resolve()
+
+    if not validate_path_within_project(result, project_root):
+        raise ValueError(f"SAFETY VIOLATION: Path '{result}' is outside project root '{project_root}'")
+
+    return result
+
+
+def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
+    """Detect files nested inside directories that must be flat (no subfolders).
+
+    Args:
+        path_parts: tuple/list of path components (e.g. Path.parts).
+
+    Returns:
+        None if compliant, or a violation dict with:
+        - domain: the flat directory that was violated
+        - illegal_child: the subdirectory found inside it
+        - message: human-readable explanation
+    """
+    for i, part in enumerate(path_parts):
+        if part in FLAT_DIRECTORIES:
+            remaining = path_parts[i + 1 :]
+            if len(remaining) > 1:
+                illegal_child = remaining[0]
+                if illegal_child == "__pycache__":
+                    return None
+                return {
+                    "domain": part,
+                    "illegal_child": illegal_child,
+                    "message": (
+                        f"FLAT VIOLATION: '{part}/' must not contain subdirectory "
+                        f"'{illegal_child}/'. All files must live directly in '{part}/'."
+                    ),
+                }
+    return None
+
+
+# ============================================================================
 # EXPORTS
 # ============================================================================
 
@@ -512,63 +624,16 @@ __all__ = [
     "AGENT_DISCOVERY_JSON",
     "AGENT_DISCOVERY_MANIFEST_JSON",
     "AGENTIC_CORE_DIR",
+    "AGENTIC_CORE_LAYERS",
+    "ALLOW_ROOT_PY_TERRITORIES",
+    "ALLOWED_DUPLICATE_FILENAMES",
     "APPS_EVAL_DIR",
     "APPS_EVAL_SUBFOLDER_MAP",
     "APPS_EXEC_DIR",
     "APPS_EXEC_SUBFOLDER_MAP",
     "APPS_LIC_DIR",
     "APPS_LIC_SUBFOLDER_MAP",
-    "APPS_RESEARCH_DIR",
-    "APPS_RESEARCH_SUBFOLDER_MAP",
-    "APPS_RFP_DIR",
-    "APPS_RFP_SUBFOLDER_MAP",
-    "APPS_RG_DIR",
-    "APPS_RG_SUBFOLDER_MAP",
-    "APPS_SHARED_DIR",
-    "APPS_SHARED_SUBFOLDER_MAP",
-    "ARCHIVES_DIR",
-    "CORE_SUBFOLDER_MAP",
-    "DASHBOARD_DIR",
-    "DEPTH_RULES",
-    "SYSTEM_LEARNING_DIR",
-    "TOOLS_DIR",
-    "GLOBAL_EXCLUDED_DIRS",
-    "L0_MAINTENANCE_DIR",
-    "L0_ROUTING_DIR",
-    "L1_COGNITION_DIR",
-    "L2_EXECUTION_DIR",
-    "L3_ORCHESTRATION_DIR",
-    "L4_APPROVED_FOLDERS",
-    "L4_STATE_DIR",
-    "L5_SAFETY_DIR",
-    "L6_OBSERVABILITY_DIR",
-    "LAYER_ROOTS",
-    "OPS_SCRIPTS_DIR",
-    "PROJECT_ROOT_MARKERS",
-    "PROJECT_ROOT_WHITELIST",
-    "ROOT_ALLOWED_PATTERNS",
-    "ROOT_PROTECTED_FILES",
-    "ROOT_WHITELIST",
-    "RUNTIME_STATE_JSON",
-    "SCRIPTS_DIR",
-    "SOVEREIGN_EXCLUDED_FOLDERS",
-    "TESTS_DIR",
-    "VARIABLE_DEPTH_SUBFOLDERS",
-    "WINDSURF_SCRIPTS_DIR",
-    "get_validated_project_root",
-]
-
-# Export list for __init__.py
-__all__ = [
-    "AGENT_DISCOVERY_JSON",
-    "AGENT_DISCOVERY_MANIFEST_JSON",
-    "AGENTIC_CORE_DIR",
-    "APPS_EVAL_DIR",
-    "APPS_EVAL_SUBFOLDER_MAP",
-    "APPS_EXEC_DIR",
-    "APPS_EXEC_SUBFOLDER_MAP",
-    "APPS_LIC_DIR",
-    "APPS_LIC_SUBFOLDER_MAP",
+    "APPS_PACKAGES",
     "APPS_RESEARCH_DIR",
     "APPS_RESEARCH_SUBFOLDER_MAP",
     "APPS_RFP_DIR",
@@ -585,7 +650,12 @@ __all__ = [
     "DEFAULT_SLEEP",
     "DEFAULT_TIMEOUT",
     "DEPTH_RULES",
+    "FLAT_DIRECTORIES",
+    "FORBIDDEN_FOLDER_PATTERN",
+    "FORBIDDEN_ROOT_FOLDERS",
     "GLOBAL_EXCLUDED_DIRS",
+    "HEALING_CONFIDENCE_X",
+    "HEALING_CONFIDENCE_Y",
     "L0_MAINTENANCE_DIR",
     "L0_ROUTING_DIR",
     "L1_COGNITION_DIR",
@@ -595,6 +665,7 @@ __all__ = [
     "L4_STATE_DIR",
     "L5_SAFETY_DIR",
     "L6_OBSERVABILITY_DIR",
+    "LAYER_PREFIX_EXEMPT_TERRITORIES",
     "LAYER_ROOTS",
     "MAX_DEPTH",
     "MAX_FILES",
@@ -602,26 +673,26 @@ __all__ = [
     "OPS_SCRIPTS_DIR",
     "PROJECT_ROOT_MARKERS",
     "PROJECT_ROOT_WHITELIST",
+    "QWEN_14B_MODEL_ID",
     "ROOT_ALLOWED_PATTERNS",
     "ROOT_PROTECTED_FILES",
     "ROOT_WHITELIST",
     "RUNTIME_STATE_JSON",
     "SCRIPTS_DIR",
     "SOVEREIGN_EXCLUDED_FOLDERS",
+    "SSOT_SCORE_THRESHOLD_DET",
+    "SSOT_SCORE_THRESHOLD_QWEN",
     "SYSTEM_LEARNING_DIR",
     "TESTS_DIR",
     "TESTS_UNIT_DIR",
     "THRESHOLD",
-    "WINDSURF_SCRIPTS_DIR",
-    "HEALING_CONFIDENCE_X",
-    "HEALING_CONFIDENCE_Y",
-    "SSOT_SCORE_THRESHOLD_DET",
-    "SSOT_SCORE_THRESHOLD_QWEN",
-    "QWEN_14B_MODEL_ID",
-    "AGENTIC_CORE_LAYERS",
-    "APPS_PACKAGES",
     "TOOLS_DIR",
     "VARIABLE_DEPTH_SUBFOLDERS",
+    "WINDSURF_SCRIPTS_DIR",
     "get_all_apps_paths",
     "get_apps_directories",
+    "get_validated_project_root",
+    "safe_path_join",
+    "validate_flat_directory",
+    "validate_path_within_project",
 ]

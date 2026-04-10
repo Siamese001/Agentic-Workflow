@@ -101,8 +101,11 @@ from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint import DEPTH_RULES, LAYER_PREFIX_EXEMPT_TERRITORIES
-from agentic_core.L5_safety.config.structure_blueprint.ssot import ALLOW_ROOT_PY_TERRITORIES
+from agentic_core.L0_routing.config.path_constants import (
+    ALLOW_ROOT_PY_TERRITORIES,
+    DEPTH_RULES,
+    LAYER_PREFIX_EXEMPT_TERRITORIES,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -308,7 +311,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> tuple[bool, str]:
         """Validate forbidden folder patterns and numbered roots."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L0_routing.config.path_constants import (
             FORBIDDEN_FOLDER_PATTERN,
             FORBIDDEN_ROOT_FOLDERS,
         )
@@ -325,7 +328,8 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> tuple[bool, str]:
         """Validate path is within an allowed sovereign territory using SSOT helper."""
-        from agentic_core.L5_safety.config.structure_blueprint import ROOT_WHITELIST, is_path_allowed
+        from agentic_core.L0_routing.config.path_constants import ROOT_WHITELIST
+        from agentic_core.L5_safety.config.structure_enforcement_util import is_path_allowed
 
         if rel_path is not None:
             if not is_path_allowed(str(rel_path)):
@@ -419,7 +423,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> tuple[bool, str]:
         """Validate app-specific files are not in core."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_enforcement_util import (
             get_correct_app_path,
             is_app_specific_file,
         )
@@ -434,7 +438,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """Validate filename patterns for forbidden prefixes and backup files."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_enforcement_util import (
             check_forbidden_signals,
             has_forbidden_layer_prefix,
         )
@@ -467,7 +471,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> tuple[bool, str]:
         """Final validation checks for root-level files and gravity leaks."""
-        from agentic_core.L5_safety.config.structure_blueprint import ROOT_PROTECTED_FILES
+        from agentic_core.L0_routing.config.path_constants import ROOT_PROTECTED_FILES
 
         if len(parts) == 1 and file_path.suffix == ".py":
             if file_path.name not in ROOT_PROTECTED_FILES:

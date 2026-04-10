@@ -85,7 +85,7 @@ _emit_links_execution_to_snapshot("p4", "run_file_classification_heal_agentic_co
 project_root = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,

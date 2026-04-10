@@ -7,11 +7,7 @@ Run this as pre-commit hook or CI check.
 import re
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    DISCOVERY_EXCLUDED_TERRITORIES,
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -238,7 +234,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
         lines = content.split("\n")
 
         # Skip if file imports from structure_blueprint (likely compliant)
-        if "from agentic_core.L5_safety.config.structure_blueprint_config import" in content:
+        if "from agentic_core.L5_safety.config.structure_blueprint import" in content:
             # File uses SSOT, but still check for violations
             pass
 
@@ -329,7 +325,7 @@ def validate_repository() -> tuple[bool, dict]:
         print("REMEDIATION REQUIRED")
         print("=" * 80)
         print("Replace hardcoded paths with SSOT constants:")
-        print("  from agentic_core.L5_safety.config.structure_blueprint_config import (")
+        print("  from agentic_core.L5_safety.config.structure_blueprint import (")
         print("      AGENT_DISCOVERY_JSON, DASHBOARD_DIR, L0_MAINTENANCE_DIR,")
         print("      get_validated_project_root")
         print("  )")

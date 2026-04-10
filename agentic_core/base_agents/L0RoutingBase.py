@@ -86,7 +86,7 @@ except ImportError:
         pass
 
 
-from agentic_core.L5_safety.config.structure_blueprint import TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,

@@ -18,7 +18,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CRITICAL_MIXINS = {'MetaLearningMixin': 'P0', 'AuditTrailMixin': 'P1', 'CostGuardrailMixin': 'P1', 'HITLMixin': 'P0', 'PineconeVectorMixin': 'P1', 'RedisCacheMixin': 'P1', 'HealerMixin': 'P0'}

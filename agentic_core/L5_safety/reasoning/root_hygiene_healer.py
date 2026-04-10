@@ -1,9 +1,5 @@
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    GLOBAL_EXCLUDED_DIRS,
-    REPORTS_DIR,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, REPORTS_DIR, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -532,7 +528,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         # Sovereign territory dirs derived live from SSOT — zero hardcoded folder names.
         # Dotdirs / VCS / IDE tooling are NOT code territories; they stay explicit here.
         try:
-            from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
+            from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
 
             _sovereign_dirs: set[str] = set(PROJECT_ROOT_WHITELIST)
         except (ImportError, AttributeError):

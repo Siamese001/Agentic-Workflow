@@ -4,10 +4,7 @@ Remove duplicate const realAgentData declarations by line numbers.
 """
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.config.structure_blueprint import (
-    DASHBOARD_DIR,
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.config.path_constants import DASHBOARD_DIR, get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

@@ -41,13 +41,8 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
-from agentic_core.L5_safety.config.structure_blueprint import (
-    APP_SPECIFIC_TARGET_SUBFOLDER,
-    AST_DOMAIN_HIT_THRESHOLD,
-    PROJECT_ROOT_METADATA,
-    ROOT_PROTECTED_FILES,
-    get_validated_project_root,
-)
+from agentic_core.L0_routing.config.path_constants import ROOT_PROTECTED_FILES, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint import APP_SPECIFIC_TARGET_SUBFOLDER, AST_DOMAIN_HIT_THRESHOLD, PROJECT_ROOT_METADATA
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L5_safety.utils.location_constants_util import (
     ARCHIVE_SUBFOLDERS,

@@ -35,6 +35,17 @@ replaced by a simplified YAML policy + single-file CI gate:
 - `governance.py`: 0 consumers
 - `_simulate_verify.py`: 0 consumers
 
+## Wave 2 Archive (2026-04-11): YAML configs
+
+| File | Purpose |
+|------|---------|
+| `territories.yaml` | Territory structure definitions (depth, purpose, subfolders) |
+| `layers.yaml` | Layer definitions |
+
+These YAMLs are superseded by `config/structure_blueprint/structure_policy.yaml`.
+Runtime constants that consumed these have been hardcoded as empty frozensets
+(`ALLOW_ROOT_PY_TERRITORIES`, `LAYER_PREFIX_EXEMPT_TERRITORIES`) in L0 `path_constants.py`.
+
 ## Safe to delete permanently after
 
 90-day archive period (per constitutional §3). Target: 2026-07-10.

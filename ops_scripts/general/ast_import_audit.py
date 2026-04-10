@@ -53,7 +53,7 @@ from collections import defaultdict
 _FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+from agentic_core.L0_routing.config.path_constants import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     REPORTS_DIR,

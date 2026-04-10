@@ -117,11 +117,7 @@ def _get_DashboardDataGenerator():
 
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
-    AGENTIC_CORE_DIR,
-    TESTS_DIR,
-)
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, AGENT_DISCOVERY_JSON, TESTS_DIR
 from agentic_core.prompt_governance.renderer import DashboardRenderer
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

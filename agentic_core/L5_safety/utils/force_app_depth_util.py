@@ -88,6 +88,7 @@ _emit_links_execution_to_snapshot("p4", "force_app_depth_util", "exec_snapshot_l
 
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
+from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import (
@@ -96,7 +97,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     get_validated_project_root,
 )
-from agentic_core.L5_safety.config.structure_blueprint import safe_path_join
+from agentic_core.L0_routing.config.path_constants import safe_path_join
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -206,17 +207,17 @@ def force_app_depth() -> Any:
             if item.is_dir() and item.name.endswith("_engine"):
                 engine_folder = item
                 dest: Any = CORE / "L2_execution" / "P3_engines" / engine_folder.name
-            _wg.ensure_dir(dest)
-            for item in engine_folder.iterdir():
-                if item.is_dir() and item.name.startswith("__"):
-                    continue
-                _wg.move_path(str(item), str(dest / item.name))
-            try:
-                _wg.remove_tree(str(engine_folder))
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
-                pass
-                print(f"  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines")
+                _wg.ensure_dir(dest)
+                for item in engine_folder.iterdir():
+                    if item.is_dir() and item.name.startswith("__"):
+                        continue
+                    _wg.move_path(str(item), str(dest / item.name))
+                try:
+                    _wg.remove_tree(str(engine_folder))
+                # guardian: allow-silent-swallow
+                except (ValueError, TypeError):
+                    pass
+                    print(f"  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines")
         for item in app_path.iterdir():
             if item.is_dir() and item.name.startswith("L"):
                 layer_folder = item
@@ -246,12 +247,13 @@ def force_app_depth() -> Any:
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(app_path):
-            if py_file.name == "__init__.py":
+            py_path = Path(py_file)
+            if py_path.name == "__init__.py":
                 continue
-            if "sovereign_lock" in py_file.name:
+            if "sovereign_lock" in py_path.name:
                 continue
-            _wg.move_path(str(py_file), str(app_p1 / py_file.name))
-            print(f"  [!] DEPTH CORRECTION: {py_file.name} -> {app_path.name}/P1_core")
+            _wg.move_path(str(py_path), str(app_p1 / py_path.name))
+            print(f"  [!] DEPTH CORRECTION: {py_path.name} -> {app_path.name}/P1_core")
 
 
 if __name__ == "__main__":
