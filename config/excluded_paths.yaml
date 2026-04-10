@@ -131,6 +131,10 @@ precommit_excludes:
   - ".*/logs/.*"  # Log directories
   - "docs/store/.*"  # Docs store directory
 
+# Windsurf runtime state (local-only, never committed)
+windsurf_state_dirs:
+  - ".windsurf/state"
+
 # File patterns to exclude (glob-style)
 file_patterns:
   - "*.pyc"
@@ -143,3 +147,4 @@ file_patterns:
   - "*.log"
   - "*.tmp"
   - "Thumbs.db"  # Windows thumbnail cache (file, not directory)
+  - "*.sqlite"  # Local SQLite databases (runtime state, never committed)
