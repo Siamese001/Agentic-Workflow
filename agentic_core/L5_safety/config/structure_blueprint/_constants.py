@@ -524,32 +524,31 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "_context.py",
             "_propagator.py",
         ],
-        "extra_subfolders": {
-            "dashboards": {
-                "purpose": "Operational dashboards, visualizations, and renderers.",
-                "allowed_suffixes": ["_dashboard.py", "_view.py", "_panel.py", "_renderer.py"],
-                "subfolders": {
-                    "core": {"purpose": "Core dashboard logic and shared components."},
-                    "css": {"purpose": "Dashboard stylesheets and themes."},
-                    "data": {"purpose": "Dashboard data files and fixtures."},
-                    "js": {
-                        "purpose": "Dashboard JavaScript modules.",
-                        "subfolders": {
-                            "components": {"purpose": "Reusable UI components."},
-                            "constants": {"purpose": "JS constant definitions."},
-                            "controllers": {"purpose": "Dashboard controllers."},
-                            "renderers": {"purpose": "Chart and data renderers."},
-                            "utils": {"purpose": "JS utility functions."},
-                        },
-                    },
-                    "renderers": {"purpose": "Server-side rendering logic."},
-                },
+        "extra_subfolders": {},
+        "utils_subfolders": {
+            "dashboard": {
+                "purpose": "Operational dashboard aggregator, analytics dashboard, and orchestrator.",
             },
             "engines": {
                 "purpose": "Observability engines and telemetry processors.",
             },
-            "golden_evaluation": {
-                "purpose": "Golden evaluation datasets and benchmark tooling.",
+            "evaluation": {
+                "purpose": "Evaluation cache, learning bridge, provenance, signal integrators, and metric aggregation.",
+                "subfolders": {
+                    "golden": {"purpose": "Golden evaluation datasets and ground-truth evaluators."},
+                },
+            },
+            "metrics": {
+                "purpose": "Retrieval and observability metrics: NDCG, MRR, precision@k, recall@k, Prometheus.",
+            },
+            "performance": {
+                "purpose": "Performance emitter and registry for L6 observability.",
+            },
+            "telemetry": {
+                "purpose": "Reasoning outcome tracker and telemetry aggregation.",
+            },
+            "visualization": {
+                "purpose": "Workflow visualization and visualization state updates.",
             },
         },
         "routing_rules": {

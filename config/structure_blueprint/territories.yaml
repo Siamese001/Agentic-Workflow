@@ -271,7 +271,19 @@ territories:
           types: {purpose: "Data models"}
           reasoning: {purpose: "Decision agents"}
           enforcement: {purpose: "Guardrails"}
-          utils: {purpose: "Helpers"}
+          utils:
+            purpose: "Helpers"
+            subfolders:
+              dashboard: {purpose: "Operational dashboard aggregator, analytics dashboard, and orchestrator"}
+              engines: {purpose: "Observability engines and telemetry processors"}
+              evaluation:
+                purpose: "Evaluation cache, learning bridge, provenance, signal integrators, and metric aggregation"
+                subfolders:
+                  golden: {purpose: "Golden evaluation datasets and ground-truth evaluators"}
+              metrics: {purpose: "Retrieval and observability metrics: NDCG, MRR, precision@k, recall@k, Prometheus"}
+              performance: {purpose: "Performance emitter and registry"}
+              telemetry: {purpose: "Reasoning outcome tracker and telemetry aggregation"}
+              visualization: {purpose: "Workflow visualization and visualization state updates"}
       # Cross-cutting infrastructure
       mixins:
         depth: 2
