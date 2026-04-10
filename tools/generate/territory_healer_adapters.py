@@ -34,6 +34,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
         """Lazy load the underlying agent."""
         if self._agent is None:
             from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+
             self._agent = HierarchyHealerAgent(project_root=self.project_root)
         return self._agent
 
@@ -52,31 +53,37 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
 
         # Convert territory root files to Violation objects
         for v in scan_result.get("territory_root_files", []):
-            violations.append(Violation(
-                type="TERRITORY_ROOT_FILE",
-                path=v.get("path", ""),
-                message=v.get("message", f"File at {territory} root"),
-                severity="ERROR",
-                details=v,
-            ))
+            violations.append(
+                Violation(
+                    type="TERRITORY_ROOT_FILE",
+                    path=v.get("path", ""),
+                    message=v.get("message", f"File at {territory} root"),
+                    severity="ERROR",
+                    details=v,
+                )
+            )
 
         # Convert forbidden folders
         for folder in scan_result.get("forbidden_folders", []):
-            violations.append(Violation(
-                type="FORBIDDEN_FOLDER",
-                path=folder,
-                message=f"Forbidden folder at root: {folder}",
-                severity="ERROR",
-            ))
+            violations.append(
+                Violation(
+                    type="FORBIDDEN_FOLDER",
+                    path=folder,
+                    message=f"Forbidden folder at root: {folder}",
+                    severity="ERROR",
+                )
+            )
 
         # Convert archived files
         for filename in scan_result.get("archived_files_at_root", []):
-            violations.append(Violation(
-                type="ARCHIVED_FILE_AT_ROOT",
-                path=filename,
-                message=f"Archived file at root: {filename}",
-                severity="WARNING",
-            ))
+            violations.append(
+                Violation(
+                    type="ARCHIVED_FILE_AT_ROOT",
+                    path=filename,
+                    message=f"Archived file at root: {filename}",
+                    severity="WARNING",
+                )
+            )
 
         return ScanResult(
             territory=territory,
@@ -120,11 +127,13 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                         execute=True,
                     )
                     if mirror_result.get("folders_created", 0) > 0:
-                        actions_taken.append({
-                            "type": "TEST_MIRROR_FOLDERS_CREATED",
-                            "count": mirror_result["folders_created"],
-                            "applied": True,
-                        })
+                        actions_taken.append(
+                            {
+                                "type": "TEST_MIRROR_FOLDERS_CREATED",
+                                "count": mirror_result["folders_created"],
+                                "applied": True,
+                            }
+                        )
                         violations_fixed += mirror_result.get("violations_found", 0)
 
             except Exception as e:
@@ -158,6 +167,7 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
         """Lazy load the underlying agent."""
         if self._agent is None:
             from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+
             self._agent = LocationHealerAgent(project_root=self.project_root)
         return self._agent
 
@@ -182,13 +192,15 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
             file_path = v.get("file", "")
             # Check if this violation is in our territory
             if file_path.startswith(str(territory_path)) or file_path.startswith(territory):
-                violations.append(Violation(
-                    type="LOCATION_VIOLATION",
-                    path=file_path,
-                    message=v.get("reason", "Location violation"),
-                    severity="ERROR",
-                    details=v,
-                ))
+                violations.append(
+                    Violation(
+                        type="LOCATION_VIOLATION",
+                        path=file_path,
+                        message=v.get("reason", "Location violation"),
+                        severity="ERROR",
+                        details=v,
+                    )
+                )
 
         return ScanResult(
             territory=territory,
@@ -246,6 +258,7 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
     def _get_agent(self):
         if self._agent is None:
             from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
+
             self._agent = GravityLeakHealerAgent(project_root=self.project_root)
         return self._agent
 
@@ -264,13 +277,15 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
         violations = []
 
         for v in scan_result.get("violations", []):
-            violations.append(Violation(
-                type="GRAVITY_VIOLATION",
-                path=v.get("file", ""),
-                message=v.get("message", "Layer inversion detected"),
-                severity="ERROR",
-                details=v,
-            ))
+            violations.append(
+                Violation(
+                    type="GRAVITY_VIOLATION",
+                    path=v.get("file", ""),
+                    message=v.get("message", "Layer inversion detected"),
+                    severity="ERROR",
+                    details=v,
+                )
+            )
 
         return ScanResult(
             territory=territory,
@@ -329,6 +344,7 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
             from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
                 FilesystemSSOTReconcilerAgent,
             )
+
             self._agent = FilesystemSSOTReconcilerAgent(project_root=self.project_root)
         return self._agent
 
@@ -346,13 +362,15 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
         violations = []
 
         for v in scan_result.get("violations", []):
-            violations.append(Violation(
-                type="FILESYSTEM_DRIFT",
-                path=v.get("path", ""),
-                message=v.get("message", "SSOT drift detected"),
-                severity="WARNING",
-                details=v,
-            ))
+            violations.append(
+                Violation(
+                    type="FILESYSTEM_DRIFT",
+                    path=v.get("path", ""),
+                    message=v.get("message", "SSOT drift detected"),
+                    severity="WARNING",
+                    details=v,
+                )
+            )
 
         return ScanResult(
             territory=territory,

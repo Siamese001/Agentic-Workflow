@@ -262,11 +262,17 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "arbitration": {
                 "purpose": "Multi-advisor arbitration and decision arbitrator logic.",
             },
+            "coordination": {
+                "purpose": "Lease coordination and work bundle coordination.",
+            },
             "engines": {
                 "purpose": "Orchestration engines and workflow processors.",
             },
             "ptc": {
                 "purpose": "Prompt-to-completion (PTC) tool registry, contract definitions, and invoker.",
+            },
+            "registry": {
+                "purpose": "Agent capability and dispatch registries.",
             },
             "replay": {
                 "purpose": "Deterministic replay and state reconstruction for orchestration traces.",

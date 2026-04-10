@@ -171,12 +171,14 @@ territories:
             no_root_files: true
             subfolders:
               arbitration: {purpose: "Multi-advisor arbitration and decision arbitrator logic"}
+              coordination: {purpose: "Lease coordination and work bundle coordination"}
               engines: {purpose: "Orchestration engines and workflow processors"}
               ptc: {purpose: "Prompt-to-completion tool registry, contract definitions, and invoker"}
           enforcement: {purpose: "Guardrails"}
           utils:
             purpose: "Helpers"
             subfolders:
+              registry: {purpose: "Agent capability and dispatch registries"}
               replay: {purpose: "Deterministic replay and state reconstruction for orchestration traces"}
           inference:
             depth: 2

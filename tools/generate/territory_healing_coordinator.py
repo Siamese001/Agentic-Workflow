@@ -23,6 +23,7 @@ logger = logging.getLogger("TerritoryHealingCoordinator")
 @dataclass
 class TerritoryHealingReport:
     """Comprehensive report for territory healing."""
+
     territory: str
     agents_executed: list[str] = field(default_factory=list)
     scan_results: list[ScanResult] = field(default_factory=list)
@@ -114,10 +115,7 @@ class TerritoryHealingCoordinator:
         logger.info(f"=== TERRITORY {mode}: {territory} ===")
 
         # Find agents that can handle this territory
-        applicable_agents = [
-            agent for agent in self.agents
-            if agent.can_handle(territory)
-        ]
+        applicable_agents = [agent for agent in self.agents if agent.can_handle(territory)]
 
         if not applicable_agents:
             logger.warning(f"No agents can handle territory: {territory}")
@@ -216,9 +214,20 @@ class TerritoryHealingCoordinator:
         territories = []
 
         # Standard territories
-        standard_dirs = ["agentic_core", "apps_eval", "apps_exec", "apps_lic",
-                        "apps_research", "apps_rfp", "apps_rg", "apps_shared",
-                        "system_learning", "tests", "ops_scripts", "tools"]
+        standard_dirs = [
+            "agentic_core",
+            "apps_eval",
+            "apps_exec",
+            "apps_lic",
+            "apps_research",
+            "apps_rfp",
+            "apps_rg",
+            "apps_shared",
+            "system_learning",
+            "tests",
+            "ops_scripts",
+            "tools",
+        ]
 
         for dirname in standard_dirs:
             if (self.project_root / dirname).exists():
