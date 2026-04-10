@@ -148,3 +148,4 @@ file_patterns:
   - "*.tmp"
   - "Thumbs.db"  # Windows thumbnail cache (file, not directory)
   - "*.sqlite"  # Local SQLite databases (runtime state, never committed)
+  - "*_test/"  # Runtime test directories (never committed)
