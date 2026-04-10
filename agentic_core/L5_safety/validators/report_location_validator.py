@@ -294,7 +294,9 @@ class ReportLocationValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ReportLocationValidator.is_report_file",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "ReportLocationValidator.is_report_file",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

@@ -173,6 +173,7 @@ _emit_validated_by_safety_plane("p1", "credential_guard", "safety_validation")
 _emit_invokes_eval("p1", "credential_guard", "eval_call")
 _emit_proposal_commits_routing("p1", "credential_guard", "routing_commit")
 
+
 class CredentialGuard:
     """Runtime credential access guard.
 
@@ -202,12 +203,15 @@ class CredentialGuard:
             verdict = "deny"
             _cg_logger.debug(
                 "applies_guardrail: credential_guard rate_limit operation=%s target=%s verdict=%s",
-                operation, target, verdict,
+                operation,
+                target,
+                verdict,
             )
             entry = {"operation": operation, "target": target, "verdict": verdict}
             self._log.append(entry)
             if self._mode == "enforce":
                 from agentic_core.L5_safety.enforcement.credential_guard import CredentialAccessDeniedError
+
                 raise CredentialAccessDeniedError(
                     f"Credential guard rate limit exceeded for {target}",
                 )
@@ -217,7 +221,9 @@ class CredentialGuard:
         verdict = "allow"
         _cg_logger.debug(
             "applies_guardrail: credential_guard check operation=%s target=%s verdict=%s",
-            operation, target, verdict,
+            operation,
+            target,
+            verdict,
         )
         entry = {"operation": operation, "target": target, "verdict": verdict}
         self._log.append(entry)
@@ -291,7 +297,9 @@ def is_text_file(file_path: Path) -> bool:
     if not file_path.suffix and file_path.stat().st_size < MAX_FILE_SIZE:
         try:
             with open(file_path, encoding="utf-8") as f:
-                f.read(1024)    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+                f.read(
+                    1024
+                )  # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
             return True
         except (UnicodeDecodeError, PermissionError):
             return False
@@ -302,7 +310,9 @@ def scan_file(file_path: Path) -> list[dict[str, Any]]:
     """Scan a single file for credential patterns."""
     violations = []
     try:
-        with open(file_path, encoding="utf-8") as f:    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+        with open(
+            file_path, encoding="utf-8"
+        ) as f:  # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
             content = f.read()
     except (UnicodeDecodeError, PermissionError):
         return violations

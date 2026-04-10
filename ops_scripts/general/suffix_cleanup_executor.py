@@ -24,7 +24,11 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -207,7 +211,10 @@ def update_imports_in_file(file_path: Path, old_name: str, new_name: str) -> int
             file_path.write_text(content, encoding="utf-8")
             return 1
         return 0
-    except (UnicodeDecodeError, OSError):    # guardian: File operations with encoding need error-specific handling
+    except (
+        UnicodeDecodeError,
+        OSError,
+    ):  # guardian: File operations with encoding need error-specific handling
         return 0
 
 

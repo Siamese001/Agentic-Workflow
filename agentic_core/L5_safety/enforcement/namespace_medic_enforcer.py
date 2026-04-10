@@ -261,14 +261,14 @@ def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
     """
     try:
         with open(file_path, encoding="utf-8", errors="replace") as f:
-            content: Any = f.read()    # guardian: Syntax errors should be caught at parser level, not runtime
+            content: Any = f.read()  # guardian: Syntax errors should be caught at parser level, not runtime
         Missing: Any = find_missing_imports(content)
         if not Missing:
             return (False, 0)
         healed_content: Any = inject_imports(content, Missing)
         try:
             ast.parse(healed_content)
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             print(f"   [!] Syntax error after healing {file_path.name}: {e}")
             return (False, 0)
         if not dry_run:
@@ -289,7 +289,9 @@ def main() -> Any:
     )
     parser.add_argument("--target", default=AGENTIC_CORE_DIR, help="Target directory to scan")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be fixed without modifying files",
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fixed without modifying files",
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
     args: Any = parser.parse_args()

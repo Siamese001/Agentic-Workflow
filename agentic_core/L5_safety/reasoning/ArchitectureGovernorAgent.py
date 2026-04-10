@@ -253,8 +253,11 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 }
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("ArchitectureGovernorAgent: RuntimeError swallowed at L255: %s", e)
+            logging.getLogger(__name__).debug(
+                "ArchitectureGovernorAgent: RuntimeError swallowed at L255: %s", e
+            )
         Logger.info(
             f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})",
         )
@@ -264,7 +267,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "state_snapshot",
+            str(_uuid.uuid4()),
+            "ArchitectureGovernorAgent._get_structure_validator",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -274,7 +279,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "ArchitectureGovernorAgent._get_structure_validator", "p0_governance",
+            str(_uuid.uuid4()),
+            "ArchitectureGovernorAgent._get_structure_validator",
+            "p0_governance",
         )
         if self._structure_validator is None:
             from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import (
@@ -316,7 +323,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
 
             self._cognitive_agent = CognitiveDispositionAgent(
-                project_root=self.project_root, confidence_threshold=THRESHOLD,
+                project_root=self.project_root,
+                confidence_threshold=THRESHOLD,
             )
         return self._cognitive_agent
 
@@ -331,7 +339,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             Dict with keys: status, details, artifacts, errors
         """
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ArchitectureGovernorAgent.heal",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "ArchitectureGovernorAgent.heal",
         )
         if hasattr(self, "ml_enhanced_heal") and hasattr(self, "_do_heal"):
             return self.ml_enhanced_heal(violation, self._do_heal)
@@ -525,7 +535,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             if violations_found > 0:
                 self._log_categorical_drift(all_violations)
             dedup_results = self._trigger_deduplication_audit(
-                roots_scanned, execute=execute and (not dry_run),
+                roots_scanned,
+                execute=execute and (not dry_run),
             )
             if self.healing_enabled and execute and (not dry_run) and (violations_fixed > 0):
                 Logger.info("[Phase 3] Running post-healing cleanup...")
@@ -1081,14 +1092,16 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         _wg.remove_file(sentinel)
                 pycache = path / "__pycache__"
                 if pycache.exists():
-                    _wg.remove_tree(pycache, ignore_errors=True)    # guardian: Add error context logging
+                    _wg.remove_tree(pycache, ignore_errors=True)  # guardian: Add error context logging
                 _wg.remove_dir(path)
                 try:
                     rel_path = path.relative_to(self.project_root)
                     Logger.info(f"  [CLEANUP] Removed empty directory: {rel_path}")
                 except ValueError:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                     Logger.info(f"  [CLEANUP] Removed empty directory: {path}")
-            except OSError:  # guardian: allow-silent-swallow -- intentional: cleanup rmdir failure is non-critical
+            except (
+                OSError
+            ):  # guardian: allow-silent-swallow -- intentional: cleanup rmdir failure is non-critical
                 pass
 
     def finalize_sovereign_lockdown(self) -> tuple[bool, dict]:
@@ -1184,7 +1197,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         return violations
 
     def _persist_audit_report(
-        self, structural_results: dict[str, Any], drift_violations: list[dict[str, Any]],
+        self,
+        structural_results: dict[str, Any],
+        drift_violations: list[dict[str, Any]],
     ) -> None:
         """[PHASE 8] Saves immutable audit record."""
         _wg.ensure_dir(self.audit_log_dir)
@@ -1287,7 +1302,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         return {"purge_status": purge_results, "lockdown_status": lockdown_result, "final_purity": is_pure}
 
     def execute_cognitive_purge(
-        self, checkpoint_file: str = "cognitive_checkpoint.json", rate_limit_delay: float = 1.0,
+        self,
+        checkpoint_file: str = "cognitive_checkpoint.json",
+        rate_limit_delay: float = 1.0,
     ) -> dict[str, Any]:
         """
         [PHASE 13] Execute AI-driven purge using Cognitive Batch Processor.
@@ -1321,7 +1338,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         cognitive = self._get_cognitive_agent()
         processor = CognitiveBatchProcessor(
-            agent=cognitive, checkpoint_file=checkpoint_file, rate_limit_delay=rate_limit_delay,
+            agent=cognitive,
+            checkpoint_file=checkpoint_file,
+            rate_limit_delay=rate_limit_delay,
         )
         Logger.info(f"[{agent_name}] Starting batch processing...")
         batch_stats = processor.process_batch(violations)

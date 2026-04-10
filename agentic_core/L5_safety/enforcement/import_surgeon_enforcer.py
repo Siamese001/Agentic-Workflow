@@ -250,12 +250,17 @@ class SovereignImportSurgeon:
                         if suggested != line.strip():
                             violations.append(
                                 ImportViolation(
-                                    str(file_path), line_num, line, "RELATIVE_TO_ABSOLUTE", suggested,
+                                    str(file_path),
+                                    line_num,
+                                    line,
+                                    "RELATIVE_TO_ABSOLUTE",
+                                    suggested,
                                 ),
                             )
                 if not line.strip().startswith("#") and self.apps_shared_pattern.search(line):
                     suggested: Any = line.replace(
-                        "from apps_shared import", "from apps_shared.P1_core import",
+                        "from apps_shared import",
+                        "from apps_shared.P1_core import",
                     )
                     if suggested != line:
                         violations.append(

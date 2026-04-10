@@ -240,8 +240,11 @@ class MigrationExecutor:
     def process_quarantine(self):
         """Move broken files to legacy/quarantine."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MigrationExecutor.process_quarantine")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MigrationExecutor.process_quarantine"
+        )
 
         broken = self.manifest.get("actions", {}).get("fix_syntax_errors", [])
         logger.info(f"Processing {len(broken)} broken files...")

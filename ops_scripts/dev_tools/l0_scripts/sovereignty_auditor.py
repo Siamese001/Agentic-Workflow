@@ -9,6 +9,7 @@ Rationale:
     2. attempting to import them (verifying paths/imports are healthy).
     3. Confirming the internal class name matches the filename.
 """
+
 import ast
 import importlib.util
 import sys
@@ -173,26 +174,27 @@ _emit_gated_by_confidence("p1", "sovereignty_auditor", "confidence_gate")
 
 
 class SovereigntyAuditor:
-
     def __init__(self):
         self.agents_found = 0
         self.import_failures = []
         self.naming_violations = []
 
     def audit_file(self, path: Path):
-        if not path.name.endswith('Agent.py'):
+        if not path.name.endswith("Agent.py"):
             return
         self.agents_found += 1
         module_name = path.stem
         try:
-            tree = ast.parse(path.read_text(encoding='utf-8'))
+            tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             if module_name not in classes:
-                self.naming_violations.append(f"{path.name}: Expected class '{module_name}' not found. Found: {classes}")
+                self.naming_violations.append(
+                    f"{path.name}: Expected class '{module_name}' not found. Found: {classes}"
+                )
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            self.naming_violations.append(f'{path.name}: AST Parse Error - {e}')
+            self.naming_violations.append(f"{path.name}: AST Parse Error - {e}")
         try:
             spec = importlib.util.spec_from_file_location(module_name, path)
             if spec and spec.loader:
@@ -200,38 +202,40 @@ class SovereigntyAuditor:
                 sys.modules[module_name] = module
                 spec.loader.exec_module(module)
         except ImportError as e:
-            self.import_failures.append(f'{path.name}: {e}')
+            self.import_failures.append(f"{path.name}: {e}")
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.import_failures.append(f'{path.name}: Runtime Error - {e}')
+            self.import_failures.append(f"{path.name}: Runtime Error - {e}")
 
     def run(self):
-        print('=' * 60)
-        print('PASCAL SOVEREIGNTY: POST-MIGRATION AUDIT')
-        print('=' * 60)
+        print("=" * 60)
+        print("PASCAL SOVEREIGNTY: POST-MIGRATION AUDIT")
+        print("=" * 60)
         target_dirs = [REPO_ROOT / d for d in [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]]
         files = []
         for d in target_dirs:
             if d.exists():
                 files.extend(get_python_files(d))
-        print(f'Scanning {len(files)} files for Agents...')
+        print(f"Scanning {len(files)} files for Agents...")
         for f in files:
             self.audit_file(f)
-        print('\n' + '=' * 60)
-        print(f'Agents Found: {self.agents_found}')
-        print(f'Naming Violations: {len(self.naming_violations)}')
-        print(f'Import Failures:   {len(self.import_failures)}')
+        print("\n" + "=" * 60)
+        print(f"Agents Found: {self.agents_found}")
+        print(f"Naming Violations: {len(self.naming_violations)}")
+        print(f"Import Failures:   {len(self.import_failures)}")
         if self.naming_violations:
-            print('\n[!] NAMING VIOLATIONS (Class name != Filename):')
+            print("\n[!] NAMING VIOLATIONS (Class name != Filename):")
             for v in self.naming_violations:
-                print(f'  - {v}')
+                print(f"  - {v}")
         if self.import_failures:
-            print('\n[!] IMPORT FAILURES (Broken References):')
+            print("\n[!] IMPORT FAILURES (Broken References):")
             for f in self.import_failures:
-                print(f'  - {f}')
+                print(f"  - {f}")
         if self.import_failures:
             sys.exit(1)
-        print('\n[PASS] Architecture Integrity Verified.')
+        print("\n[PASS] Architecture Integrity Verified.")
         sys.exit(0)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     SovereigntyAuditor().run()

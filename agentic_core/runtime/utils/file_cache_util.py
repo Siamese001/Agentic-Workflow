@@ -200,6 +200,7 @@ class FileCache:
             The singleton FileCache instance
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileCache.get_instance")
 
@@ -250,7 +251,7 @@ class FileCache:
                         new_files["python"].append(file_path)
                     elif suffix in {".md", ".markdown"}:
                         new_files["markdown"].append(file_path)
-        except PermissionError as e:    # guardian: Permission errors should validate access before operation
+        except PermissionError as e:  # guardian: Permission errors should validate access before operation
             Logger.warning(f"[FileCache] Permission error during scan: {e}")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise

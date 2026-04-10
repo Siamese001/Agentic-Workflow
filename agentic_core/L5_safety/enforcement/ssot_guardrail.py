@@ -37,7 +37,11 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
 )
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -446,7 +450,10 @@ def scan_repository(project_root: Path) -> ScanResult:
                 try:
                     content = fp.read_text(encoding="utf-8", errors="replace")
                     tree = ast.parse(content)
-                except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+                except (
+                    SyntaxError,
+                    OSError,
+                ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
                     continue
 
                 result.files_scanned += 1

@@ -47,7 +47,7 @@ def check_invocation_status_dashboard(source: str) -> tuple[str, ast.FunctionDef
     """
     try:
         tree = ast.parse(source)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return "Inherited", None
 
     # Dashboard logic: find ALL heal_repository functions, check FIRST one
@@ -110,7 +110,7 @@ def add_super_call(source: str) -> str:
     """Add super().heal_repository() call to the first heal_repository method."""
     try:
         tree = ast.parse(source)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return source
 
     # Find first heal_repository function (matching dashboard logic)

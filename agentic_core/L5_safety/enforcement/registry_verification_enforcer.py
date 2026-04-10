@@ -33,7 +33,11 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     TESTS_DIR,
 )
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -298,7 +302,12 @@ class RegistryVerifier:
                 return None
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError, FileNotFoundError):    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+            OSError,
+            FileNotFoundError,
+        ):  # guardian: Parsing and encoding errors need separate handling strategies
             return None
         relative_path = str(file_path.relative_to(self.project_root))
         for node in ast.walk(tree):
@@ -325,7 +334,9 @@ class RegistryVerifier:
         """Scan filesystem for all agent files."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegistryVerifier.scan_filesystem",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "RegistryVerifier.scan_filesystem",
         )
         agents: list[AgentInfo] = []
         for agent_file in self.project_root.rglob("*Agent.py"):
@@ -345,7 +356,7 @@ class RegistryVerifier:
         try:
             with open(self.discovery_path, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, OSError):    # guardian: Add error context logging
+        except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
             return []
 
     def verify_registry(self) -> VerificationResult:

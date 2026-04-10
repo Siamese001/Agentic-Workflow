@@ -202,7 +202,9 @@ class HealingInvocationAudit:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HealingInvocationAudit.audit_all_methods",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HealingInvocationAudit.audit_all_methods",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -258,8 +260,11 @@ class HealingInvocationAudit:
                     return match.group(1)
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("healing_invocation_audit_enforcer: RuntimeError swallowed at L260: %s", e)
+            logging.getLogger(__name__).debug(
+                "healing_invocation_audit_enforcer: RuntimeError swallowed at L260: %s", e
+            )
         return file_path.stem
 
     def _check_super_presence(self, file_path: Path) -> bool:
@@ -268,7 +273,9 @@ class HealingInvocationAudit:
             with open(file_path) as f:
                 content = f.read()
                 method_match = re.search(
-                    "def heal_repository\\(.*?\\).*?:.*?(?=\\n    def |\\nclass |\\Z)", content, re.DOTALL,
+                    "def heal_repository\\(.*?\\).*?:.*?(?=\\n    def |\\nclass |\\Z)",
+                    content,
+                    re.DOTALL,
                 )
                 if method_match:
                     method_body = method_match.group(0)

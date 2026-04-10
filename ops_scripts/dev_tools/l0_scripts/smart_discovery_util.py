@@ -20,8 +20,16 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import AGENT_DISCOVERY_JSON, AGENT_DISCOVERY_MANIFEST_JSON, SCRIPTS_DIR
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    AGENT_DISCOVERY_JSON,
+    AGENT_DISCOVERY_MANIFEST_JSON,
+    SCRIPTS_DIR,
+)
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -211,7 +219,7 @@ def get_json_mtime() -> datetime | None:
         return None
     try:
         return datetime.fromtimestamp(DISCOVERY_JSON.stat().st_mtime)
-    except OSError as e:    # guardian: Add error context logging
+    except OSError as e:  # guardian: Add error context logging
         log.error(f"Failed to read JSON mtime: {e}")
         return None
 
@@ -225,7 +233,7 @@ def get_latest_source_mtime() -> datetime:
             mtime = datetime.fromtimestamp(py_file.stat().st_mtime)
             if mtime > latest:
                 latest = mtime
-        except OSError:    # guardian: Add error context logging
+        except OSError:  # guardian: Add error context logging
             return datetime.now()  # Unreadable → assume changed
     return latest if latest != datetime.min else datetime.now()
 

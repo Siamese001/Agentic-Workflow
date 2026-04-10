@@ -86,7 +86,6 @@ try:
 
     _SSOT_EXCLUSIONS_AVAILABLE = True
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     _SSOT_EXCLUSIONS_AVAILABLE = False
     GLOBAL_EXCLUDED_DIRS = None
@@ -432,10 +431,11 @@ class SovereignIndex:
             current_mtime = os.path.getmtime(self._project_root)
             if current_mtime != self._root_mtime:
                 Logger.debug("[INDEX] Project root mtime changed, refreshing")
-                self.refresh()    # guardian: Add error context logging
+                self.refresh()  # guardian: Add error context logging
         except OSError as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("sovereign_index_util: OSError swallowed at L436: %s", e)
+            logging.getLogger(__name__).debug("sovereign_index_util: OSError swallowed at L436: %s", e)
 
     def _scan_filesystem(self) -> int:
         """
@@ -450,7 +450,7 @@ class SovereignIndex:
         self._all_files.clear()
         self._cache.clear()
         try:
-            self._root_mtime = os.path.getmtime(self._project_root)    # guardian: Add error context logging
+            self._root_mtime = os.path.getmtime(self._project_root)  # guardian: Add error context logging
         except OSError:
             self._root_mtime = 0.0
         self._scan_directory(self._project_root)
@@ -477,9 +477,11 @@ class SovereignIndex:
                                 continue
                             self._scan_directory(Path(entry.path))
                         elif entry.is_file(follow_symlinks=False):
-                            self._all_files.append(Path(entry.path))    # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
+                            self._all_files.append(
+                                Path(entry.path)
+                            )  # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
                     except (PermissionError, OSError):
-                        continue    # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
+                        continue  # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
         except (PermissionError, OSError) as e:
             Logger.debug(f"[INDEX] Cannot scan {directory}: {e}")
 

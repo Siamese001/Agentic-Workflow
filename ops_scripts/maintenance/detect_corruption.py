@@ -8,7 +8,11 @@ import ast
 import re
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 
 def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
@@ -31,9 +35,9 @@ def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
         try:
             content = py_file.read_text(encoding="utf-8")
             ast.parse(content)
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             corrupted.append((py_file, e.lineno or 0, str(e)))
-        except UnicodeDecodeError as e:    # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError as e:  # guardian: Encoding errors should specify fallback encoding strategy
             corrupted.append((py_file, 0, f"Encoding error: {e}"))
         except Exception as e:
             raise
@@ -70,7 +74,10 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
                         suspicious.append(
                             (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}"),
                         )
-        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ):  # guardian: File operations with encoding need error-specific handling
             pass
 
     return suspicious

@@ -1,4 +1,5 @@
 """Tests for structure blueprint yaml_loader module."""
+
 from __future__ import annotations
 
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST, ROOT_WHITELIST

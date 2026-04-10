@@ -197,7 +197,9 @@ class AgentMetadata:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "AgentMetadata.has_gravity_violation",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "AgentMetadata.has_gravity_violation",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -418,7 +420,10 @@ class SSOTScanner:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+        ):  # guardian: Parsing and encoding errors need separate handling strategies
             return None
 
         # Find agent class (aligned with classification kernel: endswith "Agent", exclude Mixin)

@@ -42,7 +42,11 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L0_routing.config.path_constants import ROOT_PROTECTED_FILES, get_validated_project_root
-from agentic_core.L5_safety.config.structure_blueprint import APP_SPECIFIC_TARGET_SUBFOLDER, AST_DOMAIN_HIT_THRESHOLD, PROJECT_ROOT_METADATA
+from agentic_core.L5_safety.config.structure_blueprint import (
+    APP_SPECIFIC_TARGET_SUBFOLDER,
+    AST_DOMAIN_HIT_THRESHOLD,
+    PROJECT_ROOT_METADATA,
+)
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L5_safety.utils.location_constants_util import (
     ARCHIVE_SUBFOLDERS,
@@ -526,7 +530,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                         print(f"  File          : {_fp}")
                         print(f"  Validator says: {_cp}")
                         print(f"  Violation msg : {message[:80]}")
-                        print("  Options  : [V] Use validator path  [H] Let healer decide  [S] Skip")    # guardian: EOFError should be handled with specific context
+                        print(
+                            "  Options  : [V] Use validator path  [H] Let healer decide  [S] Skip"
+                        )  # guardian: EOFError should be handled with specific context
                         try:
                             _ssot_raw = __import__("builtins").input("  Choice [V/H/S]: ").strip().upper()
                         except EOFError:
@@ -1409,7 +1415,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             print("\nOPTIONS:")
             print("  [1] RELOCATE - Move to an existing approved subfolder")
             print(f"  [2] CREATE   - Add '{unknown_subfolder}' as a new approved subfolder (updates SSOT)")
-            print("  [3] ARCHIVE  - Archive to void_violations/ (last resort)")    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+            print(
+                "  [3] ARCHIVE  - Archive to void_violations/ (last resort)"
+            )  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             print("  [4] SKIP     - Skip this file (no action)")
             print(f"{'=' * 70}")
 
@@ -1516,7 +1524,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         print(f"\nCreating new subfolder '{new_subfolder}' in '{root_folder}'...")
         print("This will update SOVEREIGN_REGISTRY in structure_blueprint.py")
-    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
         try:
             confirm = input("Confirm? [y/n]: ").strip().lower()
             if confirm != "y":
@@ -1634,7 +1642,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Analyze subfolder semantics for confidence scoring
             # [AST-PRIMARY] Pass file_path so agent files are blocked before regex/Jaccard
             confidence_score = self._calculate_subfolder_confidence(
-                unknown_subfolder, existing_subfolders, file_path=file_path,
+                unknown_subfolder,
+                existing_subfolders,
+                file_path=file_path,
             )
 
             if confidence_score > 0.75:
@@ -1654,7 +1664,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                 # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
                 # [AST-PRIMARY] Pass file_path so agent files skip non-source subfolders
                 best_match = self._find_best_matching_subfolder(
-                    unknown_subfolder, existing_subfolders, file_path=file_path,
+                    unknown_subfolder,
+                    existing_subfolders,
+                    file_path=file_path,
                 )
                 if best_match:
                     Logger.info(
@@ -2167,7 +2179,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                     if len(rel_parts) == 1 and (
                         "validator" in filename_lower or "compliance" in filename_lower
                     ):
-                        if "sovereign" not in content_lower:    # guardian: Parsing and encoding errors need separate handling strategies
+                        if (
+                            "sovereign" not in content_lower
+                        ):  # guardian: Parsing and encoding errors need separate handling strategies
                             semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
                             heal_actions.append({"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"})
                 except ValueError:
@@ -2993,7 +3007,12 @@ class LocationHealerAgent(SovereignBaseAgent):
                 else:
                     batch_report["batch_post_heal_status"] = "NO_ACTIONS"
                     batch_report["batch_message"] = "No healing actions applied"
-            except (OSError, ImportError, AttributeError, ValueError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                ImportError,
+                AttributeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 batch_report["batch_post_heal_status"] = "ERROR"
                 batch_report["batch_message"] = f"Batch validation error: {e}"
                 Logger.error(f"[LocationHealerAgent] Batch post-heal failed: {e}")
@@ -3079,7 +3098,12 @@ class LocationHealerAgent(SovereignBaseAgent):
                     duplicate_report["duplicate_message"] = f"Resolved {len(duplicate_actions)} duplicates"
                 else:
                     duplicate_report["duplicate_message"] = "No duplicates detected"
-            except (OSError, ImportError, AttributeError, ValueError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                ImportError,
+                AttributeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 duplicate_report["duplicate_message"] = f"ERROR: {e}"
                 Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")
 

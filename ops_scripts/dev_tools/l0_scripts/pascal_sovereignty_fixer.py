@@ -1,4 +1,8 @@
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -360,7 +364,7 @@ class PascalSovereigntyFixer:
                 # Resolve paths to handle case-insensitivity on Windows
                 if dest.resolve() != src.resolve():
                     is_collision = True
-            except OSError:    # guardian: Add error context logging
+            except OSError:  # guardian: Add error context logging
                 is_collision = True
 
         if is_collision:
@@ -398,7 +402,7 @@ class PascalSovereigntyFixer:
             src.rename(temp)
             temp.rename(dest)
             return True
-        except OSError as e:    # guardian: Add error context logging
+        except OSError as e:  # guardian: Add error context logging
             print(f"  [ERROR] Rename failed: {e}")
             return False
 

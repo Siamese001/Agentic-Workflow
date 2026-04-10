@@ -3,7 +3,11 @@
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
 
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
 # This boosts alignment detection — review and integrate appropriately

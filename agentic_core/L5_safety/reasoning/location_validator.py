@@ -242,7 +242,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
         _emit_applies_guardrail(str(_uuid.uuid4()), "LocationValidatorAgent.heal", "p0_governance")
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "LocationValidatorAgent.heal",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "LocationValidatorAgent.heal",
         )
         return {
             "status": "skipped",
@@ -373,22 +375,31 @@ class LocationValidatorAgent(SovereignBaseAgent):
                                     f"SEMANTIC VIOLATION: Root script imports '{alias.name}'. Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/",
                                 )
                 elif isinstance(node, ast.ImportFrom):
-                    if node.module:    # guardian: Syntax errors should be caught at parser level, not runtime
+                    if node.module:  # guardian: Syntax errors should be caught at parser level, not runtime
                         for prefix in forbidden_prefixes:
-                            if node.module.startswith(prefix):    # guardian: File operations with encoding need error-specific handling
+                            if node.module.startswith(
+                                prefix
+                            ):  # guardian: File operations with encoding need error-specific handling
                                 return (
                                     False,
                                     f"SEMANTIC VIOLATION: Root script imports from '{node.module}'. Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/",
                                 )
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("location_validator: SyntaxError swallowed at L379: %s", e)
-        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling
+            logging.getLogger(__name__).debug("location_validator: SyntaxError swallowed at L379: %s", e)
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: File operations with encoding need error-specific handling
             self.logger.debug(f"Failed to check import depth for {rel_path}: {e}")
         return (True, "OK")
 
     def _validate_depth_requirements(
-        self, parts: tuple, root_folder: str, rel_path: Path,
+        self,
+        parts: tuple,
+        root_folder: str,
+        rel_path: Path,
     ) -> tuple[bool, str]:
         """Validate depth requirements from sovereign registry.
 
@@ -453,14 +464,20 @@ class LocationValidatorAgent(SovereignBaseAgent):
             if forbidden_prefix:
                 return (False, f"LAYER PREFIX VIOLATION: Filename has forbidden prefix '{forbidden_prefix}'")
         if file_path.name.endswith((".bak", ".backup", ".old", ".tmp")):
-            return (False, "BROKEN BACKUP FILE: Remove stale backup file")    # guardian: File operations with encoding need error-specific handling
+            return (
+                False,
+                "BROKEN BACKUP FILE: Remove stale backup file",
+            )  # guardian: File operations with encoding need error-specific handling
         try:
             content = None
             if file_path.exists() and file_path.is_file():
                 if file_path.stat().st_size < 1000000:
                     try:
                         content = file_path.read_text(encoding="utf-8", errors="ignore")
-                    except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling
+                    except (
+                        OSError,
+                        UnicodeDecodeError,
+                    ) as e:  # guardian: File operations with encoding need error-specific handling
                         self.logger.debug(f"Failed to read content for artifact check: {e}")
             rejection_reason = check_forbidden_signals(file_path.name, content)
             if rejection_reason:
@@ -491,14 +508,22 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 current_l2 = rel_parts[1] if len(rel_parts) > 2 else None
                 current_territory = f"{current_l1}/{current_l2}" if current_l2 else current_l1
             except ValueError:
-                current_l1, current_l2, current_territory = (None, None, None)    # guardian: Parsing and encoding errors need separate handling strategies
+                current_l1, current_l2, current_territory = (
+                    None,
+                    None,
+                    None,
+                )  # guardian: Parsing and encoding errors need separate handling strategies
             result = self._check_forbidden_imports(tree, current_l1, rel_path)
             if not result[0]:
                 return result
             result = self._check_semantic_alignment(tree, current_territory, rel_path)
             if not result[0]:
                 return result
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            OSError,
+            UnicodeDecodeError,
+            SyntaxError,
+        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"AST parsing failed for {rel_path}: {e}")
         return (True, "OK")
 
@@ -574,7 +599,10 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return None
 
     def _check_semantic_alignment(
-        self, tree: Any, current_territory: str, rel_path: Path,
+        self,
+        tree: Any,
+        current_territory: str,
+        rel_path: Path,
     ) -> tuple[bool, str]:
         """Check semantic alignment between file location and content.
 
@@ -593,7 +621,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
             file_path = self.project_root / rel_path
             if file_path.exists():
                 fca = FileClassificationAgent(
-                    project_root=self.project_root, dry_run=True, validate_only=True,
+                    project_root=self.project_root,
+                    dry_run=True,
+                    validate_only=True,
                 )
                 file_type = fca.classify_file(file_path)
                 correct_folder = fca._get_correct_folder_for_type(file_type)
@@ -637,7 +667,10 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (app_rg_score, app_lic_score, territory_scores)
 
     def _check_app_domain_violation(
-        self, app_rg_score: float, app_lic_score: float, rel_path: Path,
+        self,
+        app_rg_score: float,
+        app_lic_score: float,
+        rel_path: Path,
     ) -> tuple[bool, str]:
         """
         [HARDENED] Detects cross-contamination AND Global Candidates for apps_shared.
@@ -665,7 +698,10 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (True, "")
 
     def _check_territory_alignment(
-        self, current_territory: str, territory_scores: dict[str, float], rel_path: Path,
+        self,
+        current_territory: str,
+        territory_scores: dict[str, float],
+        rel_path: Path,
     ) -> tuple[bool, str]:
         """Check territory alignment between file location and content."""
         from agentic_core.L5_safety.config.structure_blueprint import (
@@ -691,7 +727,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return (True, "OK")
 
     def _collect_ast_increments(
-        self, tree: Any, territory_keywords: dict[str, Any],
+        self,
+        tree: Any,
+        territory_keywords: dict[str, Any],
     ) -> list[tuple[str, float]]:
         """Collect AST-based scoring increments."""
         import ast
@@ -713,7 +751,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
         return scores
 
     def _recompute_ast_scores(
-        self, tree: Any, territory_keywords: dict[str, Any],
+        self,
+        tree: Any,
+        territory_keywords: dict[str, Any],
     ) -> tuple[float, float, dict[str, float]]:
         """Recompute AST scores (wrapper for _calculate_semantic_scores)."""
         return self._calculate_semantic_scores(tree)

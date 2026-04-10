@@ -349,7 +349,9 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "DuplicateCodeDetectorAgent.execute",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "DuplicateCodeDetectorAgent.execute",
         )
         file_types = file_types or self.SUPPORTED_EXTENSIONS
         Logger.info(f"[DUPE SCAN] Scanning for duplicates in {len(file_types)} file types...")
@@ -363,8 +365,11 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                 Logger.info("[ADG] DuplicateCodeDetectorAgent antipatterns=%s", _adg_antipatterns)
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("DuplicateCodeDetectorAgent: RuntimeError swallowed at L365: %s", e)
+            logging.getLogger(__name__).debug(
+                "DuplicateCodeDetectorAgent: RuntimeError swallowed at L365: %s", e
+            )
         results = {
             "whole_file_duplicates": [],
             "code_block_duplicates": [],

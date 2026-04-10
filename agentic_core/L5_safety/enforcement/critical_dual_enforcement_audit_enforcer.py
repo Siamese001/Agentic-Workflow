@@ -230,7 +230,9 @@ class CriticalDualEnforcementAuditor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CriticalDualEnforcementAuditor.parse_requirements_metadata",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CriticalDualEnforcementAuditor.parse_requirements_metadata",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

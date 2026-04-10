@@ -15,7 +15,11 @@ import shutil
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # ============================================================================
 # CONFIGURATION
@@ -115,7 +119,7 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return {"valid": False, "error": "syntax"}
     except Exception as e:
         return {"valid": False, "error": str(e)}

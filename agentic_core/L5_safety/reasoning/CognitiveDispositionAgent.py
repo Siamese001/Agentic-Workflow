@@ -222,14 +222,19 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
         }
 
     async def analyze_violation_async(
-        self, file_path: Path, violation_type: str, context: dict = None,
+        self,
+        file_path: Path,
+        violation_type: str,
+        context: dict = None,
     ) -> DispositionDecision:
         """Analyze violation using Native LLM Gateway."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CognitiveDispositionAgent.analyze_violation_async",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CognitiveDispositionAgent.analyze_violation_async",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -279,7 +284,10 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
 
     def analyze_violation(
-        self, file_path: Path, violation_type: str, context: dict = None,
+        self,
+        file_path: Path,
+        violation_type: str,
+        context: dict = None,
     ) -> DispositionDecision:
         """Sync wrapper around analyze_violation_async.
 
@@ -302,7 +310,9 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             ctx = {"territory": territory, **{k: v[k] for k in v if k not in ("file", "path", "type")}}
             try:
                 decision = await self.analyze_violation_async(
-                    file_path=Path(path_str) if path_str else Path("."), violation_type=vtype, context=ctx,
+                    file_path=Path(path_str) if path_str else Path("."),
+                    violation_type=vtype,
+                    context=ctx,
                 )
                 decisions.append(decision)
             # guardian: allow-silent-swallow -- per-violation failure is logged and returns MANUAL_REVIEW disposition

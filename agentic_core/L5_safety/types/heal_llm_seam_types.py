@@ -17,7 +17,11 @@ from pathlib import Path
 from typing import Any, Callable, Literal
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -179,7 +183,8 @@ _emit_proposal_commits_routing("p1", "heal_llm_seam_types", "routing_commit")
 
 # Capability token: only standard_heal may set this to True
 _HEAL_SEAM_CAPABILITY: contextvars.ContextVar[bool] = contextvars.ContextVar(
-    "_HEAL_SEAM_CAPABILITY", default=False,
+    "_HEAL_SEAM_CAPABILITY",
+    default=False,
 )
 
 
@@ -339,7 +344,8 @@ class HealBudgetCaps:
 _ESCALATION_COUNT: contextvars.ContextVar[int] = contextvars.ContextVar("_ESCALATION_COUNT", default=0)
 _HIGH_TIER_COUNT: contextvars.ContextVar[int] = contextvars.ContextVar("_HIGH_TIER_COUNT", default=0)
 _BUDGET_CAPS: contextvars.ContextVar[HealBudgetCaps | None] = contextvars.ContextVar(
-    "_BUDGET_CAPS", default=None,
+    "_BUDGET_CAPS",
+    default=None,
 )
 
 

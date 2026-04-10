@@ -213,8 +213,11 @@ class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
     ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L0RoutingBase.heal_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L0RoutingBase.heal_repository"
+        )
 
         if _call_path is None:
             _call_path = set()

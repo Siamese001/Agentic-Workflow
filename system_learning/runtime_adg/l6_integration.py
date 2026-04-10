@@ -28,8 +28,8 @@ from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
 class L6MetaLearningBridge:
     """Bridge between runtime ADG snapshots and L6 meta-learning state.
 
-    Stores runtime ADG snapshots in L6 territory for meta-learning analysis
-and system evolution based on execution patterns.
+        Stores runtime ADG snapshots in L6 territory for meta-learning analysis
+    and system evolution based on execution patterns.
     """
 
     def __init__(self, l6_base_dir: Path | None = None) -> None:
@@ -136,15 +136,17 @@ and system evolution based on execution patterns.
                     "status": node.status[:16] if node.status in ("ok", "error") else "ok",
                     "attributes": json.loads(node.attributes_json) if node.attributes_json else {},
                 }
-                for node in snapshot.nodes[:self._max_pattern_nodes]  # Limit node serialization
+                for node in snapshot.nodes[: self._max_pattern_nodes]  # Limit node serialization
             ],
             "edges": [
                 {
                     "src_id": edge.src_id[:128],
                     "dst_id": edge.dst_id[:128],
-                    "relation": edge.relation[:64] if edge.relation in ("parent_child", "temporal_sequence") else "unknown",
+                    "relation": edge.relation[:64]
+                    if edge.relation in ("parent_child", "temporal_sequence")
+                    else "unknown",
                 }
-                for edge in snapshot.edges[:self._max_pattern_nodes * 2]  # Limit edges too
+                for edge in snapshot.edges[: self._max_pattern_nodes * 2]  # Limit edges too
             ],
         }
 
@@ -152,7 +154,7 @@ and system evolution based on execution patterns.
         serialized = json.dumps(snapshot_data)
         if len(serialized) > self._max_snapshot_size_mb * 1024 * 1024:
             raise ValueError(
-                f"Snapshot size {len(serialized) / (1024*1024):.1f}MB exceeds limit {self._max_snapshot_size_mb}MB",
+                f"Snapshot size {len(serialized) / (1024 * 1024):.1f}MB exceeds limit {self._max_snapshot_size_mb}MB",
             )
 
         snapshot_file.write_text(serialized, encoding="utf-8")
@@ -178,7 +180,7 @@ and system evolution based on execution patterns.
 
         # Trim index if too large (keep last 1000 entries)
         if len(self._snapshot_index) > 1000:
-            oldest_keys = sorted(self._snapshot_index.keys())[:len(self._snapshot_index) - 1000]
+            oldest_keys = sorted(self._snapshot_index.keys())[: len(self._snapshot_index) - 1000]
             for key in oldest_keys:
                 del self._snapshot_index[key]
 
@@ -188,13 +190,16 @@ and system evolution based on execution patterns.
         self._extract_and_store_patterns(meta_learning_id, snapshot)
 
         # Log evolution event
-        self._log_evolution_event("runtime_adg_stored", {
-            "meta_learning_id": meta_learning_id,
-            "trace_id": snapshot.trace_id[:256] if snapshot.trace_id else "",
-            "mission": snapshot.mission[:256] if snapshot.mission else "",
-            "node_count": len(snapshot.nodes),
-            "edge_count": len(snapshot.edges),
-        })
+        self._log_evolution_event(
+            "runtime_adg_stored",
+            {
+                "meta_learning_id": meta_learning_id,
+                "trace_id": snapshot.trace_id[:256] if snapshot.trace_id else "",
+                "mission": snapshot.mission[:256] if snapshot.mission else "",
+                "node_count": len(snapshot.nodes),
+                "edge_count": len(snapshot.edges),
+            },
+        )
 
         return meta_learning_id
 
@@ -230,33 +235,43 @@ and system evolution based on execution patterns.
 
             # Component distribution
             component = node.component[:128] if node.component else "unknown"
-            patterns["component_distribution"][component] = patterns["component_distribution"].get(component, 0) + 1
+            patterns["component_distribution"][component] = (
+                patterns["component_distribution"].get(component, 0) + 1
+            )
 
             # Span type distribution
             span_type = node.kind[:64] if node.kind else "unknown"
-            patterns["span_type_distribution"][span_type] = patterns["span_type_distribution"].get(span_type, 0) + 1
+            patterns["span_type_distribution"][span_type] = (
+                patterns["span_type_distribution"].get(span_type, 0) + 1
+            )
 
             # Error patterns (with limit)
             if node.status == "error" and len(patterns["error_patterns"]) < max_errors:
-                patterns["error_patterns"].append({
-                    "node_id": node.node_id[:128] if node.node_id else "",
-                    "component": component,
-                    "layer": layer,
-                })
+                patterns["error_patterns"].append(
+                    {
+                        "node_id": node.node_id[:128] if node.node_id else "",
+                        "component": component,
+                        "layer": layer,
+                    }
+                )
 
             # Timing patterns (with limits)
             if node.duration_ms > 1000 and len(patterns["timing_patterns"]["slow_operations"]) < max_slow_ops:
-                patterns["timing_patterns"]["slow_operations"].append({
-                    "node_id": node.node_id[:128] if node.node_id else "",
-                    "component": component,
-                    "duration_ms": node.duration_ms,
-                })
+                patterns["timing_patterns"]["slow_operations"].append(
+                    {
+                        "node_id": node.node_id[:128] if node.node_id else "",
+                        "component": component,
+                        "duration_ms": node.duration_ms,
+                    }
+                )
             elif node.duration_ms < 10 and len(patterns["timing_patterns"]["fast_operations"]) < max_fast_ops:
-                patterns["timing_patterns"]["fast_operations"].append({
-                    "node_id": node.node_id[:128] if node.node_id else "",
-                    "component": component,
-                    "duration_ms": node.duration_ms,
-                })
+                patterns["timing_patterns"]["fast_operations"].append(
+                    {
+                        "node_id": node.node_id[:128] if node.node_id else "",
+                        "component": component,
+                        "duration_ms": node.duration_ms,
+                    }
+                )
 
         # Analyze edges for patterns
         for edge in snapshot.edges:
@@ -297,6 +312,7 @@ and system evolution based on execution patterns.
         except OSError as e:
             # Log to stderr if file write fails
             import sys
+
             print(f"Warning: Failed to write evolution log: {e}", file=sys.stderr)
 
     def get_meta_learning_snapshots(self, limit: int = 100) -> list[dict[str, Any]]:
@@ -319,10 +335,7 @@ and system evolution based on execution patterns.
             reverse=True,
         )
 
-        return [
-            {"meta_learning_id": ml_id, **metadata}
-            for ml_id, metadata in sorted_snapshots[:limit]
-        ]
+        return [{"meta_learning_id": ml_id, **metadata} for ml_id, metadata in sorted_snapshots[:limit]]
 
     def get_execution_patterns(self, trace_id: str | None = None) -> dict[str, Any]:
         """Get execution patterns for meta-learning.
@@ -361,16 +374,24 @@ and system evolution based on execution patterns.
 
             for patterns in self._pattern_index.values():
                 for layer, count in patterns.get("layer_distribution", {}).items():
-                    aggregated["layer_distribution"][layer] = aggregated["layer_distribution"].get(layer, 0) + count
+                    aggregated["layer_distribution"][layer] = (
+                        aggregated["layer_distribution"].get(layer, 0) + count
+                    )
 
                 for component, count in patterns.get("component_distribution", {}).items():
-                    aggregated["component_distribution"][component] = aggregated["component_distribution"].get(component, 0) + count
+                    aggregated["component_distribution"][component] = (
+                        aggregated["component_distribution"].get(component, 0) + count
+                    )
 
                 for span_type, count in patterns.get("span_type_distribution", {}).items():
-                    aggregated["span_type_distribution"][span_type] = aggregated["span_type_distribution"].get(span_type, 0) + count
+                    aggregated["span_type_distribution"][span_type] = (
+                        aggregated["span_type_distribution"].get(span_type, 0) + count
+                    )
 
                 for relation, count in patterns.get("relation_patterns", {}).items():
-                    aggregated["relation_patterns"][relation] = aggregated["relation_patterns"].get(relation, 0) + count
+                    aggregated["relation_patterns"][relation] = (
+                        aggregated["relation_patterns"].get(relation, 0) + count
+                    )
 
             return aggregated
 

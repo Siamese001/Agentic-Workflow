@@ -265,7 +265,9 @@ class SovereignHealthReport:
         """Generate Markdown report optimized for LLM/Human consumption."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "GravityValidator.to_markdown",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "GravityValidator.to_markdown",
         )
         lines = []
         lines.append("# SSOT Sovereign Health Report")
@@ -455,7 +457,10 @@ class UnifiedSSOTValidator:
                                         severity=8,
                                     ),
                                 )
-            except (SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies
+            except (
+                SyntaxError,
+                UnicodeDecodeError,
+            ):  # guardian: Parsing and encoding errors need separate handling strategies
                 continue
         return violations
 

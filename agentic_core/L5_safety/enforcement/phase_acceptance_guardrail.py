@@ -187,7 +187,9 @@ class PhaseAcceptanceGuard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "PhaseAcceptanceGuard.check_testpaths_contract_sync",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "PhaseAcceptanceGuard.check_testpaths_contract_sync",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

@@ -193,11 +193,18 @@ def estimate_directory_size(dir_path: Path) -> int:
                     total_size += file_path.stat().st_size
                     if total_size > max_scan_bytes:
                         return total_size
-                except (OSError, PermissionError):    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+                except (
+                    OSError,
+                    PermissionError,
+                ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
                     continue
-    except (OSError, PermissionError):    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+    except (
+        OSError,
+        PermissionError,
+    ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("cache_guard: OSError swallowed at L201: %s", e)
+        logging.getLogger(__name__).debug("cache_guard: OSError swallowed at L201: %s", e)
     return total_size
 
 
@@ -206,7 +213,10 @@ def has_tracked_files(dir_path: Path, root_path: Path) -> bool:
     try:
         relative_path = dir_path.relative_to(root_path)
         result = subprocess.run(
-            ["git", "ls-files", str(relative_path)], capture_output=True, text=True, cwd=str(root_path),
+            ["git", "ls-files", str(relative_path)],
+            capture_output=True,
+            text=True,
+            cwd=str(root_path),
         )
         return bool(result.stdout.strip())
     except (subprocess.SubprocessError, ValueError):

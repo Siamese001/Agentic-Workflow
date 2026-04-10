@@ -159,18 +159,25 @@ _emit_stores_embedding("p4", "investigate_overlaps", "embedding_store")
 _emit_updates_meta_learning_state("p4", "investigate_overlaps", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "investigate_overlaps", "exec_snapshot_link")
 PROJECT_ROOT = get_validated_project_root()
-GROUPS = {'Location': ['LocationAgent.py', 'LocationValidatorAgent.py', 'LocationHealerAgent.py'], 'Hierarchy': ['HierarchyAgent.py', 'HierarchyValidatorAgent.py'], 'Import': ['ImportAgent.py', 'ImportLockAgent.py'], 'Strategic': ['StrategicRecommendationAgent.py', 'StrategicPlannerAgent.py']}
+GROUPS = {
+    "Location": ["LocationAgent.py", "LocationValidatorAgent.py", "LocationHealerAgent.py"],
+    "Hierarchy": ["HierarchyAgent.py", "HierarchyValidatorAgent.py"],
+    "Import": ["ImportAgent.py", "ImportLockAgent.py"],
+    "Strategic": ["StrategicRecommendationAgent.py", "StrategicPlannerAgent.py"],
+}
+
 
 def get_file_hash(path: Path):
     if not path.exists():
         return None
     return hashlib.md5(path.read_bytes()).hexdigest()
 
+
 def investigate():
-    print('[*] Investigating Potential Overlaps...')
-    print(f'[*] Project Root: {PROJECT_ROOT}')
+    print("[*] Investigating Potential Overlaps...")
+    print(f"[*] Project Root: {PROJECT_ROOT}")
     for group_name, filenames in GROUPS.items():
-        print(f'\n--- Group: {group_name} ---')
+        print(f"\n--- Group: {group_name} ---")
         found_files = []
         for root, dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
@@ -178,17 +185,19 @@ def investigate():
                 if f in filenames:
                     found_files.append(Path(root) / f)
         if not found_files:
-            print('  No files found.')
+            print("  No files found.")
             continue
         for f_path in found_files:
             f_hash = get_file_hash(f_path)
             rel_path = f_path.relative_to(PROJECT_ROOT)
-            print(f'  Found: {rel_path} (MD5: {f_hash[:8]}...)')
+            print(f"  Found: {rel_path} (MD5: {f_hash[:8]}...)")
         hashes = [get_file_hash(p) for p in found_files]
         unique_hashes = set(hashes)
         if len(unique_hashes) < len(hashes):
-            print('  [!] WARNING: Identical MD5 hashes detected in this group. Consolidation required.')
+            print("  [!] WARNING: Identical MD5 hashes detected in this group. Consolidation required.")
         else:
-            print('  [✓] Implementation patterns differ. Likely intentional separation.')
-if __name__ == '__main__':
+            print("  [✓] Implementation patterns differ. Likely intentional separation.")
+
+
+if __name__ == "__main__":
     investigate()

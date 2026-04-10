@@ -74,7 +74,9 @@ class FileBackedRuntimeADGStore:
         # Use L4 sovereign territory if no base_dir specified
         if base_dir is None:
             project_root = get_validated_project_root()
-            base_dir = project_root / "agentic_core" / "L4_state" / "memory" / "runtime_adg"    # guardian: Add error context logging
+            base_dir = (
+                project_root / "agentic_core" / "L4_state" / "memory" / "runtime_adg"
+            )  # guardian: Add error context logging
 
         self._base_dir = Path(base_dir)
         self._validate_l4_compliance()
@@ -122,7 +124,8 @@ class FileBackedRuntimeADGStore:
 
     def _save_trace_index(self) -> None:
         self._trace_index_path.write_text(
-            json.dumps(self._trace_index, indent=2, sort_keys=True), encoding="utf-8",
+            json.dumps(self._trace_index, indent=2, sort_keys=True),
+            encoding="utf-8",
         )
 
     def persist(self, snapshot: RuntimeADGSnapshot) -> str:
@@ -186,24 +189,28 @@ def _deserialise_snapshot(payload: bytes) -> RuntimeADGSnapshot:
 
             if len(fields) == 9:
                 # This is a node: 9 fields
-                nodes.append(RuntimeADGNode(
-                    node_id=fields[0].decode("utf-8"),
-                    name=fields[1].decode("utf-8"),
-                    kind=fields[2].decode("utf-8"),
-                    layer=fields[3].decode("utf-8"),
-                    component=fields[4].decode("utf-8"),
-                    started_at_utc=int(fields[5].decode("utf-8")),
-                    duration_ms=float(fields[6].decode("utf-8")),
-                    status=fields[7].decode("utf-8"),
-                    attributes_json=fields[8].decode("utf-8"),
-                ))
+                nodes.append(
+                    RuntimeADGNode(
+                        node_id=fields[0].decode("utf-8"),
+                        name=fields[1].decode("utf-8"),
+                        kind=fields[2].decode("utf-8"),
+                        layer=fields[3].decode("utf-8"),
+                        component=fields[4].decode("utf-8"),
+                        started_at_utc=int(fields[5].decode("utf-8")),
+                        duration_ms=float(fields[6].decode("utf-8")),
+                        status=fields[7].decode("utf-8"),
+                        attributes_json=fields[8].decode("utf-8"),
+                    )
+                )
             elif len(fields) == 3:
                 # This is an edge: 3 fields
-                edges.append(RuntimeADGEdge(
-                    src_id=fields[0].decode("utf-8"),
-                    dst_id=fields[1].decode("utf-8"),
-                    relation=fields[2].decode("utf-8"),
-                ))
+                edges.append(
+                    RuntimeADGEdge(
+                        src_id=fields[0].decode("utf-8"),
+                        dst_id=fields[1].decode("utf-8"),
+                        relation=fields[2].decode("utf-8"),
+                    )
+                )
             # Skip unknown field counts
 
         return create_runtime_adg_snapshot(

@@ -300,7 +300,7 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
         else:
             print("   [OK] No runaway generation detected.")
             self.ctx.report(self.name, 45, True, [])
-            self.ctx.signals.add("GENERATIVE_CLEAN")    # guardian: Add error context logging
+            self.ctx.signals.add("GENERATIVE_CLEAN")  # guardian: Add error context logging
 
     # guardian: allow-type-erasure
     def _purge_single_file(self, file_path: str) -> Any:
@@ -308,7 +308,7 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
         try:
             _wg.remove_file(file_path)
             print(f"         DELETED: {file_path}")
-        except OSError as e:    # guardian: Add error context logging
+        except OSError as e:  # guardian: Add error context logging
             print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
 
     # guardian: allow-type-erasure

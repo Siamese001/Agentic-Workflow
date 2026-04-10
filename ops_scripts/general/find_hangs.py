@@ -75,7 +75,7 @@ def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, st
 
     try:
         return queue.get_nowait()
-    except (queue.Empty, OSError):    # guardian: Add error context logging
+    except (queue.Empty, OSError):  # guardian: Add error context logging
         return (module_path, "UNKNOWN", 0.0)
 
 
@@ -118,7 +118,11 @@ def has_top_level_execution(file_path: Path) -> list[str]:
                                 attr = node.value.func.attr
                                 if attr in ("connect", "setup", "configure", "getLogger"):
                                     suspicious.append(f"Top-level: {name} = ...{attr}()")
-    except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+    except (
+        OSError,
+        UnicodeDecodeError,
+        SyntaxError,
+    ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
         suspicious.append(f"Parse error: {e}")
 
     return suspicious
@@ -196,7 +200,7 @@ def main():
             end="",
             flush=True,
         )
-# guardian: allow-magic-config
+        # guardian: allow-magic-config
 
         result = import_with_timeout(str(file_path), timeout=DEFAULT_TIMEOUT)
         path, status, duration = result

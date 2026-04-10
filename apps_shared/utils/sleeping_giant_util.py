@@ -18,7 +18,11 @@ from pathlib import Path
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -219,6 +223,7 @@ class AgentAnalyzer(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentAnalyzer.visit_Import")
 
@@ -315,7 +320,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
 
     try:
         tree = ast.parse(content)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return None
 
     analyzer = AgentAnalyzer()

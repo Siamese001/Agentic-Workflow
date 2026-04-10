@@ -273,14 +273,17 @@ class ArchivalGatekeeper:
                 result.approval_status = "APPROVED"
                 Logger.info(
                     f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}",
-                )    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+                )  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             else:
                 result.approval_status = "DENIED"
                 Logger.info(
                     f"[ArchivalGatekeeper] User DENIED: {result.operation.value} {result.source_path}",
                 )
             return approved
-        except (EOFError, KeyboardInterrupt):    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        except (
+            EOFError,
+            KeyboardInterrupt,
+        ):  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             result.approval_status = "DENIED"
             Logger.warning(
                 f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}",
@@ -451,7 +454,9 @@ class ArchivalGatekeeper:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ArchivalGatekeeper.safe_archive:{Path(source).name}",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"ArchivalGatekeeper.safe_archive:{Path(source).name}",
         )
         source = Path(source).resolve()
         error = self._validate_path(source, "archive")
@@ -622,7 +627,10 @@ class ArchivalGatekeeper:
         return self._operation_count
 
     def restore_from_archive(
-        self, archived_path: str | Path, requester_agent: str, reason: str,
+        self,
+        archived_path: str | Path,
+        requester_agent: str,
+        reason: str,
     ) -> ArchivalResult:
         """
         Restore a file from the archive to its original location.

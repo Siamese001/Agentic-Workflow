@@ -198,7 +198,6 @@ class MissionPreflight:
 
                 self._location_agent = LocationValidatorAgent(self.project_root)
             except ImportError as e:
-
                 raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
                 pass
         return self._location_agent
@@ -303,7 +302,6 @@ class MissionPreflight:
                         print(f"   [X] {v}")
                 return violations
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
                 raise
                 print(f"   [!] Span check failed: {e}")
         else:
@@ -329,7 +327,6 @@ class MissionPreflight:
                         print(f"   ... and {len(violations) - 3} more violations")
                 return violations
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
                 raise
                 print(f"   [!] Hierarchy check failed: {e}")
         return []

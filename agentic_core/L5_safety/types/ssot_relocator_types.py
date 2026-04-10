@@ -359,7 +359,8 @@ class SSOTRelocator:
         for violation in gravity_violations:
             source = self.project_root / violation.file_path
             target_path = violation.file_path.replace(
-                f"/{violation.actual_layer}/", f"/{violation.assigned_layer}/",
+                f"/{violation.actual_layer}/",
+                f"/{violation.assigned_layer}/",
             )
             target = self.project_root / target_path
             result = self._relocate_file(source=source, target=target, action="MOVED")
@@ -407,7 +408,10 @@ class SSOTRelocator:
         else:
             try:
                 gk_result = self.gatekeeper.safe_move(
-                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action}",
+                    source,
+                    target,
+                    "SSOTRelocator",
+                    f"SSOT Reconciliation: {action}",
                 )
                 if gk_result.success:
                     result.success = True
@@ -459,7 +463,10 @@ class SSOTRelocator:
         else:
             try:
                 gk_result = self.gatekeeper.safe_move(
-                    source, target, "SSOTRelocator", f"SSOT Reconciliation: {action} folder",
+                    source,
+                    target,
+                    "SSOTRelocator",
+                    f"SSOT Reconciliation: {action} folder",
                 )
                 if gk_result.success:
                     result.success = True
@@ -519,7 +526,10 @@ class SSOTRelocator:
                         if not target_file.exists():
                             _wg.ensure_dir(target_file.parent)
                             gk_result = self.gatekeeper.safe_move(
-                                item, target_file, "SSOTRelocator", "SSOT Reconciliation: Flatten folder",
+                                item,
+                                target_file,
+                                "SSOTRelocator",
+                                "SSOT Reconciliation: Flatten folder",
                             )
                             if not gk_result.success and gk_result.approval_status == "DENIED":
                                 result.action = "SKIPPED"
@@ -543,13 +553,19 @@ class SSOTRelocator:
         Args:
             directory: Directory to check and clean up
         """
-        if not directory.exists() or not directory.is_dir():    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+        if (
+            not directory.exists() or not directory.is_dir()
+        ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
             return
         try:
             if not any(directory.iterdir()):
                 _wg.remove_dir(directory)
                 logger.info(f"Cleaned up empty directory: {directory}")
                 self._cleanup_empty_dirs(directory.parent)
-        except (OSError, PermissionError):    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+        except (
+            OSError,
+            PermissionError,
+        ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("ssot_relocator_types: OSError swallowed at L553: %s", e)
+            logging.getLogger(__name__).debug("ssot_relocator_types: OSError swallowed at L553: %s", e)

@@ -351,7 +351,10 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
         self._generate_dashboard_v2_with_rows(today, dashboard_rows, total_row)
 
     def _save_modular_markdown_report(
-        self, today: str, total_row: dict[str, Any], dashboard_rows: list[dict[str, Any]],
+        self,
+        today: str,
+        total_row: dict[str, Any],
+        dashboard_rows: list[dict[str, Any]],
     ) -> None:
         """Passive Markdown renderer consuming pre-computed L6 rows."""
         report_path = (
@@ -374,7 +377,10 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
         _wg.write_text(report_path, md, encoding="utf-8")
 
     def _generate_dashboard_v2_with_rows(
-        self, today: str, dashboard_rows: list[dict[str, Any]], total_row: dict[str, Any],
+        self,
+        today: str,
+        dashboard_rows: list[dict[str, Any]],
+        total_row: dict[str, Any],
     ) -> None:
         """L6 Interactive Dashboard generation consuming pre-computed unified rows."""
         renderer = DashboardRenderer(self.project_root)

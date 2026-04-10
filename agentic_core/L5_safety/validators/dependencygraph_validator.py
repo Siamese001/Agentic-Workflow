@@ -262,14 +262,20 @@ class DependencyGraph:
             try:
                 with open(file_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):    # guardian: Parsing and encoding errors need separate handling strategies
+                for node in ast.walk(
+                    tree
+                ):  # guardian: Parsing and encoding errors need separate handling strategies
                     if isinstance(node, ast.Import):
                         for n in node.names:
                             self.graph[file_path]["imports"].append(n.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             self.graph[file_path]["imports"].append(node.module)
-            except (OSError, SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies
+            except (
+                OSError,
+                SyntaxError,
+                UnicodeDecodeError,
+            ):  # guardian: Parsing and encoding errors need separate handling strategies
                 continue
         for file, data in self.graph.items():
             for imp in data["imports"]:
@@ -363,14 +369,14 @@ class ValidationContext:
             except (ImportError, AttributeError, ValueError) as e:
                 print(f"      [WARN] Gemini unavailable: {type(e).__name__}")
 
-    def _load_memory(self):    # guardian: Add error context logging
+    def _load_memory(self):  # guardian: Add error context logging
         if self.memory_file.exists():
             try:
                 with open(self.memory_file) as f:
                     data = json.load(f)
                     self.file_hashes = data.get("hashes", {})
                     self.skip_files = set(data.get("skip", []))
-            except (OSError, json.JSONDecodeError) as e:    # guardian: Add error context logging
+            except (OSError, json.JSONDecodeError) as e:  # guardian: Add error context logging
                 print(f"      [DEBUG] Failed to load memory: {e}")
 
     def _save_memory(self):
@@ -382,14 +388,17 @@ class ValidationContext:
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         self.results[key] = {"passed": passed, "details": details, "agent": agent}
-        if not passed:    # guardian: File operations with encoding need error-specific handling
+        if not passed:  # guardian: File operations with encoding need error-specific handling
             print(f"   [{agent}] Key {key}: FAIL")
 
     def get_file_content(self, file_path: str) -> str:
         try:
             with open(file_path, encoding="utf-8") as f:
                 return f.read()
-        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ):  # guardian: File operations with encoding need error-specific handling
             return ""
 
     def write_compliant_file(self, path: str, content: str) -> bool:
@@ -422,12 +431,16 @@ class ValidationContext:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"resilient_mutation:{agent_name}",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"resilient_mutation:{agent_name}",
         )
         try:
             prompt = f"Agent: {agent_name}\nTask: {Task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(
-                self._client.models.generate_content, model=self.model_id, contents=[prompt],
+                self._client.models.generate_content,
+                model=self.model_id,
+                contents=[prompt],
             )
             await self.budget.track(prompt, response.text)
             return _clean_llm_code(response.text)
@@ -491,14 +504,20 @@ class ValidationContext:
             try:
                 with open(file_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):    # guardian: Parsing and encoding errors need separate handling strategies
+                for node in ast.walk(
+                    tree
+                ):  # guardian: Parsing and encoding errors need separate handling strategies
                     if isinstance(node, ast.Import):
                         for n in node.names:
                             self.graph.graph[file_path]["imports"].append(n.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             self.graph.graph[file_path]["imports"].append(node.module)
-            except (OSError, SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies
+            except (
+                OSError,
+                SyntaxError,
+                UnicodeDecodeError,
+            ):  # guardian: Parsing and encoding errors need separate handling strategies
                 continue
         for file, data in self.graph.graph.items():
             for imp in data["imports"]:

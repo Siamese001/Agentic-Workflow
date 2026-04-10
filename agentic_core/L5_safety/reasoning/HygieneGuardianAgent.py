@@ -95,7 +95,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -220,7 +224,8 @@ class HygieneGuardianAgent(SovereignBaseAgent):
     TEMP_EXTENSIONS = {".tmp", ".temp", ".swp", ".swo"}
     DEBUG_PRINT_PATTERN = re.compile("^\\s*print\\s*\\(", re.MULTILINE)
     COMMENTED_CODE_PATTERN = re.compile(
-        "^\\s*#\\s*(def|class|import|from|if|for|while|try)\\s+", re.MULTILINE,
+        "^\\s*#\\s*(def|class|import|from|if|for|while|try)\\s+",
+        re.MULTILINE,
     )
     COPY_PATTERNS = [
         re.compile("^Copy of (.+)$", re.IGNORECASE),
@@ -295,14 +300,17 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 "details": "Exception during healing",
                 "artifacts": [],
                 "errors": [str(e)],
-            }    # guardian: File operations with encoding need error-specific handling
+            }  # guardian: File operations with encoding need error-specific handling
 
     def _is_empty_file(self, file_path: Path) -> bool:
         """Check if file is empty or contains only whitespace."""
         try:
             content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
-        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ):  # guardian: File operations with encoding need error-specific handling
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
@@ -322,14 +330,20 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             lines = content.split("\n")
             debug_lines = []
             for i, line in enumerate(lines, 1):
-                stripped = line.strip()    # guardian: Parsing and encoding errors need separate handling strategies
+                stripped = (
+                    line.strip()
+                )  # guardian: Parsing and encoding errors need separate handling strategies
                 if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
                     continue
                 if self.DEBUG_PRINT_PATTERN.search(line):
                     if "logger" not in line.lower() and "log(" not in line.lower():
                         debug_lines.append(i)
             return debug_lines
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            OSError,
+            UnicodeDecodeError,
+            SyntaxError,
+        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to scan for debug statements in {file_path.name}: {e}")
             return []
 
@@ -339,14 +353,18 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
         Returns:
             (has_commented_code, num_lines)
-        """    # guardian: Parsing and encoding errors need separate handling strategies
+        """  # guardian: Parsing and encoding errors need separate handling strategies
         try:
             content = file_path.read_text(encoding="utf-8")
             matches = self.COMMENTED_CODE_PATTERN.findall(content)
             if len(matches) > 5:
                 return (True, len(matches))
             return (False, 0)
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            OSError,
+            UnicodeDecodeError,
+            SyntaxError,
+        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to scan for commented code in {file_path.name}: {e}")
             return (False, 0)
 

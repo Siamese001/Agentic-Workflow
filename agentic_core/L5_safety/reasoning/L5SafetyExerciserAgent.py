@@ -128,7 +128,10 @@ def _get_layer_entry():
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import get_validated_project_root
-from agentic_core.L5_safety.config.structure_blueprint import has_forbidden_layer_prefix, is_broken_backup_file
+from agentic_core.L5_safety.config.structure_blueprint import (
+    has_forbidden_layer_prefix,
+    is_broken_backup_file,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -215,7 +218,7 @@ def _get_hierarchy_agent() -> Any:
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         return HierarchyAgent
-# guardian: allow-silent-degradation - Optional hierarchy healer
+    # guardian: allow-silent-degradation - Optional hierarchy healer
     except ImportError:
         return None
 
@@ -227,7 +230,7 @@ def _get_naming_agent() -> Any:
         from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
 
         return NamingAgent
-# guardian: allow-silent-degradation - Optional naming agent
+    # guardian: allow-silent-degradation - Optional naming agent
     except ImportError:
         return None
 
@@ -239,7 +242,7 @@ def _get_import_agent() -> Any:
         from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
         return create_legacy_import_healer
-# guardian: allow-silent-degradation - Optional code healer
+    # guardian: allow-silent-degradation - Optional code healer
     except ImportError:
         return None
 
@@ -251,7 +254,7 @@ def _get_RedTeamAgent() -> Any:
         from agentic_core.L5_safety.reasoning.RedTeamAgent import RedTeamAgent
 
         return RedTeamAgent
-# guardian: allow-silent-degradation - Optional red team agent
+    # guardian: allow-silent-degradation - Optional red team agent
     except ImportError:
         return None
 
@@ -263,7 +266,7 @@ def _get_healer_agent() -> Any:
         from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent
 
         return StructuralHealerAgent
-# guardian: allow-silent-degradation - Optional structural healer
+    # guardian: allow-silent-degradation - Optional structural healer
     except ImportError:
         return None
 
@@ -275,7 +278,7 @@ def log_event(event_type: str, payload: dict) -> Any:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
 
         _log_event(event_type, payload)
-# guardian: allow-silent-degradation - Optional runtime logging
+    # guardian: allow-silent-degradation - Optional runtime logging
     except (ImportError, AttributeError) as e:
         print(f"[L5SafetyExerciserAgent] Event logging unavailable ({type(e).__name__}): {event_type}")
 
@@ -390,14 +393,14 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
 
     def _exercise_guardrail_limits(self) -> str:
         """Cycle rate limit / mutation guard (in-memory counter)."""
-        return "Guardrail probe: Rate limit dry-check passed"    # guardian: AssertionError should be handled with specific context
+        return "Guardrail probe: Rate limit dry-check passed"  # guardian: AssertionError should be handled with specific context
 
     # guardian: allow-type-erasure
     def heal_repository(self, dry_run: bool = True, **kwargs) -> dict:
         """Repository healing with parent chain invocation."""
         try:
             result = super().heal_repository(dry_run=dry_run, **kwargs)
-        except AttributeError:    # guardian: AssertionError should be handled with specific context
+        except AttributeError:  # guardian: AssertionError should be handled with specific context
             result = {}
         return {"healed": 0, "skipped": 0, "parent": result}
 

@@ -393,10 +393,16 @@ def get_repo_root() -> Path:
     """Determine repository root via git or fallback to .git search."""
     try:
         result = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True,
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
         )
         return Path(result.stdout.strip())
-    except (subprocess.CalledProcessError, FileNotFoundError):    # guardian: File operations should check existence before access
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+    ):  # guardian: File operations should check existence before access
         current = Path.cwd()
         while current != current.parent:
             if (current / ".git").exists():

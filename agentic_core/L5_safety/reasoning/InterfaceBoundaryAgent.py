@@ -201,13 +201,17 @@ class InterfaceBoundaryAgent(SovereignBaseAgent):
 
         _emit_snapshots_state(str(_uuid.uuid4()), "InterfaceBoundaryAgent.heal_repository", "state_snapshot")
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "InterfaceBoundaryAgent.heal_repository", "L5_POLICY",
+            str(uuid.uuid4()),
+            "InterfaceBoundaryAgent.heal_repository",
+            "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "InterfaceBoundaryAgent.heal_repository",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "InterfaceBoundaryAgent.heal_repository",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
