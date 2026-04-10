@@ -3,6 +3,7 @@ trigger: glob
 globs:
   - "**/test_*_adg.py"
   - "tools/adg/**"
+description: Apply when reading or writing ADG test files or tools to enforce mandatory use of adg_test_accelerator.py for gap analysis, scoped test selection, and parallel grouping.
 ---
 
 # ADG Test Accelerator Mandatory Enforcement
