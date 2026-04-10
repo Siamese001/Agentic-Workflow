@@ -130,6 +130,7 @@ OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
 SCRIPTS_DIR: Final[str] = "scripts"
 SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
 TESTS_DIR: Final[str] = "tests"
+WINDSURF_SCRIPTS_DIR: Final[str] = ".windsurf/scripts"
 TESTS_UNIT_DIR: Final[str] = "tests/unit"
 TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
@@ -553,6 +554,7 @@ __all__ = [
     "SOVEREIGN_EXCLUDED_FOLDERS",
     "TESTS_DIR",
     "VARIABLE_DEPTH_SUBFOLDERS",
+    "WINDSURF_SCRIPTS_DIR",
     "get_validated_project_root",
 ]
 
@@ -610,6 +612,7 @@ __all__ = [
     "TESTS_DIR",
     "TESTS_UNIT_DIR",
     "THRESHOLD",
+    "WINDSURF_SCRIPTS_DIR",
     "HEALING_CONFIDENCE_X",
     "HEALING_CONFIDENCE_Y",
     "SSOT_SCORE_THRESHOLD_DET",

@@ -83,6 +83,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
     TESTS_DIR,
     TOOLS_DIR,
+    WINDSURF_SCRIPTS_DIR,
     get_apps_directories,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
@@ -291,9 +292,7 @@ logger = logging.getLogger(__name__)
 # This ensures new apps_* directories are automatically included in scans
 _APPS_SCAN_ROOTS: tuple[str, ...] = tuple(get_apps_directories())
 
-_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
-    AGENTIC_CORE_DIR,
-) + _APPS_SCAN_ROOTS
+_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (AGENTIC_CORE_DIR,) + _APPS_SCAN_ROOTS
 
 _NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     INFRASTRUCTURE_DIR,
@@ -301,6 +300,7 @@ _NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     TOOLS_DIR,
     TESTS_DIR,  # H1
     OPS_SCRIPTS_DIR,  # H1
+    WINDSURF_SCRIPTS_DIR,  # Cascade hook scripts
 )
 
 # Phase 1.1: Coverage-only scan roots for test files with structural_only mode
@@ -389,7 +389,10 @@ def _get_visitors_for_mode(scan_mode: str, file_path: str) -> list[str]:
 
 
 def _get_cache_aware_scan_mode(
-    cache_path: Path | None, repo_root: Path, include_tests: bool = True, force_mode: str | None = None,
+    cache_path: Path | None,
+    repo_root: Path,
+    include_tests: bool = True,
+    force_mode: str | None = None,
 ) -> str:
     """Determine optimal scan mode based on cache state and file changes.
 
@@ -448,7 +451,9 @@ def _get_cache_aware_scan_mode(
 
 
 def _should_use_incremental_scan(
-    cache_path: Path | None, repo_root: Path, changed_files: list[str] | None = None,
+    cache_path: Path | None,
+    repo_root: Path,
+    changed_files: list[str] | None = None,
 ) -> bool:
     """Determine if incremental scanning should be used.
 
@@ -549,6 +554,9 @@ def _is_scannable_static_path(rel_path: str, include_tests: bool, scan_mode: str
     if not root_matched:
         return False
     if include_tests:
+        return True
+    # Windsurf hook scripts are operational infrastructure — exempt from runtime-only subdir filter
+    if normalized.startswith(f"{WINDSURF_SCRIPTS_DIR}/"):
         return True
     parts = tuple(part for part in normalized.split("/") if part)
     return not any(part in _RUNTIME_ONLY_SCAN_SUBDIRS for part in parts)
@@ -826,7 +834,9 @@ class ScanResult:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ScanResult.canonical_edge_text",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ScanResult.canonical_edge_text",
         )
 
         lines = []
@@ -895,7 +905,15 @@ _EDGE_FIELD_NAMES: frozenset[str] = frozenset(f.name for f in fields(Edge))
 # Wave H: sort key — total order over all 7 canonical text fields to ensure digest stability.
 # Must match canonical_edge_text() field order: from|rel|to|kind|file|line|symbol
 # A 5-field key left edge_kind/symbol as tie-breakers resolved by set() iteration (PYTHONHASHSEED) → non-deterministic digest.
-_EDGE_SORT_KEY = lambda e: (e.from_name, e.relation_type, e.to_name, e.edge_kind, e.source_file, e.line_no, e.symbol or "")  # noqa: E731
+_EDGE_SORT_KEY = lambda e: (
+    e.from_name,
+    e.relation_type,
+    e.to_name,
+    e.edge_kind,
+    e.source_file,
+    e.line_no,
+    e.symbol or "",
+)  # noqa: E731
 
 
 def _kway_merge_exact(sorted_streams: list[list[Edge]]) -> list[Edge]:
@@ -916,13 +934,23 @@ def _kway_merge_exact(sorted_streams: list[list[Edge]]) -> list[Edge]:
     result: list[Edge] = []
     for edge in heapq.merge(*sorted_streams, key=_EDGE_SORT_KEY):
         eq_key = (
-            edge.from_name, edge.relation_type, edge.to_name, edge.edge_kind,
-            edge.source_file, edge.line_no, edge.symbol,
-            edge.semantic_type, edge.confidence,
-            edge.source_span_start, edge.source_span_end,
-            edge.source_span_line, edge.source_span_column,
-            edge.target_span_start, edge.target_span_end,
-            edge.target_span_line, edge.target_span_column,
+            edge.from_name,
+            edge.relation_type,
+            edge.to_name,
+            edge.edge_kind,
+            edge.source_file,
+            edge.line_no,
+            edge.symbol,
+            edge.semantic_type,
+            edge.confidence,
+            edge.source_span_start,
+            edge.source_span_end,
+            edge.source_span_line,
+            edge.source_span_column,
+            edge.target_span_start,
+            edge.target_span_end,
+            edge.target_span_line,
+            edge.target_span_column,
             edge.dynamic_resolution,
         )
         if eq_key not in seen:
@@ -1197,7 +1225,9 @@ _MAX_BLOCKS_PER_FUNC = 10  # cap block nodes per function
 # Walks AST and collects type annotations for symbols. Returns a dict
 # mapping canonical symbol name → inferred type string.
 def _iter_python_files(
-    repo_root: Path, include_tests: bool = True, scan_mode: str = "full",
+    repo_root: Path,
+    include_tests: bool = True,
+    scan_mode: str = "full",
 ) -> Iterator[Path]:
     """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order.
 
@@ -2195,7 +2225,11 @@ class ADGStaticScanner:
                 had_error = False
             else:
                 file_edges, had_error, file_type_map, file_surface_evidence = _scan_file(
-                    filepath, self.repo_root, self.include_tests, shared_normalizer, self.scan_mode,
+                    filepath,
+                    self.repo_root,
+                    self.include_tests,
+                    shared_normalizer,
+                    self.scan_mode,
                 )
                 if not had_error:
                     cache.put(rel, fhash, file_edges, file_type_map, file_surface_evidence)
@@ -2204,7 +2238,9 @@ class ADGStaticScanner:
                 syntax_error_count += 1
                 syntax_errors.append(rel)
                 # Fail fast on first syntax error to prevent wasted scanning
-                raise SyntaxError(f"Syntax error in {rel}: parsing failed. Fix all syntax errors before running ADG generation.")
+                raise SyntaxError(
+                    f"Syntax error in {rel}: parsing failed. Fix all syntax errors before running ADG generation."
+                )
             else:
                 manifest.parsed_module_count += 1
                 all_type_surface.update(file_type_map)
