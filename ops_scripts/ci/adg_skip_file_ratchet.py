@@ -7,7 +7,7 @@ to silently erode grep-ban enforcement.
 
 This gate:
   1. Counts all # adg-grep-ban: skip-file directives in tracked Python files.
-  2. Compares against the baseline in ops_scripts/hooks/skip_file_budget.json.
+  2. Compares against the baseline in ops_scripts/ci/skip_file_budget.json.
   3. FAILS if count > baseline (new skip-file added without updating the baseline).
   4. Prints a WARNING (non-blocking) if count < baseline (budget shrank — tighten it).
 
@@ -44,7 +44,7 @@ emit_determinism_digest("trace_adg_skip_file_ratchet", "adg_skip_file_ratchet_co
 _emit_validated_by_safety_plane("p1", "adg_skip_file_ratchet", "safety_validation")
 
 ROOT = Path(__file__).resolve().parents[2]
-BUDGET_FILE = ROOT / "ops_scripts" / "hooks" / "skip_file_budget.json"
+BUDGET_FILE = ROOT / "ops_scripts" / "ci" / "skip_file_budget.json"
 
 _DIRECTIVE = "adg-grep-ban: skip-file"
 
@@ -57,6 +57,7 @@ def _count_skip_files(root: Path) -> list[str]:
         capture_output=True,
         encoding="utf-8",
         timeout=60,
+        check=False,
     )
     hits: list[str] = []
     for rel in r.stdout.splitlines():
@@ -68,7 +69,7 @@ def _count_skip_files(root: Path) -> list[str]:
                 if _DIRECTIVE in line.lower():
                     hits.append(rel)
                     break
-        except OSError:    # guardian: Add error context logging
+        except OSError:  # guardian: Add error context logging
             pass
     return sorted(hits)
 
@@ -124,7 +125,7 @@ def main(update: bool = False) -> int:
             "\nTo legitimately add a skip-file directive:\n"
             "  1. Confirm the file truly needs it (test fixture with banned patterns as literals).\n"
             "  2. Run:  python ops_scripts/ci/adg_skip_file_ratchet.py --update\n"
-            "  3. Commit both the file AND ops_scripts/hooks/skip_file_budget.json.\n",
+            "  3. Commit both the file AND ops_scripts/ci/skip_file_budget.json.\n",
             file=sys.stderr,
         )
         return 1

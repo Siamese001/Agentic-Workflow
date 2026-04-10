@@ -1,5 +1,5 @@
 {
-  "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by ops_scripts/hooks/windsurf/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global.",
+  "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by .windsurf/scripts/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global.",
   "mcpServers": {
     "GitKraken": {
       "command": "C:/Users/amita/AppData/Local/GitKrakenCLI/gk.exe",
