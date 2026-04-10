@@ -221,26 +221,8 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "determinism": {
                 "purpose": "Determinism guards, replay guards, and canonical digest calculators.",
             },
-            "engines": {
-                "purpose": "Execution engines and processing pipelines.",
-            },
             "healers": {
                 "purpose": "Self-healing strategies for execution failures.",
-            },
-            "scripts": {
-                "purpose": "Execution-layer operational scripts.",
-            },
-            "tools": {
-                "purpose": "Standardized tool implementations — strict naming enforced.",
-                "allowed_suffixes": [
-                    "_impl.py",
-                    "_agent.py",
-                    "_client.py",
-                    "_util.py",
-                    "_service.py",
-                    "_executor.py",
-                ],
-                "forbidden_suffixes": ["_tool.py"],
             },
         },
         "routing_rules": {

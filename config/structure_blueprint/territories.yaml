@@ -166,6 +166,10 @@ territories:
           reasoning: {purpose: "Decision agents"}
           enforcement: {purpose: "Guardrails"}
           utils: {purpose: "Helpers"}
+          audit: {purpose: "Execution audit trails and compliance logging"}
+          capability: {purpose: "Capability token promotion and execution capability gates"}
+          determinism: {purpose: "Determinism guards, replay guards, and canonical digest calculators"}
+          healers: {purpose: "Self-healing strategies for execution failures"}
       L3_orchestration:
         depth: 2
         purpose: "Multi-agent coordination, workflow state"
