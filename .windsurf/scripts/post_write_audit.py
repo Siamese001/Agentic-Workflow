@@ -28,7 +28,7 @@ from pathlib import Path
 FAIL_POLICY = "open"
 MCP_CONFIG_SUFFIX = "mcp_config.json"
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "mcp_lint_audit.jsonl"
 
 _SHELL_ENV_VAR_RE = re.compile(r"\$\{[A-Z_][A-Z0-9_]*:-[^}]*\}")

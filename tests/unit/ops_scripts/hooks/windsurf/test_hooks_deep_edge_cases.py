@@ -29,7 +29,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +60,7 @@ class TestPreRunGatePayloadShapes:
     """Non-standard payload shapes must never crash — fail-closed or allow."""
 
     def _run(self, raw: str) -> int:
-        from ops_scripts.hooks.windsurf.pre_run_gate import main
+        from pre_run_gate import main
 
         with patch("sys.stdin", StringIO(raw)):
             return main()
@@ -104,7 +104,7 @@ class TestPreRunGatePowerShellVariants:
     """Every PowerShell spelling that should be blocked."""
 
     def _check(self, cmd: str) -> int:
-        from ops_scripts.hooks.windsurf.pre_run_gate import check_command
+        from pre_run_gate import check_command
 
         return check_command(cmd)
 
@@ -156,7 +156,7 @@ class TestPreRunGateFullSuiteRegex:
     """Full-suite block: coverage of all pytest path variants."""
 
     def _run_with_adg_active(self, cmd: str) -> int:
-        from ops_scripts.hooks.windsurf.pre_run_gate import check_command
+        from pre_run_gate import check_command
 
         with patch.dict(os.environ, {"ADG_REPAIR_ACTIVE": "1"}):
             return check_command(cmd)
@@ -177,14 +177,14 @@ class TestPreRunGateFullSuiteRegex:
         assert self._run_with_adg_active("pytest tests/unit/ops_scripts/test_foo.py") == 0
 
     def test_pytest_full_suite_no_env_not_blocked(self):
-        from ops_scripts.hooks.windsurf.pre_run_gate import check_command
+        from pre_run_gate import check_command
 
         with patch.dict(os.environ, {}, clear=True):
             result = check_command("pytest tests/unit")
         assert result == 0
 
     def test_adg_repair_active_empty_string_not_blocked(self):
-        from ops_scripts.hooks.windsurf.pre_run_gate import check_command
+        from pre_run_gate import check_command
 
         with patch.dict(os.environ, {"ADG_REPAIR_ACTIVE": ""}):
             assert check_command("pytest tests/unit") == 0
@@ -192,7 +192,7 @@ class TestPreRunGateFullSuiteRegex:
     def test_adg_repair_active_string_0_still_blocks(self):
         # "0" is a non-empty string — truthy in Python, so blocks.
         # This is documented/intentional behaviour: set env var to empty to deactivate.
-        from ops_scripts.hooks.windsurf.pre_run_gate import check_command
+        from pre_run_gate import check_command
 
         with patch.dict(os.environ, {"ADG_REPAIR_ACTIVE": "0"}):
             assert check_command("pytest tests/unit") == 2
@@ -207,7 +207,7 @@ class TestPreWriteGatePayloadShapes:
     """Non-standard shapes must not crash."""
 
     def _run(self, raw: str) -> int:
-        from ops_scripts.hooks.windsurf.pre_write_gate import main
+        from pre_write_gate import main
 
         with patch("sys.stdin", StringIO(raw)):
             with patch("sys.argv", ["pre_write_gate.py"]):
@@ -261,7 +261,7 @@ class TestPreWriteGateCommentFalsePositives:
     """Patterns inside comments must NOT trigger anti-pattern violations."""
 
     def _scan(self, code: str) -> list:
-        from ops_scripts.hooks.windsurf.pre_write_gate import scan_antipatterns
+        from pre_write_gate import scan_antipatterns
 
         return scan_antipatterns(code)
 
@@ -307,7 +307,7 @@ class TestPreWriteGateSubprocessNestedParen:
     """Nested parens in subprocess args must not cause false timeout violations."""
 
     def _scan(self, code: str) -> list:
-        from ops_scripts.hooks.windsurf.pre_write_gate import scan_antipatterns
+        from pre_write_gate import scan_antipatterns
 
         return scan_antipatterns(code)
 
@@ -347,7 +347,7 @@ class TestPreWriteGateMultipleViolations:
     """Multiple violations in one edit must ALL be reported, return code is 2."""
 
     def _run_payload(self, new_string: str) -> tuple:
-        from ops_scripts.hooks.windsurf.pre_write_gate import main
+        from pre_write_gate import main
 
         payload = {
             "tool_info": {"file_path": "module.py", "edits": [{"old_string": "", "new_string": new_string}]}
@@ -378,7 +378,7 @@ class TestPreWriteGateArgvFastPath:
     """argv[1] file-type fast path must behave correctly."""
 
     def _run_with_argv(self, argv_path: str, payload: dict) -> int:
-        from ops_scripts.hooks.windsurf.pre_write_gate import main
+        from pre_write_gate import main
 
         with patch("sys.stdin", _stdin(payload)):
             with patch("sys.argv", ["pre_write_gate.py", argv_path]):
@@ -427,7 +427,7 @@ class TestPreMcpGatePayloadShapes:
     """Non-dict payloads must never block (fail-open for non-ADG assumed)."""
 
     def _run(self, raw: str) -> int:
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         with patch("sys.stdin", StringIO(raw)):
             return main()
@@ -455,7 +455,7 @@ class TestPreMcpGateRecoveryToolCaseSensitivity:
     """Recovery tool whitelist is exact-case — wrong case goes to gate."""
 
     def _run_adg(self, tool_name: str, repo_root: Path) -> int:
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         # Provision a real sqlite so _has_adg_sqlite returns True and probes pass.
         adg_dir = repo_root / "artifacts" / "adg"
@@ -463,7 +463,7 @@ class TestPreMcpGateRecoveryToolCaseSensitivity:
         _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": tool_name}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", repo_root):
+            with patch("pre_mcp_gate.REPO_ROOT", repo_root):
                 return main()
 
     def test_adg_health_lowercase_whitelisted(self, tmp_path):
@@ -492,7 +492,7 @@ class TestPreMcpGateStalenessThresholds:
     """Snapshot age is advisory-only — never blocks regardless of age."""
 
     def _run_with_snapshot_age(self, age_seconds: float, tmp_path: Path) -> int:
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True, exist_ok=True)
@@ -503,7 +503,7 @@ class TestPreMcpGateStalenessThresholds:
         os.utime(snap, (mtime, mtime))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 return main()
 
     def test_age_60s_allowed(self, tmp_path):
@@ -522,18 +522,18 @@ class TestPreMcpGateStalenessThresholds:
         assert self._run_with_snapshot_age(86400.0, tmp_path) == 0
 
     def test_no_snapshot_file_always_allowed(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main as _mcp_main
+        from pre_mcp_gate import main as _mcp_main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
         _create_real_sqlite(adg_dir, "adg_indexed_test.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert _mcp_main() == 0
 
     def test_multiple_snapshots_newest_wins(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
@@ -547,7 +547,7 @@ class TestPreMcpGateStalenessThresholds:
         os.utime(new_snap, (now - 300, now - 300))
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert main() == 0  # newest snapshot reported, always allowed
 
 
@@ -556,7 +556,7 @@ class TestPreMcpGateLockDetection:
 
     def test_nonzero_wal_with_healthy_db_allowed_for_read(self, tmp_path):
         """Non-zero WAL is normal in WAL mode — read-only tools must pass."""
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
@@ -564,12 +564,12 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-wal")).write_bytes(b"\x00" * 32)
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert main() == 0
 
     def test_nonzero_journal_with_healthy_db_allowed_for_read(self, tmp_path):
         """Journal file presence does not block if DB is readable."""
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
@@ -577,12 +577,12 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-journal")).write_bytes(b"\x00" * 32)
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert main() == 0
 
     def test_real_write_contention_blocks_write_tool(self, tmp_path):
         """BEGIN IMMEDIATE contention blocks write-affecting tools."""
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
@@ -593,14 +593,14 @@ class TestPreMcpGateLockDetection:
         try:
             payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_rebuild"}}
             with patch("sys.stdin", _stdin(payload)):
-                with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+                with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                     assert main() == 2
         finally:
             holder.rollback()
             holder.close()
 
     def test_zero_byte_wal_does_not_block(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
@@ -608,22 +608,22 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-wal")).write_text("")  # zero-byte = normal WAL mode
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert main() == 0
 
     def test_no_lock_file_allowed(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
         _create_real_sqlite(adg_dir, "adg_indexed_20260101.sqlite")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert main() == 0
 
     def test_lock_check_skipped_for_recovery_tools(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import main
+        from pre_mcp_gate import main
 
         adg_dir = tmp_path / "artifacts" / "adg"
         adg_dir.mkdir(parents=True)
@@ -631,7 +631,7 @@ class TestPreMcpGateLockDetection:
         (adg_dir / (db.name + "-wal")).write_text("")
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_health"}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                 assert main() == 0  # recovery tool bypasses lock check
 
 
@@ -644,19 +644,15 @@ class TestPrePromptClassifierFieldAliasing:
     """user_prompt vs prompt field, priority, and default tier."""
 
     def _classify(self, tool_info: dict) -> tuple:
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+        from pre_prompt_classifier import main
         import io
 
         payload = {"tool_info": tool_info}
         with patch("sys.stdin", _stdin(payload)):
-            with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red", return_value=False
-            ):
-                with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_up", return_value=True
-                ):
+            with patch("pre_prompt_classifier.check_adg_health_red", return_value=False):
+                with patch("pre_prompt_classifier.check_redis_up", return_value=True):
                     with patch(
-                        "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_adg_hot",
+                        "pre_prompt_classifier.check_redis_adg_hot",
                         return_value=True,
                     ):
                         stderr_cap = io.StringIO()
@@ -691,19 +687,19 @@ class TestPrePromptClassifierFieldAliasing:
         assert "[pre_prompt_classifier] Tier:" in stderr
 
     def test_list_payload_returns_0(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+        from pre_prompt_classifier import main
 
         with patch("sys.stdin", _stdin([{"user_prompt": "refactor"}])):
             assert main() == 0
 
     def test_string_payload_returns_0(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+        from pre_prompt_classifier import main
 
         with patch("sys.stdin", _stdin("refactor the architecture")):
             assert main() == 0
 
     def test_tool_info_non_dict_returns_0(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+        from pre_prompt_classifier import main
 
         with patch("sys.stdin", _stdin({"tool_info": "refactor the architecture"})):
             assert main() == 0
@@ -713,7 +709,7 @@ class TestPrePromptClassifierTierKeywordPriority:
     """Keyword scoring priority: T3 > T2x2 > T1 > T0 > single T2."""
 
     def _tier(self, prompt: str) -> str:
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import classify_tier
+        from pre_prompt_classifier import classify_tier
 
         return classify_tier(prompt)
 
@@ -733,7 +729,7 @@ class TestPrePromptClassifierTierKeywordPriority:
         assert self._tier("update the README") == "T2"
 
     def test_empty_prompt_defaults_t1(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import classify_tier
+        from pre_prompt_classifier import classify_tier
 
         # classify_tier is called only when prompt is non-empty, but test directly
         assert classify_tier("random words with no keywords") == "T1"
@@ -747,23 +743,19 @@ class TestPrePromptClassifierPlanWarning:
     """Missing plan warns but does NOT block."""
 
     def _run(self, prompt: str, plans_exist: bool) -> tuple:
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+        from pre_prompt_classifier import main
         import io
 
         payload = {"tool_info": {"user_prompt": prompt}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red", return_value=False
-            ):
-                with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_up", return_value=True
-                ):
+            with patch("pre_prompt_classifier.check_adg_health_red", return_value=False):
+                with patch("pre_prompt_classifier.check_redis_up", return_value=True):
                     with patch(
-                        "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_adg_hot",
+                        "pre_prompt_classifier.check_redis_adg_hot",
                         return_value=True,
                     ):
                         with patch(
-                            "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_plan_exists",
+                            "pre_prompt_classifier.check_plan_exists",
                             return_value=plans_exist,
                         ):
                             stderr_cap = io.StringIO()
@@ -791,14 +783,12 @@ class TestPostRunAuditPayloadShapes:
     """Non-dict payloads must not crash — always return 0."""
 
     def _run(self, raw: str, tmp_path: Path) -> int:
-        from ops_scripts.hooks.windsurf.post_run_audit import main
+        from post_run_audit import main
 
         log = tmp_path / "spawned_processes.jsonl"
         with patch("sys.stdin", StringIO(raw)):
-            with patch("ops_scripts.hooks.windsurf.post_run_audit.PROCESS_LOG", log):
-                with patch(
-                    "ops_scripts.hooks.windsurf.post_run_audit._get_pid_best_effort", return_value=None
-                ):
+            with patch("post_run_audit.PROCESS_LOG", log):
+                with patch("post_run_audit._get_pid_best_effort", return_value=None):
                     return main()
 
     def test_list_payload_returns_0(self, tmp_path):
@@ -815,13 +805,11 @@ class TestPostRunAuditPayloadShapes:
 
     def test_tool_info_string_returns_0_no_log(self, tmp_path):
         log = tmp_path / "spawned_processes.jsonl"
-        from ops_scripts.hooks.windsurf.post_run_audit import main
+        from post_run_audit import main
 
         with patch("sys.stdin", _stdin({"tool_info": "git status"})):
-            with patch("ops_scripts.hooks.windsurf.post_run_audit.PROCESS_LOG", log):
-                with patch(
-                    "ops_scripts.hooks.windsurf.post_run_audit._get_pid_best_effort", return_value=None
-                ):
+            with patch("post_run_audit.PROCESS_LOG", log):
+                with patch("post_run_audit._get_pid_best_effort", return_value=None):
                     rc = main()
         assert rc == 0
         # Non-dict tool_info → no log written
@@ -842,10 +830,10 @@ class TestPostMcpAuditPayloadShapes:
     """Non-dict payloads must not crash — always return 0."""
 
     def _run(self, raw: str, log_path: Path) -> int:
-        from ops_scripts.hooks.windsurf.post_mcp_audit import main
+        from post_mcp_audit import main
 
         with patch("sys.stdin", StringIO(raw)):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log_path):
+            with patch("post_mcp_audit.AUDIT_LOG", log_path):
                 return main()
 
     def test_list_payload_returns_0(self, tmp_path):
@@ -862,30 +850,30 @@ class TestPostMcpAuditPayloadShapes:
 
     def test_tool_info_non_dict_returns_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        from ops_scripts.hooks.windsurf.post_mcp_audit import main
+        from post_mcp_audit import main
 
         with patch("sys.stdin", _stdin({"tool_info": "adg_sqlite"})):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 rc = main()
         assert rc == 0
         assert not log.exists()
 
     def test_duration_ms_zero_logged(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        from ops_scripts.hooks.windsurf.post_mcp_audit import main
+        from post_mcp_audit import main
 
         payload = {
             "tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node", "duration_ms": 0}
         }
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 main()
         record = json.loads(log.read_text())
         assert record["duration_ms"] == 0
 
     def test_duration_ms_float_logged(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        from ops_scripts.hooks.windsurf.post_mcp_audit import main
+        from post_mcp_audit import main
 
         payload = {
             "tool_info": {
@@ -895,18 +883,18 @@ class TestPostMcpAuditPayloadShapes:
             }
         }
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 main()
         record = json.loads(log.read_text())
         assert record["duration_ms"] == 123.456
 
     def test_both_fields_empty_string_logged(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        from ops_scripts.hooks.windsurf.post_mcp_audit import main
+        from post_mcp_audit import main
 
         payload = {"tool_info": {}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 main()
         record = json.loads(log.read_text())
         assert record["mcp_server_name"] == ""
@@ -923,10 +911,10 @@ class TestPostWriteAuditPayloadShapes:
     """Non-dict payloads must not crash — always return 0."""
 
     def _run(self, raw: str) -> int:
-        from ops_scripts.hooks.windsurf.post_write_audit import main
+        from post_write_audit import main
 
         with patch("sys.stdin", StringIO(raw)):
-            with patch("ops_scripts.hooks.windsurf.post_write_audit.AUDIT_LOG", Path("/dev/null")):
+            with patch("post_write_audit.AUDIT_LOG", Path("/dev/null")):
                 return main()
 
     def test_list_payload_returns_0(self):
@@ -946,7 +934,7 @@ class TestPostWriteAuditEnvVarFormats:
     """Shell env var format must warn; Windsurf-native format must not."""
 
     def _lint(self, file_path: str, config_content: str, edits: list) -> list:
-        from ops_scripts.hooks.windsurf.post_write_audit import lint_mcp_config
+        from post_write_audit import lint_mcp_config
 
         with patch("pathlib.Path.exists", return_value=True):
             with patch("pathlib.Path.read_text", return_value=config_content):
@@ -975,14 +963,14 @@ class TestPostWriteAuditEnvVarFormats:
         )
 
     def test_finding_count_matches_findings_length(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_write_audit import main
+        from post_write_audit import main
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         mcp_file = tmp_path / "mcp_config.json"
         mcp_file.write_text(json.dumps({"mcpServers": {}}))  # missing server entries
         payload = {"tool_info": {"file_path": str(mcp_file), "edits": []}}
         with patch("sys.stdin", _stdin(payload)):
-            with patch("ops_scripts.hooks.windsurf.post_write_audit.AUDIT_LOG", log):
+            with patch("post_write_audit.AUDIT_LOG", log):
                 main()
         if log.exists():
             record = json.loads(log.read_text().strip())
@@ -1004,7 +992,7 @@ class TestPostCascadeCleanupRotationLimits:
         path.write_text("\n".join(f"line {i}" for i in range(n_lines)) + "\n")
 
     def test_process_log_limit_is_500(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         log = tmp_path / "spawned_processes.jsonl"
         self._make_log(log, 600)
@@ -1013,7 +1001,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 500
 
     def test_mcp_tool_log_limit_is_500(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         log = tmp_path / "mcp_tool_audit.jsonl"
         self._make_log(log, 600)
@@ -1022,7 +1010,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 500
 
     def test_mcp_lint_log_limit_is_200_not_500(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 300)
@@ -1031,7 +1019,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 200, "mcp_lint_audit has a 200-line limit, not 500"
 
     def test_at_exactly_limit_no_rotation(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 200)
@@ -1040,7 +1028,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert log.read_text() == original, "At exactly limit, file must not be modified"
 
     def test_under_limit_no_rotation(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         log = tmp_path / "spawned_processes.jsonl"
         self._make_log(log, 10)
@@ -1048,7 +1036,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(log.read_text().strip().splitlines()) == 10
 
     def test_rotation_keeps_newest_lines(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 250)
@@ -1059,7 +1047,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert lines[-1] == "line 249"
 
     def test_session_summary_has_audit_line_counts_keyed_by_filename(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         summary = run_cleanup(tmp_path)
         assert "audit_line_counts" in summary
@@ -1069,18 +1057,18 @@ class TestPostCascadeCleanupRotationLimits:
         assert "mcp_lint_audit.jsonl" in counts
 
     def test_session_summary_has_timestamp(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import run_cleanup
+        from post_cascade_cleanup import run_cleanup
 
         summary = run_cleanup(tmp_path)
         assert "timestamp" in summary
         datetime.fromisoformat(summary["timestamp"].replace("Z", "+00:00"))
 
     def test_main_returns_0_even_on_oserror(self, tmp_path):
-        from ops_scripts.hooks.windsurf.post_cascade_cleanup import main, WINDSURF_DIR, SESSION_SUMMARY
+        from post_cascade_cleanup import main, WINDSURF_DIR, SESSION_SUMMARY
 
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path / "no_write"):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path / "no_write"):
             with patch(
-                "ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY",
+                "post_cascade_cleanup.SESSION_SUMMARY",
                 tmp_path / "no_write" / "s.json",
             ):
                 with patch("pathlib.Path.mkdir", side_effect=OSError("read only")):

@@ -34,9 +34,9 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.pre_write_gate import (
+from pre_write_gate import (
     check_mcp_config,
     check_python_syntax,
     main,
@@ -48,6 +48,7 @@ from ops_scripts.hooks.windsurf.pre_write_gate import (
 # ---------------------------------------------------------------------------
 # scan_antipatterns
 # ---------------------------------------------------------------------------
+
 
 class TestScanAntipatternsBareExcept:
     def test_bare_except_blocked(self):
@@ -96,9 +97,7 @@ class TestScanAntipatternsBroadExcept:
         assert not any("except Exception" in x for x in v)
 
     def test_except_exception_wrong_guardian_blocked(self):
-        v = scan_antipatterns(
-            "except Exception:  # noqa: broad\n"
-        )
+        v = scan_antipatterns("except Exception:  # noqa: broad\n")
         assert any("except Exception" in x for x in v)
 
 
@@ -164,21 +163,12 @@ class TestScanAntipatternsSubprocessTimeout:
         assert any("timeout=" in x for x in v)
 
     def test_multiline_subprocess_with_timeout_on_next_line_allowed(self):
-        code = (
-            "result = subprocess.run(\n"
-            "    ['git', 'log'],\n"
-            "    timeout=15,\n"
-            "    capture_output=True,\n"
-            ")\n"
-        )
+        code = "result = subprocess.run(\n    ['git', 'log'],\n    timeout=15,\n    capture_output=True,\n)\n"
         v = scan_antipatterns(code)
         assert not any("missing timeout=" in x for x in v)
 
     def test_two_subprocess_calls_both_missing_timeout_both_reported(self):
-        code = (
-            "subprocess.run(['a'])\n"
-            "subprocess.run(['b'])\n"
-        )
+        code = "subprocess.run(['a'])\nsubprocess.run(['b'])\n"
         v = scan_antipatterns(code)
         assert sum(1 for x in v if "missing timeout=" in x) == 2
 
@@ -201,6 +191,7 @@ class TestScanAntipatternsSubprocessTimeout:
 # reconstruct_projected_content
 # ---------------------------------------------------------------------------
 
+
 class TestReconstructProjectedContent:
     def test_applies_edit_to_existing_file(self, tmp_path):
         f = tmp_path / "mod.py"
@@ -212,13 +203,17 @@ class TestReconstructProjectedContent:
     def test_appends_when_no_old_string(self, tmp_path):
         f = tmp_path / "mod.py"
         f.write_text("x = 1\n", encoding="utf-8")
-        result = reconstruct_projected_content(str(f), [{"old_string": "", "new_string": "\ndef bar(): pass\n"}])
+        result = reconstruct_projected_content(
+            str(f), [{"old_string": "", "new_string": "\ndef bar(): pass\n"}]
+        )
         assert "x = 1" in result
         assert "def bar" in result
 
     def test_new_file_starts_empty_then_appends(self, tmp_path):
         f = tmp_path / "new.py"
-        result = reconstruct_projected_content(str(f), [{"old_string": "", "new_string": "def foo(): pass\n"}])
+        result = reconstruct_projected_content(
+            str(f), [{"old_string": "", "new_string": "def foo(): pass\n"}]
+        )
         assert result == "def foo(): pass\n"
 
     def test_multiple_edits_applied_in_order(self, tmp_path):
@@ -237,6 +232,7 @@ class TestReconstructProjectedContent:
 # ---------------------------------------------------------------------------
 # check_python_syntax
 # ---------------------------------------------------------------------------
+
 
 class TestCheckPythonSyntax:
     def test_valid_syntax_no_errors(self, tmp_path):
@@ -282,6 +278,7 @@ class TestCheckPythonSyntax:
 # ---------------------------------------------------------------------------
 # check_mcp_config
 # ---------------------------------------------------------------------------
+
 
 class TestCheckMcpConfig:
     def test_deletion_blocked(self):
@@ -332,6 +329,7 @@ class TestCheckMcpConfig:
 # ---------------------------------------------------------------------------
 # main() — full integration with sys.argv mocked
 # ---------------------------------------------------------------------------
+
 
 class TestMain:
     def _run(self, payload: dict) -> int:
@@ -405,9 +403,7 @@ class TestMain:
         payload = {
             "tool_info": {
                 "file_path": "runner.py",
-                "edits": [
-                    {"old_string": "", "new_string": "subprocess.run(['git', 'log'], timeout=30)\n"}
-                ],
+                "edits": [{"old_string": "", "new_string": "subprocess.run(['git', 'log'], timeout=30)\n"}],
             },
         }
         assert self._run(payload) == 0
@@ -521,12 +517,14 @@ class TestMain:
                 assert main() == 0
 
     def test_argv_fast_path_py_file_proceeds_to_check(self):
-        raw = json.dumps({
-            "tool_info": {
-                "file_path": "module.py",
-                "edits": [{"old_string": "", "new_string": "except:\n    pass\n"}],
-            },
-        })
+        raw = json.dumps(
+            {
+                "tool_info": {
+                    "file_path": "module.py",
+                    "edits": [{"old_string": "", "new_string": "except:\n    pass\n"}],
+                },
+            }
+        )
         with patch("sys.stdin", StringIO(raw)):
             with patch("sys.argv", ["pre_write_gate.py", "module.py"]):
                 assert main() == 2

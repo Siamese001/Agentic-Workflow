@@ -30,14 +30,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.post_run_audit import _get_pid_best_effort, main
+from post_run_audit import _get_pid_best_effort, main
 
 
 # ---------------------------------------------------------------------------
 # _get_pid_best_effort
 # ---------------------------------------------------------------------------
+
 
 class TestGetPidBestEffort:
     def test_returns_none_when_psutil_not_installed(self):
@@ -81,13 +82,14 @@ class TestGetPidBestEffort:
 # main() integration
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
     def _run(self, payload: dict, log_path: Path) -> int:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
-            with patch("ops_scripts.hooks.windsurf.post_run_audit.PROCESS_LOG", log_path):
+            with patch("post_run_audit.PROCESS_LOG", log_path):
                 with patch(
-                    "ops_scripts.hooks.windsurf.post_run_audit._get_pid_best_effort",
+                    "post_run_audit._get_pid_best_effort",
                     return_value=None,
                 ):
                     return main()
@@ -101,7 +103,7 @@ class TestMain:
     def test_empty_stdin_exits_0_no_log(self, tmp_path):
         log = tmp_path / "spawned_processes.jsonl"
         with patch("sys.stdin", StringIO("")):
-            with patch("ops_scripts.hooks.windsurf.post_run_audit.PROCESS_LOG", log):
+            with patch("post_run_audit.PROCESS_LOG", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -109,7 +111,7 @@ class TestMain:
     def test_malformed_json_exits_0_no_log(self, tmp_path):
         log = tmp_path / "spawned_processes.jsonl"
         with patch("sys.stdin", StringIO("{bad json")):
-            with patch("ops_scripts.hooks.windsurf.post_run_audit.PROCESS_LOG", log):
+            with patch("post_run_audit.PROCESS_LOG", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -117,7 +119,7 @@ class TestMain:
     def test_whitespace_stdin_exits_0_no_log(self, tmp_path):
         log = tmp_path / "spawned_processes.jsonl"
         with patch("sys.stdin", StringIO("   \n  ")):
-            with patch("ops_scripts.hooks.windsurf.post_run_audit.PROCESS_LOG", log):
+            with patch("post_run_audit.PROCESS_LOG", log):
                 result = main()
         assert result == 0
         assert not log.exists()

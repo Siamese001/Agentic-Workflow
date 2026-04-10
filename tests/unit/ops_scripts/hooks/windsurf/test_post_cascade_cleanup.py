@@ -31,9 +31,9 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.post_cascade_cleanup import (
+from post_cascade_cleanup import (
     _count_lines,
     _rotate_log,
     main,
@@ -44,6 +44,7 @@ from ops_scripts.hooks.windsurf.post_cascade_cleanup import (
 # ---------------------------------------------------------------------------
 # _rotate_log
 # ---------------------------------------------------------------------------
+
 
 class TestRotateLog:
     def test_file_over_limit_truncated_to_last_n(self, tmp_path):
@@ -117,6 +118,7 @@ class TestRotateLog:
 # _count_lines
 # ---------------------------------------------------------------------------
 
+
 class TestCountLines:
     def test_absent_returns_0(self, tmp_path):
         assert _count_lines(tmp_path / "missing.jsonl") == 0
@@ -140,6 +142,7 @@ class TestCountLines:
 # ---------------------------------------------------------------------------
 # run_cleanup
 # ---------------------------------------------------------------------------
+
 
 class TestRunCleanup:
     def test_returns_summary_with_required_keys(self, tmp_path):
@@ -197,24 +200,25 @@ class TestRunCleanup:
 # main()
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
     def test_always_exits_0_clean(self, tmp_path):
         summary_path = tmp_path / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 assert main() == 0
 
     def test_session_summary_written(self, tmp_path):
         summary_path = tmp_path / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 main()
         assert summary_path.exists()
 
     def test_session_summary_has_timestamp(self, tmp_path):
         summary_path = tmp_path / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 main()
         data = json.loads(summary_path.read_text())
         assert "timestamp" in data
@@ -222,18 +226,18 @@ class TestMain:
 
     def test_session_summary_has_audit_line_counts(self, tmp_path):
         summary_path = tmp_path / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 main()
         data = json.loads(summary_path.read_text())
         assert "audit_line_counts" in data
 
     def test_main_exits_0_even_if_oserror(self, tmp_path):
         summary_path = tmp_path / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 with patch(
-                    "ops_scripts.hooks.windsurf.post_cascade_cleanup.run_cleanup",
+                    "post_cascade_cleanup.run_cleanup",
                     side_effect=OSError("disk full"),
                 ):
                     assert main() == 0
@@ -241,8 +245,8 @@ class TestMain:
     def test_main_creates_windsurf_dir_if_missing(self, tmp_path):
         new_dir = tmp_path / "new_artifacts" / "windsurf"
         summary_path = new_dir / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", new_dir):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", new_dir):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 main()
         assert new_dir.exists()
 
@@ -250,7 +254,7 @@ class TestMain:
         log = tmp_path / "spawned_processes.jsonl"
         log.write_text("\n".join(f'{{"n": {i}}}' for i in range(600)) + "\n")
         summary_path = tmp_path / "session_summary.json"
-        with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.WINDSURF_DIR", tmp_path):
-            with patch("ops_scripts.hooks.windsurf.post_cascade_cleanup.SESSION_SUMMARY", summary_path):
+        with patch("post_cascade_cleanup.WINDSURF_DIR", tmp_path):
+            with patch("post_cascade_cleanup.SESSION_SUMMARY", summary_path):
                 main()
         assert len(log.read_text().strip().splitlines()) == 500

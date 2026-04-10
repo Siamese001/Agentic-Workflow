@@ -30,14 +30,15 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.post_write_audit import lint_mcp_config, main
+from post_write_audit import lint_mcp_config, main
 
 
 # ---------------------------------------------------------------------------
 # lint_mcp_config unit tests
 # ---------------------------------------------------------------------------
+
 
 class TestLintMcpConfig:
     def _write(self, tmp_path, config: dict) -> str:
@@ -166,12 +167,13 @@ class TestLintMcpConfig:
 # main() integration
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
     def _run(self, payload: dict, log_path: Path = None) -> int:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
             if log_path is not None:
-                with patch("ops_scripts.hooks.windsurf.post_write_audit.AUDIT_LOG", log_path):
+                with patch("post_write_audit.AUDIT_LOG", log_path):
                     return main()
             return main()
 
@@ -205,9 +207,7 @@ class TestMain:
 
     def test_mcp_config_clean_exits_0(self, tmp_path):
         config_path = tmp_path / "mcp_config.json"
-        config_path.write_text(
-            json.dumps({"mcpServers": {"svc": {"command": "python"}}}), encoding="utf-8"
-        )
+        config_path.write_text(json.dumps({"mcpServers": {"svc": {"command": "python"}}}), encoding="utf-8")
         log = tmp_path / "mcp_lint_audit.jsonl"
         payload = {"tool_info": {"file_path": str(config_path), "edits": []}}
         assert self._run(payload, log) == 0

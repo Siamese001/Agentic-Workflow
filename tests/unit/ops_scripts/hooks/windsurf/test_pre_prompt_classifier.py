@@ -31,11 +31,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.pre_prompt_classifier import (
+from pre_prompt_classifier import (
     check_plan_exists,
-    check_redis_down,
+    check_redis_up,
     classify_tier,
     main,
 )
@@ -179,72 +179,72 @@ class TestCheckPlanExists:
         assert check_plan_exists("T1") is True
 
     def test_t2_no_plans_dir_false(self, tmp_path):
-        with patch("ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
             assert check_plan_exists("T2") is False
 
     def test_t2_empty_plans_dir_false(self, tmp_path):
         (tmp_path / ".windsurf" / "plans").mkdir(parents=True)
-        with patch("ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
             assert check_plan_exists("T2") is False
 
     def test_t2_with_plan_file_true(self, tmp_path):
         plans = tmp_path / ".windsurf" / "plans"
         plans.mkdir(parents=True)
         (plans / "my-plan-abc123.md").write_text("# Plan")
-        with patch("ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
             assert check_plan_exists("T2") is True
 
     def test_t3_no_plans_dir_false(self, tmp_path):
-        with patch("ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
             assert check_plan_exists("T3") is False
 
     def test_t3_with_plan_file_true(self, tmp_path):
         plans = tmp_path / ".windsurf" / "plans"
         plans.mkdir(parents=True)
         (plans / "plan.md").write_text("# Plan")
-        with patch("ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
             assert check_plan_exists("T3") is True
 
     def test_non_md_file_in_plans_not_counted(self, tmp_path):
         plans = tmp_path / ".windsurf" / "plans"
         plans.mkdir(parents=True)
         (plans / "not_a_plan.txt").write_text("text")
-        with patch("ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT", tmp_path):
+        with patch("pre_prompt_classifier.REPO_ROOT", tmp_path):
             assert check_plan_exists("T2") is False
 
 
 # ---------------------------------------------------------------------------
-# check_redis_down
+# check_redis_up
 # ---------------------------------------------------------------------------
 
 
-class TestCheckRedisDown:
-    def test_connection_refused_returns_true(self):
+class TestCheckRedisUp:
+    def test_connection_refused_returns_false(self):
         import socket
 
         with patch("socket.create_connection", side_effect=ConnectionRefusedError):
-            assert check_redis_down() is True
+            assert check_redis_up() is False
 
-    def test_successful_connection_returns_false(self):
+    def test_successful_connection_returns_true(self):
         mock_conn = MagicMock()
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
         mock_conn.__exit__ = MagicMock(return_value=False)
         import socket
 
         with patch("socket.create_connection", return_value=mock_conn):
-            assert check_redis_down() is False
+            assert check_redis_up() is True
 
-    def test_os_error_fails_open(self):
+    def test_os_error_fails_open_returns_true(self):
         import socket
 
         with patch("socket.create_connection", side_effect=OSError("Network unreachable")):
-            assert check_redis_down() is False
+            assert check_redis_up() is True
 
-    def test_timeout_os_error_fails_open(self):
+    def test_timeout_os_error_fails_open_returns_true(self):
         import socket
 
         with patch("socket.create_connection", side_effect=TimeoutError("timed out")):
-            assert check_redis_down() is False
+            assert check_redis_up() is True
 
 
 # ---------------------------------------------------------------------------
@@ -257,16 +257,16 @@ class TestMain:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
             with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red",
+                "pre_prompt_classifier.check_adg_health_red",
                 return_value=adg_red,
             ):
                 with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down",
-                    return_value=redis_down,
+                    "pre_prompt_classifier.check_redis_up",
+                    return_value=not redis_down,
                 ):
                     if repo_root is not None:
                         with patch(
-                            "ops_scripts.hooks.windsurf.pre_prompt_classifier.REPO_ROOT",
+                            "pre_prompt_classifier.REPO_ROOT",
                             repo_root,
                         ):
                             return main()
@@ -294,34 +294,36 @@ class TestMain:
         payload = {"tool_info": {"user_prompt": "refactor the authentication layer"}}
         self._run(payload, adg_red=False, redis_down=False)
         captured = capsys.readouterr()
-        assert "mcp8_create_task" in captured.err
+        assert "create_task" in captured.err
         assert "SR_INTAKE" in captured.err
         assert "SR_PLAN" in captured.err
         assert "SR_APPROVAL" in captured.err
 
-    # --- T2/T3 + red ADG: blocked ---
+    # --- T2/T3 + BOTH red: blocked (§13: only block when BOTH Redis AND SQLite unavailable) ---
     def test_t3_red_adg_blocked(self):
         payload = {"tool_info": {"user_prompt": "refactor the entire architecture"}}
-        assert self._run(payload, adg_red=True, redis_down=False) == 2
+        assert self._run(payload, adg_red=True, redis_down=True) == 2
 
     def test_t2_red_adg_blocked(self):
         payload = {"tool_info": {"user_prompt": "fix and update the module"}}
-        assert self._run(payload, adg_red=True, redis_down=False) == 2
+        assert self._run(payload, adg_red=True, redis_down=True) == 2
 
     def test_blocked_message_mentions_adg(self, capsys):
         payload = {"tool_info": {"user_prompt": "refactor the auth layer"}}
-        self._run(payload, adg_red=True, redis_down=False)
+        self._run(payload, adg_red=True, redis_down=True)
         captured = capsys.readouterr()
         assert "adg_sqlite" in captured.err.lower() or "BLOCKED" in captured.err
 
-    # --- T2/T3 + Redis down: blocked ---
+    # --- T2/T3 + Redis down only: falls back to SQLite, not blocked ---
     def test_t3_redis_down_blocked(self):
         payload = {"tool_info": {"user_prompt": "restructure the module hierarchy"}}
-        assert self._run(payload, adg_red=False, redis_down=True) == 2
+        # Redis down but ADG SQLite healthy → fallback, allow (§13)
+        assert self._run(payload, adg_red=False, redis_down=True) == 0
 
     def test_t2_redis_down_blocked(self):
         payload = {"tool_info": {"user_prompt": "implement and create the new service"}}
-        assert self._run(payload, adg_red=False, redis_down=True) == 2
+        # Redis down but ADG SQLite healthy → fallback, allow (§13)
+        assert self._run(payload, adg_red=False, redis_down=True) == 0
 
     def test_blocked_message_mentions_redis(self, capsys):
         payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
@@ -338,7 +340,8 @@ class TestMain:
     # --- prompt field variants ---
     def test_prompt_field_alias_works(self):
         payload = {"tool_info": {"prompt": "refactor the architecture"}}
-        assert self._run(payload, adg_red=True) == 2
+        # adg_red=True, redis_down defaults False → fallback to SQLite succeeds → exit 0
+        assert self._run(payload, adg_red=True) == 0
 
     def test_user_prompt_takes_precedence(self):
         # user_prompt preferred over prompt

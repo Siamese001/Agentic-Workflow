@@ -22,13 +22,14 @@ Plan requirements verified:
 import json
 import sys
 from io import StringIO
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.pre_run_gate import check_command, main
+from pre_run_gate import check_command, main
 
 
 # ---------------------------------------------------------------------------

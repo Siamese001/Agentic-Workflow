@@ -11,7 +11,7 @@ from unittest.mock import patch
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
-from ops_scripts.hooks.windsurf.post_write_mcp_config_sync import _validate_ssot, main
+from post_write_mcp_config_sync import _validate_ssot, main
 
 
 class TestPostWriteMcpConfigSync(unittest.TestCase):
@@ -81,8 +81,8 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
         issues = _validate_ssot(self.ssot)
         self.assertTrue(any("JSON parse error" in issue for issue in issues))
 
-    @patch("ops_scripts.hooks.windsurf.post_write_mcp_config_sync.GLOBAL")
-    @patch("ops_scripts.hooks.windsurf.post_write_mcp_config_sync.SSOT")
+    @patch("post_write_mcp_config_sync.GLOBAL")
+    @patch("post_write_mcp_config_sync.SSOT")
     def test_main_sync_success(self, mock_ssot, _mock_global):
         """Happy path: successful sync to global config."""
         mock_ssot.exists.return_value = True
@@ -92,15 +92,15 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
         result = main()
         self.assertEqual(0, result)
 
-    @patch("ops_scripts.hooks.windsurf.post_write_mcp_config_sync.SSOT")
+    @patch("post_write_mcp_config_sync.SSOT")
     def test_main_ssot_not_found(self, mock_ssot):
         """Edge case: SSOT file missing should not fail."""
         mock_ssot.exists.return_value = False
         result = main()
         self.assertEqual(0, result)  # advisory only
 
-    @patch("ops_scripts.hooks.windsurf.post_write_mcp_config_sync.GLOBAL")
-    @patch("ops_scripts.hooks.windsurf.post_write_mcp_config_sync.SSOT")
+    @patch("post_write_mcp_config_sync.GLOBAL")
+    @patch("post_write_mcp_config_sync.SSOT")
     def test_main_validation_failure(self, mock_ssot, mock_global):
         """Failure path: validation failures prevent sync."""
         mock_ssot.exists.return_value = True

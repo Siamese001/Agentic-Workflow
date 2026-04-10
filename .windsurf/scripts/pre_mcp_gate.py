@@ -113,7 +113,7 @@ FILESYSTEM_WRITE_TOOLS = {
     "edit_file",  # mcp5_edit_file  — line-based edits
 }
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 
 
@@ -412,9 +412,15 @@ def check_pytest_gate(repo_root: Path) -> int:
     return 0
 
 
-def check_redis_gate() -> int:
+def check_redis_gate(repo_root: Path) -> int:
     """
-    Check Redis MCP health by attempting a connection to Redis.
+    Check Redis MCP health with ADG SQLite fallback.
+
+    Constitutional §13 MCP Green Light:
+    1. Check Redis hot cache first (fast path ~75ms)
+    2. If Redis cold/down, fallback to ADG SQLite (canonical source)
+    3. Only block if BOTH Redis AND SQLite are unavailable
+
     Return 0 (allow) or 2 (block).
     """
     import os
@@ -424,32 +430,64 @@ def check_redis_gate() -> int:
     db = int(os.getenv("REDIS_DB", "0"))
     timeout = int(os.getenv("REDIS_TIMEOUT", "5"))
 
-    try:
-        import redis as redis_lib
-    except ImportError:
-        return _exit_block(
-            "Redis MCP health check failed: redis package not installed. Install with: pip install redis",
-        )
+    redis_ok = False
+    redis_error = ""
 
     try:
+        import redis as redis_lib
+
         client = redis_lib.Redis(
             host=host,
             port=port,
             db=db,
-            socket_timeout=timeout,
             socket_connect_timeout=timeout,
+            socket_timeout=timeout,
+            decode_responses=True,
         )
-        if not client.ping():
-            return _exit_block(
-                f"Redis MCP health check failed: Redis at {host}:{port} not responding to PING.",
-            )
+        if client.ping():
+            redis_ok = True
+        else:
+            redis_error = f"Redis at {host}:{port} not responding to PING"
+    except ImportError:
+        redis_error = "redis package not installed"
     except redis_lib.ConnectionError as exc:
-        return _exit_block(
-            f"Redis MCP health check failed: Cannot connect to Redis at {host}:{port}. Error: {exc}",
-        )
+        redis_error = f"Cannot connect to Redis at {host}:{port}: {exc}"
     except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
-        return _exit_block(f"Redis MCP health check unexpected error: {exc}")
+        redis_error = f"Unexpected error: {exc}"
 
+    if redis_ok:
+        return 0  # Redis hot — fast path success
+
+    # Redis cold/down → Fallback to ADG SQLite (Constitutional §13)
+    print(
+        f"[pre_mcp_gate] Redis unavailable ({redis_error}) — falling back to ADG SQLite (canonical source)",
+        file=sys.stderr,
+    )
+
+    if not _has_adg_sqlite(repo_root):
+        print(
+            "[pre_mcp_gate] ADG SQLite not found — attempting auto-generation",
+            file=sys.stderr,
+        )
+        if not _auto_generate_adg(repo_root):
+            return _exit_block(
+                f"Redis unavailable ({redis_error}) AND ADG SQLite missing "
+                "(auto-generation failed). Run 'python tools/generate_full_adg.py' manually.",
+            )
+
+    # Check SQLite accessibility (read-only probe)
+    blocked, reason = _check_sqlite_access(repo_root, needs_write=False)
+    if blocked:
+        return _exit_block(
+            f"Redis unavailable ({redis_error}) AND ADG SQLite inaccessible ({reason}). "
+            "Both ADG backends are down — cannot proceed safely.",
+        )
+
+    print(
+        "[pre_mcp_gate] ADG SQLite accessible — proceeding with degraded performance "
+        "(Redis cache unavailable, using canonical SQLite)",
+        file=sys.stderr,
+    )
     return 0
 
 
@@ -706,11 +744,11 @@ def main() -> int:
             return 0
         return check_pytest_gate(REPO_ROOT)
 
-    # Redis MCP: verify Redis connectivity
+    # Redis MCP: verify Redis connectivity with ADG SQLite fallback
     if server_name == REDIS_SERVER_NAME:
         if tool_name in REDIS_RECOVERY_TOOLS:
             return 0
-        return check_redis_gate()
+        return check_redis_gate(REPO_ROOT)
 
     # Memory MCP: verify SQLite DB is accessible
     if server_name == MEMORY_SERVER_NAME:

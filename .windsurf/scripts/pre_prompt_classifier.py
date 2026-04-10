@@ -25,7 +25,7 @@ from pathlib import Path
 
 FAIL_POLICY = "closed_for_t2t3_adg"
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 T3_KEYWORDS = {
     "architecture",

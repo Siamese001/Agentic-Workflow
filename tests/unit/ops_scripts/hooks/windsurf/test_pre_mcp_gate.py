@@ -39,10 +39,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-import ops_scripts.hooks.windsurf.pre_mcp_gate as _gate_module
-from ops_scripts.hooks.windsurf.pre_mcp_gate import (
+import pre_mcp_gate as _gate_module
+from pre_mcp_gate import (
     ADG_RECOVERY_TOOLS,
     ADG_WRITE_TOOLS,
     FILESYSTEM_WRITE_TOOLS,
@@ -417,7 +417,7 @@ class TestCheckAdgGate:
 
     def test_missing_artifacts_dir_no_sqlite_triggers_autogen(self, tmp_path):
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate._auto_generate_adg",
+            "pre_mcp_gate._auto_generate_adg",
             return_value=True,
         ):
             assert check_adg_gate(tmp_path) == 0
@@ -472,7 +472,7 @@ class TestMain:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
             if repo_root is not None:
-                with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", repo_root):
+                with patch("pre_mcp_gate.REPO_ROOT", repo_root):
                     return main()
             return main()
 
@@ -540,7 +540,7 @@ class TestMain:
         """If Node.js is not in PATH, task_manager gate must block non-recovery tools."""
         payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "decompose_task"}}
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            "pre_mcp_gate.subprocess.run",
             side_effect=FileNotFoundError("node not found"),
         ):
             assert self._run(payload) == 2
@@ -650,7 +650,7 @@ class TestMain:
     def test_adg_no_artifacts_dir_autogen_triggered(self, tmp_path):
         payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_node"}}
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate._auto_generate_adg",
+            "pre_mcp_gate._auto_generate_adg",
             return_value=True,
         ):
             assert self._run(payload, tmp_path) == 0
@@ -737,7 +737,7 @@ class TestCheckVectorDbGate:
     """Gate: chromadb importable (hard block) + HTTP instance probe (advisory/fail-open)."""
 
     def _gate(self):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_vector_db_gate
+        from pre_mcp_gate import check_vector_db_gate
 
         return check_vector_db_gate
 
@@ -745,7 +745,7 @@ class TestCheckVectorDbGate:
         """chromadb importable + no HTTP server = advisory only, not blocked."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             with patch("socket.create_connection", side_effect=ConnectionRefusedError):
                 assert self._gate()() == 0
 
@@ -756,7 +756,7 @@ class TestCheckVectorDbGate:
         mock_conn = MagicMock()
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
         mock_conn.__exit__ = MagicMock(return_value=False)
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             with patch("socket.create_connection", return_value=mock_conn):
                 assert self._gate()() == 0
 
@@ -765,13 +765,13 @@ class TestCheckVectorDbGate:
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stderr = "No module named chromadb"
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             assert self._gate()() == 2
 
     def test_chromadb_probe_timeout_blocked(self):
         """subprocess timeout on library probe = hard block."""
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            "pre_mcp_gate.subprocess.run",
             side_effect=subprocess.TimeoutExpired(cmd="python", timeout=10),
         ):
             assert self._gate()() == 2
@@ -780,7 +780,7 @@ class TestCheckVectorDbGate:
         """vector_stats and list_collections always pass even if chromadb missing."""
         mock_result = MagicMock()
         mock_result.returncode = 1  # chromadb missing
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             for tool in VECTOR_DB_RECOVERY_TOOLS:
                 payload = {"tool_info": {"mcp_server_name": "vector_db", "mcp_tool_name": tool}}
                 raw = json.dumps(payload)
@@ -791,7 +791,7 @@ class TestCheckVectorDbGate:
         """When HTTP server absent, advisory INFO message is printed."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             with patch("socket.create_connection", side_effect=ConnectionRefusedError):
                 self._gate()()
         captured = capsys.readouterr()
@@ -807,7 +807,7 @@ class TestCheckOtelGate:
     """Gate: opentelemetry SDK importable (hard block) + OTLP collector probe (advisory/fail-open)."""
 
     def _gate(self):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_otel_gate
+        from pre_mcp_gate import check_otel_gate
 
         return check_otel_gate
 
@@ -815,7 +815,7 @@ class TestCheckOtelGate:
         """SDK importable + no OTLP collector = advisory only, not blocked."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             with patch("socket.create_connection", side_effect=ConnectionRefusedError):
                 assert self._gate()() == 0
 
@@ -826,7 +826,7 @@ class TestCheckOtelGate:
         mock_conn = MagicMock()
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
         mock_conn.__exit__ = MagicMock(return_value=False)
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             with patch("socket.create_connection", return_value=mock_conn):
                 assert self._gate()() == 0
 
@@ -835,13 +835,13 @@ class TestCheckOtelGate:
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stderr = "No module named opentelemetry"
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             assert self._gate()() == 2
 
     def test_otel_probe_timeout_blocked(self):
         """subprocess timeout on SDK probe = hard block."""
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            "pre_mcp_gate.subprocess.run",
             side_effect=subprocess.TimeoutExpired(cmd="python", timeout=10),
         ):
             assert self._gate()() == 2
@@ -850,7 +850,7 @@ class TestCheckOtelGate:
         """otel_status and otel_metrics_summary always pass even if SDK missing."""
         mock_result = MagicMock()
         mock_result.returncode = 1  # SDK missing
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             for tool in OTEL_MCP_RECOVERY_TOOLS:
                 payload = {"tool_info": {"mcp_server_name": "otel_mcp", "mcp_tool_name": tool}}
                 raw = json.dumps(payload)
@@ -861,7 +861,7 @@ class TestCheckOtelGate:
         """When OTLP collector absent, advisory INFO message is printed."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             with patch("socket.create_connection", side_effect=ConnectionRefusedError):
                 self._gate()()
         captured = capsys.readouterr()
@@ -876,30 +876,31 @@ class TestCheckOtelGate:
 class TestCheckRedisGate:
     """Gate: Redis TCP PING (hard block on ConnectionRefusedError)."""
 
-    def _gate(self):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_redis_gate
+    def _gate(self, repo_root=None):
+        from pre_mcp_gate import REPO_ROOT, check_redis_gate
 
-        return check_redis_gate
+        root = repo_root if repo_root is not None else REPO_ROOT
+        return lambda: check_redis_gate(root)
 
-    def test_redis_up_allowed(self):
+    def test_redis_up_allowed(self, tmp_path):
         import redis as redis_lib
 
         mock_client = MagicMock()
         mock_client.ping.return_value = True
         with patch.object(redis_lib, "Redis", return_value=mock_client):
-            assert self._gate()() == 0
+            assert self._gate(tmp_path)() == 0
 
-    def test_redis_not_installed_blocked(self):
+    def test_redis_not_installed_blocked(self, tmp_path):
         with patch.dict("sys.modules", {"redis": None}):
-            assert self._gate()() == 2
+            assert self._gate(tmp_path)() == 2
 
-    def test_redis_connection_refused_blocked(self):
+    def test_redis_connection_refused_blocked(self, tmp_path):
         import redis as redis_lib
 
         mock_client = MagicMock()
         mock_client.ping.side_effect = redis_lib.ConnectionError("Connection refused")
         with patch.object(redis_lib, "Redis", return_value=mock_client):
-            assert self._gate()() == 2
+            assert self._gate(tmp_path)() == 2
 
     def test_recovery_tool_bypasses_gate(self):
         """redis_health bypasses gate even when Redis is down.
@@ -924,7 +925,7 @@ class TestCheckMemoryGate:
     """Gate: knowledge_graph.sqlite accessible (hard block on OperationalError)."""
 
     def _gate(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_memory_gate
+        from pre_mcp_gate import check_memory_gate
 
         return lambda: check_memory_gate(tmp_path)
 
@@ -962,7 +963,7 @@ class TestCheckMemoryGate:
             payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": tool}}
             raw = json.dumps(payload)
             with patch("sys.stdin", StringIO(raw)):
-                with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.REPO_ROOT", tmp_path):
+                with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
                     assert main() == 0, f"Recovery tool '{tool}' must bypass memory gate"
 
 
@@ -975,7 +976,7 @@ class TestCheckPytestGate:
     """Gate: pytest importable (hard block) + pytest.ini advisory."""
 
     def _gate(self, tmp_path):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_pytest_gate
+        from pre_mcp_gate import check_pytest_gate
 
         return lambda: check_pytest_gate(tmp_path)
 
@@ -983,14 +984,14 @@ class TestCheckPytestGate:
         (tmp_path / "pytest.ini").write_text("[pytest]")
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             assert self._gate(tmp_path)() == 0
 
     def test_pytest_installed_no_ini_advisory_only_allowed(self, tmp_path, capsys):
         """No pytest.ini is advisory only — gate still allows."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             result = self._gate(tmp_path)()
         assert result == 0
         captured = capsys.readouterr()
@@ -999,14 +1000,14 @@ class TestCheckPytestGate:
     def test_pytest_not_installed_blocked(self, tmp_path):
         mock_result = MagicMock()
         mock_result.returncode = 1
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             assert self._gate(tmp_path)() == 2
 
     def test_recovery_tools_bypass_gate(self):
         """list_pytest_config and discover_tests bypass gate."""
         mock_result = MagicMock()
         mock_result.returncode = 1  # pytest not installed
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             for tool in PYTEST_RECOVERY_TOOLS:
                 payload = {"tool_info": {"mcp_server_name": "pytest_mcp", "mcp_tool_name": tool}}
                 raw = json.dumps(payload)
@@ -1023,19 +1024,19 @@ class TestCheckTaskManagerGate:
     """Gate: Node.js in PATH (hard block on FileNotFoundError)."""
 
     def _gate(self):
-        from ops_scripts.hooks.windsurf.pre_mcp_gate import check_task_manager_gate
+        from pre_mcp_gate import check_task_manager_gate
 
         return check_task_manager_gate
 
     def test_node_available_allowed(self):
         mock_result = MagicMock()
         mock_result.returncode = 0
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             assert self._gate()() == 0
 
     def test_node_not_in_path_blocked(self):
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            "pre_mcp_gate.subprocess.run",
             side_effect=FileNotFoundError("node not found"),
         ):
             assert self._gate()() == 2
@@ -1043,12 +1044,12 @@ class TestCheckTaskManagerGate:
     def test_node_returns_nonzero_blocked(self):
         mock_result = MagicMock()
         mock_result.returncode = 1
-        with patch("ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run", return_value=mock_result):
+        with patch("pre_mcp_gate.subprocess.run", return_value=mock_result):
             assert self._gate()() == 2
 
     def test_node_probe_timeout_blocked(self):
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            "pre_mcp_gate.subprocess.run",
             side_effect=subprocess.TimeoutExpired(cmd="node", timeout=10),
         ):
             assert self._gate()() == 2
@@ -1056,7 +1057,7 @@ class TestCheckTaskManagerGate:
     def test_recovery_tools_bypass_gate(self):
         """list_tasks, decompose_task, task_info always bypass the Node.js probe."""
         with patch(
-            "ops_scripts.hooks.windsurf.pre_mcp_gate.subprocess.run",
+            "pre_mcp_gate.subprocess.run",
             side_effect=FileNotFoundError("node not found"),
         ):
             for tool in TASK_MANAGER_RECOVERY_TOOLS:

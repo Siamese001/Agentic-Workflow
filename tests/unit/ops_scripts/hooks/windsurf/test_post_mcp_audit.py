@@ -30,32 +30,35 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from ops_scripts.hooks.windsurf.post_mcp_audit import main
+from post_mcp_audit import main
 
 
 # ---------------------------------------------------------------------------
 # main() integration tests
 # ---------------------------------------------------------------------------
 
+
 class TestMain:
     def _run(self, payload: dict, log_path: Path) -> int:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log_path):
+            with patch("post_mcp_audit.AUDIT_LOG", log_path):
                 return main()
 
     # Always exits 0
     def test_valid_payload_exits_0(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        payload = {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_health", "duration_ms": 42}}
+        payload = {
+            "tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_health", "duration_ms": 42}
+        }
         assert self._run(payload, log) == 0
 
     def test_empty_stdin_exits_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
         with patch("sys.stdin", StringIO("")):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -63,7 +66,7 @@ class TestMain:
     def test_malformed_json_exits_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
         with patch("sys.stdin", StringIO("{bad json")):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -71,7 +74,7 @@ class TestMain:
     def test_whitespace_stdin_exits_0_no_log(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
         with patch("sys.stdin", StringIO("   \n  ")):
-            with patch("ops_scripts.hooks.windsurf.post_mcp_audit.AUDIT_LOG", log):
+            with patch("post_mcp_audit.AUDIT_LOG", log):
                 result = main()
         assert result == 0
         assert not log.exists()
@@ -79,7 +82,9 @@ class TestMain:
     # Record content
     def test_log_record_has_all_required_fields(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        payload = {"tool_info": {"mcp_server_name": "filesystem", "mcp_tool_name": "read_file", "duration_ms": 123}}
+        payload = {
+            "tool_info": {"mcp_server_name": "filesystem", "mcp_tool_name": "read_file", "duration_ms": 123}
+        }
         self._run(payload, log)
         record = json.loads(log.read_text().strip())
         assert "timestamp" in record
@@ -174,10 +179,20 @@ class TestMain:
         assert record["mcp_server_name"] == "gitkraken"
 
     # All known MCP server names accepted
-    @pytest.mark.parametrize("server", [
-        "adg_sqlite", "memory", "filesystem", "gitkraken", "deepwiki",
-        "enhanced_http", "redis", "task_manager", "pytest_mcp",
-    ])
+    @pytest.mark.parametrize(
+        "server",
+        [
+            "adg_sqlite",
+            "memory",
+            "filesystem",
+            "gitkraken",
+            "deepwiki",
+            "enhanced_http",
+            "redis",
+            "task_manager",
+            "pytest_mcp",
+        ],
+    )
     def test_all_known_mcp_servers_accepted(self, tmp_path, server):
         log = tmp_path / f"audit_{server}.jsonl"
         payload = {"tool_info": {"mcp_server_name": server, "mcp_tool_name": "some_tool"}}
@@ -194,8 +209,8 @@ class TestMain:
 
     def test_very_large_duration_ms_no_crash(self, tmp_path):
         log = tmp_path / "mcp_tool_audit.jsonl"
-        payload = {"tool_info": {"mcp_server_name": "s", "mcp_tool_name": "t", "duration_ms": 10 ** 15}}
+        payload = {"tool_info": {"mcp_server_name": "s", "mcp_tool_name": "t", "duration_ms": 10**15}}
         result = self._run(payload, log)
         assert result == 0
         record = json.loads(log.read_text().strip())
-        assert record["duration_ms"] == 10 ** 15
+        assert record["duration_ms"] == 10**15

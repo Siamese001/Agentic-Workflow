@@ -43,12 +43,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_probe_result(servers: list) -> MagicMock:
     """Build a mock subprocess.run result returning {"servers": [...]} JSON."""
@@ -60,18 +61,20 @@ def _make_probe_result(servers: list) -> MagicMock:
 
 def _run_classifier_healthy(prompt: str):
     """Run main() with healthy ADG + Redis, return (exit_code, captured)."""
-    from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+    from pre_prompt_classifier import main
+
     payload = {"tool_info": {"user_prompt": prompt}}
     with patch("sys.stdin", StringIO(json.dumps(payload))):
         with patch(
-            "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red",
+            "pre_prompt_classifier.check_adg_health_red",
             return_value=False,
         ):
             with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down",
-                return_value=False,
+                "pre_prompt_classifier.check_redis_up",
+                return_value=True,
             ):
                 import io
+
                 stderr_capture = io.StringIO()
                 with patch("sys.stderr", stderr_capture):
                     rc = main()
@@ -82,6 +85,7 @@ def _run_classifier_healthy(prompt: str):
 # Gap 1: Subprocess timeout enforcement in pre_write_gate
 # ---------------------------------------------------------------------------
 
+
 class TestGap1SubprocessTimeoutEnforcement:
     """
     Gap: subprocess calls without timeout= were not blocked by pre_write_gate.
@@ -89,34 +93,32 @@ class TestGap1SubprocessTimeoutEnforcement:
     """
 
     def setup_method(self):
-        from ops_scripts.hooks.windsurf.pre_write_gate import scan_antipatterns
+        from pre_write_gate import scan_antipatterns
+
         self.scan = scan_antipatterns
 
     # All 5 subprocess variants must be blocked without timeout=
     def test_subprocess_run_no_timeout_blocked(self):
         v = self.scan("subprocess.run(['git', 'status'])\n")
-        assert any("timeout=" in x for x in v), \
+        assert any("timeout=" in x for x in v), (
             "subprocess.run without timeout= must be blocked (constitutional §14)"
+        )
 
     def test_subprocess_popen_no_timeout_blocked(self):
         v = self.scan("proc = subprocess.Popen(['cmd'], stdout=subprocess.PIPE)\n")
-        assert any("timeout=" in x for x in v), \
-            "subprocess.Popen without timeout= must be blocked"
+        assert any("timeout=" in x for x in v), "subprocess.Popen without timeout= must be blocked"
 
     def test_subprocess_call_no_timeout_blocked(self):
         v = self.scan("subprocess.call(['pip', 'install', 'x'])\n")
-        assert any("timeout=" in x for x in v), \
-            "subprocess.call without timeout= must be blocked"
+        assert any("timeout=" in x for x in v), "subprocess.call without timeout= must be blocked"
 
     def test_subprocess_check_output_no_timeout_blocked(self):
         v = self.scan("out = subprocess.check_output(['git', 'log'])\n")
-        assert any("timeout=" in x for x in v), \
-            "subprocess.check_output without timeout= must be blocked"
+        assert any("timeout=" in x for x in v), "subprocess.check_output without timeout= must be blocked"
 
     def test_subprocess_check_call_no_timeout_blocked(self):
         v = self.scan("subprocess.check_call(['make', 'test'])\n")
-        assert any("timeout=" in x for x in v), \
-            "subprocess.check_call without timeout= must be blocked"
+        assert any("timeout=" in x for x in v), "subprocess.check_call without timeout= must be blocked"
 
     # All 5 variants allowed when timeout= present
     def test_subprocess_run_with_timeout_allowed(self):
@@ -142,11 +144,7 @@ class TestGap1SubprocessTimeoutEnforcement:
     # Multiline call — timeout on a later line must be found
     def test_multiline_subprocess_run_timeout_on_later_line_allowed(self):
         code = (
-            "result = subprocess.run(\n"
-            "    ['git', 'status'],\n"
-            "    capture_output=True,\n"
-            "    timeout=30,\n"
-            ")\n"
+            "result = subprocess.run(\n    ['git', 'status'],\n    capture_output=True,\n    timeout=30,\n)\n"
         )
         v = self.scan(code)
         assert not any("missing timeout=" in x for x in v)
@@ -155,8 +153,9 @@ class TestGap1SubprocessTimeoutEnforcement:
     def test_two_calls_both_missing_both_violations_reported(self):
         code = "subprocess.run(['a'])\nsubprocess.Popen(['b'])\n"
         v = self.scan(code)
-        assert sum(1 for x in v if "missing timeout=" in x) == 2, \
+        assert sum(1 for x in v if "missing timeout=" in x) == 2, (
             "Both subprocess calls without timeout= must each be reported"
+        )
 
     # One with, one without → only one violation
     def test_one_with_one_without_only_one_violation(self):
@@ -166,7 +165,8 @@ class TestGap1SubprocessTimeoutEnforcement:
 
     # main() integration — ensures the gate fires end-to-end
     def test_main_blocks_subprocess_without_timeout_via_payload(self):
-        from ops_scripts.hooks.windsurf.pre_write_gate import main
+        from pre_write_gate import main
+
         payload = {
             "tool_info": {
                 "file_path": "ops_scripts/some_script.py",
@@ -181,7 +181,8 @@ class TestGap1SubprocessTimeoutEnforcement:
         assert result == 2, "main() must block subprocess.run without timeout="
 
     def test_main_allows_subprocess_with_timeout_via_payload(self):
-        from ops_scripts.hooks.windsurf.pre_write_gate import main
+        from pre_write_gate import main
+
         payload = {
             "tool_info": {
                 "file_path": "ops_scripts/some_script.py",
@@ -200,6 +201,7 @@ class TestGap1SubprocessTimeoutEnforcement:
 # Gap 2: Structured reasoning mandate injected for T2/T3
 # ---------------------------------------------------------------------------
 
+
 class TestGap2StructuredReasoningMandateInjection:
     """
     Gap: pre_prompt_classifier never injected the SR mandate, so Cascade
@@ -209,98 +211,94 @@ class TestGap2StructuredReasoningMandateInjection:
 
     def test_t3_mandate_contains_mcp8_create_task(self):
         _, stderr = _run_classifier_healthy("refactor the authentication architecture")
-        assert "mcp8_create_task" in stderr, \
-            "SR mandate must instruct Cascade to call mcp8_create_task for T3"
+        assert "create_task" in stderr, (
+            "SR mandate must instruct Cascade to call create_task (task_manager MCP) for T3"
+        )
 
     def test_t3_mandate_contains_sr_intake(self):
         _, stderr = _run_classifier_healthy("restructure the layer boundaries")
-        assert "SR_INTAKE" in stderr, \
-            "SR mandate must contain SR_INTAKE block instruction"
+        assert "SR_INTAKE" in stderr, "SR mandate must contain SR_INTAKE block instruction"
 
     def test_t3_mandate_contains_sr_plan(self):
         # Use a reliable T3 prompt — keyword "architecture" or "refactor"
         _, stderr = _run_classifier_healthy("refactor the architecture to restructure modules")
-        assert "SR_PLAN" in stderr, \
-            "SR mandate must contain SR_PLAN block instruction"
+        assert "SR_PLAN" in stderr, "SR mandate must contain SR_PLAN block instruction"
 
     def test_t3_mandate_contains_sr_approval(self):
         _, stderr = _run_classifier_healthy("consolidate the duplicate registries")
-        assert "SR_APPROVAL" in stderr, \
-            "SR mandate must contain SR_APPROVAL gate instruction"
+        assert "SR_APPROVAL" in stderr, "SR mandate must contain SR_APPROVAL gate instruction"
 
     def test_t3_mandate_mentions_retired_sequential_thinking(self):
         _, stderr = _run_classifier_healthy("refactor the governance model")
-        assert (
-            "Sequential Thinking" in stderr
-            or "RETIRED" in stderr
-            or "sequential" in stderr.lower()
-        ), "SR mandate must reference that Sequential Thinking MCP is retired"
+        assert "Sequential Thinking" in stderr or "RETIRED" in stderr or "sequential" in stderr.lower(), (
+            "SR mandate must reference that Sequential Thinking MCP is retired"
+        )
 
     def test_t3_mandate_mentions_task_manager(self):
         _, stderr = _run_classifier_healthy("architectural redesign of L0 routing")
-        assert (
-            "Task Manager" in stderr
-            or "mcp8" in stderr
-            or "task_manager" in stderr.lower()
-        ), "SR mandate must reference Task Manager MCP as replacement"
+        assert "Task Manager" in stderr or "mcp8" in stderr or "task_manager" in stderr.lower(), (
+            "SR mandate must reference Task Manager MCP as replacement"
+        )
 
     def test_t2_mandate_injected(self):
         _, stderr = _run_classifier_healthy("fix and update the hook implementation")
-        assert "mcp8_create_task" in stderr, \
-            "SR mandate must also be injected for T2 prompts"
+        assert "create_task" in stderr, "SR mandate must also be injected for T2 prompts"
 
     def test_t0_mandate_not_injected(self):
         _, stderr = _run_classifier_healthy("explain how the pre_run_gate works")
-        assert "mcp8_create_task" not in stderr, \
-            "SR mandate must NOT be injected for T0 (question) prompts"
+        assert "create_task" not in stderr, "SR mandate must NOT be injected for T0 (question) prompts"
 
     def test_t1_mandate_not_injected(self):
         _, stderr = _run_classifier_healthy("fix the typo in the docstring")
-        assert "mcp8_create_task" not in stderr, \
-            "SR mandate must NOT be injected for T1 (trivial) prompts"
+        assert "create_task" not in stderr, "SR mandate must NOT be injected for T1 (trivial) prompts"
 
     def test_mandate_not_injected_when_adg_red(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
+        from pre_prompt_classifier import main
         import io
+
         payload = {"tool_info": {"user_prompt": "refactor the entire architecture"}}
         with patch("sys.stdin", StringIO(json.dumps(payload))):
             with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red",
+                "pre_prompt_classifier.check_adg_health_red",
                 return_value=True,
             ):
                 with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down",
+                    "pre_prompt_classifier.check_redis_up",
+                    return_value=False,  # Redis also down -> BOTH red -> blocks
+                ):
+                    stderr_cap = io.StringIO()
+                    with patch("sys.stderr", stderr_cap):
+                        main()
+        assert "create_task" not in stderr_cap.getvalue(), (
+            "SR mandate must NOT be injected when BOTH ADG and Redis are red (blocked before reaching that code)"
+        )
+
+    def test_mandate_not_injected_when_redis_down(self):
+        from pre_prompt_classifier import main
+        import io
+
+        payload = {"tool_info": {"user_prompt": "refactor the entire architecture"}}
+        with patch("sys.stdin", StringIO(json.dumps(payload))):
+            with patch(
+                "pre_prompt_classifier.check_adg_health_red",
+                return_value=True,  # ADG also red -> BOTH red -> blocks
+            ):
+                with patch(
+                    "pre_prompt_classifier.check_redis_up",
                     return_value=False,
                 ):
                     stderr_cap = io.StringIO()
                     with patch("sys.stderr", stderr_cap):
                         main()
-        assert "mcp8_create_task" not in stderr_cap.getvalue(), \
-            "SR mandate must NOT be injected when ADG is red (blocked before reaching that code)"
-
-    def test_mandate_not_injected_when_redis_down(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import main
-        import io
-        payload = {"tool_info": {"user_prompt": "refactor the entire architecture"}}
-        with patch("sys.stdin", StringIO(json.dumps(payload))):
-            with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red",
-                return_value=False,
-            ):
-                with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down",
-                    return_value=True,
-                ):
-                    stderr_cap = io.StringIO()
-                    with patch("sys.stderr", stderr_cap):
-                        main()
-        assert "mcp8_create_task" not in stderr_cap.getvalue(), \
-            "SR mandate must NOT be injected when Redis is down (blocked before reaching that code)"
+        assert "create_task" not in stderr_cap.getvalue(), (
+            "SR mandate must NOT be injected when BOTH red (blocked before reaching that code)"
+        )
 
 
 # ---------------------------------------------------------------------------
 # Gap 3: Redis health not checked before T2/T3 work
 # ---------------------------------------------------------------------------
+
 
 class TestGap3RedisHealthCheck:
     """
@@ -311,64 +309,71 @@ class TestGap3RedisHealthCheck:
     """
 
     def setup_method(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import (
-            check_redis_down,
+        from pre_prompt_classifier import (
+            check_redis_up,
             main,
         )
-        self.check_redis_down = check_redis_down
+
+        self.check_redis_up = check_redis_up
         self.main = main
 
     def _run(self, prompt: str, adg_red: bool = False, redis_down: bool = False) -> tuple:
         import io
+
         payload = {"tool_info": {"user_prompt": prompt}}
         with patch("sys.stdin", StringIO(json.dumps(payload))):
             with patch(
-                "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_adg_health_red",
+                "pre_prompt_classifier.check_adg_health_red",
                 return_value=adg_red,
             ):
                 with patch(
-                    "ops_scripts.hooks.windsurf.pre_prompt_classifier.check_redis_down",
-                    return_value=redis_down,
+                    "pre_prompt_classifier.check_redis_up",
+                    return_value=not redis_down,
                 ):
                     stderr_cap = io.StringIO()
                     with patch("sys.stderr", stderr_cap):
                         rc = self.main()
         return rc, stderr_cap.getvalue()
 
-    # check_redis_down unit tests
+    # check_redis_up unit tests
     def test_check_redis_down_exists_and_importable(self):
-        assert callable(self.check_redis_down), \
-            "check_redis_down must be importable from pre_prompt_classifier"
+        assert callable(self.check_redis_up), "check_redis_up must be importable from pre_prompt_classifier"
 
     def test_check_redis_down_returns_true_on_connection_refused(self):
         import socket
+
         with patch("socket.create_connection", side_effect=ConnectionRefusedError):
-            assert self.check_redis_down() is True, \
-                "check_redis_down must return True when Redis port is refused"
+            assert self.check_redis_up() is False, (
+                "check_redis_up must return False when Redis port is refused"
+            )
 
     def test_check_redis_down_returns_false_on_success(self):
         mock_conn = MagicMock()
         mock_conn.__enter__ = MagicMock(return_value=mock_conn)
         mock_conn.__exit__ = MagicMock(return_value=False)
         import socket
+
         with patch("socket.create_connection", return_value=mock_conn):
-            assert self.check_redis_down() is False, \
-                "check_redis_down must return False when Redis is reachable"
+            assert self.check_redis_up() is True, "check_redis_up must return True when Redis is reachable"
 
     def test_check_redis_down_fails_open_on_oserror(self):
         import socket
-        with patch("socket.create_connection", side_effect=OSError("Network unreachable")):
-            assert self.check_redis_down() is False, \
-                "check_redis_down must fail-open (return False) on unexpected OSError"
 
-    # Integration: T2/T3 blocked when Redis down
+        with patch("socket.create_connection", side_effect=OSError("Network unreachable")):
+            assert self.check_redis_up() is True, (
+                "check_redis_up must fail-open (return True) on unexpected OSError"
+            )
+
+    # Integration: T2/T3 + Redis down alone = fallback to SQLite, allowed (§13)
     def test_t3_blocked_when_redis_down(self):
         rc, _ = self._run("refactor the authentication layer", redis_down=True)
-        assert rc == 2, "T3 prompt must be BLOCKED when Redis is down"
+        # Redis down but ADG SQLite healthy → fallback succeeds → exit 0 (§13)
+        assert rc == 0, "T3 + Redis down alone: §13 fallback to SQLite should allow"
 
     def test_t2_blocked_when_redis_down(self):
         rc, _ = self._run("fix and update the test file", redis_down=True)
-        assert rc == 2, "T2 prompt must be BLOCKED when Redis is down"
+        # Redis down but ADG SQLite healthy → fallback succeeds → exit 0 (§13)
+        assert rc == 0, "T2 + Redis down alone: §13 fallback to SQLite should allow"
 
     # Integration: T0/T1 NOT blocked when Redis down
     def test_t0_not_blocked_when_redis_down(self):
@@ -387,8 +392,9 @@ class TestGap3RedisHealthCheck:
     # Block message mentions Redis
     def test_redis_block_message_mentions_redis(self):
         _, stderr = self._run("refactor the entire architecture", redis_down=True)
-        assert "redis" in stderr.lower() or "Redis" in stderr, \
+        assert "redis" in stderr.lower() or "Redis" in stderr, (
             "Block message must mention Redis so Cascade knows why it was blocked"
+        )
 
     # Both red: still blocks
     def test_both_adg_red_and_redis_down_still_blocks(self):
@@ -399,6 +405,7 @@ class TestGap3RedisHealthCheck:
 # ---------------------------------------------------------------------------
 # Gap 4: show_output: false made classifier output invisible to Cascade
 # ---------------------------------------------------------------------------
+
 
 class TestGap4ShowOutputInHooksJson:
     """
@@ -416,20 +423,15 @@ class TestGap4ShowOutputInHooksJson:
     def test_pre_user_prompt_hook_configured(self):
         data = json.loads(self.hooks_path.read_text(encoding="utf-8"))
         hooks = data.get("hooks", data)
-        assert "pre_user_prompt" in hooks, \
-            "hooks.json must contain pre_user_prompt hook configuration"
+        assert "pre_user_prompt" in hooks, "hooks.json must contain pre_user_prompt hook configuration"
 
     def test_pre_user_prompt_show_output_is_true(self):
         data = json.loads(self.hooks_path.read_text(encoding="utf-8"))
         hooks = data.get("hooks", data)
         pre_user_prompt = hooks["pre_user_prompt"]
         entries = pre_user_prompt if isinstance(pre_user_prompt, list) else [pre_user_prompt]
-        classifier_entries = [
-            e for e in entries
-            if "pre_prompt_classifier" in e.get("command", "")
-        ]
-        assert classifier_entries, \
-            "No pre_user_prompt hook entry references pre_prompt_classifier"
+        classifier_entries = [e for e in entries if "pre_prompt_classifier" in e.get("command", "")]
+        assert classifier_entries, "No pre_user_prompt hook entry references pre_prompt_classifier"
         for entry in classifier_entries:
             assert entry.get("show_output") is True, (
                 f"pre_user_prompt hook for pre_prompt_classifier must have "
@@ -444,8 +446,9 @@ class TestGap4ShowOutputInHooksJson:
         if not isinstance(entries, list):
             entries = [entries]
         commands = [e.get("command", "") for e in entries]
-        assert any("pre_prompt_classifier" in c for c in commands), \
+        assert any("pre_prompt_classifier" in c for c in commands), (
             "pre_user_prompt hook must invoke pre_prompt_classifier.py"
+        )
 
     def test_hooks_json_is_valid_json(self):
         text = self.hooks_path.read_text(encoding="utf-8")
@@ -457,6 +460,7 @@ class TestGap4ShowOutputInHooksJson:
 # Gap 5: check_adg_health_stale renamed to check_adg_health_red
 # ---------------------------------------------------------------------------
 
+
 class TestGap5AdgHealthFunctionRename:
     """
     Gap: test suite imported check_adg_health_stale which no longer existed
@@ -466,10 +470,11 @@ class TestGap5AdgHealthFunctionRename:
 
     def _run_health_check(self, servers_response: list) -> bool:
         """Helper: run check_adg_health_red with a mocked probe that returns servers_response."""
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import check_adg_health_red
+        from pre_prompt_classifier import check_adg_health_red
+
         mock_result = _make_probe_result(servers_response)
         with patch(
-            "ops_scripts.hooks.windsurf.pre_prompt_classifier.subprocess.run",
+            "pre_prompt_classifier.subprocess.run",
             return_value=mock_result,
         ):
             # Also mock probe_script.exists() to return True so the function doesn't bail early
@@ -477,76 +482,75 @@ class TestGap5AdgHealthFunctionRename:
                 return check_adg_health_red(Path("."))
 
     def test_check_adg_health_red_importable(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import check_adg_health_red
-        assert callable(check_adg_health_red), \
-            "check_adg_health_red must be importable and callable"
+        from pre_prompt_classifier import check_adg_health_red
+
+        assert callable(check_adg_health_red), "check_adg_health_red must be importable and callable"
 
     def test_check_adg_health_stale_does_not_exist(self):
-        import ops_scripts.hooks.windsurf.pre_prompt_classifier as mod
+        import pre_prompt_classifier as mod
+
         assert not hasattr(mod, "check_adg_health_stale"), (
-            "check_adg_health_stale must not exist — it was the old broken name. "
-            "Use check_adg_health_red."
+            "check_adg_health_stale must not exist — it was the old broken name. Use check_adg_health_red."
         )
 
     def test_check_adg_health_red_returns_true_when_probe_reports_non_ok(self):
         result = self._run_health_check([{"name": "adg_sqlite", "status": "error"}])
-        assert result is True, \
-            "check_adg_health_red must return True when probe reports status != 'ok'"
+        assert result is True, "check_adg_health_red must return True when probe reports status != 'ok'"
 
     def test_check_adg_health_red_returns_false_when_probe_reports_ok(self):
         result = self._run_health_check([{"name": "adg_sqlite", "status": "ok"}])
-        assert result is False, \
-            "check_adg_health_red must return False when probe reports status == 'ok'"
+        assert result is False, "check_adg_health_red must return False when probe reports status == 'ok'"
 
     def test_check_adg_health_red_fails_open_when_probe_errors(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import check_adg_health_red
+        from pre_prompt_classifier import check_adg_health_red
+
         with patch(
-            "ops_scripts.hooks.windsurf.pre_prompt_classifier.subprocess.run",
+            "pre_prompt_classifier.subprocess.run",
             side_effect=FileNotFoundError("probe not found"),
         ):
             with patch("pathlib.Path.exists", return_value=True):
                 result = check_adg_health_red(Path("."))
-        assert result is False, \
-            "check_adg_health_red must fail-open (return False) when probe script errors"
+        assert result is False, "check_adg_health_red must fail-open (return False) when probe script errors"
 
     def test_check_adg_health_red_fails_open_on_malformed_json(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import check_adg_health_red
+        from pre_prompt_classifier import check_adg_health_red
+
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "{not valid json}"
         with patch(
-            "ops_scripts.hooks.windsurf.pre_prompt_classifier.subprocess.run",
+            "pre_prompt_classifier.subprocess.run",
             return_value=mock_result,
         ):
             with patch("pathlib.Path.exists", return_value=True):
                 result = check_adg_health_red(Path("."))
-        assert result is False, \
-            "check_adg_health_red must fail-open when probe returns malformed JSON"
+        assert result is False, "check_adg_health_red must fail-open when probe returns malformed JSON"
 
     def test_check_adg_health_red_fails_open_on_nonzero_exit(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import check_adg_health_red
+        from pre_prompt_classifier import check_adg_health_red
+
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stdout = ""
         with patch(
-            "ops_scripts.hooks.windsurf.pre_prompt_classifier.subprocess.run",
+            "pre_prompt_classifier.subprocess.run",
             return_value=mock_result,
         ):
             with patch("pathlib.Path.exists", return_value=True):
                 result = check_adg_health_red(Path("."))
-        assert result is False, \
-            "check_adg_health_red must fail-open when probe exits with non-zero code"
+        assert result is False, "check_adg_health_red must fail-open when probe exits with non-zero code"
 
     def test_check_adg_health_red_fails_open_when_probe_script_missing(self):
-        from ops_scripts.hooks.windsurf.pre_prompt_classifier import check_adg_health_red
+        from pre_prompt_classifier import check_adg_health_red
+
         # probe_script.exists() returns False → should bail out and return False
         with patch("pathlib.Path.exists", return_value=False):
             result = check_adg_health_red(Path("/nonexistent"))
-        assert result is False, \
-            "check_adg_health_red must fail-open when probe script file does not exist"
+        assert result is False, "check_adg_health_red must fail-open when probe script file does not exist"
 
     def test_check_adg_health_red_returns_true_when_adg_sqlite_absent_from_results(self):
         # Probe returned results but adg_sqlite not among them → red (absent = unhealthy)
         result = self._run_health_check([{"name": "other_server", "status": "ok"}])
-        assert result is True, \
+        assert result is True, (
             "check_adg_health_red must return True (red) when adg_sqlite not in probe results"
+        )

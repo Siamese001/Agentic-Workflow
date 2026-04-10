@@ -22,7 +22,7 @@ from pathlib import Path
 
 FAIL_POLICY = "open"
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 PROCESS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "spawned_processes.jsonl"
 
 
