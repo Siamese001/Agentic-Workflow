@@ -319,8 +319,8 @@ def _print_defect_table(
             pass
 
     # --- Compact burndown table (auto-printed on every ADG run) ---
-    _TH = "+-----+------------------------------+-------+-------+-------+------+"
-    _THDR = "| Band| Kind                         | Gross | Exempt |   Net |   %  |"
+    _TH = "+-----+------+------------------------------+-------+-------+-------+------+"
+    _THDR = "| Band| Gate | Kind                         | Gross | Exempt |   Net |   %  |"
     print("\n[ADG] Burndown:")
     print(_TH)
     print(_THDR)
@@ -331,17 +331,17 @@ def _print_defect_table(
 
     # P0
     _p0_gate = "✓" if p0_count == 0 else "✗"
-    print(f"| P0{_p0_gate} | layer violations             | {p0_count:5} |        | {p0_count:5} |      |")
+    print(f"| P0  | {_p0_gate}   | layer violations             | {p0_count:5} |        | {p0_count:5} |      |")
     if _p0_cycle_count:
         print(
-            f"|     |  circular_import             | {_p0_cycle_count:5} |        | {_p0_cycle_count:5} |      |"
+            f"|     |      |  circular_import             | {_p0_cycle_count:5} |        | {_p0_cycle_count:5} |      |"
         )
     if _p0_dynamic_count:
         print(
-            f"|     |  dynamic_execution           | {_p0_dynamic_count:5} |        | {_p0_dynamic_count:5} |      |"
+            f"|     |      |  dynamic_execution           | {_p0_dynamic_count:5} |        | {_p0_dynamic_count:5} |      |"
         )
     for _src_l, _dst_l, _cnt in _p0_layer_pairs:
-        print(f"|     |    {_src_l or '?'} -> {_dst_l or '?':<22}| {_cnt:5} |        | {_cnt:5} |      |")
+        print(f"|     |      |    {_src_l or '?'} -> {_dst_l or '?':<22}| {_cnt:5} |        | {_cnt:5} |      |")
     print(_TH)
 
     # P1 / P2 / P3 bands
@@ -361,13 +361,14 @@ def _print_defect_table(
         _exempt = _guardian_by_sev.get(_sev, 0)
         _gross = _count + _exempt
         _status = ("*" if _delta > 0 else "^") if _ceil is not None else "~"
+        _gate_sym = "^" if _delta > 0 else "✓"
         print(
-            f"| {_band}{_status} | {_label:<29}| {_gross:5} | {_exempt:6} | {_count:5} | {_pct(_exempt, _gross):>4} |"
+            f"| {_band}{_status} | {_gate_sym}   | {_label:<29}| {_gross:5} | {_exempt:6} | {_count:5} | {_pct(_exempt, _gross):>4} |"
         )
         for _kind, _cnt, _prod in _cat_data.get(_sev, []):
             _ek = _guardian_by_kind.get(_sev, {}).get(_kind, 0)
             _gk = _cnt + _ek
-            print(f"|     |  {_kind:<28}| {_gk:5} | {_ek:6} | {_cnt:5} | {_pct(_ek, _gk):>4} |")
+            print(f"|     |      |  {_kind:<28}| {_gk:5} | {_ek:6} | {_cnt:5} | {_pct(_ek, _gk):>4} |")
         print(_TH)
 
     # SC/AP audit rows
@@ -379,16 +380,16 @@ def _print_defect_table(
             ("AP-", "agentic antipatterns", _ap_total),
         ]:
             if _row_total:
-                print(f"| ~   | {_row_label:<29}| {_row_total:5} |        | {_row_total:5} |      |")
+                print(f"| ~   |      | {_row_label:<29}| {_row_total:5} |        | {_row_total:5} |      |")
                 for _ck, _cv in sorted(_sc_ap_counts.items()):
                     if _ck.startswith(_prefix):
-                        print(f"|     |  {_ck:<28}| {_cv:5} |        | {_cv:5} |      |")
+                        print(f"|     |      |  {_ck:<28}| {_cv:5} |        | {_cv:5} |      |")
                 print(_TH)
 
     # Totals
     _total_gross = total + _guardian_total
     print(
-        f"| TOT | ALL                          | {_total_gross:5} | {_guardian_total:6} | {total:5} | {_pct(_guardian_total, _total_gross):>4} |"
+        f"| TOT |      | ALL                          | {_total_gross:5} | {_guardian_total:6} | {total:5} | {_pct(_guardian_total, _total_gross):>4} |"
     )
     print(_TH)
     print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=actionable  %=exempt/gross")
