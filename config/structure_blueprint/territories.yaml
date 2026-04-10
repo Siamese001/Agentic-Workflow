@@ -196,11 +196,23 @@ territories:
         depth: 2
         purpose: "Memory, embeddings, retrieval"
         subfolders:
+          cache: {purpose: "Caching layers and cache management strategies"}
           config: {purpose: "Configuration"}
           types: {purpose: "Data models"}
           reasoning: {purpose: "Decision agents"}
-          enforcement: {purpose: "Guardrails"}
-          utils: {purpose: "Helpers"}
+          enforcement:
+            purpose: "Guardrails"
+            subfolders:
+              authority: {purpose: "State and memory authority enforcement — run-scoped state, memory access control"}
+          memory:
+            purpose: "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers"
+            subfolders:
+              semantic: {purpose: "Semantic search stores (BM25, embeddings)"}
+          utils:
+            purpose: "Helpers"
+            subfolders:
+              client: {purpose: "External client wrappers (ChromaDB, etc.)"}
+              commit: {purpose: "Two-phase commit and transactional coordination utilities"}
       L5_safety:
         depth: 2
         purpose: "Guardrails, validation, policy enforcement"

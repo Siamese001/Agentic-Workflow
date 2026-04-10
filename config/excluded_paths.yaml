@@ -151,3 +151,4 @@ file_patterns:
   - "*.sqlite"  # Local SQLite databases (runtime state, never committed)
   - "*_test/"  # Runtime test directories (never committed)
   - "runtime_adg/"  # Live ChromaDB vector store directories (regenerated at runtime, never committed)
+  - "*.jsonl"  # JSON Lines runtime output files (drift timelines, trace logs — never committed)

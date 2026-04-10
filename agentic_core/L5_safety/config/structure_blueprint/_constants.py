@@ -338,7 +338,7 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
         ],
         "utils_suffixes": ["_util.py", "_helper.py"],
         "extra_subfolders": {
-            "caching": {
+            "cache": {
                 "purpose": "Caching layers and cache management strategies.",
             },
             "engines": {
@@ -353,6 +353,11 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             },
             "storage": {
                 "purpose": "Persistent and filesystem-backed state storage implementations.",
+            },
+        },
+        "enforcement_subfolders": {
+            "authority": {
+                "purpose": "State and memory authority enforcement — run-scoped state, memory access control.",
             },
         },
         "routing_rules": {
