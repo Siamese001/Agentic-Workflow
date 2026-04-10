@@ -11,7 +11,7 @@
 
 | File | Type | Role | Editable |
 |------|------|------|----------|
-| `.windsurf/rules/*.md` | **Source** (14 files) | Modular rule definitions — discovered directly by Windsurf | ✅ YES |
+| `.windsurf/rules/*.md` | **Source** (15 files) | Modular rule definitions — discovered directly by Windsurf | ✅ YES |
 | `AGENTS.md` (repo root) | **Conventions** | Concise repo-wide agent guidance including Windsurf config doc policy | ✅ YES |
 
 ### Maintenance Workflow
@@ -259,6 +259,7 @@ All `model_decision` and `glob` rules require a `description` field in frontmatt
 | `adg-test-accelerator-enforcement.md` | `glob` | Fires on ADG test files and tools — enforces adg_test_accelerator.py usage |
 | `mcp-config-ssot.md` | `glob` | Fires on edits to `.windsurf/mcp_config.json` |
 | `mcp-pytest-enforcement.md` | `glob` | Fires on edits to `test_*.py` and `conftest.py` |
+| `refactor-decision-memory.md` | `model_decision` | Before opening HITL for any refactor-class decision, consult the refactor-decision-memory skill for historical precedent |
 
 ---
 
@@ -300,6 +301,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-05-09
 
 **Changelog**:
+- 2026-04-15: **REFACTOR DECISION MEMORY** — New rule `refactor-decision-memory.md` (model_decision). New skill `refactor-decision-memory/` with `lookup_refactor_decisions.py`. New hook `post_cascade_hitl_capture.py` wired into `post_cascade_response`. SQLite+FTS5 ledger at `.windsurf/state/refactor_decisions/`. `hitl-enforcement.md` unchanged — memory system sits under the policy layer. 30 unit tests added.
 - 2026-04-15: **RULE SIZE REDUCTION** — `constitutional.md` 29K→3.3K (always_on core, 16 constraints + tier table). `hitl-enforcement.md` 33K→2.7K (always_on pipeline + bypass + thresholds). New `hitl-decision-points.md` (model_decision, 10 decision triggers + HITL-10 shape + telemetry). `sequential-thinking-enforcement.md` converted from always_on (6.9K) to model_decision (1.8K). `adg-test-accelerator-enforcement.md` description frontmatter added. `skills/graph-analysis/fail_closed_discipline.md` created. All 6 skill entry files confirmed as `SKILL.md`. Always_on rules: constitutional (3.3K), global_rules (3.0K), hitl-enforcement (2.7K), plan-location (1.9K).
 - 2026-04-14: **WINDSURF DOC ALIGNMENT** — All 6 skill entry files renamed `skill.md` → `SKILL.md` (canonical naming). Added `description` frontmatter to 4 `model_decision` rules (`adg-repair-discipline`, `anti-pattern-hitl-gate`, `memory-management`, `security-hardening`) and 2 `glob` rules (`mcp-config-ssot`, `mcp-pytest-enforcement`). New rule: `windsurf-config-lookup.md`. Removed non-standard `file_pattern` fields from `hooks.json`; moved path filtering logic into `post_write_mcp_config_sync.py`. Added 25 support files across all 5 incomplete skill directories (5 per skill). Added `## Windsurf Configuration Docs` block to repo-root `AGENTS.md`. Updated RULES_INDEX: file count 13→14, skills count 5→6, added Conditional Rules table.
 - 2026-04-09: **WINDSURF DRIFT CLEANUP** — Deleted `.windsurf/rules/.windsurfrules` (90KB aggregate, not a documented Windsurf rule artifact, preprocessor archived). Deleted `.windsurf/rules/_variables.yaml` (orphaned config for archived preprocessor). Relocated `pytest-optimization.md` from `.windsurf/` root to `docs/` (no activation path at root). Flattened `.windsurf/plans/plans/` and `.windsurf/plans/tasks/` subdirs into `.windsurf/plans/` per plan-location.md SSOT. Archived `_show_diffs.py` to `tools/archive/`. Updated RULES_INDEX.md: removed dead preprocessor workflow, corrected file count (9→13), fixed `.windsurfrules` status claim. All 6 `SKILL.md` files: moved non-standard frontmatter fields (`enforcement_layer`, `enforcement_timing`, `enforcement_type`) into `metadata:` block per Agent Skills spec.
