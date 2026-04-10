@@ -11,6 +11,31 @@ last_updated: "2026-04-05"
 # None currently active
 
 territories:
+  __root__:
+    depth: 0
+    type: "root"
+    purpose: "Project root — allowed files only, no subdirectories except whitelisted territories"
+    allowed_files:
+      - "README.md"
+      - "AGENTS.md"
+      - "ARCHITECTURE_LAYERS.md"
+      - "conftest.py"
+      - "pyproject.toml"
+      - "pyrightconfig.json"
+      - "pytest.ini"
+      - ".codeiumignore"
+      - ".env"
+      - ".gitattributes"
+      - ".gitignore"
+      - ".pre-commit-config.yaml"
+      - ".pylintrc"
+    allowed_patterns:
+      - "trace_*.jsonl"
+      - "mission_*.log"
+      - "*.bat"
+      - "*.sh"
+      - "root_drift_*.py"
+
   config:
     depth: 2
     type: "configuration"

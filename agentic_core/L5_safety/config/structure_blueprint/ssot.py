@@ -1050,6 +1050,17 @@ ROOT_ALLOWED_PATTERNS: Final[Sequence[Pattern]] = [
     re.compile(r"^root_drift_.*\.py$"),  # Allowed: Remediation scripts (Temp)
     re.compile(r"^ARCHITECTURE_LAYERS\.md$"),  # Allowed: Architecture documentation
     re.compile(r"^README\.md$"),  # Allowed: Project README
+    re.compile(r"^AGENTS\.md$"),  # Allowed: Agent guidance documentation
+    re.compile(r"^\.codeiumignore$"),  # Allowed: Codeium ignore rules
+    re.compile(r"^\.env$"),  # Allowed: Environment variables
+    re.compile(r"^\.gitattributes$"),  # Allowed: Git attributes
+    re.compile(r"^\.gitignore$"),  # Allowed: Git ignore rules
+    re.compile(r"^\.pre-commit-config\.yaml$"),  # Allowed: Pre-commit configuration
+    re.compile(r"^\.pylintrc$"),  # Allowed: Pylint configuration
+    re.compile(r"^conftest\.py$"),  # Allowed: Root pytest conftest
+    re.compile(r"^pyproject\.toml$"),  # Allowed: Python project configuration
+    re.compile(r"^pyrightconfig\.json$"),  # Allowed: Pyright type checker configuration
+    re.compile(r"^pytest\.ini$"),  # Allowed: Pytest configuration
 ]
 
 
