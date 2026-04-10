@@ -340,12 +340,16 @@ try:
     ENFORCED_TERRITORIES: Final[frozenset[str]] = (
         _ENFORCED_TERRITORIES_BASE | _discover_apps_wildcard_folders()
     )
-except Exception:
+except (
+    Exception
+):  # guardian: allow-broad-except -- module-init fallback; discovery failure must not block import
     ENFORCED_TERRITORIES = _ENFORCED_TERRITORIES_BASE  # type: ignore[misc]
 
 try:
     CODE_TERRITORIES: Final[frozenset[str]] = _CODE_TERRITORIES_BASE | _discover_apps_wildcard_folders()
-except Exception:
+except (
+    Exception
+):  # guardian: allow-broad-except -- module-init fallback; discovery failure must not block import
     CODE_TERRITORIES = _CODE_TERRITORIES_BASE  # type: ignore[misc]
 
 
@@ -1023,7 +1027,6 @@ def safe_prefixed_filename(prefix: str, filename: str) -> str:
 
     # Check if filename already starts with the prefix
     stem = filename.rsplit(".", 1)[0] if "." in filename else filename
-    "." + filename.rsplit(".", 1)[1] if "." in filename else ""
 
     # If already has prefix, return unchanged
     if stem.startswith(prefix + "_") or stem == prefix:
@@ -1175,10 +1178,8 @@ def is_path_allowed(rel_path: str | Path) -> bool:
     # 3. Depth Enforcement: disabled — repo structure is mature and accurate.
     # The depth caps were set 6 months ago on a greenfield repo and now block
     # legitimate deep paths (agentic_core actual=7, tests actual=9, etc.).
-    # The `depth` key is retained in SSOT YAML to avoid KeyError on line 1357
-    # but is no longer used as a hard nesting cap.
-    # folder_depth kept for the file-position check at line 1357.
-    folder_depth = len(parts) - 1 if "." in filename else len(parts)
+    # The `depth` key is retained in SSOT YAML to avoid KeyError in territory
+    # configs but is no longer used as a hard nesting cap.
 
     # Check subfolder existence and nested forbidden patterns
     if len(parts) > 1:
