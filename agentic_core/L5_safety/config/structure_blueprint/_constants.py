@@ -373,17 +373,52 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
     "L5_safety": {
         "purpose": "The Guardian: Safety, Security, and Governance.",
         "notes": "LCD+ canonical skeleton. guardrails/gravity/cognition/governance/security/policy_engine/red_teaming/runtime/human_review DISSOLVED into reasoning/enforcement.",
-        "extra_subfolders": {
+        "extra_subfolders": {},
+        "reasoning_subfolders": {
+            "adaptation": {
+                "purpose": "Policy adaptation loop — runtime safety policy self-adjustment.",
+            },
             "core_kernel": {
                 "purpose": "Zero-dependency safety kernel and foundational primitives.",
+            },
+            "file_classification": {
+                "purpose": "File classification sub-package: classification core, naming policy, validation rules.",
+            },
+        },
+        "validators_subfolders": {
+            "invariants": {
+                "purpose": "Runtime invariant checker.",
             },
             "static_checks": {
                 "purpose": "Static analysis invariant checks: determinism serialization, PowerShell ban, PTC invariants, write-gateway enforcement.",
             },
         },
+        "utils_subfolders": {
+            "runners": {
+                "purpose": "Orchestrator and agent runner utilities for safety layer agents.",
+            },
+        },
         "enforcement_subfolders": {
+            "audit": {
+                "purpose": "Safety audit trail, registry, and AI check audit.",
+            },
+            "escalation": {
+                "purpose": "Human escalation and escalation orchestration.",
+            },
+            "gates": {
+                "purpose": "Tool safety gate and enforcement checkpoints.",
+            },
             "governance": {
                 "purpose": "Governance policies, audit hooks, and compliance frameworks nested under safety enforcement.",
+            },
+            "hitl": {
+                "purpose": "Human-in-the-loop enforcement: decision logger, escalation activator, review queue.",
+            },
+            "retrieval": {
+                "purpose": "Retrieval safety gate.",
+            },
+            "security": {
+                "purpose": "Credential guards, injection gates, secret management, signature verification.",
             },
         },
         "config_subfolders": {

@@ -229,12 +229,40 @@ territories:
         depth: 2
         purpose: "Guardrails, validation, policy enforcement"
         subfolders:
-          config: {purpose: "Configuration"}
+          config:
+            purpose: "Configuration"
+            subfolders:
+              structure_blueprint:
+                purpose: "SSOT structure blueprint module — _constants.py, territories.py, ssot.py, derived.py, and enforcement/snapshot baseline files"
+                subfolders:
+                  data: {purpose: "SSOT data files (territories.json, manifest snapshots)"}
+                  enforcement: {purpose: "Structural enforcement baselines — import graph, debt baselines, type registry"}
           types: {purpose: "Data models"}
-          reasoning: {purpose: "Decision agents"}
-          enforcement: {purpose: "Guardrails"}
-          validators: {purpose: "Validators"}
-          utils: {purpose: "Helpers"}
+          reasoning:
+            purpose: "Decision agents"
+            subfolders:
+              adaptation: {purpose: "Policy adaptation loop — runtime safety policy self-adjustment"}
+              core_kernel: {purpose: "Zero-dependency safety kernel and foundational primitives"}
+              file_classification: {purpose: "File classification sub-package: classification core, naming policy, validation rules"}
+          enforcement:
+            purpose: "Guardrails"
+            subfolders:
+              audit: {purpose: "Safety audit trail, registry, and AI check audit"}
+              escalation: {purpose: "Human escalation and escalation orchestration"}
+              gates: {purpose: "Tool safety gate and enforcement checkpoints"}
+              governance: {purpose: "Governance policies, audit hooks, and compliance frameworks"}
+              hitl: {purpose: "Human-in-the-loop enforcement: decision logger, escalation activator, review queue"}
+              retrieval: {purpose: "Retrieval safety gate"}
+              security: {purpose: "Credential guards, injection gates, secret management, signature verification"}
+          validators:
+            purpose: "Validators"
+            subfolders:
+              invariants: {purpose: "Runtime invariant checker"}
+              static_checks: {purpose: "Static analysis invariant checks: determinism, PowerShell ban, PTC invariants, write-gateway enforcement"}
+          utils:
+            purpose: "Helpers"
+            subfolders:
+              runners: {purpose: "Orchestrator and agent runner utilities for safety layer agents"}
       L6_observability:
         depth: 2
         purpose: "Telemetry, logging, monitoring"
