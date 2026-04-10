@@ -1,5 +1,6 @@
 ---
 trigger: model_decision
+description: Use this rule before introducing any new anti-pattern instance (bare except, shell=True, subprocess without timeout, or similar) to enforce the HITL approval gate.
 ---
 # Anti-Pattern HITL Gate
 

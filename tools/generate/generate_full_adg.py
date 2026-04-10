@@ -56,17 +56,6 @@ from agentic_core.adg.artifact.builder_types import build_artifact  # noqa: E402
 from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
     ADGStaticScanner,
 )
-from agentic_core.L2_execution.utils.batch_processor import BatchProcessor  # noqa: E402
-
-# CPU Optimization Imports
-from agentic_core.L2_execution.utils.cpu_optimizer import (  # noqa: E402
-    CPUConfig,
-    get_cpu_optimizer,
-    shutdown_cpu_optimizer,
-)
-from agentic_core.L2_execution.utils.parallel_file_processor import (  # noqa: E402
-    shutdown_file_processor,
-)
 from tools.generate.archiving import (  # noqa: E402  # M.2 modularization
     _archive_old_artifacts,
     _create_zip_archive,
@@ -111,10 +100,6 @@ def generate_full_adg(
     adg_artifacts_dir: Path,
     ts: str,
     archive_old: bool = True,
-    parallel: bool = True,
-    workers: int | None = None,
-    cpu_affinity: bool = False,
-    batch_size: int = 100,
     enable_zip: bool = True,
     enable_reports: bool = True,
     enable_analysis: bool = True,
@@ -125,10 +110,6 @@ def generate_full_adg(
         adg_artifacts_dir: Directory for ADG artifacts
         ts: Timestamp string (MMDDYYYY format)
         archive_old: If True, archive artifacts older than retention period
-        parallel: Enable parallel processing via CPU optimizer (default True)
-        workers: Number of worker processes (None = auto-detect)
-        cpu_affinity: Enable CPU affinity pinning (AMD-optimized)
-        batch_size: Batch size for parallel file/edge operations
         enable_zip: Write a zip archive of all artifacts (default True)
         enable_reports: Generate all 8 standardized reports (default True)
         enable_analysis: Run score_edges + route_violations analytics (default True)
@@ -138,38 +119,12 @@ def generate_full_adg(
     import time as _time
 
     # --- Startup mode banner (visible before any work begins) ---
-    print("[ADG] Mode: FULL  zip=ON  reports=ON  parallel=ON")
+    print("[ADG] Mode: FULL  zip=ON  reports=ON")
 
     # Track semantic enrichment warnings for P4 defect reporting
     semantic_warnings: list[str] = []
 
     _adg_start = _time.time()
-
-    # --- CPU Optimizer initialization ---
-    cpu_config = CPUConfig(
-        max_workers=workers,
-        chunk_size=batch_size,
-        use_processes=True,
-        cpu_affinity=cpu_affinity,
-        batch_size=batch_size,
-    )
-    optimizer = get_cpu_optimizer(cpu_config)
-
-    if parallel:
-        print(
-            f"[ADG] CPU Optimizer: {optimizer.get_optimal_workers()} workers "
-            f"(AMD={optimizer._is_amd}, affinity={cpu_affinity})",
-        )
-        if cpu_affinity:
-            optimizer.set_cpu_affinity()
-            print("[ADG] CPU affinity set for current process")
-        cpu_metrics_start = optimizer.get_cpu_metrics()
-        print(
-            f"[ADG] CPU baseline: {cpu_metrics_start.get('cpu_percent_avg', 0):.1f}% avg "
-            f"({cpu_metrics_start.get('cpu_count_physical', '?')} physical cores)",
-        )
-    else:
-        print("[ADG] Running in sequential mode (--parallel disabled)")
 
     print("[ADG] Starting full scan...")
 
@@ -257,6 +212,11 @@ def generate_full_adg(
     ]
     repair_routes = route_violations(violation_edges)
     routing_summary = repair_routing_summary(repair_routes)
+
+    # --- Archive old artifacts BEFORE validation gates so cleanup always runs ---
+    # (ratchet/gate failures call sys.exit before the post-zip archive block)
+    if archive_old:
+        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
 
     # --- Write artifacts to temp directory first for fail-fast check ---
     print("[ADG] Writing artifact tiers to temp directory...")
@@ -350,22 +310,9 @@ def generate_full_adg(
     # --- E8: Ownership ---
     OwnershipRegistry.from_scan_result(result)
 
-    # --- E9: Confidence (CPU-optimized batch scoring) ---
+    # --- E9: Confidence scoring ---
     if enable_analysis:
-        if parallel:
-            _e9_start = _time.time()
-            edge_list = list(result.edges)
-            edge_batch_processor = BatchProcessor(
-                processor_func=lambda e: e,
-                batch_size=batch_size,
-                max_workers=workers,
-            )
-            scored_edges = score_edges(edge_list)
-            print(
-                f"[ADG] E9 edge scoring: {len(edge_list)} edges in {_time.time() - _e9_start:.2f}s (parallel)",
-            )
-        else:
-            scored_edges = score_edges(list(result.edges))
+        scored_edges = score_edges(list(result.edges))
         conf_summary = confidence_summary(scored_edges)
 
         # Persist confidence summary for L0 routing confidence monitor
@@ -493,11 +440,7 @@ def generate_full_adg(
         print("[ADG] Individual files will be archived using legacy path")
         zip_created = False
 
-    # --- Archive old artifacts (moved before validation check) ---
-    if archive_old:
-        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
-
-    # --- Closure validation check (moved after zip creation and archiving) ---
+    # --- Closure validation check ---
     if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:
         failed_caps = [row["capability"] for row in closure_report["closure_rows"] if not row["passed"]]
         # Allow EDGE SEMANTIC PRECISION and DETERMINISM (ARTIFACT LEVEL) to fail temporarily - these are known issues
@@ -557,17 +500,8 @@ def generate_full_adg(
         print("[ERROR] Re-run ADG generation in a stable repository state")
         sys.exit(1)
 
-    # --- CPU Optimization: Final metrics and cleanup ---
     _adg_elapsed = _time.time() - _adg_start
-
     print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
-    if parallel:
-        cpu_metrics_end = optimizer.get_cpu_metrics()
-        print(f"[ADG] CPU final: {cpu_metrics_end.get('cpu_percent_avg', 0):.1f}% avg")
-        print(f"[ADG] CPU workers used: {optimizer.get_optimal_workers()}")
-        shutdown_cpu_optimizer()
-        shutdown_file_processor()
-        print("[ADG] CPU optimizer shutdown complete")
 
 
 # M.5: _auto_ingest_to_redis extracted to tools.generate.integration.redis_ingest
@@ -648,31 +582,8 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--force", action="store_true", help="Force regeneration even if cache exists")
-    # CPU Optimization CLI Flags (parallel is now default)
-    parser.add_argument(
-        "--workers",
-        type=int,
-        default=None,
-        help="Number of worker processes (default: auto)",
-    )
-    parser.add_argument(
-        "--cpu-affinity",
-        action="store_true",
-        help="Enable CPU affinity for AMD processors (Wave 5)",
-    )
-    parser.add_argument(
-        "--batch-size",
-        type=int,
-        default=100,
-        help="Batch size for file processing (default: 100)",
-    )
     parser.add_argument("--repair", action="store_true", help="Run repair orchestrator after ADG generation")
     parser.add_argument("--repair-dry-run", action="store_true", help="Show repairs without applying them")
-    parser.add_argument(
-        "--no-parallel",
-        action="store_true",
-        help="Disable parallel processing (default: enabled)",
-    )
     parser.add_argument(
         "--no-zip",
         action="store_true",
@@ -696,21 +607,12 @@ def main() -> None:
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
 
     print(f"[ADG] Starting generation with timestamp: {ts}")
-    print(f"[ADG] Parallel mode: {not args.no_parallel}")
-    if not args.no_parallel:
-        print(f"[ADG] Workers: {args.workers or 'auto'}")
-        print(f"[ADG] CPU affinity: {args.cpu_affinity}")
-        print(f"[ADG] Batch size: {args.batch_size}")
 
     # Generate ADG
     try:
         generate_full_adg(
             adg_artifacts_dir,
             ts,
-            parallel=not args.no_parallel,
-            workers=args.workers,
-            cpu_affinity=args.cpu_affinity,
-            batch_size=args.batch_size,
             enable_zip=not args.no_zip,
             enable_reports=not args.no_reports,
             enable_analysis=True,

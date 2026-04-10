@@ -1,5 +1,6 @@
 ---
 trigger: model_decision
+description: Use this rule when handling credentials, environment variables, secrets, API keys, or any code path that touches external service authentication.
 ---
 # Security Hardening Rule
 

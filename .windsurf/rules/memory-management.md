@@ -1,5 +1,6 @@
 ---
 trigger: model_decision
+description: Use this rule when reading or writing to the persistent memory graph, purging stale entities, or syncing ADG context into the memory store.
 ---
 # Memory Management Rules
 

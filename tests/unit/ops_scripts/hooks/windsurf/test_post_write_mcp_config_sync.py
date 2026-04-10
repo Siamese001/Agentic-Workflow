@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for post_write_mcp_config_sync.py hook."""
 
+import io
 import json
 import tempfile
 import unittest
@@ -10,7 +11,7 @@ from unittest.mock import patch
 # Import the module under test
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 from post_write_mcp_config_sync import _validate_ssot, main
 
 
@@ -64,16 +65,14 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
         issues = _validate_ssot(self.ssot)
         self.assertTrue(any("hardcoded secret" in issue for issue in issues))
 
-    def test_validate_ssot_localhost_secret_allowed(self):
-        """Edge case: localhost secrets are allowed."""
+    def test_validate_ssot_localhost_value_not_flagged(self):
+        """Edge case: env value containing 'localhost' is NOT flagged as a hardcoded secret."""
         valid_config = {
-            "mcpServers": {"local-server": {"command": "python", "env": {"API_KEY": "sk-1234567890abcdef"}}}
+            "mcpServers": {"local-server": {"command": "python", "env": {"API_KEY": "http://localhost:8080/key"}}}
         }
         self.ssot.write_text(json.dumps(valid_config), encoding="utf-8")
         issues = _validate_ssot(self.ssot)
-        # Should not flag localhost secrets (server name contains 'local' but actual check is on value)
-        # Since the value doesn't contain localhost, it will be flagged - this is expected behavior
-        self.assertTrue(any("hardcoded secret" in issue for issue in issues))
+        self.assertEqual([], issues, "localhost value should not be flagged as hardcoded secret")
 
     def test_validate_ssot_json_parse_error(self):
         """Failure path: malformed JSON."""
@@ -108,6 +107,76 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
 
         result = main()
         self.assertEqual(0, result)  # advisory only, never blocks
+
+
+    def test_main_argv_non_mcp_path_skips(self):
+        """Filter: non-mcp_config.json argv path causes immediate 0 return without touching SSOT."""
+        with patch("sys.argv", ["post_write_mcp_config_sync.py", "/some/other/file.py"]):
+            with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                mock_ssot.exists.return_value = True
+                result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_not_called()
+
+    def test_main_argv_mcp_config_path_proceeds(self):
+        """Filter: mcp_config.json in argv proceeds to sync (SSOT checked)."""
+        with patch("sys.argv", ["post_write_mcp_config_sync.py", "/repo/.windsurf/mcp_config.json"]):
+            with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                mock_ssot.exists.return_value = False
+                result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_called_once()
+
+    def test_main_argv_windows_backslash_path_proceeds(self):
+        """Filter: Windows backslash path ending in mcp_config.json is accepted."""
+        with patch("sys.argv", ["post_write_mcp_config_sync.py", r"C:\repo\.windsurf\mcp_config.json"]):
+            with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                mock_ssot.exists.return_value = False
+                result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_called_once()
+
+    def test_main_stdin_non_mcp_payload_skips(self):
+        """Filter: stdin JSON with non-mcp file_path causes immediate 0 return."""
+        payload = json.dumps({"file_path": "/some/other.py"})
+        with patch("sys.argv", ["post_write_mcp_config_sync.py"]):
+            with patch("sys.stdin", io.StringIO(payload)):
+                with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                    mock_ssot.exists.return_value = True
+                    result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_not_called()
+
+    def test_main_stdin_mcp_config_payload_proceeds(self):
+        """Filter: stdin JSON with mcp_config.json file_path proceeds to sync."""
+        payload = json.dumps({"file_path": "/repo/.windsurf/mcp_config.json"})
+        with patch("sys.argv", ["post_write_mcp_config_sync.py"]):
+            with patch("sys.stdin", io.StringIO(payload)):
+                with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                    mock_ssot.exists.return_value = False
+                    result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_called_once()
+
+    def test_main_stdin_empty_proceeds(self):
+        """Edge: empty stdin with no argv falls through to SSOT check."""
+        with patch("sys.argv", ["post_write_mcp_config_sync.py"]):
+            with patch("sys.stdin", io.StringIO("")):
+                with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                    mock_ssot.exists.return_value = False
+                    result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_called_once()
+
+    def test_main_stdin_malformed_json_proceeds(self):
+        """Edge: malformed stdin JSON falls through to SSOT check (no crash)."""
+        with patch("sys.argv", ["post_write_mcp_config_sync.py"]):
+            with patch("sys.stdin", io.StringIO("{bad json")):
+                with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
+                    mock_ssot.exists.return_value = False
+                    result = main()
+        self.assertEqual(0, result)
+        mock_ssot.exists.assert_called_once()
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+# classification: dead-code — zero production callers as of 2026-04-10 (executor theater audit)
 """CPU Optimization Module for AMD Processors — Workload-Aware Implementation.
 
 Maximizes CPU utilization safely through:
@@ -27,7 +28,7 @@ import psutil
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 # Safety guardrails for AMD 9950X3D
 MAX_OPERATING_TEMP_C = 95  # AMD official spec
@@ -44,6 +45,7 @@ class WorkloadClass(enum.Enum):
     - Memory sharing requirements
     - Fixture/setup overhead characteristics
     """
+
     PYTHON_CPU = "python_cpu"  # Pure Python compute (GIL-bound) -> processes
     NATIVE_CPU = "native_cpu"  # NumPy, pandas, etc. (releases GIL) -> threads or processes
     PYTEST_MIXED = "pytest_mixed"  # General pytest suite -> xdist processes
@@ -58,6 +60,7 @@ class OperatingProfile(enum.Enum):
     INTERACTIVE: Desktop in use — reserve threads for responsiveness
     BATCH: Dedicated execution window — use full recommended defaults
     """
+
     INTERACTIVE = "interactive"
     BATCH = "batch"
 
@@ -83,6 +86,7 @@ WORKLOAD_BANDS: dict[WorkloadClass, tuple[int, int, int]] = {
 @dataclass(frozen=True)
 class CPUConfig:
     """CPU optimization configuration."""
+
     max_workers: int | None = None  # None = auto-detect from workload class
     chunk_size: int = 100
     use_processes: bool | None = None  # None = auto-detect
@@ -98,6 +102,7 @@ class CPUConfig:
 @dataclass(frozen=True)
 class WorkerRecommendation:
     """Complete worker recommendation for a workload."""
+
     workers: int
     use_processes: bool
     pytest_dist: str | None  # --dist value for pytest-xdist, None if not pytest
@@ -138,8 +143,7 @@ class AMD9950X3DOptimizer:
             use_procs = self._should_use_processes(self.config.workload_class)
             self.config = replace(self.config, use_processes=use_procs)
             logger.info(
-                f"Auto-configured: workload={self.config.workload_class.value}, "
-                f"use_processes={use_procs}",
+                f"Auto-configured: workload={self.config.workload_class.value}, use_processes={use_procs}",
             )
 
     def _detect_amd(self) -> bool:
@@ -335,7 +339,7 @@ class AMD9950X3DOptimizer:
         if self._executor is None:
             if use_processes:
                 # Unix: Use fork context (fast)
-                ctx = mp.get_context('fork') if not self._is_windows else mp.get_context('spawn')
+                ctx = mp.get_context("fork") if not self._is_windows else mp.get_context("spawn")
                 self._executor = concurrent.futures.ProcessPoolExecutor(
                     max_workers=workers,
                     mp_context=ctx,
@@ -373,7 +377,7 @@ class AMD9950X3DOptimizer:
 
         # Create fresh executor per workload class
         if rec.use_processes:
-            ctx = mp.get_context('fork') if not self._is_windows else mp.get_context('spawn')
+            ctx = mp.get_context("fork") if not self._is_windows else mp.get_context("spawn")
             executor: concurrent.futures.Executor = concurrent.futures.ProcessPoolExecutor(
                 max_workers=rec.workers,
                 mp_context=ctx,
@@ -419,7 +423,7 @@ class AMD9950X3DOptimizer:
         results = []
 
         for i in range(0, len(items), batch_size):
-            batch = items[i:i + batch_size]
+            batch = items[i : i + batch_size]
             batch_results = func(batch)
             results.extend(batch_results)
 

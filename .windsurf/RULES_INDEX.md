@@ -1,6 +1,6 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-04-09
+**Last Updated**: 2026-04-14
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
 > **2026-04-09 SSOT CLARIFICATION**: Windsurf discovers rules directly from `.windsurf/rules/*.md` (one file per rule, 12,000 char limit each). There is no preprocessor — rule files ARE the source of truth. The previously generated `.windsurfrules` aggregate has been deleted.
@@ -11,7 +11,8 @@
 
 | File | Type | Role | Editable |
 |------|------|------|----------|
-| `.windsurf/rules/*.md` | **Source** (13 files) | Modular rule definitions — discovered directly by Windsurf | ✅ YES |
+| `.windsurf/rules/*.md` | **Source** (14 files) | Modular rule definitions — discovered directly by Windsurf | ✅ YES |
+| `AGENTS.md` (repo root) | **Conventions** | Concise repo-wide agent guidance including Windsurf config doc policy | ✅ YES |
 
 ### Maintenance Workflow
 
@@ -29,6 +30,7 @@ vim .windsurf/rules/hitl-enforcement.md
 |------|-------|--------|------|----------|--------|
 | **§0: DEFAULT ANALYSIS MODE (Tier-Aware)** | Windsurf | Before work | Behavioural | `.windsurf/skills/graph-analysis/` | ✅ ENFORCED |
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
+| **Windsurf Config Lookup** | Windsurf | On demand | Behavioural | `.windsurf/rules/windsurf-config-lookup.md` | ✅ ENFORCED |
 | **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
 | **§8.5: HITL Enforcement** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` | ✅ ENFORCED |
 | **§10.0: Wave/Micro-Wave Plan Model** | Windsurf | Before plan draft | Behavioural | `.windsurf/rules/plan-location.md` + Constitutional Rule #13 | ✅ ENFORCED |
@@ -54,6 +56,8 @@ vim .windsurf/rules/hitl-enforcement.md
 | 6 | **structured-reasoning** | Windsurf | Before work | Behavioural | None (behavioral) | None | ✅ ENFORCED |
 
 **Note**: 30 individual skills consolidated into 5 canonical skills (2026-04-03). `structured-reasoning` added 2026-04-07 to replace retired Sequential Thinking MCP. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
+
+**2026-04-14 update**: All 6 skill entry files renamed `skill.md` → `SKILL.md` (uppercase) per Windsurf canonical naming. Support files (5 per skill) added for all incomplete skill directories.
 
 **Key**:
 - **Layer**: Windsurf (AI-time only) | Pre-commit (commit-time only) | Both (dual enforcement)
@@ -228,11 +232,27 @@ The following CI-specific and utility skills were also archived (not consolidate
 | Category | Total | Enforced | Partial | Missing |
 |----------|-------|----------|---------|---------|
 | Constitutional Rules | 5 | 5 | 0 | 0 |
-| Skills | 5 | 5 | 0 | 0 |
+| Skills | 6 | 6 | 0 | 0 |
 | CI Gates | 41 | 41 | 0 | 0 |
 | Pre-commit Hooks | 25+ | 25+ | 0 | 0 |
 
 **Overall Coverage**: 100% ✅
+
+---
+
+## Conditional Rules (model_decision & glob triggers)
+
+All `model_decision` and `glob` rules require a `description` field in frontmatter for Cascade trigger mapping.
+
+| Rule File | Trigger | Description |
+|---|---|---|
+| `adg-repair-discipline.md` | `model_decision` | Use when diagnosing ADG failures or running the ADG repair loop |
+| `anti-pattern-hitl-gate.md` | `model_decision` | Use before introducing any new anti-pattern instance |
+| `memory-management.md` | `model_decision` | Use when reading/writing the persistent memory graph |
+| `security-hardening.md` | `model_decision` | Use when handling credentials, env vars, secrets, or external auth |
+| `windsurf-config-lookup.md` | `model_decision` | Use for Windsurf IDE configuration, rules, hooks, MCP, skills, workflows |
+| `mcp-config-ssot.md` | `glob` | Fires on edits to `.windsurf/mcp_config.json` |
+| `mcp-pytest-enforcement.md` | `glob` | Fires on edits to `test_*.py` and `conftest.py` |
 
 ---
 
@@ -274,6 +294,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-05-09
 
 **Changelog**:
+- 2026-04-14: **WINDSURF DOC ALIGNMENT** — All 6 skill entry files renamed `skill.md` → `SKILL.md` (canonical naming). Added `description` frontmatter to 4 `model_decision` rules (`adg-repair-discipline`, `anti-pattern-hitl-gate`, `memory-management`, `security-hardening`) and 2 `glob` rules (`mcp-config-ssot`, `mcp-pytest-enforcement`). New rule: `windsurf-config-lookup.md`. Removed non-standard `file_pattern` fields from `hooks.json`; moved path filtering logic into `post_write_mcp_config_sync.py`. Added 25 support files across all 5 incomplete skill directories (5 per skill). Added `## Windsurf Configuration Docs` block to repo-root `AGENTS.md`. Updated RULES_INDEX: file count 13→14, skills count 5→6, added Conditional Rules table.
 - 2026-04-09: **WINDSURF DRIFT CLEANUP** — Deleted `.windsurf/rules/.windsurfrules` (90KB aggregate, not a documented Windsurf rule artifact, preprocessor archived). Deleted `.windsurf/rules/_variables.yaml` (orphaned config for archived preprocessor). Relocated `pytest-optimization.md` from `.windsurf/` root to `docs/` (no activation path at root). Flattened `.windsurf/plans/plans/` and `.windsurf/plans/tasks/` subdirs into `.windsurf/plans/` per plan-location.md SSOT. Archived `_show_diffs.py` to `tools/archive/`. Updated RULES_INDEX.md: removed dead preprocessor workflow, corrected file count (9→13), fixed `.windsurfrules` status claim. All 6 `SKILL.md` files: moved non-standard frontmatter fields (`enforcement_layer`, `enforcement_timing`, `enforcement_type`) into `metadata:` block per Agent Skills spec.
 - 2026-04-08: **POWERSHELL-BAN CI GATE FIXED** — Root cause: `check_powershell_ban.py` had 20 over-broad regex patterns (`$var`, `|pipe|`, `if(){`) generating 7,244 false-positive violations per commit, overflowing Windsurf context and causing internal error `170ba0ebe0fc4955bb7b3ae6ada485f7`. Fix: replaced with 17 precise `\bVerb-Noun\b` patterns scoped to unambiguous PS cmdlets only. Also fixed `pre_run_gate.py` which blocked running the checker itself (substring match on script filename containing "powershell"). Now 0 violations. Committed: `8c1719c99a`.
 - 2026-04-08: **MCP ROSTER CLEANUP + GLOBAL CONFIG FIXES** — Deleted 5 redundant/broken MCP servers (Playwright, Figma, Brave Search, Fetch, GitHub MCP) dropping ~50 tools. Fixed Redis MCP env vars from bash `${VAR:-default}` syntax (broken on Windows) to literal values. Removed `disabledTools: [read_file]` from filesystem MCP. Removed web allowlist restriction (all sites now accessible). Added turbo allow/deny lists and global `files.exclude` patterns.

@@ -11,8 +11,7 @@
       {
         "command": "python .windsurf/scripts/pre_write_gate.py",
         "working_directory": "C:/Git/Agentic-Workflow",
-        "show_output": true,
-        "file_pattern": ".*\\.py$"
+        "show_output": true
       }
     ],
     "pre_mcp_tool_use": [
@@ -38,8 +37,7 @@
       {
         "command": "python .windsurf/scripts/post_write_mcp_config_sync.py",
         "working_directory": "C:/Git/Agentic-Workflow",
-        "show_output": true,
-        "file_pattern": ".*mcp_config\\.json$"
+        "show_output": true
       }
     ],
     "post_run_command": [

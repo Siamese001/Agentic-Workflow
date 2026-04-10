@@ -1,3 +1,4 @@
+# classification: dead-code — zero production callers as of 2026-04-10 (executor theater audit)
 """Parallel File Processing for CPU-Intensive ADG Operations.
 
 Provides parallel file reading/processing for ADG tools and other

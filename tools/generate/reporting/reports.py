@@ -318,122 +318,83 @@ def _print_defect_table(
         except sqlite3.OperationalError:
             pass
 
-    _H = "+-----+------------------------------+-------+-------+-------+-------+-------+---------+----------------------------------+"
-    _HDR = "| P#  | Description / Category       | Gross | Guard |   Net | Files | Prod% | Density | Top Hotspot (AP\u00d7FI)             |"
-    print("\n[ADG] Defect Summary:")
-    print(_H)
-    print(_HDR)
-    print(_H)
+    # --- Compact burndown table (auto-printed on every ADG run) ---
+    _TH = "+-----+------------------------------+-------+-------+-------+------+"
+    _THDR = "| Band| Kind                         | Gross | Exempt |   Net |   %  |"
+    print("\n[ADG] Burndown:")
+    print(_TH)
+    print(_THDR)
+    print(_TH)
 
-    _p0_gate = "BLOCKS" if p0_count > 0 else "PASS"
-    _p0_viol = sum(c for _, _, c in _p0_layer_pairs) if _p0_layer_pairs else 0
-    _p0_exempt = len(_violation_rows) - p0_count if _violation_rows else 0
-    _p0_gross = p0_count + _p0_exempt
-    print(
-        f"| P0* | CRITICAL (blocks on any > 0) | {_p0_gross:5} | {_p0_exempt:5} | {p0_count:5} | {'':5} | {'':5} | {'':7} | {'':32} |"
-    )
-    _viol_label = f"{_p0_viol}" if _p0_viol else "0"
-    print(
-        f"|     |  layer_violation              | {_viol_label:>5} | {_p0_exempt:5} | {p0_count:5} |       |       |         |                                  |"
-    )
-    for _src_l, _dst_l, _cnt in _p0_layer_pairs:
-        _pair = f"    {_src_l or '?'} -> {_dst_l or '?'}"
+    def _pct(a: int, b: int) -> str:
+        return f"{a * 100 // b}%" if b else "—"
+
+    # P0
+    _p0_gate = "✓" if p0_count == 0 else "✗"
+    print(f"| P0{_p0_gate} | layer violations             | {p0_count:5} |        | {p0_count:5} |      |")
+    if _p0_cycle_count:
         print(
-            f"|     | {_pair:<30}| {_cnt:5} |       |       |       |       |         |                                  |"
+            f"|     |  circular_import             | {_p0_cycle_count:5} |        | {_p0_cycle_count:5} |      |"
         )
-    print(
-        f"|     |  circular_import              | {_p0_cycle_count:5} |       |       |       |       |         |                                  |"
-    )
-    print(
-        f"|     |  dynamic_execution            | {_p0_dynamic_count:5} |       |       |       |       |         |                                  |"
-    )
-    print(_H)
+    if _p0_dynamic_count:
+        print(
+            f"|     |  dynamic_execution           | {_p0_dynamic_count:5} |        | {_p0_dynamic_count:5} |      |"
+        )
+    for _src_l, _dst_l, _cnt in _p0_layer_pairs:
+        print(f"|     |    {_src_l or '?'} -> {_dst_l or '?':<22}| {_cnt:5} |        | {_cnt:5} |      |")
+    print(_TH)
 
-    # --- SC/AP audit rows ---
+    # P1 / P2 / P3 bands
+    _bands = [
+        ("P1", "HIGH antipatterns", p1_count, "HIGH", _p1_ceiling, _p1_delta),
+        (
+            "P2",
+            "MEDIUM antipatterns",
+            p2_count,
+            "MEDIUM",
+            _p2_ceiling,
+            max(0, p2_count - _p2_ceiling) if _p2_ceiling is not None else 0,
+        ),
+        ("P3", "style / warnings", p3_count, "LOW", None, 0),
+    ]
+    for _band, _label, _count, _sev, _ceil, _delta in _bands:
+        _exempt = _guardian_by_sev.get(_sev, 0)
+        _gross = _count + _exempt
+        _status = ("*" if _delta > 0 else "^") if _ceil is not None else "~"
+        print(
+            f"| {_band}{_status} | {_label:<29}| {_gross:5} | {_exempt:6} | {_count:5} | {_pct(_exempt, _gross):>4} |"
+        )
+        for _kind, _cnt, _prod in _cat_data.get(_sev, []):
+            _ek = _guardian_by_kind.get(_sev, {}).get(_kind, 0)
+            _gk = _cnt + _ek
+            print(f"|     |  {_kind:<28}| {_gk:5} | {_ek:6} | {_cnt:5} | {_pct(_ek, _gk):>4} |")
+        print(_TH)
+
+    # SC/AP audit rows
     if _sc_ap_counts:
         _sc_total = sum(v for k, v in _sc_ap_counts.items() if k.startswith("SC-"))
         _ap_total = sum(v for k, v in _sc_ap_counts.items() if k.startswith("AP-"))
-        if _sc_total > 0:
-            print(
-                f"| SC~ | [SC] Structural conformance  |       |       | {_sc_total:5} |       |       |         | audit-mode watch                 |"
-            )
-            for _ck, _cv in sorted(_sc_ap_counts.items()):
-                if _ck.startswith("SC-"):
-                    print(
-                        f"|     |  {_ck:<28}| {_cv:5} |       | {_cv:5} |       |       |         |                                  |"
-                    )
-            print(_H)
-        if _ap_total > 0:
-            print(
-                f"| AP~ | [AP] Agentic anti-patterns   |       |       | {_ap_total:5} |       |       |         | audit-mode watch                 |"
-            )
-            for _ck, _cv in sorted(_sc_ap_counts.items()):
-                if _ck.startswith("AP-"):
-                    print(
-                        f"|     |  {_ck:<28}| {_cv:5} |       | {_cv:5} |       |       |         |                                  |"
-                    )
-            print(_H)
+        for _prefix, _row_label, _row_total in [
+            ("SC-", "structural conformance", _sc_total),
+            ("AP-", "agentic antipatterns", _ap_total),
+        ]:
+            if _row_total:
+                print(f"| ~   | {_row_label:<29}| {_row_total:5} |        | {_row_total:5} |      |")
+                for _ck, _cv in sorted(_sc_ap_counts.items()):
+                    if _ck.startswith(_prefix):
+                        print(f"|     |  {_ck:<28}| {_cv:5} |        | {_cv:5} |      |")
+                print(_TH)
 
-    def _print_sev_block(label, p_tag, count, sev_key, ceiling, gate_sym):
-        _files = _sev_files.get(sev_key, 0)
-        _cats = _cat_data.get(sev_key, [])
-        _guard_sev = _guardian_by_sev.get(sev_key, 0)
-        _gross = count + _guard_sev
-        _guard_kinds = _guardian_by_kind.get(sev_key, {})
-        _dens = _sev_density.get(sev_key, "\u2014")
-        _hs = _sev_top_hotspot.get(sev_key, "\u2014")
-        _total_prod = sum(c[2] for c in _cats)
-        _overall_prod_pct = f"{_total_prod * 100 // count}%" if count else "N/A"
-        _delta_str = ""
-        if ceiling is not None:
-            _dv = max(0, count - ceiling)
-            _delta_str = f" ({_dv:+d})" if _dv != 0 else " (=)"
-        _tag = f"{p_tag}{gate_sym}"
-        print(
-            f"| {_tag:<4}| {label:<29}| {_gross:5} | {_guard_sev:5} | {count:5} | {_files:5} | {_overall_prod_pct:>5} | {_dens:>5}/c | {_hs:<32} |"
-        )
-        for _kind, _cnt, _prod in _cats:
-            _gk = _guard_kinds.get(_kind, 0)
-            _gross_k = _cnt + _gk
-            _share = f"{_gross_k * 100 // _gross}%" if _gross else "  "
-            _ppct = f"{_prod * 100 // _cnt}%" if _cnt else "  "
-            print(
-                f"|     |  {_kind:<28}  | {_gross_k:5} | {_gk:5} | {_cnt:5} | {_share:>5} | {_ppct:>5} |         |                                  |"
-            )
-        _hp = _hotspot_pct.get(sev_key, 0)
-        if _hp > 0:
-            print(
-                f"|     |  (top-10 files = {_hp}% of net)   |       |       |       |       |       |         |                                  |"
-            )
-        print(_H)
-
-    _p1_gate_sym = "*" if _p1_delta > 0 else "^"
-    _print_sev_block("HIGH antipatterns", "P1", p1_count, "HIGH", _p1_ceiling, _p1_gate_sym)
-
-    _p2_delta_val = max(0, p2_count - _p2_ceiling) if _p2_ceiling is not None else 0
-    _p2_gate_sym = "*" if _p2_delta_val > 0 else "^"
-    _print_sev_block("MEDIUM antipatterns", "P2", p2_count, "MEDIUM", _p2_ceiling, _p2_gate_sym)
-
-    _print_sev_block("LOW style / warnings", "P3", p3_count, "LOW", None, "~")
-    if semantic_warnings:
-        _sw = len(semantic_warnings)
-        _pct = f"{_sw * 100 // p3_count}%" if p3_count else "  "
-        print(
-            f"|     |  {'semantic_precision_gap':<28}  | {_sw:5} |       |       | {_pct:>5} |       |         |                                  |"
-        )
-        print(_H)
-
+    # Totals
     _total_gross = total + _guardian_total
     print(
-        f"| TOT | ALL defects                  | {_total_gross:5} | {_guardian_total:5} | {total:5} |       |       |         |                                  |"
+        f"| TOT | ALL                          | {_total_gross:5} | {_guardian_total:6} | {total:5} | {_pct(_guardian_total, _total_gross):>4} |"
     )
-    print(_H)
+    print(_TH)
+    print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=actionable  %=exempt/gross")
+    print("  Gate: *=BLOCKS  ^=ratchet  ~=watch  ✓=clean  ✗=failing")
 
-    print("  Gross=total edges  Guard=exempted  Net=actionable  Density=APs per 100 nodes (/c=per centum)")
-    print(
-        "  Prod%=production layers (L0-L6+shared)  Top Hotspot=riskiest file (antipattern_count \u00d7 fan_in)"
-    )
-    print("  Gate: *=BLOCKS (halts ADG)  ^=ratchet (blocks on increase)  ~=watch only")
+    _p2_delta_val = max(0, p2_count - _p2_ceiling) if _p2_ceiling is not None else 0
 
     _p1_ratchet_label = "stable" if _p1_delta == 0 else "REGRESSION"
     print(f"[ADG] P1 ratchet: {p1_count}/{_p1_ceiling} ({_p1_delta:+d} \u2014 {_p1_ratchet_label})")
@@ -472,8 +433,76 @@ def _print_defect_table(
         except sqlite3.OperationalError:
             pass
 
+    # Guardian counts keyed by P-band (P1=HIGH, P2=MEDIUM, P3=LOW; P0 has no guardians)
+    _guardian_p0 = 0
+    _guardian_p1 = _guardian_by_sev.get("HIGH", 0)
+    _guardian_p2 = _guardian_by_sev.get("MEDIUM", 0)
+    _guardian_p3 = _guardian_by_sev.get("LOW", 0)
+
+    # Gross = net + guardian (exempted); diff = gross - net = guardian count per band
+    _gross_p0 = p0_count + _guardian_p0
+    _gross_p1 = p1_count + _guardian_p1
+    _gross_p2 = p2_count + _guardian_p2
+    _gross_p3 = p3_count + _guardian_p3
+
+    def _build_kind_rows(sev_key: str, gross_total: int) -> list[dict]:
+        """Build per-kind breakdown rows matching the terminal defect table columns."""
+        rows = []
+        kinds_by_guardian = _guardian_by_kind.get(sev_key, {})
+        for _kind, _net, _prod in _cat_data.get(sev_key, []):
+            _gk = kinds_by_guardian.get(_kind, 0)
+            _gross_k = _net + _gk
+            rows.append(
+                {
+                    "kind": _kind,
+                    "net": _net,
+                    "guardian": _gk,
+                    "gross": _gross_k,
+                    "diff": _gk,
+                    "prod_count": _prod,
+                    "share_pct": round(_gross_k * 100 / gross_total, 1) if gross_total else 0,
+                    "prod_pct": round(_prod * 100 / _net, 1) if _net else 0,
+                }
+            )
+        return rows
+
     _burndown: dict = {
-        "schema_version": "2.0",
+        "schema_version": "2.1",
+        "summary": {
+            "P0": {
+                "net": p0_count,
+                "guardian": _guardian_p0,
+                "gross": _gross_p0,
+                "diff": _guardian_p0,
+                "label": "layer_violations",
+                "by_kind": [],
+            },
+            "P1": {
+                "net": p1_count,
+                "guardian": _guardian_p1,
+                "gross": _gross_p1,
+                "diff": _guardian_p1,
+                "label": "anti_patterns_high",
+                "by_kind": _build_kind_rows("HIGH", _gross_p1),
+            },
+            "P2": {
+                "net": p2_count,
+                "guardian": _guardian_p2,
+                "gross": _gross_p2,
+                "diff": _guardian_p2,
+                "label": "anti_patterns_medium",
+                "by_kind": _build_kind_rows("MEDIUM", _gross_p2),
+            },
+            "P3": {
+                "net": p3_count,
+                "guardian": _guardian_p3,
+                "gross": _gross_p3,
+                "diff": _guardian_p3,
+                "label": "style_warnings",
+                "by_kind": _build_kind_rows("LOW", _gross_p3),
+            },
+        },
+        # Legacy flat keys — kept for backward compatibility
         "P0_layer_violations": p0_count,
         "P1_anti_patterns": p1_count,
         "P2_anti_patterns": p2_count,
@@ -485,6 +514,12 @@ def _print_defect_table(
             "cycle_count": _p0_cycle_count,
             "dynamic_exec_count": _p0_dynamic_count,
             "guardian_exemptions": _guardian_total,
+            "guardian_by_band": {
+                "P0": _guardian_p0,
+                "P1": _guardian_p1,
+                "P2": _guardian_p2,
+                "P3": _guardian_p3,
+            },
         },
     }
     _burndown_path = ROOT / "artifacts" / "adg" / "adg_burndown_table.json"

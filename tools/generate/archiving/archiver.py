@@ -18,23 +18,23 @@ def _extract_timestamp(filename: str) -> str | None:
         Legacy1: adg_indexed_03122026.sqlite         -> 03122026       (MMDDYYYY)
         Legacy2: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (ISO)
     """
-    parts = filename.split("_")
+    # Strip all extensions (handles .sqlite, .sqlite-shm, .sqlite-wal, .json, .zip)
+    bare = filename.split(".")[0]
+    parts = bare.split("_")
     if len(parts) < 3:
         return None
 
     # Check if last two parts form timestamp (MMDDYYYY_HHMM)
     if len(parts) >= 4:
         ts_date = parts[-2]
-        ts_time_with_ext = parts[-1]
-        ts_time = ts_time_with_ext.split(".")[0]
+        ts_time = parts[-1]
 
         # Current format: MMDDYYYY_HHMM
         if len(ts_date) == 8 and ts_date.isdigit() and len(ts_time) == 4 and ts_time.isdigit():
             return f"{ts_date}_{ts_time}"
 
-    # Last part before extension should be timestamp (legacy formats)
-    ts_with_ext = parts[-1]
-    ts = ts_with_ext.split(".")[0]
+    # Last part is timestamp (legacy formats)
+    ts = parts[-1]
 
     # Legacy format 1: MMDDYYYY (8 digits)
     if len(ts) == 8 and ts.isdigit():
@@ -86,6 +86,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     for pattern in [
         "adg_*.json",
         "adg_*.sqlite",
+        "adg_*.sqlite-shm",
+        "adg_*.sqlite-wal",
         "adg_run_*.zip",
         "scan_result_cache.json",
         "*_report_*.json",
@@ -161,6 +163,16 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                             except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure should not block archive deletion
                                 pass
                         file_path.unlink()
+                        if file_path.suffix == ".sqlite":
+                            for _aux in [
+                                file_path.with_suffix(".sqlite-wal"),
+                                file_path.with_suffix(".sqlite-shm"),
+                            ]:
+                                if _aux.exists():
+                                    try:
+                                        _aux.unlink()
+                                    except OSError:
+                                        pass
                     except OSError as e:
                         print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
                         continue
@@ -181,6 +193,18 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                         if _is_file_locked(file_path):
                             print(f"[WARNING] Archive: locked file skipped {file_path.name}")
                             print("[WARNING]   File held by another process — will be cleaned up on next run")
+                            # Still clean up unlocked sidecars even if main file is locked
+                            if file_path.suffix == ".sqlite":
+                                for _aux in [
+                                    file_path.with_suffix(".sqlite-wal"),
+                                    file_path.with_suffix(".sqlite-shm"),
+                                ]:
+                                    if _aux.exists():
+                                        try:
+                                            _aux.unlink()
+                                            archived_count += 1
+                                        except OSError:
+                                            pass
                             continue
 
                         if file_path.suffix == ".sqlite":

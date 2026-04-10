@@ -53,6 +53,8 @@ def materialize_phase_c(sqlite_path: Path) -> dict[str, int]:
     """
     conn = sqlite3.connect(str(sqlite_path))
     conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA cache_size = -64000")
+    conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()
 
     for tbl in reversed(_PHASE_C_TABLES):
@@ -180,6 +182,23 @@ def materialize_phase_c(sqlite_path: Path) -> dict[str, int]:
     # -------------------------------------------------------------------------
 
     # mv_determinism_provenance_drift
+    # Pre-compute dynamic resolution counts to avoid OR-join performance issue.
+    # Original: LEFT JOIN edges e ON (e.src_id = n.id OR e.dst_id = n.id)
+    # Fix: use UNION ALL with separate index-friendly lookups.
+    cur.execute("DROP TABLE IF EXISTS _t_dyn_res_counts")
+    cur.execute("""
+        CREATE TEMP TABLE _t_dyn_res_counts AS
+        SELECT node_id, COUNT(DISTINCT edge_id) AS cnt FROM (
+            SELECT src_id AS node_id, id AS edge_id FROM edges
+            WHERE dynamic_resolution IS NOT NULL AND dynamic_resolution != ''
+            UNION ALL
+            SELECT dst_id AS node_id, id AS edge_id FROM edges
+            WHERE dynamic_resolution IS NOT NULL AND dynamic_resolution != ''
+        )
+        GROUP BY node_id
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_drc ON _t_dyn_res_counts(node_id)")
+
     cur.execute(f"""
         CREATE TABLE mv_determinism_provenance_drift AS
         SELECT
@@ -193,21 +212,18 @@ def materialize_phase_c(sqlite_path: Path) -> dict[str, int]:
                  THEN 1 ELSE 0 END AS has_artifact_digest,
             CASE WHEN (SELECT value FROM meta WHERE key='scanner_digest' LIMIT 1) IS NOT NULL
                  THEN 1 ELSE 0 END AS has_scanner_digest,
-            COUNT(DISTINCT CASE WHEN e.dynamic_resolution IS NOT NULL
-                                 AND e.dynamic_resolution != '' THEN e.id END)
-                                  AS dynamic_resolution_count,
+            COALESCE(dr.cnt, 0)   AS dynamic_resolution_count,
             CASE
-                WHEN COUNT(DISTINCT CASE WHEN e.dynamic_resolution IS NOT NULL
-                                          AND e.dynamic_resolution != '' THEN e.id END) > 0
+                WHEN COALESCE(dr.cnt, 0) > 0
                 THEN 1 ELSE 0
             END AS drift_flag
         FROM nodes n
-        LEFT JOIN edges e ON (e.src_id = n.id OR e.dst_id = n.id)
+        LEFT JOIN _t_dyn_res_counts dr ON dr.node_id = n.id
         WHERE n.entity_type = 'module'
           AND n.resolved_path NOT LIKE 'tests/%'
-        GROUP BY n.id
         ORDER BY dynamic_resolution_count DESC
     """)
+    cur.execute("DROP TABLE IF EXISTS _t_dyn_res_counts")
 
     # mv_graph_vs_report_mismatches
     # Violations whose edge_id has no matching edge row, or edges with no violations row.

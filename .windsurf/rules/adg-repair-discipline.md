@@ -1,5 +1,6 @@
 ---
 trigger: model_decision
+description: Use this rule when diagnosing or repairing ADG graph failures, running the ADG repair loop, or resolving graph analysis errors before T2/T3 work.
 ---
 # ADG Repair Discipline — Constitutional Rule §ADG-1
 

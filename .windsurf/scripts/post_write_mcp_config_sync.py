@@ -8,6 +8,7 @@ Exit 0 always (sync failure is advisory, never blocks the write).
 
 from __future__ import annotations
 
+import io
 import json
 import shutil
 import sys
@@ -48,6 +49,28 @@ def _validate_ssot(path: Path) -> list[str]:
 
 
 def main() -> int:
+    # Path filtering: only run when the written file is mcp_config.json.
+    # Previously handled by file_pattern in hooks.json (non-standard field now removed).
+    if len(sys.argv) > 1:
+        written_path = sys.argv[1]
+        if not written_path.replace("\\", "/").endswith("mcp_config.json"):
+            return 0
+    else:
+        # No argv: attempt to read file_path from stdin JSON payload.
+        raw = sys.stdin.read()
+        if raw.strip():
+            try:
+                payload = json.loads(raw)
+                file_path = (
+                    payload.get("tool_info", payload).get("file_path", "")
+                    if isinstance(payload, dict) else ""
+                )
+                if file_path and not file_path.replace("\\", "/").endswith("mcp_config.json"):
+                    return 0
+            except (json.JSONDecodeError, AttributeError):
+                pass
+        sys.stdin = io.StringIO("")  # stdin consumed; replace for safety
+
     if not SSOT.exists():
         print(f"[mcp_sync] SSOT not found: {SSOT} — skipping", flush=True)
         return 0

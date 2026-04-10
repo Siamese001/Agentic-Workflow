@@ -147,6 +147,17 @@ def main():
         sys.exit(1)
     print("✅ Infrastructure wiring scan passed")
 
+    # Gate: Executor theater (no fake parallelism in production code)
+    print("🔍 Running executor theater gate...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(ROOT / "ops_scripts/ci/executor_theater_gate.py")], cwd=ROOT
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Executor theater gate passed")
+
     # Gate: P0 two-pass (preflight + full ADG enforcement)
     print("\n[P0 TWO-PASS GATE]")
     try:

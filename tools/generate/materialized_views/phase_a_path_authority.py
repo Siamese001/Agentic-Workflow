@@ -96,7 +96,18 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
     """
     conn = sqlite3.connect(str(sqlite_path))
     conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA cache_size = -64000")  # 64MB cache for MV queries
+    conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()
+
+    # Performance-critical composite indexes for all materialized view phases.
+    # Additive (IF NOT EXISTS) — persist in the SQLite and benefit all phases.
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_nodes_resolved_path ON nodes(resolved_path)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_nodes_entity_layer ON nodes(entity_type, layer)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_edges_dst_rel ON edges(dst_id, relation_type)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_edges_src_rel ON edges(src_id, relation_type)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_edges_source_file ON edges(source_file)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_violations_edge_id ON violations(edge_id)")
 
     # Drop in reverse dependency order
     for tbl in reversed(_PHASE_A_TABLES):

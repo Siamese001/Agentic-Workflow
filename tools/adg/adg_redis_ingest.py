@@ -6,9 +6,9 @@ and edges, and writes them into Redis using the same key scheme as RedisCache
 so ADGService.get_node() / get_edge_fanout() get cache hits immediately.
 
 Key scheme (mirrors tools/adg/cache/redis_cache.py):
-    adg:v1:<snapshot_id>:node:<node_id>          → HSET (node fields)
-    adg:v1:<snapshot_id>:edge_detail:<edge_id>   → HSET (edge fields)
-    adg:v1:<snapshot_id>:edge:<src_id>:<rel>     → SADD <edge_id> (fanout index)
+    adg:v1:<snapshot_id>:node:<node_id>          → HSET (node fields, pre-ingested)
+    adg:v1:<snapshot_id>:edge:<src_id>:<rel>     → SADD <edge_id> (fanout index, pre-ingested)
+    adg:v1:<snapshot_id>:edge_detail:<edge_id>   → HSET (lazy backfill on first MCP access)
     adg:v1:<snapshot_id>:_hot                    → SET 1 (sentinel — cache is populated)
 
 Usage:
@@ -30,7 +30,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_VERSION = "v1"
 REDIS_URL = os.getenv("ADG_REDIS_URL", "redis://localhost:6379/0")
-BATCH_SIZE = 500  # nodes/edges per Redis pipeline flush
+BATCH_SIZE = 5000  # nodes/edges per Redis pipeline flush
+PROGRESS_INTERVAL = 10000  # print progress every N items
 
 
 def _find_latest_sqlite(adg_dir: Path) -> Path:
@@ -128,47 +129,46 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
 
     # --- Ingest nodes ---
     nodes_written = 0
+    cursor_nodes = conn.execute("SELECT * FROM nodes")
     pipe = client.pipeline(transaction=False)
-    for row in conn.execute("SELECT * FROM nodes"):
-        raw = dict(row)
-        data = {k: str(v) for k, v in raw.items() if v is not None}
-        if not data or "id" not in data:
-            continue
-        key = _redis_key(snapshot_id, f"node:{data['id']}")
-        pipe.hmset(key, data)
-        nodes_written += 1
-        if nodes_written % BATCH_SIZE == 0:
-            pipe.execute()
-            pipe = client.pipeline(transaction=False)
+    while True:
+        batch = cursor_nodes.fetchmany(BATCH_SIZE)
+        if not batch:
+            break
+        for row in batch:
+            raw = dict(row)
+            data = {k: str(v) for k, v in raw.items() if v is not None}
+            if not data or "id" not in data:
+                continue
+            key = _redis_key(snapshot_id, f"node:{data['id']}")
+            pipe.hmset(key, data)
+            nodes_written += 1
+        pipe.execute()
+        pipe = client.pipeline(transaction=False)
+        if nodes_written % PROGRESS_INTERVAL == 0:
             print(f"[adg_redis_ingest]   nodes {nodes_written:,}/{node_count:,}...", end="\r")
     pipe.execute()
     print(f"[adg_redis_ingest] Nodes written : {nodes_written:,}          ")
 
-    # --- Ingest edges ---
+    # --- Ingest edges (fanout index only — edge_detail hashes are lazily backfilled on MCP query) ---
     edges_written = 0
+    cursor_edges = conn.execute("SELECT id, src_id, relation_type FROM edges")
     pipe = client.pipeline(transaction=False)
-    for row in conn.execute(
-        """SELECT id, src_id, dst_id, relation_type, edge_kind,
-                  source_file, line_no, symbol
-           FROM edges"""
-    ):
-        data = {k: str(v) for k, v in dict(row).items() if v is not None}
-        edge_id = data["id"]
-        src_id = data["src_id"]
-        relation_type = data["relation_type"]
-
-        # Edge detail hash
-        detail_key = _redis_key(snapshot_id, f"edge_detail:{edge_id}")
-        pipe.hmset(detail_key, data)
-
-        # Fanout index set
-        fanout_key = _redis_key(snapshot_id, f"edge:{src_id}:{relation_type}")
-        pipe.sadd(fanout_key, edge_id)
-
-        edges_written += 1
-        if edges_written % BATCH_SIZE == 0:
-            pipe.execute()
-            pipe = client.pipeline(transaction=False)
+    while True:
+        batch = cursor_edges.fetchmany(BATCH_SIZE)
+        if not batch:
+            break
+        for row in batch:
+            edge_id = str(row[0])
+            src_id = str(row[1])
+            relation_type = str(row[2])
+            # Fanout index set only (detail hash backfilled lazily on first MCP access)
+            fanout_key = _redis_key(snapshot_id, f"edge:{src_id}:{relation_type}")
+            pipe.sadd(fanout_key, edge_id)
+            edges_written += 1
+        pipe.execute()
+        pipe = client.pipeline(transaction=False)
+        if edges_written % PROGRESS_INTERVAL == 0:
             print(f"[adg_redis_ingest]   edges {edges_written:,}/{edge_count:,}...", end="\r")
     pipe.execute()
     print(f"[adg_redis_ingest] Edges written : {edges_written:,}          ")

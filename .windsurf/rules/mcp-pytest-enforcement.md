@@ -1,5 +1,6 @@
 ---
 trigger: glob
+description: Apply when reading or editing test files or conftest to enforce MCP server test coverage, hung-process detection, and pytest integrity requirements.
 globs:
   - "**/test_*.py"
   - "**/conftest.py"

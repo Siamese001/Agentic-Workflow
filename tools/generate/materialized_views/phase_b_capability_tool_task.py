@@ -61,6 +61,8 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
     """
     conn = sqlite3.connect(str(sqlite_path))
     conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA cache_size = -64000")
+    conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()
 
     for tbl in reversed(_PHASE_B_TABLES):
@@ -336,6 +338,9 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             END AS gap_flag
         FROM nodes n
         LEFT JOIN edges e  ON e.src_id  = n.id
+            AND e.relation_type IN ('writes_to', 'writes_through',
+                                    'routes_to_capability', 'reads_policy_state',
+                                    'validates_capability')
         LEFT JOIN edges e2 ON e2.src_id = n.id AND e2.relation_type = 'implements'
         WHERE n.entity_type = 'module'
           AND n.resolved_path NOT LIKE 'tests/%'
@@ -370,6 +375,8 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             2)                    AS risk_score
         FROM nodes n
         LEFT JOIN edges e ON e.src_id = n.id
+            AND e.relation_type IN ('dynamic_exec', 'validates_capability',
+                                    'reads_policy_state', 'validated_by_safety_plane')
         WHERE n.entity_type = 'module'
           AND n.resolved_path NOT LIKE 'tests/%'
         GROUP BY n.id
@@ -399,6 +406,8 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             END AS gap_flag
         FROM nodes n
         LEFT JOIN edges e  ON e.src_id  = n.id
+            AND e.relation_type IN ('writes_through', 'invokes_provider',
+                                    'routes_to_capability')
         LEFT JOIN edges e2 ON e2.src_id = n.id AND e2.relation_type = 'implements'
         WHERE n.entity_type = 'module'
           AND n.resolved_path NOT LIKE 'tests/%'
@@ -452,7 +461,30 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
     # -------------------------------------------------------------------------
 
     # mv_dependency_cone_risk
-    # 3-hop transitive fan-in approximation: direct + 1-hop + 2-hop callers.
+    # Transitive fan-in approximation using iterative temp tables.
+    # Original 3-hop self-JOIN caused combinatorial explosion on 500K+ edges.
+    # Now: compute hop 1 and hop 2 iteratively; hop 3 set to 0 (minimal signal).
+    cur.execute("DROP TABLE IF EXISTS _t_direct_fan_in")
+    cur.execute("""
+        CREATE TEMP TABLE _t_direct_fan_in AS
+        SELECT dst_id AS node_id, COUNT(DISTINCT src_id) AS fan_in
+        FROM edges WHERE relation_type IN ('imports', 'calls')
+        GROUP BY dst_id
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_dfi ON _t_direct_fan_in(node_id)")
+
+    cur.execute("DROP TABLE IF EXISTS _t_hop2_fan_in")
+    cur.execute("""
+        CREATE TEMP TABLE _t_hop2_fan_in AS
+        SELECT e1.dst_id AS node_id, COUNT(DISTINCT e2.src_id) AS fan_in
+        FROM edges e1
+        JOIN edges e2 ON e2.dst_id = e1.src_id
+            AND e2.relation_type IN ('imports', 'calls')
+        WHERE e1.relation_type IN ('imports', 'calls')
+        GROUP BY e1.dst_id
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_h2fi ON _t_hop2_fan_in(node_id)")
+
     cur.execute(f"""
         CREATE TABLE mv_dependency_cone_risk AS
         SELECT
@@ -461,27 +493,25 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             n.adg_name            AS adg_name,
             n.layer               AS layer,
             n.resolved_path       AS resolved_path,
-            COUNT(DISTINCT e1.src_id) AS direct_fan_in,
-            COUNT(DISTINCT e2.src_id) AS hop2_fan_in,
-            COUNT(DISTINCT e3.src_id) AS hop3_fan_in,
-            COUNT(DISTINCT e1.src_id)
-                + COUNT(DISTINCT e2.src_id)
-                + COUNT(DISTINCT e3.src_id) AS transitive_depth_approx,
+            COALESCE(h1.fan_in, 0) AS direct_fan_in,
+            COALESCE(h2.fan_in, 0) AS hop2_fan_in,
+            0                      AS hop3_fan_in,
+            COALESCE(h1.fan_in, 0)
+                + COALESCE(h2.fan_in, 0) AS transitive_depth_approx,
             ROUND(
                 (
-                    COUNT(DISTINCT e1.src_id) * 1.0
-                    + COUNT(DISTINCT e2.src_id) * 0.5
-                    + COUNT(DISTINCT e3.src_id) * 0.25
+                    COALESCE(h1.fan_in, 0) * 1.0
+                    + COALESCE(h2.fan_in, 0) * 0.5
                 ),
             2)                    AS cone_risk_score
         FROM nodes n
-        LEFT JOIN edges e1 ON e1.dst_id = n.id  AND e1.relation_type IN ('imports', 'calls')
-        LEFT JOIN edges e2 ON e2.dst_id = e1.src_id AND e2.relation_type IN ('imports', 'calls')
-        LEFT JOIN edges e3 ON e3.dst_id = e2.src_id AND e3.relation_type IN ('imports', 'calls')
+        LEFT JOIN _t_direct_fan_in h1 ON h1.node_id = n.id
+        LEFT JOIN _t_hop2_fan_in h2 ON h2.node_id = n.id
         WHERE n.entity_type = 'module'
-        GROUP BY n.id
         ORDER BY cone_risk_score DESC
     """)
+    cur.execute("DROP TABLE IF EXISTS _t_direct_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_hop2_fan_in")
 
     # mv_high_fan_in_out_with_defects
     cur.execute(f"""

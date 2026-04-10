@@ -1,5 +1,6 @@
 ---
 trigger: glob
+description: Apply when reading or editing the MCP server configuration file to enforce SSOT discipline, auto-sync rules, and secret handling constraints.
 globs:
   - ".windsurf/mcp_config.json"
 ---
