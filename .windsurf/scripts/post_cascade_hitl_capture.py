@@ -50,6 +50,16 @@ _PACKET_HEADER_RE = re.compile(
     re.DOTALL | re.MULTILINE,
 )
 
+# Structured capture marker emitted by Cascade post-HITL:
+# DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<label>, outcome=<status>
+_CAPTURE_MARKER_RE = re.compile(
+    r"DECISION_CAPTURED:\s*type=(?P<dtype>[\w_]+),\s*"
+    r"repo_area=(?P<area>[^,]+),\s*"
+    r"selected=(?P<selected>[^,]+),\s*"
+    r"outcome=(?P<outcome>\w+)",
+    re.MULTILINE,
+)
+
 _DECISION_TYPE_KEYWORDS: list[tuple[str, str]] = [
     ("architecture", "architecture_choice"),
     ("architectural", "architecture_choice"),
@@ -226,11 +236,71 @@ def _make_decision_id(text: str, _ts: str) -> str:  # _ts kept for call-site com
 # ---------------------------------------------------------------------------
 
 
+def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) -> bool:
+    """Capture a decision from a DECISION_CAPTURED structured marker."""
+    dtype = m.group("dtype")
+    area = m.group("area").strip()
+    selected = m.group("selected").strip()[:200]
+    outcome = m.group("outcome").strip()
+
+    ts = datetime.now(timezone.utc).isoformat()
+    decision_id = _make_decision_id(f"marker:{area}:{selected}", ts)
+
+    existing = conn.execute("SELECT 1 FROM decisions WHERE decision_id = ?", (decision_id,)).fetchone()
+    if existing:
+        return False
+
+    branch, sha = _get_git_info()
+    status = "executed" if outcome == "executed" else "surfaced"
+    context_window = text[max(0, m.start() - 300) : m.end() + 200].strip()
+
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO decisions
+            (decision_id, created_at, branch, commit_sha, decision_type,
+             request_summary, normalized_intent, recommended_option_id,
+             selected_option_id, options_json, status)
+        VALUES
+            (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
+             :request_summary, :normalized_intent, :recommended_option_id,
+             :selected_option_id, :options_json, :status)
+        """,
+        {
+            "decision_id": decision_id,
+            "created_at": ts,
+            "branch": branch,
+            "commit_sha": sha,
+            "decision_type": dtype,
+            "request_summary": context_window[:500],
+            "normalized_intent": area[:200],
+            "recommended_option_id": selected,
+            "selected_option_id": selected,
+            "options_json": json.dumps([selected]),
+            "status": status,
+        },
+    )
+    conn.execute(
+        """INSERT INTO decisions_fts
+               (decision_id, normalized_intent, request_summary, user_goal, selection_rationale)
+           VALUES (?, ?, ?, '', '')""",
+        (decision_id, area[:200], context_window[:500]),
+    )
+    conn.commit()
+    return True
+
+
 def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     """
     Detect a HITL packet in text and write a decision record.
     Returns True if a new record was inserted, False otherwise.
+    Tries structured marker first, falls back to HITL packet header heuristic.
     """
+    # Path 1: structured DECISION_CAPTURED marker (reliable, emitted by Cascade post-HITL)
+    marker = _CAPTURE_MARKER_RE.search(text)
+    if marker:
+        return _capture_from_marker(marker, text, conn)
+
+    # Path 2: heuristic HITL packet header in prose (fallback)
     m = _PACKET_HEADER_RE.search(text)
     if not m:
         return False
