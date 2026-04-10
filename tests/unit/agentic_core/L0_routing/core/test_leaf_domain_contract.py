@@ -28,11 +28,11 @@ def test_leaf_domains_no_lcd():
     AGENTIC_CORE = ROOT / AGENTIC_CORE_DIR
 
     # Load blueprint to get LEAF_DOMAINS
-    from agentic_core.L5_safety.config.structure_blueprint._constants import (
-        build_sovereign_territories,
+    from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        get_all_territories,
     )
 
-    territories = build_sovereign_territories()
+    territories = get_all_territories()
     ac = territories.get(AGENTIC_CORE_DIR, {})
     leaf_domains = ac.get("leaf_domains", [])
 
@@ -57,11 +57,11 @@ def _get_declared_subfolders(domain: str) -> set[str]:
     """Get subfolders declared in the blueprint for a LEAF_DOMAIN."""
     # Import here to avoid circular deps at module level
     try:
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
-            build_sovereign_territories,
+        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+            get_all_territories,
         )
 
-        territories = build_sovereign_territories()
+        territories = get_all_territories()
         ac = territories.get(AGENTIC_CORE_DIR, {})
         subfolders_def = ac.get("subfolders", {})
         domain_def = subfolders_def.get(domain, {})
