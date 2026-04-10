@@ -73,39 +73,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-# Import extracted modules for convenience
-from .execute_ssot_context import HealContext
-from .execute_ssot_engine import SovereignDecisionEngine
-from .execute_ssot_meta import MetaLearningError, MetaLearningResult
-from .execute_ssot_reporting import ExecutionReporter
-from .execute_ssot_retrieval import (
-    _L1_EXACT_CACHE,
-    _L2_SEMANTIC_CACHE,
-    _retrieve_execution_context,
-    _store_in_retrieval_cache,
-)
-from .execute_ssot_state import RuntimeStateManager
-from .execute_ssot_validators import NonInteractiveGuard, PreFlightValidator
+# execute_ssot_* modules archived 2026-04-10 (zero production fan-in).
+# See ops_scripts/archives/execute_ssot_pipeline/README.md
+# __getattr__ below provides stub fallbacks for any residual callers.
 
 __all__ = [
-    # Legacy exports
     "emit_determinism_digest",
     "emit_replay_key",
-    # Extracted modules
-    "HealContext",
-    "SovereignDecisionEngine",
-    "PreFlightValidator",
-    "NonInteractiveGuard",
-    "RuntimeStateManager",
-    "ExecutionReporter",
-    # Retrieval and caching
-    "_L1_EXACT_CACHE",
-    "_L2_SEMANTIC_CACHE",
-    "_retrieve_execution_context",
-    "_store_in_retrieval_cache",
-    # Meta-learning
-    "MetaLearningResult",
-    "MetaLearningError",
 ]
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")
@@ -193,12 +167,14 @@ _emit_links_execution_to_snapshot("p4", "__init__", "exec_snapshot_link")
 
 def __getattr__(name: str):
     """Provide lightweight fallback exports for generated legacy tests."""
+
     def _stub_function(*_args, **_kwargs):
         return True
 
     _stub_function.__name__ = name
 
     if name and name[0].isupper():
+
         def _init(_self, *_args, **_kwargs):
             return None
 
