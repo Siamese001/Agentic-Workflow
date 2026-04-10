@@ -321,12 +321,21 @@ def gate_g4_classification() -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def run_all_gates(sqlite_path: Path | None = None, gate_filter: str | None = None) -> int:
+def run_all_gates(
+    sqlite_path: Path | None = None,
+    gate_filter: str | None = None,
+    json_output: bool = False,
+) -> int:
     """Run all (or selected) gates. Returns exit code."""
+    import json as _json
+
     if sqlite_path is None:
         sqlite_path = _find_latest_sqlite()
     if sqlite_path is None:
-        print("[EXECUTOR_THEATER_GATE] ERROR: No ADG SQLite found in artifacts/adg/")
+        if json_output:
+            print(_json.dumps({"error": "No ADG SQLite found"}))
+        else:
+            print("[EXECUTOR_THEATER_GATE] ERROR: No ADG SQLite found in artifacts/adg/")
         return 2
 
     gate_map = {
@@ -338,26 +347,39 @@ def run_all_gates(sqlite_path: Path | None = None, gate_filter: str | None = Non
 
     if gate_filter:
         if gate_filter not in gate_map:
-            print(f"[EXECUTOR_THEATER_GATE] ERROR: Unknown gate '{gate_filter}'")
+            if json_output:
+                print(_json.dumps({"error": f"Unknown gate '{gate_filter}'"}))
+            else:
+                print(f"[EXECUTOR_THEATER_GATE] ERROR: Unknown gate '{gate_filter}'")
             return 2
         gates_to_run = {gate_filter: gate_map[gate_filter]}
     else:
         gates_to_run = gate_map
 
     all_violations: list[str] = []
+    json_results: dict = {}
+
     for key, (label, fn) in gates_to_run.items():
         try:
             violations = fn()
         except Exception as e:  # guardian: allow-broad-exception -- CI gate must not crash; report error and continue to next gate
             violations = [f"{key.upper()}: Gate error: {e}"]
 
-        if violations:
-            print(f"  ❌ {label}: {len(violations)} violation(s)")
-            for v in violations:
-                print(f"     {v}")
-            all_violations.extend(violations)
-        else:
-            print(f"  ✅ {label}: PASS")
+        passed = not violations
+        json_results[key] = {"passed": passed, "violations": violations}
+
+        if not json_output:
+            if violations:
+                print(f"  ❌ {label}: {len(violations)} violation(s)")
+                for v in violations:
+                    print(f"     {v}")
+            else:
+                print(f"  ✅ {label}: PASS")
+        all_violations.extend(violations)
+
+    if json_output:
+        print(_json.dumps(json_results))
+        return 0 if not all_violations else 1
 
     if all_violations:
         print(f"\n[EXECUTOR_THEATER_GATE] FAILED: {len(all_violations)} total violation(s)")
@@ -381,9 +403,15 @@ def main() -> None:
         default=None,
         help="Run a specific gate only (default: all)",
     )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        default=False,
+        help="Emit results as JSON to stdout (for machine consumption)",
+    )
     args = parser.parse_args()
 
-    rc = run_all_gates(sqlite_path=args.sqlite, gate_filter=args.gate)
+    rc = run_all_gates(sqlite_path=args.sqlite, gate_filter=args.gate, json_output=args.json)
     sys.exit(rc)
 
 
