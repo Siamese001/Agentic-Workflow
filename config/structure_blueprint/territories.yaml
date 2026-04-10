@@ -139,7 +139,16 @@ territories:
         subfolders:
           config: {purpose: "Configuration"}
           types: {purpose: "Data models"}
-          reasoning: {purpose: "Decision agents"}
+          reasoning:
+            purpose: "Decision agents"
+            subfolders:
+              ml_decision_support:
+                purpose: "ML-based decision support (feature extraction, model registry, inference)"
+                subfolders:
+                  config: {purpose: "ML model configuration and thresholds"}
+                  features: {purpose: "Feature extractors per layer (l0_–l6_, c0/c1)"}
+                  inference: {purpose: "Deterministic engine, replay harness, shadow logger"}
+                  models: {purpose: "Layer-specific ML models and unified inference engine"}
           enforcement: {purpose: "Guardrails"}
           utils: {purpose: "Helpers"}
       L2_execution:
