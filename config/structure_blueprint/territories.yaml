@@ -129,8 +129,8 @@ territories:
             purpose: "Decision-making agents, engines, planners, strategists"
           enforcement:
             purpose: "Constraint execution, guardrails, governors, gates"
-          validators:
-            purpose: "Passive auditing, compliance checks, structural validators"
+            subfolders:
+              governance: {purpose: "Routing governance policies and compliance frameworks"}
           utils:
             purpose: "Helper functions, mixins, shared utilities"
       L1_cognition:
@@ -299,22 +299,125 @@ territories:
           contracts: {depth: 2, purpose: "Contract definitions"}
       # Other top-level directories
       base_agents: {depth: 2, purpose: "Base agent classes"}
-      runtime: {depth: 2, purpose: "Runtime utilities and types"}
-      config: {depth: 2, purpose: "Framework configuration"}
-      utils: {depth: 2, purpose: "Framework utilities"}
+      runtime:
+        depth: 2
+        purpose: "Runtime utilities and types"
+        subfolders:
+          config: {purpose: "Runtime configuration"}
+          contracts: {purpose: "Runtime contracts and protocol interfaces"}
+          enforcement: {purpose: "Runtime enforcement and guardrails"}
+          engine: {purpose: "Runtime engine implementations"}
+          exceptions: {purpose: "Runtime exception types"}
+          types: {purpose: "Runtime data models and type definitions"}
+          utils: {purpose: "Runtime helper utilities"}
+      config:
+        depth: 2
+        purpose: "Framework configuration"
+        subfolders:
+          agent_configs: {purpose: "Per-agent configuration files"}
+      utils:
+        depth: 2
+        purpose: "Framework utilities"
+        subfolders:
+          metrics: {purpose: "Framework-level metrics utilities"}
+          runners: {purpose: "Framework runner utilities"}
+          schemas: {purpose: "Shared schema definitions"}
+          workflow_engines: {purpose: "Workflow engine utilities"}
       gateway: {depth: 2, purpose: "Gateway implementations"}
       interfaces: {depth: 2, purpose: "Interface definitions"}
       L_CONTRACTS: {depth: 2, purpose: "Layer contracts and cross-layer enforcement contracts"}
-      tracing: {depth: 2, purpose: "Tracing infrastructure"}
-      prompt_governance: {depth: 2, purpose: "Prompt governance"}
-      cache: {depth: 2, purpose: "Caching infrastructure"}
+      tracing:
+        depth: 2
+        purpose: "Tracing infrastructure"
+        subfolders:
+          engines: {purpose: "Tracing engine implementations"}
+      prompt_governance:
+        depth: 2
+        purpose: "Prompt governance"
+        subfolders:
+          contracts: {purpose: "Prompt governance contracts and interface definitions"}
+          core: {purpose: "Core prompt governance logic"}
+          meta_prompts: {purpose: "Meta-prompt definitions and templates"}
+          optimization: {purpose: "Prompt optimization strategies"}
+          registry:
+            purpose: "Prompt registry and catalog"
+            subfolders:
+              backups: {purpose: "Registry backup snapshots"}
+          scripts: {purpose: "Prompt governance operational scripts"}
+          security:
+            purpose: "Prompt security enforcement"
+            subfolders:
+              adversarial: {purpose: "Adversarial prompt detection"}
+              detectors: {purpose: "Prompt injection and threat detectors"}
+              utils: {purpose: "Security utility functions"}
+              validators: {purpose: "Security validation rules"}
+          templates: {purpose: "Prompt template library"}
+          validation: {purpose: "Prompt validation logic"}
+      cache:
+        depth: 2
+        purpose: "Caching infrastructure"
+        subfolders:
+          core: {purpose: "Core cache implementations: key builders, redis client, graph-aware and policy caches"}
       embeddings: {depth: 2, purpose: "Embedding infrastructure"}
-      knowledge: {depth: 2, purpose: "Knowledge base infrastructure"}
-      visualization: {depth: 2, purpose: "Visualization tools"}
-      evaluation: {depth: 2, purpose: "Evaluation infrastructure"}
-      cloud_native: {depth: 2, purpose: "Cloud-native patterns"}
-      case_memory: {depth: 2, purpose: "Case memory infrastructure"}
-      _compat: {depth: 2, purpose: "Compatibility shims"}
+      knowledge:
+        depth: 2
+        purpose: "Knowledge base infrastructure"
+        subfolders:
+          cache: {purpose: "Knowledge cache layer"}
+          canonical: {purpose: "Canonical knowledge store"}
+          chunking: {purpose: "Document chunking strategies"}
+          circuit: {purpose: "Circuit breaker patterns for knowledge retrieval"}
+          concurrency: {purpose: "Concurrency utilities for knowledge operations"}
+          dispatcher: {purpose: "Knowledge query dispatcher"}
+          document_loaders: {purpose: "Document loader implementations"}
+          engine: {purpose: "Knowledge engine core"}
+          enrichment: {purpose: "Knowledge enrichment pipelines"}
+          fallback: {purpose: "Fallback strategies for knowledge retrieval"}
+          gates: {purpose: "Knowledge access gates"}
+          healing: {purpose: "Knowledge healing and repair"}
+          ingestion: {purpose: "Document and data ingestion"}
+          lifecycle: {purpose: "Knowledge lifecycle management"}
+          observability: {purpose: "Knowledge layer telemetry and observability"}
+          query: {purpose: "Query processing and routing"}
+          reasoning: {purpose: "Knowledge reasoning agents"}
+          research_cache: {purpose: "Research result caching"}
+          retrieval: {purpose: "Knowledge retrieval implementations"}
+          static_index: {purpose: "Static knowledge index"}
+          telemetry: {purpose: "Knowledge telemetry emitters"}
+      visualization:
+        depth: 2
+        purpose: "Visualization tools"
+        subfolders:
+          engines: {purpose: "Visualization engine implementations"}
+      evaluation:
+        depth: 2
+        purpose: "Evaluation infrastructure"
+        subfolders:
+          chunking: {purpose: "Chunking evaluation utilities"}
+          datasets: {purpose: "Evaluation datasets"}
+          feedback: {purpose: "Feedback collection and processing"}
+          golden: {purpose: "Golden reference datasets"}
+          judges: {purpose: "Evaluation judge implementations"}
+          metrics: {purpose: "Evaluation metrics"}
+          monitoring: {purpose: "Evaluation monitoring"}
+          retrieval: {purpose: "Retrieval evaluation"}
+          runners: {purpose: "Evaluation runner utilities"}
+          schemas: {purpose: "Evaluation schema definitions"}
+      cloud_native:
+        depth: 2
+        purpose: "Cloud-native patterns"
+        subfolders:
+          core: {purpose: "Core cloud-native implementations"}
+      case_memory:
+        depth: 2
+        purpose: "Case memory infrastructure"
+        subfolders:
+          core: {purpose: "Core case memory implementations"}
+      _compat:
+        depth: 2
+        purpose: "Compatibility shims"
+        subfolders:
+          core: {purpose: "Core compatibility shim implementations"}
       adg:
         depth: 2
         purpose: "ADG integration — Architecture Dependency Graph"
@@ -326,14 +429,27 @@ territories:
           ci: {depth: 2, purpose: "CI integration and invariant checks"}
           client: {depth: 2, purpose: "MCP client for ADG graph operations"}
           contracts: {depth: 2, purpose: "ADG contract definitions and protocol interfaces"}
-          extraction: {depth: 2, purpose: "Static AST-based scanner and edge extraction"}
+          extraction:
+            depth: 2
+            purpose: "Static AST-based scanner and edge extraction"
+            subfolders:
+              visitors: {purpose: "AST visitor implementations for edge extraction"}
           identity: {depth: 2, purpose: "Entity identity resolution and canonicalization"}
           precision: {depth: 2, purpose: "Precision scoring and semantic enrichment"}
           processing: {depth: 2, purpose: "ADG processing pipelines and batch operations"}
           runtime: {depth: 2, purpose: "ADG runtime behavioral indexing and live analysis"}
           _compat: {depth: 2, purpose: "Backward-compatibility shims for ADG modules"}
-      agents: {depth: 2, purpose: "Agent registry"}
-      core: {depth: 2, purpose: "Core utilities"}
+      agents:
+        depth: 2
+        purpose: "Agent registry"
+        subfolders:
+          _compat: {purpose: "Agent compatibility shims"}
+          types: {purpose: "Agent type definitions"}
+      core:
+        depth: 2
+        purpose: "Core utilities"
+        subfolders:
+          frameworks: {purpose: "Core framework implementations"}
 
   apps_eval:
     depth: 2

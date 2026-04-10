@@ -136,49 +136,12 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "*_types.py": "types",
             "*Agent.py": "reasoning",
         },
-        "extra_subfolders": {
-            "scripts": {
-                "purpose": "Operational scripts (Zero-Ambiguity Standard)",
-                "subfolders": {
-                    ".github": {"purpose": "GitHub workflow scripts"},
-                    "ci": {"purpose": "CI/CD pipeline scripts"},
-                    "config": {"purpose": "Configuration scripts"},
-                    "installation": {"purpose": "Installation and setup scripts"},
-                    "general_scripts": {"purpose": "General maintenance scripts"},
-                },
-            },
-            "logs": {
-                "purpose": "Guardian and audit log outputs (JSON reports).",
-                "allowed_extensions": [".json", ".log"],
-            },
-            "engines": {
-                "purpose": "Routing engines and dispatch processors.",
-            },
-            "meta_control": {
-                "purpose": "Meta-control logic for routing governance and self-regulation.",
-            },
-            "policy": {
-                "purpose": "Policy definitions and routing policy engines.",
-            },
-            "seams": {
-                "purpose": "Cross-layer seam contracts and integration points.",
-            },
-            "seam": {
-                "purpose": "Legacy single-seam audit module. Predates seams/; kept for backward compatibility.",
-            },
-        },
+        "extra_subfolders": {},
     },
     "L1_cognition": {
         "purpose": "Cognitive processing, reasoning, and thought patterns.",
         "notes": "LCD+ canonical skeleton. thought_engine/ and meta_learning/ DISSOLVED into 6 folders.",
-        "extra_subfolders": {
-            "engines": {
-                "purpose": "Cognitive engines and processing pipelines.",
-            },
-            "telemetry": {
-                "purpose": "Layer-level telemetry emitters and observability event reporters.",
-            },
-        },
+        "extra_subfolders": {},
         "reasoning_suffixes": [
             "_engine.py",
             "_manager.py",
