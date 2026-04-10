@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scri
 
 from pre_prompt_classifier import (
     check_plan_exists,
+    check_redis_adg_hot,
     check_redis_up,
     classify_tier,
     main,
@@ -248,12 +249,63 @@ class TestCheckRedisUp:
 
 
 # ---------------------------------------------------------------------------
+# check_redis_adg_hot
+# ---------------------------------------------------------------------------
+
+
+class TestCheckRedisAdgHot:
+    def test_sentinel_found_returns_true(self):
+        mock_client = MagicMock()
+        mock_client.scan.return_value = (0, ["adg:v1:abc123:_hot"])
+        mock_redis = MagicMock()
+        mock_redis.from_url.return_value = mock_client
+        with patch.dict("sys.modules", {"redis": mock_redis}):
+            assert check_redis_adg_hot() is True
+
+    def test_no_sentinel_returns_false(self):
+        mock_client = MagicMock()
+        mock_client.scan.return_value = (0, [])
+        mock_redis = MagicMock()
+        mock_redis.from_url.return_value = mock_client
+        with patch.dict("sys.modules", {"redis": mock_redis}):
+            assert check_redis_adg_hot() is False
+
+    def test_scan_continues_until_cursor_zero(self):
+        mock_client = MagicMock()
+        mock_client.scan.side_effect = [
+            (42, []),  # first page: no keys, cursor non-zero
+            (0, ["adg:v1:xyz:_hot"]),  # second page: key found
+        ]
+        mock_redis = MagicMock()
+        mock_redis.from_url.return_value = mock_client
+        with patch.dict("sys.modules", {"redis": mock_redis}):
+            assert check_redis_adg_hot() is True
+
+    def test_redis_import_error_returns_false(self):
+        with patch.dict("sys.modules", {"redis": None}):
+            assert check_redis_adg_hot() is False
+
+    def test_connection_exception_returns_false(self):
+        mock_redis = MagicMock()
+        mock_redis.from_url.side_effect = OSError("connection refused")
+        with patch.dict("sys.modules", {"redis": mock_redis}):
+            assert check_redis_adg_hot() is False
+
+
+# ---------------------------------------------------------------------------
 # main() integration
 # ---------------------------------------------------------------------------
 
 
 class TestMain:
-    def _run(self, payload: dict, adg_red: bool = False, redis_down: bool = False, repo_root=None) -> int:
+    def _run(
+        self,
+        payload: dict,
+        adg_red: bool = False,
+        redis_down: bool = False,
+        adg_hot: bool = True,
+        repo_root=None,
+    ) -> int:
         raw = json.dumps(payload)
         with patch("sys.stdin", StringIO(raw)):
             with patch(
@@ -264,13 +316,17 @@ class TestMain:
                     "pre_prompt_classifier.check_redis_up",
                     return_value=not redis_down,
                 ):
-                    if repo_root is not None:
-                        with patch(
-                            "pre_prompt_classifier.REPO_ROOT",
-                            repo_root,
-                        ):
-                            return main()
-                    return main()
+                    with patch(
+                        "pre_prompt_classifier.check_redis_adg_hot",
+                        return_value=adg_hot,
+                    ):
+                        if repo_root is not None:
+                            with patch(
+                                "pre_prompt_classifier.REPO_ROOT",
+                                repo_root,
+                            ):
+                                return main()
+                        return main()
 
     # --- T0/T1: never blocked regardless of infrastructure ---
     def test_t0_prompt_never_blocked_even_if_adg_red(self):
@@ -356,6 +412,27 @@ class TestMain:
         self._run(payload, adg_red=False, redis_down=False, repo_root=tmp_path)
         captured = capsys.readouterr()
         assert "WARNING" in captured.err or "plan" in captured.err.lower()
+
+    # --- Redis up + ADG hot/cold branch distinction ---
+    def test_redis_up_adg_hot_emits_hot_cache_confirmed(self, capsys):
+        payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
+        self._run(payload, adg_red=False, redis_down=False, adg_hot=True)
+        captured = capsys.readouterr()
+        assert "hot cache confirmed" in captured.err
+
+    def test_redis_up_adg_cold_emits_warning(self, capsys):
+        payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
+        self._run(payload, adg_red=False, redis_down=False, adg_hot=False)
+        captured = capsys.readouterr()
+        assert "cold" in captured.err.lower() or "adg_redis_ingest" in captured.err
+
+    def test_redis_up_adg_cold_adg_mcp_red_blocks(self):
+        payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
+        assert self._run(payload, adg_red=True, redis_down=False, adg_hot=False) == 2
+
+    def test_redis_up_adg_cold_adg_mcp_healthy_allows(self):
+        payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
+        assert self._run(payload, adg_red=False, redis_down=False, adg_hot=False) == 0
 
     # --- fail-open cases ---
     def test_empty_stdin_exits_0(self):

@@ -73,12 +73,16 @@ def _run_classifier_healthy(prompt: str):
                 "pre_prompt_classifier.check_redis_up",
                 return_value=True,
             ):
-                import io
+                with patch(
+                    "pre_prompt_classifier.check_redis_adg_hot",
+                    return_value=True,
+                ):
+                    import io
 
-                stderr_capture = io.StringIO()
-                with patch("sys.stderr", stderr_capture):
-                    rc = main()
-                return rc, stderr_capture.getvalue()
+                    stderr_capture = io.StringIO()
+                    with patch("sys.stderr", stderr_capture):
+                        rc = main()
+                    return rc, stderr_capture.getvalue()
 
 
 # ---------------------------------------------------------------------------
@@ -330,9 +334,13 @@ class TestGap3RedisHealthCheck:
                     "pre_prompt_classifier.check_redis_up",
                     return_value=not redis_down,
                 ):
-                    stderr_cap = io.StringIO()
-                    with patch("sys.stderr", stderr_cap):
-                        rc = self.main()
+                    with patch(
+                        "pre_prompt_classifier.check_redis_adg_hot",
+                        return_value=True,
+                    ):
+                        stderr_cap = io.StringIO()
+                        with patch("sys.stderr", stderr_cap):
+                            rc = self.main()
         return rc, stderr_cap.getvalue()
 
     # check_redis_up unit tests
