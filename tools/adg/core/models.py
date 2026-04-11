@@ -1,4 +1,5 @@
 """ADG Core Models — Pydantic models for type-safe ADG entities."""
+
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -6,11 +7,13 @@ from pydantic import BaseModel, Field
 
 class ADGNode(BaseModel):
     """Canonical node representation from SQLite."""
+
     id: str
     adg_name: str
     entity_type: str
     layer: str | None = None
-    file_path: str | None = None
+    # resolved_path is the authoritative path field from the nodes schema.
+    # file_path does not exist as a column — removed to prevent misleading null output.
     resolved_path: str | None = None
 
     class Config:
@@ -19,6 +22,7 @@ class ADGNode(BaseModel):
 
 class ADGEdge(BaseModel):
     """Canonical edge representation from SQLite."""
+
     id: str
     src_id: str
     dst_id: str
@@ -34,6 +38,7 @@ class ADGEdge(BaseModel):
 
 class ADGResponse(BaseModel):
     """Unified response shape regardless of backend."""
+
     status: str = "ok"
     data: dict[str, Any]
     backend_used: str = Field(..., description="redis|sqlite")
@@ -42,9 +47,10 @@ class ADGResponse(BaseModel):
 
 class HealthStatus(BaseModel):
     """Health check response."""
+
     mode: str  # "sqlite_only" | "full"
     sqlite: str  # "healthy" | "degraded" | "unavailable"
-    redis: str   # "healthy" | "degraded" | "unavailable"
+    redis: str  # "healthy" | "degraded" | "unavailable"
     cache_hit_capable: bool
     schema_version: str
     adg_snapshot_id: str

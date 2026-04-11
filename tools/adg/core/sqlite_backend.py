@@ -2,6 +2,7 @@
 
 Enhanced with SQLiteGraphStore for graph-native operations.
 """
+
 import logging
 import sqlite3
 from pathlib import Path
@@ -94,7 +95,8 @@ class SQLiteBackend:
     def get_node(self, node_id: str) -> ADGNode | None:
         """Fetch node by ID from SQLite."""
         cur = self._conn.execute(
-            "SELECT * FROM nodes WHERE id = ?", (node_id,),
+            "SELECT * FROM nodes WHERE id = ?",
+            (node_id,),
         )
         row = cur.fetchone()
         if row:
@@ -110,12 +112,48 @@ class SQLiteBackend:
         return [self._row_to_node(row) for row in cur.fetchall()]
 
     def get_nodes_by_file(self, file_path: str, limit: int = 100) -> list[ADGNode]:
-        """Fetch nodes by file path."""
+        """Fetch nodes by file path.
+
+        Tries exact match first (index-friendly), then suffix LIKE match as fallback.
+        The leading-wildcard LIKE used previously caused full-table scans and false matches.
+        """
+        # 1. Exact match — uses idx_nodes_resolved_path if present
+        cur = self._conn.execute(
+            "SELECT * FROM nodes WHERE resolved_path = ? LIMIT ?",
+            (file_path, limit),
+        )
+        rows = cur.fetchall()
+        if rows:
+            return [self._row_to_node(r) for r in rows]
+
+        # 2. Suffix LIKE fallback — anchored at right side only, avoids leading-wildcard scan
         cur = self._conn.execute(
             "SELECT * FROM nodes WHERE resolved_path LIKE ? LIMIT ?",
-            (f"%{file_path}%", limit),
+            (f"%{file_path}", limit),
         )
-        return [self._row_to_node(row) for row in cur.fetchall()]
+        return [self._row_to_node(r) for r in cur.fetchall()]
+
+    def find_node(self, name: str, limit: int = 10) -> list[ADGNode]:
+        """Find nodes by exact adg_name or adg_name prefix match.
+
+        Enables human-readable name resolution without knowing the integer node ID.
+        Returns exact matches first, then prefix matches if no exact hit.
+        """
+        # 1. Exact adg_name match
+        cur = self._conn.execute(
+            "SELECT * FROM nodes WHERE adg_name = ? LIMIT ?",
+            (name, limit),
+        )
+        rows = cur.fetchall()
+        if rows:
+            return [self._row_to_node(r) for r in rows]
+
+        # 2. Prefix match on adg_name
+        cur = self._conn.execute(
+            "SELECT * FROM nodes WHERE adg_name LIKE ? LIMIT ?",
+            (f"{name}%", limit),
+        )
+        return [self._row_to_node(r) for r in cur.fetchall()]
 
     def get_edge_fanout(self, src_id: str, relation_type: str, limit: int = 30) -> list[ADGEdge]:
         """Fetch outgoing edges."""
@@ -153,8 +191,10 @@ class SQLiteBackend:
         """Fetch anti-pattern violations."""
         try:
             cur = self._conn.execute(
+                # Include both relation types: 'violates' (layer boundary breaks) and
+                # 'antipattern' (code-level anti-pattern instances, ~8800 rows in practice).
                 """SELECT id, source_file, relation_type, symbol, line_no
-                   FROM edges WHERE relation_type = 'violates' LIMIT ?""",
+                   FROM edges WHERE relation_type IN ('violates', 'antipattern') LIMIT ?""",
                 (limit,),
             )
             return [dict(row) for row in cur.fetchall()]
@@ -211,9 +251,9 @@ class SQLiteBackend:
         visited = {start_id}
         current_level = [(start_id, [])]  # (node_id, path)
 
-        for depth in range(max_depth):
+        for depth in range(max_depth):  # progress: bounded by max_depth (shallow traversal)
             next_level = []
-            for node_id, path in current_level:
+            for node_id, path in current_level:  # progress: bounded by graph fanout
                 # Get neighbors
                 query = "SELECT dst_id FROM edges WHERE src_id = ?"
                 params = [node_id]

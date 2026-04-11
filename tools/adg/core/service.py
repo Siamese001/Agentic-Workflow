@@ -1,4 +1,5 @@
 """ADG Service — Query orchestration with mandatory SQLite + optional Redis."""
+
 import logging
 from typing import Any, Callable
 
@@ -67,9 +68,11 @@ class ADGService:
         if self._redis._available:
             try:
                 result = redis_query()
-                if result is not None:
+                # Treat [] the same as None: an empty cached list is indistinguishable
+                # from a cache miss for edge queries, so always fall through to SQLite.
+                if result is not None and result != []:
                     return result, "redis"
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- Redis client can raise varied transport/timeout/serialization errors; all are non-fatal and should fall through to SQLite
                 logger.debug(f"Redis query failed: {e}")
 
         # Fall back to SQLite
@@ -140,16 +143,20 @@ class ADGService:
             backend_used="sqlite",
         )
 
-    def get_edge_fanout(self, src_id: str, relation_type: str,
-                       limit: int = 30) -> ADGResponse:
+    def get_edge_fanout(self, src_id: str, relation_type: str, limit: int = 30) -> ADGResponse:
         """Fetch outgoing edges with read-through."""
         edges, backend = self._query_with_fallback(
             redis_query=lambda: self._redis.get_edge_fanout(
-                src_id, relation_type, self._adg_snapshot_id,
+                src_id,
+                relation_type,
+                self._adg_snapshot_id,
             ),
             sqlite_query=lambda: self._sqlite.get_edge_fanout(src_id, relation_type, limit),
             cache_set=lambda e: self._redis.set_edge_fanout(
-                src_id, relation_type, e, self._adg_snapshot_id,
+                src_id,
+                relation_type,
+                e,
+                self._adg_snapshot_id,
             ),
         )
 
@@ -166,8 +173,7 @@ class ADGService:
             backend_used=backend,
         )
 
-    def get_edge_fanin(self, tgt_id: str, relation_type: str,
-                      limit: int = 30) -> ADGResponse:
+    def get_edge_fanin(self, tgt_id: str, relation_type: str, limit: int = 30) -> ADGResponse:
         """Fetch incoming edges (SQLite only for now)."""
         edges = self._sqlite.get_edge_fanin(tgt_id, relation_type, limit)
 
@@ -223,4 +229,22 @@ class ADGService:
         """Reopen backend connections after explicit close for lock release workflows."""
         if self._sqlite:
             self._sqlite.reopen()
+            # Refresh snapshot ID so Redis cache keys reflect the active snapshot.
+            # Without this, Redis lookups after a reload use the stale snapshot ID.
+            status = self._sqlite.get_status()
+            self._adg_snapshot_id = status["timestamp"]
         logger.info("ADGService reopened SQLite connection")
+
+    def find_node(self, name: str, limit: int = 10) -> ADGResponse:
+        """Find nodes by exact or prefix adg_name match."""
+        nodes = self._sqlite.find_node(name, limit)
+
+        return ADGResponse(
+            status="ok",
+            data={
+                "query": name,
+                "nodes": [n.model_dump() for n in nodes],
+                "count": len(nodes),
+            },
+            backend_used="sqlite",
+        )

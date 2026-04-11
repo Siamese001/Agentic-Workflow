@@ -13,15 +13,14 @@
     },
     "adg_sqlite": {
       "command": "python",
-      "args": [
-        "-c",
-        "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/adg/mcp/server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/adg/mcp/server.py', encoding='utf-8').read())"
-      ],
+      "args": ["-m", "tools.adg.mcp.server"],
+      "cwd": "C:/Git/Agentic-Workflow",
       "disabled": false,
       "env": {
         "ADG_DIR": "C:/Git/Agentic-Workflow/artifacts/adg",
         "ADG_MCP_PAGE_SIZE": "500",
-        "ADG_MCP_CACHE_META_TTL": "5"
+        "ADG_MCP_CACHE_META_TTL": "5",
+        "PYTHONPATH": "C:/Git/Agentic-Workflow"
       }
     },
     "deepwiki": {
@@ -51,6 +50,7 @@
       "args": [
         "C:/Git/Agentic-Workflow/tools/memory/adg_memory_server.py"
       ],
+      "cwd": "C:/Git/Agentic-Workflow",
       "disabled": false,
       "env": {
         "ADG_REDIS_URL": "redis://localhost:6379/0",

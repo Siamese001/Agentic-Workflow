@@ -9,9 +9,12 @@ This server follows the hardened design:
 from __future__ import annotations
 
 import atexit
+import hashlib
 import logging
 import os
 import signal
+import time
+import uuid
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -24,6 +27,41 @@ from tools.adg.mcp.health import HealthDiagnostics
 _log_file = os.path.expanduser("~/adg_mcp_server.log")
 logging.basicConfig(filename=_log_file, level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
 _log = logging.getLogger("adg_mcp")
+
+# ---------------------------------------------------------------------------
+# Process identity — set once at module load (i.e. true process start, not reconnect)
+# ---------------------------------------------------------------------------
+_STARTUP_TIME: float = time.time()
+_STARTUP_NONCE: str = uuid.uuid4().hex[:12]  # unique per OS process spawn
+
+
+# Fingerprint covers the full loaded server stack, not just this file.
+# A changed fingerprint after restart proves dependency edits were picked up.
+def _compute_stack_fingerprints() -> tuple[dict[str, str], str]:
+    """Return per-file md5[:10] fingerprints and a combined fingerprint."""
+    import pathlib
+
+    _repo = pathlib.Path(__file__).resolve().parents[3]
+    _files = {
+        "server.py": __file__,
+        "service.py": str(_repo / "tools/adg/core/service.py"),
+        "sqlite_backend.py": str(_repo / "tools/adg/core/sqlite_backend.py"),
+        "models.py": str(_repo / "tools/adg/core/models.py"),
+    }
+    per_file: dict[str, str] = {}
+    combined = hashlib.md5()
+    for label, path in _files.items():
+        try:
+            content = open(path, encoding="utf-8").read().encode()
+        except OSError:
+            content = b""
+        digest = hashlib.md5(content).hexdigest()[:10]
+        per_file[label] = digest
+        combined.update(content)
+    return per_file, combined.hexdigest()[:10]
+
+
+_STACK_FINGERPRINTS, _COMBINED_FINGERPRINT = _compute_stack_fingerprints()
 
 # ---------------------------------------------------------------------------
 # Global service instance (initialized at startup, not import)
@@ -175,6 +213,27 @@ def adg_nodes_by_file(file_path: str, limit: int = 100) -> dict[str, Any]:
 
 
 @mcp.tool()
+def adg_find_node(name: str, limit: int = 10) -> dict[str, Any]:
+    """Find nodes by adg_name — exact match first, then prefix match.
+
+    Use this to resolve a human-readable ADG name (e.g.
+    'ADG::Module::tools/adg/core/service.py') to a node id without
+    needing the opaque integer id upfront.
+    """
+    try:
+        svc = _init_service()
+        resp = svc.find_node(name, limit)
+        return {
+            "status": resp.status,
+            "data": resp.data,
+            "backend_used": resp.backend_used,
+        }
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
+        _log.error("Find node query failed: %s", e)
+        return {"status": "error", "message": str(e)}
+
+
+@mcp.tool()
 def adg_edge_fanout(src_id: str, relation_type: str, limit: int = 30) -> dict[str, Any]:
     """Get outgoing edges from src_id via relation_type.
 
@@ -283,16 +342,54 @@ def adg_reopen_connections() -> dict[str, Any]:
 
 
 @mcp.tool()
+def adg_runtime_info() -> dict[str, Any]:
+    """Return process-level runtime identity for verifying restarts.
+
+    Returns pid, startup_nonce (unique per OS process spawn, not per reconnect),
+    source_fingerprint (md5 of server.py at load time), sqlite_path, snapshot_id.
+    A changed pid or nonce after a Windsurf MCP restart proves a fresh process
+    is serving. Use adg_reload for SQLite snapshot/data refresh only.
+    """
+    import datetime
+
+    try:
+        svc = _init_service()
+        h = svc.health()
+        _, sqlite_meta = svc._sqlite.health()
+        return {
+            "status": "ok",
+            "data": {
+                "pid": os.getpid(),
+                "startup_time": datetime.datetime.fromtimestamp(_STARTUP_TIME).isoformat(),
+                "startup_nonce": _STARTUP_NONCE,
+                "stack_fingerprints": _STACK_FINGERPRINTS,
+                "combined_fingerprint": _COMBINED_FINGERPRINT,
+                "sqlite_path": sqlite_meta.get("path"),
+                "snapshot_id": h.adg_snapshot_id,
+                "redis_enabled": h.cache_hit_capable,
+            },
+        }
+    except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
+        _log.error("Runtime info failed: %s", e)
+        return {"status": "error", "message": str(e)}
+
+
+@mcp.tool()
 def adg_reload() -> dict[str, Any]:
-    """Auto-reload ADG if a newer snapshot exists.
+    """Auto-reload ADG SQLite snapshot if a newer file exists on disk.
+
+    DATA RELOAD ONLY — repoints the connection to the latest snapshot file.
+    This does NOT restart the server process or reload edited source code.
+    To pick up code changes, restart the MCP server via Windsurf MCP Settings.
 
     Checks if the current snapshot is stale and reloads to the latest one.
     Returns status indicating whether reload occurred or was unnecessary.
     """
     try:
         svc = _init_service()
-        health_report = svc.health()
-        sqlite_meta = health_report._asdict()
+        # HealthStatus is a Pydantic BaseModel, not a NamedTuple — use _sqlite.health()
+        # directly to get the stale/path metadata that lives in the SQLite backend.
+        _sqlite_status, sqlite_meta = svc._sqlite.health()
 
         is_stale = sqlite_meta.get("is_stale", False)
         current_path = sqlite_meta.get("path")
@@ -313,8 +410,7 @@ def adg_reload() -> dict[str, Any]:
         svc.reopen()
 
         # Verify reload
-        new_health = svc.health()
-        new_meta = new_health._asdict()
+        _sqlite_status_new, new_meta = svc._sqlite.health()
 
         return {
             "status": "ok",

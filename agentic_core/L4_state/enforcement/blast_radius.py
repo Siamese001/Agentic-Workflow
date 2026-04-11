@@ -6,6 +6,7 @@ and containment for meta-learning proposals.
 
 import logging
 import uuid
+from tqdm import tqdm
 from dataclasses import dataclass
 from typing import Any
 
@@ -130,7 +131,7 @@ class BlastRadiusCalculator:
             return False
 
         if hasattr(proposal, "__dict__"):
-            for value in proposal.__dict__.values():
+            for value in tqdm(proposal.__dict__.values(), desc="depth scan", unit="field", leave=False):
                 if _is_nested(value):
                     depth = max(depth, 2)
                     sub_iter = (

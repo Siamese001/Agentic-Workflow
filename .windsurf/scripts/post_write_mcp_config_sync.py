@@ -198,28 +198,25 @@ def _sync_notion_mcp_registry(servers: dict, token: str, db_id: str) -> None:
 
 
 def main() -> int:
-    # Path filtering: only run when the written file is mcp_config.json.
-    # Previously handled by file_pattern in hooks.json (non-standard field now removed).
-    if len(sys.argv) > 1:
-        written_path = sys.argv[1]
-        if not written_path.replace("\\", "/").endswith("mcp_config.json"):
-            return 0
-    else:
-        # No argv: attempt to read file_path from stdin JSON payload.
-        raw = sys.stdin.read()
-        if raw.strip():
-            try:
-                payload = json.loads(raw)
-                file_path = (
-                    payload.get("tool_info", payload).get("file_path", "")
-                    if isinstance(payload, dict)
-                    else ""
-                )
-                if file_path and not file_path.replace("\\", "/").endswith("mcp_config.json"):
-                    return 0
-            except (json.JSONDecodeError, AttributeError):
-                pass
-        sys.stdin = io.StringIO("")  # stdin consumed; replace for safety
+    # Path filtering: only run when mcp_config.json was recently written.
+    #
+    # Windsurf's post_write_code hook does NOT pass the written filename as
+    # argv[1] and does NOT send a JSON stdin payload — both the argv branch
+    # and the stdin branch previously silently returned 0 on every invocation,
+    # meaning the sync NEVER fired automatically.
+    #
+    # Fix: check whether the SSOT file was modified within the last 10 seconds.
+    # The post_write_code hook fires immediately after Cascade finishes writing
+    # a file, so a 10-second window is tight enough to avoid false positives
+    # from unrelated writes while still catching the intended trigger.
+    import time as _time
+
+    if SSOT.exists():
+        age_seconds = _time.time() - SSOT.stat().st_mtime
+        if age_seconds > 10:
+            return 0  # mcp_config.json was not just written — skip
+    # Drain stdin unconsumed so the process doesn't block
+    sys.stdin = io.StringIO("")
 
     if not SSOT.exists():
         print(f"[mcp_sync] SSOT not found: {SSOT} — skipping", flush=True)
