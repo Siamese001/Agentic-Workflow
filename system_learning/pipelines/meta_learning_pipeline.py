@@ -52,6 +52,7 @@ import hashlib
 import logging
 import uuid
 from dataclasses import dataclass
+from tqdm import tqdm
 from typing import Any, Protocol
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -947,7 +948,7 @@ def run_pipeline(
 
     _inj_detector = InjectionDetector()
     proposals = []
-    for key in proposer_order:
+    for key in tqdm(proposer_order, desc="proposals", unit="key", leave=False):
         proposer = proposer_map[key]
         if proposer is None:
             continue
@@ -1036,7 +1037,7 @@ def run_pipeline(
 
     # Step 7: Validate each proposal
     validated_proposals = []
-    for pkg in proposals:
+    for pkg in tqdm(proposals, desc="validate proposals", unit="pkg", leave=False):
         if cfg.require_replay_validation:
 
             def canonicalize(output):
@@ -1109,8 +1110,8 @@ def run_pipeline(
             from system_learning.types.healing_outcome_types import HealingOutcomeEvent as _WHE
 
             _window_aggregator = HealingOutcomeAggregator(window_size=10000)
-            for _rec in _window_records:
-                for _s in _rec.snapshot:
+            for _rec in tqdm(_window_records, desc="window records", unit="rec", leave=False):
+                for _s in tqdm(_rec.snapshot, desc="  snapshots", unit="snap", leave=False):
                     for _ in range(_s.success_count):
                         _window_aggregator.ingest(
                             _WHE(
