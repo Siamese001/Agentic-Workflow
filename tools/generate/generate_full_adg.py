@@ -79,6 +79,8 @@ from tools.generate.utils.file_utils import (  # noqa: E402  # M.1 modularizatio
     _check_locked_files,
     _perform_wal_checkpoint,
 )
+from tools.generate.adg_graph_watchlist_builder import build_and_emit_graph_watchlist  # noqa: E402  # P5: graph-native intelligence
+from tools.generate.adg_watchlist_builder import build_and_emit_watchlist  # noqa: E402  # P4: high-signal watchlist
 from tools.generate.infra_wiring_views import enrich_and_report as _enrich_infra_views  # noqa: E402
 from tools.generate.materialized_views import materialize_all_views as _materialize_adg_views  # noqa: E402
 from tools.generate.validation import (  # noqa: E402  # M.3 modularization
@@ -280,6 +282,31 @@ def generate_full_adg(
     # --- ADG materialized views: structural/authority/trace/snapshot visibility ---
     _materialize_adg_views(paths.sqlite)
 
+    # --- P4: High-signal anomaly watchlist (non-blocking intelligence layer) ---
+    try:
+        watchlist_path = build_and_emit_watchlist(
+            paths.sqlite,
+            adg_artifacts_dir,
+            print_summary=True,
+        )
+        print(f"[ADG] P4 watchlist artifact: {watchlist_path.name}")
+    except Exception as e:  # guardian: allow-silent-swallow -- watchlist is non-critical intelligence
+        print(f"[ADG] P4 watchlist skipped: {e}")
+
+    # --- P5: Graph-native intelligence watchlist (non-blocking graph layer) ---
+    graph_watchlist_items: list = []
+    try:
+        from tools.generate.adg_graph_watchlist_builder import ADGGraphWatchlistBuilder
+
+        with ADGGraphWatchlistBuilder(paths.sqlite) as builder:
+            graph_watchlist_items = builder.build_graph_watchlist()
+            graph_watchlist_path = builder.emit_artifact(graph_watchlist_items, adg_artifacts_dir)
+            if print_summary:
+                print(builder.emit_terminal_summary(graph_watchlist_items, top_n=10))
+        print(f"[ADG] P5 graph watchlist artifact: {graph_watchlist_path.name}")
+    except Exception as e:  # guardian: allow-silent-swallow -- graph watchlist is non-critical intelligence
+        print(f"[ADG] P5 graph watchlist skipped: {e}")
+
     # --- Repair orchestrator: classify + fix remaining issues ---
     print("[ADG] Running repair orchestrator on committed artifacts...")
     _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
@@ -390,6 +417,42 @@ def generate_full_adg(
     print(
         f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}",
     )
+
+    # --- E11: Graph-native SQL analytics (Prompt 6/7 integration) ---
+    if graph_watchlist_items:
+        # Count promoted signals
+        rev_dep_count = sum(1 for i in graph_watchlist_items if i.reverse_dep_score > 0)
+        bridge_count = sum(1 for i in graph_watchlist_items if i.bridge_score > 0)
+        blast_count = sum(1 for i in graph_watchlist_items if i.blast_radius > 0)
+        scc_count = sum(1 for i in graph_watchlist_items if i.scc_cluster_size > 0)
+
+        # Count gate decisions (Prompt 7)
+        fail_count = sum(1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "FAIL")
+        warn_count = sum(1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "WARN")
+
+        print(f"[ADG] E11 graph-native SQL analytics:")
+        print(f"      Promoted signals: RevDep={rev_dep_count}  Bridge={bridge_count}  Blast={blast_count}")
+        if scc_count == 0:
+            print(f"      SCC=0 (codebase appears acyclic - architecturally positive)")
+        else:
+            print(f"      SCC={scc_count} [surface_with_caveat: semantic proof not fully closed]")
+        # Show gate summary (Prompt 7)
+        if fail_count > 0 or warn_count > 0:
+            print(f"      Gate decisions: FAIL={fail_count}  WARN={warn_count}")
+        # Show top 3 graph hotspots with remediation (Prompt 7)
+        top_graph = graph_watchlist_items[:3]
+        for i, item in enumerate(top_graph, 1):
+            signals = []
+            if item.reverse_dep_score > 0:
+                signals.append("RevDep")
+            if item.bridge_score > 0:
+                signals.append("Bridge")
+            if item.blast_radius > 0:
+                signals.append("Blast")
+            sig_str = "+".join(signals) if signals else "none"
+            gate = item.remediation.gate_decision if item.remediation else "INFO"
+            fix = item.remediation.recommended_fix_pattern[:25] if item.remediation else "review"
+            print(f"      G{i}: {item.file[:45]:<45} score={item.score:.1f} [{gate}] {fix}")
 
     # --- Memory MCP persistence ---
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)

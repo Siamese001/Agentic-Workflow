@@ -461,29 +461,76 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
     # -------------------------------------------------------------------------
 
     # mv_dependency_cone_risk
-    # Transitive fan-in approximation using iterative temp tables.
-    # Original 3-hop self-JOIN caused combinatorial explosion on 500K+ edges.
-    # Now: compute hop 1 and hop 2 iteratively; hop 3 set to 0 (minimal signal).
-    cur.execute("DROP TABLE IF EXISTS _t_direct_fan_in")
-    cur.execute("""
-        CREATE TEMP TABLE _t_direct_fan_in AS
-        SELECT dst_id AS node_id, COUNT(DISTINCT src_id) AS fan_in
-        FROM edges WHERE relation_type IN ('imports', 'calls')
-        GROUP BY dst_id
-    """)
-    cur.execute("CREATE INDEX IF NOT EXISTS _idx_dfi ON _t_direct_fan_in(node_id)")
+    # Fix: Aggregate at symbol level first (edges reference symbols, not modules),
+    # then roll up to module level via resolved_path for both hop-1 and hop-2.
+    # Hop-3 remains deferred due to performance (500K+ edges).
+    cur.execute("DROP TABLE IF EXISTS _t_sym_direct_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_sym_hop2_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_mod_direct_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_mod_hop2_fan_in")
 
-    cur.execute("DROP TABLE IF EXISTS _t_hop2_fan_in")
+    # Hop 1: Direct fan-in at symbol level, rolled up to module
     cur.execute("""
-        CREATE TEMP TABLE _t_hop2_fan_in AS
-        SELECT e1.dst_id AS node_id, COUNT(DISTINCT e2.src_id) AS fan_in
-        FROM edges e1
-        JOIN edges e2 ON e2.dst_id = e1.src_id
-            AND e2.relation_type IN ('imports', 'calls')
-        WHERE e1.relation_type IN ('imports', 'calls')
-        GROUP BY e1.dst_id
+        CREATE TEMP TABLE _t_sym_direct_fan_in AS
+        SELECT
+            dst_sym.resolved_path AS file_path,
+            COUNT(DISTINCT src_sym.resolved_path) AS fan_in
+        FROM edges e
+        JOIN nodes dst_sym ON e.dst_id = dst_sym.id
+        JOIN nodes src_sym ON e.src_id = src_sym.id
+        WHERE e.relation_type IN ('imports', 'calls')
+        AND dst_sym.resolved_path IS NOT NULL
+        AND src_sym.resolved_path IS NOT NULL
+        GROUP BY dst_sym.resolved_path
     """)
-    cur.execute("CREATE INDEX IF NOT EXISTS _idx_h2fi ON _t_hop2_fan_in(node_id)")
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_sdfi ON _t_sym_direct_fan_in(file_path)")
+
+    # Build module-level direct fan-in from symbol aggregation
+    cur.execute("""
+        CREATE TEMP TABLE _t_mod_direct_fan_in AS
+        SELECT n.id AS node_id, COALESCE(s.fan_in, 0) AS fan_in
+        FROM nodes n
+        LEFT JOIN _t_sym_direct_fan_in s ON s.file_path = n.resolved_path
+        WHERE n.entity_type = 'module'
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_mdfi ON _t_mod_direct_fan_in(node_id)")
+
+    # Hop 2: Find modules that import modules which the target imports
+    # If Target imports symbols from Module B, and Module B imports Module A,
+    # then changes to Module A could affect Target via Module B.
+    # Pattern: Target -(e1)-> symbols in Module B, Module B -(e2)-> symbols in Module A
+    cur.execute("""
+        CREATE TEMP TABLE _t_sym_hop2_fan_in AS
+        SELECT
+            target_imports.resolved_path AS file_path,
+            COUNT(DISTINCT hop2_src.resolved_path) AS fan_in
+        FROM edges e1
+        -- e1: target module imports symbols
+        JOIN nodes target_imports ON e1.src_id = target_imports.id
+        -- Those symbols are defined in intermediate modules
+        JOIN nodes intermediate_sym ON e1.dst_id = intermediate_sym.id
+        -- Intermediate modules import other modules (e2)
+        JOIN edges e2 ON e2.src_id = intermediate_sym.id
+        JOIN nodes hop2_src ON e2.dst_id = hop2_src.id
+        WHERE e1.relation_type IN ('imports', 'calls')
+        AND e2.relation_type IN ('imports', 'calls')
+        AND target_imports.resolved_path IS NOT NULL
+        AND hop2_src.resolved_path IS NOT NULL
+        AND target_imports.resolved_path != hop2_src.resolved_path
+        AND intermediate_sym.resolved_path IS NOT NULL
+        GROUP BY target_imports.resolved_path
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_sh2fi ON _t_sym_hop2_fan_in(file_path)")
+
+    # Build module-level hop-2 fan-in
+    cur.execute("""
+        CREATE TEMP TABLE _t_mod_hop2_fan_in AS
+        SELECT n.id AS node_id, COALESCE(s.fan_in, 0) AS fan_in
+        FROM nodes n
+        LEFT JOIN _t_sym_hop2_fan_in s ON s.file_path = n.resolved_path
+        WHERE n.entity_type = 'module'
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_mh2fi ON _t_mod_hop2_fan_in(node_id)")
 
     cur.execute(f"""
         CREATE TABLE mv_dependency_cone_risk AS
@@ -496,22 +543,22 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             COALESCE(h1.fan_in, 0) AS direct_fan_in,
             COALESCE(h2.fan_in, 0) AS hop2_fan_in,
             0                      AS hop3_fan_in,
-            COALESCE(h1.fan_in, 0)
-                + COALESCE(h2.fan_in, 0) AS transitive_depth_approx,
+            COALESCE(h1.fan_in, 0) + COALESCE(h2.fan_in, 0) AS transitive_depth_approx,
             ROUND(
-                (
-                    COALESCE(h1.fan_in, 0) * 1.0
-                    + COALESCE(h2.fan_in, 0) * 0.5
-                ),
+                COALESCE(h1.fan_in, 0) * 1.0 +
+                COALESCE(h2.fan_in, 0) * 0.5,
             2)                    AS cone_risk_score
         FROM nodes n
-        LEFT JOIN _t_direct_fan_in h1 ON h1.node_id = n.id
-        LEFT JOIN _t_hop2_fan_in h2 ON h2.node_id = n.id
+        LEFT JOIN _t_mod_direct_fan_in h1 ON h1.node_id = n.id
+        LEFT JOIN _t_mod_hop2_fan_in h2 ON h2.node_id = n.id
         WHERE n.entity_type = 'module'
         ORDER BY cone_risk_score DESC
     """)
-    cur.execute("DROP TABLE IF EXISTS _t_direct_fan_in")
-    cur.execute("DROP TABLE IF EXISTS _t_hop2_fan_in")
+
+    cur.execute("DROP TABLE IF EXISTS _t_sym_direct_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_sym_hop2_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_mod_direct_fan_in")
+    cur.execute("DROP TABLE IF EXISTS _t_mod_hop2_fan_in")
 
     # mv_high_fan_in_out_with_defects
     cur.execute(f"""

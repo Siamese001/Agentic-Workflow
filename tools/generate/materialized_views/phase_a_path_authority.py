@@ -601,6 +601,39 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
     # -------------------------------------------------------------------------
 
     # mv_hotspot_centrality
+    # Fix: Aggregate at symbol level first (edges reference symbols, not modules),
+    # then roll up to module level via resolved_path.
+    cur.execute("DROP TABLE IF EXISTS _t_symbol_inbound")
+    cur.execute("DROP TABLE IF EXISTS _t_symbol_outbound")
+
+    # Pre-aggregate inbound edges at symbol level by resolved_path
+    cur.execute("""
+        CREATE TEMP TABLE _t_symbol_inbound AS
+        SELECT
+            sym.resolved_path AS file_path,
+            COUNT(DISTINCT e.id) AS fan_in
+        FROM edges e
+        JOIN nodes sym ON e.dst_id = sym.id
+        WHERE e.relation_type IN ('imports', 'calls')
+        AND sym.resolved_path IS NOT NULL
+        GROUP BY sym.resolved_path
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_sym_in ON _t_symbol_inbound(file_path)")
+
+    # Pre-aggregate outbound edges at symbol level by resolved_path
+    cur.execute("""
+        CREATE TEMP TABLE _t_symbol_outbound AS
+        SELECT
+            sym.resolved_path AS file_path,
+            COUNT(DISTINCT e.id) AS fan_out
+        FROM edges e
+        JOIN nodes sym ON e.src_id = sym.id
+        WHERE e.relation_type IN ('imports', 'calls')
+        AND sym.resolved_path IS NOT NULL
+        GROUP BY sym.resolved_path
+    """)
+    cur.execute("CREATE INDEX IF NOT EXISTS _idx_sym_out ON _t_symbol_outbound(file_path)")
+
     cur.execute(f"""
         CREATE TABLE mv_hotspot_centrality AS
         SELECT
@@ -609,25 +642,28 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
             n.adg_name            AS adg_name,
             n.layer               AS layer,
             n.resolved_path       AS resolved_path,
-            COUNT(DISTINCT e_in.id)   AS fan_in,
-            COUNT(DISTINCT e_out.id)  AS fan_out,
-            COUNT(DISTINCT e_in.id) + COUNT(DISTINCT e_out.id) AS degree,
+            COALESCE(fi.fan_in, 0)   AS fan_in,
+            COALESCE(fo.fan_out, 0)  AS fan_out,
+            COALESCE(fi.fan_in, 0) + COALESCE(fo.fan_out, 0) AS degree,
             ROUND(
-                CAST(COUNT(DISTINCT e_in.id) AS REAL)
-                * CAST(COUNT(DISTINCT e_out.id) AS REAL)
+                CAST(COALESCE(fi.fan_in, 0) AS REAL)
+                * CAST(COALESCE(fo.fan_out, 0) AS REAL)
                 / NULLIF((SELECT COUNT(*) FROM nodes WHERE entity_type='module'), 0),
             4)                    AS betweenness_approx,
             ROUND(
-                CAST(COUNT(DISTINCT e_in.id) AS REAL)
+                CAST(COALESCE(fi.fan_in, 0) AS REAL)
                 / NULLIF((SELECT COUNT(*) FROM nodes WHERE entity_type='module'), 0),
             4)                    AS degree_centrality
         FROM nodes n
-        LEFT JOIN edges e_in  ON e_in.dst_id  = n.id  AND e_in.relation_type  IN ('imports', 'calls')
-        LEFT JOIN edges e_out ON e_out.src_id = n.id  AND e_out.relation_type IN ('imports', 'calls')
+        LEFT JOIN _t_symbol_inbound fi ON fi.file_path = n.resolved_path
+        LEFT JOIN _t_symbol_outbound fo ON fo.file_path = n.resolved_path
         WHERE n.entity_type = 'module'
         GROUP BY n.id
         ORDER BY fan_in DESC
     """)
+
+    cur.execute("DROP TABLE IF EXISTS _t_symbol_inbound")
+    cur.execute("DROP TABLE IF EXISTS _t_symbol_outbound")
 
     # mv_unknown_taxonomy_and_orphans
     cur.execute(f"""

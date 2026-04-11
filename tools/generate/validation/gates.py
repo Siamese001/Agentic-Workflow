@@ -280,7 +280,7 @@ _DEFAULT_SC_AP_CONFIG_PATH = ROOT / "artifacts" / "adg" / "sc_ap_config.json"
 
 _DEFAULT_SC_AP_CONFIG: dict[str, dict[str, Any]] = {
     "SC-1": {
-        "enabled": False,
+        "enabled": True,
         "audit_mode": True,
         "promoted_date": None,
         "label": "Gravity import / illegal layer reach",
@@ -318,7 +318,7 @@ _DEFAULT_SC_AP_CONFIG: dict[str, dict[str, Any]] = {
         "label": "Direct durable write breach",
     },
     "SC-5": {
-        "enabled": False,
+        "enabled": True,
         "audit_mode": True,
         "promoted_date": None,
         "label": "Agentic spine completeness",

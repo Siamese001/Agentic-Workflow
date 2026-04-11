@@ -1,6 +1,6 @@
 """Orchestrator for ADG SQLite materialized view refresh.
 
-Calls Phase A → B → C → D in dependency order.
+Calls Phase A → B → C → D → E in dependency order.
 Returns combined row-count dict and logs a summary table.
 """
 
@@ -12,13 +12,15 @@ from tools.generate.materialized_views.phase_a_path_authority import materialize
 from tools.generate.materialized_views.phase_b_capability_tool_task import materialize_phase_b
 from tools.generate.materialized_views.phase_c_trace_drift_debt import materialize_phase_c
 from tools.generate.materialized_views.phase_d_snapshot_regression import materialize_phase_d
+from tools.generate.materialized_views.phase_e_graph_intelligence import materialize_phase_e
 
 
 def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
-    """Refresh all 38 ADG materialized view tables. Idempotent.
+    """Refresh all 42 ADG materialized view tables. Idempotent.
 
     Runs Phase A, then B (depends on A), then C (depends on A), then D
-    (depends on A+B+C). Logs a compact summary table to stdout.
+    (depends on A+B+C), then E (graph-native, depends on A+B). Logs a compact
+    summary table to stdout.
 
     Args:
         sqlite_path: Path to the live ADG SQLite database.
@@ -39,6 +41,10 @@ def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
 
     counts_d = materialize_phase_d(sqlite_path)
     all_counts.update(counts_d)
+
+    # Phase E: Graph-native intelligence (Prompt 5)
+    counts_e = materialize_phase_e(sqlite_path)
+    all_counts.update(counts_e)
 
     _log_summary(all_counts)
     return all_counts
