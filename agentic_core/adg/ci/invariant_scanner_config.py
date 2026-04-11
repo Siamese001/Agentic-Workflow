@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import uuid
 from dataclasses import dataclass, field
+from tqdm import tqdm
 from typing import TYPE_CHECKING
 
 from agentic_core.adg.contracts.schema_util import (
@@ -301,7 +302,7 @@ class InvariantScanner:
         violations: list[Violation] = []
         provider_bases = {s.split(".")[0] for s in PROVIDER_SDK_SYMBOLS}
 
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="rule A edges", unit="edge", leave=False):
             if edge.relation_type not in ("imports", "invokes_provider"):
                 continue
             sym = _symbol_name(edge.to_name)
@@ -336,7 +337,7 @@ class InvariantScanner:
         """RULE B: No embedding instantiation outside EmbeddingSovereignAgent."""
         violations: list[Violation] = []
 
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="rule B edges", unit="edge", leave=False):
             if edge.edge_kind != "embedding" or edge.relation_type != "instantiates":
                 continue
             from_rel = _module_rel(edge.from_name)
@@ -368,7 +369,7 @@ class InvariantScanner:
         """RULE C: No upward import/write edges (lower layer importing higher layer)."""
         violations: list[Violation] = []
 
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="rule C edges", unit="edge", leave=False):
             if edge.relation_type not in ("imports", "writes_to", "invokes_provider"):
                 continue
 
@@ -422,7 +423,7 @@ class InvariantScanner:
         """
         violations: list[Violation] = []
 
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="rule D edges", unit="edge", leave=False):
             if edge.edge_kind != "dynamic_exec":
                 continue
             from_rel = _module_rel(edge.from_name)
@@ -456,7 +457,7 @@ class InvariantScanner:
                 def bar(self): ...   # duplicate — second silently shadows first
         """
         violations: list[Violation] = []
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="rule D dup edges", unit="edge", leave=False):
             if edge.relation_type != "duplicate_method":
                 continue
             from_rel = _module_rel(edge.from_name)
@@ -488,7 +489,7 @@ class InvariantScanner:
                 Logger.warning(...)   # <-- unreachable dead code
         """
         violations: list[Violation] = []
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="rule G edges", unit="edge", leave=False):
             if edge.relation_type != "unreachable_after_raise":
                 continue
             from_rel = _module_rel(edge.from_name)
