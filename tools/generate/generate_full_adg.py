@@ -93,6 +93,7 @@ from tools.generate.validation import (  # noqa: E402  # M.3 modularization
     _check_p2_ratchet,
     _check_sqlite_integrity,
     _check_structural_conformance,
+    _check_witness_tier_gates,
 )
 
 # M.4: _print_defect_table extracted to tools.generate.reporting.reports
@@ -282,6 +283,9 @@ def generate_full_adg(
     # --- ADG materialized views: structural/authority/trace/snapshot visibility ---
     _materialize_adg_views(paths.sqlite)
 
+    # --- Architecture witness-tier gates: Class A positive / Class B absence ---
+    _check_witness_tier_gates(sqlite_path=prod_sqlite_path)
+
     # --- P4: High-signal anomaly watchlist (non-blocking intelligence layer) ---
     try:
         watchlist_path = build_and_emit_watchlist(
@@ -428,12 +432,17 @@ def generate_full_adg(
         scc_count = sum(1 for i in graph_watchlist_items if i.scc_cluster_size > 0)
 
         # Count gate decisions (Prompt 7)
-        fail_count = sum(1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "FAIL")
-        warn_count = sum(1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "WARN")
+        fail_count = sum(
+            1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "FAIL"
+        )
+        warn_count = sum(
+            1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "WARN"
+        )
 
         # Prompt 9: Compute deltas if baseline available
         try:
             from tools.generate.adg_graph_watchlist_builder import ADGGraphWatchlistBuilder
+
             with ADGGraphWatchlistBuilder(paths.sqlite) as builder:
                 graph_delta_result = builder._compute_deltas(graph_watchlist_items, adg_artifacts_dir)
         except Exception:  # guardian: allow-silent-swallow -- delta tracking is optional intelligence
@@ -453,12 +462,19 @@ def generate_full_adg(
         if graph_delta_result and graph_delta_result.get("has_baseline"):
             ds = graph_delta_result.get("delta_summary", {})
             regressions = graph_delta_result.get("regressions", [])
-            protected_regressions = [r for r in regressions if r.get("layer", "") in {"L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED", "L_RUNTIME"}]
+            protected_regressions = [
+                r
+                for r in regressions
+                if r.get("layer", "")
+                in {"L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED", "L_RUNTIME"}
+            ]
 
-            print(f"      Delta (vs baseline): new={ds.get('new', 0)} worsened={ds.get('worsened', 0)} improved={ds.get('improved', 0)} resolved={ds.get('resolved', 0)}")
+            print(
+                f"      Delta (vs baseline): new={ds.get('new', 0)} worsened={ds.get('worsened', 0)} improved={ds.get('improved', 0)} resolved={ds.get('resolved', 0)}"
+            )
             if protected_regressions:
                 print(f"      ⚠️  Protected-layer regressions: {len(protected_regressions)}")
-            elif ds.get('worsened', 0) > 0:
+            elif ds.get("worsened", 0) > 0:
                 print(f"      ℹ️  Non-protected worsening: {ds.get('worsened', 0)} items")
 
         # Show top 3 graph hotspots with remediation (Prompt 7)

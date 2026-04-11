@@ -33,6 +33,16 @@ FORBIDDEN_IMPORTS = [
     "from httpx",
     "import requests",
     "from requests",
+    # Phase 2 additions — newly registered surfaces
+    "import neo4j",
+    "from neo4j",
+    "import prometheus_client",
+    "from prometheus_client",
+    "import aiohttp",
+    "from aiohttp",
+    # Provider bypass — catches lazy imports (strip() normalises indentation)
+    "import google",
+    "from google",
 ]
 
 # Allowed directories for direct infra usage
@@ -77,6 +87,11 @@ SANCTIONED_ADAPTER_FILES = {
     # L3 ADG integration (reads ADG SQLite directly)
     "adg_integration.py",
     "hybrid_search_engine.py",
+    # Phase 2 additions — newly registered / under-review surfaces
+    "neo4j_store.py",  # Neo4j — EXPERIMENTAL_ISOLATED; pending deprecation or formalization (§F1)
+    "prometheus_metrics.py",  # Prometheus — de-facto L6 approved adapter (defines AGENTIC_REGISTRY)
+    "metrics_server.py",  # Prometheus — L6 metrics HTTP server (lazy import guard in place)
+    "optimized_vllm_client.py",  # HTTP/aiohttp — UNDER_REVIEW; L3 raw HTTP for vLLM inference (§F2)
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling
@@ -224,6 +239,7 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
             "v_p1_not_on_spine",
             "v_p1_ad_hoc_imports",
             "v_p1_mis_layered_infra",
+            "v_p1_raw_http_outside_seam",
             "v_p2_mixed_usage",
             "v_p2_duplicated_adapters",
             "v_p2_dormant_ambiguous",
@@ -312,8 +328,8 @@ def update_scorecard(
             "No post-processing applied. P0/P1 counts proven accurate via "
             "materialized t_infra_importers table and symbol-aware caller checks."
         ),
-        "total_infra_surfaces": 10,
-        "approved_active": 10 - (2 if scan_p0_count > 0 else 0),
+        "total_infra_surfaces": 13,  # Phase 2: +3 newly registered (neo4j, prometheus, aiohttp)
+        "approved_active": 13 - (2 if scan_p0_count > 0 else 0),
         "active_miswired": 2 if scan_p0_count > 0 else 0,
         "dormant_unwired": adg_counts.get("v_p2_dormant_ambiguous", 0),
         "experimental_isolated": adg_counts.get("v_p3_isolated_experimental", 0),

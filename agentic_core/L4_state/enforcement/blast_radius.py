@@ -12,8 +12,10 @@ from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_appends_commit_receipt,
     _emit_records_execution_trace,
     _emit_snapshots_state,  # noqa: E402
+    _emit_verifies_blast_radius,
 )
 
 Logger = logging.getLogger(__name__)
@@ -54,7 +56,9 @@ class BlastRadiusCalculator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "BlastRadiusCalculator.calculate_blast_radius",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "BlastRadiusCalculator.calculate_blast_radius",
         )
 
         affected_objects = self._count_affected_objects(proposal)
@@ -202,12 +206,16 @@ class BlastRadiusEnforcer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "BlastRadiusEnforcer.enforce_blast_radius",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "BlastRadiusEnforcer.enforce_blast_radius",
         )
 
+        _emit_verifies_blast_radius(_trace_id, "BlastRadiusEnforcer", "enforce_blast_radius")
         if proposal_id in self._active_proposals:
             raise RuntimeError(f"Proposal {proposal_id} already exists")
         metrics = self.calculator.calculate_blast_radius(proposal)
+        _emit_appends_commit_receipt(_trace_id, "BlastRadiusEnforcer", proposal_id)
         self._active_proposals[proposal_id] = metrics
         Logger.info(
             f"Proposal {proposal_id} approved: radius={metrics.total_affected_objects}, bytes={metrics.state_surface_bytes}",

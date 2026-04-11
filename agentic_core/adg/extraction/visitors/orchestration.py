@@ -238,6 +238,7 @@ class _ArchitectureHandoffVisitor(BaseStructuralVisitor):
         ("HANDOFF_COMMIT_RECEIPT_SYMBOLS", "appends_commit_receipt", "handoff_commit_receipt"),
         ("HANDOFF_RETRIEVAL_SURFACE_SYMBOLS", "publishes_retrieval_surface", "handoff_retrieval_surface"),
         ("HANDOFF_PROMOTE_SYMBOLS", "promotes_future_run_change", "handoff_promote"),
+        ("HANDOFF_GATES_SYMBOLS", "gates_promotion", "handoff_gates"),
     )
 
     def __init__(self, ctx: VisitorContext) -> None:
@@ -267,7 +268,7 @@ class _ArchitectureHandoffVisitor(BaseStructuralVisitor):
         tail = sym.split(".")[-1]
         base = sym.split(".")[0]
 
-        for attr, relation_type, edge_kind in self._SYMBOL_SET_MAP:
+        for attr, relation_type, edge_kind in self._SYMBOL_SET_MAP:  # tqdm: fixed-size map, no bar needed
             symbol_set: frozenset[str] = getattr(_su, attr, frozenset())
             if tail in symbol_set or base in symbol_set:
                 self.edges.append(

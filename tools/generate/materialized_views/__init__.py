@@ -1,6 +1,6 @@
 """ADG SQLite Materialized View Layer.
 
-Produces 38 physical materialized tables across 4 implementation phases:
+Produces 42 physical materialized tables across 4 implementation phases (Phase A includes mv_handoff_witness_tiers, mv_cross_cutting_witness_tiers, mv_local_heal_first_breaches, mv_observability_interference_breaches):
     Phase A — Critical path, authority/sovereignty, lifecycle, topology seeds
     Phase B — Capability/egress, tool/agent shape, task-contract/action-safety
     Phase C — Trace/replay/eval, determinism/provenance, exemption/debt

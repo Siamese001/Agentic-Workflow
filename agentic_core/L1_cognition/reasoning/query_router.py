@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 class QueryType(Enum):
     """Query types for routing decisions."""
+
     CODE_KNOWLEDGE = "code_knowledge"
     STRUCTURAL_ANALYSIS = "structural_analysis"
     EXECUTION_INTELLIGENCE = "execution_intelligence"
@@ -25,6 +26,7 @@ class QueryType(Enum):
 @dataclass
 class RoutingDecision:
     """Routing decision for a query."""
+
     query_type: QueryType
     primary_collections: list[str]
     secondary_collections: list[str]
@@ -48,74 +50,131 @@ class QueryRouter:
                 "primary": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
                 "secondary": [],
             },
-
             # Structural analysis collections
+            # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.STRUCTURAL_ANALYSIS: {
-                "primary": ["repo_adg_graph", "repo_symbols"],
+                "primary": ["repo_symbols"],
                 "secondary": ["repo_code_chunks", "repo_tests_guardrails"],
             },
-
             # Execution intelligence collections
+            # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.EXECUTION_INTELLIGENCE: {
                 "primary": ["repo_runtime_evidence"],
-                "secondary": ["repo_adg_graph", "repo_symbols"],
+                "secondary": ["repo_symbols"],
             },
-
             # Historical analysis collections
+            # NOTE: repo_git_history removed — collection was corrupt (WAL compaction failure)
             QueryType.HISTORICAL_ANALYSIS: {
-                "primary": ["repo_git_history", "repo_incidents_rca"],
+                "primary": ["repo_incidents_rca"],
                 "secondary": ["repo_runtime_evidence"],
             },
-
             # Blast radius analysis collections
+            # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.BLAST_RADIUS: {
-                "primary": ["repo_adg_graph", "repo_symbols"],
+                "primary": ["repo_symbols"],
                 "secondary": ["repo_code_chunks", "repo_tests_guardrails", "repo_runtime_evidence"],
             },
-
             # Failure analysis collections
+            # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.FAILURE_ANALYSIS: {
                 "primary": ["repo_incidents_rca", "repo_runtime_evidence"],
-                "secondary": ["repo_adg_graph", "repo_tests_guardrails"],
+                "secondary": ["repo_tests_guardrails"],
             },
-
             # General query collections
+            # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.GENERAL_QUERY: {
                 "primary": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
-                "secondary": ["repo_adg_graph", "repo_tests_guardrails"],
+                "secondary": ["repo_tests_guardrails"],
             },
         }
 
         # Keyword patterns for query type detection
         self.query_patterns = {
             QueryType.CODE_KNOWLEDGE: [
-                "what does", "how does", "explain", "describe", "what is", "implementation",
-                "function", "class", "method", "module", "code", "algorithm",
+                "what does",
+                "how does",
+                "explain",
+                "describe",
+                "what is",
+                "implementation",
+                "function",
+                "class",
+                "method",
+                "module",
+                "code",
+                "algorithm",
             ],
-
             QueryType.STRUCTURAL_ANALYSIS: [
-                "dependencies", "structure", "architecture", "design", "pattern", "relationship",
-                "graph", "coupling", "cohesion", "hierarchy", "components", "layers",
+                "dependencies",
+                "structure",
+                "architecture",
+                "design",
+                "pattern",
+                "relationship",
+                "graph",
+                "coupling",
+                "cohesion",
+                "hierarchy",
+                "components",
+                "layers",
             ],
-
             QueryType.EXECUTION_INTELLIGENCE: [
-                "execution", "runtime", "performance", "trace", "execute", "run", "process",
-                "workflow", "pipeline", "operation", "activity", "behavior",
+                "execution",
+                "runtime",
+                "performance",
+                "trace",
+                "execute",
+                "run",
+                "process",
+                "workflow",
+                "pipeline",
+                "operation",
+                "activity",
+                "behavior",
             ],
-
             QueryType.HISTORICAL_ANALYSIS: [
-                "history", "when", "commit", "change", "evolution", "timeline", "previously",
-                "past", "version", "git", "incident", "rca", "root cause",
+                "history",
+                "when",
+                "commit",
+                "change",
+                "evolution",
+                "timeline",
+                "previously",
+                "past",
+                "version",
+                "git",
+                "incident",
+                "rca",
+                "root cause",
             ],
-
             QueryType.BLAST_RADIUS: [
-                "impact", "affect", "blast radius", "depend", "require", "consequence",
-                "ripple", "cascade", "side effect", "influence", "scope", "reach",
+                "impact",
+                "affect",
+                "blast radius",
+                "depend",
+                "require",
+                "consequence",
+                "ripple",
+                "cascade",
+                "side effect",
+                "influence",
+                "scope",
+                "reach",
             ],
-
             QueryType.FAILURE_ANALYSIS: [
-                "failure", "error", "bug", "issue", "problem", "crash", "exception",
-                "incident", "fault", "break", "fail", "malfunction", "defect",
+                "failure",
+                "error",
+                "bug",
+                "issue",
+                "problem",
+                "crash",
+                "exception",
+                "incident",
+                "fault",
+                "break",
+                "fail",
+                "malfunction",
+                "defect",
             ],
         }
 
@@ -239,8 +298,9 @@ class QueryRouter:
 
         return min(1.0, confidence)
 
-    def _generate_reasoning(self, query: str, query_type: QueryType,
-                          primary: list[str], secondary: list[str]) -> str:
+    def _generate_reasoning(
+        self, query: str, query_type: QueryType, primary: list[str], secondary: list[str]
+    ) -> str:
         """Generate reasoning for routing decision."""
         reasoning_parts = []
 
@@ -269,9 +329,7 @@ class QueryRouter:
         """Get routing statistics and configuration."""
         return {
             "query_types": [qt.value for qt in QueryType],
-            "collection_mappings": {
-                qt.value: mapping for qt, mapping in self.collection_mappings.items()
-            },
+            "collection_mappings": {qt.value: mapping for qt, mapping in self.collection_mappings.items()},
             "pattern_count": sum(len(patterns) for patterns in self.query_patterns.values()),
             "layer_count": len(self.layer_keywords),
             "component_count": len(self.component_keywords),
@@ -293,9 +351,12 @@ def main():
     ]
 
     available_collections = [
-        "repo_code_chunks", "repo_symbols", "repo_arch_docs",
-        "repo_adg_graph", "repo_tests_guardrails",
-        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca",
+        "repo_code_chunks",
+        "repo_symbols",
+        "repo_arch_docs",
+        "repo_tests_guardrails",
+        "repo_runtime_evidence",
+        "repo_incidents_rca",
     ]
 
     print("Query Router Test:")

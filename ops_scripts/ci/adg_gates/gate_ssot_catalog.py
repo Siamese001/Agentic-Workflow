@@ -393,6 +393,29 @@ GATE_CATALOG: list[GateCatalogEntry] = [
         notes="H3: migrating from _adg_ci_gates.py M6. Enforces after W4.",
     ),
     # -----------------------------------------------------------------------
+    # P1 — architecture witness tier (Class A positive / Class B absence)
+    # -----------------------------------------------------------------------
+    GateCatalogEntry(
+        gate_id="G-P1-ARCH-WITNESS",
+        file="ops_scripts/ci/adg_gates/gate_p1_architecture_witness.py",
+        cls="ArchitectureWitnessGate",
+        severity="P1",
+        gate_class="structural_conformance",
+        policy=ExecutionPolicy(
+            stage="full",
+            repairability="manual_only",
+            gate_action="halt",
+            artifact_policy="full_adg_report",
+            signal_source="sqlite_mv_ci",
+            evidence_tier="truth",
+        ),
+        notes=(
+            "Class A: required-live families fail if runtime-orphaned. "
+            "Class B: absence families require governing breach view. "
+            "Planned families warn-only (not yet blocking)."
+        ),
+    ),
+    # -----------------------------------------------------------------------
     # P1 — harden gate + skip ratchet (legacy standalone)
     # -----------------------------------------------------------------------
     GateCatalogEntry(

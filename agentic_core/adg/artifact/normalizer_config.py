@@ -230,7 +230,9 @@ class NormalizedGraph:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "NormalizedGraph.compute_digest",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "NormalizedGraph.compute_digest",
         )
 
         # D2a: Canonical-stream hash — avoids building a 450 MB+ JSON string.
@@ -309,7 +311,9 @@ class ArtifactNormalizer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactNormalizer.normalize",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ArtifactNormalizer.normalize",
         )
 
         def _infer_precision_type(adg_name: str) -> str:
@@ -337,7 +341,12 @@ class ArtifactNormalizer:
         nodes: dict[str, dict] = {}
 
         # Register all entity nodes first
-        for ent in tqdm(sorted(artifact.entities, key=lambda e: e.adg_name), desc="register nodes", unit="node", leave=False):
+        for ent in tqdm(
+            sorted(artifact.entities, key=lambda e: e.adg_name),
+            desc="register nodes",
+            unit="node",
+            leave=False,
+        ):
             if ent.adg_name not in name_to_id:
                 nid = len(name_to_id)
                 name_to_id[ent.adg_name] = nid
@@ -356,7 +365,7 @@ class ArtifactNormalizer:
 
         # Register any node referenced in edges that isn't already in entities
         for rel in tqdm(artifact.relations, desc="edge nodes", unit="rel", leave=False):
-            for name in tqdm((rel.from_name, rel.to_name), desc="  names", unit="name", leave=False):
+            for name in (rel.from_name, rel.to_name):  # tqdm: outer loop already tracked
                 if name not in name_to_id:
                     nid = len(name_to_id)
                     name_to_id[name] = nid
@@ -471,7 +480,9 @@ class ArtifactNormalizer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactNormalizer.normalize_with_planes",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ArtifactNormalizer.normalize_with_planes",
         )
 
         def _infer_precision_type(adg_name: str) -> str:
@@ -486,6 +497,7 @@ class ArtifactNormalizer:
         ts_map: dict[str, str] = getattr(artifact, "type_surface_map", {})
 
         def _infer_enclosing_symbol(adg_name: str) -> str:
+            """For block nodes, extract the enclosing function/class symbol."""
             for tag in ("::if_L", "::for_L", "::try_L", "::block_L", "::expr_L"):
                 idx = adg_name.find(tag)
                 if idx != -1:
@@ -496,7 +508,9 @@ class ArtifactNormalizer:
         name_to_id: dict[str, int] = {}
         nodes_full: dict[str, dict] = {}
 
-        for ent in tqdm(sorted(artifact.entities, key=lambda e: e.adg_name), desc="full nodes", unit="node", leave=False):
+        for ent in tqdm(
+            sorted(artifact.entities, key=lambda e: e.adg_name), desc="full nodes", unit="node", leave=False
+        ):
             if ent.adg_name not in name_to_id:
                 nid = len(name_to_id)
                 name_to_id[ent.adg_name] = nid
@@ -514,7 +528,7 @@ class ArtifactNormalizer:
                 }
 
         for rel in tqdm(artifact.relations, desc="full edge nodes", unit="rel", leave=False):
-            for name in tqdm((rel.from_name, rel.to_name), desc="  names", unit="name", leave=False):
+            for name in (rel.from_name, rel.to_name):  # tqdm: outer loop already tracked
                 if name not in name_to_id:
                     nid = len(name_to_id)
                     name_to_id[name] = nid
@@ -580,8 +594,12 @@ class ArtifactNormalizer:
 
             # Plane compact edge (shared fields only — stored with global IDs, remapped later)
             e_plane: dict = {
-                "s": sid, "d": did, "r": rt,
-                "k": rel.edge_kind, "f": rel.source_file, "ln": rel.line_no,
+                "s": sid,
+                "d": did,
+                "r": rt,
+                "k": rel.edge_kind,
+                "f": rel.source_file,
+                "ln": rel.line_no,
             }
             if rel.symbol:
                 e_plane["sym"] = rel.symbol
@@ -603,6 +621,7 @@ class ArtifactNormalizer:
         # _build_plane order: sorted(entities that pass type filter) THEN sorted(dangling refs)
         # file_graph has node_type_filter={"module"}; symbol/governance have None (all types).
         from typing import Any as _Any
+
         entity_lookup: dict[str, _Any] = {e.adg_name: e for e in artifact.entities}
 
         def _build_plane_nodes(
@@ -749,7 +768,9 @@ class ArtifactNormalizer:
         id_to_node: dict[int, dict] = {int(k): v for k, v in ng.nodes.items()}
 
         entities = []
-        for node in tqdm(sorted(id_to_node.values(), key=lambda n: n["n"]), desc="denorm nodes", unit="node", leave=False):
+        for node in tqdm(
+            sorted(id_to_node.values(), key=lambda n: n["n"]), desc="denorm nodes", unit="node", leave=False
+        ):
             entities.append(
                 {
                     "adg_name": node["n"],

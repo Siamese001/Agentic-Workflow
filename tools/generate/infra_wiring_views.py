@@ -22,6 +22,10 @@ _RAW_INFRA_PACKAGES = (
     "anthropic",
     "httpx",
     "requests",
+    # Phase 2 additions — newly registered surfaces (infra_ownership_matrix.md Phase 1)
+    "neo4j",  # Graph DB — EXPERIMENTAL_ISOLATED; pending formalization (§F1)
+    "prometheus_client",  # Metrics   — de-facto L6 adapter, now formally registered (§R5)
+    "aiohttp",  # HTTP      — raw client in L3 vLLM; pending architecture ruling (§F2)
 )
 
 # Approved adapter files (canonical wrappers that MUST import raw infra)
@@ -50,6 +54,12 @@ _APPROVED_ADAPTER_PATHS = (
     "agentic_core/L4_state/utils/memory/canonical_store.py",
     "agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py",
     "apps_shared/data_adapters/repo_signal_adapter.py",
+    # Phase 2 additions — closing sanctioned-vs-approved coverage gaps
+    "apps_shared/utils/open_telemetry_tracing_adapter_util.py",  # Corrected OTel canonical adapter (replaces tools/otel/otel_mcp_server.py)
+    # REMOVED 2026-04-11 R-A2: blob_storage_provider.py deregistered — zero callers, dormant (F-P1-004). File retained on disk.
+    # REMOVED 2026-04-11 R-A1: cache/core/redis_cache_client.py deregistered — dead duplicate of cache/redis_cache_client.py (F-P1-005). File retained on disk.
+    "agentic_core/L6_observability/utils/metrics/prometheus_metrics.py",  # Prometheus — de-facto approved adapter at L6 (defines AGENTIC_REGISTRY)
+    "agentic_core/L4_state/enforcement/neo4j_store.py",  # Neo4j — EXPERIMENTAL_ISOLATED; zero callers expected; tracked for P1 visibility
 )
 
 # Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
@@ -379,6 +389,9 @@ WHERE n.entity_type = 'module'
     OR (n.resolved_path = 'agentic_core/L4_state/utils/client/chroma_client.py' AND n.layer != 'L4')
     OR (n.resolved_path = 'agentic_core/L4_state/utils/memory/canonical_store.py' AND n.layer != 'L4')
     OR (n.resolved_path = 'agentic_core/embeddings/embedding_factory.py' AND n.layer NOT IN ('L2', 'L_SHARED'))
+    -- Phase 2 additions
+    OR (n.resolved_path = 'agentic_core/L6_observability/utils/metrics/prometheus_metrics.py' AND n.layer != 'L6')
+    OR (n.resolved_path = 'agentic_core/L4_state/enforcement/neo4j_store.py' AND n.layer != 'L4')
   )
 """
 
@@ -450,6 +463,34 @@ WHERE n.entity_type = 'module'
 """
 
 
+# P1-15: Raw HTTP client (aiohttp/httpx/requests) used outside sanctioned HTTP seam.
+# Sanctioned HTTP paths: tools/mcp/enhanced_http_server.py (process-boundary MCP) and
+# agentic_core/gateway/api_gateway_integration.py (L0/L1 gateway health check).
+# The vLLM client (optimized_vllm_client.py) appears here intentionally — UNDER_REVIEW,
+# pending architecture ruling on L3 direct HTTP (infra_ownership_matrix.md §F2).
+_VIEW_P1_RAW_HTTP_OUTSIDE_SEAM = """
+CREATE VIEW IF NOT EXISTS v_p1_raw_http_outside_seam AS
+SELECT
+    e.id         AS violation_edge_id,
+    n_src.id     AS consumer_id,
+    n_src.resolved_path AS consumer_file,
+    n_src.layer  AS consumer_layer,
+    e.symbol     AS import_symbol,
+    e.line_no    AS import_line,
+    'P1: raw HTTP client outside sanctioned seam' AS violation_type
+FROM edges e
+JOIN nodes n_src ON e.src_id = n_src.id
+JOIN nodes n_dst ON e.dst_id = n_dst.id
+WHERE e.relation_type = 'imports'
+  AND n_dst.adg_name IN ({http_adg_names})
+  AND n_src.resolved_path NOT LIKE 'tools/%'
+  AND n_src.resolved_path NOT LIKE 'infrastructure/%'
+  AND n_src.resolved_path NOT LIKE 'apps_shared/%'
+  AND n_src.resolved_path NOT LIKE 'tests/%'
+  AND n_src.resolved_path NOT LIKE '%api_gateway_integration%'
+"""
+
+
 # Summary view that unions all P0 violations for easy querying
 _VIEW_INFRA_VIOLATIONS_SUMMARY = """
 CREATE VIEW IF NOT EXISTS v_infra_violations_summary AS
@@ -496,6 +537,11 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
         for (name,) in rows:
             infra_adg_names.append(name)
 
+    # HTTP-specific subset for v_p1_raw_http_outside_seam
+    _http_pkg_set = {"aiohttp", "httpx", "requests"}
+    http_adg_names = [n for n in infra_adg_names if any(n == f"ADG::Symbol::{p}" for p in _http_pkg_set)]
+    http_in = ", ".join(f"'{n}'" for n in http_adg_names) if http_adg_names else "'__none__'"
+
     # Find ADG node names for provider SDKs
     provider_adg_names = []
     for pkg in _PROVIDER_SDKS:
@@ -520,6 +566,7 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
         "v_p1_not_on_spine",
         "v_p1_ad_hoc_imports",
         "v_p1_mis_layered_infra",
+        "v_p1_raw_http_outside_seam",
         "v_p2_mixed_usage",
         "v_p2_duplicated_adapters",
         "v_p2_dormant_ambiguous",
@@ -575,6 +622,7 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
     )
     cursor.execute(_VIEW_P1_AD_HOC_IMPORTS.format(infra_adg_names=infra_in))
     cursor.execute(_VIEW_P1_MIS_LAYERED_INFRA)
+    cursor.execute(_VIEW_P1_RAW_HTTP_OUTSIDE_SEAM.format(http_adg_names=http_in))
     # P2 views
     cursor.execute(
         _VIEW_P2_MIXED_USAGE.format(
@@ -608,6 +656,7 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
         "v_p1_not_on_spine",
         "v_p1_ad_hoc_imports",
         "v_p1_mis_layered_infra",
+        "v_p1_raw_http_outside_seam",
         "v_p2_mixed_usage",
         "v_p2_duplicated_adapters",
         "v_p2_dormant_ambiguous",
@@ -627,7 +676,7 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
 
 def enrich_and_report(sqlite_path: Path) -> None:
     """Enrich ADG SQLite with infra views and print summary."""
-    print("[ADG] Materializing infrastructure wiring views (14 checks)...")
+    print("[ADG] Materializing infrastructure wiring views (15 checks)...")
     counts = materialize_infra_views(sqlite_path)
 
     p0_views = [
@@ -643,6 +692,7 @@ def enrich_and_report(sqlite_path: Path) -> None:
         "v_p1_not_on_spine",
         "v_p1_ad_hoc_imports",
         "v_p1_mis_layered_infra",
+        "v_p1_raw_http_outside_seam",
     ]
     p2_views = ["v_p2_mixed_usage", "v_p2_duplicated_adapters", "v_p2_dormant_ambiguous"]
     p3_views = ["v_p3_isolated_experimental"]

@@ -260,21 +260,17 @@ class GeminiJudge:
     def _get_client(self):
         if self._client is not None:
             return self._client
+        # guardian: allow-layer-violation -- infrastructure SDK access required for LLM provider, no agentic_core alternative exists
+        from infrastructure.sdks_mcps import create_vertex_client
+
         try:
-            import google.generativeai as genai
-        except ImportError as exc:
+            genai = create_vertex_client()
+        except (ImportError, ValueError) as exc:
             raise RuntimeError(
-                "GeminiJudge: google-genai package not installed. Install with: pip install google-genai",
+                "GeminiJudge: google-genai package not installed or GOOGLE_API_KEY missing.",
             ) from exc
 
-        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        if not api_key:
-            raise RuntimeError("GeminiJudge: GEMINI_API_KEY or GOOGLE_API_KEY required")
-
-        if not self._configured:
-            genai.configure(api_key=api_key)
-            self._configured = True
-
+        self._configured = True
         return genai.GenerativeModel(self._model)
 
     @staticmethod

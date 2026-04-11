@@ -88,22 +88,17 @@ class GeminiJudgeProvider:
     def _get_client(self) -> Any:
         if self._client is not None:
             return self._client
+        # guardian: allow-layer-violation -- infrastructure SDK access required for LLM provider, no agentic_core alternative exists
+        from infrastructure.sdks_mcps import create_vertex_client
+
         try:
-            import google.generativeai as genai
-        except ImportError as exc:
+            genai = create_vertex_client()
+        except (ImportError, ValueError) as exc:
             raise RuntimeError(
-                "GeminiJudgeProvider: google-genai package not installed. "
-                "Install with: pip install google-genai",
+                "GeminiJudgeProvider: google-genai package not installed or GOOGLE_API_KEY missing.",
             ) from exc
 
-        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        if not api_key:
-            raise RuntimeError("GeminiJudgeProvider: GEMINI_API_KEY or GOOGLE_API_KEY required")
-
-        if not self._configured:
-            genai.configure(api_key=api_key)
-            self._configured = True
-
+        self._configured = True
         return genai.GenerativeModel(self._model)
 
     @staticmethod
@@ -245,10 +240,15 @@ def create_default_registry() -> JudgeProviderRegistry:
 
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         try:
-            gemini = GeminiJudgeProvider()
+            from infrastructure.sdks_mcps import create_vertex_client
+
+            genai = create_vertex_client()
+            default_model = os.getenv("GEMINI_MODEL", GeminiJudgeProvider.DEFAULT_MODEL)
+            gemini_model = genai.GenerativeModel(default_model)
+            gemini = GeminiJudgeProvider(gemini_client=gemini_model)
             registry.register(gemini, default=True)
             _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")
-        except (RuntimeError, ValueError, OSError) as exc:
+        except (RuntimeError, ValueError, OSError, ImportError) as exc:
             _log.warning("[create_default_registry] Gemini registration failed: %s", exc)
 
     return registry

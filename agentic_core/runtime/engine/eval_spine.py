@@ -14,7 +14,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    _emit_gates_promotion,
+    _emit_promotes_future_run_change,
+    _emit_reads_through,
+)
 
 
 class OptimizationStage(str, Enum):
@@ -279,10 +283,13 @@ class EvalSpine:
             pair = PreferencePair(**{k: v for k, v in p.items() if k in PreferencePair.__dataclass_fields__})
             batch.pairs.append(pair)
         self.report.dpo_batches.append(batch)
+        _emit_gates_promotion(str(uuid.uuid4()), "EvalSpine.build_dpo_batch", batch.batch_id)
         return batch
 
     def stage_proposal(
-        self, dpo_batch: DPOBatch, weight_deltas: dict[str, float] | None = None,
+        self,
+        dpo_batch: DPOBatch,
+        weight_deltas: dict[str, float] | None = None,
     ) -> OptimizationProposal:
         proposal = OptimizationProposal(
             dpo_batch_id=dpo_batch.batch_id,
@@ -291,16 +298,21 @@ class EvalSpine:
             proposed_weight_deltas=weight_deltas or {},
         )
         self.report.proposals.append(proposal)
+        _emit_gates_promotion(str(uuid.uuid4()), "EvalSpine.stage_proposal", proposal.dpo_batch_id)
         return proposal
 
     def commit_optimization(self, proposal: OptimizationProposal) -> bool:
         proposal.stage = OptimizationStage.PROPOSAL_COMMITTED
         proposal.committed_at = time.time()
+        _emit_promotes_future_run_change(
+            str(uuid.uuid4()), "EvalSpine.commit_optimization", proposal.dpo_batch_id
+        )
         return True
 
     def reject_proposal(self, proposal: OptimizationProposal, reason: str = "") -> None:
         proposal.stage = OptimizationStage.PROPOSAL_REJECTED
         proposal.rejection_reason = reason
+
 
 _emit_reads_through("l4", "eval_spine", "urg_read_1")
 _emit_reads_through("l4", "eval_spine", "urg_read_2")

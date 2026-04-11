@@ -13,6 +13,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
+    _emit_materializes_read_view,
+    _emit_publishes_retrieval_surface,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
@@ -164,6 +166,8 @@ _emit_writes_through("p1", "promotion_authority", "write_through_2")
 _emit_validated_by_safety_plane("p1", "promotion_authority", "safety_validation")
 _emit_invokes_eval("p1", "promotion_authority", "eval_call")
 _emit_proposal_commits_routing("p1", "promotion_authority", "routing_commit")
+_emit_publishes_retrieval_surface("l4rt", "promotion_authority", "PromotionAuthority.publish_retrieval")
+_emit_materializes_read_view("l4rt", "promotion_authority", "PromotionAuthority.materialize_read")
 
 Logger = logging.getLogger(__name__)
 
@@ -196,7 +200,9 @@ class PromotionAuthority:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "state_snapshot",
+            str(_uuid.uuid4()),
+            "PromotionAuthority.update_pointer_via_gateway",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -206,13 +212,17 @@ class PromotionAuthority:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "PromotionAuthority.update_pointer_via_gateway", "p0_governance",
+            str(_uuid.uuid4()),
+            "PromotionAuthority.update_pointer_via_gateway",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "PromotionAuthority.update_pointer_via_gateway",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "PromotionAuthority.update_pointer_via_gateway",
         )
 
         if not self._write_gateway:

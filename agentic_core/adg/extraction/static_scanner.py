@@ -935,7 +935,9 @@ def _kway_merge_exact(sorted_streams: list[list[Edge]]) -> list[Edge]:
     """
     seen: set[tuple] = set()
     result: list[Edge] = []
-    for edge in tqdm(heapq.merge(*sorted_streams, key=_EDGE_SORT_KEY), desc="merge streams", unit="edge", leave=False):
+    for edge in tqdm(
+        heapq.merge(*sorted_streams, key=_EDGE_SORT_KEY), desc="merge streams", unit="edge", leave=False
+    ):
         eq_key = (
             edge.from_name,
             edge.relation_type,
@@ -1240,7 +1242,9 @@ def _iter_python_files(
         scan_mode: "full" (default) or "structural_only" for Phase 1 optimization
     """
     all_files: list[Path] = []
-    for scan_root in tqdm(_selected_scan_roots(include_tests, scan_mode), desc="scan roots", unit="root", leave=False):
+    for scan_root in tqdm(
+        _selected_scan_roots(include_tests, scan_mode), desc="scan roots", unit="root", leave=False
+    ):
         root_path = repo_root / scan_root
         if not root_path.exists():
             continue
@@ -2014,7 +2018,9 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
             for node in tqdm(frontier, desc="  bfs nodes", unit="node", leave=False):
                 node_key = _module_to_key(node)
                 # S7: sorted for stable BFS traversal order
-                for importer in tqdm(sorted(importers_of.get(node_key, set())), desc="  importers", unit="mod", leave=False):
+                for importer in tqdm(
+                    sorted(importers_of.get(node_key, set())), desc="  importers", unit="mod", leave=False
+                ):
                     if importer not in visited:
                         visited.add(importer)
                         next_frontier.append(importer)
@@ -2184,7 +2190,11 @@ class ADGStaticScanner:
 
         import sys
 
-        from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
+        from agentic_core.adg.extraction.scan_cache import (
+            ScanCache,
+            compute_extraction_fingerprint,
+            file_hash,
+        )
 
         if self.scan_mode == "auto":
             self.scan_mode = _get_cache_aware_scan_mode(self.cache_path, self.repo_root, self.include_tests)
@@ -2195,7 +2205,15 @@ class ADGStaticScanner:
         # after the normalizer os.walk fix (0.27s vs 1.95s with rglob). Not worth the overhead.
         from agentic_core.adg.identity.normalizer import IdentityNormalizer
 
-        cache = ScanCache.load(self.cache_path) if self.cache_path else ScanCache()
+        # Compute extraction fingerprint once per scan run so that any change to a
+        # visitor implementation, symbol-set, or the scanner itself automatically
+        # invalidates the entire on-disk cache without requiring manual deletion.
+        _extraction_fp = compute_extraction_fingerprint(self.repo_root)
+        cache = (
+            ScanCache.load(self.cache_path, extraction_fingerprint=_extraction_fp)
+            if self.cache_path
+            else ScanCache()
+        )
         shared_normalizer = IdentityNormalizer(repo_root=self.repo_root)
         shared_normalizer._get_known_files()  # Pre-warm known-files cache (single os.walk)
         all_files = list(
@@ -2261,7 +2279,7 @@ class ADGStaticScanner:
             all_edges.extend(file_edges)
 
         if self.cache_path:
-            cache.save(self.cache_path)
+            cache.save(self.cache_path, extraction_fingerprint=_extraction_fp)
         cache_stats = cache.stats()
         manifest.cache_hits = cache_stats["hits"]
         manifest.cache_misses = cache_stats["misses"]

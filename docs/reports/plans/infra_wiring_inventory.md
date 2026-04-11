@@ -1,389 +1,210 @@
-# Infrastructure Wiring Inventory
-**Generated:** 2026-04-08
-**Purpose:** Baseline inventory of all infrastructure surfaces in Agentic-Workflow repository
+# Infrastructure Wiring Inventory — Phase 0 Baseline
+**Generated:** 2026-04-11
+**ADG Snapshot:** 04112026_1142 (78,517 nodes / 628,872 edges)
+**Purpose:** Phase 0 baseline inventory of all infrastructure surfaces in Agentic-Workflow repository.
+**Scope:** All raw or wrapped infra surfaces — Redis/cache, SQLite/DB, vector DB/Chroma, provider SDKs, model clients, HTTP clients, queues, OTel/tracing, eval harnesses, file/object storage, auth/secrets adapters, feature flags/config, Prometheus metrics, graph DB.
 
 ## Executive Summary
 
-This inventory catalogs all infrastructure surfaces (Redis, SQLite, ChromaDB, OpenAI, Anthropic, HTTP clients, Boto3, OpenTelemetry, Google, Pytest) across the codebase. Each surface is classified by owner layer, intended role, active consumers, adapter reachability, and wiring status.
+This scan identified **13 distinct infrastructure surface classes** (prior 2026-04-08 inventory counted 10 — Neo4j, Prometheus, and vLLM/aiohttp were missing). The prior P0 violation (`apps_rfp` direct chromadb import) is **resolved** — that import is now a code comment only. The current ADG scorecard is P0=0, P1=0, P2=5 (at accepted ceiling), P3=5.
 
-**Total Surfaces Identified:** 10 infrastructure classes
-**Active Approved:** 7
-**Active Miswired:** 2
-**Dormant Unwired:** 1
-**Experimental Isolated:** 0
-**Deprecated Pending Removal:** 0
+Three new surfaces discovered this pass are unregistered in both `infra_wiring_scan.py` `FORBIDDEN_IMPORTS` and `_APPROVED_ADAPTER_PATHS`:
+- **Neo4j** (`agentic_core/L4_state/enforcement/neo4j_store.py`) — zero ADG callers; isolated/experimental
+- **Prometheus** (`agentic_core/L6_observability/utils/metrics/`) — active but not in approved adapter registry
+- **vLLM aiohttp** (`agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py`) — raw HTTP in L3, not sanctioned
 
----
+The provider SDK control plane (`infrastructure/sdks_mcps/__init__.py`) is confirmed active but its client classes (`OpenAIClient`, `AnthropicClient`, `VertexClient`) are **empty stubs** — the real provider access flows through thin factory functions, not class instances.
 
-## Raw Infrastructure Entrypoints
-
-### 1. Redis (Caching/Coordination)
-**Primary Files:**
-- `agentic_core/cache/redis_cache_client.py` - DeterministicRedisCache (L2 cache adapter)
-- `agentic_core/L2_execution/reasoning/RedisSovereignAgent.py` - RedisSovereignAgent (L2 execution agent)
-- `tools/adg/cache/redis_cache.py` - ADG Redis hot cache (tools layer)
-- `tools/memory/adg_memory_server.py` - Memory MCP Redis backend (tools layer)
-- `tools/mcp/redis_mcp_server.py` - Redis MCP server (tools layer)
-
-**Layer Assignment:**
-- **Owner Layer:** L2 (Execution) - RedisSovereignAgent
-- **Adapter Layer:** L2 - redis_cache_client.py
-- **Tools Layer:** tools/adg, tools/memory, tools/mcp (MCP infrastructure)
-
-**Intended Role:**
-- Hot cache for L0/L1/L3/L5 routing, execution, orchestration, safety
-- Coordination leases for L2 execution locks
-- Operational workspace for per-trace, team-sync, replay-assist, novelty
-
-**Active Consumers:**
-- RedisSovereignAgent (L2)
-- EmbeddingSovereignAgent (L2) - via RedisCacheMixin
-- SovereignRedisOrchestrator (L3)
-- CachedStateLedger (L4)
-- ADG query services (tools)
-- Memory MCP server (tools)
-
-**Adapter Reachability:** ✅ APPROVED - DeterministicRedisCache is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected
-
-**Weak Architecture Edges:** ⚠️ Multiple direct redis.Redis imports in tools layer (acceptable for infrastructure code)
-
-**Status:** ACTIVE_APPROVED
+| Metric | Count |
+|---|---|
+| Total surfaces identified | 13 |
+| Active, approved (P0/P1 COMPLIANT) | 8 |
+| Active, issues (P2 accepted ceiling) | 3 |
+| Unregistered / no adapter entry | 3 |
+| Dormant / experimental (P3) | 5 |
+| Deprecated pending removal | 0 |
+| Prior P0 violations resolved | 1 (apps_rfp chromadb) |
 
 ---
 
-### 2. SQLite (Relational Storage)
-**Primary Files:**
-- `tools/memory/sqlite_memory_store.py` - Memory graph persistence (tools layer)
-- `tools/utils/query_violations.py` - Violation query tool (tools layer)
-- `tools/guardian/guardian_sweep.py` - Guardian analysis (tools layer)
-- `tools/generate/generate_*.py` - ADG generation scripts (tools layer)
+## Infra Surface Classification Table
 
-**Layer Assignment:**
-- **Owner Layer:** L4 (State) - canonical storage layer
-- **Adapter Layer:** tools/memory (infrastructure wrapper)
-- **Tools Layer:** tools/utils, tools/guardian, tools/generate (tooling infrastructure)
-
-**Intended Role:**
-- Memory graph persistence (knowledge graph)
-- ADG artifact storage (indexed SQLite)
-- Violation tracking and analysis
-- Guardian anti-pattern detection storage
-
-**Active Consumers:**
-- Memory MCP server (mcp6)
-- ADG generation pipeline
-- Guardian analysis tools
-- Violation query tools
-
-**Adapter Reachability:** ✅ APPROVED - sqlite_memory_store.py is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected
-
-**Weak Architecture Edges:** ⚠️ Direct sqlite3 imports in tools layer (acceptable for infrastructure code)
-
-**Status:** ACTIVE_APPROVED
+| infra_surface | owner_layer | approved_entrypoints | approved_callers | active? | issues |
+|---|---|---|---|---|---|
+| Redis/cache | L2 (cache seam) | `agentic_core/cache/redis_cache_client.py` (DeterministicRedisCache) | L2, L3, L4 agents; tools/adg, tools/mcp | ✅ YES | P2: duplicate adapter at `agentic_core/cache/core/redis_cache_client.py` not in `_APPROVED_ADAPTER_PATHS` |
+| SQLite/ADG store | L4 + tools | `tools/memory/sqlite_memory_store.py`; `apps_shared/data_adapters/repo_signal_adapter.py` | tools/*, apps_shared signal collector | ✅ YES | L4 raw users (chunk_manifest_registry, graph_knowledge_store, etc.) sanctioned by filename only — not in `_APPROVED_ADAPTER_PATHS` |
+| ChromaDB/vector | L4 | `agentic_core/L4_state/utils/client/chroma_client.py` (SovereignChromaClient) | L4 retrieval, tools/mcp/vector_db_server | ✅ YES | P2: `retrieval_layers.py` + `in_memory_vector_cache.py` + `gptcache_client.py` all import raw chromadb (3 mixed-usage counts at accepted ceiling) |
+| OpenAI (embeddings+LLM) | L2/infra | `agentic_core/embeddings/embedding_factory.py`; `infrastructure/sdks_mcps/__init__.py` | L1, L2, system_learning, apps_shared | ✅ YES | `agentic_core/L4_state/reasoning/retrieval_layers.py` has `from openai import OpenAI` at module level (not in `_PROVIDER_EXEMPT_PREFIXES`); `agentic_core/knowledge/enrichment/semantic_enricher.py` lazy raw openai |
+| Anthropic (LLM) | infrastructure | `infrastructure/sdks_mcps/__init__.py` (`create_anthropic_client()`) | apps_shared/types/model_router_types.py; infrastructure | ✅ YES | `infrastructure/sdks_mcps` stub classes (`AnthropicClient`) are empty `pass` — no real implementation |
+| Google Gemini/Vertex (LLM) | infrastructure | `infrastructure/sdks_mcps/__init__.py` (`create_vertex_client()`); `apps_shared/utils/providers_google_genai_client_util.py` | apps_shared, agentic_core evaluation | ✅ YES | `agentic_core/evaluation/judges/llm_judge.py` + `provider_registry.py` import `google.generativeai` directly — not in `_PROVIDER_EXEMPT_PREFIXES` |
+| HTTP (requests/aiohttp/httpx) | tools/infra | `tools/mcp/enhanced_http_server.py` (process-boundary) | MCP clients, tools | ✅ YES | `agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py` imports `aiohttp` directly — NOT in `SANCTIONED_ADAPTER_FILES` or `_APPROVED_ADAPTER_PATHS` |
+| S3/Blob (boto3) | L4 | `agentic_core/L4_state/utils/memory/canonical_store.py`; `agentic_core/L4_state/utils/memory/blob_storage_provider.py` | L4 state only | ✅ YES | `blob_storage_provider.py` in `SANCTIONED_ADAPTER_FILES` but not in `_APPROVED_ADAPTER_PATHS` — view gap |
+| OpenTelemetry (tracing) | apps_shared/L6 | `apps_shared/utils/open_telemetry_tracing_adapter_util.py` (`OpenTelemetryTracingAdapter`, `get_tracer()`) | system_learning, L3 orchestrator, tools/otel | ✅ YES | `apps_shared/mixins/apps_tracing_mixin.py` directly imports `from opentelemetry import trace` instead of using `get_tracer()` |
+| Prometheus (metrics) | L6 | `agentic_core/L6_observability/utils/metrics/prometheus_metrics.py` | L6 observability metrics server | ✅ YES | **UNREGISTERED** — not in `FORBIDDEN_IMPORTS`, not in `_APPROVED_ADAPTER_PATHS`, not in `SANCTIONED_ADAPTER_FILES` |
+| Embedding models (sentence_transformers) | L2/apps_shared | `agentic_core/embeddings/embedding_factory.py`; `system_learning/engines/openai_embedder.py` (BGEEmbedder) | L2, system_learning | ✅ YES | `apps_shared/validators/cache_entry_validator.py`, `apps_shared/utils/late_interaction_reranker_util.py`, `apps_shared/enforcement/GlobalcacheStrategy.py` instantiate `SentenceTransformer` directly — bypass embedding_factory |
+| Neo4j (graph DB) | L4 | NONE — no approved adapter registered | `apps_shared/utils/rank_observability_components_util.py` (try/except only) | ⚠️ UNKNOWN | **UNREGISTERED** — `neo4j` not in `FORBIDDEN_IMPORTS`; `neo4j_store.py` not in `_APPROVED_ADAPTER_PATHS`; zero ADG import-edge callers; appears experimental/isolated |
+| Feature flags/config | system_learning/agentic_core | `system_learning/config/feature_flags.py` (`FeatureFlagConfig`, env-driven); `agentic_core/runtime/config` (`FeatureFlag`, `FeatureFlagManager`) | system_learning monitoring, agentic_core runtime | ✅ YES | Two parallel flag stores (system_learning vs agentic_core); no external flag service dependency confirmed; env-var-driven only |
 
 ---
 
-### 3. ChromaDB (Vector Database)
-**Primary Files:**
-- `agentic_core/L4_state/utils/client/chroma_client.py` - SovereignChromaClient (L4 state client)
-- `tools/mcp/vector_db_server.py` - Vector DB MCP server (tools layer)
-- `apps_rfp/engines/proposal_retrieval_engine.py` - RFP retrieval engine (apps layer)
+## Explicit Raw Infra Client Entrypoints
 
-**Layer Assignment:**
-- **Owner Layer:** L4 (State) - SovereignChromaClient
-- **Adapter Layer:** L4 - chroma_client.py
-- **Tools Layer:** tools/mcp (MCP infrastructure)
-- **Apps Layer:** apps_rfp (application surface)
+These are the files where raw infra packages are imported directly (not via adapter). Grouped by package.
 
-**Intended Role:**
-- Persistent semantic memory layer
-- Document retrieval for RFP applications
-- Fallback hash-based embeddings (Wave 1)
+### `redis` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `agentic_core/cache/redis_cache_client.py` | L2/L_SHARED | ✅ APPROVED adapter | Canonical DeterministicRedisCache |
+| `agentic_core/cache/core/redis_cache_client.py` | L2/L_SHARED | ⚠️ P2 DUPLICATE | Same filename, different directory; not in `_APPROVED_ADAPTER_PATHS` |
+| `agentic_core/L2_execution/reasoning/RedisSovereignAgent.py` | L2 | ✅ SANCTIONED (filename) | Sovereign Redis agent |
+| `agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py` | L3 | ✅ APPROVED adapter | Fail-closed orchestrator per ownership matrix |
+| `agentic_core/L4_state/reasoning/CachedStateLedger.py` | L4 | ✅ SANCTIONED (filename) | L4 state ledger |
+| `agentic_core/L4_state/utils/memory/semantic_cache_manager.py` | L4 | ✅ SANCTIONED (filename) | HiveMind semantic cache |
+| `tools/adg/adg_redis_ingest.py` | tools | ✅ ALLOWED (tools/) | ADG ingest pipeline |
+| `tools/adg/adg_stale_guard.py` | tools | ✅ ALLOWED (tools/) | Stale detection |
+| `tools/adg/queries/adg_rlhf_sft_query*.py` | tools | ✅ ALLOWED (tools/) | Diagnostic queries |
+| `tools/mcp/redis_mcp_server.py` | tools | ✅ ALLOWED (tools/) | Redis MCP server |
+| `tools/memory/adg_memory_server.py` | tools | ✅ ALLOWED (tools/) | Memory graph MCP |
+| `agentic_core/L4_state/cache/redis_mcp_client.py` | L4 | ✅ TOMBSTONED | Intentionally empty — see file header |
 
-**Active Consumers:**
-- RetrievalLayers (L4)
-- ProposalRetrievalEngine (apps_rfp)
-- Vector DB MCP server
+### `chromadb` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `agentic_core/L4_state/utils/client/chroma_client.py` | L4 | ✅ APPROVED adapter | SovereignChromaClient |
+| `agentic_core/L4_state/reasoning/retrieval_layers.py` | L4 | ⚠️ SANCTIONED + RAW OPENAI | Both chromadb AND openai raw imports at module level |
+| `agentic_core/L4_state/utils/memory/in_memory_vector_cache.py` | L4 | ✅ SANCTIONED (filename) | In-memory vector cache |
+| `agentic_core/L4_state/cache/gptcache_client.py` | L4 | ✅ SANCTIONED (filename) | Native L2 cache (SQLite+ChromaDB); renamed from GPTCache |
+| `tools/mcp/vector_db_server.py` | tools | ✅ ALLOWED (tools/) | Vector DB MCP server |
 
-**Adapter Reachability:** ✅ APPROVED - SovereignChromaClient is the sanctioned adapter
+### `sqlite3` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `tools/memory/sqlite_memory_store.py` | tools | ✅ APPROVED adapter | Canonical memory graph persistence |
+| `apps_shared/data_adapters/repo_signal_adapter.py` | L_APP | ✅ APPROVED adapter | Read-only signal introspection |
+| `agentic_core/L4_state/utils/memory/graph_knowledge_store.py` | L4 | ✅ SANCTIONED (filename) | Knowledge graph store |
+| `agentic_core/L4_state/utils/memory/chunk_manifest_registry.py` | L4 | ✅ SANCTIONED (filename) | Chunk manifest |
+| `agentic_core/L4_state/utils/memory/completeness_snapshot_registry.py` | L4 | ✅ SANCTIONED (filename) | Completeness registry |
+| `agentic_core/L4_state/utils/memory/retrieval_eval_registry.py` | L4 | ✅ SANCTIONED (filename) | Retrieval eval |
+| `agentic_core/L4_state/utils/memory/verdict_store.py` | L4 | ✅ SANCTIONED (filename) | Verdict store |
+| `agentic_core/L4_state/utils/memory/evidence_assembler.py` | L4 | ✅ SANCTIONED (filename) | Evidence assembler |
+| `agentic_core/L4_state/cache/gptcache_client.py` | L4 | ✅ SANCTIONED (filename) | Native L2 cache SQLite backend |
+| `tools/generate/generate_static_adg.py` + materialized_views/*.py | tools | ✅ ALLOWED (tools/) | ADG generation |
+| Root-level debug scripts (`_validate_adg.py`, `_debug_hotspot.py`, etc.) | repo root | ⚠️ NOT PRODUCTION | Diagnostic scripts; not app code |
 
-**apps_* Direct Imports:** ⚠️ YES - apps_rfp/engines/proposal_retrieval_engine.py imports chromadb directly
+### `openai` / `anthropic` / `google.generativeai` packages
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `infrastructure/sdks_mcps/__init__.py` | infrastructure | ✅ APPROVED adapter | Provider SDK control plane (factory functions) |
+| `agentic_core/embeddings/embedding_factory.py` | L2 | ✅ APPROVED adapter (exempt prefix) | Canonical embedding seam |
+| `apps_shared/utils/providers_google_genai_client_util.py` | apps_shared | ✅ ALLOWED (apps_shared) | Google Gemini client util |
+| `apps_shared/types/model_router_types.py` | apps_shared | ✅ ALLOWED (apps_shared) | Lazy inline raw openai/anthropic |
+| `system_learning/engines/openai_embedder.py` | system_learning | ✅ ALLOWED (system_learning) | OpenAI + BGE embedder |
+| `agentic_core/L4_state/reasoning/retrieval_layers.py` | L4 | ❌ **ISSUE** | `from openai import OpenAI` at module level — not exempt; should route via `embedding_factory` or `infrastructure/sdks_mcps` |
+| `agentic_core/knowledge/enrichment/semantic_enricher.py` | agentic_core | ❌ **ISSUE** | Lazy `from openai import OpenAI` in agentic_core — not in any exempt path |
+| `agentic_core/evaluation/judges/llm_judge.py` | L5 | ❌ **ISSUE** | Lazy `import google.generativeai` — agentic_core/evaluation not in `_PROVIDER_EXEMPT_PREFIXES` |
+| `agentic_core/evaluation/judges/provider_registry.py` | L5 | ❌ **ISSUE** | Lazy `import google.generativeai` — same issue as llm_judge.py |
+| `apps_shared/types/hardened_gemini_executor_types.py` | apps_shared | ✅ ALLOWED (apps_shared) | Hardened executor type |
 
-**Weak Architecture Edges:** ⚠️ Direct chromadb import in apps_rfp (should use L4 adapter)
+### `boto3` / `botocore` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `agentic_core/L4_state/utils/memory/canonical_store.py` | L4 | ✅ APPROVED adapter | Canonical S3/filesystem store |
+| `agentic_core/L4_state/utils/memory/blob_storage_provider.py` | L4 | ✅ SANCTIONED (filename) | Blob storage provider; not yet in `_APPROVED_ADAPTER_PATHS` |
 
-**Status:** ACTIVE_MISWIRED (apps_* direct import violation)
+### `aiohttp` / `requests` / `httpx` packages
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `tools/mcp/enhanced_http_server.py` | tools | ✅ APPROVED adapter (process-boundary) | MCP HTTP server |
+| `agentic_core/gateway/api_gateway_integration.py` | agentic_core | ✅ SANCTIONED (filename) | Kong/Envoy health check |
+| `agentic_core/core/frameworks/documentation_framework.py` | agentic_core | ✅ SANCTIONED (filename) | Framework doc example |
+| `agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py` | L3 | ❌ **ISSUE** | Direct `import aiohttp` — NOT in `SANCTIONED_ADAPTER_FILES`; no approved entrypoint for vLLM HTTP in L3 |
 
----
+### `opentelemetry` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `apps_shared/utils/open_telemetry_tracing_adapter_util.py` | apps_shared | ✅ CANONICAL adapter | `OpenTelemetryTracingAdapter`, `get_tracer()` — OTLP gRPC/HTTP + console export |
+| `apps_shared/mixins/apps_tracing_mixin.py` | apps_shared | ⚠️ **ISSUE** | Direct `from opentelemetry import trace` — bypasses `get_tracer()` canonical path |
 
-### 4. OpenAI (Model Provider)
-**Primary Files:**
-- `system_learning/engines/openai_embedder.py` - OpenAIEmbedder (system_learning layer)
-- `agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py` - EmbeddingSovereignAgent (L2 execution)
-- `agentic_core/embeddings/embedding_factory.py` - Embedding client factory (L2 infrastructure)
+### `prometheus_client` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `agentic_core/L6_observability/utils/metrics/prometheus_metrics.py` | L6 | ❌ **UNREGISTERED** | Direct top-level `prometheus_client` import — no approved adapter entry anywhere |
+| `agentic_core/L6_observability/utils/engines/metrics_server.py` | L6 | ❌ **UNREGISTERED** | Lazy `prometheus_client` import — no approved adapter entry |
 
-**Layer Assignment:**
-- **Owner Layer:** L2 (Execution) - EmbeddingSovereignAgent
-- **Adapter Layer:** L2 - embedding_factory.py
-- **System Learning Layer:** system_learning/engines (meta-learning infrastructure)
+### `neo4j` package
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `agentic_core/L4_state/enforcement/neo4j_store.py` | L4 | ❌ **UNREGISTERED** | `from neo4j import GraphDatabase` — not in `FORBIDDEN_IMPORTS` scanner; zero ADG import-edge callers; only caller is `apps_shared/utils/rank_observability_components_util.py` via try/except guard |
 
-**Intended Role:**
-- Text embedding generation (text-embedding-3-large, text-embedding-3-small)
-- Semantic search embeddings
-- Meta-learning embedding pipeline
-
-**Active Consumers:**
-- EmbeddingSovereignAgent (L2)
-- SemanticRetriever (L1)
-- EmbeddingSovereignAgent (L2) - via factory
-- OpenAIEmbedder (system_learning)
-
-**Adapter Reachability:** ✅ APPROVED - embedding_factory.py is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected
-
-**Weak Architecture Edges:** ⚠️ Direct openai import in system_learning/engines (acceptable for meta-learning infrastructure)
-
-**Status:** ACTIVE_APPROVED
-
----
-
-### 5. Anthropic (Model Provider)
-**Primary Files:**
-- `infrastructure/sdks_mcps/__init__.py` - Anthropic client wrapper (infrastructure layer)
-- `apps_shared/types/model_router_types.py` - Model router types (apps_shared layer)
-
-**Layer Assignment:**
-- **Owner Layer:** infrastructure/sdks_mcps (infrastructure abstraction layer)
-- **Adapter Layer:** infrastructure/sdks_mcps
-- **Apps Shared Layer:** apps_shared/types (shared types)
-
-**Intended Role:**
-- Anthropic Claude model access
-- Model routing abstraction
-- Provider-agnostic model interface
-
-**Active Consumers:**
-- Model router (apps_shared)
-- Infrastructure MCP wrappers
-
-**Adapter Reachability:** ✅ APPROVED - infrastructure/sdks_mcps is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected (apps_shared is shared infrastructure, not application surface)
-
-**Weak Architecture Edges:** None identified
-
-**Status:** ACTIVE_APPROVED
-
----
-
-### 6. HTTP Clients (httpx/requests)
-**Primary Files:**
-- `tools/mcp/enhanced_http_server.py` - Enhanced HTTP MCP server (tools layer)
-- `agentic_core/gateway/api_gateway_integration.py` - API gateway integration (L0/L1 boundary)
-- `agentic_core/mixins/cst_healer_mixin.py` - CST healer mixin (L2 execution)
-
-**Layer Assignment:**
-- **Owner Layer:** L0 (Routing) - API gateway integration
-- **Adapter Layer:** tools/mcp (MCP infrastructure)
-- **Execution Layer:** L2 - CST healer mixin
-
-**Intended Role:**
-- External API calls
-- Gateway integration
-- Healing API calls
-- MCP HTTP capabilities
-
-**Active Consumers:**
-- API gateway (L0/L1)
-- CST healer (L2)
-- Enhanced HTTP MCP server
-
-**Adapter Reachability:** ✅ APPROVED - enhanced_http_server.py is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected
-
-**Weak Architecture Edges:** None identified
-
-**Status:** ACTIVE_APPROVED
+### `sentence_transformers` / `torch` packages
+| File | Layer | Status | Justification |
+|---|---|---|---|
+| `agentic_core/embeddings/embedding_factory.py` | L2 | ✅ APPROVED (exempt prefix) | Canonical embedding seam |
+| `system_learning/engines/openai_embedder.py` | system_learning | ✅ ALLOWED (system_learning) | BGEEmbedder via SentenceTransformer |
+| `tools/mcp/vector_db_server.py` | tools | ✅ ALLOWED (tools/) | Embedding model in MCP server |
+| `apps_shared/validators/cache_entry_validator.py` | apps_shared | ⚠️ ALLOWED but bypasses factory | Direct `SentenceTransformer` instantiation |
+| `apps_shared/utils/late_interaction_reranker_util.py` | apps_shared | ⚠️ ALLOWED but bypasses factory | Direct `SentenceTransformer` + `torch` |
+| `apps_shared/enforcement/GlobalcacheStrategy.py` | apps_shared | ⚠️ ALLOWED but bypasses factory | Direct `SentenceTransformer` instantiation |
 
 ---
 
-### 7. Boto3 (AWS SDK)
-**Primary Files:**
-- `agentic_core/L4_state/utils/memory/canonical_store.py` - Canonical state store (L4 state)
-- `agentic_core/L4_state/utils/memory/blob_storage_provider.py` - Blob storage provider (L4 state)
+## Initial Issues List
 
-**Layer Assignment:**
-- **Owner Layer:** L4 (State) - canonical_store.py, blob_storage_provider.py
-- **Adapter Layer:** L4 - both files serve as adapters
+### P0 — Hard Fail (would block CI if triggered)
+*No active P0 violations per current ADG scorecard (2026-04-08 scan). Prior violation resolved.*
 
-**Intended Role:**
-- AWS S3 blob storage
-- Canonical state persistence
-- Durable write backend
+| # | File | Package | Issue | Resolution Path |
+|---|---|---|---|---|
+| — | `apps_rfp/engines/proposal_retrieval_engine.py` | chromadb | ✅ **RESOLVED** — was a direct import; now a comment only | No action needed |
 
-**Active Consumers:**
-- State ledger (L4)
-- Blob storage consumers (L4)
+### P1 — Block (structural violations)
+*No active P1 violations per current ADG scorecard.*
 
-**Adapter Reachability:** ✅ APPROVED - Both files are sanctioned L4 adapters
+### P2 — Accepted at ceiling (mixed/duplicated adapters)
+| # | File | Package | Issue |
+|---|---|---|---|
+| 1 | `agentic_core/cache/core/redis_cache_client.py` | redis | Duplicate adapter path; not in `_APPROVED_ADAPTER_PATHS`; separate from canonical `agentic_core/cache/redis_cache_client.py` |
+| 2 | `agentic_core/L4_state/reasoning/retrieval_layers.py` | chromadb + openai | Mixed: raw chromadb AND raw openai at module level; sanctioned by filename but multi-infra |
+| 3 | `agentic_core/L4_state/cache/gptcache_client.py` | chromadb + sqlite3 | Mixed: uses both raw chromadb and raw sqlite3; sanctioned but multi-infra |
 
-**apps_* Direct Imports:** ❌ NONE detected
+### New Issues Discovered This Pass (not yet registered in scorecard/scan)
 
-**Weak Architecture Edges:** None identified
-
-**Status:** ACTIVE_APPROVED
-
----
-
-### 8. OpenTelemetry (Observability)
-**Primary Files:**
-- `tools/otel/otel_mcp_server.py` - OTel MCP server (tools layer)
-- `system_learning/stores/otel_telemetry_store.py` - OTel telemetry store (system_learning layer)
-- `apps_shared/mixins/apps_tracing_mixin.py` - Apps tracing mixin (apps_shared layer)
-- `agentic_core/mixins/integrated_tracing_mixin.py` - Integrated tracing mixin (agentic_core layer)
-
-**Layer Assignment:**
-- **Owner Layer:** L6 (Observability) - telemetry_store.py
-- **Adapter Layer:** tools/otel (MCP infrastructure)
-- **System Learning Layer:** system_learning/stores (meta-learning infrastructure)
-- **Apps Shared Layer:** apps_shared/mixins (shared tracing)
-- **Agentic Core Layer:** agentic_core/mixins (core tracing)
-
-**Intended Role:**
-- Distributed tracing
-- Telemetry collection
-- Observability data storage
-- Performance monitoring
-
-**Active Consumers:**
-- OTel MCP server
-- Telemetry store (system_learning)
-- Apps tracing (apps_shared)
-- Core tracing (agentic_core)
-
-**Adapter Reachability:** ✅ APPROVED - otel_mcp_server.py is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected (apps_shared is shared infrastructure)
-
-**Weak Architecture Edges:** None identified
-
-**Status:** ACTIVE_APPROVED
-
----
-
-### 9. Google (Gemini/Vertex AI)
-**Primary Files:**
-- `infrastructure/sdks_mcps/__init__.py` - Google GenAI client wrapper (infrastructure layer)
-- `apps_shared/utils/providers_google_genai_client_util.py` - Google GenAI client utility (apps_shared layer)
-- `agentic_core/evaluation/judges/provider_registry.py` - Provider registry (L5 safety)
-
-**Layer Assignment:**
-- **Owner Layer:** infrastructure/sdks_mcps (infrastructure abstraction layer)
-- **Adapter Layer:** infrastructure/sdks_mcps
-- **Apps Shared Layer:** apps_shared/utils (shared utilities)
-- **Safety Layer:** L5 - provider_registry.py
-
-**Intended Role:**
-- Gemini embeddings
-- Vertex AI model access
-- Provider abstraction
-- Evaluation judge integration
-
-**Active Consumers:**
-- EmbeddingSovereignAgent (L2) - via infrastructure wrapper
-- Provider registry (L5)
-- Apps shared utilities
-
-**Adapter Reachability:** ✅ APPROVED - infrastructure/sdks_mcps is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected (apps_shared is shared infrastructure)
-
-**Weak Architecture Edges:** None identified
-
-**Status:** ACTIVE_APPROVED
-
----
-
-### 10. Pytest (Testing Framework)
-**Primary Files:**
-- `tools/mcp/pytest_server.py` - Pytest MCP server (tools layer)
-- `tools/generate/generate_test_stubs.py` - Test stub generator (tools layer)
-
-**Layer Assignment:**
-- **Owner Layer:** tools/mcp (MCP infrastructure)
-- **Tools Layer:** tools/generate (tooling infrastructure)
-
-**Intended Role:**
-- Test execution via MCP
-- Test stub generation
-- Test discovery and running
-
-**Active Consumers:**
-- Pytest MCP server
-- Test generation tools
-
-**Adapter Reachability:** ✅ APPROVED - pytest_server.py is the sanctioned adapter
-
-**apps_* Direct Imports:** ❌ NONE detected
-
-**Weak Architecture Edges:** None identified
-
-**Status:** ACTIVE_APPROVED
-
----
-
-## Infrastructure Surface Classification Table
-
-| Infra Surface | Owner Layer | Adapter Layer | Approved Entrypoints | Approved Callers | apps_* Direct Import? | Status |
-|--------------|-------------|---------------|---------------------|------------------|----------------------|---------|
-| Redis | L2 | L2 (redis_cache_client.py) | DeterministicRedisCache, RedisSovereignAgent | L2, L3, L4, tools | ❌ NO | ACTIVE_APPROVED |
-| SQLite | L4 | tools/memory (sqlite_memory_store.py) | SqliteMemoryStore | tools, MCP | ❌ NO | ACTIVE_APPROVED |
-| ChromaDB | L4 | L4 (chroma_client.py) | SovereignChromaClient | L4, tools, apps_rfp | ⚠️ YES (apps_rfp) | ACTIVE_MISWIRED |
-| OpenAI | L2 | L2 (embedding_factory.py) | EmbeddingSovereignAgent, OpenAIEmbedder | L1, L2, system_learning | ❌ NO | ACTIVE_APPROVED |
-| Anthropic | infrastructure | infrastructure/sdks_mcps | AnthropicClientWrapper | apps_shared, infrastructure | ❌ NO | ACTIVE_APPROVED |
-| HTTP Clients | L0 | tools/mcp (enhanced_http_server.py) | EnhancedHTTPMCP, APIGateway | L0, L1, L2, tools | ❌ NO | ACTIVE_APPROVED |
-| Boto3 (AWS) | L4 | L4 (canonical_store.py, blob_storage_provider.py) | CanonicalStore, BlobStorageProvider | L4 | ❌ NO | ACTIVE_APPROVED |
-| OpenTelemetry | L6 | tools/otel (otel_mcp_server.py) | OTelMCPServer, TelemetryStore | L6, system_learning, apps_shared, agentic_core | ❌ NO | ACTIVE_APPROVED |
-| Google (Gemini) | infrastructure | infrastructure/sdks_mcps | GoogleGenAIWrapper | L2, L5, apps_shared | ❌ NO | ACTIVE_APPROVED |
-| Pytest | tools | tools/mcp (pytest_server.py) | PytestMCPServer | tools | ❌ NO | ACTIVE_APPROVED |
-
----
-
-## apps_* Direct Import Violations
-
-### P0 HARD FAIL: apps_rfp ChromaDB Direct Import
-**File:** `apps_rfp/engines/proposal_retrieval_engine.py`
-**Violation:** Direct `import chromadb` instead of using L4 SovereignChromaClient adapter
-**Architecture Law Violated:** apps_* surfaces must not directly own raw infra clients
-**Recommended Fix:** Import from `agentic_core.L4_state.utils.client.chroma_client` instead of direct chromadb
-**Expected ADG Edge Change:** Remove `apps_rfp → chromadb` edge, add `apps_rfp → L4_chroma_client` edge
+| Priority | File | Package | Finding |
+|---|---|---|---|
+| **HIGH** | `agentic_core/L4_state/reasoning/retrieval_layers.py` | openai | `from openai import OpenAI` at module level in agentic_core/L4; not in `_PROVIDER_EXEMPT_PREFIXES`; should route via `embedding_factory` or `infrastructure/sdks_mcps` |
+| **HIGH** | `agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py` | aiohttp | Direct `import aiohttp` in L3 for vLLM HTTP; not in `SANCTIONED_ADAPTER_FILES` or `_APPROVED_ADAPTER_PATHS`; no sanctioned HTTP adapter for vLLM |
+| **HIGH** | `agentic_core/evaluation/judges/llm_judge.py` | google.generativeai | Lazy raw import in agentic_core/evaluation; `agentic_core/evaluation/` not in `_PROVIDER_EXEMPT_PREFIXES` |
+| **HIGH** | `agentic_core/evaluation/judges/provider_registry.py` | google.generativeai | Same as llm_judge.py — same file directory, same exemption gap |
+| **MEDIUM** | `agentic_core/L6_observability/utils/metrics/prometheus_metrics.py` | prometheus_client | Not in `FORBIDDEN_IMPORTS`, not in `_APPROVED_ADAPTER_PATHS`; no sanctioned adapter entry for Prometheus |
+| **MEDIUM** | `agentic_core/L6_observability/utils/engines/metrics_server.py` | prometheus_client | Same — unregistered Prometheus surface |
+| **MEDIUM** | `agentic_core/L4_state/enforcement/neo4j_store.py` | neo4j | Completely unregistered infra surface; 0 ADG callers; `neo4j` not in `FORBIDDEN_IMPORTS`; `NEO4J_URI/USERNAME/PASSWORD` env vars required |
+| **MEDIUM** | `agentic_core/knowledge/enrichment/semantic_enricher.py` | openai | Lazy raw OpenAI in agentic_core — not in any exempt path |
+| **LOW** | `apps_shared/mixins/apps_tracing_mixin.py` | opentelemetry | Direct `from opentelemetry import trace` bypasses `get_tracer()` canonical path in `open_telemetry_tracing_adapter_util.py` |
+| **LOW** | `infrastructure/sdks_mcps/__init__.py` | openai/anthropic/google | Client classes (`OpenAIClient`, `AnthropicClient`, `VertexClient`) are empty `pass` stubs — factory functions work, class instances do not |
+| **LOW** | `agentic_core/L4_state/utils/memory/blob_storage_provider.py` | boto3 | In `SANCTIONED_ADAPTER_FILES` but missing from `_APPROVED_ADAPTER_PATHS` — view coverage gap |
+| **INFO** | `agentic_core/cache/core/redis_cache_client.py` | redis | Second redis_cache_client.py at `core/` subdirectory — not in `_APPROVED_ADAPTER_PATHS`; duplicated adapter pattern already at P2 ceiling |
 
 ---
 
 ## Uncertainties and Assumptions
 
 ### Uncertainties
-1. **ChromaDB Fallback Status:** The SovereignChromaClient uses hash-based fallback embeddings. It's unclear if this is temporary (Wave 1) or permanent.
-2. **Boto3 Usage Extent:** Only two files import boto3, but the actual AWS usage pattern is not fully mapped.
-3. **OpenTelemetry Collector:** The OTel MCP server exists, but collector connectivity status is unknown.
+1. **Neo4j activation state**: `neo4j_store.py` has a guardian-annotated `ImportError` raise on missing dep. Unclear if neo4j is installed in any environment. Zero ADG callers suggests experimental/never activated.
+2. **vLLM deployment status**: `optimized_vllm_client.py` references `http://localhost:8000/v1` (local RTX 5090). Unknown if this is active in CI or production environments.
+3. **Prometheus collector connectivity**: Metrics server exists at L6; unknown if a Prometheus collector scrapes it in any running environment.
+4. **`infrastructure/sdks_mcps` stub migration**: The empty client classes suggest an in-progress migration. Unknown if consumers are waiting for real class implementations or only use factory functions.
+5. **`gptcache_client.py` name confusion**: File comments say "No GPTCache dependency" but the class exported as `GPTCacheClient` for backward compat. Unclear if callers expect GPTCache behavior or native behavior.
+6. **Feature flag duplication**: Two flag systems (`system_learning/config/feature_flags.py` vs `agentic_core/runtime/config`) — unclear if they are converging or intentionally separate.
+7. **Embedding factory bypass in apps_shared**: Three `SentenceTransformer` direct instantiations in `apps_shared`. These are in ALLOWED_DIRS but may indicate the factory seam is not enforced for apps_shared.
 
 ### Assumptions
-1. **tools Layer as Infrastructure:** All files under `tools/` are treated as infrastructure/tooling, not production authority surfaces.
-2. **apps_shared as Shared Infrastructure:** `apps_shared/` is treated as shared infrastructure layer, not application surface.
-3. **Direct Imports in tools Layer:** Direct SDK imports in `tools/` layer are acceptable for infrastructure code.
-4. **Memory MCP as Infrastructure:** Memory graph persistence via SQLite is treated as infrastructure, not application state.
+1. `tools/` is non-production infrastructure tooling — direct SDK imports are acceptable.
+2. `apps_shared/` is shared infrastructure (not application surface) — SDK imports are permitted.
+3. `system_learning/` is meta-learning infrastructure — raw provider imports are permitted.
+4. A surface with zero ADG callers AND a `try/except ImportError` guard is classified as experimental/isolated (P3).
+5. The `infra_wiring_scan.py` `SANCTIONED_ADAPTER_FILES` set (by filename) and `infra_wiring_views.py` `_APPROVED_ADAPTER_PATHS` set (by path) are two independent lists; discrepancies between them are tracked as view coverage gaps, not P0 violations.
+6. Root-level diagnostic scripts (`_validate_adg.py`, `_debug_hotspot.py`, etc.) are not production code — their direct sqlite3 imports are out of scope for wiring enforcement.
 
 ---
 
-## Next Steps
-
-1. **Phase 1:** Create ownership matrix defining allowed layer ownership and caller policies
-2. **Phase 2:** Enrich ADG with infra-specific relations (owns_infra_surface, wraps_infra_surface, uses_raw_infra_client, etc.)
-3. **Phase 3:** Generate severity-ranked violations using ADG queries
-4. **Phase 4:** Create prioritized repair plan for miswired surfaces
-5. **Phase 5:** Design CI ratchet and scorecard for regression prevention
+*Stop condition reached — Phase 0 inventory complete. Ownership rule changes, ADG extractor changes, and code repairs are deferred to subsequent phases.*

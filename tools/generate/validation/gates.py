@@ -1433,3 +1433,275 @@ def _check_agentic_antipatterns(
                 print(f"[ADG] {check_id} ({label}): PASSED")
 
     return results
+
+
+# ---------------------------------------------------------------------------
+# Architecture witness-tier gates: Class A (positive witness) + Class B (absence/breach)
+# ---------------------------------------------------------------------------
+
+# Required columns in both witness-tier tables (regression schema protection)
+_WITNESS_TIER_REQUIRED_COLUMNS: frozenset[str] = frozenset(
+    {
+        "snapshot_id",
+        "plumbing_witness_count",
+        "test_witness_count",
+        "live_runtime_witness_count",
+        "zero_witness_count",
+        "runtime_orphaned",
+    }
+)
+
+# Class A: runtime-spine handoff families (view_name in mv_handoff_witness_tiers).
+# All currently PLANNED — plumbing/schema wired but no live callers yet.
+_CLASS_A_SPINE_FAMILIES_PLANNED: frozenset[str] = frozenset(
+    {
+        "mv_ingress_before_anything",
+        "mv_l1_plan_before_route",
+        "mv_retrieval_evidence_handoff",
+        "mv_evidence_to_prompt_handoff",
+        "mv_governed_execution_envelope_continuity",
+        "mv_runtime_exit_continuity",
+    }
+)
+
+# Class A: cross-cutting families required-live NOW (confirmed live_rt > 0 in repo).
+_CLASS_A_CC_FAMILIES_REQUIRED: frozenset[str] = frozenset(
+    {
+        "capability_egress_chokepoint",
+        "heal_retry_under_blueprint",
+        "hitl_freeze_materialize_reclear",
+        "retrieval_surface_integrity",
+        "uwg_full_commit_chain",
+    }
+)
+
+# Class A: cross-cutting families PLANNED (runtime-orphaned; not yet blocking).
+_CLASS_A_CC_FAMILIES_PLANNED: frozenset[str] = frozenset(
+    {
+        "commit_uwg_envelope_continuity",
+        "exit_hitl_envelope_continuity",
+        "future_run_only_promotion",
+        "offline_publication_before_runtime",
+    }
+)
+
+# Class B: absence/negative families and their governing breach views.
+# All four families now have dedicated breach surfaces.
+_CLASS_B_FAMILIES: dict[str, str | None] = {
+    "no_direct_write_live_planes": "mv_write_sovereignty_paths",
+    "replay_envelope_continuity": "mv_digest_reconciliation",
+    "local_heal_first": "mv_local_heal_first_breaches",
+    "observability_non_interference": "mv_observability_interference_breaches",
+}
+
+
+def _check_witness_tier_gates(sqlite_path: Path | None = None) -> dict[str, Any]:
+    """Validate architecture witness-tier views and enforce Class A / Class B gate policies.
+
+    Class A (positive witness) -- live runtime proof required:
+      - required families: sys.exit(1) if runtime-orphaned
+      - planned families: warn but do not fail
+
+    Class B (absence / negative) -- breach/forbidden-path surface required:
+      - checks governing breach views exist and are populated
+      - reports families without a dedicated breach surface as insufficient
+
+    Regression protection:
+      - sys.exit(1) if mv_handoff_witness_tiers or mv_cross_cutting_witness_tiers missing
+      - sys.exit(1) if required schema columns absent from either table
+      - sys.exit(1) if a required Class A family missing from mv_cross_cutting_witness_tiers
+
+    Returns:
+        Dict with keys: 'class_a_required_violations', 'class_a_planned_warnings',
+        'class_b_status', 'schema_ok', 'tables_present', 'error'
+    """
+    result: dict[str, Any] = {
+        "class_a_required_violations": [],
+        "class_a_planned_warnings": [],
+        "class_b_status": {},
+        "schema_ok": False,
+        "tables_present": False,
+        "error": None,
+    }
+
+    if sqlite_path is None or not sqlite_path.exists():
+        result["error"] = "SQLite not found"
+        return result
+
+    try:
+        with sqlite3.connect(str(sqlite_path)) as conn:
+            # -- Regression: required mv_* tables must exist ------------------
+            existing_tables: set[str] = {
+                row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+            }
+            required_mv = frozenset(
+                {
+                    "mv_handoff_witness_tiers",
+                    "mv_cross_cutting_witness_tiers",
+                }
+            )
+            missing_mv = required_mv - existing_tables
+            if missing_mv:
+                msg = f"[ERROR][WITNESS-REGRESSION] Tables missing: {sorted(missing_mv)}"
+                print(msg)
+                print("[ERROR] Re-run: python tools/generate_full_adg.py")
+                result["error"] = msg
+                sys.exit(1)
+
+            result["tables_present"] = True
+
+            # -- Regression: required schema columns must exist ---------------
+            for tbl in required_mv:
+                cols = {r[1] for r in conn.execute(f"PRAGMA table_info({tbl})").fetchall()}
+                missing_cols = _WITNESS_TIER_REQUIRED_COLUMNS - cols
+                if missing_cols:
+                    msg = f"[ERROR][SCHEMA-DRIFT] {tbl} missing columns: {sorted(missing_cols)}"
+                    print(msg)
+                    print("[ERROR] Schema drift detected -- regenerate ADG.")
+                    result["error"] = msg
+                    sys.exit(1)
+
+            result["schema_ok"] = True
+
+            # -- Class A: runtime-spine handoff families ----------------------
+            spine_rows = conn.execute(
+                "SELECT view_name,"
+                " COALESCE(SUM(live_runtime_witness_count), 0),"
+                " COALESCE(SUM(runtime_orphaned), 0)"
+                " FROM mv_handoff_witness_tiers"
+                " GROUP BY view_name"
+            ).fetchall()
+
+            for view_name, _live_rt_total, orphaned_count in spine_rows:
+                if view_name in _CLASS_A_SPINE_FAMILIES_PLANNED and orphaned_count > 0:
+                    print(
+                        f"[ADG-WITNESS][PLANNED] {view_name}: "
+                        f"spine runtime-orphaned={orphaned_count} (planned -- not yet blocking)"
+                    )
+                    result["class_a_planned_warnings"].append(
+                        {
+                            "family": view_name,
+                            "table": "mv_handoff_witness_tiers",
+                            "orphaned_count": int(orphaned_count),
+                            "status": "planned",
+                        }
+                    )
+
+            # -- Class A: cross-cutting required families ---------------------
+            cc_rows = conn.execute(
+                "SELECT family_name,"
+                " COALESCE(SUM(live_runtime_witness_count), 0),"
+                " COALESCE(SUM(plumbing_witness_count), 0),"
+                " COALESCE(SUM(test_witness_count), 0),"
+                " COALESCE(SUM(runtime_orphaned), 0)"
+                " FROM mv_cross_cutting_witness_tiers"
+                " GROUP BY family_name"
+            ).fetchall()
+
+            present_cc = {row[0] for row in cc_rows}
+            missing_required = _CLASS_A_CC_FAMILIES_REQUIRED - present_cc
+            if missing_required:
+                msg = (
+                    f"[ERROR][WITNESS-REGRESSION] Required Class A families missing from "
+                    f"mv_cross_cutting_witness_tiers: {sorted(missing_required)}"
+                )
+                print(msg)
+                result["error"] = msg
+                sys.exit(1)
+
+            for family_name, live_rt, plumbing, test, orphaned in cc_rows:
+                if family_name in _CLASS_A_CC_FAMILIES_REQUIRED:
+                    if orphaned > 0:
+                        msg = (
+                            f"[ERROR][CLASS-A] '{family_name}': required-live family is "
+                            f"runtime-orphaned -- plumbing={plumbing} test={test} "
+                            f"live_rt={live_rt} orphaned_rels={orphaned}"
+                        )
+                        print(msg)
+                        result["class_a_required_violations"].append(
+                            {
+                                "family": family_name,
+                                "table": "mv_cross_cutting_witness_tiers",
+                                "plumbing": int(plumbing),
+                                "test": int(test),
+                                "live_rt": int(live_rt),
+                                "orphaned_count": int(orphaned),
+                                "status": "required",
+                            }
+                        )
+                    else:
+                        print(f"[ADG-WITNESS][CLASS-A] '{family_name}': live_rt={live_rt} OK")
+                elif family_name in _CLASS_A_CC_FAMILIES_PLANNED:
+                    if orphaned > 0:
+                        print(
+                            f"[ADG-WITNESS][PLANNED] '{family_name}': "
+                            f"cc runtime-orphaned={orphaned} (planned -- not yet blocking)"
+                        )
+                        result["class_a_planned_warnings"].append(
+                            {
+                                "family": family_name,
+                                "table": "mv_cross_cutting_witness_tiers",
+                                "orphaned_count": int(orphaned),
+                                "status": "planned",
+                            }
+                        )
+
+            # -- Class B: absence/negative families --------------------------
+            for family, breach_view in _CLASS_B_FAMILIES.items():
+                status_b: dict[str, Any] = {
+                    "family": family,
+                    "gate_class": "B",
+                    "breach_view": breach_view,
+                }
+                if breach_view is None:
+                    status_b["breach_surface"] = "INSUFFICIENT"
+                    status_b["note"] = "No dedicated breach view -- zero witnesses is ambiguous"
+                    print(
+                        f"[ADG-WITNESS][CLASS-B] '{family}': "
+                        f"no dedicated breach surface -- enforcement insufficient"
+                    )
+                elif breach_view in existing_tables:
+                    row_count = conn.execute(
+                        f"SELECT COUNT(*) FROM {breach_view}"  # noqa: S608
+                    ).fetchone()[0]
+                    status_b["breach_surface"] = "PRESENT"
+                    status_b["breach_view_rows"] = row_count
+                    print(
+                        f"[ADG-WITNESS][CLASS-B] '{family}': "
+                        f"breach surface {breach_view} present ({row_count} rows)"
+                    )
+                else:
+                    status_b["breach_surface"] = "MISSING"
+                    status_b["note"] = f"Breach view {breach_view} not in DB"
+                    print(f"[ADG-WITNESS][CLASS-B] '{family}': breach surface {breach_view} MISSING")
+                result["class_b_status"][family] = status_b
+
+            # -- Final summary ------------------------------------------------
+            req_violations = result["class_a_required_violations"]
+            planned_warnings = result["class_a_planned_warnings"]
+            b_insufficient = sum(
+                1 for s in result["class_b_status"].values() if s.get("breach_surface") == "INSUFFICIENT"
+            )
+            print()
+            print("[ADG-WITNESS] Architecture witness-tier gate summary:")
+            print(f"  Class A required violations  : {len(req_violations)}")
+            print(f"  Class A planned warnings     : {len(planned_warnings)}")
+            print(f"  Class B families surveyed    : {len(_CLASS_B_FAMILIES)}")
+            print(f"  Class B breach-surface gaps  : {b_insufficient}")
+
+            if req_violations:
+                print()
+                print("[ERROR] Class A required-live violations -- gate FAILED:")
+                for v in req_violations:
+                    print(f"  [x] {v['family']} (orphaned={v['orphaned_count']})")
+                sys.exit(1)
+            else:
+                print("[ADG-WITNESS] Class A gate: PASSED")
+
+    except SystemExit:
+        raise
+    except sqlite3.Error as exc:
+        result["error"] = str(exc)
+        print(f"[ADG-WITNESS] WARNING: witness-tier gate query failed: {exc}")
+
+    return result

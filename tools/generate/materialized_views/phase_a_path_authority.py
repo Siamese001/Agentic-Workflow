@@ -36,6 +36,10 @@ _PHASE_A_TABLES: tuple[str, ...] = (
     "mv_hotspot_centrality",
     "mv_unknown_taxonomy_and_orphans",
     "mv_prompt_assembly_wiring_gaps",
+    "mv_handoff_witness_tiers",
+    "mv_cross_cutting_witness_tiers",
+    "mv_local_heal_first_breaches",
+    "mv_observability_interference_breaches",
 )
 
 _SPINE_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED")
@@ -759,6 +763,325 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
     )
     cur.execute(
         "CREATE INDEX IF NOT EXISTS idx_mv_pa_wiring_snapshot ON mv_prompt_assembly_wiring_gaps(snapshot_id)"
+    )
+
+    # -------------------------------------------------------------------------
+    # Family 12 — Handoff witness tiers (runtime-spine Phase 2)
+    # -------------------------------------------------------------------------
+
+    # mv_handoff_witness_tiers
+    # For each of the 17 architecture-handoff relation types, classify ADG edges
+    # into three witness tiers:
+    #   plumbing  — graph_persister.py / lifecycle_trace_contract.py (bootstrap proof)
+    #   test      — tests/ prefix (coverage proof)
+    #   live_rt   — all other production-code edges (runtime-spine obligation)
+    # runtime_orphaned = 1 when extraction is wired and (plumbing OR test) exists
+    #                     but live_runtime_witness_count = 0
+    cur.execute("DROP TABLE IF EXISTS mv_handoff_witness_tiers")
+    cur.execute(f"""
+        CREATE TABLE mv_handoff_witness_tiers AS
+        WITH handoff_rels AS (
+            SELECT 'validates_request'           AS relation_type,
+                   'mv_ingress_before_anything'  AS view_name
+            UNION ALL SELECT 'produces_plan',            'mv_l1_plan_before_route'
+            UNION ALL SELECT 'proposes_route',            'mv_l1_plan_before_route'
+            UNION ALL SELECT 'prefilters_scope',          'mv_retrieval_evidence_handoff'
+            UNION ALL SELECT 'produces_evidence_contract','mv_retrieval_evidence_handoff'
+            UNION ALL SELECT 'packages_prompt_envelope',  'mv_evidence_to_prompt_handoff'
+            UNION ALL SELECT 'stamps_execution_packet',   'mv_governed_execution_envelope_continuity'
+            UNION ALL SELECT 'propagates_policy_hash',    'mv_governed_execution_envelope_continuity'
+            UNION ALL SELECT 'propagates_replay_key',     'mv_governed_execution_envelope_continuity'
+            UNION ALL SELECT 'publishes_retrieval_surface','mv_governed_execution_envelope_continuity'
+            UNION ALL SELECT 'promotes_future_run_change','mv_governed_execution_envelope_continuity'
+            UNION ALL SELECT 'seals_result',              'mv_runtime_exit_continuity'
+            UNION ALL SELECT 'chooses_exit_disposition',  'mv_runtime_exit_continuity'
+            UNION ALL SELECT 'materializes_hitl_packet',  'mv_runtime_exit_continuity'
+            UNION ALL SELECT 'reclears_human_decision',   'mv_runtime_exit_continuity'
+            UNION ALL SELECT 'verifies_blast_radius',     'mv_runtime_exit_continuity'
+            UNION ALL SELECT 'appends_commit_receipt',    'mv_runtime_exit_continuity'
+        ),
+        tier_counts AS (
+            SELECT
+                hr.relation_type,
+                hr.view_name,
+                COALESCE(SUM(CASE
+                    WHEN e.source_file IN (
+                        'agentic_core/adg/extraction/graph_persister.py',
+                        'agentic_core/runtime/contracts/lifecycle_trace_contract.py'
+                    ) THEN 1 ELSE 0 END), 0) AS plumbing_witness_count,
+                COALESCE(SUM(CASE
+                    WHEN e.source_file LIKE 'tests/%'
+                    THEN 1 ELSE 0 END), 0)   AS test_witness_count,
+                COALESCE(SUM(CASE
+                    WHEN e.source_file NOT IN (
+                        'agentic_core/adg/extraction/graph_persister.py',
+                        'agentic_core/runtime/contracts/lifecycle_trace_contract.py'
+                    ) AND e.source_file NOT LIKE 'tests/%'
+                    THEN 1 ELSE 0 END), 0)   AS live_runtime_witness_count
+            FROM handoff_rels hr
+            LEFT JOIN edges e ON e.relation_type = hr.relation_type
+            GROUP BY hr.relation_type, hr.view_name
+        )
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            relation_type,
+            view_name,
+            plumbing_witness_count,
+            test_witness_count,
+            live_runtime_witness_count,
+            CASE WHEN (plumbing_witness_count + test_witness_count + live_runtime_witness_count) = 0
+                 THEN 1 ELSE 0 END AS zero_witness_count,
+            CASE WHEN (plumbing_witness_count > 0 OR test_witness_count > 0)
+                  AND live_runtime_witness_count = 0
+                 THEN 1 ELSE 0 END AS built_plus_test_or_plumbing_covered_plus_runtime_orphaned,
+            CASE WHEN (plumbing_witness_count + test_witness_count + live_runtime_witness_count) > 0
+                  AND (plumbing_witness_count > 0 OR test_witness_count > 0)
+                  AND live_runtime_witness_count = 0
+                 THEN 1 ELSE 0 END AS runtime_orphaned
+        FROM tier_counts
+        ORDER BY view_name, relation_type
+    """)
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_handoff_witness_rt_orphaned"
+        " ON mv_handoff_witness_tiers(runtime_orphaned, view_name)"
+    )
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_handoff_witness_snapshot ON mv_handoff_witness_tiers(snapshot_id)"
+    )
+
+    # -------------------------------------------------------------------------
+    # Family 13 — Cross-cutting witness tiers (all architectural obligation families)
+    # -------------------------------------------------------------------------
+
+    # mv_cross_cutting_witness_tiers
+    # Same witness-tier model as mv_handoff_witness_tiers but covering all 13
+    # cross-cutting architectural obligation families:
+    #
+    #   1.  capability_egress_chokepoint       — capability token + egress route proof
+    #   2.  local_heal_first                   — local healer dispatches before escalation
+    #   3.  heal_retry_under_blueprint         — orchestrator retries under same blueprint
+    #   4.  exit_hitl_envelope_continuity      — exit packet sealed + HITL cleared
+    #   5.  hitl_freeze_materialize_reclear    — context frozen before HITL, recleared after
+    #   6.  commit_uwg_envelope_continuity     — blast-radius checked + receipt appended
+    #   7.  uwg_full_commit_chain              — full UWG validation + durable commit
+    #   8.  no_direct_write_live_planes        — writes route through UWG, no bypass
+    #   9.  replay_envelope_continuity         — RNG/time sealed + replay key emitted
+    #   10. observability_non_interference     — observability reads only, no side-effects
+    #   11. future_run_only_promotion          — promotion gated + committed via DPO
+    #   12. offline_publication_before_runtime — surface published offline before runtime reads
+    #   13. retrieval_surface_integrity        — retrieval indexed, guardrailed, routed
+    #
+    # Tier semantics identical to mv_handoff_witness_tiers:
+    #   plumbing  — graph_persister.py + lifecycle_trace_contract.py (bootstrap proof)
+    #   test      — tests/* prefix (coverage proof)
+    #   live_rt   — all other production-code edges (runtime-spine obligation)
+    cur.execute("DROP TABLE IF EXISTS mv_cross_cutting_witness_tiers")
+    cur.execute(f"""
+        CREATE TABLE mv_cross_cutting_witness_tiers AS
+        WITH cross_cutting_rels AS (
+            -- 1. capability_egress_chokepoint
+            SELECT 'capability_egress_chokepoint'  AS family_name,
+                   'routes_to_capability'           AS relation_type
+            UNION ALL SELECT 'capability_egress_chokepoint', 'issues_capability_token'
+            UNION ALL SELECT 'capability_egress_chokepoint', 'has_capability'
+            UNION ALL SELECT 'capability_egress_chokepoint', 'validates_agent_capability'
+            -- 2. local_heal_first
+            UNION ALL SELECT 'local_heal_first',             'dispatches_healing_run'
+            UNION ALL SELECT 'local_heal_first',             'confirms_heal'
+            UNION ALL SELECT 'local_heal_first',             'aborts_heal'
+            -- 3. heal_retry_under_blueprint
+            UNION ALL SELECT 'heal_retry_under_blueprint',   'orchestrates_healing'
+            UNION ALL SELECT 'heal_retry_under_blueprint',   'heals'
+            -- 4. exit_hitl_envelope_continuity
+            UNION ALL SELECT 'exit_hitl_envelope_continuity', 'seals_result'
+            UNION ALL SELECT 'exit_hitl_envelope_continuity', 'chooses_exit_disposition'
+            UNION ALL SELECT 'exit_hitl_envelope_continuity', 'materializes_hitl_packet'
+            UNION ALL SELECT 'exit_hitl_envelope_continuity', 'reclears_human_decision'
+            -- 5. hitl_freeze_materialize_reclear
+            UNION ALL SELECT 'hitl_freeze_materialize_reclear', 'freezes_context'
+            UNION ALL SELECT 'hitl_freeze_materialize_reclear', 'escalates_to_human'
+            UNION ALL SELECT 'hitl_freeze_materialize_reclear', 'awaits_approval'
+            UNION ALL SELECT 'hitl_freeze_materialize_reclear', 'requires_human_review'
+            UNION ALL SELECT 'hitl_freeze_materialize_reclear', 'learns_from_decision'
+            -- 6. commit_uwg_envelope_continuity
+            UNION ALL SELECT 'commit_uwg_envelope_continuity', 'verifies_blast_radius'
+            UNION ALL SELECT 'commit_uwg_envelope_continuity', 'appends_commit_receipt'
+            UNION ALL SELECT 'commit_uwg_envelope_continuity', 'commits_mutation'
+            UNION ALL SELECT 'commit_uwg_envelope_continuity', 'distributes_mutation'
+            -- 7. uwg_full_commit_chain
+            UNION ALL SELECT 'uwg_full_commit_chain',         'validates_uwg_intent'
+            UNION ALL SELECT 'uwg_full_commit_chain',         'checks_policy_hash_at_uwg'
+            UNION ALL SELECT 'uwg_full_commit_chain',         'validates_blast_radius_at_uwg'
+            UNION ALL SELECT 'uwg_full_commit_chain',         'performs_durable_commit'
+            UNION ALL SELECT 'uwg_full_commit_chain',         'applies_hmac_seal'
+            UNION ALL SELECT 'uwg_full_commit_chain',         'packages_execution_trace'
+            UNION ALL SELECT 'uwg_full_commit_chain',         'appends_hash_chain'
+            -- 8. no_direct_write_live_planes
+            UNION ALL SELECT 'no_direct_write_live_planes',   'routes_through_uwg'
+            UNION ALL SELECT 'no_direct_write_live_planes',   'bypasses_uwg'
+            UNION ALL SELECT 'no_direct_write_live_planes',   'execution_terminates_at_uwg'
+            -- 9. replay_envelope_continuity
+            UNION ALL SELECT 'replay_envelope_continuity',    'guards_replay'
+            UNION ALL SELECT 'replay_envelope_continuity',    'seeds_rng'
+            UNION ALL SELECT 'replay_envelope_continuity',    'patches_time'
+            UNION ALL SELECT 'replay_envelope_continuity',    'emits_replay_key'
+            UNION ALL SELECT 'replay_envelope_continuity',    'compares_proof'
+            UNION ALL SELECT 'replay_envelope_continuity',    'emits_determinism_digest'
+            -- 10. observability_non_interference
+            UNION ALL SELECT 'observability_non_interference', 'observes_policy_state'
+            UNION ALL SELECT 'observability_non_interference', 'observes_runtime_state'
+            UNION ALL SELECT 'observability_non_interference', 'snapshots_state'
+            UNION ALL SELECT 'observability_non_interference', 'intercepts_io'
+            UNION ALL SELECT 'observability_non_interference', 'transcripts_response'
+            UNION ALL SELECT 'observability_non_interference', 'hard_fails_untranscripted'
+            -- 11. future_run_only_promotion
+            UNION ALL SELECT 'future_run_only_promotion',     'promotes_future_run_change'
+            UNION ALL SELECT 'future_run_only_promotion',     'gates_promotion'
+            UNION ALL SELECT 'future_run_only_promotion',     'commits_optimization'
+            UNION ALL SELECT 'future_run_only_promotion',     'builds_dpo_batch'
+            -- 12. offline_publication_before_runtime
+            UNION ALL SELECT 'offline_publication_before_runtime', 'publishes_retrieval_surface'
+            UNION ALL SELECT 'offline_publication_before_runtime', 'reads_materialized_surface'
+            UNION ALL SELECT 'offline_publication_before_runtime', 'materializes_read_view'
+            -- 13. retrieval_surface_integrity
+            UNION ALL SELECT 'retrieval_surface_integrity',   'indexes_for_retrieval'
+            UNION ALL SELECT 'retrieval_surface_integrity',   'retrieves_via'
+            UNION ALL SELECT 'retrieval_surface_integrity',   'retrieves_from_store'
+            UNION ALL SELECT 'retrieval_surface_integrity',   'applies_retrieval_guardrail'
+            UNION ALL SELECT 'retrieval_surface_integrity',   'routes_retrieval'
+        ),
+        tier_counts AS (
+            SELECT
+                cr.family_name,
+                cr.relation_type,
+                COALESCE(SUM(CASE
+                    WHEN e.source_file IN (
+                        'agentic_core/adg/extraction/graph_persister.py',
+                        'agentic_core/runtime/contracts/lifecycle_trace_contract.py'
+                    ) THEN 1 ELSE 0 END), 0) AS plumbing_witness_count,
+                COALESCE(SUM(CASE
+                    WHEN e.source_file LIKE 'tests/%'
+                    THEN 1 ELSE 0 END), 0)   AS test_witness_count,
+                COALESCE(SUM(CASE
+                    WHEN e.source_file NOT IN (
+                        'agentic_core/adg/extraction/graph_persister.py',
+                        'agentic_core/runtime/contracts/lifecycle_trace_contract.py'
+                    ) AND e.source_file NOT LIKE 'tests/%'
+                    THEN 1 ELSE 0 END), 0)   AS live_runtime_witness_count
+            FROM cross_cutting_rels cr
+            LEFT JOIN edges e ON e.relation_type = cr.relation_type
+            GROUP BY cr.family_name, cr.relation_type
+        )
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            family_name,
+            relation_type,
+            plumbing_witness_count,
+            test_witness_count,
+            live_runtime_witness_count,
+            CASE WHEN (plumbing_witness_count + test_witness_count + live_runtime_witness_count) = 0
+                 THEN 1 ELSE 0 END AS zero_witness_count,
+            CASE WHEN (plumbing_witness_count > 0 OR test_witness_count > 0)
+                  AND live_runtime_witness_count = 0
+                 THEN 1 ELSE 0 END AS built_plus_test_or_plumbing_covered_plus_runtime_orphaned,
+            CASE WHEN (plumbing_witness_count + test_witness_count + live_runtime_witness_count) > 0
+                  AND (plumbing_witness_count > 0 OR test_witness_count > 0)
+                  AND live_runtime_witness_count = 0
+                 THEN 1 ELSE 0 END AS runtime_orphaned
+        FROM tier_counts
+        ORDER BY family_name, relation_type
+    """)
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_cc_witness_rt_orphaned"
+        " ON mv_cross_cutting_witness_tiers(runtime_orphaned, family_name)"
+    )
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_cc_witness_snapshot ON mv_cross_cutting_witness_tiers(snapshot_id)"
+    )
+
+    # -------------------------------------------------------------------------
+    # Family 14 — Class B breach surfaces (absence/forbidden-path semantics)
+    # -------------------------------------------------------------------------
+
+    # mv_local_heal_first_breaches
+    # Identifies heal-domain production modules that have escalation edges
+    # (escalates_failure, escalates_to_human) but NO local-heal-first relations
+    # (dispatches_healing_run, confirms_heal, aborts_heal) in the same source file.
+    # Zero rows = no breach (PASSED). Any rows = forbidden path detected.
+    cur.execute("DROP TABLE IF EXISTS mv_local_heal_first_breaches")
+    cur.execute(f"""
+        CREATE TABLE mv_local_heal_first_breaches AS
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            e.source_file,
+            e.relation_type         AS escalation_relation,
+            COUNT(DISTINCT e.id)    AS breach_edge_count,
+            CASE WHEN EXISTS (
+                SELECT 1 FROM edges e2
+                WHERE e2.source_file = e.source_file
+                  AND e2.relation_type IN (
+                      'dispatches_healing_run', 'confirms_heal', 'aborts_heal'
+                  )
+            ) THEN 0 ELSE 1 END    AS missing_heal_first_in_file
+        FROM edges e
+        WHERE e.relation_type IN ('escalates_failure', 'escalates_to_human')
+          AND e.source_file NOT LIKE 'tests/%'
+          AND e.source_file NOT IN (
+              'agentic_core/adg/extraction/graph_persister.py',
+              'agentic_core/runtime/contracts/lifecycle_trace_contract.py'
+          )
+          AND (
+              e.source_file LIKE '%heal%'
+              OR e.source_file LIKE '%retry%'
+              OR e.source_file LIKE '%recovery%'
+          )
+        GROUP BY e.source_file, e.relation_type
+        HAVING missing_heal_first_in_file = 1
+        ORDER BY breach_edge_count DESC
+    """)
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_local_heal_breach"
+        " ON mv_local_heal_first_breaches(source_file, escalation_relation)"
+    )
+
+    # mv_observability_interference_breaches
+    # Identifies production source files that have BOTH observability relations
+    # (observes_*, snapshots_state, intercepts_io, transcripts_response,
+    #  hard_fails_untranscripted) AND mutation/write relations
+    # (commits_mutation, performs_durable_commit, applies_hmac_seal, bypasses_uwg,
+    #  routes_through_uwg).
+    # Any such file is a forbidden-path breach: observability code with side-effects.
+    # Zero rows = no breach (PASSED).
+    cur.execute("DROP TABLE IF EXISTS mv_observability_interference_breaches")
+    cur.execute(f"""
+        CREATE TABLE mv_observability_interference_breaches AS
+        SELECT
+            {_snapshot_id_expr()}        AS snapshot_id,
+            obs_e.source_file,
+            COUNT(DISTINCT obs_e.id)     AS observability_edge_count,
+            COUNT(DISTINCT mut_e.id)     AS mutation_edge_count
+        FROM edges obs_e
+        JOIN edges mut_e ON mut_e.source_file = obs_e.source_file
+        WHERE obs_e.relation_type IN (
+            'observes_policy_state', 'observes_runtime_state', 'snapshots_state',
+            'intercepts_io', 'transcripts_response', 'hard_fails_untranscripted'
+        )
+          AND mut_e.relation_type IN (
+            'commits_mutation', 'performs_durable_commit', 'applies_hmac_seal',
+            'bypasses_uwg', 'routes_through_uwg'
+          )
+          AND obs_e.source_file NOT LIKE 'tests/%'
+          AND obs_e.source_file NOT IN (
+              'agentic_core/adg/extraction/graph_persister.py',
+              'agentic_core/runtime/contracts/lifecycle_trace_contract.py'
+          )
+        GROUP BY obs_e.source_file
+        HAVING observability_edge_count > 0 AND mutation_edge_count > 0
+        ORDER BY mutation_edge_count DESC
+    """)
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_obs_interference"
+        " ON mv_observability_interference_breaches(source_file)"
     )
 
     conn.commit()

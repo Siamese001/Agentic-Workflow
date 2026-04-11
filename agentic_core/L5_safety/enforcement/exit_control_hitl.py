@@ -37,11 +37,15 @@ from typing import Any, Optional
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
+    _emit_chooses_exit_disposition,
     _emit_escalates_to_human,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
+    _emit_materializes_hitl_packet,
     _emit_reads_policy_state,
+    _emit_reclears_human_decision,
     _emit_records_execution_trace,
+    _emit_seals_result,
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_transcripts_response,
@@ -213,6 +217,8 @@ class ExitControlHITL:
         mat_trace = hashlib.sha256(f"{packet_id}:{trace_id}".encode()).hexdigest()[:16]
 
         _emit_snapshots_state(trace_id, "ExitControlHITL.freeze_and_materialize", "h1_freeze")
+        _emit_seals_result(trace_id, "ExitControlHITL", "freeze_and_materialize")
+        _emit_materializes_hitl_packet(trace_id, "ExitControlHITL", "h2_packet")
         _emit_applies_guardrail(
             trace_id, "ExitControlHITL.freeze_and_materialize", "h1_h2_freeze_materialize"
         )
@@ -335,6 +341,8 @@ class ExitControlHITL:
         has_commit = packet.sealed_artifact_summary.get("has_commit_payload", False)
         outcome = ReClearOutcome.CLEARED_COMMIT if has_commit else ReClearOutcome.CLEARED_ALLOW
 
+        _emit_chooses_exit_disposition(trace_id, "ExitControlHITL", outcome.value)
+        _emit_reclears_human_decision(trace_id, "ExitControlHITL", human_input.reviewer_id)
         _emit_transcripts_response(trace_id, "ExitControlHITL", outcome.value)
         logger.info(
             "[ExitControlHITL] H5 re-clearance passed: packet_id=%s outcome=%s reviewer=%s",

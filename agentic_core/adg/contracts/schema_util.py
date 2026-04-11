@@ -25,8 +25,9 @@ from typing import Literal
 
 # Local stub to avoid L_TOOLS->L_RUNTIME dependency while maintaining ADG instrumentation
 def _emit_reads_through(source: str, target: str, context: str) -> None:
-    """Stub for reads_through ADG edge emission.\n    \n    Avoids importing from L_RUNTIME (layer violation).\n    The actual emission is handled by static analysis.\n    """
+    """Stub for reads_through ADG edge emission.\n    \n    Avoids importing from L_RUNTIME (layer violation).\n    The actual emission is handled by static analysis.\n"""
     pass
+
 
 # Configuration constants required by tests
 
@@ -2919,6 +2920,13 @@ HANDOFF_PROMOTE_SYMBOLS: frozenset[str] = frozenset(
         "queue_future_run",
         "schedule_future_promotion",
         "_emit_promotes_future_run_change",
+    },
+)
+HANDOFF_GATES_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "gate_promotion",
+        "check_promotion_gate",
+        "_emit_gates_promotion",
     },
 )
 

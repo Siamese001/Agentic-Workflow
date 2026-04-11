@@ -193,7 +193,47 @@ _emit_gated_by_confidence("p1", "scan_cache", "confidence_gate")
 
 logger = logging.getLogger(__name__)
 
-CACHE_VERSION = "2"
+CACHE_VERSION = "3"
+
+# Files whose content changes should invalidate the entire scan cache.
+# Visitor implementations, the symbol-set registry, and the scanner itself
+# all affect what edges are extracted from every file in the repo.
+_EXTRACTION_LAYER_FILES: tuple[str, ...] = (
+    "agentic_core/adg/extraction/static_scanner.py",
+    "agentic_core/adg/extraction/scan_cache.py",
+    "agentic_core/adg/contracts/schema_util.py",
+    "agentic_core/adg/extraction/visitors/__init__.py",
+    "agentic_core/adg/extraction/visitors/orchestration.py",
+    "agentic_core/adg/extraction/visitors/core.py",
+    "agentic_core/adg/extraction/visitors/structural.py",
+    "agentic_core/adg/extraction/visitors/dynamic.py",
+    "agentic_core/adg/extraction/visitors/governance.py",
+    "agentic_core/adg/extraction/visitors/misc.py",
+    "agentic_core/adg/extraction/visitors/lifecycle_advanced.py",
+    "agentic_core/adg/extraction/visitors/runtime_semantic.py",
+    "agentic_core/adg/extraction/visitors/context_control.py",
+    "agentic_core/adg/extraction/visitors/transport_proof.py",
+    "agentic_core/adg/extraction/visitors/p4_waves.py",
+    "agentic_core/adg/extraction/visitors/l4_waves.py",
+    "agentic_core/adg/extraction/visitors/learning.py",
+)
+
+
+def compute_extraction_fingerprint(repo_root: Path) -> str:
+    """Return a SHA-256 digest over all extraction-layer source files.
+
+    Any change to a visitor, symbol-set, or the scanner itself bumps this
+    digest, causing ScanCache.load() to discard the on-disk cache and force
+    a full re-scan on the next ADG run.
+    """
+    h = hashlib.sha256()
+    for rel in sorted(_EXTRACTION_LAYER_FILES):
+        p = repo_root / rel
+        try:
+            h.update(p.read_bytes())
+        except OSError:
+            h.update(rel.encode())  # file absent — include path so digest still changes
+    return h.hexdigest()
 
 
 @dataclass
@@ -224,7 +264,7 @@ class ScanCache:
     # ------------------------------------------------------------------
 
     @classmethod
-    def load(cls, cache_path: Path) -> ScanCache:
+    def load(cls, cache_path: Path, extraction_fingerprint: str = "") -> ScanCache:
         """Load cache from disk.  Returns empty cache on any error."""
         import uuid as _uuid  # noqa: PLC0415
 
@@ -238,6 +278,12 @@ class ScanCache:
             raw = _orjson.loads(_raw_bytes) if _ORJSON_AVAILABLE else json.loads(_raw_bytes.decode("utf-8"))
             if raw.get("version") != CACHE_VERSION:
                 logger.debug("ScanCache version mismatch — discarding stale cache")
+                return cls()
+            if extraction_fingerprint and raw.get("extraction_fingerprint") != extraction_fingerprint:
+                logger.debug(
+                    "ScanCache extraction_fingerprint mismatch — discarding stale cache "
+                    "(visitor/schema change detected)"
+                )
                 return cls()
             entries: dict[str, _CacheEntry] = {}
             for rel, entry in raw.get("entries", {}).items():
@@ -253,10 +299,11 @@ class ScanCache:
             logger.debug("ScanCache load error (%s) — starting fresh", exc)
             return cls()
 
-    def save(self, cache_path: Path) -> None:
+    def save(self, cache_path: Path, extraction_fingerprint: str = "") -> None:
         """Persist cache to disk atomically (write-then-rename)."""
         payload = {
             "version": CACHE_VERSION,
+            "extraction_fingerprint": extraction_fingerprint,
             "entries": {
                 rel: {
                     "file_hash": e.file_hash,
@@ -279,7 +326,9 @@ class ScanCache:
             logger.warning("ScanCache save failed: %s", exc)
 
     def get(
-        self, rel_path: str, file_hash: str,
+        self,
+        rel_path: str,
+        file_hash: str,
     ) -> tuple[list[dict] | None, dict[str, str], dict[str, int], bool]:
         """Check cache for a file.
 
@@ -361,4 +410,5 @@ __all__ = [
     "ScanCache",
     "file_hash",
     "CACHE_VERSION",
+    "compute_extraction_fingerprint",
 ]
