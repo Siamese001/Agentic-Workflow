@@ -5,6 +5,7 @@ Provides comprehensive HTTP capabilities for Windsurf with enterprise features
 """
 
 import asyncio
+import ipaddress
 import json
 import logging
 import sys
@@ -13,6 +14,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 import anyio
+from tqdm import tqdm
 
 # HTTP libraries
 try:
@@ -47,13 +49,17 @@ logger = logging.getLogger(__name__)
 # Configuration
 DEFAULT_TIMEOUT = 30
 MAX_TIMEOUT = 300
-MAX_RETRIES = 3
 MAX_RESPONSE_SIZE = 1000000  # 1MB
+MAX_REDIRECTS = 5
 ALLOWED_SCHEMES = {"http", "https"}
-BLOCKED_DOMAINS = {
-    "localhost", "127.0.0.1", "0.0.0.0", "::1",
-    "internal", "intranet", "corp", "private",
+BLOCKED_HOSTNAMES = {
+    "localhost",
+    "internal",
+    "intranet",
+    "corp",
+    "private",
 }
+
 
 class EnhancedHTTPMCPServer:
     def __init__(self):
@@ -330,11 +336,15 @@ class EnhancedHTTPMCPServer:
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "method": {"type": "string", "enum": ["GET", "POST", "PUT", "DELETE", "HEAD"]},
+                                            "method": {
+                                                "type": "string",
+                                                "enum": ["GET", "POST", "PUT", "DELETE", "HEAD"],
+                                            },
                                             "url": {"type": "string"},
                                             "headers": {"type": "object"},
                                             "data": {},
                                             "timeout": {"type": "integer", "maximum": 300},
+                                            "verify_ssl": {"type": "boolean", "default": True},
                                         },
                                         "required": ["method", "url"],
                                     },
@@ -380,7 +390,7 @@ class EnhancedHTTPMCPServer:
                 )
 
     def _validate_url(self, url: str) -> bool:
-        """Validate URL for safety"""
+        """Validate URL for safety - blocks private IPs, metadata endpoints, and unsafe hostnames"""
         try:
             parsed = urlparse(url)
 
@@ -388,13 +398,36 @@ class EnhancedHTTPMCPServer:
             if parsed.scheme not in ALLOWED_SCHEMES:
                 return False
 
-            # Check for blocked domains
-            domain = parsed.hostname.lower() if parsed.hostname else ""
-            if any(blocked in domain for blocked in BLOCKED_DOMAINS):
+            hostname = parsed.hostname
+            if not hostname:
                 return False
 
+            # Check for blocked hostnames (exact match only)
+            if hostname.lower() in BLOCKED_HOSTNAMES:
+                return False
+
+            # Check IP addresses for private ranges
+            try:
+                ip = ipaddress.ip_address(hostname)
+
+                # Block IPv4 private ranges
+                if ip.version == 4:
+                    if ip.is_private or ip.is_loopback or ip.is_link_local:
+                        return False
+                    # Block cloud metadata endpoint
+                    if ip == ipaddress.IPv4Address("169.254.169.254"):
+                        return False
+
+                # Block IPv6 loopback and link-local
+                if ip.version == 6:
+                    if ip.is_loopback or ip.is_link_local:
+                        return False
+            except ValueError:
+                # Not an IP address, hostname already checked above
+                pass
+
             return True
-        except Exception:
+        except (ValueError, AttributeError):
             return False
 
     def _prepare_auth(self, auth_config: dict[str, Any]) -> tuple | None:
@@ -433,6 +466,43 @@ class EnhancedHTTPMCPServer:
 
         return prepared_headers
 
+    def _redact_headers(self, headers: dict[str, str]) -> dict[str, str]:
+        """Redact sensitive headers from response logging"""
+        sensitive_headers = {
+            "set-cookie",
+            "authorization",
+            "proxy-authorization",
+            "www-authenticate",
+        }
+        redacted = {}
+        for key, value in headers.items():
+            if key.lower() in sensitive_headers:
+                redacted[key] = "[REDACTED]"
+            else:
+                redacted[key] = value
+        return redacted
+
+    async def _read_response_bounded(self, response) -> str:
+        """Read response body with size limit to prevent memory exhaustion"""
+        content = []
+        total_read = 0
+        chunk_size = 65536  # 64KB chunks
+
+        async for chunk in response.content.iter_chunked(chunk_size):
+            total_read += len(chunk)
+            if total_read > MAX_RESPONSE_SIZE:
+                # Truncate to exactly MAX_RESPONSE_SIZE
+                excess = total_read - MAX_RESPONSE_SIZE
+                content.append(chunk[: len(chunk) - excess].decode("utf-8", errors="replace"))
+                break
+            content.append(chunk.decode("utf-8", errors="replace"))
+
+        result = "".join(content)
+        if total_read > MAX_RESPONSE_SIZE:
+            result = result[:MAX_RESPONSE_SIZE] + "\n... (content truncated)"
+
+        return result
+
     async def _http_get(self, args: dict[str, Any]) -> CallToolResult:
         """Perform HTTP GET request"""
         url = args["url"]
@@ -460,22 +530,20 @@ class EnhancedHTTPMCPServer:
                     timeout=aiohttp.ClientTimeout(total=timeout),
                     ssl=verify_ssl,
                     allow_redirects=follow_redirects,
+                    max_redirects=MAX_REDIRECTS if follow_redirects else 0,
                 ) as response:
-                    content = await response.text()
+                    content = await self._read_response_bounded(response)
                     response_time = time.time() - start_time
-
-                    # Truncate content if too large
-                    if len(content) > MAX_RESPONSE_SIZE:
-                        content = content[:MAX_RESPONSE_SIZE] + "\n... (content truncated)"
 
                     result = f"GET {url}\n"
                     result += f"Status: {response.status}\n"
                     result += f"Response time: {response_time:.2f}s\n"
                     result += f"Content length: {len(content)} bytes\n\n"
 
-                    # Add headers
+                    # Add headers with redaction
                     result += "Response headers:\n"
-                    for key, value in response.headers.items():
+                    redacted_headers = self._redact_headers(dict(response.headers))
+                    for key, value in redacted_headers.items():
                         result += f"{key}: {value}\n"
                     result += "\n"
 
@@ -492,7 +560,7 @@ class EnhancedHTTPMCPServer:
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
                 isError=True,
             )
-        except Exception as e:
+        except (aiohttp.ClientError, ValueError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP GET error: {str(e)}")],
                 isError=True,
@@ -536,11 +604,8 @@ class EnhancedHTTPMCPServer:
                     timeout=aiohttp.ClientTimeout(total=timeout),
                     ssl=verify_ssl,
                 ) as response:
-                    content = await response.text()
+                    content = await self._read_response_bounded(response)
                     response_time = time.time() - start_time
-
-                    if len(content) > MAX_RESPONSE_SIZE:
-                        content = content[:MAX_RESPONSE_SIZE] + "\n... (content truncated)"
 
                     result = f"POST {url}\n"
                     result += f"Status: {response.status}\n"
@@ -551,7 +616,8 @@ class EnhancedHTTPMCPServer:
                         result += f"Request body: {str(request_data)[:500]}\n\n"
 
                     result += "Response headers:\n"
-                    for key, value in response.headers.items():
+                    redacted_headers = self._redact_headers(dict(response.headers))
+                    for key, value in redacted_headers.items():
                         result += f"{key}: {value}\n"
                     result += "\n"
 
@@ -567,7 +633,7 @@ class EnhancedHTTPMCPServer:
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
                 isError=True,
             )
-        except Exception as e:
+        except (aiohttp.ClientError, ValueError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP POST error: {str(e)}")],
                 isError=True,
@@ -610,15 +676,12 @@ class EnhancedHTTPMCPServer:
                     timeout=aiohttp.ClientTimeout(total=timeout),
                     ssl=verify_ssl,
                 ) as response:
-                    content = await response.text()
+                    content = await self._read_response_bounded(response)
                     response_time = time.time() - start_time
-
-                    if len(content) > MAX_RESPONSE_SIZE:
-                        content = content[:MAX_RESPONSE_SIZE] + "\n... (content truncated)"
 
                     result = f"PUT {url}\n"
                     result += f"Status: {response.status}\n"
-                    result += f"Response time: {response_time:.2f}s\n\n"
+                    result += f"Response time: {response_time:.2f}s\n"
 
                     if content:
                         result += f"Response body:\n{content}"
@@ -632,7 +695,7 @@ class EnhancedHTTPMCPServer:
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
                 isError=True,
             )
-        except Exception as e:
+        except (aiohttp.ClientError, ValueError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP PUT error: {str(e)}")],
                 isError=True,
@@ -662,12 +725,12 @@ class EnhancedHTTPMCPServer:
                     timeout=aiohttp.ClientTimeout(total=timeout),
                     ssl=verify_ssl,
                 ) as response:
-                    content = await response.text()
+                    content = await self._read_response_bounded(response)
                     response_time = time.time() - start_time
 
                     result = f"DELETE {url}\n"
                     result += f"Status: {response.status}\n"
-                    result += f"Response time: {response_time:.2f}s\n\n"
+                    result += f"Response time: {response_time:.2f}s\n"
 
                     if content:
                         result += f"Response body:\n{content}"
@@ -681,7 +744,7 @@ class EnhancedHTTPMCPServer:
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
                 isError=True,
             )
-        except Exception as e:
+        except (aiohttp.ClientError, ValueError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP DELETE error: {str(e)}")],
                 isError=True,
@@ -718,7 +781,8 @@ class EnhancedHTTPMCPServer:
                     result += f"Response time: {response_time:.2f}s\n\n"
                     result += "Response headers:\n"
 
-                    for key, value in response.headers.items():
+                    redacted_headers = self._redact_headers(dict(response.headers))
+                    for key, value in redacted_headers.items():
                         result += f"{key}: {value}\n"
 
                     return CallToolResult(
@@ -730,7 +794,7 @@ class EnhancedHTTPMCPServer:
                 content=[TextContent(type="text", text=f"Request timed out after {timeout}s")],
                 isError=True,
             )
-        except Exception as e:
+        except (aiohttp.ClientError, ValueError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"HTTP HEAD error: {str(e)}")],
                 isError=True,
@@ -754,6 +818,7 @@ class EnhancedHTTPMCPServer:
                 async with session.head(
                     url,
                     timeout=aiohttp.ClientTimeout(total=timeout),
+                    ssl=True,
                 ) as response:
                     response_time = time.time() - start_time
 
@@ -773,18 +838,22 @@ class EnhancedHTTPMCPServer:
 
         except asyncio.TimeoutError:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"❌ Connection test timed out after {timeout}s",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"❌ Connection test timed out after {timeout}s",
+                    )
+                ],
                 isError=True,
             )
-        except Exception as e:
+        except (aiohttp.ClientError, ValueError) as e:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"❌ Connection test failed: {str(e)}",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"❌ Connection test failed: {str(e)}",
+                    )
+                ],
                 isError=True,
             )
 
@@ -795,10 +864,12 @@ class EnhancedHTTPMCPServer:
 
         if len(requests) > 20:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text="Too many requests (max 20)",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text="Too many requests (max 20)",
+                    )
+                ],
                 isError=True,
             )
 
@@ -815,6 +886,7 @@ class EnhancedHTTPMCPServer:
 
             headers = self._prepare_headers(req.get("headers", {}), req.get("auth", {}))
             timeout = min(req.get("timeout", DEFAULT_TIMEOUT), MAX_TIMEOUT)
+            verify_ssl = req.get("verify_ssl", True)
 
             try:
                 async with aiohttp.ClientSession() as session:
@@ -823,18 +895,19 @@ class EnhancedHTTPMCPServer:
                         headers=headers,
                         data=req.get("data"),
                         timeout=aiohttp.ClientTimeout(total=timeout),
+                        ssl=verify_ssl,
                     ) as response:
-                        content = await response.text()
+                        content = await self._read_response_bounded(response)
+                        redacted = self._redact_headers(dict(response.headers))
 
                         return {
                             "method": method,
                             "url": url,
                             "status": response.status,
-                            "response_time": 0,  # Would need timing implementation
                             "content_length": len(content),
-                            "headers": dict(response.headers),
+                            "headers": redacted,
                         }
-            except Exception as e:
+            except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
                 return {
                     "method": method,
                     "url": url,
@@ -850,17 +923,22 @@ class EnhancedHTTPMCPServer:
                     return await execute_request(req)
 
             tasks = [bounded_execute(req) for req in requests]
-            results = await asyncio.gather(*tasks)
+            results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Format results
             result_text = f"Batch HTTP requests ({len(requests)} total, {max_concurrent} concurrent)\n\n"
 
-            for i, res in enumerate(results, 1):
-                result_text += f"Request {i}: {res['method']} {res['url']}\n"
-
-                if "error" in res:
+            for i, res in tqdm(
+                enumerate(results, 1), total=len(results), desc="Formatting results", unit="req", leave=False
+            ):
+                if isinstance(res, BaseException):
+                    result_text += f"Request {i}: ERROR\n"
+                    result_text += f"  ❌ Error: {str(res)}\n"
+                elif "error" in res:
+                    result_text += f"Request {i}: {res['method']} {res['url']}\n"
                     result_text += f"  ❌ Error: {res['error']}\n"
                 else:
+                    result_text += f"Request {i}: {res['method']} {res['url']}\n"
                     result_text += f"  ✅ Status: {res['status']}\n"
                     result_text += f"  📏 Content: {res['content_length']} bytes\n"
 
@@ -870,11 +948,12 @@ class EnhancedHTTPMCPServer:
                 content=[TextContent(type="text", text=result_text)],
             )
 
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Batch request error: {str(e)}")],
                 isError=True,
             )
+
 
 async def main():
     """Main entry point"""
@@ -898,6 +977,7 @@ async def main():
                 ),
             ),
         )
+
 
 if __name__ == "__main__":
     try:
