@@ -10,6 +10,7 @@ import logging
 import time
 import math
 import random
+from tqdm import tqdm
 from typing import Any, Dict, List, Optional, Tuple, Set
 from dataclasses import dataclass, field
 from enum import Enum
@@ -247,9 +248,9 @@ class SwarmIntelligenceEngine:
         fitness_history = []
 
         # Run optimization iterations
-        for iteration in range(self.swarm_config["max_iterations"]):
+        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="swarm optim", unit="iter", leave=False):
             # Update agent positions
-            for agent in swarm_state.agents.values():
+            for agent in tqdm(swarm_state.agents.values(), desc="  agents", unit="agent", leave=False):
                 # PSO update equations
                 r1, r2 = random.random(), random.random()
 
@@ -323,7 +324,7 @@ class SwarmIntelligenceEngine:
         swarm_id = f"sim_swarm_{int(time.time())}"
         swarm_state = self._initialize_swarm(swarm_id, context, SwarmBehavior.ADAPTIVE_RESPONSE)
 
-        for step in range(simulation_steps):
+        for step in tqdm(range(simulation_steps), desc="swarm sim", unit="step", leave=False):
             # Update swarm state
             self._update_swarm_step(swarm_state, context, step)
 
@@ -360,7 +361,7 @@ class SwarmIntelligenceEngine:
 
         dimensions = max(len(context.target_modules), 5)  # At least 5 dimensions
 
-        for i in range(swarm_size):
+        for i in tqdm(range(swarm_size), desc="init swarm", unit="agent", leave=False):
             # Assign role based on distribution
             rand_val = random.random()
             cumulative = 0.0
@@ -411,7 +412,7 @@ class SwarmIntelligenceEngine:
         """Initialize swarm for optimization."""
         agents = {}
 
-        for i in range(self.swarm_config["swarm_size"]):
+        for i in tqdm(range(self.swarm_config["swarm_size"]), desc="init PSO agents", unit="agent", leave=False):
             position = np.random.uniform(-1, 1, dimensions)
             velocity = np.random.uniform(-0.1, 0.1, dimensions)
 
@@ -449,12 +450,12 @@ class SwarmIntelligenceEngine:
         self, swarm_state: SwarmState, context: ArchitecturalContext
     ) -> SwarmState:
         """Run Particle Swarm Optimization algorithm."""
-        for iteration in range(self.swarm_config["max_iterations"]):
+        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="PSO iters", unit="iter", leave=False):
             # Update neighbors
             self._update_neighbors(swarm_state)
 
             # Update each agent
-            for agent in swarm_state.agents.values():
+            for agent in tqdm(swarm_state.agents.values(), desc="  PSO agents", unit="agent", leave=False):
                 # PSO update
                 r1, r2 = random.random(), random.random()
 
@@ -495,8 +496,8 @@ class SwarmIntelligenceEngine:
         # Simplified ACO for architectural optimization
         pheromone_trails = np.ones((len(context.target_modules), len(context.target_modules))) * 0.1
 
-        for iteration in range(self.swarm_config["max_iterations"]):
-            for agent in swarm_state.agents.values():
+        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="ACO iters", unit="iter", leave=False):
+            for agent in tqdm(swarm_state.agents.values(), desc="  ACO agents", unit="agent", leave=False):
                 if agent.role == SwarmRole.EXPLORER:
                     # Ant explores solution space
                     solution = self._construct_solution(pheromone_trails, context)
@@ -520,9 +521,9 @@ class SwarmIntelligenceEngine:
     def _bee_algorithm(self, swarm_state: SwarmState, context: ArchitecturalContext) -> SwarmState:
         """Run Bee Algorithm for task allocation."""
         # Simplified bee algorithm
-        for iteration in range(self.swarm_config["max_iterations"]):
+        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="bee iters", unit="iter", leave=False):
             # Employed bee phase
-            for agent in swarm_state.agents.values():
+            for agent in tqdm(swarm_state.agents.values(), desc="  bee agents", unit="agent", leave=False):
                 if agent.role == SwarmRole.EXPLOITER:
                     # Exploit current solution
                     new_solution = agent.position + np.random.uniform(-0.1, 0.1, len(agent.position))
@@ -539,7 +540,7 @@ class SwarmIntelligenceEngine:
                 : len(swarm_state.agents) // 2
             ]
 
-            for agent in best_agents:
+            for agent in tqdm(best_agents, desc="  onlookers", unit="agent", leave=False):
                 # Recruit onlookers to best solutions
                 for other_agent in swarm_state.agents.values():
                     if other_agent.role == SwarmRole.SCOUT:
@@ -562,7 +563,7 @@ class SwarmIntelligenceEngine:
 
     def _consensus_algorithm(self, swarm_state: SwarmState, context: ArchitecturalContext) -> SwarmState:
         """Run consensus algorithm for collective decision."""
-        for iteration in range(self.swarm_config["max_iterations"]):
+        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="consensus iters", unit="iter", leave=False):
             # Agents share information and move toward consensus
             consensus_position = np.zeros_like(swarm_state.global_best)
 
@@ -592,7 +593,7 @@ class SwarmIntelligenceEngine:
 
     def _adaptive_swarm_algorithm(self, swarm_state: SwarmState, context: ArchitecturalContext) -> SwarmState:
         """Run adaptive swarm algorithm."""
-        for iteration in range(self.swarm_config["max_iterations"]):
+        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="adaptive iters", unit="iter", leave=False):
             # Adaptive behavior based on swarm state
             if swarm_state.swarm_diversity > 0.5:
                 # High diversity - explore more
@@ -601,7 +602,7 @@ class SwarmIntelligenceEngine:
                 # Low diversity - exploit more
                 exploration_rate = 0.2
 
-            for agent in swarm_state.agents.values():
+            for agent in tqdm(swarm_state.agents.values(), desc="  adaptive agents", unit="agent", leave=False):
                 # Adaptive movement
                 if random.random() < exploration_rate:
                     # Explore
@@ -726,7 +727,7 @@ class SwarmIntelligenceEngine:
         # Weight agents by fitness and role
         agent_weights = {}
 
-        for agent in swarm_state.agents.values():
+        for agent in tqdm(swarm_state.agents.values(), desc="collective decision", unit="agent", leave=False):
             weight = agent.fitness
 
             # Role-based weighting
@@ -892,7 +893,7 @@ class SwarmIntelligenceEngine:
     def _update_swarm_step(self, swarm_state: SwarmState, context: ArchitecturalContext, step: int) -> None:
         """Update swarm for one simulation step."""
         # Simple update for simulation
-        for agent in swarm_state.agents.values():
+        for agent in tqdm(swarm_state.agents.values(), desc="sim step", unit="agent", leave=False):
             # Random walk with drift
             agent.velocity = 0.9 * agent.velocity + np.random.uniform(-0.05, 0.05, len(agent.position))
             agent.position = agent.position + agent.velocity
