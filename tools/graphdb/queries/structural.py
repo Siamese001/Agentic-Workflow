@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
+from tqdm import tqdm
 
 
 class StructuralQueries:
@@ -41,7 +42,7 @@ class StructuralQueries:
             "L6": 6,
         }
 
-        for u, v, attrs in self.graph.edges(data=True):
+        for u, v, attrs in tqdm(self.graph.edges(data=True), desc="import edges", unit="edge", leave=False):
             if attrs.get("graph_type") == "IMPORTS":
                 u_attrs = self.graph.nodes[u]
                 v_attrs = self.graph.nodes[v]
@@ -90,7 +91,7 @@ class StructuralQueries:
             ("L4", "L0"): "State should not depend on routing",
         }
 
-        for u, v, attrs in self.graph.edges(data=True):
+        for u, v, attrs in tqdm(self.graph.edges(data=True), desc="layer edges", unit="edge", leave=False):
             u_attrs = self.graph.nodes[u]
             v_attrs = self.graph.nodes[v]
 
@@ -144,7 +145,7 @@ class StructuralQueries:
             "analysis": {},
         }
 
-        for module in l2_modules:
+        for module in tqdm(l2_modules, desc="L2 modules", unit="module", leave=False):
             module_attrs = self.graph.nodes[module]
             module_name = module_attrs.get("name", "")
 
@@ -206,7 +207,7 @@ class StructuralQueries:
             if attrs.get("graph_type") in ["WRITES_TO", "WRITES_THROUGH"]
         ]
 
-        for u, v, attrs in write_edges:
+        for u, v, attrs in tqdm(write_edges, desc="write edges", unit="edge", leave=False):
             # Check if write goes through UWG
             goes_through_uwg = False
 
@@ -254,7 +255,7 @@ class StructuralQueries:
 
         results["capabilities"]["total"] = len(capabilities)
 
-        for capability in capabilities:
+        for capability in tqdm(capabilities, desc="capabilities", unit="cap", leave=False):
             # Check if capability is properly gated
             incoming_edges = list(self.graph.in_edges(capability, data=True))
             has_gate = any(
@@ -277,7 +278,7 @@ class StructuralQueries:
 
         results["tools"]["total"] = len(tools)
 
-        for tool in tools:
+        for tool in tqdm(tools, desc="tools", unit="tool", leave=False):
             incoming_edges = list(self.graph.in_edges(tool, data=True))
             has_gate = any(
                 attrs.get("graph_type") in ["GATED_BY_CONFIDENCE", "APPLIES_GUARDRAIL"]
@@ -300,7 +301,7 @@ class StructuralQueries:
 
         results["providers"]["total"] = len(providers)
 
-        for provider in providers:
+        for provider in tqdm(providers, desc="providers", unit="provider", leave=False):
             incoming_edges = list(self.graph.in_edges(provider, data=True))
             has_gate = any(
                 attrs.get("graph_type") in ["GATED_BY_CONFIDENCE", "APPLIES_GUARDRAIL"]
@@ -342,7 +343,7 @@ class StructuralQueries:
             "layer_analysis": {},
         }
 
-        for component, expected_layers in expected_spine.items():
+        for component, expected_layers in tqdm(expected_spine.items(), desc="spine check", unit="component", leave=False):
             found_nodes = []
 
             for layer in expected_layers:
@@ -384,14 +385,14 @@ class StructuralQueries:
             "L6": ["infrastructure", "storage", "network", "system"],
         }
 
-        for layer in ["L0", "L1", "L6"]:
+        for layer in tqdm(["L0", "L1", "L6"], desc="grounding layers", unit="layer", leave=False):
             layer_nodes = [
                 node
                 for node, attrs in self.graph.nodes(data=True)
                 if attrs.get("properties", {}).get("layer") == layer
             ]
 
-            for node in layer_nodes:
+            for node in tqdm(layer_nodes, desc="  nodes", unit="node", leave=False):
                 node_attrs = self.graph.nodes[node]
                 node_name = node_attrs.get("name", "").lower()
 
@@ -446,8 +447,8 @@ class StructuralQueries:
         ]
 
         # Check for improper dependencies
-        for contract in grounding_contracts:
-            for prompt_comp in prompt_assembly:
+        for contract in tqdm(grounding_contracts, desc="contracts", unit="contract", leave=False):
+            for prompt_comp in tqdm(prompt_assembly, desc="  prompt comps", unit="comp", leave=False):
                 if self.graph.has_edge(contract, prompt_comp):
                     attrs = self.graph.edges[contract, prompt_comp]
                     violations.append(
