@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 import networkx as nx
+from tqdm import tqdm
 
 from ..snapshot import SnapshotManager
 
@@ -40,7 +41,7 @@ class HistoricalQueries:
         new_violations = []
 
         # Find all violation edges in the new graph
-        for u, v, attrs in to_graph.edges(data=True):
+        for u, v, attrs in tqdm(to_graph.edges(data=True), desc="violation edges", unit="edge", leave=False):
             if attrs.get("graph_type") == "VIOLATES":
                 # Check if this violation existed in the old graph
                 if not from_graph.has_edge(u, v):
@@ -92,7 +93,7 @@ class HistoricalQueries:
         new_direct_writes = []
 
         # Find all write edges in the new graph
-        for u, v, attrs in to_graph.edges(data=True):
+        for u, v, attrs in tqdm(to_graph.edges(data=True), desc="write edges", unit="edge", leave=False):
             if attrs.get("graph_type") in ["WRITES_TO", "WRITES_THROUGH"]:
                 # Check if this is a direct write (not through gateway)
                 v_attrs = to_graph.nodes[v]
@@ -132,7 +133,7 @@ class HistoricalQueries:
         orphaned_interfaces = []
 
         # Find all nodes that had dependents in the old graph
-        for node in from_graph.nodes():
+        for node in tqdm(from_graph.nodes(), desc="nodes", unit="node", leave=False):
             old_dependents = list(from_graph.predecessors(node))
             new_dependents = list(to_graph.predecessors(node)) if node in to_graph else []
 
@@ -183,7 +184,7 @@ class HistoricalQueries:
 
             phase_coverage = {phase: 0 for phase in expected_subphases}
 
-            for module in l2_modules:
+            for module in tqdm(l2_modules, desc="L2 modules", unit="module", leave=False):
                 module_attrs = graph.nodes[module]
                 module_name = module_attrs.get("name", "")
 
@@ -202,7 +203,7 @@ class HistoricalQueries:
         to_analysis = analyze_l2_coverage(to_graph)
 
         regressions = []
-        for phase in expected_subphases:
+        for phase in tqdm(expected_subphases, desc="phases", unit="phase", leave=False):
             from_count = from_analysis["phase_coverage"][phase]
             to_count = to_analysis["phase_coverage"][phase]
 
@@ -241,7 +242,7 @@ class HistoricalQueries:
         new_call_surfaces = []
 
         # Find tool/provider invocation edges in new graph
-        for u, v, attrs in to_graph.edges(data=True):
+        for u, v, attrs in tqdm(to_graph.edges(data=True), desc="tool/provider edges", unit="edge", leave=False):
             if attrs.get("graph_type") in ["INVOKES_PROVIDER", "INVOKES_TOOL"]:
                 v_attrs = to_graph.nodes[v]
 
@@ -278,7 +279,7 @@ class HistoricalQueries:
         new_cross_layer_deps = []
 
         # Find cross-layer edges in new graph
-        for u, v, attrs in to_graph.edges(data=True):
+        for u, v, attrs in tqdm(to_graph.edges(data=True), desc="cross-layer edges", unit="edge", leave=False):
             u_attrs = to_graph.nodes[u]
             v_attrs = to_graph.nodes[v]
 
