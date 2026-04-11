@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
+from tqdm import tqdm
 
 
 class BlastRadiusQueries:
@@ -106,12 +107,12 @@ class BlastRadiusQueries:
         illegal_paths = []
         legal_paths = []
 
-        for path in paths:
+        for path in tqdm(paths, desc="path analysis", unit="path", leave=False):
             path_edges = []
             is_illegal = False
             violations = []
 
-            for i in range(len(path) - 1):
+            for i in tqdm(range(len(path) - 1), desc="  edges", unit="edge", leave=False):
                 u, v = path[i], path[i + 1]
                 edge_attrs = self.graph.edges[u, v]
                 path_edges.append(
@@ -204,7 +205,7 @@ class BlastRadiusQueries:
             if self.graph.edges[u, v].get("graph_type") == "WRITES_THROUGH"
         ]
 
-        for source, target in writes_through:
+        for source, target in tqdm(writes_through, desc="gateway bypass", unit="edge", leave=False):
             # Find alternative paths from source to target that don't use the gateway
             try:
                 # Remove gateway temporarily and find paths
@@ -215,7 +216,7 @@ class BlastRadiusQueries:
                     try:
                         alt_paths = list(nx.all_simple_paths(temp_graph, source, target, cutoff=5))
 
-                        for alt_path in alt_paths:
+                        for alt_path in tqdm(alt_paths, desc="  alt paths", unit="path", leave=False):
                             path_edges = []
                             for i in range(len(alt_path) - 1):
                                 u, v = alt_path[i], alt_path[i + 1]
@@ -272,7 +273,7 @@ class BlastRadiusQueries:
 
         # Find broken dependencies
         broken_dependencies = []
-        for neighbor in self.graph.neighbors(removed_node):
+        for neighbor in tqdm(list(self.graph.neighbors(removed_node)), desc="broken deps", unit="node", leave=False):
             neighbor_attrs = self.graph.nodes[neighbor]
             edge_attrs = self.graph.edges[removed_node, neighbor]
 
@@ -339,7 +340,7 @@ class BlastRadiusQueries:
         }
 
         # Calculate fan-in and fan-out for each node
-        for node in self.graph.nodes():
+        for node in tqdm(self.graph.nodes(), desc="hub scan", unit="node", leave=False):
             in_degree = self.graph.in_degree(node) if self.graph.is_directed() else self.graph.degree(node)
             out_degree = self.graph.out_degree(node) if self.graph.is_directed() else 0
 
@@ -369,7 +370,7 @@ class BlastRadiusQueries:
         # Analyze policy context for top hubs
         top_hubs = hubs["bidirectional"][:5] + hubs["fan_in"][:5] + hubs["fan_out"][:5]
 
-        for hub in top_hubs:
+        for hub in tqdm(top_hubs, desc="hub policy", unit="hub", leave=False):
             node = hub["node"]
 
             # Check if hub is protected by policies
@@ -418,7 +419,7 @@ class BlastRadiusQueries:
         """
         affected_areas = []
 
-        for source, target in edge_additions:
+        for source, target in tqdm(edge_additions, desc="edge impact", unit="edge", leave=False):
             if source not in self.graph or target not in self.graph:
                 continue
 
