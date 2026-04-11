@@ -38,10 +38,10 @@
     },
     "filesystem": {
       "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or .windsurf\\plans\\ in args.",
-      "_startup": "Direct node invocation — no npx/registry fetch. Package: @modelcontextprotocol/server-filesystem@2026.1.14 globally installed at C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation/node_modules/@modelcontextprotocol/server-filesystem. To upgrade: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, update this path, restart Windsurf.",
-      "command": "C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation/node.exe",
+      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime — no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
+      "command": "node",
       "args": [
-        "C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
+        "C:/Git/Agentic-Workflow/.windsurf/scripts/filesystem_mcp_launcher.js",
         "C:/Git/Agentic-Workflow"
       ],
       "cwd": "C:/Git/Agentic-Workflow",

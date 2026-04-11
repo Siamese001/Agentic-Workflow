@@ -79,6 +79,8 @@ TASK_MANAGER_RECOVERY_TOOLS = {
     # Real tool names from @blizzy/mcp-task-manager — verified against MCP registry
     "task_info",  # lightweight read — used as health probe
     "create_task",  # first call in any T2/T3 session — must always be allowed
+    "update_task",  # lifecycle transitions (in_progress, done) — must not be blocked by probe failure
+    "decompose_task",  # T3 decomposition gate — must not be blocked by probe failure
 }
 
 VECTOR_DB_RECOVERY_TOOLS = {
@@ -117,17 +119,13 @@ FILESYSTEM_WRITE_TOOLS = {
     "move_file",  # mcp4_move_file  — rename/relocate; mutates filesystem
 }
 
-# Absolute paths to the node.exe and server script used in mcp_config.json.
-# These are validated by check_filesystem_startup_gate() on first use.
-_FS_NODE_EXE = Path(r"C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation/node.exe")
-_FS_SERVER_SCRIPT = Path(
-    r"C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation"
-    r"/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js"
-)
-_FS_ALLOWED_DIR = Path(r"C:/Git/Agentic-Workflow")
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
+
+# Launcher script path — validated by check_filesystem_startup_gate() on first use.
+# The launcher resolves node + npm global prefix dynamically; no version-pinned paths.
+_FS_LAUNCHER = REPO_ROOT / ".windsurf" / "scripts" / "filesystem_mcp_launcher.js"
+_FS_ALLOWED_DIR = Path(r"C:/Git/Agentic-Workflow")
 
 # ---------------------------------------------------------------------------
 # GitKraken MCP hardening constants
@@ -365,32 +363,51 @@ def _get_latest_snapshot_age_seconds(repo_root: Path) -> float | None:
 
 def check_filesystem_startup_gate() -> int:
     """
-    Verify the filesystem MCP can actually start: node.exe and the server
-    dist/index.js must both exist on disk.
+    Verify the filesystem MCP can actually start:
+      1. 'node' is resolvable in PATH (checked via subprocess).
+      2. The repo-local launcher script exists.
+      3. The allowed directory exists.
 
-    Cached per process — file-existence probes run once per gate process.
+    Cached per process — probes run once per gate process.
     Returns 0 (allow) or 2 (block with actionable message).
     """
     cache_key = "filesystem_startup_ok"
     if cache_key not in _PROBE_CACHE:
-        node_ok = _FS_NODE_EXE.exists()
-        script_ok = _FS_SERVER_SCRIPT.exists()
+        # Probe 1: node in PATH
+        node_ok = False
+        try:
+            result = subprocess.run(
+                ["node", "--version"],
+                capture_output=True,
+                timeout=5,
+                check=False,
+            )
+            node_ok = result.returncode == 0
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+            node_ok = False
+
+        # Probe 2: launcher script exists in repo
+        launcher_ok = _FS_LAUNCHER.exists()
+
+        # Probe 3: allowed directory exists
         allowed_ok = _FS_ALLOWED_DIR.exists()
-        _PROBE_CACHE[cache_key] = node_ok and script_ok and allowed_ok
+
+        _PROBE_CACHE[cache_key] = node_ok and launcher_ok and allowed_ok
+
         if not node_ok:
             print(
-                f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
-                f"node.exe not found at {_FS_NODE_EXE}. "
-                "Run 'fnm use 24' and verify npm prefix -g, then update "
-                "mcp_config.json 'command' path and restart Windsurf.",
+                "[pre_mcp_gate] Filesystem MCP startup check FAILED: "
+                "'node' not found in PATH. "
+                "Ensure Node.js is installed and fnm has activated the correct version. "
+                "Operator note: docs/guides/filesystem_mcp_operations.md",
                 file=sys.stderr,
             )
-        if not script_ok:
+        if not launcher_ok:
             print(
                 f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
-                f"server script not found at {_FS_SERVER_SCRIPT}. "
-                "Run 'npm install -g @modelcontextprotocol/server-filesystem@2026.1.14' "
-                "and update mcp_config.json args[0] path, then restart Windsurf.",
+                f"launcher not found at {_FS_LAUNCHER}. "
+                "Ensure the repo is intact (git status). "
+                "Operator note: docs/guides/filesystem_mcp_operations.md",
                 file=sys.stderr,
             )
         if not allowed_ok:
@@ -402,9 +419,9 @@ def check_filesystem_startup_gate() -> int:
 
     if not _PROBE_CACHE["filesystem_startup_ok"]:
         return _exit_block(
-            "Filesystem MCP cannot start — node.exe, server script, or allowed directory "
-            "missing. See stderr above for which path failed. Operator note: "
-            "docs/guides/filesystem_mcp_operations.md"
+            "Filesystem MCP cannot start — node, launcher, or allowed directory check failed. "
+            "See stderr above for which check failed. "
+            "Operator note: docs/guides/filesystem_mcp_operations.md"
         )
     return 0
 
