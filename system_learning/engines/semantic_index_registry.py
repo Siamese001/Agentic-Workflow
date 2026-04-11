@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from tqdm import tqdm
 from dataclasses import dataclass
 from typing import Any
 
@@ -382,7 +383,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="incident_bundles")
             out: list[IncidentRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="incidents", unit="result", leave=False):
                 meta = self.incident._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     IncidentRetrievalResult(
@@ -408,7 +409,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="graph_neighborhoods")
             out: list[NeighborhoodRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="graph_motifs", unit="result", leave=False):
                 meta = self.graph._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     NeighborhoodRetrievalResult(
@@ -434,7 +435,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="mutation_diffs")
             out: list[MutationRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="mutations", unit="result", leave=False):
                 meta = self.mutation._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     MutationRetrievalResult(
@@ -459,7 +460,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="prompt_outcomes")
             out: list[PromptOutcomeRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="prompt_outcomes", unit="result", leave=False):
                 meta = self.prompt._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     PromptOutcomeRetrievalResult(
@@ -485,7 +486,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="retrieval_cases")
             out: list[RetrievalCaseRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="retrieval_cases", unit="result", leave=False):
                 meta = self.retrieval._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     RetrievalCaseRetrievalResult(
@@ -511,7 +512,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="replay_failures")
             out: list[ReplayFailureRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="replay_failures", unit="result", leave=False):
                 meta = self.replay._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     ReplayFailureRetrievalResult(
@@ -536,7 +537,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="path_d_preferences")
             out: list[PreferenceRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="preferences", unit="result", leave=False):
                 meta = self.preference._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     PreferenceRetrievalResult(
@@ -561,7 +562,7 @@ class SemanticIndexRegistry:
 
             raw = query_similarity(query_text, top_k=min(k, 20), namespace="policy_guardrail_cases")
             out: list[GuardrailRetrievalResult] = []
-            for r in raw:
+            for r in tqdm(raw, desc="guardrail_cases", unit="result", leave=False):
                 meta = self.guardrail._meta.get(r.content_hash, {})  # noqa: SLF001
                 out.append(
                     GuardrailRetrievalResult(
