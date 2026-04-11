@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
+from tqdm import tqdm
 from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -273,7 +274,7 @@ class HealingConfigOptimizer:
         _emit_gated_by_confidence(str(uuid.uuid4()), "HealingConfigOptimizer.propose_threshold_adjustments", "0.5")
         adjustments = []
 
-        for key, aggregate in snapshot.aggregates:
+        for key, aggregate in tqdm(snapshot.aggregates, desc="aggregate keys", unit="key", leave=False):
             # Check if we have enough data
             if aggregate.total_count < self._min_sample_size:
                 continue
@@ -354,7 +355,7 @@ class HealingConfigOptimizer:
         """Apply pattern findings to generate adjustments."""
         adjustments = []
 
-        for finding in pattern_report.findings:
+        for finding in tqdm(pattern_report.findings, desc="findings", unit="finding", leave=False):
             if finding.key.label == "UNDERPERFORMING_HEALER_TIER":
                 # Increase escalation aggressiveness
                 component = finding.key.component
@@ -417,7 +418,7 @@ class HealingConfigOptimizer:
             grouped[key].append(adj)
 
         # Apply constraints per group
-        for (healer_name, tier), group_adj in grouped.items():
+        for (healer_name, tier), group_adj in tqdm(grouped.items(), desc="group adjustments", unit="group", leave=False):
             # Get current threshold
             current_threshold = self._get_current_threshold_for_healer(healer_name, tier)
 
@@ -430,7 +431,7 @@ class HealingConfigOptimizer:
             if abs(total_delta) > self._max_delta:
                 # Scale down all adjustments proportionally
                 scale = self._max_delta / abs(total_delta)
-                for adj in group_adj:
+                for adj in tqdm(group_adj, desc="  adjustments", unit="adj", leave=False):
                     scaled_delta = (adj.proposed_threshold - current_threshold) * scale
                     adj = ThresholdAdjustment(
                         healer_name=adj.healer_name,
@@ -541,7 +542,7 @@ class HealingConfigOptimizer:
 
                 # Update adjustments with embedding-influenced confidence
                 embedding_influenced_adjustments = []
-                for adj in adjustments:
+                for adj in tqdm(adjustments, desc="embedding adjustments", unit="adj", leave=False):
                     # Combine statistical confidence with embedding score
                     statistical_confidence = adj.confidence
                     embedding_confidence = embedding_score
@@ -653,7 +654,7 @@ class ThresholdAdjustmentProposal:
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustmentProposal.canonical_bytes")
 
         adjustments_data = []
-        for adj in self.adjustments:
+        for adj in tqdm(self.adjustments, desc="canonical bytes", unit="adj", leave=False):
             adjustments_data.append(
                 {
                     "healer_name": adj.healer_name,
