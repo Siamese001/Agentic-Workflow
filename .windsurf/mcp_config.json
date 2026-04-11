@@ -64,7 +64,15 @@
         "-c",
         "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/vector_db_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/vector_db_server.py', encoding='utf-8').read())"
       ],
-      "disabled": false
+      "disabled": false,
+      "env": {
+        "VECTOR_DB_CHROMA_PATH": "C:/Git/Agentic-Workflow/artifacts/chroma",
+        "VECTOR_DB_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
+        "VECTOR_DB_MAX_BATCH": "32",
+        "VECTOR_DB_MAX_QUERY_RESULTS": "100",
+        "VECTOR_DB_MAX_SEARCH_RESULTS": "20",
+        "VECTOR_DB_LOG_LEVEL": "INFO"
+      }
     },
     "otel_mcp": {
       "command": "python",
