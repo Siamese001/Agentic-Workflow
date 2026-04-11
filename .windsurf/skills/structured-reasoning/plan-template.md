@@ -2,6 +2,8 @@
 
 Copy-paste this at the start of any T2/T3 task.
 
+> **MCP prefix note:** Tool names below use stable server-name style. Resolve the live numeric prefix from the tool list visible in your session (e.g. `adg_health` → `mcp1_adg_health` if `adg_sqlite` loads at position 1).
+
 ---
 
 ```
@@ -15,17 +17,17 @@ Tier: T2 | T3
 Complexity: simple | medium | complex
 
 ## SR_PLAN
-1. Call mcp1_adg_health — confirm ADG MCP is healthy
-2. Call mcp5_mem_recall_session_start — load session context
+1. Call adg_health (server: adg_sqlite) — confirm ADG MCP is healthy
+2. Call mem_recall_session_start (server: memory) — load session context
 3. 
 4. 
 5. 
 N. Verification: run scoped tests / check git diff / confirm no layer violations
 
 Tools needed:
-  - mcp1_adg_health
-  - mcp5_mem_recall_session_start
-  - mcp13_create_task
+  - adg_health (server: adg_sqlite)
+  - mem_recall_session_start (server: memory)
+  - create_task (server: task_manager)
   - 
 
 Missing information:

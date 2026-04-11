@@ -96,11 +96,11 @@ Every checkpoint MUST include:
 
 #### File-based MCP Tools
 ```python
-# ❌ FORBIDDEN: Hallucinated parameter
-mcp5_write_file(path="some/path", content="data", extra_param="not_real")
+# ❌ FORBIDDEN: Hallucinated parameter (server: filesystem — tool: write_file)
+write_file(path="some/path", content="data", extra_param="not_real")
 
 # ✅ CORRECT: Only documented parameters
-mcp5_write_file(path="some/path", content="data")
+write_file(path="some/path", content="data")
 ```
 
 #### Search MCP Tools
@@ -159,11 +159,11 @@ adg_node(node_id="123")
 ### MCP Tool Validation Evidence
 ```
 ## MCP_TOOL_VALIDATION
-**Tool**: mcp5_write_file
+**Tool**: write_file (server: filesystem)
 **Parameters validated**: path (string), content (string)
 **Validation result**: ✅ PASS
 **Documentation source**: MCP filesystem server v1.0
-**Test call**: mcp5_write_file(path="test.txt", content="test") - SUCCESS
+**Test call**: write_file(path="test.txt", content="test") - SUCCESS
 ```
 
 ### Gate Failure Evidence

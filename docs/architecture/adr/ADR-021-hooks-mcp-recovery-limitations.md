@@ -1,4 +1,4 @@
-# ADR: Windsurf Hooks Cannot Auto-Recover Red MCP Servers
+# ADR-021: Windsurf Hooks Cannot Auto-Recover Red MCP Servers
 
 **Date:** 2026-04-08
 **Status:** Accepted

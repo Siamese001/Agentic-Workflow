@@ -45,21 +45,21 @@ When a symbol is undefined in N files:
 
 **REQUIRED**: Use ADG MCP tools exclusively for all dependency analysis:
 
-| Query Need | Required MCP Tool |
+| Query Need | Required MCP Tool (server: `adg_sqlite`) |
 |------------|-------------------|
-| Trace import chain | `mcp0_adg_edge_fanout` with `relation_type=imports` |
-| Find who calls a function | `mcp0_adg_edge_fanin` |
-| Locate symbol definition | `mcp0_adg_node` |
-| List files in a layer | `mcp0_adg_nodes_by_layer` |
-| Find nodes in a file | `mcp0_adg_nodes_by_file` |
+| Trace import chain | `adg_edge_fanout` with `relation_type=imports` |
+| Find who calls a function | `adg_edge_fanin` |
+| Locate symbol definition | `adg_node` |
+| List files in a layer | `adg_nodes_by_layer` |
+| Find nodes in a file | `adg_nodes_by_file` |
 
 **If ADG MCP is broken:** STOP. Run `/mcp-failure-rca`. Fix the MCP. Do NOT fall back to grep.
 
-The correct escalation when `mcp0_adg_*` fails:
+The correct escalation when the `adg_sqlite` MCP tools fail:
 ```
-python ops_scripts/ci/mcp_health_monitor.py --probe
-Remove-Item -Recurse -Force tools/adg/core/__pycache__
-# Restart ADG MCP server in Windsurf IDE
+# Clear stale bytecode (Python — no PowerShell):
+python -c "import pathlib; [p.unlink() for p in pathlib.Path('tools/adg/core/__pycache__').glob('*.pyc')]"
+# Restart ADG MCP server in Windsurf IDE (Ctrl+Shift+P → Reload MCP)
 ```
 
 ---

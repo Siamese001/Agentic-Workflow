@@ -17,7 +17,7 @@ Run before any MCP tool call with parameters not previously validated in this se
 
 | Mistake | Example | Correct |
 |---|---|---|
-| Hallucinated parameter | `mcp5_write_file(path=..., extra=True)` | Remove `extra` |
+| Hallucinated parameter | `write_file(path=..., extra=True)` (server: `filesystem`) | Remove `extra` |
 | Wrong parameter name | `find_by_name(path=...)` | Use `SearchDirectory=` |
 | Missing required param | `mcp1_adg_node()` | Provide `node_id=` |
 | Wrong type | `limit="50"` | Use `limit=50` (int) |

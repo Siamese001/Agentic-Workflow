@@ -1,7 +1,7 @@
 # ADR-019: ADG SQLite Materialized View Layer Expansion
 
 **Status**: Accepted  
-**Date**: 2025  
+**Date**: 2026-04-09  
 **Deciders**: Engineering / ADG Working Group  
 
 ---

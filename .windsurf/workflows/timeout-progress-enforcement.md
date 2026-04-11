@@ -125,6 +125,6 @@ Check for violations:
 ## References
 
 - Constitutional Rule: `.windsurf/rules/constitutional.md` §9
-- Enforcement Skill: `.windsurf/skills/timeout-progress-enforcement/skill.md`
-- Timeout Patterns: `.windsurf/skills/timeout-progress-enforcement/timeout_patterns.md`
-- Progress Patterns: `.windsurf/skills/timeout-progress-enforcement/progress_patterns.md`
+- Enforcement Skill: `.windsurf/skills/artifact-management/SKILL.md` (progress display protocol covers timeout+progress)
+
+> **Skill directory note:** The `timeout-progress-enforcement` skill directory is not present in the current `.windsurf/skills/` layout (7 canonical skills as of 2026-04-14). References to `.windsurf/skills/timeout-progress-enforcement/` are stale and should not be used.

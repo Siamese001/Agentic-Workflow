@@ -48,12 +48,12 @@ Keep these four layers separate at all times:
 
 | Need | Tool |
 |------|------|
-| ADG scope / blast radius | `mcp1_adg_health`, `mcp1_adg_edge_fanout` |
-| Session context | `mcp9_mem_recall_session_start` |
-| Task tracking | `mcp13_create_task`, `mcp13_update_task` |
-| File reads | `mcp7_read_text_file` or native `read_file` |
-| Tests | `mcp11_run_tests` or `run_command` with pytest |
-| Git state | `mcp0_git_status` or `run_command` with git |
+| ADG scope / blast radius | `adg_health`, `adg_edge_fanout` (server: `adg_sqlite`) |
+| Session context | `mem_recall_session_start` (server: `memory`) |
+| Task tracking | `create_task`, `update_task` (server: `task_manager`) |
+| File reads | `read_text_file` (server: `filesystem`) or native `read_file` |
+| Tests | `run_tests` (server: `pytest_mcp`) or `run_command` with pytest |
+| Git state | `git_status` (server: `GitKraken`) or `run_command` with git |
 
 If any MCP hangs: STOP, do not retry, route around it, note `[MCP UNAVAILABLE]`.
 

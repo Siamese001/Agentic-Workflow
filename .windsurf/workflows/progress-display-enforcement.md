@@ -33,7 +33,7 @@ if estimated_duration > 5.0 or item_count > 10:
 
 Use the standardized progress display format:
 ```python
-from .windsurf.skills.progress_display import ProgressTracker
+from tools.progress_display import ProgressTracker
 
 # Create tracker
 tracker = ProgressTracker(total_items, operation_name)
@@ -257,24 +257,17 @@ When violations are detected:
 
 ## Tools and Resources
 
-### Required Files
-- `.windsurf/skills/progress-display/SKILL.md` - Main skill definition
-- `.windsurf/skills/progress-display/progress_terminal_protocol.md` - Protocol specification
-- `.windsurf/skills/progress-display/color_scheme_reference.md` - Color definitions
-- `.windsurf/skills/progress-display/progress_implementation_guide.md` - Implementation guide
-- `.windsurf/skills/progress-display/example_usage.md` - Usage examples
-
 ### Integration Scripts
-- `tools/progress_display.py` - Core implementation
-- `tools/progress_utils.py` - Utility functions
-- `tests/test_progress_display.py` - Test suite
+- `tools/progress_display.py` - Core implementation (verify exists before use)
+- `tools/progress_utils.py` - Utility functions (verify exists before use)
+- `tests/test_progress_display.py` - Test suite (verify exists before use)
+
+> **Skill directory note:** The `progress-display` skill directory is not present in the current `.windsurf/skills/` layout (7 canonical skills as of 2026-04-14). Progress display guidance is covered by the `artifact-management` skill (`SKILL.md` and `progress_display_protocol.md`). References to `.windsurf/skills/progress-display/` are stale and should not be used.
 
 ## References
 
 - **Constitutional Rule**: §5.3 Query Timeout & Progress Reporting
-- **Skill Definition**: `.windsurf/skills/progress-display/SKILL.md`
-- **Color Scheme**: `.windsurf/skills/progress-display/color_scheme_reference.md`
-- **Implementation Guide**: `.windsurf/skills/progress-display/progress_implementation_guide.md`
+- **Skill Definition**: `.windsurf/skills/artifact-management/SKILL.md` (progress display is in `progress_display_protocol.md`)
 
 ---
 

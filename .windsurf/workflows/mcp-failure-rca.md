@@ -1,5 +1,5 @@
 ---
-description: RCA workflow for ADG SQLite (mcp1), Redis (mcp12), PyTest (mcp11), and OTel (mcp9) MCP failures. Sequential Thinking MCP is permanently retired — do not attempt recovery.
+description: RCA workflow for ADG SQLite (`adg_sqlite`), Redis (`redis`), PyTest (`pytest_mcp`), and OTel (`otel_mcp`) MCP failures. Sequential Thinking MCP is permanently retired — do not attempt recovery.
 ---
 
 # MCP Failure RCA & Auto-Fix Workflow
@@ -10,10 +10,12 @@ Invoke with `/mcp-failure-rca`. Automatically diagnoses and fixes ADG MCP and Re
 
 ## STEP 0: Triage — identify which MCP is down
 
-Call `adg_health` MCP tool. If it returns an error, ADG MCP is down → go to STEP 1.
-Call `mcp12_redis_health` MCP tool. If it returns an error, Redis is down → go to STEP 3.
-Call `mcp11_discover_tests` with path=`tests`. If it errors → go to STEP 7.
+Call the `adg_health` tool (server: `adg_sqlite`). If it returns an error, ADG MCP is down → go to STEP 1.
+Call the `redis_health` tool (server: `redis`). If it returns an error, Redis is down → go to STEP 3.
+Call the `discover_tests` tool (server: `pytest_mcp`) with path=`tests`. If it errors → go to STEP 7.
 If all healthy → nothing to fix, return to original prompt.
+
+> **Load-order note:** The numeric tool prefixes Windsurf assigns (e.g. `mcp8_redis_health`) shift whenever a server is added or removed from `mcp_config.json`. Use the server names above as the stable identifiers; resolve the live prefix from the tool list visible in your session.
 
 ---
 
@@ -151,8 +153,8 @@ python tools/adg/adg_redis_ingest.py --force
 
 ## STEP 5: Verify both MCPs healthy, resume original prompt
 
-Call `adg_health` — must return `"status": "ok"`.
-Call `mcp9_redis_health` — must return `"status": "ok"`.
+Call `adg_health` (server: `adg_sqlite`) — must return `"status": "ok"`.
+Call `redis_health` (server: `redis`) — must return `"status": "ok"`.
 
 Once both healthy, **return to and resume the original user prompt** that triggered this workflow. Do NOT use grep as a substitute — the original prompt must be re-executed with ADG MCP as the primary query tool.
 
@@ -170,8 +172,8 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 | `ADGEdge.id Input should be str, got int` | Same root cause — edge ids also int | 2D |
 | `sequentialthinking` tool (any error) | `@modelcontextprotocol/server-sequential-thinking` permanently retired — do not recover | 6 (tombstone) |
 | Any npx-based MCP hangs (filesystem, memory, deepwiki, brave) | Same root cause — `npx` vs `npx.cmd` on Windows | Restart MCP in Windsurf |
-| `mcp11_discover_tests` errors | pytest_server.py missing or pytest not installed | 7 |
-| `mcp9_otel_status` errors | otel_mcp_server.py missing or OTel collector not running | 8 |
+| `discover_tests` errors (server: `pytest_mcp`) | pytest_server.py missing or pytest not installed | 7 |
+| `otel_status` errors (server: `otel_mcp`) | otel_mcp_server.py missing or OTel collector not running | 8 |
 
 ---
 
@@ -202,7 +204,7 @@ python -c "import subprocess; subprocess.run(['taskkill', '/f', '/im', 'node.exe
 
 ## STEP 7: Fix — PyTest MCP error
 
-**Symptom:** `mcp11_discover_tests` or `mcp11_run_tests` errors.
+**Symptom:** `discover_tests` or `run_tests` errors from the `pytest_mcp` server.
 
 **A) Verify pytest server script exists:**
 // turbo
@@ -222,7 +224,7 @@ python -m pytest --version
 
 ## STEP 8: Fix — OTel MCP error
 
-**Symptom:** `mcp9_otel_status` errors or returns unhealthy.
+**Symptom:** `otel_status` errors or returns unhealthy from the `otel_mcp` server.
 
 **A) Verify OTel server script exists:**
 // turbo

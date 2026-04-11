@@ -14,9 +14,11 @@ globs:
 ## Scope
 
 This rule applies to:
-- All MCP server implementations in `tools/adg/mcp/`, `tools/redis_mcp/`, `tools/memory_mcp/`, `tools/filesystem_mcp/`
+- All MCP server implementations in `tools/adg/mcp/` (ADG SQLite MCP) and `tools/mcp/` (pytest, otel, redis, memory servers)
 - MCP client code in `agentic_core/`
 - MCP-related test files in `tests/integration/`, `tests/unit/`
+
+> **Note:** `tools/redis_mcp/`, `tools/memory_mcp/`, and `tools/filesystem_mcp/` do not exist as standalone directories. The filesystem MCP is npx-based (no local source). Redis and memory servers live under `tools/mcp/`.
 
 ## Mandatory Test Requirements
 
@@ -46,9 +48,8 @@ Every MCP server MUST have:
 | Zombie process | Cleanup on exit | Test process lifecycle |
 
 **CI Enforcement:**
-- Pre-commit hook: `mcp-pytest-scan` (T21)
-- Gate: `ops_scripts/ci/check_mcp_pytest_coverage.py`
-- Hung process detection: `ops_scripts/ci/mcp_hung_process_detector.py`
+- Gate: `ops_scripts/ci/run_contract_gates.py` (canonical entry point)
+- Hung process detection: `ops_scripts/ci/mcp_hung_process_detector.py` — *verify script exists before invoking*
 
 ### 3. MCP Redis Specific Tests
 
@@ -73,7 +74,7 @@ pytest tests/integration/tools/adg/mcp/test_hung_process.py -v
 
 ### 4. MCP Memory Specific Tests
 
-**Memory MCP** (`tools/memory_mcp/`) MUST have:
+**Memory MCP** (server: `memory`, source in `tools/mcp/`) MUST have:
 - Memory graph CRUD tests
 - Entity relationship tests
 - Search and query tests
@@ -81,8 +82,8 @@ pytest tests/integration/tools/adg/mcp/test_hung_process.py -v
 
 ### 5. MCP Filesystem Specific Tests
 
-**Filesystem MCP** (`tools/filesystem_mcp/`) MUST have:
-- Path validation tests
+**Filesystem MCP** (server: `filesystem`, npx-based — no local source directory) MUST have:
+- Path validation tests (mock the MCP call)
 - Permission tests (mocked)
 - File operation tests
 - Directory traversal tests

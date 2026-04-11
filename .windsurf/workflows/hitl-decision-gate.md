@@ -38,17 +38,22 @@ For each approach (2-4 options, never more): **What** (concrete action), **Impac
 
 ### Step 3 — Present Options (STOP HERE)
 
-**REQUIRED FORMAT**:
+**REQUIRED**: Use the `ask_user_question` tool — do NOT present options as prose or blockquotes. Per `hitl-enforcement.md`: *"Surface 1–N options via `ask_user_question` — ALL analysis INSIDE description field, never in chat prose."*
 
-> I've identified N approaches for `<task>`:
->
-> **Option A**: `<approach>` — Impact: `<what changes>` — Trade-offs: `<pros/cons>`
->
-> **Option B**: `<approach>` — Impact: `<what changes>` — Trade-offs: `<pros/cons>`
->
-> Which approach should I use?
+Minimal shape for each option:
+- `label`: concise option title (e.g. `Option A — <approach>`)
+- `description`: impact, trade-offs, risk — everything the user needs to decide, inside this field
 
-**CRITICAL**: STOP after presenting. Do NOT proceed with any option.
+Set `allowMultiple: false`. Include the HITL header packet in the `question` field:
+```
+Recommended: <option title>
+Why it wins: <one sentence, case-specific>
+What you are optimizing for: <actual goal>
+What is being traded off: <precise cost>
+Candidates evaluated: N | Surfaced: M | Suppressed (low confidence): X | Suppressed (non-distinct): Y
+```
+
+**CRITICAL**: STOP after the tool call. Do NOT proceed with any option until the user responds.
 
 ### Step 4 — Wait for User Selection
 

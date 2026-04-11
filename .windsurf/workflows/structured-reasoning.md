@@ -32,7 +32,9 @@ Stop. Do not proceed to Phase B until intake is written.
 
 ## PHASE B — Decomposition & Plan
 
-Using `mcp13_create_task`, create the top-level task. Then emit a numbered plan:
+Using `create_task` (server: `task_manager`), create the top-level task. Then emit a numbered plan:
+
+> **MCP prefix note:** Tool names in the block below use numeric prefixes that are correct for the current load order (`adg_sqlite`=1, `memory`=5). Resolve live prefix from the tool list visible in your session if numbering has shifted.
 
 ```
 ## SR_PLAN
@@ -44,7 +46,7 @@ N. [Verification step]
 Tools needed:
   - mcp1_adg_health (ADG scope check)
   - mcp5_mem_recall_session_start (session context)
-  - read_file / mcp7_read_text_file (evidence pull)
+  - read_file / `read_text_file` (server: `filesystem`) (evidence pull)
   - <additional tools justified by plan>
 
 Missing information:
@@ -127,7 +129,7 @@ Execute the approved plan step by step. For each step:
 2. State the tool(s) being used and why
 3. Execute the tool call
 4. Check result before proceeding to Step N+1
-5. Update task status: `mcp13_update_task`
+5. Update task status: `update_task` (server: `task_manager`)
 
 **MCP failure rule:** If any MCP hangs or errors:
 - STOP that step

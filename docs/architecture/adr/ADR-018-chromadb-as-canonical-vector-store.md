@@ -1,4 +1,4 @@
-# ADR: ChromaDB as Canonical Vector Store
+# ADR-018: ChromaDB as Canonical Vector Store
 
 **Date:** 2026-03-29  
 **Status:** Accepted  

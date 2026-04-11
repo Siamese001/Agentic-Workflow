@@ -2,6 +2,8 @@
 
 Emit this block after Phase E (execution) completes.
 
+> **MCP prefix note:** Tool names below use stable server-name style. Resolve the live numeric prefix from the tool list visible in your session.
+
 ```
 ## SR_SUMMARY
 Task: <task title>
@@ -13,7 +15,7 @@ What changed:
 
 What was verified:
   - [ ] Scoped tests passed: <pytest command and result>
-  - [ ] ADG health still OK: mcp1_adg_health — <result>
+  - [ ] ADG health still OK: adg_health (server: adg_sqlite) — <result>
   - [ ] git diff reviewed — only expected files changed
   - [ ] Layer boundaries not violated
   - [ ] No new anti-patterns introduced
@@ -30,5 +32,5 @@ Recommended next step:
   - <concrete action — who, what, when>
 
 Task Manager update:
-  - mcp13_update_task status=done lessons_learned=<key insight>
+  - update_task (server: task_manager) status=done lessons_learned=<key insight>
 ```

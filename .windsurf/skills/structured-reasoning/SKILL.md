@@ -26,9 +26,9 @@ Four layers — keep them separated at all times:
 | Layer | What happens here | Allowed tools |
 |-------|------------------|---------------|
 | **Reasoning** | Goal normalization, decomposition, branch analysis | Native Cascade reasoning only |
-| **Routing** | Tool selection, MCP health check, fallback planning | `mcp1_adg_health`, `mcp13_create_task` |
+| **Routing** | Tool selection, MCP health check, fallback planning | `adg_health` (server: `adg_sqlite`), `create_task` (server: `task_manager`) |
 | **Execution** | Edits, writes, commands | All tools — only after APPROVED |
-| **Verification** | Tests, health checks, diff review | `mcp11_run_tests`, `mcp0_git_status` |
+| **Verification** | Tests, health checks, diff review | `run_tests` (server: `pytest_mcp`), `git_status` (server: `GitKraken`) |
 
 Collapsing all four into one opaque step is **FORBIDDEN**.
 
@@ -66,7 +66,7 @@ Tier: T2 | T3
 
 ### Step 2 — Decompose into SR_PLAN
 
-Use `mcp13_create_task` + `mcp13_decompose_task` for tracking. Emit numbered steps:
+Use `create_task` + `decompose_task` (server: `task_manager`) for tracking. Emit numbered steps:
 
 ```
 ## SR_PLAN
@@ -123,7 +123,7 @@ Recommended next step:
   - <concrete action — who, what, when>
 ```
 
-Then update task: `mcp13_update_task` with `status=done` and `lessons_learned`.
+Then update task: `update_task` (server: `task_manager`) with `status=done` and `lessons_learned`.
 
 ---
 
@@ -169,9 +169,9 @@ Each revision must:
 
 ## MCP Role Mapping
 
-> **Note on prefixes:** Declared prefix fields in `config/mcp_servers.yaml` and `.windsurf/mcp_config.json`
-> are documentation metadata. Windsurf assigns live `mcp0`/`mcp1`/`mcp2`... numbers by load order from
-> `~/.codeium/windsurf/mcp_config.json`. Use the tool names visible in your session, not these prefix labels.
+> **Note on prefixes:** Windsurf assigns live `mcp0`/`mcp1`/`mcp2`... numbers by load order from
+> `~/.codeium/windsurf/mcp_config.json`. Use the server names and tool names in this table, not
+> numeric prefix labels — numeric prefixes shift whenever a server is added or removed.
 
 | MCP (YAML name) | When to invoke | Failure fallback |
 |-----------------|---------------|-----------------|
@@ -181,7 +181,7 @@ Each revision must:
 | **filesystem** | File reads (`read_text_file`, `list_directory`, etc.) — write tools BLOCKED by gate, use native `edit`/`write_to_file` | `read_file` native tool always available |
 | **pytest_mcp** | Scoped test runs, test discovery, coverage — prefer over `run_command pytest` for structured output | `run_command` with pytest CLI |
 | **gitkraken** | Git status, log, commit, branch, PR/issue ops — prefer over `run_command git` | `run_command` with git CLI |
-| **redis_mcp** | ADG hot cache inspection, namespace stats, sentinel key check — primary ADG health path per constitutional §13 | Note `[REDIS UNAVAILABLE]`; fall back to adg_sqlite probe |
+| **redis** | ADG hot cache inspection, namespace stats, sentinel key check — primary ADG health path per constitutional §13 | Note `[REDIS UNAVAILABLE]`; fall back to adg_sqlite probe |
 | **enhanced_http** | External API calls, URL fetching with POST/headers/auth, batch HTTP — use when `read_url_content` is insufficient | `read_url_content` native tool |
 | **deepwiki** | Questions about external GitHub repos, third-party lib docs — not for this repo | `read_url_content` as fallback |
 | **vector_db** | Similarity search against ChromaDB embeddings — any retrieval requiring "find facts similar to X" (RAG, duplicate detection) | Note `[VECTOR_DB UNAVAILABLE]`; proceed without semantic retrieval |

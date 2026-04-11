@@ -31,7 +31,7 @@ vim .windsurf/rules/hitl-enforcement.md
 | **§0: DEFAULT ANALYSIS MODE (Tier-Aware)** | Windsurf | Before work | Behavioural | `.windsurf/skills/graph-analysis/` | ✅ ENFORCED |
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
 | **Windsurf Config Lookup** | Windsurf | On demand | Behavioural | `.windsurf/rules/windsurf-config-lookup.md` | ✅ ENFORCED |
-| **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
+| **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | Referenced by `.windsurf/rules/adg-repair-discipline.md` — supporting doc at `docs/technical/TEST_FAILURE_decision_tree.md` (not a Windsurf-discoverable rule file) | ✅ ENFORCED (CI: cond. 8b) |
 | **Global Rules Policy** | Windsurf | Always | Behavioural | `.windsurf/rules/global_rules.md` (always_on, 3.0K) | ✅ ENFORCED |
 | **HITL Core Pipeline** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` (always_on, 2.7K) | ✅ ENFORCED |
 | **HITL Decision Points** | Windsurf | On demand | Behavioural | `.windsurf/rules/hitl-decision-points.md` (model_decision) | ✅ ENFORCED |
@@ -57,9 +57,9 @@ vim .windsurf/rules/hitl-enforcement.md
 | 5 | **artifact-management** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b | ✅ ENFORCED |
 | 6 | **structured-reasoning** | Windsurf | Before work | Behavioural | None (behavioral) | None | ✅ ENFORCED |
 
-**Note**: 30 individual skills consolidated into 5 canonical skills (2026-04-03). `structured-reasoning` added 2026-04-07 to replace retired Sequential Thinking MCP. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
+**Note**: 30 individual skills consolidated into 5 canonical skills (2026-04-03). `structured-reasoning` added 2026-04-07; `refactor-decision-memory` added 2026-04-15. Current total: **7 canonical skills**. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
 
-**2026-04-14 update**: All 6 skill entry files renamed `skill.md` → `SKILL.md` (uppercase) per Windsurf canonical naming. Support files (5 per skill) added for all incomplete skill directories.
+**2026-04-14 update**: All skill entry files renamed `skill.md` → `SKILL.md` (uppercase) per Windsurf canonical naming. Support files (5 per skill) added for all incomplete skill directories.
 **2026-04-15 update**: `constitutional.md` shrunk 29K→3.3K (always_on core only); `hitl-enforcement.md` shrunk 33K→2.7K (always_on core only); `hitl-decision-points.md` added (model_decision, full doctrine); `sequential-thinking-enforcement.md` converted from always_on to model_decision; `adg-test-accelerator-enforcement.md` description frontmatter added; `skills/graph-analysis/fail_closed_discipline.md` added.
 
 **Key**:

@@ -2,6 +2,8 @@
 
 Copy this checklist and complete every item before executing Phase E.
 
+> **MCP prefix note:** Tool names below use stable server-name style. Resolve the live numeric prefix from the tool list visible in your session (e.g. `adg_health` → `mcp1_adg_health` if `adg_sqlite` loads at position 1).
+
 ```
 ## SR_PRE_EXECUTION_GATE
 Task: <task title>
@@ -14,9 +16,9 @@ REASONING LAYER
 [ ] Revision cycle complete (if evidence changed the plan)
 
 ROUTING LAYER
-[ ] mcp1_adg_health called — result: OK | DEGRADED | FAILED
-[ ] mcp5_mem_recall_session_start called — result: OK | UNAVAILABLE
-[ ] mcp13_create_task created — task ID: <id>
+[ ] adg_health (server: adg_sqlite) called — result: OK | DEGRADED | FAILED
+[ ] mem_recall_session_start (server: memory) called — result: OK | UNAVAILABLE
+[ ] create_task (server: task_manager) created — task ID: <id>
 [ ] All required MCPs identified and confirmed healthy (or fallback documented)
 
 EVIDENCE LAYER
