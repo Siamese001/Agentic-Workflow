@@ -279,7 +279,10 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             from apps_shared.utils.TitaniumRAGPipeline import TitaniumRAGPipeline
 
             self.titanium_pipeline = TitaniumRAGPipeline(
-                enable_compression=True, enable_decomposition=True, enable_reranking=True, enable_caching=True,
+                enable_compression=True,
+                enable_decomposition=True,
+                enable_reranking=True,
+                enable_caching=True,
             )
             print("   [OK] Titanium RAG Pipeline integrated")
         # guardian: allow-silent-swallow - optional dependency
@@ -339,7 +342,9 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignRAGOrchestrator.red_team_critique",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "SovereignRAGOrchestrator.red_team_critique",
         )
         response: Any = await self.engine.resilient_mutation(critique_prompt, temperature=0.3)
 
@@ -375,7 +380,9 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                 return (vector_results, sparse_results)
 
             result = await self.titanium_pipeline.query(
-                query.query, retrieval_function=retrieval_func, top_k_final=query.top_k,
+                query.query,
+                retrieval_function=retrieval_func,
+                top_k_final=query.top_k,
             )
             documents = [
                 RagDocument(
@@ -397,7 +404,10 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             )
         else:
             legacy_result = await self.sovereign_retrieve(
-                query.query, top_k=query.top_k, filters=query.filters, mission_context=query.mission_context,
+                query.query,
+                top_k=query.top_k,
+                filters=query.filters,
+                mission_context=query.mission_context,
             )
             documents = [
                 RagDocument(
@@ -445,11 +455,12 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         """
         Main retrieval method with multi-hop expansion and self-optimization
         """
+        AnchoredResult, RetrievalAnchor = _get_retrieval_anchor_types()
         if top_k is None:
             top_k: Any = self.base_top_k
         current_query: Any = query
         all_documents: Any = []
-        for hop in range(self.max_hops):
+        for hop in range(self.max_hops):  # progress_bar: bounded by max_hops
             base_queries: Any = await self.query_planner.decompose_query(current_query)
             all_queries: Any = []
             async with asyncio.TaskGroup() as tg:
@@ -490,6 +501,36 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             "top_k": top_k,
             "hops": hop + 1,
         }
+        from agentic_core.L3_orchestration.types.c0_evidence_contract_types import (  # noqa: PLC0415
+            C0ContractViolation,
+            C0EvidenceContract,
+            CitedSpan,
+        )
+        import hashlib as _hashlib  # noqa: PLC0415
+
+        _cited_spans = tuple(
+            CitedSpan(
+                span_id=a.anchor.chunk_id,
+                source_ref=a.anchor.source_doc_id,
+                text_snippet=a.content[:200],
+                relevance_score=getattr(final_docs[i], "score", 0.85) if i < len(final_docs) else 0.85,
+                chunk_hash=a.anchor.version_hash,
+            )
+            for i, a in enumerate(_anchors)
+        )
+        _retrieval_id = str(uuid.uuid4())
+        _request_id = _hashlib.sha256(query.encode()).hexdigest()[:16]
+        try:
+            c0_contract = C0EvidenceContract.build(
+                retrieval_id=_retrieval_id,
+                request_id=_request_id,
+                coverage_score=result["faithfulness"],
+                cited_spans=_cited_spans,
+            )
+        except C0ContractViolation as _exc:
+            logger.warning("C0EvidenceContract build failed: %s", _exc)
+            c0_contract = None
+        result["c0_contract"] = c0_contract
         self.query_history.append(result)
         if len(self.query_history) >= self.performance_window:
             await self.adapt_parameters(result)
@@ -503,13 +544,15 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         avg_faithfulness: Any = sum(faithfulness_scores) / len(faithfulness_scores)
         if avg_faithfulness > 0.94:
             self.faithfulness_threshold = min(
-                0.95, self.faithfulness_threshold + self.threshold_adaptation_rate,
+                0.95,
+                self.faithfulness_threshold + self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Raising threshold to {self.faithfulness_threshold:.3f}")
         elif avg_faithfulness < 0.85:
             self.faithfulness_threshold = max(
-                0.7, self.faithfulness_threshold - self.threshold_adaptation_rate,
+                0.7,
+                self.faithfulness_threshold - self.threshold_adaptation_rate,
             )
             self._save_sovereign_config()
             print(f"   [SELF-OPT] Lowering threshold to {self.faithfulness_threshold:.3f}")
@@ -594,7 +637,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                 return dot / (na * nb + 1e-08)
 
             scores = []
-            for doc in candidates[: self.base_top_k]:
+            for doc in candidates[: self.base_top_k]:  # progress_bar: bounded by base_top_k
                 text = (
                     doc.text
                     if hasattr(doc, "text")
@@ -625,7 +668,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             top_k = self.base_top_k
         result = await self.sovereign_retrieve(query, top_k=top_k)
         candidates = result.get("documents", [])
-        for _round in range(self._MAX_REFLECTION_ROUNDS):
+        for _round in range(self._MAX_REFLECTION_ROUNDS):  # progress_bar: bounded by MAX_REFLECTION_ROUNDS
             sufficiency = await self._check_sufficiency(candidates, query)
             if sufficiency >= self._SUFFICIENCY_THRESHOLD:
                 break
@@ -640,7 +683,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             except (AttributeError, TypeError, ValueError) as e:
                 logger.debug(f"Query decomposition failed: {e}")
                 break
-            for sq in sub_queries:
+            for sq in sub_queries:  # progress_bar: bounded by sub_queries length
                 try:
                     sub_result = await self.sovereign_retrieve(sq, top_k=top_k)
                     sub_docs = sub_result.get("documents", [])
@@ -683,7 +726,11 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
         if _call_path is None:
             _call_path = set()
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         agent_name = "SovereignRagOrchestrator"
         if agent_name in _call_path:

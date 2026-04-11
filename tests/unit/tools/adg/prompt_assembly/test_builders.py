@@ -9,7 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools.adg.prompt_assembly.contracts import PromptEnvelope, PromptAssemblyStatus
+from tools.adg.prompt_assembly.contracts import (
+    EvidenceBundle,
+    EvidenceItem,
+    PromptAssemblyStatus,
+    PromptEnvelope,
+)
 from tools.adg.prompt_assembly.packets.builders import (
     _BUILDER_NAMES,
     build_determinism_rca,
@@ -132,3 +137,141 @@ class TestSpecificBuilders:
         assert "module_b" in env.task_block
         assert env.replay_metadata.get("from_node") == "module_a"
         assert env.replay_metadata.get("to_node") == "module_b"
+
+
+class TestPreShapedBundleHook:
+    """Targeted tests for the pre_shaped_bundle parameter added to _assemble()."""
+
+    def _make_item(self, source_artifact: str = "test.json") -> EvidenceItem:
+        return EvidenceItem(
+            source_artifact=source_artifact,
+            source_type="json_report",
+            snapshot_id="ts001",
+            data={"text_snippet": "test evidence content"},
+            support_score=0.85,
+        )
+
+    def _make_bundle(self, coverage: float = 0.75, weak: bool = False) -> EvidenceBundle:
+        item = self._make_item()
+        return EvidenceBundle(
+            items=[item],
+            coverage_score=coverage,
+            contradiction_status="none",
+            contradictions=[],
+            gaps=[],
+            freshness="2026-04-11T09:00:00Z",
+            weak_support=weak,
+        )
+
+    def test_pre_shaped_bundle_used_directly(self) -> None:
+        """When pre_shaped_bundle is supplied, it is used and coverage flows through."""
+        from tools.adg.prompt_assembly.packets.builders import _assemble
+        from tools.adg.prompt_assembly.packets.registry import get_template
+
+        template = get_template("executive_summary")
+        item = self._make_item()
+        bundle = self._make_bundle(coverage=0.75)
+        env = _assemble(
+            template=template,
+            must_items=[item],
+            opt_items=[],
+            task_block="Test task block for C0 bridge",
+            pre_shaped_bundle=bundle,
+        )
+        assert isinstance(env, PromptEnvelope)
+        assert env.assembly_status is not None
+        assert env.assembly_status.evidence_contract_status == "partial"
+
+    def test_pre_shaped_bundle_coverage_complete(self) -> None:
+        """coverage_score >= 0.8 produces evidence_contract_status='complete'."""
+        from tools.adg.prompt_assembly.packets.builders import _assemble
+        from tools.adg.prompt_assembly.packets.registry import get_template
+
+        template = get_template("executive_summary")
+        item = self._make_item()
+        bundle = self._make_bundle(coverage=0.90)
+        env = _assemble(
+            template=template,
+            must_items=[item],
+            opt_items=[],
+            task_block="Test task block",
+            pre_shaped_bundle=bundle,
+        )
+        assert env.assembly_status is not None
+        assert env.assembly_status.evidence_contract_status == "complete"
+        assert env.assembly_status.assembly_result == "pass"
+
+    def test_pre_shaped_bundle_empty_coverage_fails(self) -> None:
+        """coverage_score == 0.0 with pre_shaped_bundle produces assembly_result='fail'."""
+        from tools.adg.prompt_assembly.packets.builders import _assemble
+        from tools.adg.prompt_assembly.packets.registry import get_template
+
+        template = get_template("executive_summary")
+        empty_bundle = EvidenceBundle(
+            items=[],
+            coverage_score=0.0,
+            contradiction_status="none",
+            contradictions=[],
+            gaps=["no_evidence"],
+            freshness="",
+            weak_support=True,
+        )
+        env = _assemble(
+            template=template,
+            must_items=[],
+            opt_items=[],
+            task_block="Test task block",
+            pre_shaped_bundle=empty_bundle,
+        )
+        assert env.assembly_status is not None
+        assert env.assembly_status.evidence_contract_status == "empty"
+        assert env.assembly_status.assembly_result == "fail"
+
+    def test_replay_extras_flow_through_with_pre_shaped_bundle(self) -> None:
+        """replay_extras keys survive in replay_metadata when pre_shaped_bundle is used."""
+        from tools.adg.prompt_assembly.packets.builders import _assemble
+        from tools.adg.prompt_assembly.packets.registry import get_template
+
+        template = get_template("executive_summary")
+        item = self._make_item()
+        bundle = self._make_bundle(coverage=0.80)
+        extras = {
+            "retrieval_id": "ret-uuid-001",
+            "request_id": "req-uuid-001",
+            "evidence_hmac": "abc123deadbeef" * 4,
+            "coverage_score": 0.80,
+            "abstain_hint": False,
+            "confidence_band": "HIGH",
+        }
+        env = _assemble(
+            template=template,
+            must_items=[item],
+            opt_items=[],
+            task_block="Test task block",
+            replay_extras=extras,
+            pre_shaped_bundle=bundle,
+        )
+        assert env.replay_metadata["retrieval_id"] == "ret-uuid-001"
+        assert env.replay_metadata["request_id"] == "req-uuid-001"
+        assert env.replay_metadata["evidence_hmac"] == "abc123deadbeef" * 4
+        assert env.replay_metadata["confidence_band"] == "HIGH"
+        assert env.replay_metadata["abstain_hint"] is False
+
+    def test_none_pre_shaped_bundle_uses_internal_shaping(self) -> None:
+        """With pre_shaped_bundle=None (default), internal shape_evidence() is called unchanged."""
+        env = build_executive_summary()
+        assert isinstance(env, PromptEnvelope)
+        assert env.packet_type == "executive_summary"
+        assert env.assembly_status is not None
+
+    def test_existing_builders_unaffected(self) -> None:
+        """All 8 existing builders produce valid output unchanged after the parameter addition."""
+        for ptype in _BUILDER_NAMES:
+            kwargs = {}
+            if ptype == "graph_path_explanation":
+                kwargs = {"from_node": "x", "to_node": "y"}
+            env = build_packet(ptype, sqlite_path=None, graph=None, **kwargs)
+            assert isinstance(env, PromptEnvelope)
+            assert env.packet_type == ptype
+            assert env.assembly_status is not None
+            assert "source_artifacts" in env.replay_metadata

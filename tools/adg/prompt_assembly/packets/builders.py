@@ -21,6 +21,7 @@ from tools.adg.prompt_assembly.budgeting.token_budgeter import (
     estimate_tokens,
 )
 from tools.adg.prompt_assembly.contracts import (
+    EvidenceBundle,
     EvidenceItem,
     PromptAssemblyStatus,
     PromptEnvelope,
@@ -50,11 +51,15 @@ def _assemble(
     opt_items: list[EvidenceItem],
     task_block: str,
     replay_extras: dict[str, Any] | None = None,
+    pre_shaped_bundle: EvidenceBundle | None = None,
 ) -> PromptEnvelope:
     """Shared assembly: shape → budget → build envelope."""
     # Shape evidence
     all_items = must_items + opt_items
-    bundle = shape_evidence(all_items, must_use_sources=template.must_use_sources)
+    if pre_shaped_bundle is not None:
+        bundle = pre_shaped_bundle
+    else:
+        bundle = shape_evidence(all_items, must_use_sources=template.must_use_sources)
 
     # Separate must-use (canonical) from optional (derived)
     must_dicts = [item.to_dict() for item in must_items if not item.data.get("error")]
