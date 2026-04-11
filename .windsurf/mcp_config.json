@@ -104,6 +104,10 @@
         "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/pytest_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/pytest_server.py', encoding='utf-8').read())"
       ],
       "disabled": false
+    },
+    "notion": {
+      "serverUrl": "https://mcp.notion.com/mcp",
+      "disabled": false
     }
   }
 }

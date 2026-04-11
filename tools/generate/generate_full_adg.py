@@ -418,7 +418,8 @@ def generate_full_adg(
         f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}",
     )
 
-    # --- E11: Graph-native SQL analytics (Prompt 6/7 integration) ---
+    # --- E11: Graph-native SQL analytics (Prompt 6/7/9 integration) ---
+    graph_delta_result = None
     if graph_watchlist_items:
         # Count promoted signals
         rev_dep_count = sum(1 for i in graph_watchlist_items if i.reverse_dep_score > 0)
@@ -430,6 +431,14 @@ def generate_full_adg(
         fail_count = sum(1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "FAIL")
         warn_count = sum(1 for i in graph_watchlist_items if i.remediation and i.remediation.gate_decision == "WARN")
 
+        # Prompt 9: Compute deltas if baseline available
+        try:
+            from tools.generate.adg_graph_watchlist_builder import ADGGraphWatchlistBuilder
+            with ADGGraphWatchlistBuilder(paths.sqlite) as builder:
+                graph_delta_result = builder._compute_deltas(graph_watchlist_items, adg_artifacts_dir)
+        except Exception:  # guardian: allow-silent-swallow -- delta tracking is optional intelligence
+            graph_delta_result = None
+
         print(f"[ADG] E11 graph-native SQL analytics:")
         print(f"      Promoted signals: RevDep={rev_dep_count}  Bridge={bridge_count}  Blast={blast_count}")
         if scc_count == 0:
@@ -439,6 +448,19 @@ def generate_full_adg(
         # Show gate summary (Prompt 7)
         if fail_count > 0 or warn_count > 0:
             print(f"      Gate decisions: FAIL={fail_count}  WARN={warn_count}")
+
+        # Prompt 9: Show delta tracking summary
+        if graph_delta_result and graph_delta_result.get("has_baseline"):
+            ds = graph_delta_result.get("delta_summary", {})
+            regressions = graph_delta_result.get("regressions", [])
+            protected_regressions = [r for r in regressions if r.get("layer", "") in {"L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED", "L_RUNTIME"}]
+
+            print(f"      Delta (vs baseline): new={ds.get('new', 0)} worsened={ds.get('worsened', 0)} improved={ds.get('improved', 0)} resolved={ds.get('resolved', 0)}")
+            if protected_regressions:
+                print(f"      ⚠️  Protected-layer regressions: {len(protected_regressions)}")
+            elif ds.get('worsened', 0) > 0:
+                print(f"      ℹ️  Non-protected worsening: {ds.get('worsened', 0)} items")
+
         # Show top 3 graph hotspots with remediation (Prompt 7)
         top_graph = graph_watchlist_items[:3]
         for i, item in enumerate(top_graph, 1):

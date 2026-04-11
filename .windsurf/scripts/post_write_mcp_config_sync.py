@@ -34,8 +34,8 @@ def _validate_ssot(path: Path) -> list[str]:
         for name, cfg in servers.items():
             if not isinstance(cfg, dict):
                 continue
-            if not cfg.get("command") and not cfg.get("url"):
-                issues.append(f"Server '{name}' has neither 'command' nor 'url'")
+            if not cfg.get("command") and not cfg.get("url") and not cfg.get("serverUrl"):
+                issues.append(f"Server '{name}' has neither 'command', 'url', nor 'serverUrl'")
             env = cfg.get("env", {})
             for key, val in env.items():
                 if not isinstance(val, str) or val.startswith("${"):

@@ -1,4 +1,4 @@
-# ADR-002: Single MCP Config Sync Script (YAML → Global JSON)
+# ADR-020: Single MCP Config Sync Script (YAML → Global JSON)
 
 **Status**: ACCEPTED  
 **Date**: 2026-04-07  
