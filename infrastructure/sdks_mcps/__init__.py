@@ -23,6 +23,7 @@ Usage:
 __all__ = [
     # builder functions
     "create_openai_client",
+    "create_openai_sync_client",
     "create_anthropic_client",
     "create_vertex_client",
     # Client classes
@@ -50,6 +51,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 def create_openai_client():
     """Create OpenAI client - minimal wrapper for migration."""
     import openai
@@ -58,6 +60,16 @@ def create_openai_client():
     if not api_key:
         raise ValueError("OPENAI_API_KEY missing")
     return openai.AsyncOpenAI(api_key=api_key)
+
+
+def create_openai_sync_client():
+    """Create synchronous OpenAI client for sync call sites."""
+    import openai
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY missing")
+    return openai.OpenAI(api_key=api_key)
 
 
 def create_anthropic_client():

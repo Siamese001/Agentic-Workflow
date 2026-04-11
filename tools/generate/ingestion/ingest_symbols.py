@@ -127,7 +127,7 @@ def load_from_adg(adg_path: Path) -> list[dict]:
         rows = cur.fetchall()
         conn.close()
 
-        for row in rows:
+        for row in rows:  # tqdm: DB result rows, no bar needed
             adg_name = row["adg_name"] or ""
             node_type = (row[node_type_col] if node_type_col else None) or "unknown"
             layer = row["layer"] or detect_layer(row["file_path"] if "file_path" in cols else "")
@@ -175,11 +175,11 @@ def load_from_adg(adg_path: Path) -> list[dict]:
 def load_from_ast(repo_root: Path) -> list[dict]:
     """Fallback: extract symbols from live AST scan."""
     docs = []
-    for scan_dir in SCAN_DIRS:
+    for scan_dir in SCAN_DIRS:  # tqdm: small fixed dir list, no bar needed
         base = repo_root / scan_dir
         if not base.exists():
             continue
-        for py_file in base.rglob("*.py"):
+        for py_file in base.rglob("*.py"):  # tqdm: filesystem rglob, no bar needed
             if any(excl in py_file.parts for excl in EXCLUDE_DIRS):
                 continue
             try:
@@ -219,7 +219,7 @@ def load_from_ast(repo_root: Path) -> list[dict]:
                 }
             )
 
-            for node in ast.walk(tree):
+            for node in ast.walk(tree):  # tqdm: AST walk, no bar needed
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     continue
                 if not hasattr(node, "lineno"):

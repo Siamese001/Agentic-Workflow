@@ -118,7 +118,7 @@ class ArchitectureWitnessGate(ADGGateBase):
             return self._empty_result()
 
         missing_tables = _REQUIRED_TABLES - existing_tables
-        for tbl in sorted(missing_tables):
+        for tbl in sorted(missing_tables):  # tqdm: short sorted set, no bar needed
             summary["tables_missing"].append(tbl)
             violations.append(
                 GateViolation(
@@ -171,7 +171,7 @@ class ArchitectureWitnessGate(ADGGateBase):
 
         present_cc = {row[0] for row in cc_rows}
         missing_required = _REQUIRED_LIVE_CC - present_cc
-        for family in sorted(missing_required):
+        for family in sorted(missing_required):  # tqdm: short sorted set, no bar needed
             summary["schema_violations"].append(
                 f"Required Class A family '{family}' missing from mv_cross_cutting_witness_tiers"
             )
@@ -197,7 +197,7 @@ class ArchitectureWitnessGate(ADGGateBase):
                 )
             )
 
-        for family_name, live_rt, plumbing, test, orphaned in cc_rows:
+        for family_name, live_rt, plumbing, test, orphaned in cc_rows:  # tqdm: DB result set, no bar needed
             if family_name in _REQUIRED_LIVE_CC and orphaned > 0:
                 summary["class_a_required_violations"] += 1
                 violations.append(
@@ -234,7 +234,7 @@ class ArchitectureWitnessGate(ADGGateBase):
                 summary["class_a_planned_warnings"] += 1
 
         # -- Class B: absence/negative families --------------------------------
-        for family, breach_view in _CLASS_B_BREACH.items():
+        for family, breach_view in _CLASS_B_BREACH.items():  # tqdm: small config dict, no bar needed
             b_status: dict[str, Any] = {
                 "family": family,
                 "gate_class": "B",

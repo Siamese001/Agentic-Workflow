@@ -479,7 +479,7 @@ def generate_full_adg(
 
         # Show top 3 graph hotspots with remediation (Prompt 7)
         top_graph = graph_watchlist_items[:3]
-        for i, item in enumerate(top_graph, 1):
+        for i, item in enumerate(top_graph, 1):  # tqdm: top-3 slice, no bar needed
             signals = []
             if item.reverse_dep_score > 0:
                 signals.append("RevDep")

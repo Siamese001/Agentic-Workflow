@@ -95,7 +95,7 @@ def extract_entities(source: str, file_path: Path) -> list[dict]:
     rel_path = str(file_path.relative_to(REPO_ROOT))
     module_name = rel_path.replace("\\", "/").replace("/", ".").removesuffix(".py")
 
-    for node in ast.walk(tree):
+    for node in ast.walk(tree):  # tqdm: AST walk, no bar needed
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             continue
         if not hasattr(node, "lineno"):
@@ -144,7 +144,7 @@ def chunk_file(source: str, file_path: Path, chunk_size: int = 60) -> list[dict]
     chunks = []
     step = max(1, chunk_size - 10)
 
-    for i in range(0, len(lines), step):
+    for i in range(0, len(lines), step):  # tqdm: line-chunk window, no bar needed
         chunk_lines = lines[i : i + chunk_size]
         chunk_text = "".join(chunk_lines)
         if not chunk_text.strip():
@@ -165,11 +165,11 @@ def chunk_file(source: str, file_path: Path, chunk_size: int = 60) -> list[dict]
 def collect_documents(repo_root: Path) -> list[dict]:
     """Walk repo source dirs and collect entity+chunk documents."""
     docs = []
-    for scan_dir in SCAN_DIRS:
+    for scan_dir in SCAN_DIRS:  # tqdm: small fixed dir list, no bar needed
         base = repo_root / scan_dir
         if not base.exists():
             continue
-        for py_file in base.rglob("*.py"):
+        for py_file in base.rglob("*.py"):  # tqdm: filesystem rglob, no bar needed
             if any(excl in py_file.parts for excl in EXCLUDE_DIRS):
                 continue
             try:
@@ -182,7 +182,7 @@ def collect_documents(repo_root: Path) -> list[dict]:
             canonical_digest = compute_digest(source)
 
             # Entity-level documents (functions + classes)
-            for entity in extract_entities(source, py_file):
+            for entity in extract_entities(source, py_file):  # tqdm: per-file entities, no bar needed
                 doc_text = (
                     f"def {entity['name']}({entity['args']}):\n"
                     if entity["entity_type"] == "function"
@@ -212,7 +212,7 @@ def collect_documents(repo_root: Path) -> list[dict]:
                 )
 
             # File-level chunks
-            for chunk in chunk_file(source, py_file):
+            for chunk in chunk_file(source, py_file):  # tqdm: per-file chunks, no bar needed
                 chunk_id_str = f"{chunk['file_path']}:chunk:{chunk['chunk_index']}"
                 docs.append(
                     {

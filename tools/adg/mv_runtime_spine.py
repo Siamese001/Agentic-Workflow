@@ -262,7 +262,7 @@ def print_summary_table(views: list[ViewResult]) -> None:
     )
     print(fmt_hdr)
     print("-" * width)
-    for view in views:
+    for view in views:  # tqdm: small fixed result set, no bar needed
         print(f"  [{view.name}]")
         for row in view.rows:
             rt_orphan = "TRUE  !" if row.runtime_orphaned else "false"
@@ -347,7 +347,7 @@ def print_cross_cutting_summary(results: list[CrossCuttingFamilyResult]) -> None
     hdr = f"  {'Family':<42}  {'rels':>4}  {'plumbing':>8}  {'test':>6}  {'live_rt':>7}  {'rt_orphaned':>11}"
     print(hdr)
     print("-" * width)
-    for r in results:
+    for r in results:  # tqdm: DB result set, no bar needed
         flag = "TRUE  !" if r.runtime_orphaned else "false"
         line = (
             f"  {r.family_name:<42}"

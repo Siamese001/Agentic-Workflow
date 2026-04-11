@@ -554,7 +554,7 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
             provider_adg_names.append(name)
 
     # Drop existing views (idempotent recreation) — order matters for dependencies
-    for vname in (
+    for vname in (  # tqdm: small fixed tuple of view names, no bar needed
         "v_infra_violations_summary",  # depends on P0 views, drop first
         "v_p0_apps_direct_infra",
         "v_p0_provider_bypass",

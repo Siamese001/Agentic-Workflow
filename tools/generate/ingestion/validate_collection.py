@@ -97,7 +97,7 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
     meta_errors = 0
     required_keys = REQUIRED_META_KEYS.get(collection_name, set())
 
-    for i in range(len(embeddings)):
+    for i in range(len(embeddings)):  # tqdm: sampled embedding check, no bar needed
         emb = embeddings[i]
         if emb is None:
             dim_errors += 1

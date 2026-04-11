@@ -176,10 +176,6 @@ _emit_validated_by_safety_plane("p1", "dependencygraph_validator", "safety_valid
 _emit_invokes_eval("p1", "dependencygraph_validator", "eval_call")
 _emit_proposal_commits_routing("p1", "dependencygraph_validator", "routing_commit")
 
-try:
-    from google import genai
-except ImportError:  # guardian: allow-silent-swallow
-    genai = None
 few_shot_hygiene = '\n# Example 1: Missing docstring\n# Original:\n# def my_func(arg):\n#     return arg * 2\n# Refactored:\n# def my_func(arg):\n#     """Doubles the input argument."""\n#     return arg * 2\n\n# Example 2: Incorrect variable naming (not snake_case)\n# Original:\n# myVariable = 10\n# Refactored:\n# my_variable = 10\n\n# Example 3: Unused import\n# Original:\n# import os\n# def func():\n#     pass\n# Refactored:\n# def func():\n#     pass\n\n# Example 4: Trailing whitespace\n# Original:\n# def func():\n#     print("hello")\n# Refactored:\n# def func():\n#     print("hello")\n\n# Example 5: Line too long (over 80 chars)\n# Original:\n# def some_long_function_name(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10):\n#     pass\n# Refactored:\n# def some_long_function_name(\n#     arg1, arg2, arg3, arg4, arg5,\n#     arg6, arg7, arg8, arg9, arg10\n# ):\n#     pass\n'
 few_shot_style = "\n# Example 1: Function name not snake_case\n# Original:\n# def MyFunction():\n#     pass\n# Refactored:\n# def my_function():\n#     pass\n\n# Example 2: Class name not CamelCase\n# Original:\n# class my_class:\n#     pass\n# Refactored:\n# class MyClass:\n#     pass\n\n# Example 3: Constant not ALL_CAPS\n# Original:\n# my_constant = 10\n# Refactored:\n# MY_CONSTANT = 10\n\n# Example 4: Missing blank line after imports\n# Original:\n# import os\n# import sys\n# def func():\n#     pass\n# Refactored:\n# import os\n# import sys\n\n# def func():\n#     pass\n\n# Example 5: Missing blank line after class definition\n# Original:\n# class MyClass:\n#     pass\n# def func():\n#     pass\n# Refactored:\n# class MyClass:\n#     pass\n\n\n# def func():\n#     pass\n"
 
@@ -361,8 +357,11 @@ class ValidationContext:
 
     def _init_intelligence(self):
         api_key = os.environ.get("GOOGLE_API_KEY")
-        if api_key and genai:
+        if api_key:
             try:
+                from infrastructure.sdks_mcps import create_vertex_client
+
+                genai = create_vertex_client()
                 self._client = genai.Client(api_key=api_key)
                 self.intelligence_enabled = True
                 print("      [OK] Gemini Connected")

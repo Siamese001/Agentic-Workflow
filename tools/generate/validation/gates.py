@@ -1572,7 +1572,7 @@ def _check_witness_tier_gates(sqlite_path: Path | None = None) -> dict[str, Any]
                 " GROUP BY view_name"
             ).fetchall()
 
-            for view_name, _live_rt_total, orphaned_count in spine_rows:
+            for view_name, _live_rt_total, orphaned_count in spine_rows:  # tqdm: DB result set, no bar needed
                 if view_name in _CLASS_A_SPINE_FAMILIES_PLANNED and orphaned_count > 0:
                     print(
                         f"[ADG-WITNESS][PLANNED] {view_name}: "
@@ -1609,7 +1609,13 @@ def _check_witness_tier_gates(sqlite_path: Path | None = None) -> dict[str, Any]
                 result["error"] = msg
                 sys.exit(1)
 
-            for family_name, live_rt, plumbing, test, orphaned in cc_rows:
+            for (
+                family_name,
+                live_rt,
+                plumbing,
+                test,
+                orphaned,
+            ) in cc_rows:  # tqdm: DB result set, no bar needed
                 if family_name in _CLASS_A_CC_FAMILIES_REQUIRED:
                     if orphaned > 0:
                         msg = (
@@ -1647,7 +1653,7 @@ def _check_witness_tier_gates(sqlite_path: Path | None = None) -> dict[str, Any]
                         )
 
             # -- Class B: absence/negative families --------------------------
-            for family, breach_view in _CLASS_B_FAMILIES.items():
+            for family, breach_view in _CLASS_B_FAMILIES.items():  # tqdm: small config dict, no bar needed
                 status_b: dict[str, Any] = {
                     "family": family,
                     "gate_class": "B",

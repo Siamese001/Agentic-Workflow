@@ -36,6 +36,7 @@ class SemanticKnowledgeObject:
 
     This is the 🟠 fact_vec payload that gets stored in Vector DB.
     """
+
     chunk_id: str
     title: str
     summary: str
@@ -133,15 +134,11 @@ class SemanticEnricher:
         """Initialize default LLM client based on provider."""
         if self.provider == "openai":
             try:
-                from openai import OpenAI
-                api_key = os.getenv("OPENAI_API_KEY")
-                if api_key:
-                    self.llm_client = OpenAI(api_key=api_key)
-                else:
-                    Logger.warning("OPENAI_API_KEY not set, enrichment will use mock")
-                    self.llm_client = None
-            except ImportError:
-                Logger.warning("OpenAI not installed, enrichment will use mock")
+                from infrastructure.sdks_mcps import create_openai_sync_client
+
+                self.llm_client = create_openai_sync_client()
+            except (ImportError, ValueError):
+                Logger.warning("OpenAI not configured, enrichment will use mock")
                 self.llm_client = None
         else:
             Logger.warning(f"Provider {self.provider} not yet supported, using mock")
@@ -283,7 +280,10 @@ Respond with ONLY valid JSON."""
                 response = self.llm_client.chat.completions.create(
                     model=self.model,
                     messages=[
-                        {"role": "system", "content": "You are a semantic enrichment engine. Output valid JSON only."},
+                        {
+                            "role": "system",
+                            "content": "You are a semantic enrichment engine. Output valid JSON only.",
+                        },
                         {"role": "user", "content": prompt},
                     ],
                     temperature=0.1,
@@ -367,7 +367,11 @@ Respond with ONLY valid JSON."""
         Returns:
             Dict with enriched fields (enriched_text, title, summary, key_concepts, etc.)
         """
-        chunk_id = metadata.get("chunk_id", metadata.get("id", "unknown")) if isinstance(metadata, dict) else "unknown"
+        chunk_id = (
+            metadata.get("chunk_id", metadata.get("id", "unknown"))
+            if isinstance(metadata, dict)
+            else "unknown"
+        )
         knowledge_obj = self.enrich_chunk(
             chunk_id=chunk_id,
             raw_text=chunk_text,

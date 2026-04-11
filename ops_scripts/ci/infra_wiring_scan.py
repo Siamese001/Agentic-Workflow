@@ -117,7 +117,7 @@ def scan_file(file_path: Path) -> list[tuple[int, str]] | None:
         _log.warning("Could not read %s: %s", file_path, exc)
         return None
 
-    for line_num, line in enumerate(lines, start=1):
+    for line_num, line in enumerate(lines, start=1):  # tqdm: per-file line scan, no bar needed
         line_stripped = line.strip()
         for forbidden in FORBIDDEN_IMPORTS:
             if line_stripped.startswith(forbidden):
@@ -161,7 +161,7 @@ def scan_directory(root_dir: Path) -> dict[str, list[tuple[int, str]]]:
     violations = {}
 
     # Scan agentic_core
-    for py_file in root_dir.glob("agentic_core/**/*.py"):
+    for py_file in root_dir.glob("agentic_core/**/*.py"):  # tqdm: filesystem glob, no bar needed
         if not is_allowed_path(py_file):
             file_violations = scan_file(py_file)
             if file_violations:
@@ -184,7 +184,7 @@ def _classify_violations(
 ) -> list[dict[str, str]]:
     """Convert raw violations to P0 detail records for the scorecard."""
     details: list[dict[str, str]] = []
-    for file_path, file_violations in violations.items():
+    for file_path, file_violations in violations.items():  # tqdm: violation dict, no bar needed
         rel_path = Path(file_path)
         # Extract a short relative path from the repo root
         parts = rel_path.parts
