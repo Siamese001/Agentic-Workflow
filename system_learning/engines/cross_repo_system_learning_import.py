@@ -19,6 +19,7 @@ import json
 import os
 import re
 from dataclasses import asdict, dataclass, replace
+from tqdm import tqdm
 from pathlib import Path
 from typing import Any, Literal
 
@@ -303,11 +304,11 @@ def _derive_ingestion_timestamp_from_path(path: str) -> int:
 
 def discover_artifacts(git_root: Path) -> tuple[DiscoveredArtifact, ...]:
     artifacts: list[DiscoveredArtifact] = []
-    for current, dirnames, filenames in os.walk(git_root, topdown=True):
+    for current, dirnames, filenames in tqdm(os.walk(git_root, topdown=True), desc="walk git root", unit="dir", leave=False):
         dirnames[:] = sorted(d for d in dirnames if d not in _EXCLUDED_DIR_NAMES)
         filenames.sort()
         current_path = Path(current)
-        for filename in filenames:
+        for filename in tqdm(filenames, desc="  files", unit="file", leave=False):
             path = current_path / filename
             normalized_path = str(path).replace("\\", "/").lower()
             if any(token in normalized_path for token in _EXCLUDED_PATH_SUBSTRINGS):
@@ -336,7 +337,7 @@ def discover_artifacts(git_root: Path) -> tuple[DiscoveredArtifact, ...]:
     # Deterministic duplicate suppression by normalized content hash
     canonical_by_hash: dict[str, str] = {}
     deduped: list[DiscoveredArtifact] = []
-    for item in artifacts:
+    for item in tqdm(artifacts, desc="dedupe artifacts", unit="item", leave=False):
         canonical = canonical_by_hash.get(item.content_hash)
         if canonical is None:
             canonical_by_hash[item.content_hash] = item.absolute_path
@@ -355,7 +356,7 @@ def discover_artifacts(git_root: Path) -> tuple[DiscoveredArtifact, ...]:
 
 def build_accepted_manifest(discovered: tuple[DiscoveredArtifact, ...]) -> tuple[AcceptedArtifact, ...]:
     accepted: list[AcceptedArtifact] = []
-    for item in discovered:
+    for item in tqdm(discovered, desc="build manifest", unit="item", leave=False):
         if item.disposition not in {"ingest-as-C0", "ingest-as-L4-memory"}:
             continue
         if item.bucket not in _ALLOWED_BUCKETS or item.bucket == "UNSAFE_OR_UNSCOPED":
@@ -390,7 +391,7 @@ def build_embedding_import_records(accepted: tuple[AcceptedArtifact, ...]) -> tu
     records: list[EmbeddingImportRecord] = []
     seen_hashes: set[str] = set()
 
-    for item in accepted:
+    for item in tqdm(accepted, desc="validate accepted", unit="item", leave=False):
         path = Path(item.source_path)
         if path.suffix.lower() not in _TEXT_EXTENSIONS:
             continue
@@ -637,7 +638,7 @@ def load_cross_repo_learning_context(repo_root: Path) -> dict[str, Any]:
         raise RuntimeError("HARD FAIL: cross-repo context proposal_only must remain True")
 
     seen_paths: dict[str, str] = {}
-    for row in accepted:
+    for row in tqdm(accepted, desc="check rows", unit="row", leave=False):
         missing = sorted(_REQUIRED_ACCEPTED_FIELDS - set(row.keys()))
         if missing:
             raise RuntimeError(f"HARD FAIL: accepted manifest row missing fields: {missing}")
