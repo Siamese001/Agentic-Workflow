@@ -2,6 +2,7 @@
 Focused Redis hot-cache query: RLHF and SFT gaps only.
 """
 import redis
+from tqdm import tqdm
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -52,10 +53,10 @@ print("=" * 70)
 
 all_prod_nodes = []
 
-for filepath in TARGET_FILES:
+for filepath in tqdm(TARGET_FILES, desc="Querying RLHF/SFT files", unit="file"):
     nodes = get_nodes_for_file(filepath)
     print(f"\n[FILE] {filepath}  ({len(nodes)} nodes)")
-    for n in nodes:
+    for n in tqdm(nodes, desc=f"  nodes", unit="node", leave=False):
         nid = n.get('id', '?')
         name = n.get('adg_name', '?').replace('ADG::Module::','').replace('ADG::Symbol::','')
         layer = n.get('layer', '?')
@@ -84,10 +85,10 @@ print("=" * 70)
 
 # From the snapshot we know: builds_dpo_batch=43, produces_preference_pair=13
 # Let's find which prod nodes have these
-for rel in ['builds_dpo_batch', 'produces_preference_pair']:
+for rel in tqdm(['builds_dpo_batch', 'produces_preference_pair'], desc="Edge types", unit="type"):
     keys = r.keys(f'adg:edge:*:{rel}')
     print(f"\n[{rel}] ({len(keys)} source nodes total)")
-    for k in keys:
+    for k in tqdm(keys, desc=f"  {rel}", unit="src", leave=False):
         parts = k.decode().split(':')
         src_id = parts[2]
         data = r.hgetall(f'adg:node:{src_id}')
@@ -109,12 +110,12 @@ print("RLHF FEEDBACK LOOP CONNECTIVITY CHECK")
 print("=" * 70)
 
 # Find if rlhf_optimizer or dpo_batch_builder are imported by anything
-for filepath in ['system_learning/engines/rlhf_optimizer.py',
+for filepath in tqdm(['system_learning/engines/rlhf_optimizer.py',
                  'system_learning/engines/rlhf_optimizer_impl.py',
                  'agentic_core/utils/workflow_engines/dpo_batch_builder.py',
-                 'system_learning/engines/governance_reward_model.py']:
+                 'system_learning/engines/governance_reward_model.py'], desc="Connectivity check", unit="file"):
     nodes = get_nodes_for_file(filepath)
-    for n in nodes:
+    for n in tqdm(nodes, desc=f"  {filepath.split('/')[-1]}", unit="node", leave=False):
         nid = n.get('id')
         name = n.get('adg_name','?').replace('ADG::Module::','')
         layer = n.get('layer','?')
@@ -149,7 +150,7 @@ print("\n\n" + "=" * 70)
 print("GOVERNANCE REWARD MODEL DETAILS")
 print("=" * 70)
 nodes = get_nodes_for_file('system_learning/engines/governance_reward_model.py')
-for n in nodes:
+for n in tqdm(nodes, desc="governance nodes", unit="node", leave=False):
     nid = n.get('id')
     name = n.get('adg_name','?')
     layer = n.get('layer','?')
