@@ -13,6 +13,7 @@ import hashlib
 import json
 import math
 import uuid
+from tqdm import tqdm
 from dataclasses import asdict, dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
@@ -351,7 +352,7 @@ class PatternAnalysisEngine:
                 raise ValueError(f"Invalid healing_snapshot_bytes: {exc}") from exc
             healing_version = snap.get("version_id")
             aggregates = snap.get("aggregates", [])
-            for agg in aggregates:
+            for agg in tqdm(aggregates, desc="aggregates", unit="agg", leave=False):
                 key_data = agg.get("key", {})
                 healer = key_data.get("healer_name", "unknown")
                 counts = agg.get("aggregate", agg.get("counts", {}))
@@ -383,7 +384,7 @@ class PatternAnalysisEngine:
             try:
                 drift = _json.loads(drift_snapshot_bytes.decode("utf-8"))
                 drift_version = drift.get("version")
-                for score_entry in drift.get("drift_scores", []):
+                for score_entry in tqdm(drift.get("drift_scores", []), desc="drift scores", unit="score", leave=False):
                     component = score_entry.get("component", "unknown")
                     score = score_entry.get("score", 0.0)
                     if score >= self._config.drift_score_threshold:
@@ -479,7 +480,7 @@ class PatternAnalysisEngine:
         distance_threshold = 0.25
         clusters = []
         assigned = set()
-        for idx, embedding in indexed_embeddings:
+        for idx, embedding in tqdm(indexed_embeddings, desc="clustering", unit="embedding", leave=False):
             if idx in assigned:
                 continue
             cluster_indices = [idx]
@@ -595,7 +596,7 @@ class PatternAnalysisEngine:
         domain_analysis = {}
         shared_patterns = []
 
-        for domain, events in domain_patterns.items():
+        for domain, events in tqdm(domain_patterns.items(), desc="domain analysis", unit="domain", leave=False):
             # Extract success rates
             success_rates = [event.get("success_rate", 0.0) for event in events]
 
@@ -624,8 +625,8 @@ class PatternAnalysisEngine:
         cross_domain_correlations = []
         domains = list(domain_patterns.keys())
         if len(domains) > 1:
-            for i, domain1 in enumerate(domains):
-                for domain2 in domains[i+1:]:
+            for i, domain1 in tqdm(enumerate(domains), desc="cross-domain", unit="pair", total=len(domains), leave=False):
+                for domain2 in tqdm(domains[i+1:], desc="domain pairs", unit="domain", leave=False):
                     # Simple correlation based on average success rates
                     rate1 = domain_analysis[domain1]["avg_success_rate"]
                     rate2 = domain_analysis[domain2]["avg_success_rate"]
