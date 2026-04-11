@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from tqdm import tqdm
 from typing import TYPE_CHECKING, Literal
 
 from agentic_core.adg.schema import PROMPT_SLOT_AUTHORITY, PROMPT_SLOT_TYPES
@@ -320,7 +321,7 @@ def detect_prompt_authority_violations(result: ScanResult) -> PromptAuthorityRep
     # Pass 1: module -> {slot_type: (to_name, source_file, line_no)}
     module_slots: dict[str, dict[str, tuple[str, str, int]]] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="prompt edges", unit="edge", leave=False):
         if edge.relation_type != "generates_prompt":
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):
@@ -355,10 +356,10 @@ def detect_prompt_authority_violations(result: ScanResult) -> PromptAuthorityRep
     # Pass 3: detect authority inversions — module generates both a low AND a high-authority slot
     violations: list[PromptAuthorityViolation] = []
 
-    for mod_path, slots in module_slots.items():
+    for mod_path, slots in tqdm(module_slots.items(), desc="module slots", unit="mod", leave=False):
         generated_slot_types = set(slots.keys())
-        for low_slot in generated_slot_types:
-            for high_slot in generated_slot_types:
+        for low_slot in tqdm(generated_slot_types, desc="  low slots", unit="slot", leave=False):
+            for high_slot in tqdm(generated_slot_types, desc="    high slots", unit="slot", leave=False):
                 if low_slot == high_slot:
                     continue
                 low_rank = PROMPT_SLOT_AUTHORITY.get(low_slot, 99)
@@ -384,7 +385,7 @@ def detect_prompt_authority_violations(result: ScanResult) -> PromptAuthorityRep
 
     # Pass 4: detect missing D0 fences — assembly modules that generate S0 or I0 but not D0
     missing_fences: list[str] = []
-    for mod_path, slot_set in assembly_modules.items():
+    for mod_path, slot_set in tqdm(assembly_modules.items(), desc="assembly mods", unit="mod", leave=False):
         has_assembly_slots = bool(slot_set & {"S0", "I0", "C0", "U0"})
         has_d0 = "D0" in slot_set
         if has_assembly_slots and not has_d0 and len(slot_set) >= 2:
