@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import ast
 from typing import TYPE_CHECKING
+from tqdm import tqdm
 
 from . import BaseStructuralVisitor, VisitorContext, register_visitor
 
@@ -39,7 +40,7 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
             self.generic_visit(node)
             return
 
-        for alias in node.names:
+        for alias in tqdm(node.names, desc="import aliases", unit="alias", leave=False):
             module = alias.name.split(".")[0]
             to_name = canonical_name("Symbol", f"{module}.*")
             self.edges.append(
@@ -67,7 +68,7 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
 
         module = node.module or ""
         to_name = canonical_name("Symbol", f"{module}.*")
-        for alias in node.names:
+        for alias in tqdm(node.names, desc="star import", unit="alias", leave=False):
             self.edges.append(
                 _Edge(
                     from_name=self._module_adg_name,
@@ -125,7 +126,7 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
 
         # Return type annotation
         if node.returns:
-            for name in self._extract_annotation_names(node.returns):
+            for name in tqdm(self._extract_annotation_names(node.returns), desc="return ann", unit="name", leave=False):
                 self.edges.append(
                     _Edge(
                         from_name=self._module_adg_name,
@@ -139,9 +140,9 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
                 )
 
         # Argument annotations
-        for arg in node.args.args + node.args.kwonlyargs:
+        for arg in tqdm(node.args.args + node.args.kwonlyargs, desc="arg ann", unit="arg", leave=False):
             if arg.annotation:
-                for name in self._extract_annotation_names(arg.annotation):
+                for name in tqdm(self._extract_annotation_names(arg.annotation), desc="  ann names", unit="name", leave=False):
                     self.edges.append(
                         _Edge(
                             from_name=self._module_adg_name,
@@ -162,7 +163,7 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         if node.annotation:
-            for name in self._extract_annotation_names(node.annotation):
+            for name in tqdm(self._extract_annotation_names(node.annotation), desc="var ann", unit="name", leave=False):
                 self.edges.append(
                     _Edge(
                         from_name=self._module_adg_name,
@@ -211,7 +212,7 @@ class _DecoratorVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
-        for decorator in node.decorator_list:
+        for decorator in tqdm(node.decorator_list, desc="decorators", unit="dec", leave=False):
             name = self._get_decorator_name(decorator)
             if name:
                 self.edges.append(
@@ -232,7 +233,7 @@ class _DecoratorVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
-        for decorator in node.decorator_list:
+        for decorator in tqdm(node.decorator_list, desc="decorators", unit="dec", leave=False):
             name = self._get_decorator_name(decorator)
             if name:
                 self.edges.append(
@@ -359,7 +360,7 @@ class _UnusedImportVisitor(BaseStructuralVisitor):
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         unused = set(self._imported_names.keys()) - self._used_names
-        for name in unused:
+        for name in tqdm(unused, desc="unused imports", unit="name", leave=False):
             self.edges.append(
                 _Edge(
                     from_name=self._module_adg_name,
