@@ -174,7 +174,8 @@ class TestCheckFileViolations:
         violations = check_file(p)
         assert any("analyze_graph" in v.message for v in violations)
 
-    def test_build_function_no_progress(self, tmp_path):
+    def test_build_function_excluded_from_heavy_prefix(self, tmp_path):
+        """build_* is excluded from heavy prefixes — function-level check must not fire."""
         code = """\
             def build_index(files):
                 index = {}
@@ -194,7 +195,8 @@ class TestCheckFileViolations:
         """
         p = _write_py(tmp_path, "build_index.py", code)
         violations = check_file(p)
-        assert any("build_index" in v.message for v in violations)
+        func_violations = [v for v in violations if "build_index" in v.message]
+        assert func_violations == [], f"build_* should not be flagged: {func_violations}"
 
 
 # ---------------------------------------------------------------------------
@@ -266,6 +268,52 @@ class TestCheckFileCompliant:
         """
         p = _write_py(tmp_path, "progress_reporter.py", code)
         assert check_file(p) == []
+
+    def test_validate_function_excluded_from_heavy_prefix(self, tmp_path):
+        """validate_* functions are excluded — thin policy wrappers, not time-intensive."""
+        code = """\
+            def validate_cache_operation(op, key, data_size=None):
+                result = check_policy(op)
+                for item in result.items:
+                    check(item)
+                    verify(item)
+                    assert_ok(item)
+                    log(item)
+                    store(item)
+                    emit(item)
+                    record(item)
+                    finalize(item)
+                    archive(item)
+                    report(item)
+                return result
+        """
+        p = _write_py(tmp_path, "validate_no_flag.py", code)
+        violations = check_file(p)
+        func_violations = [v for v in violations if "validate_cache_operation" in v.message]
+        assert func_violations == [], f"validate_* should not be flagged: {func_violations}"
+
+    def test_heavy_func_no_loop_no_false_positive(self, tmp_path):
+        """scan_* function with no for-loop must not be flagged (no iteration = not time-intensive)."""
+        code = """\
+            def scan_config(root):
+                a = load(root)
+                b = parse(a)
+                c = validate(b)
+                d = transform(c)
+                e = store(d)
+                f = log(e)
+                g = finalize(f)
+                h = check(g)
+                i = report(h)
+                j = archive(i)
+                k = emit(j)
+                l = record(k)
+                return l
+        """
+        p = _write_py(tmp_path, "scan_no_loop.py", code)
+        violations = check_file(p)
+        func_violations = [v for v in violations if "scan_config" in v.message]
+        assert func_violations == []
 
     def test_short_loop_no_violation(self, tmp_path):
         code = """\

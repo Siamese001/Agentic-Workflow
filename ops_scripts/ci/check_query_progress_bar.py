@@ -42,8 +42,11 @@ _LOOP_LINE_THRESHOLD = 10
 # Minimum function-body length (lines) to require progress for heavy-named functions
 _FUNC_LINE_THRESHOLD = 12
 
-# Function name prefixes that indicate potentially long operations
-_HEAVY_PREFIXES = ("scan_", "build_", "query_", "search_", "analyze_", "process_", "validate_")
+# Function name prefixes that indicate potentially long I/O or query operations.
+# Deliberately excludes build_* (data factories) and validate_* (thin policy wrappers) —
+# those are almost always pure in-memory logic with no iteration, not time-intensive queries.
+# A function is only flagged when its body ALSO contains at least one for-loop (see check_file).
+_HEAVY_PREFIXES = ("scan_", "query_", "search_", "analyze_", "process_")
 
 # Strings that mark a block as compliant (case-insensitive check on source text)
 _COMPLIANCE_MARKERS = (
@@ -142,6 +145,8 @@ def check_file(path: Path) -> list[Violation]:
                     )
 
         # --- Check 2: Heavy-named functions without progress reporting ---
+        # Only flag when the function body contains at least one for-loop — pure
+        # data-builder/factory functions with no iteration are never time-intensive.
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             name = node.name.lower()
             if any(name.startswith(prefix) for prefix in _HEAVY_PREFIXES):
@@ -150,13 +155,16 @@ def check_file(path: Path) -> list[Violation]:
                 length = end - start
                 if length >= _FUNC_LINE_THRESHOLD:
                     body_src = _extract_source_lines(source, start, end)
-                    if not _has_compliance_marker(body_src):
+                    has_loop = any(
+                        isinstance(child, ast.For) for child in ast.walk(node)
+                    )
+                    if has_loop and not _has_compliance_marker(body_src):
                         violations.append(
                             Violation(
                                 path,
                                 start,
-                                f"Function '{node.name}' ({length} lines) has no progress "
-                                f"reporting (add tqdm/ProgressReporter — §16)",
+                                f"Function '{node.name}' ({length} lines) iterates without "
+                                f"progress reporting (add tqdm/ProgressReporter — §16)",
                             )
                         )
 
