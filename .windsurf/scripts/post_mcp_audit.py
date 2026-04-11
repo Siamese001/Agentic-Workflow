@@ -107,6 +107,36 @@ def _mark_task_created() -> None:
         pass  # fail-open: don't disrupt audit on state file error
 
 
+def _mark_task_started() -> None:
+    """Set task_started=true and increment update_task_count. Fail-open on any error."""
+    try:
+        if SESSION_STATE.exists():
+            state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        else:
+            state = {}
+        state["task_started"] = True
+        count = state.get("update_task_count", 0) + 1
+        state["update_task_count"] = count
+        if count >= 2:
+            state["lessons_captured"] = True
+        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+    except (OSError, json.JSONDecodeError):
+        pass  # fail-open
+
+
+def _mark_task_decomposed() -> None:
+    """Set task_decomposed=true in session state. Fail-open on any error."""
+    try:
+        if SESSION_STATE.exists():
+            state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        else:
+            state = {}
+        state["task_decomposed"] = True
+        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+    except (OSError, json.JSONDecodeError):
+        pass  # fail-open
+
+
 def _append_log(record: dict) -> None:
     try:
         AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -145,9 +175,14 @@ def main() -> int:
     }
     _append_log(record)
 
-    # Mark task_created when Cascade calls create_task on the task_manager MCP.
-    if tool_name == "create_task" and "task" in server_name.lower():
-        _mark_task_created()
+    # Track task_manager lifecycle state transitions.
+    if "task" in server_name.lower():
+        if tool_name == "create_task":
+            _mark_task_created()
+        elif tool_name == "update_task":
+            _mark_task_started()
+        elif tool_name == "decompose_task":
+            _mark_task_decomposed()
 
     # GitKraken write-action enriched audit (P0-5 / P1-2)
     if server_name == GITKRAKEN_SERVER_NAME and tool_name in _GITKRAKEN_WRITE_TOOLS:

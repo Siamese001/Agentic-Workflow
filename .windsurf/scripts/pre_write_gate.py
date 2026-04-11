@@ -53,9 +53,14 @@ _RISKY_MCP_PATTERNS = [
 
 def check_task_exists(file_path: str) -> str | None:
     """
-    Return a block reason if current session is T2/T3 and no task was created.
+    Return a block reason if the task lifecycle pre-execution invariants are not met.
     Returns None if write is allowed.
     Fail-open: missing/corrupt state file allows the write.
+
+    Check order (per approved design):
+      1. task_created  — T2/T3: create_task must have been called
+      2. task_decomposed — T3 only: decompose_task must have been called
+      3. task_started  — T2/T3: update_task must have been called (pre-start transition)
     """
     # Only gate .py files in repo — don't block config/docs edits
     if not file_path.endswith(".py"):
@@ -76,14 +81,31 @@ def check_task_exists(file_path: str) -> str | None:
     if tier not in ("T2", "T3"):
         return None
 
-    if state.get("task_created", False):
-        return None
+    # Check 1: task_created
+    if not state.get("task_created", False):
+        return (
+            f"{tier} write attempted without Task Manager task. "
+            "Call create_task (task_manager MCP) before editing files. "
+            "SR_MANDATE step 2 requires task registration for T2/T3 work."
+        )
 
-    return (
-        f"{tier} write attempted without Task Manager task. "
-        "Call create_task (task_manager MCP) before editing files. "
-        "SR_MANDATE step 2 requires task registration for T2/T3 work."
-    )
+    # Check 2: task_decomposed (T3 only)
+    if tier == "T3" and not state.get("task_decomposed", False):
+        return (
+            "T3 write blocked: decompose_task not called. "
+            "Complex T3 work requires decomposition via decompose_task "
+            "(task_manager MCP) before execution."
+        )
+
+    # Check 3: task_started (T2/T3)
+    if not state.get("task_started", False):
+        return (
+            f"{tier} write blocked: update_task not called before execution. "
+            "Call update_task with status='in_progress' on the active task "
+            "before editing files."
+        )
+
+    return None
 
 
 def _exit_block(reason: str) -> int:

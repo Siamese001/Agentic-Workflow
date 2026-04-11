@@ -112,18 +112,75 @@ _SR_MANDATE = """
 """.strip()
 
 
+_TASK_LIFECYCLE_FIELDS = (
+    "task_created",
+    "task_started",
+    "task_decomposed",
+    "update_task_count",
+    "lessons_captured",
+)
+
+
 def _write_session_state(tier: str) -> None:
-    """Persist current tier and reset task_created for this prompt turn."""
+    """
+    Persist current tier and manage task lifecycle state across prompt turns.
+
+    Reset all lifecycle fields only when transitioning to an independent T0/T1
+    prompt (signals prior work is complete).  For T2/T3 prompts — including
+    short continuation turns — preserve existing lifecycle fields so active
+    tasks are not orphaned mid-session.
+    """
     try:
         SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
-        state = {
-            "current_tier": tier,
-            "task_created": False,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+        if tier in ("T0", "T1"):
+            # Independent non-task prompt — full reset is safe.
+            state = {
+                "current_tier": tier,
+                "task_created": False,
+                "task_started": False,
+                "task_decomposed": False,
+                "update_task_count": 0,
+                "lessons_captured": False,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        else:
+            # T2/T3 or continuation — preserve existing lifecycle fields.
+            try:
+                existing = (
+                    json.loads(SESSION_STATE.read_text(encoding="utf-8")) if SESSION_STATE.exists() else {}
+                )
+            except (OSError, json.JSONDecodeError):
+                existing = {}
+            state = {"current_tier": tier, "timestamp": datetime.now(timezone.utc).isoformat()}
+            for field in _TASK_LIFECYCLE_FIELDS:
+                default = 0 if field == "update_task_count" else False
+                state[field] = existing.get(field, default)
         SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
     except OSError:
         pass  # fail-open: don't block on state file write failure
+
+
+def _warn_open_task(tier: str) -> None:
+    """
+    Emit an advisory warning to stderr when a new T2/T3 prompt arrives while a
+    prior task appears to be unclosed (update_task_count < 2).  Warning only —
+    never blocks.
+    """
+    try:
+        if not SESSION_STATE.exists():
+            return
+        state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return
+    if not state.get("task_created", False):
+        return
+    if state.get("update_task_count", 0) < 2:
+        print(
+            f"[pre_prompt_classifier] WARNING: {tier}: prior T2/T3 task was not closed "
+            "(update_task_count < 2). Call update_task(status='done', lessons_learned=...) "
+            "to close it, or the task will be orphaned.",
+            file=sys.stderr,
+        )
 
 
 def classify_tier(prompt: str) -> str:
@@ -276,7 +333,11 @@ def main() -> int:
     tier = classify_tier(prompt)
     print(f"[pre_prompt_classifier] Tier: {tier}", file=sys.stderr)
 
-    # Persist tier and reset task_created flag for this prompt turn.
+    # Advisory: warn before state update so we read the prior turn's lifecycle state.
+    if tier in ("T2", "T3"):
+        _warn_open_task(tier)
+
+    # Persist tier; preserve or reset lifecycle fields per approved design.
     _write_session_state(tier)
 
     if tier in ("T2", "T3"):

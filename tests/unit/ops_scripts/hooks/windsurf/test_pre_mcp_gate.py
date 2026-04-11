@@ -551,7 +551,7 @@ class TestMain:
 
     def test_task_manager_node_not_found_blocked(self):
         """If Node.js is not in PATH, task_manager gate must block non-recovery tools."""
-        payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "decompose_task"}}
+        payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "list_tasks"}}
         with patch(
             "pre_mcp_gate.subprocess.run",
             side_effect=FileNotFoundError("node not found"),
@@ -1331,7 +1331,7 @@ class TestCheckTaskManagerGate:
             assert self._gate()() == 2
 
     def test_recovery_tools_bypass_gate(self):
-        """list_tasks, decompose_task, task_info always bypass the Node.js probe."""
+        """All TASK_MANAGER_RECOVERY_TOOLS always bypass the Node.js probe."""
         with patch(
             "pre_mcp_gate.subprocess.run",
             side_effect=FileNotFoundError("node not found"),
@@ -1341,3 +1341,33 @@ class TestCheckTaskManagerGate:
                 raw = json.dumps(payload)
                 with patch("sys.stdin", StringIO(raw)):
                     assert main() == 0, f"Recovery tool '{tool}' must bypass task_manager gate"
+
+    def test_update_task_whitelisted(self):
+        """update_task must bypass the Node.js gate (lifecycle completion must not be blocked)."""
+        with patch(
+            "pre_mcp_gate.subprocess.run",
+            side_effect=FileNotFoundError("node not found"),
+        ):
+            payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "update_task"}}
+            with patch("sys.stdin", StringIO(json.dumps(payload))):
+                assert main() == 0
+
+    def test_decompose_task_whitelisted(self):
+        """decompose_task must bypass the Node.js gate (T3 decomposition must not be blocked)."""
+        with patch(
+            "pre_mcp_gate.subprocess.run",
+            side_effect=FileNotFoundError("node not found"),
+        ):
+            payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "decompose_task"}}
+            with patch("sys.stdin", StringIO(json.dumps(payload))):
+                assert main() == 0
+
+    def test_unknown_tool_hits_gate_when_node_missing(self):
+        """A tool not in TASK_MANAGER_RECOVERY_TOOLS must go through the Node.js probe."""
+        with patch(
+            "pre_mcp_gate.subprocess.run",
+            side_effect=FileNotFoundError("node not found"),
+        ):
+            payload = {"tool_info": {"mcp_server_name": "task_manager", "mcp_tool_name": "list_tasks"}}
+            with patch("sys.stdin", StringIO(json.dumps(payload))):
+                assert main() == 2
