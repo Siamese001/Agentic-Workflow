@@ -24,6 +24,7 @@ import hashlib
 import json
 import logging
 import uuid
+from tqdm import tqdm
 from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -500,10 +501,10 @@ class SystemLearningMemoryBridge:
             raise
 
         restored: dict[str, tuple[float, int]] = {}
-        for entity in results:
+        for entity in tqdm(results, desc="restore rates", unit="entity", leave=False):
             obs = entity.get("observations", [])
             sig = rate = count = None
-            for o in obs:
+            for o in tqdm(obs, desc="observations", unit="obs", leave=False):
                 if o.startswith("error_signature="):
                     sig = o[len("error_signature=") :]
                 elif o.startswith("rate="):
@@ -579,7 +580,7 @@ class SystemLearningMemoryBridge:
             raise
 
         # Individual finding entities for pattern library queries
-        for finding in rca_findings[:_MAX_RCA_FINDINGS]:
+        for finding in tqdm(rca_findings[:_MAX_RCA_FINDINGS], desc="rca findings", unit="finding", leave=False):
             cat = getattr(finding, "category", "UNKNOWN")
             sig = getattr(finding, "signature", "unknown")
             cnt = getattr(finding, "count", 0)
@@ -629,7 +630,7 @@ class SystemLearningMemoryBridge:
             return results
         # Filter by category in observations (MCP search may not substring-match)
         filtered = []
-        for entity in results:
+        for entity in tqdm(results, desc="filter rca", unit="entity", leave=False):
             for obs in entity.get("observations", []):
                 if obs.startswith("category=") and category in obs:
                     filtered.append(entity)
@@ -708,7 +709,7 @@ class SystemLearningMemoryBridge:
             return results
         # Filter by profile_id in observations (MCP search may not substring-match)
         filtered = []
-        for entity in results:
+        for entity in tqdm(results, desc="filter drift", unit="entity", leave=False):
             for obs in entity.get("observations", []):
                 if obs.startswith("profile_id=") and profile_id in obs:
                     filtered.append(entity)
