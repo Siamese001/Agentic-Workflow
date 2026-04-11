@@ -22,16 +22,20 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
 
-_DEFAULT_DB = Path(r"C:\Git\Agentic-Workflow\artifacts\memory\knowledge_graph.sqlite")
+from tqdm import tqdm
 
-ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset({
-    "ArchitectureLayer",
-    "ProjectContext",
-    "ConstitutionalRule",
-    "EpisodicEvent",
-    "ProceduralPattern",
-    "ArchitecturalDecision",
-})
+_DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
+
+ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset(
+    {
+        "ArchitectureLayer",
+        "ProjectContext",
+        "ConstitutionalRule",
+        "EpisodicEvent",
+        "ProceduralPattern",
+        "ArchitecturalDecision",
+    }
+)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS entities (
@@ -136,14 +140,19 @@ class SqliteMemoryStore:
         skipped: list[str] = []
         rejected: list[dict] = []
         with self.connection() as conn:
-            for e in entities:
+            for e in tqdm(entities, desc="Creating entities", unit="entity", leave=False):
                 name = (e.get("name") or "").strip()
                 if not name:
                     continue
                 etype = e.get("entityType") or "general"
                 if etype not in ALLOWED_ENTITY_TYPES:
-                    rejected.append({"name": name, "entity_type": etype,
-                                     "reason": f"entity_type '{etype}' not in ALLOWED_ENTITY_TYPES"})
+                    rejected.append(
+                        {
+                            "name": name,
+                            "entity_type": etype,
+                            "reason": f"entity_type '{etype}' not in ALLOWED_ENTITY_TYPES",
+                        }
+                    )
                     continue
                 obs_list: list[str] = e.get("observations") or []
                 exists = conn.execute("SELECT 1 FROM entities WHERE name = ?", (name,)).fetchone()
@@ -191,7 +200,7 @@ class SqliteMemoryStore:
         now = time.time()
         created: list[dict] = []
         with self.connection() as conn:
-            for rel in relations:
+            for rel in tqdm(relations, desc="Creating relations", unit="rel", leave=False):
                 from_e = (rel.get("from") or "").strip()
                 to_e = (rel.get("to") or "").strip()
                 rel_type = (rel.get("relationType") or "related_to").strip()
@@ -280,7 +289,7 @@ class SqliteMemoryStore:
         """Delete specific observations. Each item: {entityName, observations: list[str]}."""
         with self.connection() as conn:
             removed: dict[str, int] = {}
-            for item in deletions:
+            for item in tqdm(deletions, desc="Deleting observations", unit="item", leave=False):
                 name = item.get("entityName") or ""
                 obs_list: list[str] = item.get("observations") or []
                 count = sum(
@@ -361,7 +370,7 @@ class SqliteMemoryStore:
         now = time.time()
         with self.connection() as conn:
             self._upsert_entity(conn, name, etype, now)
-            for obs in (observations or []):
+            for obs in observations or []:
                 if obs:
                     self._add_obs(conn, name, obs, now)
 

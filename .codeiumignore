@@ -15,6 +15,7 @@
 # Runtime log artifacts (JSONL audit logs, session summaries)
 **/*.jsonl
 artifacts/windsurf/
+!artifacts/windsurf/session_state.json
 
 # Protobuf session data
 **/*.pb

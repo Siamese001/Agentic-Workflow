@@ -41,6 +41,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tqdm import tqdm
+
 # Add repo root to path so 'tools.memory' imports work when running standalone
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
@@ -445,7 +447,7 @@ def mem_import_adg_context() -> dict[str, Any]:
             "L5": "Safety — validators, guardrails, escalation",
             "L6": "Observability — dashboards, spans, metrics",
         }
-        for layer, desc in layer_descriptions.items():
+        for layer, desc in tqdm(layer_descriptions.items(), desc="Importing ADG layers", unit="layer"):
             count = r.scard(f"adg:nodes:by_layer:{layer}")
             ename = f"Layer:{layer}"
             _store.upsert_entity(
@@ -465,7 +467,7 @@ def mem_import_adg_context() -> dict[str, Any]:
             "entities": imported,
             "adg_timestamp": timestamp,
         }
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # guardian: allow-broad-exception -- Redis/import errors from optional dependency; all failure modes returned as structured {"status":"error"} response to caller, never swallowed
         return {"status": "error", "message": str(exc)}
 
 
