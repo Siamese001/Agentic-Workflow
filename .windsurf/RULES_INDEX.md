@@ -1,6 +1,6 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-04-15
+**Last Updated**: 2026-04-11
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
 > **2026-04-09 SSOT CLARIFICATION**: Windsurf discovers rules directly from `.windsurf/rules/*.md` (one file per rule, 12,000 char limit each). There is no preprocessor — rule files ARE the source of truth. The previously generated `.windsurfrules` aggregate has been deleted.
@@ -37,6 +37,7 @@ vim .windsurf/rules/hitl-enforcement.md
 | **HITL Decision Points** | Windsurf | On demand | Behavioural | `.windsurf/rules/hitl-decision-points.md` (model_decision) | ✅ ENFORCED |
 | **§10.0: Wave/Micro-Wave Plan Model** | Windsurf | Before plan draft | Behavioural | `.windsurf/rules/plan-location.md` + Constitutional Rule #13 | ✅ ENFORCED |
 | **Plan Location Rule** | Pre-commit | After work | Structural | `.windsurf/rules/plan-location.md` | ✅ ENFORCED |
+| **§16: Query Progress Bar** | Both | During work | Behavioural + Structural | `.windsurf/rules/query-progress-bar.md` (always_on) + CI: `check_query_progress_bar.py` | ✅ ENFORCED |
 
 **Notes**:
 - §0: CI gate removed (was misplaced — process rule cannot be verified at commit time)
@@ -227,19 +228,8 @@ The following CI-specific and utility skills were also archived (not consolidate
 39. `check_utility_silent_swallowers.py` ✅ NOW WIRED (§10/§11)
 40. `check_wall_clock_in_determinism.py`
 41. `validate_import_dependencies.py` ✅
+42. `check_query_progress_bar.py` ✅ NEW
 
----
-
-## Coverage Summary
-
-| Category | Total | Enforced | Partial | Missing |
-|----------|-------|----------|---------|---------|
-| Constitutional Rules | 5 | 5 | 0 | 0 |
-| Skills | 6 | 6 | 0 | 0 |
-| CI Gates | 41 | 41 | 0 | 0 |
-| Pre-commit Hooks | 25+ | 25+ | 0 | 0 |
-
-**Overall Coverage**: 100% ✅
 
 ---
 
@@ -301,6 +291,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-05-09
 
 **Changelog**:
+- 2026-04-11: **QUERY PROGRESS BAR** — New constitutional rule §16 (`query-progress-bar.md`, always_on). New CI gate `check_query_progress_bar.py` (detects bare long loops ≥10 lines and heavy-named functions ≥12 lines without progress reporting). New pre-commit hook `check-query-progress-bar` on staged Python files. 38 unit tests added (`tests/ci/test_check_query_progress_bar.py`). `constitutional.md` updated with §16. RULES_INDEX coverage updated: 6 Constitutional Rules, 42 CI Gates, 26+ Pre-commit Hooks.
 - 2026-04-15: **REFACTOR DECISION MEMORY** — New rule `refactor-decision-memory.md` (model_decision). New skill `refactor-decision-memory/` with `lookup_refactor_decisions.py`. New hook `post_cascade_hitl_capture.py` wired into `post_cascade_response`. SQLite+FTS5 ledger at `.windsurf/state/refactor_decisions/`. `hitl-enforcement.md` unchanged — memory system sits under the policy layer. 30 unit tests added.
 - 2026-04-15: **RULE SIZE REDUCTION** — `constitutional.md` 29K→3.3K (always_on core, 16 constraints + tier table). `hitl-enforcement.md` 33K→2.7K (always_on pipeline + bypass + thresholds). New `hitl-decision-points.md` (model_decision, 10 decision triggers + HITL-10 shape + telemetry). `sequential-thinking-enforcement.md` converted from always_on (6.9K) to model_decision (1.8K). `adg-test-accelerator-enforcement.md` description frontmatter added. `skills/graph-analysis/fail_closed_discipline.md` created. All 6 skill entry files confirmed as `SKILL.md`. Always_on rules: constitutional (3.3K), global_rules (3.0K), hitl-enforcement (2.7K), plan-location (1.9K).
 - 2026-04-14: **WINDSURF DOC ALIGNMENT** — All 6 skill entry files renamed `skill.md` → `SKILL.md` (canonical naming). Added `description` frontmatter to 4 `model_decision` rules (`adg-repair-discipline`, `anti-pattern-hitl-gate`, `memory-management`, `security-hardening`) and 2 `glob` rules (`mcp-config-ssot`, `mcp-pytest-enforcement`). New rule: `windsurf-config-lookup.md`. Removed non-standard `file_pattern` fields from `hooks.json`; moved path filtering logic into `post_write_mcp_config_sync.py`. Added 25 support files across all 5 incomplete skill directories (5 per skill). Added `## Windsurf Configuration Docs` block to repo-root `AGENTS.md`. Updated RULES_INDEX: file count 13→14, skills count 5→6, added Conditional Rules table.

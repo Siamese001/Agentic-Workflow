@@ -23,6 +23,7 @@ trigger: always_on
 13. **MCP green light before T2/T3.** Check Redis hot cache first (`adg_redis_ingest.py --check`). Fallback: `mcp1_adg_health`. Both red = BLOCKED.
 14. **Subprocess timeout required.** `subprocess.run(argv, shell=False, timeout=30)`. No exceptions.
 15. **Precise exception handling.** Catch specific types. Bare `except:` FORBIDDEN. `except Exception` without guardian comment FORBIDDEN.
+16. **Query progress bar mandatory.** All operations >5s, loops >10 lines, or heavy-named functions (`scan_*`, `build_*`, `query_*`, etc.) >12 lines MUST display a colored progress bar. CI gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.
 
 ## Tier Classification
 

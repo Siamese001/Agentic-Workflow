@@ -130,6 +130,17 @@ repos:
   - repo: local
     hooks:
 
+      # -- T3b: Query Progress Bar Gate ------------------------------------------------
+      - id: check-query-progress-bar
+        name: "T3b: Query Progress Bar Compliance (§16)"
+        entry: py ops_scripts/ci/check_query_progress_bar.py
+        language: system
+        pass_filenames: true
+        always_run: false
+        require_serial: true
+        types: [python]
+        files: ^(agentic_core|apps_rg|apps_lic|apps_eval|apps_exec|apps_research|apps_rfp|apps_shared|apps_underwriting_ai|ops_scripts|tools|system_learning)/
+
       # -- T6: Pytest Config SSOT Gate -------------------------------------------------
       - id: pytest-config-ssot
         name: "T6: Pytest Config SSOT"
