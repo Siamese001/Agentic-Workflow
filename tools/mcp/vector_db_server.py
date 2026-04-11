@@ -680,11 +680,12 @@ class VectorDBMCPServer:
             embeddings = self.embedding_model.encode(texts, batch_size=batch_size)
             processing_time = time.time() - start_time
 
+            safe_time = max(processing_time, 1e-9)  # guard against sub-timer-resolution runs
             result = "Embedding Results\n"
             result += f"Texts processed: {len(texts)}\n"
             result += f"Processing time: {processing_time:.2f}s\n"
             result += f"Embedding dimension: {embeddings.shape[1]}\n"
-            result += f"Texts per second: {len(texts) / processing_time:.1f}\n"
+            result += f"Texts per second: {len(texts) / safe_time:.1f}\n"
             result += f"return_vectors: {return_vectors}\n\n"
 
             # Previews always present (first 5 dimensions)
@@ -737,7 +738,7 @@ class VectorDBMCPServer:
                 isError=True,
             )
         collections = args.get("collections", [])
-        n_results = min(args.get("n_results", 5), MAX_SEARCH_RESULTS)
+        n_results: int = min(int(args.get("n_results", 5)), MAX_SEARCH_RESULTS)
 
         try:
             # Get all collections if none specified
@@ -784,8 +785,8 @@ class VectorDBMCPServer:
                 except Exception as col_err:  # guardian: allow-broad-exception -- ChromaDB raises heterogeneous errors per collection; non-fatal to preserve cross-collection results
                     collection_errors[collection_name] = str(col_err)
 
-            # Sort merged results by distance ascending
-            merged.sort(key=lambda r: r["distance"])
+            # Sort merged results by distance ascending; secondary keys break ties deterministically
+            merged.sort(key=lambda r: (r["distance"], r["collection"], r["document"]))
 
             result_text = "Semantic Search Results\n"
             result_text += f'Query: "{query}"\n'

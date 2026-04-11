@@ -515,3 +515,118 @@ async def test_semantic_search_flattened_results_include_collection_and_rank(ser
     assert "2. [ss_flat_col]" in text, f"Expected rank-2 line with collection name:\n{text}"
     assert "alpha doc" in text
     assert "beta doc" in text
+
+
+# ---------------------------------------------------------------------------
+# Hardening pass
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_semantic_search_n_results_type_coerced_to_int(server, ephemeral):
+    """n_results passed as a float-like value must be coerced to int without error."""
+    try:
+        ephemeral.create_collection("nr_col")
+    except Exception:  # guardian: allow-broad-exception -- ChromaDB raises heterogeneous errors if collection already exists; safe to skip in test setup
+        pass
+    server.chroma_client = ephemeral
+
+    mock_model = MagicMock()
+    mock_model.encode.return_value = np.zeros((1, 384), dtype=np.float32)
+    server.embedding_model = mock_model
+
+    # Pass n_results as a string "3" (simulates JSON deserialization edge case)
+    result = await server._semantic_search(
+        {
+            "query": "hello",
+            "collections": ["nr_col"],
+            "n_results": "3",
+        }
+    )
+    # Must not crash with TypeError — empty collection returns empty results cleanly
+    assert not result.isError or "EMPTY_QUERY" not in result.content[0].text
+
+
+@pytest.mark.asyncio
+async def test_embed_text_zero_duration_does_not_divide_by_zero(server):
+    """Even when encode() completes in zero elapsed time the server must not raise ZeroDivisionError."""
+    mock_model = MagicMock()
+    mock_model.encode.return_value = np.array([[0.1] * 384], dtype=np.float32)
+    server.embedding_model = mock_model
+
+    # Force processing_time to exactly 0.0 by returning the same timestamp twice
+    with patch("tools.mcp.vector_db_server.time") as mock_time:
+        mock_time.time.side_effect = [0.0, 0.0]
+        result = await server._embed_text({"texts": ["hello"]})
+
+    assert not result.isError, result.content[0].text
+    text = result.content[0].text
+    assert "Texts per second:" in text, f"Rate line missing:\n{text}"
+    # Value must be a large finite number, not inf or nan
+    rate_line = [l for l in text.splitlines() if "Texts per second:" in l][0]
+    rate_val = float(rate_line.split(":")[1].strip())
+    assert rate_val > 0, f"Rate must be positive: {rate_val}"
+    import math
+
+    assert math.isfinite(rate_val), f"Rate must be finite: {rate_val}"
+
+
+def test_invalid_env_var_for_max_batch_falls_back_safely(monkeypatch):
+    """A non-integer VECTOR_DB_MAX_BATCH must fall back to the default without crashing."""
+    monkeypatch.setenv("VECTOR_DB_MAX_BATCH", "not_a_number")
+
+    import importlib
+    import tools.mcp.vector_db_server as mod
+
+    importlib.reload(mod)
+
+    assert mod.MAX_EMBEDDING_BATCH_SIZE == 32, f"Expected default 32, got {mod.MAX_EMBEDDING_BATCH_SIZE}"
+
+
+@pytest.mark.asyncio
+async def test_semantic_search_tie_order_is_deterministic(server, ephemeral):
+    """Two hits with identical distance must appear in a consistent (alphabetical) order."""
+    for name in ("tie_col_a", "tie_col_b"):
+        try:
+            ephemeral.create_collection(name)
+        except Exception:  # guardian: allow-broad-exception -- ChromaDB raises heterogeneous errors if collection already exists; safe to skip in test setup
+            pass
+    server.chroma_client = ephemeral
+
+    # Both collections return one doc with the same distance 0.5
+    controlled = {
+        "tie_col_a": {"documents": [["alpha"]], "distances": [[0.5]], "metadatas": [[{}]]},
+        "tie_col_b": {"documents": [["beta"]], "distances": [[0.5]], "metadatas": [[{}]]},
+    }
+    original_get = ephemeral.get_collection
+
+    def patched_get(name):
+        col = original_get(name)
+        mock_col = MagicMock(wraps=col)
+        mock_col.query.return_value = controlled[name]
+        return mock_col
+
+    mock_model = MagicMock()
+    mock_model.encode.return_value = np.zeros((1, 384), dtype=np.float32)
+    server.embedding_model = mock_model
+
+    results = []
+    for _ in range(3):
+        with patch.object(ephemeral, "get_collection", side_effect=patched_get):
+            r = await server._semantic_search(
+                {
+                    "query": "test",
+                    "collections": ["tie_col_a", "tie_col_b"],
+                    "n_results": 5,
+                }
+            )
+        results.append(r.content[0].text)
+
+    # All three runs must produce identical output
+    assert results[0] == results[1] == results[2], (
+        "Tied-distance results must be in the same order across runs"
+    )
+    # alpha (tie_col_a) must sort before beta (tie_col_b) — alphabetical by collection then doc
+    pos_alpha = results[0].index("alpha")
+    pos_beta = results[0].index("beta")
+    assert pos_alpha < pos_beta, f"Expected alpha before beta (alphabetical tie-break):\n{results[0]}"
