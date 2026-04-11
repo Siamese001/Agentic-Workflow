@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
+from tqdm import tqdm
 from typing import NamedTuple
 
 
@@ -95,7 +96,7 @@ class ExceptionTypeInference:
         # Analyze function body for patterns
         function_code = "\n".join(violation.surrounding_code)
 
-        for exc_type, patterns in self.exception_patterns.items():
+        for exc_type, patterns in tqdm(self.exception_patterns.items(), desc="exc patterns", unit="type", leave=False):
             score = 0.0
             evidence = []
 
@@ -145,7 +146,7 @@ class ExceptionTypeInference:
         """Infer exception types from import statements."""
         candidates = []
 
-        for import_name in violation.imports:
+        for import_name in tqdm(violation.imports, desc="imports", unit="import", leave=False):
             if "json" in import_name:
                 candidates.append(
                     ExceptionType(
@@ -205,7 +206,7 @@ class AutoRemediationEngine:
         print(f"  Found {len(violations)} candidates for remediation")
 
         actions = []
-        for violation in violations:
+        for violation in tqdm(violations, desc="remediation", unit="violation", leave=False):
             action = self._analyze_single_violation(violation)
             if action and action.confidence > 0.0:
                 actions.append(action)
@@ -254,7 +255,7 @@ class AutoRemediationEngine:
             """)
 
         violations = []
-        for file_path, line_no, evidence, severity in cursor.fetchall():
+        for file_path, line_no, evidence, severity in tqdm(cursor.fetchall(), desc="load violations", unit="row", leave=False):
             try:
                 # Load file context
                 full_path = Path(file_path)
@@ -304,7 +305,7 @@ class AutoRemediationEngine:
         class_name = None
 
         # Search backwards for function/class definition
-        for i in range(line_no - 1, max(-1, line_no - 50), -1):
+        for i in tqdm(range(line_no - 1, max(-1, line_no - 50), -1), desc="search context", unit="line", leave=False):
             if i < 0 or i >= len(lines):
                 break
 
