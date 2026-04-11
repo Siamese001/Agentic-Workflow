@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
+from tqdm import tqdm
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -336,7 +337,7 @@ class ArtifactNormalizer:
         nodes: dict[str, dict] = {}
 
         # Register all entity nodes first
-        for ent in sorted(artifact.entities, key=lambda e: e.adg_name):
+        for ent in tqdm(sorted(artifact.entities, key=lambda e: e.adg_name), desc="register nodes", unit="node", leave=False):
             if ent.adg_name not in name_to_id:
                 nid = len(name_to_id)
                 name_to_id[ent.adg_name] = nid
@@ -354,8 +355,8 @@ class ArtifactNormalizer:
                 }
 
         # Register any node referenced in edges that isn't already in entities
-        for rel in artifact.relations:
-            for name in (rel.from_name, rel.to_name):
+        for rel in tqdm(artifact.relations, desc="edge nodes", unit="rel", leave=False):
+            for name in tqdm((rel.from_name, rel.to_name), desc="  names", unit="name", leave=False):
                 if name not in name_to_id:
                     nid = len(name_to_id)
                     name_to_id[name] = nid
@@ -374,7 +375,7 @@ class ArtifactNormalizer:
 
         # Step 2: compact edges
         edges: list[dict] = []
-        for rel in artifact.relations:
+        for rel in tqdm(artifact.relations, desc="compact edges", unit="rel", leave=False):
             e: dict = {
                 "s": name_to_id[rel.from_name],
                 "d": name_to_id[rel.to_name],
@@ -495,7 +496,7 @@ class ArtifactNormalizer:
         name_to_id: dict[str, int] = {}
         nodes_full: dict[str, dict] = {}
 
-        for ent in sorted(artifact.entities, key=lambda e: e.adg_name):
+        for ent in tqdm(sorted(artifact.entities, key=lambda e: e.adg_name), desc="full nodes", unit="node", leave=False):
             if ent.adg_name not in name_to_id:
                 nid = len(name_to_id)
                 name_to_id[ent.adg_name] = nid
@@ -512,8 +513,8 @@ class ArtifactNormalizer:
                     "es": _infer_enclosing_symbol(ent.adg_name),
                 }
 
-        for rel in artifact.relations:
-            for name in (rel.from_name, rel.to_name):
+        for rel in tqdm(artifact.relations, desc="full edge nodes", unit="rel", leave=False):
+            for name in tqdm((rel.from_name, rel.to_name), desc="  names", unit="name", leave=False):
                 if name not in name_to_id:
                     nid = len(name_to_id)
                     name_to_id[name] = nid
@@ -537,7 +538,7 @@ class ArtifactNormalizer:
         _plane_raw: dict[str, list[dict]] = {"file": [], "sym": [], "gov": []}
         _plane_refs: dict[str, set[str]] = {"file": set(), "sym": set(), "gov": set()}
 
-        for rel in artifact.relations:
+        for rel in tqdm(artifact.relations, desc="full edges", unit="rel", leave=False):
             sid = name_to_id[rel.from_name]
             did = name_to_id[rel.to_name]
             rt = rel.relation_type
@@ -748,7 +749,7 @@ class ArtifactNormalizer:
         id_to_node: dict[int, dict] = {int(k): v for k, v in ng.nodes.items()}
 
         entities = []
-        for node in sorted(id_to_node.values(), key=lambda n: n["n"]):
+        for node in tqdm(sorted(id_to_node.values(), key=lambda n: n["n"]), desc="denorm nodes", unit="node", leave=False):
             entities.append(
                 {
                     "adg_name": node["n"],
@@ -762,7 +763,7 @@ class ArtifactNormalizer:
             )
 
         relations = []
-        for e in ng.edges:
+        for e in tqdm(ng.edges, desc="denorm edges", unit="edge", leave=False):
             src = id_to_node[e["s"]]
             dst = id_to_node[e["d"]]
             rel = {
