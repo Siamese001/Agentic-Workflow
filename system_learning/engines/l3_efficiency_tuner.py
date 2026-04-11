@@ -13,6 +13,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass
+from tqdm import tqdm
 from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -269,7 +270,7 @@ class L3EfficiencyTuner:
 
         bottlenecks: list[EfficiencyBottleneck] = []
         total_agents = 0
-        for territory, time_ms in sorted(territory_timings.items()):
+        for territory, time_ms in tqdm(sorted(territory_timings.items()), desc="territory timings", unit="territory", leave=False):
             if time_ms > self._slow_territory_ms:
                 bottlenecks.append(
                     EfficiencyBottleneck(
@@ -281,8 +282,8 @@ class L3EfficiencyTuner:
                         recommendation=f"Territory '{territory}' took {time_ms:.0f}ms (threshold: {self._slow_territory_ms:.0f}ms). Consider parallelizing or reducing agent count.",
                     ),
                 )
-        for territory, agents in sorted(agent_timings.items()):
-            for agent_name, time_ms in sorted(agents.items()):
+        for territory, agents in tqdm(sorted(agent_timings.items()), desc="territory agents", unit="territory", leave=False):
+            for agent_name, time_ms in tqdm(sorted(agents.items()), desc="  agents", unit="agent", leave=False):
                 total_agents += 1
                 if time_ms > self._slow_agent_ms:
                     bottlenecks.append(
@@ -323,7 +324,7 @@ def extract_timings_from_runtime_state(
     territory_timings: dict[str, float] = {}
     agent_timings: dict[str, dict[str, float]] = {}
     exec_log = state.get("agent_execution_log", [])
-    for entry in exec_log:
+    for entry in tqdm(exec_log, desc="exec log", unit="entry", leave=False):
         if not isinstance(entry, dict):
             continue
         territory = entry.get("territory", "__unknown__")
