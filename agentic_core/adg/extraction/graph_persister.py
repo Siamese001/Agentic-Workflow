@@ -172,6 +172,44 @@ _emit_transcripts_response("p1", "graph_persister", "transcript")
 _emit_hard_fails_untranscripted("p1", "graph_persister")
 _emit_gated_by_confidence("p1", "graph_persister", "confidence_gate")
 
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E402
+    _emit_appends_commit_receipt,
+    _emit_chooses_exit_disposition,
+    _emit_materializes_hitl_packet,
+    _emit_packages_prompt_envelope,
+    _emit_prefilters_scope,
+    _emit_produces_evidence_contract,
+    _emit_produces_plan,
+    _emit_promotes_future_run_change,
+    _emit_propagates_policy_hash,
+    _emit_propagates_replay_key,
+    _emit_proposes_route,
+    _emit_publishes_retrieval_surface,
+    _emit_reclears_human_decision,
+    _emit_seals_result,
+    _emit_stamps_execution_packet,
+    _emit_validates_request,
+    _emit_verifies_blast_radius,
+)
+
+_emit_validates_request("handoff", "graph_persister", "validates_request_bootstrap")
+_emit_produces_plan("handoff", "graph_persister", "produces_plan_bootstrap")
+_emit_proposes_route("handoff", "graph_persister", "proposes_route_bootstrap")
+_emit_prefilters_scope("handoff", "graph_persister", "prefilters_scope_bootstrap")
+_emit_produces_evidence_contract("handoff", "graph_persister", "produces_evidence_contract_bootstrap")
+_emit_packages_prompt_envelope("handoff", "graph_persister", "packages_prompt_envelope_bootstrap")
+_emit_stamps_execution_packet("handoff", "graph_persister", "stamps_execution_packet_bootstrap")
+_emit_propagates_policy_hash("handoff", "graph_persister", "propagates_policy_hash_bootstrap")
+_emit_propagates_replay_key("handoff", "graph_persister", "propagates_replay_key_bootstrap")
+_emit_seals_result("handoff", "graph_persister", "seals_result_bootstrap")
+_emit_chooses_exit_disposition("handoff", "graph_persister", "chooses_exit_disposition_bootstrap")
+_emit_materializes_hitl_packet("handoff", "graph_persister", "materializes_hitl_packet_bootstrap")
+_emit_reclears_human_decision("handoff", "graph_persister", "reclears_human_decision_bootstrap")
+_emit_verifies_blast_radius("handoff", "graph_persister", "verifies_blast_radius_bootstrap")
+_emit_appends_commit_receipt("handoff", "graph_persister", "appends_commit_receipt_bootstrap")
+_emit_publishes_retrieval_surface("handoff", "graph_persister", "publishes_retrieval_surface_bootstrap")
+_emit_promotes_future_run_change("handoff", "graph_persister", "promotes_future_run_change_bootstrap")
+
 logger = logging.getLogger(__name__)
 
 _LAYER_LABELS = (

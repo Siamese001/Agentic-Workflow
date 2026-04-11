@@ -242,6 +242,7 @@ from .learning import (
 from .lifecycle_advanced import (
     _EmbeddingPipelineVisitor,
     _ExecutionTraceVisitor,
+    _HandoffExitVisitor,
     _HealerValidatorVisitor,
     _HITLVisitor,
     _PromptSlotVisitor,
@@ -254,6 +255,7 @@ from .misc import (
     _UnusedImportVisitor,
 )
 from .orchestration import (
+    _ArchitectureHandoffVisitor,
     _HealingOrchestratorVisitor,
     _P1OrchestrationVisitor,
     _P2ExecutionCapabilityVisitor,
@@ -322,6 +324,7 @@ __all__ = [
     "_SymbolInventoryVisitor",
     "_UnusedImportVisitor",
     # Orchestration visitors
+    "_ArchitectureHandoffVisitor",
     "_HealingOrchestratorVisitor",
     "_P1OrchestrationVisitor",
     "_P2ExecutionCapabilityVisitor",
@@ -330,6 +333,8 @@ __all__ = [
     "_L5ValidationProofVisitor",
     "_LearningProvenanceVisitor",
     "_P3LearningMaturityVisitor",
+    # Handoff exit visitor
+    "_HandoffExitVisitor",
     # P4 wave visitors
     "_P4StateTelemetryVisitor",
     "_P4ObservabilityGovernanceVisitor",

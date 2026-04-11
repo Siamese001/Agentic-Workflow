@@ -123,6 +123,20 @@ EntityType = Literal[
     "prompt_provenance_record",
     "preference_pair_artifact",
     "human_review_record",
+    "validated_request",
+    "l1_plan",
+    "route_decision",
+    "retrieval_plan",
+    "c0_evidence_contract",
+    "prompt_envelope",
+    "validation_packet",
+    "sealed_result",
+    "exit_disposition",
+    "hitl_packet",
+    "commit_request",
+    "commit_receipt",
+    "replay_envelope",
+    "promotion_packet",
 ]
 RelationType = Literal[
     "imports",
@@ -267,6 +281,23 @@ RelationType = Literal[
     "dispatches_execution_plan",
     "validates_agent_capability",
     "checks_agent_registry",
+    "validates_request",
+    "produces_plan",
+    "proposes_route",
+    "prefilters_scope",
+    "produces_evidence_contract",
+    "packages_prompt_envelope",
+    "stamps_execution_packet",
+    "propagates_policy_hash",
+    "propagates_replay_key",
+    "seals_result",
+    "chooses_exit_disposition",
+    "materializes_hitl_packet",
+    "reclears_human_decision",
+    "verifies_blast_radius",
+    "appends_commit_receipt",
+    "publishes_retrieval_surface",
+    "promotes_future_run_change",
 ]
 EdgeKind = Literal[
     "import",
@@ -385,6 +416,23 @@ EdgeKind = Literal[
     "execution_plan_dispatch",
     "capability_validation",
     "registry_check",
+    "handoff_validate",
+    "handoff_plan",
+    "handoff_route",
+    "handoff_prefilter",
+    "handoff_evidence",
+    "handoff_prompt_pkg",
+    "handoff_exec_stamp",
+    "handoff_policy_hash",
+    "handoff_replay_key",
+    "handoff_seal",
+    "handoff_exit_choice",
+    "handoff_hitl_packet",
+    "handoff_reclear",
+    "handoff_blast_radius",
+    "handoff_commit_receipt",
+    "handoff_retrieval_surface",
+    "handoff_promote",
 ]
 PROMPT_SLOT_TYPES: tuple[str, ...] = ("S0", "D0", "I0", "C0", "U0")
 PROMPT_SLOT_AUTHORITY: dict[str, int] = {slot: i for i, slot in enumerate(PROMPT_SLOT_TYPES)}
@@ -2759,5 +2807,198 @@ GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
         "ADGBehavioralIndex",
         "get_data_files",
         "ADGStaticScanner",
+    },
+)
+
+# ── Architecture Handoff: Symbol Sets (used by _ArchitectureHandoffVisitor) ───
+HANDOFF_VALIDATE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "validate_request",
+        "build_validated_request",
+        "check_and_validate",
+        "_emit_validates_request",
+    },
+)
+HANDOFF_PLAN_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "produce_plan",
+        "build_l1_plan",
+        "create_l1_plan",
+        "produce_l1_plan",
+        "_emit_produces_plan",
+    },
+)
+HANDOFF_ROUTE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "propose_route",
+        "build_route_decision",
+        "select_route",
+        "build_l3_route_decision_artifact",
+        "_emit_proposes_route",
+    },
+)
+HANDOFF_PREFILTER_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "prefilter_scope",
+        "filter_scope",
+        "prefilter",
+        "build_retrieval_plan",
+        "_emit_prefilters_scope",
+    },
+)
+HANDOFF_EVIDENCE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "produce_evidence_contract",
+        "build_evidence_contract",
+        "assemble_evidence",
+        "build_c0_evidence",
+        "_emit_produces_evidence_contract",
+    },
+)
+HANDOFF_PROMPT_PKG_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "package_prompt_envelope",
+        "wrap_prompt_envelope",
+        "seal_prompt_envelope",
+        "build_prompt_envelope",
+        "_emit_packages_prompt_envelope",
+    },
+)
+HANDOFF_EXEC_STAMP_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "stamp_execution_packet",
+        "stamp_packet",
+        "issue_exec_stamp",
+        "build_capability_token",
+        "_emit_stamps_execution_packet",
+    },
+)
+HANDOFF_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "propagate_policy_hash",
+        "forward_policy_hash",
+        "relay_policy_hash",
+        "_emit_propagates_policy_hash",
+    },
+)
+HANDOFF_REPLAY_KEY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "propagate_replay_key",
+        "forward_replay_key",
+        "relay_replay_key",
+        "_emit_propagates_replay_key",
+    },
+)
+HANDOFF_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "verify_blast_radius",
+        "check_blast_radius_handoff",
+        "validate_blast_radius_handoff",
+        "_emit_verifies_blast_radius",
+    },
+)
+HANDOFF_COMMIT_RECEIPT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "append_commit_receipt",
+        "record_commit_receipt",
+        "issue_commit_receipt",
+        "_emit_appends_commit_receipt",
+    },
+)
+HANDOFF_RETRIEVAL_SURFACE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "publish_retrieval_surface",
+        "expose_retrieval_surface",
+        "register_retrieval_surface",
+        "_emit_publishes_retrieval_surface",
+    },
+)
+HANDOFF_PROMOTE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "promote_future_run_change",
+        "queue_future_run",
+        "schedule_future_promotion",
+        "_emit_promotes_future_run_change",
+    },
+)
+
+# ── Architecture Handoff: Exit/Seal/HITL Symbol Sets (used by _HandoffExitVisitor)
+HANDOFF_SEAL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "seal_result",
+        "finalize_result",
+        "lock_result",
+        "build_sealed_result",
+        "_emit_seals_result",
+    },
+)
+HANDOFF_EXIT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "choose_exit_disposition",
+        "select_exit",
+        "determine_exit_disposition",
+        "build_exit_disposition",
+        "_emit_chooses_exit_disposition",
+    },
+)
+HANDOFF_HITL_PKT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "materialize_hitl_packet",
+        "build_hitl_packet",
+        "create_hitl_packet",
+        "_emit_materializes_hitl_packet",
+    },
+)
+HANDOFF_RECLEAR_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "reclear_human_decision",
+        "re_approve",
+        "reclear_decision",
+        "reissue_human_approval",
+        "_emit_reclears_human_decision",
+    },
+)
+
+# ── Architecture Handoff: Atomic Family Registry ─────────────────────────────
+ATOMIC_FAMILY_REGISTRY: dict[str, str] = {
+    "ValidatedRequest": "validated_request",
+    "L1Plan": "l1_plan",
+    "RouteDecision": "route_decision",
+    "RetrievalPlan": "retrieval_plan",
+    "C0EvidenceContract": "c0_evidence_contract",
+    "PromptEnvelope": "prompt_envelope",
+    "CapabilityToken": "capability_token",
+    "SandboxEnvelope": "sandbox_envelope",
+    "ValidationPacket": "validation_packet",
+    "ExecutionTrace": "execution_trace",
+    "SealedResult": "sealed_result",
+    "ExitDisposition": "exit_disposition",
+    "HITLPacket": "hitl_packet",
+    "CommitRequest": "commit_request",
+    "CommitReceipt": "commit_receipt",
+    "ReplayEnvelope": "replay_envelope",
+    "PromotionPacket": "promotion_packet",
+}
+
+# ── Architecture Handoff: Composite Envelope Families ────────────────────────
+COMPOSITE_ENVELOPE_REGISTRY: dict[str, frozenset[str]] = {
+    "GovernedExecutionEnvelope": frozenset(
+        {"CapabilityToken", "SandboxEnvelope", "ValidationPacket", "ReplayEnvelope"},
+    ),
+    "ExitHitlEnvelope": frozenset(
+        {"SealedResult", "ExitDisposition", "HITLPacket"},
+    ),
+    "CommitUwgEnvelope": frozenset(
+        {"CommitRequest", "CommitReceipt"},
+    ),
+}
+
+# CommitUwgEnvelope: authority / blast-radius / lock-chain witness semantics
+COMMIT_UWG_WITNESS_RELATIONS: frozenset[str] = frozenset(
+    {
+        "verifies_blast_radius",
+        "appends_commit_receipt",
+        "claims_write_lock",
+        "applies_hmac_seal",
     },
 )

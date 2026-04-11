@@ -40,6 +40,7 @@ from agentic_core.adg.extraction.scanner_utils import (
 from agentic_core.adg.extraction.visitors import (
     VisitorContext,
     _AntipatternVisitor,
+    _ArchitectureHandoffVisitor,
     _AttributeVisitor,
     _AuthoritativeCommitVisitor,
     _BoundaryVerifierVisitor,
@@ -55,6 +56,7 @@ from agentic_core.adg.extraction.visitors import (
     _ExecutionTraceVisitor,
     # Governance visitors
     _GovernancePlaneVisitor,
+    _HandoffExitVisitor,
     _HealerValidatorVisitor,
     # Orchestration visitors (G22, G28-G30)
     _HITLVisitor,
@@ -1507,6 +1509,16 @@ def _scan_file(
         boundary_visitor = _BoundaryVerifierVisitor(VisitorContext(module_adg, rel))
         boundary_visitor.visit(tree)
         edges.extend(boundary_visitor.extract_edges())
+
+        # G40: Architecture handoff family edges (validates_request, produces_plan, etc.)
+        handoff_visitor = _ArchitectureHandoffVisitor(VisitorContext(module_adg, rel))
+        handoff_visitor.visit(tree)
+        edges.extend(handoff_visitor.extract_edges())
+
+        # G41: Exit/HITL handoff family edges (seals_result, chooses_exit_disposition, etc.)
+        exit_handoff_visitor = _HandoffExitVisitor(VisitorContext(module_adg, rel))
+        exit_handoff_visitor.visit(tree)
+        edges.extend(exit_handoff_visitor.extract_edges())
 
     # All remaining gap visitors (DISABLED - legacy visitors)
     # if visitors_to_run == "full":

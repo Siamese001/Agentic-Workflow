@@ -214,3 +214,74 @@ class _P3OrchestrationHealingVisitor(BaseStructuralVisitor):
 
     def extract_edges(self) -> list[Edge]:
         return self.edges
+
+
+@register_visitor("architecture_handoff")
+class _ArchitectureHandoffVisitor(BaseStructuralVisitor):
+    """Extract architecture handoff edges (validates_request, produces_plan, proposes_route, etc.).
+
+    Emits edges for the 13 forward-pass handoff relation types by matching call symbols
+    against the HANDOFF_* symbol sets defined in schema_util.py.
+    """
+
+    _SYMBOL_SET_MAP = (
+        ("HANDOFF_VALIDATE_SYMBOLS", "validates_request", "handoff_validate"),
+        ("HANDOFF_PLAN_SYMBOLS", "produces_plan", "handoff_plan"),
+        ("HANDOFF_ROUTE_SYMBOLS", "proposes_route", "handoff_route"),
+        ("HANDOFF_PREFILTER_SYMBOLS", "prefilters_scope", "handoff_prefilter"),
+        ("HANDOFF_EVIDENCE_SYMBOLS", "produces_evidence_contract", "handoff_evidence"),
+        ("HANDOFF_PROMPT_PKG_SYMBOLS", "packages_prompt_envelope", "handoff_prompt_pkg"),
+        ("HANDOFF_EXEC_STAMP_SYMBOLS", "stamps_execution_packet", "handoff_exec_stamp"),
+        ("HANDOFF_POLICY_HASH_SYMBOLS", "propagates_policy_hash", "handoff_policy_hash"),
+        ("HANDOFF_REPLAY_KEY_SYMBOLS", "propagates_replay_key", "handoff_replay_key"),
+        ("HANDOFF_BLAST_RADIUS_SYMBOLS", "verifies_blast_radius", "handoff_blast_radius"),
+        ("HANDOFF_COMMIT_RECEIPT_SYMBOLS", "appends_commit_receipt", "handoff_commit_receipt"),
+        ("HANDOFF_RETRIEVAL_SURFACE_SYMBOLS", "publishes_retrieval_surface", "handoff_retrieval_surface"),
+        ("HANDOFF_PROMOTE_SYMBOLS", "promotes_future_run_change", "handoff_promote"),
+    )
+
+    def __init__(self, ctx: VisitorContext) -> None:
+        super().__init__(ctx)
+        self.edges: list[Edge] = []
+
+    def _get_call_symbol(self, node: ast.expr) -> str:
+        """Extract symbol from call expression."""
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            val = node.value
+            prefix = val.id if isinstance(val, ast.Name) else ""
+            return f"{prefix}.{node.attr}" if prefix else node.attr
+        return ""
+
+    def visit_Call(self, node: ast.Call) -> None:
+        """Extract architecture handoff edges from call expressions."""
+        import agentic_core.adg.contracts.schema_util as _su
+        from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+
+        sym = self._get_call_symbol(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+        tail = sym.split(".")[-1]
+        base = sym.split(".")[0]
+
+        for attr, relation_type, edge_kind in self._SYMBOL_SET_MAP:
+            symbol_set: frozenset[str] = getattr(_su, attr, frozenset())
+            if tail in symbol_set or base in symbol_set:
+                self.edges.append(
+                    _Edge(
+                        from_name=self.ctx.module_adg_name,
+                        relation_type=relation_type,
+                        to_name=canonical_name("Symbol", sym),
+                        edge_kind=edge_kind,
+                        source_file=self.ctx.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    ),
+                )
+        self.generic_visit(node)
+
+    def extract_edges(self) -> list[Edge]:
+        return self.edges

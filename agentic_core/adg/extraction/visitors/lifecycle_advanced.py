@@ -438,3 +438,68 @@ class _HITLVisitor(BaseRuntimeVisitor):
 
     def extract_edges(self) -> list[Edge]:
         return self.edges
+
+
+@register_visitor("handoff_exit")
+class _HandoffExitVisitor(BaseStructuralVisitor):
+    """Extract ExitHitlEnvelope + reclear handoff edges.
+
+    Emits:
+      - seals_result (ExitHitlEnvelope.SealedResult)
+      - chooses_exit_disposition (ExitHitlEnvelope.ExitDisposition)
+      - materializes_hitl_packet (ExitHitlEnvelope.HITLPacket)
+      - reclears_human_decision (post-HITL re-approval)
+    """
+
+    _SYMBOL_SET_MAP = (
+        ("HANDOFF_SEAL_SYMBOLS", "seals_result", "handoff_seal"),
+        ("HANDOFF_EXIT_SYMBOLS", "chooses_exit_disposition", "handoff_exit_choice"),
+        ("HANDOFF_HITL_PKT_SYMBOLS", "materializes_hitl_packet", "handoff_hitl_packet"),
+        ("HANDOFF_RECLEAR_SYMBOLS", "reclears_human_decision", "handoff_reclear"),
+    )
+
+    def __init__(self, ctx: VisitorContext) -> None:
+        super().__init__(ctx)
+        self._edges: list[Edge] = []
+
+    def _get_call_symbol(self, node: ast.expr) -> str:
+        """Extract symbol from call expression."""
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            val = node.value
+            prefix = val.id if isinstance(val, ast.Name) else ""
+            return f"{prefix}.{node.attr}" if prefix else node.attr
+        return ""
+
+    def visit_Call(self, node: ast.Call) -> None:
+        """Extract ExitHitlEnvelope handoff edges from call expressions."""
+        import agentic_core.adg.contracts.schema_util as _su
+        from agentic_core.adg.contracts.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+
+        sym = self._get_call_symbol(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+        tail = sym.split(".")[-1]
+        base = sym.split(".")[0]
+
+        for attr, relation_type, edge_kind in self._SYMBOL_SET_MAP:
+            symbol_set: frozenset[str] = getattr(_su, attr, frozenset())
+            if tail in symbol_set or base in symbol_set:
+                self._edges.append(
+                    _Edge(
+                        from_name=self.ctx.module_adg_name,
+                        relation_type=relation_type,
+                        to_name=canonical_name("Symbol", sym),
+                        edge_kind=edge_kind,
+                        source_file=self.ctx.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    ),
+                )
+        self.generic_visit(node)
+
+    def extract_edges(self) -> list[Edge]:
+        return self._edges

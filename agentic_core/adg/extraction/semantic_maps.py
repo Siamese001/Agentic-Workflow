@@ -177,6 +177,24 @@ _SEMANTIC_TYPE_MAP: dict[tuple[str, str], str] = {
     ("context_pull", "unfreezes_context"): "context_unfreeze",
     ("capability_validation", "validates_agent_capability"): "agent_capability_validation",
     ("dynamic_exec", "invokes_dynamic"): "dynamic_invocation",
+    # architecture handoff family
+    ("handoff_validate", "validates_request"): "handoff_request_validation",
+    ("handoff_plan", "produces_plan"): "handoff_plan_production",
+    ("handoff_route", "proposes_route"): "handoff_route_proposal",
+    ("handoff_prefilter", "prefilters_scope"): "handoff_scope_prefilter",
+    ("handoff_evidence", "produces_evidence_contract"): "handoff_evidence_contract",
+    ("handoff_prompt_pkg", "packages_prompt_envelope"): "handoff_prompt_envelope",
+    ("handoff_exec_stamp", "stamps_execution_packet"): "handoff_exec_stamp",
+    ("handoff_policy_hash", "propagates_policy_hash"): "handoff_policy_hash",
+    ("handoff_replay_key", "propagates_replay_key"): "handoff_replay_key",
+    ("handoff_seal", "seals_result"): "handoff_result_seal",
+    ("handoff_exit_choice", "chooses_exit_disposition"): "handoff_exit_disposition",
+    ("handoff_hitl_packet", "materializes_hitl_packet"): "handoff_hitl_packet",
+    ("handoff_reclear", "reclears_human_decision"): "handoff_reclear",
+    ("handoff_blast_radius", "verifies_blast_radius"): "handoff_blast_radius_check",
+    ("handoff_commit_receipt", "appends_commit_receipt"): "handoff_commit_receipt",
+    ("handoff_retrieval_surface", "publishes_retrieval_surface"): "handoff_retrieval_surface",
+    ("handoff_promote", "promotes_future_run_change"): "handoff_future_promotion",
 }
 
 # Fallback: classify by relation_type alone when (edge_kind, relation_type) not in map
@@ -225,6 +243,23 @@ _SEMANTIC_FALLBACK: dict[str, str] = {
     "chunks_into": "chunking_pipeline",
     "gated_by_confidence": "confidence_gate",
     "validates_config_schema": "config_schema_validation",
+    "validates_request": "handoff_request_validation",
+    "produces_plan": "handoff_plan_production",
+    "proposes_route": "handoff_route_proposal",
+    "prefilters_scope": "handoff_scope_prefilter",
+    "produces_evidence_contract": "handoff_evidence_contract",
+    "packages_prompt_envelope": "handoff_prompt_envelope",
+    "stamps_execution_packet": "handoff_exec_stamp",
+    "propagates_policy_hash": "handoff_policy_hash",
+    "propagates_replay_key": "handoff_replay_key",
+    "seals_result": "handoff_result_seal",
+    "chooses_exit_disposition": "handoff_exit_disposition",
+    "materializes_hitl_packet": "handoff_hitl_packet",
+    "reclears_human_decision": "handoff_reclear",
+    "verifies_blast_radius": "handoff_blast_radius_check",
+    "appends_commit_receipt": "handoff_commit_receipt",
+    "publishes_retrieval_surface": "handoff_retrieval_surface",
+    "promotes_future_run_change": "handoff_future_promotion",
 }
 
 __all__ = [
