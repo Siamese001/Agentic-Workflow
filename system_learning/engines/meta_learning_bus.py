@@ -37,6 +37,8 @@ Design invariants
 
 from __future__ import annotations
 
+from tqdm import tqdm
+import logging
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -589,7 +591,7 @@ class MetaLearningBus:
         adg_relations: list[tuple[str, str, str]],
     ) -> list[TraceFeatureRecord]:
         records: list[TraceFeatureRecord] = []
-        for bundle in bundles:
+        for bundle in tqdm(bundles, desc="extract bundles", unit="bundle", leave=False):
             try:
                 record = TraceFeatureRecord.from_bundle(bundle)
                 records.append(record)
@@ -617,7 +619,7 @@ class MetaLearningBus:
     ) -> list[RCACluster]:
         try:
             clusters = self._cluster_engine.cluster(records, timestamp_utc, negative_seeds=negative_seeds)
-            for cluster in clusters:
+            for cluster in tqdm(clusters, desc="clusters", unit="cluster", leave=False):
                 # Emit: each member record → chunks_into → cluster
                 for trace_id in cluster.member_trace_ids:
                     adg_relations.append(
@@ -680,7 +682,7 @@ class MetaLearningBus:
         rejected: list[str] = []
 
         score_by_pid = {s.proposal_id: s for s in scores}
-        for proposal in annotated:
+        for proposal in tqdm(annotated, desc="score proposals", unit="proposal", leave=False):
             gs = score_by_pid.get(proposal.proposal_id)
             if gs is None:
                 rejected.append(proposal.proposal_id)
@@ -739,7 +741,7 @@ class MetaLearningBus:
         rejected: list[str] = []
         result_by_pid = {r.proposal_id: r for r in validation_results}
 
-        for proposal in proposals:
+        for proposal in tqdm(proposals, desc="validate proposals", unit="proposal", leave=False):
             result = result_by_pid.get(proposal.proposal_id)
             if result is None:
                 rejected.append(proposal.proposal_id)
@@ -805,7 +807,7 @@ class MetaLearningBus:
           - human_approval      ← True if HUMAN_OVERRIDE, None otherwise
         """
         signals: list[GovernanceRewardSignal] = []
-        for bundle in bundles:
+        for bundle in tqdm(bundles, desc="reward bundles", unit="bundle", leave=False):
             gnd = bundle.retrieval_groundedness_score
             policy_comp = 0.9 if bundle.policy_state_accessed else 1.0
             replay_stab = 0.0 if bundle.final_outcome_class == "REPLAY_FAILURE" else 1.0
@@ -854,7 +856,7 @@ class MetaLearningBus:
         """Persist ADG relations via the bridge (fail-open)."""
         if self._bridge is None:
             return
-        for from_entity, relation_type, to_entity in relations:
+        for from_entity, relation_type, to_entity in tqdm(relations, desc="emit relations", unit="rel", leave=False):
             try:
                 self._bridge.create_relation(
                     from_entity=from_entity,
