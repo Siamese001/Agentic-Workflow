@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timezone
+from tqdm import tqdm
 from pathlib import Path
 from typing import Any
 
@@ -120,7 +121,7 @@ class ADGRepairOrchestrator:
             ("mutation", f"mutation_integrity_report_{self.timestamp}.json"),
         ]
 
-        for report_name, filename in report_files:
+        for report_name, filename in tqdm(report_files, desc="load reports", unit="report", leave=False):
             report_path = self.adg_dir / filename
             if report_path.exists():
                 try:
@@ -211,7 +212,7 @@ class ADGRepairOrchestrator:
         """Extract deficiencies from closure validation report."""
         rows = report.get("closure_rows", [])
 
-        for row in rows:
+        for row in tqdm(rows, desc="closure rows", unit="row", leave=False):
             if not row.get("passed", True):
                 capability = row.get("capability", "UNKNOWN")
                 ratio = row.get("ratio", 0.0)
@@ -261,7 +262,7 @@ class ADGRepairOrchestrator:
             self.deficiencies.append(deficiency)
 
         # Each unknown module can potentially be auto-fixed
-        for module in unknown_modules[:50]:  # Limit to first 50
+        for module in tqdm(unknown_modules[:50], desc="unknown modules", unit="module", leave=False):  # Limit to first 50
             module_path = module.get("resolved_path", "")
             if not module_path:
                 continue
@@ -289,7 +290,7 @@ class ADGRepairOrchestrator:
         """Extract deficiencies from edge density report."""
         critical_coverage = report.get("critical_edge_coverage", {})
 
-        for edge_type, count in critical_coverage.items():
+        for edge_type, count in tqdm(critical_coverage.items(), desc="edge coverage", unit="type", leave=False):
             if count == 0:
                 deficiency = Deficiency(
                     id=f"missing_critical_edge_{edge_type}",
@@ -388,7 +389,7 @@ class ADGRepairOrchestrator:
             with SQLiteAnalyzer(self.sqlite_path) as analyzer:
                 sqlite_defs = analyzer.get_deficiencies_as_dicts()
 
-                for sqlite_def in sqlite_defs:
+                for sqlite_def in tqdm(sqlite_defs, desc="sqlite defs", unit="def", leave=False):
                     deficiency = Deficiency(
                         id=sqlite_def["id"],
                         category=sqlite_def["category"],
@@ -428,7 +429,7 @@ class ADGRepairOrchestrator:
                 return layer
 
         # Check for apps
-        for app_prefix in (
+        for app_prefix in tqdm((
             "apps_eval",
             "apps_exec",
             "apps_lic",
@@ -436,7 +437,7 @@ class ADGRepairOrchestrator:
             "apps_rfp",
             "apps_rg",
             "apps_shared",
-        ):
+        ), desc="app prefixes", unit="app", leave=False):
             if path_lower.startswith(app_prefix) or f"/{app_prefix}" in path_lower:
                 return "L_APP"
 
@@ -450,7 +451,7 @@ class ADGRepairOrchestrator:
         """
         matches = {}
 
-        for deficiency in self.deficiencies:
+        for deficiency in tqdm(self.deficiencies, desc="match rules", unit="def", leave=False):
             if deficiency.category != FixCategory.AUTO_FIX:
                 # Only match rules for AUTO_FIX deficiencies
                 matches[deficiency.id] = None
@@ -503,7 +504,7 @@ class ADGRepairOrchestrator:
         failed_count = 0
 
         if not dry_run:
-            for deficiency in self.deficiencies:
+            for deficiency in tqdm(self.deficiencies, desc="apply fixes", unit="def", leave=False):
                 if deficiency.category != FixCategory.AUTO_FIX:
                     continue
 
