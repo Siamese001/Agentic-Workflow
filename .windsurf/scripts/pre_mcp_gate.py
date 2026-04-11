@@ -49,6 +49,7 @@ TASK_MANAGER_SERVER_NAME = "task_manager"
 VECTOR_DB_SERVER_NAME = "vector_db"
 OTEL_MCP_SERVER_NAME = "otel_mcp"
 DEEPWIKI_SERVER_NAME = "deepwiki"
+GITKRAKEN_SERVER_NAME = "GitKraken"
 
 # Recovery tools that MUST pass even when MCP is unhealthy.
 # Without this whitelist, the gate blocks the very tools needed to recover.
@@ -108,13 +109,59 @@ FILESYSTEM_SERVER_NAME = "filesystem"
 # Write tools on the filesystem MCP that bypass pre_write_code. Blocked here
 # so all .py writes are forced through Cascade's native tools and the
 # constitutional anti-pattern + syntax gates.
+# move_file included: rename/relocate operations mutate the filesystem and
+# bypass pre_write_code just as write_file and edit_file do.
 FILESYSTEM_WRITE_TOOLS = {
     "write_file",  # mcp5_write_file — full overwrite
     "edit_file",  # mcp5_edit_file  — line-based edits
+    "move_file",  # mcp4_move_file  — rename/relocate; mutates filesystem
 }
+
+# Absolute paths to the node.exe and server script used in mcp_config.json.
+# These are validated by check_filesystem_startup_gate() on first use.
+_FS_NODE_EXE = Path(r"C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation/node.exe")
+_FS_SERVER_SCRIPT = Path(
+    r"C:/Users/amita/AppData/Roaming/fnm/node-versions/v24.13.0/installation"
+    r"/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js"
+)
+_FS_ALLOWED_DIR = Path(r"C:/Git/Agentic-Workflow")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
+
+# ---------------------------------------------------------------------------
+# GitKraken MCP hardening constants
+# ---------------------------------------------------------------------------
+
+# Canonical workspace root — GitKraken tool `directory` args must resolve
+# to this path or a subdirectory of it. Blocks cross-repo accidental mutation.
+GITKRAKEN_WORKSPACE_ROOT = REPO_ROOT
+
+# Tools that mutate LOCAL git state (stage, commit, checkout, stash, worktree add, branch create)
+GITKRAKEN_LOCAL_WRITE_TOOLS: set[str] = {
+    "git_add_or_commit",
+    "git_checkout",
+    "git_stash",
+    "git_worktree",  # add action is a write; list action is safe
+    "git_branch",  # create action is a write; list action is safe
+    "gitlens_commit_composer",
+    "gitlens_start_work",
+}
+
+# Tools that mutate REMOTE state (push, PR creation, issue comments)
+GITKRAKEN_REMOTE_WRITE_TOOLS: set[str] = {
+    "git_push",
+    "pull_request_create",
+    "pull_request_create_review",
+    "issues_add_comment",
+    "gitlens_start_review",
+}
+
+# All write-capable tools (local + remote)
+GITKRAKEN_ALL_WRITE_TOOLS: set[str] = GITKRAKEN_LOCAL_WRITE_TOOLS | GITKRAKEN_REMOTE_WRITE_TOOLS
+
+# These remote-write tools additionally require upstream tracking validation
+GITKRAKEN_PUSH_TOOLS: set[str] = {"git_push", "pull_request_create"}
 
 
 def _exit_block(reason: str) -> int:
@@ -314,6 +361,52 @@ def _get_latest_snapshot_age_seconds(repo_root: Path) -> float | None:
     newest = max(snapshots, key=lambda p: p.stat().st_mtime)
     age = datetime.now(timezone.utc).timestamp() - newest.stat().st_mtime
     return age
+
+
+def check_filesystem_startup_gate() -> int:
+    """
+    Verify the filesystem MCP can actually start: node.exe and the server
+    dist/index.js must both exist on disk.
+
+    Cached per process — file-existence probes run once per gate process.
+    Returns 0 (allow) or 2 (block with actionable message).
+    """
+    cache_key = "filesystem_startup_ok"
+    if cache_key not in _PROBE_CACHE:
+        node_ok = _FS_NODE_EXE.exists()
+        script_ok = _FS_SERVER_SCRIPT.exists()
+        allowed_ok = _FS_ALLOWED_DIR.exists()
+        _PROBE_CACHE[cache_key] = node_ok and script_ok and allowed_ok
+        if not node_ok:
+            print(
+                f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
+                f"node.exe not found at {_FS_NODE_EXE}. "
+                "Run 'fnm use 24' and verify npm prefix -g, then update "
+                "mcp_config.json 'command' path and restart Windsurf.",
+                file=sys.stderr,
+            )
+        if not script_ok:
+            print(
+                f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
+                f"server script not found at {_FS_SERVER_SCRIPT}. "
+                "Run 'npm install -g @modelcontextprotocol/server-filesystem@2026.1.14' "
+                "and update mcp_config.json args[0] path, then restart Windsurf.",
+                file=sys.stderr,
+            )
+        if not allowed_ok:
+            print(
+                f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
+                f"allowed directory not found: {_FS_ALLOWED_DIR}.",
+                file=sys.stderr,
+            )
+
+    if not _PROBE_CACHE["filesystem_startup_ok"]:
+        return _exit_block(
+            "Filesystem MCP cannot start — node.exe, server script, or allowed directory "
+            "missing. See stderr above for which path failed. Operator note: "
+            "docs/guides/filesystem_mcp_operations.md"
+        )
+    return 0
 
 
 def check_filesystem_write_gate(tool_name: str) -> int:
@@ -675,6 +768,182 @@ def check_otel_gate() -> int:
     return 0
 
 
+def _run_git(args: list[str], cwd: Path, timeout: int = 10) -> tuple[int, str, str]:
+    """
+    Run a git subprocess safely. Returns (returncode, stdout, stderr).
+    Constitutional §14: timeout= required. §0: shell=False.
+    """
+    try:
+        result = subprocess.run(
+            ["git"] + args,
+            shell=False,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(cwd),
+        )
+        return result.returncode, result.stdout.strip(), result.stderr.strip()
+    except subprocess.TimeoutExpired:
+        return 1, "", f"git {' '.join(args)} timed out after {timeout}s"
+    except (OSError, FileNotFoundError) as exc:
+        return 1, "", f"git executable error: {exc}"
+
+
+def _resolve_gitkraken_repo(payload: dict) -> Path:  # pylint: disable=unused-argument
+    """
+    Resolve the target repository from the GitKraken tool payload.
+
+    GitKraken tools pass the repo root as a `directory` field in tool arguments.
+    Windsurf's pre_mcp_tool_use hook does NOT expose tool arguments, so we
+    cannot read the `directory` value directly. We resolve the workspace root
+    from GITKRAKEN_WORKSPACE_ROOT (= REPO_ROOT from mcp_config.json cwd binding).
+
+    Returns the canonical workspace root Path.
+    """
+    # Tool arguments are not available in pre_mcp_tool_use hooks. Fall back to
+    # the workspace root anchored by the cwd setting in mcp_config.json.
+    return GITKRAKEN_WORKSPACE_ROOT.resolve()
+
+
+def _check_gitkraken_repo_confinement(repo: Path) -> tuple[bool, str]:
+    """
+    Verify `repo` is a git repository and is confined to the workspace root.
+    Returns (blocked, reason). blocked=True → deny.
+    """
+    workspace = GITKRAKEN_WORKSPACE_ROOT.resolve()
+
+    # Ensure repo resolves within the workspace (prevents cross-repo drift)
+    try:
+        repo.relative_to(workspace)
+    except ValueError:
+        return True, (
+            f"GitKraken target repo '{repo}' is outside workspace root '{workspace}'. "
+            "Cross-repo mutations are blocked."
+        )
+
+    # Confirm it is an actual git repo
+    rc, _, _ = _run_git(["rev-parse", "--git-dir"], repo)
+    if rc != 0:
+        return True, (
+            f"GitKraken target '{repo}' is not a git repository. "
+            "Ensure cwd is set correctly in mcp_config.json."
+        )
+
+    return False, "repo_confined"
+
+
+def _check_gitkraken_detached_head(repo: Path) -> tuple[bool, str]:
+    """
+    Return (is_detached, description). is_detached=True means HEAD is not on a branch.
+    """
+    rc, stdout, _ = _run_git(["symbolic-ref", "--quiet", "HEAD"], repo)
+    if rc != 0:
+        return True, "HEAD is detached — not on any branch"
+    branch = stdout.removeprefix("refs/heads/")
+    return False, f"on branch '{branch}'"
+
+
+def _check_gitkraken_dirty_tree(repo: Path) -> tuple[bool, str]:
+    """
+    Return (is_dirty, description).
+    Uses `git status --porcelain` — non-empty output = dirty tree.
+    """
+    rc, stdout, _ = _run_git(["status", "--porcelain"], repo)
+    if rc != 0:
+        return False, "status probe failed — treating as clean"
+    if stdout:
+        lines = stdout.splitlines()
+        return True, f"working tree has {len(lines)} uncommitted change(s)"
+    return False, "working tree clean"
+
+
+def _check_gitkraken_missing_upstream(repo: Path) -> tuple[bool, str]:
+    """
+    Return (missing, description). missing=True when current branch has no remote tracking.
+    """
+    rc, stdout, _ = _run_git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"], repo)
+    if rc != 0:
+        return True, "current branch has no upstream tracking branch"
+    return False, f"upstream is '{stdout}'"
+
+
+def check_gitkraken_gate(tool_name: str, payload: dict) -> int:
+    """
+    GitKraken MCP preflight gate.
+
+    P0-2: Convert GitKraken from fail-open to fail-closed for write tools.
+    P0-3: Dirty-tree, detached-HEAD, and missing-upstream checks.
+    P0-4: Repo confinement — block operations outside workspace root.
+
+    Read-only tools always pass (exit 0).
+    Write tools require repo confinement + specific safety checks per risk level.
+
+    Return 0 (allow) or 2 (block).
+    """
+    repo = _resolve_gitkraken_repo(payload)
+
+    # Read-only tools: only require repo confinement check
+    if tool_name not in GITKRAKEN_ALL_WRITE_TOOLS:
+        # For read tools, repo confinement is advisory (fail-open) to avoid
+        # blocking legitimate cross-repo reads (e.g. issues_get_detail targets GitHub)
+        return 0
+
+    # All write tools: require repo confinement
+    blocked, reason = _check_gitkraken_repo_confinement(repo)
+    if blocked:
+        return _exit_block(f"GitKraken repo confinement: {reason}")
+
+    # --- Detached HEAD check (blocks checkout, commit, push) ---
+    if tool_name in {
+        "git_checkout",
+        "git_add_or_commit",
+        "git_push",
+        "pull_request_create",
+        "gitlens_commit_composer",
+    }:
+        detached, head_desc = _check_gitkraken_detached_head(repo)
+        if detached:
+            return _exit_block(
+                f"GitKraken '{tool_name}' blocked: {head_desc}. "
+                "Checkout a branch before performing this operation."
+            )
+        print(
+            f"[pre_mcp_gate] GitKraken HEAD check: {head_desc}",
+            file=sys.stderr,
+        )
+
+    # --- Dirty-tree check (blocks checkout — prevents silent file clobber) ---
+    if tool_name == "git_checkout":
+        dirty, tree_desc = _check_gitkraken_dirty_tree(repo)
+        if dirty:
+            return _exit_block(
+                f"GitKraken 'git_checkout' blocked: {tree_desc}. "
+                "Stash or commit changes before switching branches."
+            )
+
+    # --- Missing-upstream check (blocks push and PR creation) ---
+    if tool_name in GITKRAKEN_PUSH_TOOLS:
+        missing, upstream_desc = _check_gitkraken_missing_upstream(repo)
+        if missing:
+            return _exit_block(
+                f"GitKraken '{tool_name}' blocked: {upstream_desc}. "
+                "Set a remote tracking branch before pushing "
+                "(git push --set-upstream origin <branch>)."
+            )
+        print(
+            f"[pre_mcp_gate] GitKraken upstream check: {upstream_desc}",
+            file=sys.stderr,
+        )
+
+    # All checks passed — log for audit trail (P0-5 complement at gate layer)
+    print(
+        f"[pre_mcp_gate] GitKraken ALLOW: tool='{tool_name}' repo='{repo}'",
+        file=sys.stderr,
+    )
+    return 0
+
+
 def check_deepwiki_gate() -> int:
     """
     Check DeepWiki MCP health (remote URL MCP).
@@ -727,8 +996,11 @@ def main() -> int:
     server_name = tool_info.get("mcp_server_name", "")
     tool_name = tool_info.get("mcp_tool_name", "")
 
-    # Filesystem MCP: block write tools (must go through pre_write_code)
+    # Filesystem MCP: startup health check then write-tool block
     if server_name == FILESYSTEM_SERVER_NAME:
+        rc = check_filesystem_startup_gate()
+        if rc != 0:
+            return rc
         return check_filesystem_write_gate(tool_name)
 
     # ADG SQLite MCP: health, lock, and staleness checks
@@ -778,7 +1050,11 @@ def main() -> int:
     if server_name == DEEPWIKI_SERVER_NAME:
         return check_deepwiki_gate()
 
-    # All other MCPs (GitKraken, enhanced_http): fail-open
+    # GitKraken MCP: write-tool preflight + repo confinement
+    if server_name == GITKRAKEN_SERVER_NAME:
+        return check_gitkraken_gate(tool_name, payload)
+
+    # All other MCPs (enhanced_http, etc.): fail-open
     return 0
 
 

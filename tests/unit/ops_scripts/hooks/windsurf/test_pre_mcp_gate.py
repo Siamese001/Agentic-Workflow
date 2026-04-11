@@ -46,12 +46,22 @@ from pre_mcp_gate import (
     ADG_RECOVERY_TOOLS,
     ADG_WRITE_TOOLS,
     FILESYSTEM_WRITE_TOOLS,
+    GITKRAKEN_ALL_WRITE_TOOLS,
+    GITKRAKEN_LOCAL_WRITE_TOOLS,
+    GITKRAKEN_PUSH_TOOLS,
+    GITKRAKEN_REMOTE_WRITE_TOOLS,
+    GITKRAKEN_SERVER_NAME,
+    GITKRAKEN_WORKSPACE_ROOT,
     MEMORY_RECOVERY_TOOLS,
     OTEL_MCP_RECOVERY_TOOLS,
     PYTEST_RECOVERY_TOOLS,
     TASK_MANAGER_RECOVERY_TOOLS,
     VECTOR_DB_RECOVERY_TOOLS,
     _auto_generate_adg,
+    _check_gitkraken_detached_head,
+    _check_gitkraken_dirty_tree,
+    _check_gitkraken_missing_upstream,
+    _check_gitkraken_repo_confinement,
     _check_sqlite_access,
     _get_latest_snapshot_age_seconds,
     _get_sidecar_diagnostics,
@@ -60,6 +70,7 @@ from pre_mcp_gate import (
     _probe_sqlite_write,
     check_adg_gate,
     check_filesystem_write_gate,
+    check_gitkraken_gate,
     main,
 )
 
@@ -493,7 +504,9 @@ class TestMain:
         assert self._run(payload) == 2
 
     # Non-ADG, non-filesystem MCPs with no local infra needed — always allowed
-    def test_gitkraken_mcp_allowed(self):
+    def test_gitkraken_unknown_server_name_fail_open(self):
+        # Lowercase 'gitkraken' does NOT match GITKRAKEN_SERVER_NAME ('GitKraken')
+        # — hits generic fail-open path
         assert self._run({"tool_info": {"mcp_server_name": "gitkraken"}}) == 0
 
     def test_deepwiki_mcp_allowed(self):
@@ -710,8 +723,8 @@ class TestCheckFilesystemWriteGate:
     def test_create_directory_allowed(self):
         assert check_filesystem_write_gate("create_directory") == 0
 
-    def test_move_file_allowed(self):
-        assert check_filesystem_write_gate("move_file") == 0
+    def test_move_file_blocked(self):
+        assert check_filesystem_write_gate("move_file") == 2
 
     def test_empty_tool_name_allowed(self):
         assert check_filesystem_write_gate("") == 0
@@ -1013,6 +1026,269 @@ class TestCheckPytestGate:
                 raw = json.dumps(payload)
                 with patch("sys.stdin", StringIO(raw)):
                     assert main() == 0, f"Recovery tool '{tool}' must bypass pytest gate"
+
+
+# ---------------------------------------------------------------------------
+# check_gitkraken_gate — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestGitKrakenGate:
+    """
+    Tests for the GitKraken MCP hardening gate (P0-2, P0-3, P0-4).
+
+    All git subprocess calls are mocked via _run_git to avoid real repo deps.
+    The workspace root (GITKRAKEN_WORKSPACE_ROOT) is patched to tmp_path.
+    """
+
+    def _run_payload(self, tool_name: str, tmp_path: Path) -> int:
+        payload = {"tool_info": {"mcp_server_name": GITKRAKEN_SERVER_NAME, "mcp_tool_name": tool_name}}
+        raw = json.dumps(payload)
+        with patch("sys.stdin", StringIO(raw)):
+            with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+                return main()
+
+    # --- Tool surface classification ---
+
+    def test_server_name_constant_matches_mcp_config(self):
+        assert GITKRAKEN_SERVER_NAME == "GitKraken"
+
+    def test_write_tool_sets_are_disjoint_subsets(self):
+        assert GITKRAKEN_LOCAL_WRITE_TOOLS.issubset(GITKRAKEN_ALL_WRITE_TOOLS)
+        assert GITKRAKEN_REMOTE_WRITE_TOOLS.issubset(GITKRAKEN_ALL_WRITE_TOOLS)
+        assert GITKRAKEN_PUSH_TOOLS.issubset(GITKRAKEN_REMOTE_WRITE_TOOLS)
+
+    def test_read_only_tools_always_allowed(self, tmp_path):  # pylint: disable=unused-argument
+        read_only = [
+            "git_log_or_diff",
+            "git_status",
+            "git_blame",
+            "issues_get_detail",
+            "issues_assigned_to_me",
+            "pull_request_get_detail",
+            "pull_request_get_comments",
+            "repository_get_file_content",
+            "gitkraken_workspace_list",
+            "gitlens_launchpad",
+        ]
+        for tool in read_only:
+            assert check_gitkraken_gate(tool, {}) == 0, f"Read-only '{tool}' must be allowed"
+
+    def test_read_tool_not_in_write_sets(self):
+        for tool in ["git_log_or_diff", "git_status", "git_blame", "gitlens_launchpad", "issues_get_detail"]:
+            assert tool not in GITKRAKEN_ALL_WRITE_TOOLS
+
+    # --- Repo confinement (P0-4) ---
+
+    def test_repo_confinement_outside_workspace_blocked(self, tmp_path):
+        outside = tmp_path.parent / "other_repo"
+        outside.mkdir(exist_ok=True)
+        blocked, reason = _check_gitkraken_repo_confinement(outside)
+        assert blocked is True
+        assert "outside workspace root" in reason or "Cross-repo" in reason
+
+    def test_repo_confinement_workspace_root_itself_is_confined(self, tmp_path):
+        # Must be an actual git repo for confinement to pass.
+        # Patch workspace root to tmp_path so the path-confinement check passes.
+        git_dir = tmp_path / ".git"
+        git_dir.mkdir()
+        (git_dir / "HEAD").write_text("ref: refs/heads/main")
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+            with patch("pre_mcp_gate._run_git", return_value=(0, ".git", "")):
+                blocked, reason = _check_gitkraken_repo_confinement(tmp_path)
+        assert blocked is False
+        assert reason == "repo_confined"
+
+    def test_repo_confinement_not_a_git_repo_blocked(self, tmp_path):
+        # Patch workspace root to tmp_path; sub-path is within workspace but fails git-dir probe.
+        not_a_repo = tmp_path / "sub"
+        not_a_repo.mkdir()
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+            with patch("pre_mcp_gate._run_git", return_value=(128, "", "not a git repository")):
+                blocked, reason = _check_gitkraken_repo_confinement(not_a_repo)
+        assert blocked is True
+        assert "not a git repository" in reason
+
+    # --- Detached HEAD check (P0-3) ---
+
+    def test_detached_head_returns_true_when_detached(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(1, "", "")):
+            detached, desc = _check_gitkraken_detached_head(tmp_path)
+        assert detached is True
+        assert "detached" in desc.lower()
+
+    def test_detached_head_returns_false_on_branch(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(0, "refs/heads/main", "")):
+            detached, desc = _check_gitkraken_detached_head(tmp_path)
+        assert detached is False
+        assert "main" in desc
+
+    # --- Dirty tree check (P0-3) ---
+
+    def test_dirty_tree_returns_true_when_changes_present(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(0, "M  modified_file.py", "")):
+            dirty, desc = _check_gitkraken_dirty_tree(tmp_path)
+        assert dirty is True
+        assert "uncommitted" in desc.lower()
+
+    def test_dirty_tree_returns_false_when_clean(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(0, "", "")):
+            dirty, _ = _check_gitkraken_dirty_tree(tmp_path)
+        assert dirty is False
+
+    def test_dirty_tree_status_probe_failure_treated_as_clean(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(1, "", "error")):
+            dirty, desc = _check_gitkraken_dirty_tree(tmp_path)
+        assert dirty is False
+        assert "probe failed" in desc.lower()
+
+    # --- Missing upstream check (P0-3) ---
+
+    def test_missing_upstream_returns_true_when_no_tracking(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(128, "", "no upstream")):
+            missing, desc = _check_gitkraken_missing_upstream(tmp_path)
+        assert missing is True
+        assert "upstream" in desc.lower()
+
+    def test_missing_upstream_returns_false_when_tracking_set(self, tmp_path):
+        with patch("pre_mcp_gate._run_git", return_value=(0, "origin/main", "")):
+            missing, desc = _check_gitkraken_missing_upstream(tmp_path)
+        assert missing is False
+        assert "origin/main" in desc
+
+    # --- check_gitkraken_gate integration (P0-2) ---
+
+    def _make_repo(self, tmp_path: Path) -> Path:
+        """Create a minimal fake git repo structure under tmp_path."""
+        (tmp_path / ".git").mkdir()
+        (tmp_path / ".git" / "HEAD").write_text("ref: refs/heads/main")
+        return tmp_path
+
+    def test_write_tool_confined_repo_clean_on_branch_upstream_ok(self, tmp_path):
+        """Happy path: confined, on branch, clean tree, upstream set."""
+        self._make_repo(tmp_path)
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+            with patch("pre_mcp_gate._run_git") as mock_git:
+                mock_git.return_value = (0, "refs/heads/main", "")
+                assert check_gitkraken_gate("git_add_or_commit", {}) == 0
+
+    def test_git_checkout_dirty_tree_blocked(self, tmp_path):
+        self._make_repo(tmp_path)
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+
+            def git_side_effect(args, *_a, **_kw):
+                if args[:2] == ["rev-parse", "--git-dir"]:
+                    return (0, ".git", "")
+                if args[:1] == ["symbolic-ref"]:
+                    return (0, "refs/heads/main", "")
+                if args[:1] == ["status"]:
+                    return (0, " M dirty_file.py", "")
+                return (0, "", "")
+
+            with patch("pre_mcp_gate._run_git", side_effect=git_side_effect):
+                result = check_gitkraken_gate("git_checkout", {})
+        assert result == 2
+
+    def test_git_push_missing_upstream_blocked(self, tmp_path):
+        self._make_repo(tmp_path)
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+
+            def git_side_effect(args, *_a, **_kw):
+                if args[:2] == ["rev-parse", "--git-dir"]:
+                    return (0, ".git", "")
+                if args[:1] == ["symbolic-ref"]:
+                    return (0, "refs/heads/feature", "")
+                if "@{u}" in args:
+                    return (128, "", "no upstream")
+                return (0, "", "")
+
+            with patch("pre_mcp_gate._run_git", side_effect=git_side_effect):
+                result = check_gitkraken_gate("git_push", {})
+        assert result == 2
+
+    def test_git_push_detached_head_blocked(self, tmp_path):
+        self._make_repo(tmp_path)
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+
+            def git_side_effect(args, *_a, **_kw):
+                if args[:2] == ["rev-parse", "--git-dir"]:
+                    return (0, ".git", "")
+                if args[:1] == ["symbolic-ref"]:
+                    return (1, "", "")
+                return (0, "", "")
+
+            with patch("pre_mcp_gate._run_git", side_effect=git_side_effect):
+                result = check_gitkraken_gate("git_push", {})
+        assert result == 2
+
+    def test_issues_add_comment_passes_confinement_check(self, tmp_path):
+        """issues_add_comment is a remote-write tool; passes if repo is confined."""
+        self._make_repo(tmp_path)
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+            with patch("pre_mcp_gate._run_git", return_value=(0, ".git", "")):
+                result = check_gitkraken_gate("issues_add_comment", {})
+        assert result == 0
+
+    def test_pull_request_create_missing_upstream_blocked(self, tmp_path):
+        self._make_repo(tmp_path)
+        with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+
+            def git_side_effect(args, *_a, **_kw):
+                if args[:2] == ["rev-parse", "--git-dir"]:
+                    return (0, ".git", "")
+                if args[:1] == ["symbolic-ref"]:
+                    return (0, "refs/heads/feature", "")
+                if "@{u}" in args:
+                    return (128, "", "")
+                return (0, "", "")
+
+            with patch("pre_mcp_gate._run_git", side_effect=git_side_effect):
+                result = check_gitkraken_gate("pull_request_create", {})
+        assert result == 2
+
+    def test_all_remote_write_tools_in_write_set(self):
+        for tool in [
+            "git_push",
+            "pull_request_create",
+            "pull_request_create_review",
+            "issues_add_comment",
+            "gitlens_start_review",
+        ]:
+            assert tool in GITKRAKEN_REMOTE_WRITE_TOOLS
+
+    def test_all_local_write_tools_in_write_set(self):
+        for tool in [
+            "git_add_or_commit",
+            "git_checkout",
+            "git_stash",
+            "git_worktree",
+            "git_branch",
+            "gitlens_commit_composer",
+            "gitlens_start_work",
+        ]:
+            assert tool in GITKRAKEN_LOCAL_WRITE_TOOLS
+
+    # --- main() integration for GitKraken ---
+
+    def test_main_gitkraken_read_tool_allowed(self, tmp_path):
+        assert self._run_payload("git_log_or_diff", tmp_path) == 0
+
+    def test_main_gitkraken_write_tool_confined_happy_path(self, tmp_path):
+        self._make_repo(tmp_path)
+
+        def git_ok(args, *_a, **_kw):
+            return (0, "refs/heads/main" if "symbolic-ref" in args else "origin/main", "")
+
+        with patch("pre_mcp_gate._run_git", side_effect=git_ok):
+            assert self._run_payload("git_add_or_commit", tmp_path) == 0
+
+    def test_main_gitkraken_correct_server_name_case(self, tmp_path):
+        """Server name 'GitKraken' (capital G+K) must route to GitKraken gate."""
+        payload = {"tool_info": {"mcp_server_name": "GitKraken", "mcp_tool_name": "git_log_or_diff"}}
+        raw = json.dumps(payload)
+        with patch("sys.stdin", StringIO(raw)):
+            with patch("pre_mcp_gate.GITKRAKEN_WORKSPACE_ROOT", tmp_path):
+                assert main() == 0
 
 
 # ---------------------------------------------------------------------------

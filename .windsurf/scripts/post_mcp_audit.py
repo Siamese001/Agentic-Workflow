@@ -16,6 +16,7 @@ Zero hardcoded paths — REPO_ROOT resolved from __file__.
 """
 
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,7 +25,73 @@ FAIL_POLICY = "open"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "mcp_tool_audit.jsonl"
+GITKRAKEN_WRITE_AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "gitkraken_write_audit.jsonl"
 SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+
+GITKRAKEN_SERVER_NAME = "GitKraken"
+
+# Write-capable GitKraken tools requiring enriched audit records
+_GITKRAKEN_WRITE_TOOLS: set[str] = {
+    "git_add_or_commit",
+    "git_checkout",
+    "git_stash",
+    "git_worktree",
+    "git_branch",
+    "gitlens_commit_composer",
+    "gitlens_start_work",
+    "git_push",
+    "pull_request_create",
+    "pull_request_create_review",
+    "issues_add_comment",
+    "gitlens_start_review",
+}
+
+
+def _git_context(repo: Path) -> dict:
+    """
+    Capture lightweight git context for audit records.
+    Fail-open: any subprocess failure returns partial context.
+    Constitutional §14: timeout=. §0: shell=False.
+    """
+    ctx: dict = {"repo": str(repo)}
+    try:
+        r = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            shell=False,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            cwd=str(repo),
+        )
+        ctx["branch"] = r.stdout.strip() if r.returncode == 0 else "unknown"
+    except (OSError, subprocess.TimeoutExpired):
+        ctx["branch"] = "unknown"
+
+    try:
+        r = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            shell=False,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            cwd=str(repo),
+        )
+        ctx["commit"] = r.stdout.strip() if r.returncode == 0 else "unknown"
+    except (OSError, subprocess.TimeoutExpired):
+        ctx["commit"] = "unknown"
+
+    return ctx
+
+
+def _append_gitkraken_write_audit(record: dict) -> None:
+    try:
+        GITKRAKEN_WRITE_AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with open(GITKRAKEN_WRITE_AUDIT_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+    except OSError:
+        pass
 
 
 def _mark_task_created() -> None:
@@ -81,6 +148,20 @@ def main() -> int:
     # Mark task_created when Cascade calls create_task on the task_manager MCP.
     if tool_name == "create_task" and "task" in server_name.lower():
         _mark_task_created()
+
+    # GitKraken write-action enriched audit (P0-5 / P1-2)
+    if server_name == GITKRAKEN_SERVER_NAME and tool_name in _GITKRAKEN_WRITE_TOOLS:
+        repo = REPO_ROOT
+        ctx = _git_context(repo)
+        write_record = {
+            "timestamp": record["timestamp"],
+            "tool": tool_name,
+            "duration_ms": duration_ms,
+            "repo": ctx.get("repo"),
+            "branch": ctx.get("branch"),
+            "commit": ctx.get("commit"),
+        }
+        _append_gitkraken_write_audit(write_record)
 
     return 0
 
