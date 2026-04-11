@@ -6,9 +6,11 @@ Provides pytest integration for Windsurf with comprehensive test management
 
 import json
 import logging
+import re
 import subprocess
 import sys
 import time
+import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -36,12 +38,39 @@ logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 # Configuration
-REPO_ROOT = Path(__file__).parent.parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 TESTS_DIR = REPO_ROOT / "tests"
 PYTEST_CONFIG = REPO_ROOT / "pytest.ini"
 PYPROJECT_TOML = REPO_ROOT / "pyproject.toml"
 MAX_EXECUTION_TIME = 300  # 5 minutes for test runs
 MAX_OUTPUT_SIZE = 50000  # characters
+
+# Characters not permitted in -k / -m expressions (guard against injection)
+_SAFE_EXPR_RE = re.compile(r"^[\w\s\-.()/\[\],'\"=!<>]+$")
+
+
+def _resolve_confined_path(user_path: str, base: Path) -> Path:
+    """Resolve user_path relative to base and reject traversal outside base."""
+    try:
+        resolved = (base / user_path).resolve()
+    except (ValueError, OSError) as exc:
+        raise ValueError(f"Invalid path {user_path!r}: {exc}") from exc
+    try:
+        resolved.relative_to(base.resolve())
+    except ValueError:
+        raise ValueError(f"Path {user_path!r} escapes the allowed directory {base}")
+    return resolved
+
+
+def _validate_expr(value: str, param_name: str) -> str:
+    """Reject marker/keyword expressions containing shell-dangerous characters."""
+    if not _SAFE_EXPR_RE.match(value):
+        raise ValueError(
+            f"{param_name!r} contains unsafe characters. "
+            "Only word chars, spaces, and common punctuation are allowed."
+        )
+    return value
+
 
 class PytestMCPServer:
     def __init__(self):
@@ -184,15 +213,23 @@ class PytestMCPServer:
 
     async def _discover_tests(self, args: dict[str, Any]) -> CallToolResult:
         """Discover all tests in the repository"""
-        search_path = REPO_ROOT / args.get("path", "tests")
+        try:
+            search_path = _resolve_confined_path(args.get("path", "tests"), REPO_ROOT)
+        except ValueError as exc:
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Invalid path: {exc}")],
+                isError=True,
+            )
         pattern = args.get("pattern", "test_*.py")
 
         if not search_path.exists():
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"Test path {search_path} does not exist",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"Test path {search_path} does not exist",
+                    )
+                ],
                 isError=True,
             )
 
@@ -208,18 +245,25 @@ class PytestMCPServer:
                 timeout=30,
             )
 
-            if result.returncode != 0:
+            # exit code 5 = no tests collected — not an error, return zero-test result
+            if result.returncode not in (0, 5):
                 return CallToolResult(
-                    content=[TextContent(
-                        type="text",
-                        text=f"Error collecting tests:\n{result.stderr}",
-                    )],
+                    content=[
+                        TextContent(
+                            type="text",
+                            text=(
+                                f"Error collecting tests (exit {result.returncode}):\n"
+                                f"{result.stderr or result.stdout}"
+                            ),
+                        )
+                    ],
                     isError=True,
                 )
 
             # Parse the collection output
             output = result.stdout
-            test_count = output.count("::")
+            # Count node ids: lines containing '::' that look like test node ids
+            test_count = sum(1 for ln in output.splitlines() if "::" in ln and not ln.startswith(" "))
 
             # Get file list
             test_files = list(search_path.rglob(pattern))
@@ -251,12 +295,32 @@ class PytestMCPServer:
 
     async def _run_tests(self, args: dict[str, Any]) -> CallToolResult:
         """Run pytest with specified options"""
-        test_path = args.get("path", "tests")
+        try:
+            _raw_path = args.get("path", "tests")
+            # Resolve and confine the test path
+            resolved_test_path = _resolve_confined_path(str(_raw_path), REPO_ROOT)
+        except ValueError as exc:
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Invalid path: {exc}")],
+                isError=True,
+            )
+
         keywords = args.get("keywords")
         markers = args.get("markers")
         verbose = args.get("verbose", True)
         coverage = args.get("coverage", False)
         timeout = min(args.get("timeout", 60), MAX_EXECUTION_TIME)
+
+        try:
+            if keywords:
+                keywords = _validate_expr(keywords, "keywords")
+            if markers:
+                markers = _validate_expr(markers, "markers")
+        except ValueError as exc:
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Invalid argument: {exc}")],
+                isError=True,
+            )
 
         # Build pytest command
         cmd = ["python", "-m", "pytest"]
@@ -273,10 +337,10 @@ class PytestMCPServer:
         if coverage:
             cmd.extend(["--cov=.", "--cov-report=term-missing"])
 
-        cmd.append(str(test_path))
+        cmd.append(str(resolved_test_path))
 
-        # Add JUnit XML for parsing results
-        junit_xml = REPO_ROOT / ".pytest_results.xml"
+        # Use a unique JUnit XML path to avoid collisions between concurrent runs
+        junit_xml = REPO_ROOT / f".pytest_results_{uuid.uuid4().hex}.xml"
         cmd.extend(["--junit-xml", str(junit_xml)])
 
         try:
@@ -332,19 +396,31 @@ class PytestMCPServer:
             if len(output) > MAX_OUTPUT_SIZE:
                 output = output[:MAX_OUTPUT_SIZE] + "\n... (output truncated)"
 
+            # pytest exit codes: 0=all passed, 1=some failed, 2=interrupted,
+            # 3=internal error, 4=usage error, 5=no tests collected
+            is_error = result.returncode not in (0, 1, 5)
             return CallToolResult(
                 content=[TextContent(type="text", text=output)],
+                isError=is_error,
             )
 
         except subprocess.TimeoutExpired:
+            # Best-effort cleanup of junit xml on timeout
+            try:
+                if junit_xml.exists():
+                    junit_xml.unlink()
+            except OSError:
+                pass
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"Tests timed out after {timeout} seconds",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"Tests timed out after {timeout} seconds",
+                    )
+                ],
                 isError=True,
             )
-        except Exception as e:
+        except (OSError, ValueError) as e:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Test execution error: {str(e)}")],
                 isError=True,
@@ -352,28 +428,36 @@ class PytestMCPServer:
 
     async def _get_test_details(self, args: dict[str, Any]) -> CallToolResult:
         """Get detailed information about a specific test"""
-        test_path = REPO_ROOT / args["test_path"]
+        try:
+            test_path = _resolve_confined_path(args["test_path"], REPO_ROOT)
+        except (ValueError, KeyError) as exc:
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Invalid test_path: {exc}")],
+                isError=True,
+            )
         test_name = args.get("test_name")
 
         if not test_path.exists():
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"Test file {test_path} does not exist",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"Test file {test_path} does not exist",
+                    )
+                ],
                 isError=True,
             )
 
         try:
             # Read the test file
-            with open(test_path, encoding='utf-8') as f:
+            with open(test_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Basic analysis
-            lines = content.split('\n')
+            lines = content.split("\n")
             total_lines = len(lines)
-            import_lines = len([line for line in lines if line.strip().startswith('import')])
-            function_count = len([line for line in lines if line.strip().startswith('def test_')])
+            import_lines = len([line for line in lines if line.strip().startswith("import")])
+            function_count = len([line for line in lines if line.strip().startswith("def test_")])
 
             details = f"Test File: {test_path.relative_to(REPO_ROOT)}\n"
             details += f"Total lines: {total_lines}\n"
@@ -396,7 +480,7 @@ class PytestMCPServer:
                     func_lines = []
                     indent_level = None
 
-                    for line in lines[test_start:]:
+                    for line in lines[test_start:]:  # progress_bar: in-memory line scan, bounded
                         if line.strip() == "":
                             func_lines.append(line)
                             continue
@@ -410,7 +494,7 @@ class PytestMCPServer:
 
                         func_lines.append(line)
 
-                    func_content = ''.join(func_lines)
+                    func_content = "".join(func_lines)
                     details += f"\nFunction content:\n{func_content}"
                 else:
                     details += f"Test function '{test_name}' not found"
@@ -418,8 +502,8 @@ class PytestMCPServer:
                 # List all test functions
                 test_functions = []
                 for line in lines:
-                    if line.strip().startswith('def test_'):
-                        func_name = line.strip().split('(')[0].replace('def ', '')
+                    if line.strip().startswith("def test_"):
+                        func_name = line.strip().split("(")[0].replace("def ", "")
                         test_functions.append(func_name)
 
                 details += "Test functions:\n"
@@ -443,28 +527,40 @@ class PytestMCPServer:
 
         # Check if coverage is available
         try:
-            subprocess.run(["coverage", "--version"], capture_output=True, check=True)
-        except (subprocess.CalledProcessError, FileNotFoundError):
+            subprocess.run(["coverage", "--version"], capture_output=True, check=True, timeout=10)
+        except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text="Coverage tool not found. Install with: pip install coverage",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text="Coverage tool not found. Install with: pip install coverage",
+                    )
+                ],
                 isError=True,
             )
 
-        target_path = REPO_ROOT / path
+        try:
+            target_path = _resolve_confined_path(path, REPO_ROOT)
+        except ValueError as exc:
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Invalid path: {exc}")],
+                isError=True,
+            )
         if not target_path.exists():
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"Path {target_path} does not exist",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"Path {target_path} does not exist",
+                    )
+                ],
                 isError=True,
             )
 
         cmd = [
-            "python", "-m", "pytest",
+            "python",
+            "-m",
+            "pytest",
             f"--cov={path}",
             f"--cov-report={format_type}",
             "--cov-report=term",
@@ -513,9 +609,9 @@ class PytestMCPServer:
         if PYTEST_CONFIG.exists():
             config_info += f"pytest.ini found: {PYTEST_CONFIG}\n"
             try:
-                with open(PYTEST_CONFIG) as f:
+                with open(PYTEST_CONFIG, encoding="utf-8") as f:
                     config_info += f.read()
-            except Exception as e:
+            except OSError as e:
                 config_info += f"Error reading pytest.ini: {e}\n"
         else:
             config_info += "pytest.ini: not found\n"
@@ -527,7 +623,8 @@ class PytestMCPServer:
             config_info += f"pyproject.toml found: {PYPROJECT_TOML}\n"
             try:
                 import tomllib
-                with open(PYPROJECT_TOML, 'rb') as f:
+
+                with open(PYPROJECT_TOML, "rb") as f:
                     data = tomllib.load(f)
                     if "tool" in data and "pytest" in data["tool"]:
                         config_info += "[tool.pytest]:\n"
@@ -543,15 +640,22 @@ class PytestMCPServer:
 
         # Show pytest location and version
         try:
-            result = subprocess.run(["python", "-m", "pytest", "--version"],
-                                  capture_output=True, text=True)
+            result = subprocess.run(
+                ["python", "-m", "pytest", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=15,
+            )
             config_info += f"\nPytest version:\n{result.stdout}"
-        except Exception as e:
+        except subprocess.TimeoutExpired:
+            config_info += "\nError getting pytest version: timed out"
+        except OSError as e:
             config_info += f"\nError getting pytest version: {e}"
 
         return CallToolResult(
             content=[TextContent(type="text", text=config_info)],
         )
+
 
 async def main():
     """Main entry point"""
@@ -575,6 +679,7 @@ async def main():
                 ),
             ),
         )
+
 
 if __name__ == "__main__":
     try:
