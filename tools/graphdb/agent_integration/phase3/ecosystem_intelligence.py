@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from collections import defaultdict
 import networkx as nx
+from tqdm import tqdm
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from ..phase2.contextual_engine import ContextualIntelligenceEngine, AnalysisResult
@@ -197,11 +198,11 @@ class EcosystemIntelligenceEngine:
         """
         violations = []
 
-        for module in context.target_modules:
+        for module in tqdm(context.target_modules, desc="boundary modules", unit="module", leave=False):
             # Check if module crosses system boundaries
             module_boundaries = self._get_module_boundaries(module)
 
-            for boundary in module_boundaries:
+            for boundary in tqdm(module_boundaries, desc="  boundaries", unit="boundary", leave=False):
                 boundary_info = self.boundary_registry.get(boundary)
                 if not boundary_info:
                     continue
@@ -240,7 +241,7 @@ class EcosystemIntelligenceEngine:
         }
 
         # Analyze direct impact
-        for module in context.target_modules:
+        for module in tqdm(context.target_modules, desc="impact modules", unit="module", leave=False):
             if module in self.system_registry:
                 node = self.system_registry[module]
                 impact_analysis["direct_impact"].append(
@@ -315,7 +316,7 @@ class EcosystemIntelligenceEngine:
         ]
 
         # Create ecosystem nodes
-        for system_data in mock_systems:
+        for system_data in tqdm(mock_systems, desc="ecosystem nodes", unit="system", leave=False):
             node = EcosystemNode(
                 node_id=system_data["node_id"],
                 system_type=system_data["system_type"],
@@ -371,7 +372,7 @@ class EcosystemIntelligenceEngine:
             ("order_service", "payment_service"),
         ]
 
-        for source, target in boundary_pairs:
+        for source, target in tqdm(boundary_pairs, desc="API boundaries", unit="pair", leave=False):
             boundary_id = f"api_boundary_{source}_{target}"
             boundary = SystemBoundary(
                 boundary_id=boundary_id,
@@ -400,7 +401,7 @@ class EcosystemIntelligenceEngine:
             ("auth_service", "database"),
         ]
 
-        for source, target in boundary_pairs:
+        for source, target in tqdm(boundary_pairs, desc="DB boundaries", unit="pair", leave=False):
             boundary_id = f"db_boundary_{source}_{target}"
             boundary = SystemBoundary(
                 boundary_id=boundary_id,
@@ -425,7 +426,7 @@ class EcosystemIntelligenceEngine:
         # Mock service boundary detection
         boundary_pairs = [("user_service", "notification_service"), ("order_service", "shipping_service")]
 
-        for source, target in boundary_pairs:
+        for source, target in tqdm(boundary_pairs, desc="svc boundaries", unit="pair", leave=False):
             boundary_id = f"service_boundary_{source}_{target}"
             boundary = SystemBoundary(
                 boundary_id=boundary_id,
@@ -481,7 +482,7 @@ class EcosystemIntelligenceEngine:
         """Check governance compliance across the ecosystem."""
         violations = []
 
-        for node in self.system_registry.values():
+        for node in tqdm(self.system_registry.values(), desc="compliance nodes", unit="node", leave=False):
             if node.governance_compliance < self.health_thresholds["governance_compliance"]:
                 violations.append(
                     {
