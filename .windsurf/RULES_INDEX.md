@@ -253,6 +253,21 @@ All `model_decision` and `glob` rules require a `description` field in frontmatt
 
 ---
 
+## VSCodium Extensions Policy Pack
+
+Repo-local standards for VSCodium extension and marketplace decisions. Not a Windsurf rule file — a standards doc set consulted by Windsurf prompts.
+
+| Artifact | Path | Purpose |
+|---|---|---|
+| Source notes | `docs/external/vscodium/` (4 files) | Primary-source facts from VSCodium upstream docs (retrieval date: 2026-04-11) |
+| Policy | `docs/standards/windsurf/windsurf_vscodium_extensions_policy.md` | Operational repo standard: approved/blocked sources, replacements, fallback paths, Copilot (PROVISIONAL) |
+| Decision log | `docs/standards/windsurf/windsurf_vscodium_decision_log.md` | Durable decision entries D001–D011 with FINAL/PROVISIONAL status |
+| Prompt pack | `docs/standards/windsurf/windsurf_vscodium_prompt_pack.md` | 6 reusable prompt templates for marketplace, compatibility, Copilot, config validation work |
+
+**Provisional sections:** GitHub Copilot (D010) and non-MS third-party compatibility (D011) — see decision log for unblock conditions.
+
+---
+
 ## Quick Reference
 
 ### Adding a New Rule
@@ -291,6 +306,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-05-09
 
 **Changelog**:
+- 2026-04-11: **VSCODIUM EXTENSIONS POLICY PACK** — New standards doc set at `docs/standards/windsurf/` and `docs/external/vscodium/`. Four upstream source notes created (retrieval date 2026-04-11). Policy file (`windsurf_vscodium_extensions_policy.md`) covers approved/blocked galleries, 8 blocked extensions, 5 approved replacements, proprietary debugger policy, alternate gallery config, Copilot (PROVISIONAL), and fallback paths. Decision log (`windsurf_vscodium_decision_log.md`) records D001–D011 (9 FINAL, 2 PROVISIONAL). Prompt pack (`windsurf_vscodium_prompt_pack.md`) provides 6 reusable templates. Discoverable from this index under §VSCodium Extensions Policy Pack.
 - 2026-04-11: **QUERY PROGRESS BAR** — New constitutional rule §16 (`query-progress-bar.md`, always_on). New CI gate `check_query_progress_bar.py` (detects bare long loops ≥10 lines and heavy-named functions ≥12 lines without progress reporting). New pre-commit hook `check-query-progress-bar` on staged Python files. 38 unit tests added (`tests/ci/test_check_query_progress_bar.py`). `constitutional.md` updated with §16. RULES_INDEX coverage updated: 6 Constitutional Rules, 42 CI Gates, 26+ Pre-commit Hooks.
 - 2026-04-15: **REFACTOR DECISION MEMORY** — New rule `refactor-decision-memory.md` (model_decision). New skill `refactor-decision-memory/` with `lookup_refactor_decisions.py`. New hook `post_cascade_hitl_capture.py` wired into `post_cascade_response`. SQLite+FTS5 ledger at `.windsurf/state/refactor_decisions/`. `hitl-enforcement.md` unchanged — memory system sits under the policy layer. 30 unit tests added.
 - 2026-04-15: **RULE SIZE REDUCTION** — `constitutional.md` 29K→3.3K (always_on core, 16 constraints + tier table). `hitl-enforcement.md` 33K→2.7K (always_on pipeline + bypass + thresholds). New `hitl-decision-points.md` (model_decision, 10 decision triggers + HITL-10 shape + telemetry). `sequential-thinking-enforcement.md` converted from always_on (6.9K) to model_decision (1.8K). `adg-test-accelerator-enforcement.md` description frontmatter added. `skills/graph-analysis/fail_closed_discipline.md` created. All 6 skill entry files confirmed as `SKILL.md`. Always_on rules: constitutional (3.3K), global_rules (3.0K), hitl-enforcement (2.7K), plan-location (1.9K).
