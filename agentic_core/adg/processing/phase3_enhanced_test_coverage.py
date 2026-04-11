@@ -19,6 +19,7 @@ import sqlite3
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from tqdm import tqdm
 
 
 class TestFramework(Enum):
@@ -103,7 +104,7 @@ class TestDiscoveryEngine:
                     if node.module:
                         file_imports.append(node.module)
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="ast walk tests", unit="node", leave=False):
                 if isinstance(node, ast.FunctionDef):
                     framework = self._detect_framework(node.name, content)
                     if framework != TestFramework.UNKNOWN:
@@ -123,7 +124,7 @@ class TestDiscoveryEngine:
         except SyntaxError:
             # Fallback: use regex to find test function names when AST parse fails
             tests = []
-            for match in re.finditer(r"^def (test\w+)\s*\(", content, re.MULTILINE):
+            for match in tqdm(list(re.finditer(r"^def (test\w+)\s*\(", content, re.MULTILINE)), desc="regex matches", unit="match", leave=False):
                 func_name = match.group(1)
                 line_no = content[: match.start()].count("\n") + 1
                 tests.append(
@@ -165,7 +166,7 @@ class TestDiscoveryEngine:
         target_modules: list[str] = list(file_imports or [])
 
         # Walk the AST to find function calls
-        for child in ast.walk(node):
+        for child in tqdm(ast.walk(node), desc="ast walk calls", unit="node", leave=False):
             if isinstance(child, ast.Call):
                 if isinstance(child.func, ast.Name):
                     name = child.func.id
@@ -256,7 +257,7 @@ class TestCoverageAnalyzer:
         print(f"  Analyzing {len(violations)} violations for coverage gaps")
 
         gaps = []
-        for violation in violations:
+        for violation in tqdm(violations, desc="coverage gaps", unit="violation", leave=False):
             gap = self._analyze_single_violation_coverage(violation, all_tests)
             if gap:
                 gaps.append(gap)
@@ -427,7 +428,7 @@ class TestCoverageAnalyzer:
 
         # Create test nodes and edges
         edges_created = 0
-        for test in all_tests:
+        for test in tqdm(all_tests, desc="test nodes", unit="test", leave=False):
             # Create test node
             test_adg_name = f"test::{test.name}"
             if test_adg_name not in nodes:
@@ -448,7 +449,7 @@ class TestCoverageAnalyzer:
                 test_node_id = nodes[test_adg_name]["id"]
 
             # Create edges to target functions/classes
-            for target_func in test.target_functions:
+            for target_func in tqdm(test.target_functions, desc="  target funcs", unit="func", leave=False):
                 target_adg_name = f"symbol::{target_func}"
                 if target_adg_name in nodes:
                     cursor = self.conn.execute(

@@ -423,7 +423,7 @@ class InvariantScanner:
         """
         violations: list[Violation] = []
 
-        for edge in tqdm(result.edges, desc="rule D edges", unit="edge", leave=False):
+        for edge in tqdm(result.edges, desc="rule F edges", unit="edge", leave=False):
             if edge.edge_kind != "dynamic_exec":
                 continue
             from_rel = _module_rel(edge.from_name)
