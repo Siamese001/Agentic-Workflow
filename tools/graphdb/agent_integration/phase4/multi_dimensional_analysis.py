@@ -15,6 +15,7 @@ from enum import Enum
 from collections import defaultdict
 import numpy as np
 from datetime import datetime, timedelta
+from tqdm import tqdm
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from ..phase3.ecosystem_intelligence import EcosystemIntelligenceEngine
@@ -248,7 +249,7 @@ class MultiDimensionalAnalyzer:
         }
 
         # Generate tensor data for each time step
-        for step in range(time_steps):
+        for step in tqdm(range(time_steps), desc="time steps", unit="step", leave=False):
             # Simulate architectural state at this time step
             time_context = self._evolve_context(context, step)
 
@@ -378,8 +379,8 @@ class MultiDimensionalAnalyzer:
         }
 
         # Identify strong and weak correlations
-        for i, dim1 in enumerate(self.dimensional_config["active_dimensions"]):
-            for j, dim2 in enumerate(self.dimensional_config["active_dimensions"]):
+        for i, dim1 in tqdm(enumerate(self.dimensional_config["active_dimensions"]), desc="dim correlations", unit="dim", leave=False):
+            for j, dim2 in tqdm(enumerate(self.dimensional_config["active_dimensions"]), desc="  dim2", unit="dim", leave=False):
                 if i < j:
                     correlation = correlation_matrix[i, j]
                     correlation_pair = {
@@ -403,7 +404,7 @@ class MultiDimensionalAnalyzer:
         """Create dimensional points from architectural context."""
         points = {}
 
-        for i, module in enumerate(context.target_modules):
+        for i, module in tqdm(enumerate(context.target_modules), desc="project modules", unit="module", leave=False):
             coordinates = {}
 
             # Calculate coordinates for each dimension
@@ -472,8 +473,8 @@ class MultiDimensionalAnalyzer:
 
         point_list = list(points.values())
 
-        for i, point1 in enumerate(point_list):
-            for j, point2 in enumerate(point_list):
+        for i, point1 in tqdm(enumerate(point_list), desc="similarity", unit="point", leave=False):
+            for j, point2 in tqdm(enumerate(point_list), desc="  point2", unit="pt", leave=False):
                 if i < j:
                     # Calculate similarity
                     similarity = self._calculate_dimensional_similarity(point1, point2, dimensions)
@@ -527,7 +528,7 @@ class MultiDimensionalAnalyzer:
         """Calculate metrics for each dimension."""
         metrics = {}
 
-        for dimension in dimensions:
+        for dimension in tqdm(dimensions, desc="dim metrics", unit="dim", leave=False):
             # Extract coordinates for this dimension
             coords = [point.coordinates.get(dimension, 0.0) for point in points.values()]
 
