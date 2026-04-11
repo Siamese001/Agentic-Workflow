@@ -38,6 +38,19 @@ FAIL_POLICY = "open"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_DIR = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions"
 DB_PATH = DB_DIR / "refactor_decision_ledger.sqlite"
+_LOG_PATH = DB_DIR / "hitl_capture.log"
+
+
+def _debug_log(msg: str) -> None:
+    """Append a timestamped line to the capture log (diagnostic only)."""
+    try:
+        DB_DIR.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        with _LOG_PATH.open("a", encoding="utf-8") as f:
+            f.write(f"{ts}  {msg}\n")
+    except OSError:
+        pass
+
 
 # ---------------------------------------------------------------------------
 # Detection patterns
@@ -196,6 +209,14 @@ def _extract_response_text(payload: object) -> str:
     if isinstance(payload, str):
         return payload
     if isinstance(payload, dict):
+        # post_cascade_response puts response text at tool_info.response (Windsurf docs)
+        tool_info = payload.get("tool_info")
+        if isinstance(tool_info, dict):
+            for key in ("response", "text", "content", "message", "cascade_response"):
+                val = tool_info.get(key)
+                if isinstance(val, str) and val.strip():
+                    return val
+        # Fallback: top-level keys (plain payloads, tests, other hook formats)
         for key in ("response", "text", "content", "message", "cascade_response"):
             val = payload.get(key)
             if isinstance(val, str) and val.strip():
@@ -369,6 +390,7 @@ def main() -> int:
     try:
         raw = sys.stdin.read()
         if not raw.strip():
+            _debug_log("stdin_empty")
             return 0
 
         try:
@@ -378,14 +400,20 @@ def main() -> int:
 
         text = _extract_response_text(payload)
         if not text.strip():
+            _debug_log("no_text_extracted")
             return 0
+
+        marker_found = bool(_CAPTURE_MARKER_RE.search(text))
+        _debug_log(f"text_len={len(text)} marker={marker_found}")
 
         conn = _init_db()
         if conn is None:
+            _debug_log("db_init_failed")
             return 0
 
         try:
-            detect_and_capture(text, conn)
+            captured = detect_and_capture(text, conn)
+            _debug_log(f"captured={captured}")
         except sqlite3.Error:
             pass
         finally:

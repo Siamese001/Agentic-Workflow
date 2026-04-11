@@ -284,3 +284,233 @@ class TestMain:
         out = capsys.readouterr().out
         parsed = json.loads(out)
         assert "verdict" in parsed
+
+
+# ---------------------------------------------------------------------------
+# Helpers for area-overlap and JOIN edge-case tests
+# ---------------------------------------------------------------------------
+
+
+def _seeded_db_with_area(tmp_path: Path, row_area: str = "agentic_core/L2_execution") -> Path:
+    """Seeded DB: one suggestive (non-promoted) decision with configurable repo_area."""
+    db = tmp_path / "ledger_area.sqlite"
+    conn = sqlite3.connect(str(db))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(_SEED_DDL)
+    conn.execute(
+        """INSERT INTO decisions
+               (decision_id, created_at, decision_type, request_summary,
+                normalized_intent, recommended_option_id, status)
+           VALUES ('dec_area000001', '2026-04-10T10:00:00+00:00',
+                   'refactor_scope', 'refactor area test',
+                   'extract adapter area overlap', 'Minimal', 'resolved')"""
+    )
+    conn.execute(
+        "INSERT INTO decision_scope (decision_id, repo_area) VALUES ('dec_area000001', ?)",
+        (row_area,),
+    )
+    conn.execute(
+        """INSERT INTO decision_outcomes
+               (decision_id, tests_passed, regression_found, rollback_required, promote_to_pattern)
+           VALUES ('dec_area000001', 1, 0, 0, 0)"""
+    )
+    conn.execute(
+        """INSERT INTO decisions_fts
+               (decision_id, normalized_intent, request_summary, user_goal, selection_rationale)
+           VALUES ('dec_area000001',
+                   'extract adapter area overlap', 'refactor area test', '', '')"""
+    )
+    conn.commit()
+    conn.close()
+    return db
+
+
+def _seeded_db_no_scope_no_outcomes(tmp_path: Path) -> Path:
+    """Seeded DB: one decision with NO scope row and NO outcomes row (LEFT JOIN edge case)."""
+    db = tmp_path / "ledger_minimal.sqlite"
+    conn = sqlite3.connect(str(db))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(_SEED_DDL)
+    conn.execute(
+        """INSERT INTO decisions
+               (decision_id, created_at, decision_type, request_summary,
+                normalized_intent, recommended_option_id, status)
+           VALUES ('dec_noscope001', '2026-04-10T10:00:00+00:00',
+                   'refactor_scope', 'refactor without scope or outcomes',
+                   'extract adapter minimal test', 'Minimal', 'resolved')"""
+    )
+    conn.execute(
+        """INSERT INTO decisions_fts
+               (decision_id, normalized_intent, request_summary, user_goal, selection_rationale)
+           VALUES ('dec_noscope001',
+                   'extract adapter minimal test',
+                   'refactor without scope or outcomes', '', '')"""
+    )
+    conn.commit()
+    conn.close()
+    return db
+
+
+# ---------------------------------------------------------------------------
+# TestRepoAreaOverlap — area_overlaps = row_area.startswith(repo_area[:30])
+# ---------------------------------------------------------------------------
+
+
+class TestRepoAreaOverlap:
+    def test_no_query_area_matches_any_row(self, tmp_path, monkeypatch):
+        """Empty repo_area in query → area check bypassed entirely."""
+        db = _seeded_db_with_area(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter area overlap",
+                "repo_area": "",
+            }
+        )
+        assert result["verdict"] in ("suggestive", "strong")
+
+    def test_exact_area_match(self, tmp_path, monkeypatch):
+        db = _seeded_db_with_area(tmp_path, row_area="agentic_core/L2_execution")
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter area overlap",
+                "repo_area": "agentic_core/L2_execution",
+            }
+        )
+        assert result["verdict"] in ("suggestive", "strong")
+
+    def test_prefix_area_matches(self, tmp_path, monkeypatch):
+        """A query area shorter than the row area matches when it is a prefix."""
+        db = _seeded_db_with_area(tmp_path, row_area="agentic_core/L2_execution")
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter area overlap",
+                "repo_area": "agentic_core",
+            }
+        )
+        assert result["verdict"] in ("suggestive", "strong")
+
+    def test_non_overlapping_area_filters_out(self, tmp_path, monkeypatch):
+        """Query area with no prefix overlap → no match returned."""
+        db = _seeded_db_with_area(tmp_path, row_area="agentic_core/L2_execution")
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter area overlap",
+                "repo_area": "apps_rg",
+            }
+        )
+        assert result["verdict"] == "none"
+
+    def test_query_area_over_30_chars_uses_truncated_prefix(self, tmp_path, monkeypatch):
+        """repo_area[:30] truncation: a 31-char query checks only the first 30 chars.
+        row_area 'agentic_core/L2_execution/adapters' must start with the 30-char prefix."""
+        db = _seeded_db_with_area(tmp_path, row_area="agentic_core/L2_execution/adapters")
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        query_area = "agentic_core/L2_execution/adapt"  # 31 chars; [:30]="agentic_core/L2_execution/adap"
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter area overlap",
+                "repo_area": query_area,
+            }
+        )
+        assert result["verdict"] in ("suggestive", "strong")
+
+
+# ---------------------------------------------------------------------------
+# TestScopeOutcomesJoins — LEFT JOIN behavior on missing rows
+# ---------------------------------------------------------------------------
+
+
+class TestScopeOutcomesJoins:
+    def test_missing_scope_and_outcomes_still_returns_match(self, tmp_path, monkeypatch):
+        """LEFT JOIN on both tables: absent rows do not suppress the match."""
+        db = _seeded_db_no_scope_no_outcomes(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter minimal test",
+            }
+        )
+        assert result["verdict"] == "suggestive"
+
+    def test_missing_scope_sets_repo_area_empty_string(self, tmp_path, monkeypatch):
+        """No decision_scope row → repo_area in match is '' (None coerced by 'or \"\"')."""
+        db = _seeded_db_no_scope_no_outcomes(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter minimal test",
+            }
+        )
+        assert result["matches"][0]["repo_area"] == ""
+
+    def test_missing_outcomes_defaults_promote_to_pattern_false(self, tmp_path, monkeypatch):
+        """No decision_outcomes row → promote_to_pattern=False → verdict stays suggestive."""
+        db = _seeded_db_no_scope_no_outcomes(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract adapter minimal test",
+            }
+        )
+        assert result["matches"][0]["promote_to_pattern"] is False
+
+    def test_scope_and_outcomes_fields_present_in_full_join(self, tmp_path, monkeypatch):
+        """When both rows exist, repo_area and tests_passed are visible in the match."""
+        db = _seeded_db_path(tmp_path, promoted=False)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "extract execution adapter",
+            }
+        )
+        assert result["verdict"] in ("suggestive", "strong")
+        match = result["matches"][0]
+        assert match["repo_area"] == "agentic_core/L2_execution"
+        assert match["tests_passed"] is True
+
+
+# ---------------------------------------------------------------------------
+# TestFtsEdgeCases — sanitization and FTS5 error handling
+# ---------------------------------------------------------------------------
+
+
+class TestFtsEdgeCases:
+    def test_all_special_chars_returns_none_verdict(self, tmp_path, monkeypatch):
+        """normalized_intent of only special chars → sanitized to '' → 'none' with reason."""
+        db = _seeded_db_path(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "!@#$%^&*()+[]{}",
+            }
+        )
+        assert result["verdict"] == "none"
+        assert "reason" in result
+
+    def test_hyphen_only_query_handled_gracefully(self, tmp_path, monkeypatch):
+        """Hyphens survive sanitization but may cause FTS5 OperationalError.
+        The except clause must catch it — result must not raise."""
+        db = _seeded_db_path(tmp_path)
+        monkeypatch.setattr(_m, "DB_PATH", db)
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "--- --- ---",
+            }
+        )
+        assert result["verdict"] in ("none", "suggestive", "strong")
+        assert "matches" in result
