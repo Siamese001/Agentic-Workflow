@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Set, Tuple
 
 import networkx as nx
+from tqdm import tqdm
 
 
 class AnalystQueries:
@@ -130,7 +131,7 @@ class AnalystQueries:
 
         # Analyze the subgraph
         agent_analysis = []
-        for agent in agent_nodes:
+        for agent in tqdm(agent_nodes, desc="agents", unit="agent", leave=False):
             agent_attrs = self.graph.nodes[agent]
 
             # Find agent's capabilities
@@ -203,7 +204,7 @@ class AnalystQueries:
         gateway_analysis = []
         all_related_nodes = set(gateway_nodes)
 
-        for gateway in gateway_nodes:
+        for gateway in tqdm(gateway_nodes, desc="gateways", unit="gateway", leave=False):
             gateway_attrs = self.graph.nodes[gateway]
 
             # Find writes through gateway
@@ -297,7 +298,7 @@ class AnalystQueries:
         provider_analysis = []
         all_related_nodes = set(provider_nodes)
 
-        for provider in provider_nodes:
+        for provider in tqdm(provider_nodes, desc="providers", unit="provider", leave=False):
             provider_attrs = self.graph.nodes[provider]
 
             # Find agents that invoke this provider
@@ -379,7 +380,7 @@ class AnalystQueries:
 
         explanation_paths = []
 
-        for u, v, attrs in violation_edges:
+        for u, v, attrs in tqdm(violation_edges, desc="violation edges", unit="edge", leave=False):
             violation_type = attrs.get("properties", {}).get("violation_type", "Unknown")
             severity = attrs.get("properties", {}).get("severity", "medium")
             description = attrs.get("properties", {}).get("description", "")
@@ -487,7 +488,7 @@ class AnalystQueries:
 
         neighborhood_changes = []
 
-        for node in common_nodes:
+        for node in tqdm(common_nodes, desc="common nodes", unit="node", leave=False):
             # Get neighborhoods in both graphs
             from_neighbors = set(from_graph.neighbors(node))
             to_neighbors = set(to_graph.neighbors(node))
