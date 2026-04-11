@@ -80,7 +80,11 @@
         "-c",
         "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/otel/otel_mcp_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/otel/otel_mcp_server.py', encoding='utf-8').read())"
       ],
-      "disabled": false
+      "cwd": "C:/Git/Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "PYTHONPATH": "C:/Git/Agentic-Workflow"
+      }
     },
     "task_manager": {
       "command": "npx",
