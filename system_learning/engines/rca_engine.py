@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+from tqdm import tqdm
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -255,7 +256,7 @@ def analyze_failures(
         raise RCAAnalysisError(f"Failed to decode audit_slice as UTF-8: {e}") from e
     lines = audit_text.splitlines()
     findings_dict: dict[tuple[str, str], list[str]] = {}
-    for line in lines:
+    for line in tqdm(lines, desc="parse audit", unit="line", leave=False):
         line = line.strip()
         if not line:
             continue
@@ -273,7 +274,7 @@ def analyze_failures(
     adg_correlated = False
     violation_type = None
     if violation_file_set:
-        for line in lines:
+        for line in tqdm(lines, desc="scan violations", unit="line", leave=False):
             line = line.strip()
             # Extract file path from error lines (common patterns)
             for prefix in ["File ", "  File ", "    File "]:
@@ -289,7 +290,7 @@ def analyze_failures(
                 break
 
     findings = []
-    for (category, signature), evidence_lines in findings_dict.items():
+    for (category, signature), evidence_lines in tqdm(findings_dict.items(), desc="findings", unit="finding", leave=False):
         count = len(evidence_lines)
         canonical_evidence = "\n".join(sorted(evidence_lines)).encode("utf-8")
         evidence_hash = hashlib.sha256(canonical_evidence).hexdigest()
