@@ -9,6 +9,7 @@ Covers view families:
        mv_heal_retry_exit_gaps)
     Partial 8. Determinism seeds (mv_digest_reconciliation, mv_snapshot_integrity_anomalies)
     Partial 10. Topology seeds (mv_hotspot_centrality, mv_unknown_taxonomy_and_orphans)
+    11. Prompt-assembly wiring gaps (mv_prompt_assembly_wiring_gaps)
 
 All tables are physical (DROP + CREATE AS SELECT), idempotent, and snapshot-stamped via
     (SELECT value FROM meta WHERE key='commit_sha') AS snapshot_id
@@ -34,6 +35,7 @@ _PHASE_A_TABLES: tuple[str, ...] = (
     "mv_snapshot_integrity_anomalies",
     "mv_hotspot_centrality",
     "mv_unknown_taxonomy_and_orphans",
+    "mv_prompt_assembly_wiring_gaps",
 )
 
 _SPINE_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED")
@@ -696,6 +698,67 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
     cur.execute("CREATE INDEX IF NOT EXISTS idx_mv_hotspot_snapshot ON mv_hotspot_centrality(snapshot_id)")
     cur.execute(
         "CREATE INDEX IF NOT EXISTS idx_mv_orphan_flags ON mv_unknown_taxonomy_and_orphans(orphan_flag, unknown_taxonomy_flag)"
+    )
+
+    # -------------------------------------------------------------------------
+    # Family 11 — Prompt-assembly runtime wiring gaps
+    # -------------------------------------------------------------------------
+
+    # mv_prompt_assembly_wiring_gaps
+    # For each module in the prompt-assembly subsystem (dispatcher, bridge, contracts,
+    # evidence-contract surface), count live (non-test) callers separately from
+    # test-only callers.
+    #
+    # gap_type = 'disconnected'  =>  module is built and test-covered but has
+    #                                zero live runtime callers — the exact
+    #                                negative-space pattern that was previously
+    #                                undetectable by SC-5 / AP-14 / mv_unknown_taxonomy_and_orphans.
+    cur.execute("DROP TABLE IF EXISTS mv_prompt_assembly_wiring_gaps")
+    cur.execute(f"""
+        CREATE TABLE mv_prompt_assembly_wiring_gaps AS
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            n.id                  AS node_id,
+            n.adg_name            AS target_symbol,
+            n.resolved_path       AS target_file,
+            n.layer               AS layer,
+            COUNT(DISTINCT e.id)  AS total_callers,
+            COUNT(DISTINCT CASE
+                WHEN c.resolved_path NOT LIKE 'tests/%'
+                 AND c.resolved_path NOT LIKE 'test_%'
+                THEN e.id END)    AS live_callers,
+            COUNT(DISTINCT CASE
+                WHEN c.resolved_path LIKE 'tests/%'
+                  OR c.resolved_path LIKE 'test_%'
+                THEN e.id END)    AS test_callers,
+            CASE
+                WHEN COUNT(DISTINCT CASE
+                    WHEN c.resolved_path NOT LIKE 'tests/%'
+                     AND c.resolved_path NOT LIKE 'test_%'
+                    THEN e.id END) = 0
+                THEN 'disconnected'
+                ELSE 'ok'
+            END                   AS gap_type
+        FROM nodes n
+        LEFT JOIN edges e  ON e.dst_id = n.id AND e.relation_type = 'imports'
+        LEFT JOIN nodes c  ON c.id = e.src_id
+        WHERE n.entity_type = 'module'
+          AND n.resolved_path NOT LIKE 'tests/%'
+          AND (
+              n.resolved_path LIKE 'tools/adg/prompt_assembly/%'
+           OR n.resolved_path LIKE '%c0_evidence_contract_types%'
+           OR n.resolved_path LIKE '%c0_dispatcher%'
+           OR n.resolved_path LIKE '%c0_bridge_adapter%'
+          )
+        GROUP BY n.id
+        ORDER BY live_callers ASC, total_callers DESC
+    """)
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_pa_wiring_gap "
+        "ON mv_prompt_assembly_wiring_gaps(gap_type, live_callers, test_callers)"
+    )
+    cur.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mv_pa_wiring_snapshot ON mv_prompt_assembly_wiring_gaps(snapshot_id)"
     )
 
     conn.commit()

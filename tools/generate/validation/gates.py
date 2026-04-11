@@ -35,7 +35,7 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                 violation_rows = cursor.fetchall()
 
             unapproved = []
-            for source_file, line_no in violation_rows:
+            for source_file, line_no in violation_rows:  # progress_bar: bounded by violation_rows
                 try:
                     # Skip archived files in tools/archive/ directory
                     if "tools/archive/" in source_file:
@@ -404,6 +404,12 @@ _DEFAULT_SC_AP_CONFIG: dict[str, dict[str, Any]] = {
         "promoted_date": None,
         "label": "Agentic semantic precision gaps",
     },
+    "AP-18": {
+        "enabled": True,
+        "audit_mode": False,
+        "promoted_date": None,
+        "label": "Prompt assembly subsystem disconnected from runtime",
+    },
 }
 
 
@@ -541,7 +547,7 @@ def _query_sc2_lifecycle(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         "WHERE n.layer = 'L2' "
         "  AND e.relation_type IN ('invokes_provider', 'resolves_callsite')",
     ).fetchall()
-    for src_id, adg_name, resolved_path in exec_modules:
+    for src_id, adg_name, resolved_path in exec_modules:  # progress_bar: bounded by exec_modules
         phase_edges = conn.execute(
             "SELECT DISTINCT e.relation_type FROM edges e WHERE e.src_id = ? "
             "AND e.relation_type IN ("
@@ -554,7 +560,7 @@ def _query_sc2_lifecycle(conn: sqlite3.Connection) -> list[dict[str, Any]]:
             (src_id,),
         ).fetchall()
         found_phases = set()
-        for (rt,) in phase_edges:
+        for (rt,) in phase_edges:  # progress_bar: bounded by phase_edges
             if rt in ("enters_sandbox", "stamps_work_contract"):
                 found_phases.add("E1")
             elif rt in ("validates_uwg_intent", "checks_capability_set"):
@@ -666,7 +672,7 @@ _ROLE_FORBIDDEN_EDGES: dict[str, list[str]] = {
 def _query_sc6_role_purity(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     """SC-6: Role purity for L0, L1, L6 — these layers should not have action edges."""
     violations: list[dict[str, Any]] = []
-    for layer, forbidden in _ROLE_FORBIDDEN_EDGES.items():
+    for layer, forbidden in _ROLE_FORBIDDEN_EDGES.items():  # progress_bar: bounded by ROLE_FORBIDDEN_EDGES
         placeholders = ",".join(["?"] * len(forbidden))
         rows = conn.execute(
             "SELECT e.source_file, e.line_no, e.relation_type, n_src.adg_name "
@@ -764,7 +770,7 @@ def _check_structural_conformance(
 
     with sqlite3.connect(str(sqlite_path)) as conn:
         _ensure_violation_class_column(conn)
-        for check_id, check_cfg in sorted(sc_checks.items()):
+        for check_id, check_cfg in sorted(sc_checks.items()):  # progress_bar: bounded by sc_checks
             audit = check_cfg.get("audit_mode", True)
             label = check_cfg.get("label", check_id)
             violations: list[dict[str, Any]] = []
@@ -828,6 +834,7 @@ _AP_CHECK_DISPATCH: dict[str, str] = {
     "AP-15": "_query_ap15_agent_tool_ratio",
     "AP-16": "_query_ap16_dormant_infra",
     "AP-17": "_query_ap17_semantic_precision",
+    "AP-18": "_query_ap18_prompt_assembly_orphan",
 }
 
 
@@ -868,7 +875,7 @@ def _query_ap2_phase_bypass(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         "WHERE n.layer = 'L2' "
         "  AND e.relation_type IN ('invokes_provider', 'resolves_callsite')",
     ).fetchall()
-    for src_id, adg_name, resolved_path in exec_modules:
+    for src_id, adg_name, resolved_path in exec_modules:  # progress_bar: bounded by exec_modules
         phase_edges = conn.execute(
             "SELECT DISTINCT e.relation_type FROM edges e WHERE e.src_id = ? "
             "AND e.relation_type IN ("
@@ -965,8 +972,10 @@ def _query_ap5_tool_overlap(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         ).fetchall()
         import_map[src_id] = {t[0] for t in targets}
     checked: set[tuple[int, int]] = set()
-    for i, (id_a, name_a, path_a) in enumerate(provider_nodes):
-        for j, (id_b, name_b, _path_b) in enumerate(provider_nodes):
+    for i, (id_a, name_a, path_a) in enumerate(provider_nodes):  # progress_bar: bounded by provider_nodes
+        for j, (id_b, name_b, _path_b) in enumerate(
+            provider_nodes
+        ):  # progress_bar: bounded by provider_nodes
             if i >= j:
                 continue
             pair = (min(id_a, id_b), max(id_a, id_b))
@@ -1029,8 +1038,10 @@ def _query_ap7_dup_specialization(conn: sqlite3.Connection) -> list[dict[str, An
         ).fetchall()
         import_map[nid] = {t[0] for t in targets}
     checked: set[tuple[int, int]] = set()
-    for i, (id_a, name_a, path_a, layer_a) in enumerate(agent_nodes):
-        for j, (id_b, name_b, _path_b, layer_b) in enumerate(agent_nodes):
+    for i, (id_a, name_a, path_a, layer_a) in enumerate(agent_nodes):  # progress_bar: bounded by agent_nodes
+        for j, (id_b, name_b, _path_b, layer_b) in enumerate(
+            agent_nodes
+        ):  # progress_bar: bounded by agent_nodes
             if i >= j or layer_a != layer_b:
                 continue
             pair = (min(id_a, id_b), max(id_a, id_b))
@@ -1069,7 +1080,7 @@ def _query_ap9_infra_spread(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         "   OR LOWER(adg_name) LIKE '%vector%' "
         "   OR LOWER(adg_name) LIKE '%embedding%'",
     ).fetchall()
-    for nid, adg_name, resolved_path in infra_nodes:
+    for nid, adg_name, resolved_path in infra_nodes:  # progress_bar: bounded by infra_nodes
         layers = conn.execute(
             "SELECT DISTINCT n.layer FROM edges e JOIN nodes n ON e.src_id = n.id "
             "WHERE e.dst_id = ? AND e.relation_type IN ('imports', 'reads_from')",
@@ -1241,7 +1252,7 @@ def _query_ap16_dormant_infra(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         "   OR LOWER(adg_name) LIKE '%embedding%' "
         "   OR LOWER(adg_name) LIKE '%eval%'",
     ).fetchall()
-    for nid, adg_name, resolved_path in infra_nodes:
+    for nid, adg_name, resolved_path in infra_nodes:  # progress_bar: bounded by infra_nodes
         import_count = conn.execute(
             "SELECT COUNT(*) FROM edges WHERE dst_id = ? AND relation_type = 'imports'",
             (nid,),
@@ -1282,11 +1293,69 @@ def _query_ap17_semantic_precision(conn: sqlite3.Connection) -> list[dict[str, A
     return violations
 
 
+_PROMPT_ASSEMBLY_PATH_FRAGMENTS: tuple[str, ...] = (
+    "tools/adg/prompt_assembly/",
+    "c0_evidence_contract_types",
+    "c0_dispatcher",
+    "c0_bridge_adapter",
+)
+
+
+def _query_ap18_prompt_assembly_orphan(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """AP-18: Prompt assembly subsystem disconnected from runtime.
+
+    Fails when a module in the prompt-assembly wiring surface exists and has
+    test callers but zero live (non-test) runtime callers.  This is the
+    exact negative-space pattern that was previously undetectable by:
+      - SC-5  (spine completeness: passes trivially when *any* path emits the edges)
+      - AP-14 (retrieval without guardrail: different failure mode)
+      - mv_unknown_taxonomy_and_orphans (requires *zero* edges; test callers pass it)
+
+    Does NOT fire on:
+      - modules with no callers at all (mv_unknown_taxonomy_and_orphans covers those)
+      - modules that have at least one live runtime import
+    """
+    violations: list[dict[str, Any]] = []
+    path_clauses = " OR ".join(f"n.resolved_path LIKE '%{frag}%'" for frag in _PROMPT_ASSEMBLY_PATH_FRAGMENTS)
+    rows = conn.execute(
+        "SELECT n.adg_name, n.resolved_path, "
+        "    COUNT(DISTINCT CASE "
+        "        WHEN c.resolved_path NOT LIKE 'tests/%' "
+        "         AND c.resolved_path NOT LIKE 'test_%' "
+        "        THEN e.id END) AS live_callers, "
+        "    COUNT(DISTINCT CASE "
+        "        WHEN c.resolved_path LIKE 'tests/%' "
+        "          OR c.resolved_path LIKE 'test_%' "
+        "        THEN e.id END) AS test_callers "
+        "FROM nodes n "
+        "LEFT JOIN edges e ON e.dst_id = n.id AND e.relation_type = 'imports' "
+        "LEFT JOIN nodes c ON c.id = e.src_id "
+        f"WHERE n.entity_type = 'module' "
+        f"  AND n.resolved_path NOT LIKE 'tests/%' "
+        f"  AND ({path_clauses}) "
+        "GROUP BY n.id "
+        "HAVING live_callers = 0 AND test_callers > 0",
+    ).fetchall()
+    for adg_name, resolved_path, _live_callers, test_callers in rows:  # progress_bar: bounded by rows
+        violations.append(
+            {
+                "source_file": resolved_path or "",
+                "line_no": 0,
+                "evidence": (
+                    f"{adg_name} prompt-assembly surface has {test_callers} test "
+                    f"caller(s) but 0 live runtime callers — subsystem is test-only "
+                    f"(missing_runtime_consumer)"
+                ),
+            }
+        )
+    return violations
+
+
 def _check_agentic_antipatterns(
     sqlite_path: Path | None = None,
     config_path: Path | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Run agentic anti-pattern checks (AP-1 through AP-17).
+    """Run agentic anti-pattern checks (AP-1 through AP-18).
 
     In audit mode (default), violations are logged and inserted into the violations table
     but do NOT cause sys.exit. When audit_mode is False for a check, violations cause sys.exit(1).
@@ -1313,7 +1382,7 @@ def _check_agentic_antipatterns(
 
     with sqlite3.connect(str(sqlite_path)) as conn:
         _ensure_violation_class_column(conn)
-        for check_id, check_cfg in sorted(ap_checks.items()):
+        for check_id, check_cfg in sorted(ap_checks.items()):  # progress_bar: bounded by ap_checks
             audit = check_cfg.get("audit_mode", True)
             label = check_cfg.get("label", check_id)
             violations: list[dict[str, Any]] = []

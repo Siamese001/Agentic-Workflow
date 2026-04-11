@@ -707,3 +707,160 @@ class TestLiveFutureMutationConflicts:
         ).fetchone()[0]
         conn.close()
         assert count == 0
+
+
+# ---------------------------------------------------------------------------
+# mv_prompt_assembly_wiring_gaps — negative-space detection
+# ---------------------------------------------------------------------------
+
+
+class TestPhaseAPromptAssemblyWiringGaps:
+    """Tests for mv_prompt_assembly_wiring_gaps.
+
+    Positive case: at least one live (non-test) caller → gap_type = 'ok'.
+    Negative case: test-only callers, zero live callers → gap_type = 'disconnected'.
+    """
+
+    def _setup_dispatcher_node(self, conn: sqlite3.Connection, node_id: int) -> None:
+        _node(
+            conn,
+            node_id,
+            "ADG::Module::tools/adg/prompt_assembly/c0_dispatcher.py",
+            "L_TOOLS",
+            "tools/adg/prompt_assembly/c0_dispatcher.py",
+        )
+
+    def test_table_in_phase_a_tables(self) -> None:
+        assert "mv_prompt_assembly_wiring_gaps" in _PHASE_A_TABLES
+
+    def test_empty_db_produces_zero_rows(self, tmp_path: Path) -> None:
+        db = _create_minimal_db(tmp_path)
+        counts = materialize_phase_a(db)
+        assert counts["mv_prompt_assembly_wiring_gaps"] == 0
+
+    def test_positive_live_caller_produces_ok_gap_type(self, tmp_path: Path) -> None:
+        """Positive case: dispatcher has a live runtime caller (orchestrator).
+
+        After Stage 3 fix, sovereign_rag_orchestrator imports c0_dispatcher.
+        The view should emit gap_type='ok'.
+        """
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        self._setup_dispatcher_node(conn, 1)
+        _node(
+            conn,
+            2,
+            "ADG::Module::agentic_core/L3_orchestration/reasoning/engines/sovereign_rag_orchestrator.py",
+            "L3",
+            "agentic_core/L3_orchestration/reasoning/engines/sovereign_rag_orchestrator.py",
+        )
+        _edge(
+            conn,
+            2,
+            1,
+            "imports",
+            source_file="agentic_core/L3_orchestration/reasoning/engines/sovereign_rag_orchestrator.py",
+        )
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT gap_type, live_callers, test_callers "
+            "FROM mv_prompt_assembly_wiring_gaps "
+            "WHERE target_file LIKE '%c0_dispatcher%'"
+        ).fetchone()
+        conn.close()
+        assert row is not None, "dispatcher node should appear in view"
+        gap_type, live_callers, test_callers = row
+        assert gap_type == "ok", f"expected ok but got {gap_type!r}"
+        assert live_callers >= 1
+        assert test_callers == 0
+
+    def test_negative_test_only_caller_produces_disconnected(self, tmp_path: Path) -> None:
+        """Negative case: dispatcher has ONLY a test-file caller.
+
+        This reproduces the pre-Stage-3 state where the prompt assembly subsystem
+        existed and was test-covered but had no live runtime entry point.
+        The view should emit gap_type='disconnected'.
+        """
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        self._setup_dispatcher_node(conn, 1)
+        _node(
+            conn,
+            2,
+            "ADG::Module::tests/unit/tools/adg/prompt_assembly/test_c0_dispatcher.py",
+            "L_TEST",
+            "tests/unit/tools/adg/prompt_assembly/test_c0_dispatcher.py",
+        )
+        _edge(conn, 2, 1, "imports", source_file="tests/unit/tools/adg/prompt_assembly/test_c0_dispatcher.py")
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT gap_type, live_callers, test_callers "
+            "FROM mv_prompt_assembly_wiring_gaps "
+            "WHERE target_file LIKE '%c0_dispatcher%'"
+        ).fetchone()
+        conn.close()
+        assert row is not None, "dispatcher node should appear in view"
+        gap_type, live_callers, test_callers = row
+        assert gap_type == "disconnected", f"expected disconnected but got {gap_type!r}"
+        assert live_callers == 0
+        assert test_callers >= 1
+
+    def test_no_callers_produces_disconnected(self, tmp_path: Path) -> None:
+        """Edge case: zero callers at all → also disconnected (test_callers=0, live=0)."""
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        self._setup_dispatcher_node(conn, 1)
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT gap_type, live_callers, test_callers "
+            "FROM mv_prompt_assembly_wiring_gaps "
+            "WHERE target_file LIKE '%c0_dispatcher%'"
+        ).fetchone()
+        conn.close()
+        assert row is not None
+        gap_type, live_callers, test_callers = row
+        assert gap_type == "disconnected"
+        assert live_callers == 0
+        assert test_callers == 0
+
+    def test_mixed_live_and_test_callers_produces_ok(self, tmp_path: Path) -> None:
+        """Both a live and a test caller → gap_type='ok' (live caller is enough)."""
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        self._setup_dispatcher_node(conn, 1)
+        _node(conn, 2, "live_orchestrator", "L3", "agentic_core/L3_orchestration/orch.py")
+        _node(conn, 3, "test_module", "L_TEST", "tests/unit/test_dispatch.py")
+        _edge(conn, 2, 1, "imports", source_file="agentic_core/L3_orchestration/orch.py")
+        _edge(conn, 3, 1, "imports", source_file="tests/unit/test_dispatch.py")
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT gap_type FROM mv_prompt_assembly_wiring_gaps WHERE target_file LIKE '%c0_dispatcher%'"
+        ).fetchone()
+        conn.close()
+        assert row is not None
+        assert row[0] == "ok"
+
+    def test_idempotent_refresh_preserves_results(self, tmp_path: Path) -> None:
+        """Refreshing Phase A twice returns identical wiring gap counts."""
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        self._setup_dispatcher_node(conn, 1)
+        _node(conn, 2, "test_caller", "L_TEST", "tests/unit/test_d.py")
+        _edge(conn, 2, 1, "imports", source_file="tests/unit/test_d.py")
+        conn.commit()
+        conn.close()
+        counts1 = materialize_phase_a(db)
+        counts2 = materialize_phase_a(db)
+        assert counts1["mv_prompt_assembly_wiring_gaps"] == counts2["mv_prompt_assembly_wiring_gaps"]

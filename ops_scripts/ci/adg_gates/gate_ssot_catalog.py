@@ -269,6 +269,27 @@ GATE_CATALOG: list[GateCatalogEntry] = [
         ),
         notes="Path-aware ratchet. Blocks trace/replay contract violations.",
     ),
+    GateCatalogEntry(
+        gate_id="G-P1-PROMPT-WIRING",
+        file="ops_scripts/ci/adg_gates/gate_p1_prompt_wiring.py",
+        cls="PromptAssemblyWiringGate",
+        severity="P1",
+        gate_class="structural_conformance",
+        policy=ExecutionPolicy(
+            stage="full",
+            repairability="manual_only",
+            gate_action="halt",
+            artifact_policy="full_adg_report",
+            signal_source="sqlite_mv_ci",
+            evidence_tier="truth",
+        ),
+        notes=(
+            "Blocks when prompt-assembly subsystem (dispatcher/bridge/contracts) "
+            "is test-covered but has zero live runtime callers. "
+            "Reads mv_prompt_assembly_wiring_gaps; falls back to inline SQL. "
+            "Exact condition: gap_type='disconnected' AND test_callers>0."
+        ),
+    ),
     # -----------------------------------------------------------------------
     # P1 — M1-M6 wave0 ratchet gates (migrating to ADGGateBase — Phase 03)
     # Entries use target gate_ids; legacy _adg_ci_gates.py is the shim until
