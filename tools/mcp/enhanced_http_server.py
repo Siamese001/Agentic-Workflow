@@ -382,8 +382,8 @@ class EnhancedHTTPMCPServer:
                     return await self._batch_requests(arguments)
                 else:
                     raise ValueError(f"Unknown tool: {name}")
-            except Exception as e:
-                logger.error(f"Error in tool {name}: {e}")
+            except (ValueError, RuntimeError, KeyError) as e:
+                logger.error("Error in tool %s: %s", name, e)
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error: {str(e)}")],
                     isError=True,
@@ -522,12 +522,12 @@ class EnhancedHTTPMCPServer:
         try:
             start_time = time.time()
 
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(trust_env=False) as session:
                 async with session.get(
                     url,
                     headers=headers,
                     params=params,
-                    timeout=aiohttp.ClientTimeout(total=timeout),
+                    timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                     ssl=verify_ssl,
                     allow_redirects=follow_redirects,
                     max_redirects=MAX_REDIRECTS if follow_redirects else 0,
@@ -596,12 +596,12 @@ class EnhancedHTTPMCPServer:
         try:
             start_time = time.time()
 
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(trust_env=False) as session:
                 async with session.post(
                     url,
                     headers=headers,
                     data=request_data,
-                    timeout=aiohttp.ClientTimeout(total=timeout),
+                    timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                     ssl=verify_ssl,
                 ) as response:
                     content = await self._read_response_bounded(response)
@@ -668,12 +668,12 @@ class EnhancedHTTPMCPServer:
         try:
             start_time = time.time()
 
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(trust_env=False) as session:
                 async with session.put(
                     url,
                     headers=headers,
                     data=request_data,
-                    timeout=aiohttp.ClientTimeout(total=timeout),
+                    timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                     ssl=verify_ssl,
                 ) as response:
                     content = await self._read_response_bounded(response)
@@ -718,11 +718,11 @@ class EnhancedHTTPMCPServer:
         try:
             start_time = time.time()
 
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(trust_env=False) as session:
                 async with session.delete(
                     url,
                     headers=headers,
-                    timeout=aiohttp.ClientTimeout(total=timeout),
+                    timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                     ssl=verify_ssl,
                 ) as response:
                     content = await self._read_response_bounded(response)
@@ -767,11 +767,11 @@ class EnhancedHTTPMCPServer:
         try:
             start_time = time.time()
 
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(trust_env=False) as session:
                 async with session.head(
                     url,
                     headers=headers,
-                    timeout=aiohttp.ClientTimeout(total=timeout),
+                    timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                     ssl=verify_ssl,
                 ) as response:
                     response_time = time.time() - start_time
@@ -814,10 +814,10 @@ class EnhancedHTTPMCPServer:
         try:
             start_time = time.time()
 
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(trust_env=False) as session:
                 async with session.head(
                     url,
-                    timeout=aiohttp.ClientTimeout(total=timeout),
+                    timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                     ssl=True,
                 ) as response:
                     response_time = time.time() - start_time
@@ -889,12 +889,12 @@ class EnhancedHTTPMCPServer:
             verify_ssl = req.get("verify_ssl", True)
 
             try:
-                async with aiohttp.ClientSession() as session:
+                async with aiohttp.ClientSession(trust_env=False) as session:
                     async with getattr(session, method.lower())(
                         url,
                         headers=headers,
                         data=req.get("data"),
-                        timeout=aiohttp.ClientTimeout(total=timeout),
+                        timeout=aiohttp.ClientTimeout(total=timeout, connect=10, sock_read=timeout),
                         ssl=verify_ssl,
                     ) as response:
                         content = await self._read_response_bounded(response)
@@ -984,6 +984,6 @@ if __name__ == "__main__":
         anyio.run(main)
     except KeyboardInterrupt:
         print("Enhanced HTTP MCP Server stopped by user")
-    except Exception as e:
-        logger.error(f"Server error: {e}")
+    except (OSError, RuntimeError) as e:
+        logger.error("Server error: %s", e)
         sys.exit(1)
