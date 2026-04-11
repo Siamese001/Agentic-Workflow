@@ -24,6 +24,7 @@ import hashlib
 import heapq
 import logging
 import os
+from tqdm import tqdm
 from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
 from typing import Iterator
@@ -614,7 +615,7 @@ def _enhanced_runtime_filter(edges: list[Edge], include_tests: bool) -> list[Edg
     """
     filtered_edges = []
 
-    for edge in edges:
+    for edge in tqdm(edges, desc="filter edges", unit="edge", leave=False):
         # Skip test files if not included
         if not include_tests and edge.source_file.startswith("tests/"):
             continue
@@ -932,7 +933,7 @@ def _kway_merge_exact(sorted_streams: list[list[Edge]]) -> list[Edge]:
     """
     seen: set[tuple] = set()
     result: list[Edge] = []
-    for edge in heapq.merge(*sorted_streams, key=_EDGE_SORT_KEY):
+    for edge in tqdm(heapq.merge(*sorted_streams, key=_EDGE_SORT_KEY), desc="merge streams", unit="edge", leave=False):
         eq_key = (
             edge.from_name,
             edge.relation_type,
@@ -1027,7 +1028,7 @@ def _tag_dead_imports(edges: list[Edge], dead_names: set[str]) -> list[Edge]:
     Returns a new list with dead imports replaced by dead_import-tagged edges.
     """
     result: list[Edge] = []
-    for e in edges:
+    for e in tqdm(edges, desc="dead import scan", unit="edge", leave=False):
         if e.relation_type == "imports" and e.symbol.split(".")[-1] in dead_names:
             result.append(
                 Edge(
@@ -1062,7 +1063,7 @@ def _detect_cycles(result: ScanResult) -> list[Edge]:
     radj: dict[str, set[str]] = {}
     nodes: set[str] = set()
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="node collect", unit="edge", leave=False):
         if edge.relation_type not in ("imports", "calls", "instantiates"):
             continue
         fn = edge.from_name
@@ -1121,11 +1122,11 @@ def _detect_cycles(result: ScanResult) -> list[Edge]:
                 sccs.append(sorted(scc))
 
     new_edges: list[Edge] = []
-    for scc in sccs:
+    for scc in tqdm(sccs, desc="cycle nodes", unit="scc", leave=False):
         members_key = "|".join(scc)
         cycle_hash = _hashlib.sha256(members_key.encode()).hexdigest()[:16]
         cycle_node = canonical_name("Cycle", cycle_hash)
-        for member in scc:
+        for member in tqdm(scc, desc="  scc members", unit="node", leave=False):
             rel = member[len(module_prefix) :]
             new_edges.append(
                 Edge(
@@ -1158,7 +1159,7 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
     violations: list[Edge] = []
     seen: set[tuple[str, str, str]] = set()
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="transitive imports", unit="edge", leave=False):
         if edge.relation_type != "imports":
             continue
         if edge.edge_kind in _SKIP_EDGE_KINDS:
@@ -1237,11 +1238,11 @@ def _iter_python_files(
         scan_mode: "full" (default) or "structural_only" for Phase 1 optimization
     """
     all_files: list[Path] = []
-    for scan_root in _selected_scan_roots(include_tests, scan_mode):
+    for scan_root in tqdm(_selected_scan_roots(include_tests, scan_mode), desc="scan roots", unit="root", leave=False):
         root_path = repo_root / scan_root
         if not root_path.exists():
             continue
-        for dirpath, dirnames, filenames in os.walk(root_path):
+        for dirpath, dirnames, filenames in tqdm(os.walk(root_path), desc="  walk", unit="dir", leave=False):
             dirnames[:] = sorted(
                 d
                 for d in dirnames
@@ -1739,7 +1740,7 @@ def _stamp_semantic_types_with_stats(edges: list[Edge]) -> tuple[list[Edge], dic
         "semantic_raw_edge_kind_count": 0,
     }
     result: list[Edge] = []
-    for e in edges:
+    for e in tqdm(edges, desc="semantic filter", unit="edge", leave=False):
         if e.semantic_type:
             stats["semantic_preexisting_count"] += 1
             result.append(e)
@@ -1874,7 +1875,7 @@ def _violation_propagation_eligibility(result: ScanResult) -> dict[str, int]:
 
     eligible_edge_count = 0
     eligible_module_targets: set[str] = set()
-    for violating_module in violating_modules:
+    for violating_module in tqdm(violating_modules, desc="violation scan", unit="module", leave=False):
         violating_key = _module_to_key(violating_module)
         visited: set[str] = {violating_module}
         frontier = {
@@ -1885,7 +1886,7 @@ def _violation_propagation_eligibility(result: ScanResult) -> dict[str, int]:
         visited |= frontier
         eligible_module_targets |= frontier
         eligible_edge_count += len(frontier)
-        for _depth in range(2, _MAX_PROPAGATION_DEPTH + 1):
+        for _depth in tqdm(range(2, _MAX_PROPAGATION_DEPTH + 1), desc="  depth", unit="lvl", leave=False):
             next_frontier: set[str] = set()
             for node in frontier:
                 node_key = _module_to_key(node)
@@ -1967,7 +1968,7 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
 
     violating_modules_set2: set[str] = set(violating_modules)
     propagation_edges: list[Edge] = []
-    for v_module in violating_modules:
+    for v_module in tqdm(violating_modules, desc="propagation", unit="module", leave=False):
         v_key = module_key_map[v_module]
 
         visited: set[str] = {v_module}
@@ -1977,7 +1978,7 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
             for importer in importers_of.get(v_key, set())
             if importer not in violating_modules_set2 and importer not in visited
         )
-        for importer in depth1_importers:
+        for importer in tqdm(depth1_importers, desc="  importers", unit="mod", leave=False):
             visited.add(importer)
             propagation_edges.append(
                 Edge(
@@ -1996,12 +1997,12 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
                 return propagation_edges
 
         frontier = depth1_importers
-        for depth in range(2, _MAX_PROPAGATION_DEPTH + 1):
+        for depth in tqdm(range(2, _MAX_PROPAGATION_DEPTH + 1), desc="  bfs depth", unit="lvl", leave=False):
             next_frontier: list[str] = []
-            for node in frontier:
+            for node in tqdm(frontier, desc="  bfs nodes", unit="node", leave=False):
                 node_key = _module_to_key(node)
                 # S7: sorted for stable BFS traversal order
-                for importer in sorted(importers_of.get(node_key, set())):
+                for importer in tqdm(sorted(importers_of.get(node_key, set())), desc="  importers", unit="mod", leave=False):
                     if importer not in visited:
                         visited.add(importer)
                         next_frontier.append(importer)
@@ -2397,7 +2398,7 @@ class ADGStaticScanner:
         _mc_exports = _mc_from_imports = _mc_symbol_hit = 0
         _mc_dead = _mc_decorator = _mc_star = _mc_conditional = _mc_type_ann = _mc_antipattern = 0
         _mc_cycle_nodes: dict[str, int] = {}
-        for _e in result.edges:
+        for _e in tqdm(result.edges, desc="metrics", unit="edge", leave=False):
             _rt = _e.relation_type
             _ek = _e.edge_kind
             if _rt == "calls":
