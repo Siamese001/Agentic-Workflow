@@ -154,29 +154,58 @@ class TestCollectionRouting(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# T2 — _embed_query returns exactly 1024-dim vectors
+# T2 — bge_embed_query (SR's embedding path) returns exactly 1024-dim vectors
 # ---------------------------------------------------------------------------
 
 
 class TestEmbedQueryDimension(unittest.TestCase):
-    """T2: query embedding must always be exactly 1024 dimensions."""
+    """T2: bge_embed_query (used directly by _query_collection) must always return 1024 dims.
 
-    def setUp(self):
-        self.retriever, _, _ = _build_retriever(st_dim=1024)
+    _embed_query was removed; SR's call site is now a direct call to bge_embed_query.
+    These tests exercise that function through the module-level binding SR imports.
+    """
 
     def test_embed_query_returns_1024_dim(self):
-        vec = self.retriever._embed_query("what does UniversalWriteGateway do?")
+        """bge_embed_query returns a 1024-element list."""
+        with patch(
+            "agentic_core.embeddings.bge_runtime.SentenceTransformer",
+            return_value=_make_fake_st(1024),
+        ):
+            from agentic_core.embeddings import bge_runtime
+
+            bge_runtime._bge_model = None  # reset singleton
+            from agentic_core.embeddings.bge_runtime import bge_embed_query
+
+            vec = bge_embed_query("what does UniversalWriteGateway do?")
         self.assertEqual(len(vec), 1024, f"Expected 1024-dim, got {len(vec)}")
 
     def test_embed_query_returns_floats(self):
-        vec = self.retriever._embed_query("test query")
+        """All values returned by bge_embed_query are Python floats."""
+        with patch(
+            "agentic_core.embeddings.bge_runtime.SentenceTransformer",
+            return_value=_make_fake_st(1024),
+        ):
+            from agentic_core.embeddings import bge_runtime
+
+            bge_runtime._bge_model = None
+            from agentic_core.embeddings.bge_runtime import bge_embed_query
+
+            vec = bge_embed_query("test query")
         self.assertTrue(all(isinstance(v, float) for v in vec), "All embedding values must be Python floats")
 
     def test_embed_query_raises_on_wrong_model_dim(self):
-        """If a model somehow returns wrong dim, the guard must fire."""
-        retriever, _, _ = _build_retriever(st_dim=384)
-        with self.assertRaises(RuntimeError) as ctx:
-            retriever._embed_query("any text")
+        """If the model returns wrong dim, the BGE_DIM_MISMATCH guard must fire."""
+        with patch(
+            "agentic_core.embeddings.bge_runtime.SentenceTransformer",
+            return_value=_make_fake_st(384),
+        ):
+            from agentic_core.embeddings import bge_runtime
+
+            bge_runtime._bge_model = None
+            from agentic_core.embeddings.bge_runtime import bge_embed_query
+
+            with self.assertRaises(RuntimeError) as ctx:
+                bge_embed_query("any text")
         self.assertIn("BGE_DIM_MISMATCH", str(ctx.exception))
         self.assertIn("dim=384", str(ctx.exception))
         self.assertIn("expected 1024", str(ctx.exception))

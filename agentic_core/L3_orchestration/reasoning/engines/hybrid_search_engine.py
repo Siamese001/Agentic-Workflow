@@ -20,6 +20,11 @@ from typing import Any
 
 from tqdm import tqdm
 
+try:
+    from agentic_core.embeddings.bge_runtime import BGEInstallError as _BGEInstallError
+except ImportError:
+    _BGEInstallError = RuntimeError  # type: ignore[assignment,misc]
+
 # BM25Index imported lazily to avoid L3->L4 violation
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -318,10 +323,10 @@ class HybridSearchEngine:
             Query embedding vector (1024-dim, L2-normalised), or None on install failure
         """
         try:
-            from agentic_core.embeddings.bge_runtime import BGEInstallError, bge_embed_query
+            from agentic_core.embeddings.bge_runtime import bge_embed_query
 
             return bge_embed_query(query)
-        except BGEInstallError as e:
+        except (_BGEInstallError, ImportError) as e:
             Logger.error(f"Failed to generate query embedding: {e}")
             return None
 
