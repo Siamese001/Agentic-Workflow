@@ -286,7 +286,7 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
   1. ~~Research Windsurf docs FIRST~~ → ✅ DONE. Research confirms all assumptions below.
   2. **Collapse YAML → direct JSON** — Windsurf only reads JSON. No other user maintains YAML→JSON pipeline. Our YAML layer is unique overhead.
   3. **Archive sync infrastructure** — `sync_yaml_to_global.py`, `check_mcp_config_sovereignty.py`, `/mcp-config-sync` workflow, Phase 1.3 drift detection → all confirmed unnecessary.
-  4. **Merge registry into Markdown** — JSON doesn't support comments. `docs/reference/MCP_Registry.md` is the right format. Include transport type per MCP.
+  4. **Merge registry into Markdown** — JSON doesn't support comments. `docs/guides/MCP_Registry.md` is the right format. Include transport type per MCP.
   5. **Reduce 8-point audit to version check** — Windsurf University confirms "periodically check for updates" as standard practice. `npm outdated` + GitHub pulse = sufficient.
   6. **Keep only**: `mcp_health_check.py` (Windsurf has NO native health monitoring — confirmed) + `npx` platform check (1-liner)
   7. **NEW**: Migrate env vars from `${VAR:-default}` to `${env:VAR_NAME}` (Windsurf native interpolation)
@@ -332,7 +332,7 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
   - Env vars using `${VAR:-default}` shell syntax instead of Windsurf-native `${env:VAR_NAME}` — needs migration
   - Total tool count across 14 MCPs may be near 100 limit — needs audit
   - `npx`-based servers confirmed correct launch pattern (Windsurf docs show `npx` as standard)
-- Fix: Lightweight version check (Phase 2.5 descoped) + env var migration + tool count audit (Phase 2.7 action items). Output: `docs/reference/MCP_Registry.md` with per-MCP validation metadata; ADR documenting simplification rationale
+- Fix: Lightweight version check (Phase 2.5 descoped) + env var migration + tool count audit (Phase 2.7 action items). Output: `docs/guides/MCP_Registry.md` with per-MCP validation metadata; ADR documenting simplification rationale
 
 **GAP-17: No MCP registry — overlapping responsibilities, undocumented rationale (PP-11)**
 - 13 MCP servers configured with no central registry documenting:
@@ -739,13 +739,13 @@ A blanket "exit 0 on all errors" weakens safety-critical pre-hooks. Failure poli
 **Acceptance**: Both sections in constitutional floor. Visible every Cascade turn.
 
 #### Phase 2.4 — MCP Registry SSOT (PP-11)
-**Scope**: Create `docs/reference/MCP_Registry.md` — authoritative registry of all MCP servers with rationale, scope, and SSOT authority.
+**Scope**: Create `docs/guides/MCP_Registry.md` — authoritative registry of all MCP servers with rationale, scope, and SSOT authority.
 
 **Files**:
-- CREATE: `docs/reference/MCP_Registry.md` — per-MCP: name, transport, version, rationale, scope, overlaps
+- CREATE: `docs/guides/MCP_Registry.md` — per-MCP: name, transport, version, rationale, scope, overlaps
 - UPDATE: `constitutional.md` — add §16: MCP SSOT Registry
 
-**Constitutional §16**: "MCP SSOT REGISTRY. `docs/reference/MCP_Registry.md` is the authoritative source for MCP responsibilities. Each capability has exactly ONE authoritative MCP. Overlaps documented with resolution."
+**Constitutional §16**: "MCP SSOT REGISTRY. `docs/guides/MCP_Registry.md` is the authoritative source for MCP responsibilities. Each capability has exactly ONE authoritative MCP. Overlaps documented with resolution."
 
 **Acceptance**: Registry covers all 14 MCPs. Each capability has one SSOT owner. All overlaps documented.
 
@@ -1664,7 +1664,7 @@ Each wave is independently rollbackable.
 | Rules valid triggers | 11/11 valid modes | Cascade Customizations panel |
 | SSOT dedup | 0 enforcement duplicates | governance-enforcement-table.md audit |
 | Approval classes | ALLOW/DENY/REQUIRE_APPROVAL/ESCALATE | Policy doc review |
-| MCP Registry | 14 MCPs documented | `docs/reference/MCP_Registry.md` exists |
+| MCP Registry | 14 MCPs documented | `docs/guides/MCP_Registry.md` exists |
 | HITL ⭐ calibration | All cite target-state attributes | `grep "target-state" hitl-enforcement.md` |
 | Column 5 vocabulary | In constitutional §8 | `grep "Column 5" constitutional.md` |
 | **Wave 2.5 — ADG Modularization** | | |

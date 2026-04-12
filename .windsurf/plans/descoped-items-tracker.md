@@ -28,7 +28,7 @@ Items removed or descoped from `five-tier-governance-model-a3f7c2.md` during the
 
 | Item | Original Phase | Reason | Risk | Recovery Path |
 |------|---------------|--------|------|---------------|
-| MCP registry as YAML (`config/mcp_registry.yaml`) | Phase 2.4 | Replaced by Markdown doc (`docs/reference/MCP_Registry.md`) — simpler, no parsing | LOW | Could recreate YAML if machine-readable format needed |
+| MCP registry as YAML (`config/mcp_registry.yaml`) | Phase 2.4 | Replaced by Markdown doc (`docs/guides/MCP_Registry.md`) — simpler, no parsing | LOW | Could recreate YAML if machine-readable format needed |
 | 8-point per-MCP audit checklist | Phase 2.5 | Over-engineered. Collapsed to lightweight version/deprecation check | LOW | Original checklist in git history if needed |
 | YAML SSOT detailed research (4 sources) | Phase 2.7 | Research completed but detailed findings compressed. Full findings preserved in git history of Phase 2.7 | LOW | `git log --all -- five-tier-governance-model-a3f7c2.md` for full RAG findings |
 | MCP config sovereignty script | Phase 2.7 | Archiving `check_mcp_config_sovereignty.py` — it prevents JSON edits, but JSON IS SSOT | LOW | Restore from `tools/archive/` if JSON SSOT changes |

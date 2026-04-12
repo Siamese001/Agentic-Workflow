@@ -438,7 +438,7 @@ P1.1 (Violation Analysis)
 ### 6.1 Reference Documents Analyzed
 
 1. `docs/reference/01_request_intake.md` - X0 Stage Requirements
-2. `docs/reference/02_L1_Reasoning_Plan_Generation.md` - X1 Stage Requirements
+2. `docs/reference/Layer 1 - Reasoning/02_L1_Reasoning_Plan_Generation.md` - X1 Stage Requirements
 3. `docs/reference/03_Route_Decision_Switching.md` - X2 Stage Requirements
 4. `docs/reference/04_Live_Task_Dispatch_Execution.md` - X3 Stage Requirements
 5. `docs/reference/05_Live_Runtime_Exit_Control.md` - X4 Stage Requirements

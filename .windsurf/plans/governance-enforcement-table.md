@@ -544,7 +544,7 @@ Constitutional §10 requires zero-loss refactor verification. Script exists but 
 - [ ] **H-13**: Reduce CI workflows from ~36 → 6-8 essential (consolidate + archive 14-28)
 - [ ] **H-14**: Zombie process cleanup hook kills orphaned PIDs on chat end (PP-9)
 - [ ] **H-15**: ADG SQLite lock released on chat end + warned before ADG tool calls (PP-10)
-- [ ] **H-16**: MCP registry `docs/reference/MCP_Registry.md` covers all 14 MCPs with rationale, scope, SSOT, overlaps (PP-11, PP-15 — Markdown replaces YAML)
+- [ ] **H-16**: MCP registry `docs/guides/MCP_Registry.md` covers all 14 MCPs with rationale, scope, SSOT, overlaps (PP-11, PP-15 — Markdown replaces YAML)
 - [ ] **H-17**: All 14 MCPs verified current — one-time version check via `npm outdated`/`pip list --outdated` + GitHub repo pulse (PP-12, PP-15 — simplified from 8-point audit)
 - [ ] **H-18**: Zero red MCP indicators on Windsurf startup — all servers initialize cleanly after MCP Terminal migration review
 - [ ] **H-19**: ADR published `docs/architecture/adr/adr-mcp-config-audit.md` documenting audit findings, version decisions, sequential-thinking lessons learned
@@ -554,7 +554,7 @@ Constitutional §10 requires zero-loss refactor verification. Script exists but 
 - [ ] **H-23**: ADG anti-pattern scanner flags guardian comments with generic-only justifications — P1 ratchet enforced (PP-14)
 - [ ] **H-24**: MCP YAML SSOT (`config/mcp_servers.yaml`) archived — Windsurf-native `mcp_config.json` is sole config source (PP-15)
 - [ ] **H-25**: `sync_yaml_to_global.py`, `check_mcp_config_sovereignty.py`, `/mcp-config-sync` workflow all archived (PP-15)
-- [ ] **H-26**: MCP registry lives in `docs/reference/MCP_Registry.md` (Markdown, not YAML) — rationale, scope, overlaps documented (PP-15)
+- [ ] **H-26**: MCP registry lives in `docs/guides/MCP_Registry.md` (Markdown, not YAML) — rationale, scope, overlaps documented (PP-15)
 - [ ] **H-27**: MCP config change end-to-end takes <5 minutes — no sync scripts, no drift detection, no multi-step pipeline (PP-15)
 - [ ] **H-28**: `docs/architecture/target-state-svp-engineering.md` published with concrete OpenAI Agentic SVP Engineering quality bar (PP-16)
 - [ ] **H-29**: All HITL ⭐ recommendation templates cite specific target-state attributes, not abstract principles (PP-16)
@@ -567,5 +567,5 @@ Constitutional §10 requires zero-loss refactor verification. Script exists but 
 - [ ] **H-36**: `.windsurf/rules/plan-location.md` mandates phase-level summary table — plan without it is invalid (PP-18)
 - [ ] **H-37**: All env vars in `mcp_config.json` use Windsurf-native `${env:VAR_NAME}` interpolation, not shell `${VAR:-default}` syntax (PP-15, RAG finding)
 - [ ] **H-38**: Total tool count across all MCPs audited and confirmed under 100 limit (Windsurf hard cap). Unused tools disabled. (PP-15, RAG finding)
-- [ ] **H-39**: `docs/reference/MCP_Registry.md` includes transport type per MCP (stdio/Streamable HTTP/local) (PP-11, PP-15, RAG finding)
+- [ ] **H-39**: `docs/guides/MCP_Registry.md` includes transport type per MCP (stdio/Streamable HTTP/local) (PP-11, PP-15, RAG finding)
 - [ ] **H-40**: RAG research completed for MCP standardization — 4 sources pulled (Windsurf docs, MCP best practices, Windsurf University, MCP protocol spec) with findings recorded in Phase 2.7 Step 1 (PP-12, PP-15)

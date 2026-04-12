@@ -90,7 +90,7 @@ with timestamped records of every config write — use this to trace when drift 
 
 ## References
 
-- MCP Registry: `docs/reference/MCP_Registry.md`
+- MCP Registry: `docs/guides/MCP_Registry.md`
 - SSOT rule: `.windsurf/rules/mcp-config-ssot.md`
 - Audit log: `artifacts/windsurf/mcp_lint_audit.jsonl`
 - Archive (YAML infra — do not restore): `tools/archive/mcp_yaml_infra_w5.2/`

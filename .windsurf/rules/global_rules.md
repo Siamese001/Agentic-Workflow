@@ -88,7 +88,7 @@ Tier 1 enforcement: `pre_mcp_gate.py` blocks ADG calls when SQLite write lock de
 
 ## MCP Authority: One SSOT Per Capability
 
-Each capability has exactly ONE authoritative MCP. Overlaps documented in `docs/reference/MCP_Registry.md`.
+Each capability has exactly ONE authoritative MCP. Overlaps documented in `docs/guides/MCP_Registry.md`.
 Before adding a new MCP, verify no existing MCP covers the capability.
 
 Known authority assignments:

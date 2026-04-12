@@ -180,6 +180,6 @@ The server is started with exactly one allowed directory: `C:/Git/Agentic-Workfl
 - Write gate: `.windsurf/scripts/pre_mcp_gate.py` → `FILESYSTEM_WRITE_TOOLS`, `check_filesystem_startup_gate`, `check_filesystem_write_gate`
 - Gate tests: `tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py`
 - Write-gate RCA: `docs/reports/rca/filesystem_mcp_write_gate_bypass_rca.md`
-- MCP Registry: `docs/reference/MCP_Registry.md`
+- MCP Registry: `docs/guides/MCP_Registry.md`
 - ADR-021: `docs/architecture/adr/ADR-021-hooks-mcp-recovery-limitations.md`
-- Config version policy: `docs/reference/MCP_Config_Version_Policy.md`
+- Config version policy: `docs/guides/MCP_Config_Version_Policy.md`

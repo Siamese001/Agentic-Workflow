@@ -44,7 +44,7 @@ Restart Windsurf after saving to apply the new config.
 1. Edit `.windsurf/mcp_config.json`
 2. Save — hook auto-copies to `~/.codeium/windsurf/mcp_config.json`
 3. Restart Windsurf
-4. Update `docs/reference/MCP_Registry.md`
+4. Update `docs/guides/MCP_Registry.md`
 5. Run health check: `python ops_scripts/ci/mcp_health_check.py`
 
 ## Hard Constraints
@@ -69,6 +69,6 @@ Restart Windsurf after saving to apply the new config.
 
 - Repo SSOT: `.windsurf/mcp_config.json`
 - Global (Windsurf reads): `~/.codeium/windsurf/mcp_config.json`
-- Registry: `docs/reference/MCP_Registry.md`
+- Registry: `docs/guides/MCP_Registry.md`
 - Archive: `tools/archive/mcp_yaml_infra_w5.2/` (YAML infra + sync script — do not restore)
 - ADR: `docs/architecture/adr/ADR-002-mcp-config-single-sync-script.md`
