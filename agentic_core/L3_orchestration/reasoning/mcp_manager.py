@@ -87,9 +87,9 @@ _emit_links_execution_to_snapshot("p4", "mcp_manager", "exec_snapshot_link")
 
 """L3 Orchestration: Concrete MCPConnectionManager + load_mcp_config.
 
-Routes call_tool() dispatches to the live Windsurf MCP tool functions
-available in the environment (mcp8_*, mcp12_*, mcp1_*, mcp11_*).
-Falls back gracefully when a tool is unavailable.
+Routes call_tool() dispatches to live Windsurf MCP tool functions by
+scanning mcp{0-19}_{tool_name} builtins injected at startup.
+Returns an explicit error dict when a tool cannot be resolved.
 """
 
 import json
@@ -176,49 +176,7 @@ _emit_invokes_eval("p1", "mcp_manager", "eval_call")
 _emit_proposal_commits_routing("p1", "mcp_manager", "routing_commit")
 
 
-# Import the MCP loader (.windsurf/mcp_config.json SSOT)
-try:
-    from agentic_core.config.mcp_loader import get_cached_loader
-
-    _MCP_LOADER_AVAILABLE = True
-except ImportError:
-    _MCP_LOADER_AVAILABLE = False
-    get_cached_loader = None
-
 Logger: Any = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# MCP Server Registry — loaded from .windsurf/mcp_config.json (SSOT)
-# ---------------------------------------------------------------------------
-
-# Cache for the server dispatch mapping (populated once, never None)
-_TOOL_DISPATCH_CACHE: dict[str, str] = {}
-
-
-def _get_tool_dispatch() -> dict[str, str]:
-    """Get enabled server names from .windsurf/mcp_config.json.
-
-    Returns:
-        Dict of server_name -> server_name (identity map used for presence
-        checks). Falls back to empty dict if loader unavailable.
-    """
-    if _TOOL_DISPATCH_CACHE:
-        return _TOOL_DISPATCH_CACHE
-
-    if _MCP_LOADER_AVAILABLE and get_cached_loader:
-        try:
-            loader = get_cached_loader()
-            servers = loader.list_enabled_servers()
-            _TOOL_DISPATCH_CACHE.update({s: s for s in servers})
-            Logger.debug(
-                "[MCPManager] Loaded %d servers from .windsurf/mcp_config.json", len(_TOOL_DISPATCH_CACHE)
-            )
-        except (FileNotFoundError, ValueError, OSError) as e:
-            Logger.warning(
-                "[MCPManager] Failed to load from .windsurf/mcp_config.json: %s. Using fallback.", e
-            )
-
-    return _TOOL_DISPATCH_CACHE
 
 
 def _resolve_tool(tool_name: str) -> Any:
@@ -235,31 +193,28 @@ def _resolve_tool(tool_name: str) -> Any:
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_resolve_tool", "p0_governance")
 
-    # Get dispatch table from .windsurf/mcp_config.json SSOT (cached)
-    tool_dispatch = _get_tool_dispatch()
-    mapped = tool_dispatch.get(tool_name)
+    import builtins as _builtins  # noqa: PLC0415
 
-    if mapped is None:
-        Logger.debug(f"[MCPManager] No dispatch mapping for tool '{tool_name}'")
-        return None
+    # Windsurf injects MCP tools as builtins named mcp{N}_{tool_name} where N
+    # is the server's 0-based position index assigned at startup.  Scan indices
+    # 0-19 to find the callable regardless of which index was assigned.
+    for _idx in range(20):
+        _candidate = f"mcp{_idx}_{tool_name}"
+        _fn = getattr(_builtins, _candidate, None)
+        if _fn is not None:
+            Logger.debug("[MCPManager] Resolved '%s' -> '%s'", tool_name, _candidate)
+            return _fn
 
-    # Try to resolve via global builtins (Windsurf injects MCP tools as globals)
-    import builtins
+    # Fallback: bare tool name injected via __main__ globals (test/CI environments)
+    import sys as _sys  # noqa: PLC0415
 
-    fn = getattr(builtins, mapped, None)
-    if fn is not None:
-        return fn
+    _main = _sys.modules.get("__main__", None)
+    if _main is not None:
+        _fn = getattr(_main, tool_name, None)
+        if _fn is not None:
+            return _fn
 
-    # Try current module globals (some environments inject here)
-    import sys
-
-    frame_globals = sys.modules.get("__main__", None)
-    if frame_globals is not None:
-        fn = getattr(frame_globals, mapped, None)
-        if fn is not None:
-            return fn
-
-    Logger.debug(f"[MCPManager] Tool '{mapped}' not found in environment")
+    Logger.debug("[MCPManager] Tool '%s' not found in environment", tool_name)
     return None
 
 
@@ -301,7 +256,7 @@ class MCPConnectionManager:
         Dispatch a logical tool call to the live MCP tool function.
 
         Args:
-            tool: Logical tool name (see _TOOL_DISPATCH)
+            tool: Logical tool name (e.g. "http_get", "batch_requests")
             args: Tool arguments dict (merged with kwargs)
 
         Returns:
@@ -310,8 +265,8 @@ class MCPConnectionManager:
         merged = {**(args or {}), **kwargs}
         fn = _resolve_tool(tool)
         if fn is None:
-            Logger.warning(f"[MCPManager] Tool '{tool}' unavailable — returning empty result")
-            return {}
+            Logger.warning("[MCPManager] Tool '%s' not found — no MCP provides it", tool)
+            return {"error": f"tool_not_found:{tool}", "available": False}
         try:
             result = fn(**merged)
             # Support both sync and async callables

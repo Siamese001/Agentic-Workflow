@@ -93,5 +93,5 @@ Before adding a new MCP, verify no existing MCP covers the capability.
 
 Known authority assignments:
 - File reads: `filesystem` (local), `github` (remote)
-- HTTP requests: `read_url_content` (simple GETs, native Cascade tool), `enhanced_http` (POST, auth, batch, advanced)
+- HTTP requests: `enhanced_http` is the **sole authority** for ALL programmatic HTTP calls. Use the `enhanced_http` tools: `http_get`, `http_post`, `http_put`, `http_delete`, `http_head`, `test_connectivity`, `batch_requests` (injected by Windsurf as `mcp{N}_<tool>` builtins; use the logical name, not the numeric prefix). Use `read_url_content` **only** when the request requires explicit user approval before the fetch executes (that native tool gates on user consent and is not for programmatic API calls). Decision rule: if the call is autonomous/programmatic → `enhanced_http`; if the user must approve the URL before fetching → `read_url_content`.
 - Project context: `adg_sqlite` (structural), `memory` (episodic)
