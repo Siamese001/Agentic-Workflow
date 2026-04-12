@@ -20,6 +20,9 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import numpy as np
+import pytest
+
+pytestmark = pytest.mark.retrieval_guard
 
 # ---------------------------------------------------------------------------
 # Path bootstrap — mirrors what semantic_retriever.py does at import time
