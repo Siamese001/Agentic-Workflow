@@ -405,8 +405,37 @@ This is a **deterministic AI control plane** that enables:
 
 ---
 
+## Governed Architecture Proof Pack
+
+The governed runtime system — 5 fully adopted apps, 2 formal exceptions, shared substrate — is packaged into one verifiable proof surface.
+
+**One-command release gate:**
+
+```bash
+python ops_scripts/ci/run_architecture_proof.py
+```
+
+This runs three suites in order:
+
+| Suite | Command | What it validates |
+|---|---|---|
+| S1 — Conformance Gate | `ops_scripts/ci/check_governed_app_conformance.py` | Registry + imports: CONF01–CONF08 + EXCF01–EXCF08 (36 checks) |
+| S2 — Exception Framework Proof | `tools/eval/retrieval_benchmark.py --exception-framework-proof` | All 7 apps behavioral: penta E2E + eval/uw exception controls |
+| S3 — Regression Check | `tools/eval/retrieval_benchmark.py --regression-check` | Evidence governance regression baseline |
+
+**Current green state:** 5 governed apps (research, exec, rfp, rg, lic) + 2 formal governed exceptions (eval, underwriting_ai) + 0 ad hoc statuses.
+
+**Key documents:**
+- **Architecture Proof Pack:** [`docs/architecture/architecture-proof-pack.md`](docs/architecture/architecture-proof-pack.md) — proof command map, gap maps, expected green state
+- **Governed-App Contract:** [`docs/architecture/governed-app-contract.md`](docs/architecture/governed-app-contract.md) — `FormalExceptionEntry` schema, CONF/EXCF check definitions
+- **App Registry:** [`apps_shared/integrations/app_registry.py`](apps_shared/integrations/app_registry.py) — single source of truth for all app classifications
+
+---
+
 ## Documentation
 
+* **Architecture Proof Pack:** `docs/architecture/architecture-proof-pack.md` — Proof command map, governed app registry, exception framework, expected green state
+* **Governed-App Contract:** `docs/architecture/governed-app-contract.md` — `GovernedAppRunner` contract, `FormalExceptionEntry` schema, CONF/EXCF checks
 * **Full Process Map (v28):** `docs/reference/agentic_process_mapping_v28.md` — Complete ASCII runtime flow with L0-L6 personas, decision points, and control spines
 * **Architecture ADRs:** `docs/architecture/adr/` — Architectural decision records
 * **Standards:** `docs/STANDARDS.md` — Code and design standards
