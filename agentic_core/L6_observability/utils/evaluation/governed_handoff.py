@@ -18,18 +18,28 @@ BUS U / rollout publication seam:
     Source: agentic_core.L2_execution.audit.telemetry_bus
     NOTE: No separate BUS U bus type exists in the runtime.  BUS T (BusType.TELEMETRY)
     with signal_type="PROMOTION_ROLLOUT" is the governed rollout publication channel.
+    Rollout publication is COUPLED to the commit result — it is emitted AFTER the UWG
+    commit attempt completes (with the commit result included in the payload).
 
-Default mode dry_run=True:
-    - Issues a scoped PromotionToken (single-use nonce).
-    - Validates token scope and expiry (does NOT consume nonce).
-    - Publishes to BUS T as signal_type="PROMOTION_ROLLOUT".
-    - Returns HandoffRecord with committed=False.
-    - Completed run is NOT mutated.
+Approval / commit model
+-----------------------
+dry_run=True (default — safe for proofs and CI):
+    - Issues token, validates token+rollback metadata.
+    - Skips UWG commit (commit_attempted=False, committed=False).
+    - Publishes BUS T PROMOTION_ROLLOUT with committed=False label.
+    - No live-run mutation.
 
-dry_run=False (future real mode):
-    - Same plus calls PromotionAuthority.update_pointer_via_gateway(), which
-      validates and consumes the token nonce.
-    - If the gateway is not configured, commit is skipped gracefully.
+dry_run=False, approved=False (BLOCKED):
+    - Returns immediately with error="Commit blocked: explicit approval required".
+    - No token issued, no commit, no BUS T publish.
+
+dry_run=False, approved=True (REAL GOVERNED COMMIT):
+    - Issues token, validates token scope+expiry.
+    - Validates rollback metadata contract (parameter, revert_to_value, rollback_trigger).
+    - If any pre-commit gate fails → commit_attempted=False, returns with error.
+    - Calls PromotionAuthority.update_pointer_via_gateway() (validates+consumes nonce).
+    - Publishes BUS T AFTER commit attempt (with committed status in payload).
+    - committed=True only if update_pointer_via_gateway() succeeded.
 
 Future-run only.  No direct L6 write.  No live-run mutation.
 """
@@ -47,12 +57,15 @@ from agentic_core.L2_execution.utils.providers import get_clock
 if TYPE_CHECKING:
     from agentic_core.L6_observability.utils.evaluation.promotion_packet import PromotionPacket
 
-# Signal type used on BUS T for promotion rollout publication (the "BUS U" seam)
+# Signal type used on BUS T for rollout publication (the governed "BUS U" seam)
 BUS_ROLLOUT_SIGNAL = "PROMOTION_ROLLOUT"
 
-# Semantic clock tick used for dry-run token issuance (wide window)
-_DRY_RUN_CLOCK_TICK = 0
-_DRY_RUN_WINDOW_SIZE = 9999
+# Semantic clock tick used for all proof / CI handoffs (wide window, no expiry risk)
+_PROOF_CLOCK_TICK = 0
+_PROOF_WINDOW_SIZE = 9999
+
+# Rollback metadata keys that MUST be present and non-empty for a non-dry-run commit
+ROLLBACK_REQUIRED_KEYS = frozenset({"parameter", "revert_to_value", "rollback_trigger"})
 
 
 @dataclass(frozen=True)
@@ -61,25 +74,30 @@ class HandoffRecord:
 
     Fields
     ------
-    record_id:           Unique identifier for this handoff record.
-    packet_id:           PromotionPacket.packet_id handed off.
-    token_id:            PromotionToken.token_id issued for this handoff.
-    token_valid:         Whether the token passed scope+expiry check.
-    bus_published:       Whether the packet was published to BUS T as PROMOTION_ROLLOUT.
-    committed:           True only if update_pointer_via_gateway() succeeded.
-                         Always False in dry_run=True mode.
-    dry_run:             Whether this was a dry-run handoff.
-    destination_namespace: PromotionToken target_namespace (= packet destination class).
-    handoff_at:          Monotonic epoch tick at handoff time.
-    error:               "" if successful; error message if any step failed.
+    record_id:              Unique identifier for this handoff record.
+    packet_id:              PromotionPacket.packet_id handed off.
+    token_id:               PromotionToken.token_id issued ("UNISSUED" if blocked pre-token).
+    token_valid:            Whether the token passed scope+expiry check.
+    approved:               Whether explicit approval was provided by the caller.
+    commit_attempted:       True if the UWG commit path was entered (approved non-dry-run).
+    committed:              True only if update_pointer_via_gateway() succeeded.
+    rollout_published:      True if BUS T PROMOTION_ROLLOUT was published.
+    rollback_metadata_valid: True if rollback contract keys are present and non-empty.
+    dry_run:                Whether this was a dry-run handoff.
+    destination_namespace:  PromotionToken target_namespace (= packet destination class).
+    handoff_at:             Monotonic epoch tick at handoff time.
+    error:                  "" if successful; block reason or runtime error otherwise.
     """
 
     record_id: str
     packet_id: str
     token_id: str
     token_valid: bool
-    bus_published: bool
+    approved: bool
+    commit_attempted: bool
     committed: bool
+    rollout_published: bool
+    rollback_metadata_valid: bool
     dry_run: bool
     destination_namespace: str
     handoff_at: float
@@ -90,6 +108,7 @@ class GovernedHandoffAgent:
     """Route a sealed PromotionPacket to the UWG / BUS T rollout path.
 
     Default mode is dry_run=True — safe for proofs and CI.
+    Non-dry-run commit requires explicit approved=True.
     No live-run mutation in any mode.
     """
 
@@ -97,38 +116,71 @@ class GovernedHandoffAgent:
         self,
         packet: "PromotionPacket",
         dry_run: bool = True,
+        approved: bool = False,
     ) -> HandoffRecord:
         """Route packet to governed UWG / BUS T path.
 
-        Steps
-        -----
-        1. Issue a scoped, single-use PromotionToken bound to the packet's
-           replay_digest and destination namespace.
-        2. Validate token scope and expiry (nonce NOT consumed in dry-run mode).
-        3. Publish to BUS T with signal_type="PROMOTION_ROLLOUT".
-        4. In non-dry-run mode only: call PromotionAuthority.update_pointer_via_gateway()
-           (which validates + consumes the nonce).
+        Execution order
+        ---------------
+        Blocked path (dry_run=False, approved=False):
+            → return immediately; no token, no commit, no BUS T publish.
+
+        Dry-run path (dry_run=True):
+            1. Issue PromotionToken (scoped, single-use nonce).
+            2. Validate token scope + expiry (non-consuming check).
+            3. Validate rollback metadata contract (informational only in dry-run).
+            4. Skip commit (commit_attempted=False).
+            5. Publish BUS T with committed=False label.
+
+        Real commit path (dry_run=False, approved=True):
+            1. Issue PromotionToken (scoped, single-use nonce).
+            2. Validate token scope + expiry.
+            3. Validate rollback metadata contract — block if invalid.
+            4. Call PromotionAuthority.update_pointer_via_gateway() [nonce consumed].
+            5. Publish BUS T AFTER commit with committed result in payload.
 
         Args:
             packet:   Sealed PromotionPacket from PromotionPacketizer.
-            dry_run:  If True (default), publish to BUS T but skip UWG commit.
+            dry_run:  If True (default), skip UWG commit.
+            approved: Must be True for non-dry-run commit.  Ignored in dry-run mode.
 
         Returns:
             HandoffRecord — sealed outcome record.
         """
         namespace = packet.target_destination_class
+
+        # ── Gate: non-dry-run requires explicit approval ───────────────────────
+        if not dry_run and not approved:
+            return HandoffRecord(
+                record_id=f"hr-{uuid.uuid4().hex[:12]}",
+                packet_id=packet.packet_id,
+                token_id="UNISSUED",
+                token_valid=False,
+                approved=False,
+                commit_attempted=False,
+                committed=False,
+                rollout_published=False,
+                rollback_metadata_valid=False,
+                dry_run=False,
+                destination_namespace=namespace,
+                handoff_at=get_clock().now_epoch(),
+                error="Commit blocked: explicit approval required (pass approved=True)",
+            )
+
         token_id = "UNISSUED"
         token_valid = False
-        bus_published = False
+        commit_attempted = False
         committed = False
+        rollout_published = False
+        rollback_ok, rollback_error = False, ""
         error = ""
 
         try:
             # Step 1: Issue scoped PromotionToken
             token = issue_promotion_token(
                 target_namespace=namespace,
-                semantic_clock_tick=_DRY_RUN_CLOCK_TICK,
-                window_size=_DRY_RUN_WINDOW_SIZE,
+                semantic_clock_tick=_PROOF_CLOCK_TICK,
+                window_size=_PROOF_WINDOW_SIZE,
                 replay_digest=packet.replay_digest,
                 guardian_signature=f"governed_handoff:{packet.packet_id}",
             )
@@ -136,37 +188,58 @@ class GovernedHandoffAgent:
 
             # Step 2: Validate scope + expiry (non-consuming check)
             token_valid = token.is_valid_for_namespace(namespace) and not token.is_expired(
-                _DRY_RUN_CLOCK_TICK
+                _PROOF_CLOCK_TICK
             )
 
-            # Step 3: Publish to BUS T as PROMOTION_ROLLOUT
-            bus = get_telemetry_bus()
-            bus_published = bus.publish(
-                bus_type=BusType.TELEMETRY,
-                signal_type=BUS_ROLLOUT_SIGNAL,
-                payload=_packet_to_bus_payload(packet, token_id, dry_run),
-                trace_id=packet.packet_id,
-                priority=1,
-            )
+            # Step 3: Validate rollback metadata contract
+            rollback_ok, rollback_error = _validate_rollback_metadata(packet)
 
-            # Step 4: UWG commit — only in non-dry-run mode
-            if not dry_run and token_valid:
-                from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: PLC0415
-                    get_promotion_authority,
+            if not dry_run:
+                # Real commit path — block if any pre-commit gate fails
+                if not token_valid:
+                    error = "Commit blocked: token invalid or expired"
+                elif not rollback_ok:
+                    error = f"Commit blocked: {rollback_error}"
+                else:
+                    # Step 4: UWG commit (nonce is consumed here)
+                    commit_attempted = True
+                    from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: PLC0415
+                        get_promotion_authority,
+                    )
+
+                    authority = get_promotion_authority()
+                    try:
+                        authority.update_pointer_via_gateway(
+                            new_pointer=packet.packet_id,
+                            capability_token=token,
+                        )
+                        committed = True
+                    except RuntimeError as exc:
+                        error = str(exc)
+
+                # Step 5: Publish BUS T AFTER commit attempt (commit status in payload)
+                rollout_published = get_telemetry_bus().publish(
+                    bus_type=BusType.TELEMETRY,
+                    signal_type=BUS_ROLLOUT_SIGNAL,
+                    payload=_packet_to_bus_payload(
+                        packet, token_id, dry_run, committed, commit_attempted
+                    ),
+                    trace_id=packet.packet_id,
+                    priority=1,
+                )
+            else:
+                # Dry-run: publish informational rollout signal (no commit)
+                rollout_published = get_telemetry_bus().publish(
+                    bus_type=BusType.TELEMETRY,
+                    signal_type=BUS_ROLLOUT_SIGNAL,
+                    payload=_packet_to_bus_payload(
+                        packet, token_id, dry_run, committed, commit_attempted
+                    ),
+                    trace_id=packet.packet_id,
+                    priority=1,
                 )
 
-                authority = get_promotion_authority()
-                try:
-                    authority.update_pointer_via_gateway(
-                        new_pointer=packet.packet_id,
-                        capability_token=token,
-                    )
-                    committed = True
-                except RuntimeError:
-                    # Write gateway not configured in future-run mode — expected.
-                    pass
-
-        except (RuntimeError, ValueError, OSError) as exc:
+        except (ValueError, OSError) as exc:
             error = str(exc)
 
         return HandoffRecord(
@@ -174,8 +247,11 @@ class GovernedHandoffAgent:
             packet_id=packet.packet_id,
             token_id=token_id,
             token_valid=token_valid,
-            bus_published=bus_published,
+            approved=approved,
+            commit_attempted=commit_attempted,
             committed=committed,
+            rollout_published=rollout_published,
+            rollback_metadata_valid=rollback_ok,
             dry_run=dry_run,
             destination_namespace=namespace,
             handoff_at=get_clock().now_epoch(),
@@ -183,12 +259,35 @@ class GovernedHandoffAgent:
         )
 
 
+def _validate_rollback_metadata(packet: "PromotionPacket") -> tuple[bool, str]:
+    """Check that rollback_metadata meets the minimum contract.
+
+    Required keys: parameter, revert_to_value, rollback_trigger.
+    All three must be present and non-empty/non-None.
+
+    Returns:
+        (True, "")         — contract met
+        (False, <reason>)  — contract violated
+    """
+    rb = packet.rollback_metadata
+    missing = ROLLBACK_REQUIRED_KEYS - rb.keys()
+    if missing:
+        return False, f"rollback_metadata missing keys: {sorted(missing)}"
+    if rb.get("revert_to_value") is None:
+        return False, "rollback_metadata.revert_to_value must not be None"
+    if not rb.get("rollback_trigger"):
+        return False, "rollback_metadata.rollback_trigger must not be empty"
+    return True, ""
+
+
 def _packet_to_bus_payload(
     packet: "PromotionPacket",
     token_id: str,
     dry_run: bool,
+    committed: bool,
+    commit_attempted: bool,
 ) -> dict:
-    """Convert a PromotionPacket to a BUS T payload dict."""
+    """Convert a PromotionPacket to a BUS T PROMOTION_ROLLOUT payload."""
     return {
         "packet_id": packet.packet_id,
         "edition": packet.edition,
@@ -205,8 +304,15 @@ def _packet_to_bus_payload(
         "replay_digest": packet.replay_digest,
         "token_id": token_id,
         "dry_run": dry_run,
+        "committed": committed,
+        "commit_attempted": commit_attempted,
         "signal_type": BUS_ROLLOUT_SIGNAL,
     }
 
 
-__all__ = ["BUS_ROLLOUT_SIGNAL", "GovernedHandoffAgent", "HandoffRecord"]
+__all__ = [
+    "BUS_ROLLOUT_SIGNAL",
+    "GovernedHandoffAgent",
+    "HandoffRecord",
+    "ROLLBACK_REQUIRED_KEYS",
+]
