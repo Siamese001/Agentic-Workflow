@@ -3958,6 +3958,310 @@ def run_penta_app_proof() -> bool:
     return overall
 
 
+def run_eval_exception_proof() -> bool:
+    """Proof: apps_eval satisfies the formal governed-exception framework.
+
+    Checks EVAL01–EVAL10:
+      Happy path: GovernedEvalException instantiates, emits telemetry, exposes record.
+      Formal fields: FormalExceptionEntry in registry with all required fields.
+      Compensating controls: all four CC-EVAL-NN pass.
+      Boundary guard: module importable without L6 circularity.
+    """
+    print(f"\n{'#' * 80}")
+    print("  EVAL EXCEPTION PROOF — apps_eval formal governed-exception framework")
+    print("  Exception module: apps_eval/integrations/governed_eval_exception.py")
+    print("  Handler class:    GovernedEvalException")
+    print("  Reason code:      CIRCULAR_DEPENDENCY")
+    print(f"{'#' * 80}\n")
+
+    from apps_eval.integrations.governed_eval_exception import (  # noqa: PLC0415
+        BLOCKED_LAYERS,
+        COMPENSATING_CONTROLS,
+        SAFE_LAYERS,
+        GovernedEvalException,
+    )
+    from apps_shared.integrations.app_registry import (  # noqa: PLC0415
+        APP_REGISTRY,
+        ExceptionReasonCode,
+        FormalExceptionEntry,
+    )
+
+    checks: list[tuple[str, bool, str]] = []
+    handler = GovernedEvalException()
+    entry = APP_REGISTRY.get("apps_eval")
+
+    # EVAL01: FormalExceptionEntry in registry
+    eval01 = isinstance(entry, FormalExceptionEntry)
+    checks.append(("EVAL01 FormalExceptionEntry in registry", eval01, type(entry).__name__))
+
+    # EVAL02: exception_reason_code is CIRCULAR_DEPENDENCY
+    if isinstance(entry, FormalExceptionEntry):
+        eval02 = entry.exception_reason_code == ExceptionReasonCode.CIRCULAR_DEPENDENCY
+        eval02_d = entry.exception_reason_code.value
+    else:
+        eval02, eval02_d = False, "entry not FormalExceptionEntry"
+    checks.append(("EVAL02 reason_code=CIRCULAR_DEPENDENCY", eval02, eval02_d))
+
+    # EVAL03: blocked_layers >= 4
+    eval03 = len(BLOCKED_LAYERS) >= 4
+    checks.append(("EVAL03 blocked_layers declared (>=4)", eval03, f"{len(BLOCKED_LAYERS)} layers"))
+
+    # EVAL04: safe_layers >= 1
+    eval04 = len(SAFE_LAYERS) >= 1
+    checks.append(("EVAL04 safe_layers declared (>=1)", eval04, f"{len(SAFE_LAYERS)} surfaces"))
+
+    # EVAL05: compensating_controls >= 4
+    eval05 = len(COMPENSATING_CONTROLS) >= 4
+    checks.append(("EVAL05 compensating_controls (>=4)", eval05, f"{len(COMPENSATING_CONTROLS)} controls"))
+
+    # EVAL06: handler instantiates without circular import
+    try:
+        _ = GovernedEvalException()
+        eval06, eval06_d = True, "GovernedEvalException() OK"
+    except (ImportError, RuntimeError) as exc:
+        eval06, eval06_d = False, str(exc)[:40]
+    checks.append(("EVAL06 handler instantiates (no circularity)", eval06, eval06_d))
+
+    # EVAL07: emit_run_telemetry returns valid telemetry
+    try:
+        t = handler.emit_run_telemetry(
+            eval_type="proof_check",
+            suite_name="EVAL07",
+            passed=True,
+            metric_count=3,
+        )
+        eval07 = bool(t.run_id) and t.passed
+        eval07_d = f"run_id={t.run_id[:16]}"
+    except (TypeError, ValueError, RuntimeError) as exc:
+        eval07, eval07_d = False, str(exc)[:40]
+    checks.append(("EVAL07 emit_run_telemetry() returns telemetry", eval07, eval07_d))
+
+    # EVAL08: get_exception_record() returns correct app_name
+    try:
+        rec = handler.get_exception_record()
+        eval08 = rec.app_name == "apps_eval"
+        eval08_d = f"app_name={rec.app_name}"
+    except (AttributeError, TypeError) as exc:
+        eval08, eval08_d = False, str(exc)[:40]
+    checks.append(("EVAL08 get_exception_record() correct app_name", eval08, eval08_d))
+
+    # EVAL09: check_compensating_controls() all pass
+    try:
+        cc_results = handler.check_compensating_controls()
+        all_cc = all(ok for _, ok, _ in cc_results)
+        n_cc = sum(1 for _, ok, _ in cc_results if ok)
+        eval09, eval09_d = all_cc, f"{n_cc}/{len(cc_results)} CC pass"
+    except (AttributeError, TypeError, RuntimeError) as exc:
+        eval09, eval09_d = False, str(exc)[:40]
+    checks.append(("EVAL09 check_compensating_controls() all pass", eval09, eval09_d))
+
+    # EVAL10: proof_prefix in registry entry
+    if isinstance(entry, FormalExceptionEntry):
+        eval10 = entry.proof_prefix == "EVAL"
+        eval10_d = f"proof_prefix={entry.proof_prefix!r}"
+    else:
+        eval10, eval10_d = False, "entry not FormalExceptionEntry"
+    checks.append(("EVAL10 proof_prefix='EVAL' in registry", eval10, eval10_d))
+
+    _print_proof_table(checks)
+    all_pass = all(ok for _, ok, _ in checks)
+    verdict = PASS_MARK if all_pass else FAIL_MARK
+    n_pass = sum(1 for _, ok, _ in checks if ok)
+    print(f"\n  VERDICT: {verdict}  {n_pass}/{len(checks)} EVAL checks pass")
+    if all_pass:
+        print("  apps_eval: formally governed exception — circular boundary enforced.")
+    print(f"{'#' * 80}")
+    return all_pass
+
+
+def run_uw_exception_proof() -> bool:
+    """Proof: apps_underwriting_ai satisfies the formal governed-exception framework.
+
+    Checks UW01–UW10:
+      Happy path: GovernedUwException instantiates, emits telemetry, exposes record.
+      Formal fields: FormalExceptionEntry in registry with all required fields.
+      Compensating controls: all four CC-UW-NN pass including CoreAdapter check.
+      Domain protocol: CoreAdapter + CoreHandoffPayload verified present.
+    """
+    print(f"\n{'#' * 80}")
+    print("  UW EXCEPTION PROOF — apps_underwriting_ai formal governed-exception framework")
+    print("  Exception module: apps_underwriting_ai/integrations/governed_uw_exception.py")
+    print("  Handler class:    GovernedUwException")
+    print("  Reason code:      REGULATORY_DOMAIN")
+    print(f"{'#' * 80}\n")
+
+    from apps_shared.integrations.app_registry import (  # noqa: PLC0415
+        APP_REGISTRY,
+        ExceptionReasonCode,
+        FormalExceptionEntry,
+    )
+    from apps_underwriting_ai.integrations.governed_uw_exception import (  # noqa: PLC0415
+        BLOCKED_LAYERS,
+        COMPENSATING_CONTROLS,
+        SAFE_LAYERS,
+        GovernedUwException,
+    )
+
+    checks: list[tuple[str, bool, str]] = []
+    handler = GovernedUwException()
+    entry = APP_REGISTRY.get("apps_underwriting_ai")
+
+    # UW01: FormalExceptionEntry in registry
+    uw01 = isinstance(entry, FormalExceptionEntry)
+    checks.append(("UW01 FormalExceptionEntry in registry", uw01, type(entry).__name__))
+
+    # UW02: exception_reason_code is REGULATORY_DOMAIN
+    if isinstance(entry, FormalExceptionEntry):
+        uw02 = entry.exception_reason_code == ExceptionReasonCode.REGULATORY_DOMAIN
+        uw02_d = entry.exception_reason_code.value
+    else:
+        uw02, uw02_d = False, "entry not FormalExceptionEntry"
+    checks.append(("UW02 reason_code=REGULATORY_DOMAIN", uw02, uw02_d))
+
+    # UW03: blocked_layers >= 4
+    uw03 = len(BLOCKED_LAYERS) >= 4
+    checks.append(("UW03 blocked_layers declared (>=4)", uw03, f"{len(BLOCKED_LAYERS)} layers"))
+
+    # UW04: safe_layers >= 1
+    uw04 = len(SAFE_LAYERS) >= 1
+    checks.append(("UW04 safe_layers declared (>=1)", uw04, f"{len(SAFE_LAYERS)} surfaces"))
+
+    # UW05: compensating_controls >= 4
+    uw05 = len(COMPENSATING_CONTROLS) >= 4
+    checks.append(("UW05 compensating_controls (>=4)", uw05, f"{len(COMPENSATING_CONTROLS)} controls"))
+
+    # UW06: handler instantiates
+    try:
+        _ = GovernedUwException()
+        uw06, uw06_d = True, "GovernedUwException() OK"
+    except (ImportError, RuntimeError) as exc:
+        uw06, uw06_d = False, str(exc)[:40]
+    checks.append(("UW06 handler instantiates", uw06, uw06_d))
+
+    # UW07: emit_decision_telemetry returns valid telemetry
+    try:
+        t = handler.emit_decision_telemetry(
+            request_id="UW07-proof",
+            product_type="commercial_loan",
+            recommended_decision="approve",
+            confidence_score=0.92,
+        )
+        uw07 = bool(t.run_id) and t.request_id == "UW07-proof"
+        uw07_d = f"run_id={t.run_id[:16]}"
+    except (TypeError, ValueError, RuntimeError) as exc:
+        uw07, uw07_d = False, str(exc)[:40]
+    checks.append(("UW07 emit_decision_telemetry() returns telemetry", uw07, uw07_d))
+
+    # UW08: get_exception_record() returns correct app_name
+    try:
+        rec = handler.get_exception_record()
+        uw08 = rec.app_name == "apps_underwriting_ai"
+        uw08_d = f"app_name={rec.app_name}"
+    except (AttributeError, TypeError) as exc:
+        uw08, uw08_d = False, str(exc)[:40]
+    checks.append(("UW08 get_exception_record() correct app_name", uw08, uw08_d))
+
+    # UW09: check_compensating_controls() all pass (includes CoreAdapter check)
+    try:
+        cc_results = handler.check_compensating_controls()
+        all_cc = all(ok for _, ok, _ in cc_results)
+        n_cc = sum(1 for _, ok, _ in cc_results if ok)
+        uw09, uw09_d = all_cc, f"{n_cc}/{len(cc_results)} CC pass"
+    except (AttributeError, TypeError, RuntimeError) as exc:
+        uw09, uw09_d = False, str(exc)[:40]
+    checks.append(("UW09 check_compensating_controls() all pass", uw09, uw09_d))
+
+    # UW10: proof_prefix in registry entry
+    if isinstance(entry, FormalExceptionEntry):
+        uw10 = entry.proof_prefix == "UW"
+        uw10_d = f"proof_prefix={entry.proof_prefix!r}"
+    else:
+        uw10, uw10_d = False, "entry not FormalExceptionEntry"
+    checks.append(("UW10 proof_prefix='UW' in registry", uw10, uw10_d))
+
+    _print_proof_table(checks)
+    all_pass = all(ok for _, ok, _ in checks)
+    verdict = PASS_MARK if all_pass else FAIL_MARK
+    n_pass = sum(1 for _, ok, _ in checks if ok)
+    print(f"\n  VERDICT: {verdict}  {n_pass}/{len(checks)} UW checks pass")
+    if all_pass:
+        print("  apps_underwriting_ai: formally governed exception — regulatory boundary enforced.")
+    print(f"{'#' * 80}")
+    return all_pass
+
+
+def run_exception_framework_proof() -> bool:
+    """Full governed-exception framework proof.
+
+    Combines:
+      1. run_penta_app_proof()     — 5 governed apps still pass
+      2. run_eval_exception_proof()  — apps_eval formal exception
+      3. run_uw_exception_proof()    — apps_underwriting_ai formal exception
+
+    Final state verified:
+      - 5 governed apps (research, exec, rfp, rg, lic)
+      - 2 formal governed exceptions (eval, underwriting_ai)
+      - 0 ad hoc exception statuses
+    """
+    print(f"\n{'#' * 80}")
+    print("  GOVERNED-EXCEPTION FRAMEWORK PROOF")
+    print("  Contract: docs/architecture/governed-app-contract.md §3.2")
+    print("  Registry: apps_shared/integrations/app_registry.py")
+    print("  Gate:     ops_scripts/ci/check_governed_app_conformance.py EXCF01-EXCF08")
+    print(f"{'#' * 80}\n")
+
+    # Step 1: penta-app governed proof (existing 5 apps unchanged)
+    penta_pass = run_penta_app_proof()
+
+    # Step 2: apps_eval formal exception proof
+    eval_pass = run_eval_exception_proof()
+
+    # Step 3: apps_underwriting_ai formal exception proof
+    uw_pass = run_uw_exception_proof()
+
+    # Step 4: zero ad hoc exceptions check
+    from apps_shared.integrations.app_registry import (  # noqa: PLC0415
+        APP_REGISTRY,
+        FormalExceptionEntry,
+        GovernanceStatus,
+    )
+
+    ad_hoc = [
+        name
+        for name, entry in APP_REGISTRY.items()
+        if entry.status == GovernanceStatus.EXCEPTION and not isinstance(entry, FormalExceptionEntry)
+    ]
+    no_adhoc_pass = len(ad_hoc) == 0
+    formal_exceptions = [
+        name
+        for name, entry in APP_REGISTRY.items()
+        if isinstance(entry, FormalExceptionEntry)
+    ]
+
+    overall = penta_pass and eval_pass and uw_pass and no_adhoc_pass
+    verdict = PASS_MARK if overall else FAIL_MARK
+    print(f"\n{'#' * 80}")
+    print(f"  EXCEPTION FRAMEWORK VERDICT: {verdict}")
+    print(
+        f"  penta_app={'PASS' if penta_pass else 'FAIL'}  "
+        f"eval_exception={'PASS' if eval_pass else 'FAIL'}  "
+        f"uw_exception={'PASS' if uw_pass else 'FAIL'}  "
+        f"no_adhoc={'PASS' if no_adhoc_pass else 'FAIL'}"
+    )
+    if no_adhoc_pass:
+        print(f"  Formal exceptions: {formal_exceptions}")
+        print("  Zero ad hoc exception statuses remain.")
+    else:
+        print(f"  Ad hoc exceptions detected: {ad_hoc}")
+    if overall:
+        print(
+            "  FINAL STATE: 5 governed apps + 2 formal governed exceptions.\n"
+            "  All exceptions explicit, bounded, compensated, and gate-enforced."
+        )
+    print(f"{'#' * 80}\n")
+    return overall
+
+
 def run_conformance_gate_proof() -> bool:
     """Run the repo-wide governed-app conformance gate + penta-app E2E proof.
 
@@ -4087,9 +4391,24 @@ def main() -> None:
         help="Run all five governed apps (research + exec + rfp + rg + lic) E2E proofs via shared GovernedAppRunner.",
     )
     parser.add_argument(
+        "--eval-exception-proof",
+        action="store_true",
+        help="Prove apps_eval satisfies the formal governed-exception framework (EVAL01-EVAL10 + CC-EVAL-NN).",
+    )
+    parser.add_argument(
+        "--uw-exception-proof",
+        action="store_true",
+        help="Prove apps_underwriting_ai satisfies the formal governed-exception framework (UW01-UW10 + CC-UW-NN).",
+    )
+    parser.add_argument(
+        "--exception-framework-proof",
+        action="store_true",
+        help="Full governed-exception framework proof: penta-app + eval exception + uw exception + zero ad hoc check.",
+    )
+    parser.add_argument(
         "--conformance-gate-proof",
         action="store_true",
-        help="Run the repo-wide governed-app conformance gate (registry + import checks) then triple-app E2E proof. Full PASS/FAIL verdict on the formal governed-app standard.",
+        help="Run the repo-wide governed-app conformance gate (registry + import checks) then penta-app E2E proof. Full PASS/FAIL verdict on the formal governed-app standard.",
     )
     args = parser.parse_args()
 
@@ -4127,6 +4446,18 @@ def main() -> None:
 
     if args.penta_app_proof:
         passed = run_penta_app_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.eval_exception_proof:
+        passed = run_eval_exception_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.uw_exception_proof:
+        passed = run_uw_exception_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.exception_framework_proof:
+        passed = run_exception_framework_proof()
         sys.exit(0 if passed else 1)
 
     if args.conformance_gate_proof:

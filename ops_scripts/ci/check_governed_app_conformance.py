@@ -10,11 +10,19 @@ Checks
 CONF01  All governed apps: runner module is importable
 CONF02  All governed apps: runner class is a GovernedAppRunner subclass
 CONF03  All governed apps: capability_token is non-empty and versioned (contains ".")
-CONF04  All exception/candidate apps: exception_reason is non-empty (>= 20 chars)
-CONF05  All exception/candidate apps: exception_category is one of the valid set
-CONF06  All exception/candidate apps: target_phase is non-empty
-CONF07  All exception/candidate apps: owner is non-empty
+CONF04  All CANDIDATE apps (ExceptionAppEntry): exception_reason is non-empty (>= 20 chars)
+CONF05  All CANDIDATE apps (ExceptionAppEntry): exception_category is one of the valid set
+CONF06  All CANDIDATE apps (ExceptionAppEntry): target_phase is non-empty
+CONF07  All CANDIDATE apps (ExceptionAppEntry): owner is non-empty
 CONF08  No apps_* package is absent from APP_REGISTRY (silent bypass check)
+EXCF01  All EXCEPTION-status apps: use FormalExceptionEntry (no ad hoc exceptions)
+EXCF02  All formal exceptions: exception_reason_code is a valid ExceptionReasonCode
+EXCF03  All formal exceptions: blocked_layers is non-empty
+EXCF04  All formal exceptions: safe_layers is non-empty
+EXCF05  All formal exceptions: compensating_controls has >= 2 entries
+EXCF06  All formal exceptions: review_cadence is non-empty
+EXCF07  All formal exceptions: partial_adoption_module is importable
+EXCF08  All formal exceptions: partial_adoption_class.check_compensating_controls() all pass
 
 Exit 0 = all checks pass.
 Exit 1 = one or more checks fail (table printed to stdout).
@@ -40,6 +48,7 @@ FAIL_MARK = "FAIL"
 _VALID_EXCEPTION_CATEGORIES = frozenset({"pending_migration", "circular_dependency", "regulatory_domain"})
 
 _EXCEPTION_REASON_MIN_LEN = 20
+_COMPENSATING_CONTROLS_MIN = 2
 
 
 def _discover_apps_packages() -> list[str]:
@@ -109,7 +118,7 @@ def _check_governed_entry(entry: "GovernedAppEntry") -> list[tuple[str, bool, st
 
 
 def _check_exception_entry(entry: "ExceptionAppEntry") -> list[tuple[str, bool, str]]:  # type: ignore[name-defined]  # noqa: F821
-    """Run CONF04–CONF07 for a single exception/candidate app entry."""
+    """Run CONF04–CONF07 for a single CANDIDATE app entry (ExceptionAppEntry only)."""
     results: list[tuple[str, bool, str]] = []
 
     # CONF04: exception_reason >= 20 chars
@@ -156,11 +165,120 @@ def _check_exception_entry(entry: "ExceptionAppEntry") -> list[tuple[str, bool, 
     return results
 
 
+def _check_formal_exception_entry(  # noqa: PLR0912
+    entry: "FormalExceptionEntry",  # type: ignore[name-defined]  # noqa: F821
+) -> list[tuple[str, bool, str]]:
+    """Run EXCF01–EXCF08 for a single formal exception entry."""
+    from apps_shared.integrations.app_registry import ExceptionReasonCode  # noqa: PLC0415
+
+    results: list[tuple[str, bool, str]] = []
+
+    # EXCF01 is checked at the registry level (no ad hoc exceptions)
+    # Here we run EXCF02–EXCF08.
+
+    # EXCF02: exception_reason_code is a valid ExceptionReasonCode
+    try:
+        valid_code = isinstance(entry.exception_reason_code, ExceptionReasonCode)
+        excf02_pass = valid_code
+        excf02_detail = repr(entry.exception_reason_code.value)
+    except (AttributeError, ValueError) as exc:
+        excf02_pass = False
+        excf02_detail = str(exc)[:40]
+    results.append(
+        (f"EXCF02 [{entry.app_name}] exception_reason_code valid", excf02_pass, excf02_detail)
+    )
+
+    # EXCF03: blocked_layers non-empty
+    excf03_pass = len(entry.blocked_layers) > 0
+    results.append(
+        (
+            f"EXCF03 [{entry.app_name}] blocked_layers declared",
+            excf03_pass,
+            f"{len(entry.blocked_layers)} layers",
+        )
+    )
+
+    # EXCF04: safe_layers non-empty
+    excf04_pass = len(entry.safe_layers) > 0
+    results.append(
+        (
+            f"EXCF04 [{entry.app_name}] safe_layers declared",
+            excf04_pass,
+            f"{len(entry.safe_layers)} surfaces",
+        )
+    )
+
+    # EXCF05: compensating_controls >= 2
+    excf05_pass = len(entry.compensating_controls) >= _COMPENSATING_CONTROLS_MIN
+    results.append(
+        (
+            f"EXCF05 [{entry.app_name}] compensating_controls>={_COMPENSATING_CONTROLS_MIN}",
+            excf05_pass,
+            f"{len(entry.compensating_controls)} controls",
+        )
+    )
+
+    # EXCF06: review_cadence non-empty
+    excf06_pass = bool(entry.review_cadence.strip())
+    results.append(
+        (
+            f"EXCF06 [{entry.app_name}] review_cadence set",
+            excf06_pass,
+            repr(entry.review_cadence),
+        )
+    )
+
+    # EXCF07: partial_adoption_module importable
+    try:
+        mod = importlib.import_module(entry.partial_adoption_module)
+        excf07_pass = True
+        excf07_detail = entry.partial_adoption_module
+    except ImportError as exc:
+        mod = None
+        excf07_pass = False
+        excf07_detail = str(exc)[:50]
+    results.append(
+        (f"EXCF07 [{entry.app_name}] partial_adoption_module importable", excf07_pass, excf07_detail)
+    )
+
+    # EXCF08: partial_adoption_class.check_compensating_controls() all pass
+    if excf07_pass and mod is not None:
+        try:
+            cls = getattr(mod, entry.partial_adoption_class, None)
+            if cls is None:
+                excf08_pass = False
+                excf08_detail = f"class {entry.partial_adoption_class!r} not found"
+            else:
+                handler = cls()
+                cc_results = handler.check_compensating_controls()
+                all_cc_pass = all(ok for _, ok, _ in cc_results)
+                n_pass = sum(1 for _, ok, _ in cc_results if ok)
+                excf08_pass = all_cc_pass
+                excf08_detail = f"{n_pass}/{len(cc_results)} controls pass"
+        except (AttributeError, TypeError, RuntimeError) as exc:
+            excf08_pass = False
+            excf08_detail = str(exc)[:50]
+    else:
+        excf08_pass = False
+        excf08_detail = "skipped — module not importable"
+    results.append(
+        (
+            f"EXCF08 [{entry.app_name}] compensating_controls verified",
+            excf08_pass,
+            excf08_detail,
+        )
+    )
+
+    return results
+
+
 def run_conformance_gate() -> bool:
     """Run all conformance checks. Returns True if all pass."""
     from apps_shared.integrations.app_registry import (  # noqa: PLC0415
         APP_REGISTRY,
         ExceptionAppEntry,
+        FormalExceptionEntry,
+        GovernanceStatus,
         GovernedAppEntry,
     )
 
@@ -178,10 +296,23 @@ def run_conformance_gate() -> bool:
             )
         )
 
+    # EXCF01: all EXCEPTION-status apps must use FormalExceptionEntry (no ad hoc exceptions)
+    for entry in APP_REGISTRY.values():
+        if entry.status == GovernanceStatus.EXCEPTION and not isinstance(entry, FormalExceptionEntry):
+            all_checks.append(
+                (
+                    f"EXCF01 [{entry.app_name}] EXCEPTION must use FormalExceptionEntry",
+                    False,
+                    f"got {type(entry).__name__} — upgrade to FormalExceptionEntry",
+                )
+            )
+
     # Per-app checks
     for entry in APP_REGISTRY.values():
         if isinstance(entry, GovernedAppEntry):
             all_checks.extend(_check_governed_entry(entry))
+        elif isinstance(entry, FormalExceptionEntry):
+            all_checks.extend(_check_formal_exception_entry(entry))
         elif isinstance(entry, ExceptionAppEntry):
             all_checks.extend(_check_exception_entry(entry))
 
@@ -213,6 +344,8 @@ def run_conformance_gate() -> bool:
     for name, entry in sorted(APP_REGISTRY.items()):
         if isinstance(entry, GovernedAppEntry):
             detail = entry.runner_class
+        elif isinstance(entry, FormalExceptionEntry):
+            detail = f"{entry.exception_reason_code.value} [formal]"
         else:
             detail = entry.exception_category
         print(f"  {name:<26} {entry.status.value:<12} {detail}")

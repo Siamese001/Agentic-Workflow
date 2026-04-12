@@ -27,6 +27,14 @@ class GovernanceStatus(str, Enum):
     EXCEPTION = "exception"
 
 
+class ExceptionReasonCode(str, Enum):
+    """Canonical reason codes for permanent governed exceptions."""
+
+    CIRCULAR_DEPENDENCY = "circular_dependency"
+    REGULATORY_DOMAIN = "regulatory_domain"
+    PENDING_MIGRATION = "pending_migration"
+
+
 # ---------------------------------------------------------------------------
 # Registry entry types
 # ---------------------------------------------------------------------------
@@ -72,6 +80,9 @@ class ExceptionAppEntry:
     exception_reason:  One-sentence human-readable justification.
     owner:             Team or person responsible for this entry.
     target_phase:      When migration is expected ("Phase N" or "N/A — permanent exception").
+
+    Note: Use FormalExceptionEntry for all permanent (status=EXCEPTION) apps.
+    ExceptionAppEntry is retained for transient CANDIDATE entries only.
     """
 
     app_name: str
@@ -82,11 +93,45 @@ class ExceptionAppEntry:
     target_phase: str
 
 
+@dataclass(frozen=True)
+class FormalExceptionEntry:
+    """Formal governed-exception entry for permanent exceptions.
+
+    All EXCEPTION-status apps MUST use FormalExceptionEntry.
+    ExceptionAppEntry is for transient CANDIDATE apps only.
+
+    Required fields
+    ---------------
+    exception_reason_code : ExceptionReasonCode enum value.
+    blocked_layers        : Tuple of governed substrate layers that cannot be adopted.
+    safe_layers           : Tuple of substrate surfaces safely adopted.
+    compensating_controls : Tuple of CC-XXX-NN control descriptions (≥2 required).
+    review_cadence        : "annual" | "semi-annual" | "quarterly".
+    partial_adoption_module : Dotted module path of the safe-adoption handler.
+    partial_adoption_class  : Class name of the handler.
+    proof_prefix          : Short prefix for proof-harness check IDs.
+    """
+
+    app_name: str
+    status: GovernanceStatus
+    exception_reason_code: ExceptionReasonCode
+    exception_reason: str
+    blocked_layers: tuple[str, ...]
+    safe_layers: tuple[str, ...]
+    compensating_controls: tuple[str, ...]
+    review_cadence: str
+    owner: str
+    target_phase: str
+    partial_adoption_module: str
+    partial_adoption_class: str
+    proof_prefix: str
+
+
 # ---------------------------------------------------------------------------
 # Registry — all apps_* packages must appear here
 # ---------------------------------------------------------------------------
 
-APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry] = {
+APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry | FormalExceptionEntry] = {
     # ── Governed (fully adopted) ──────────────────────────────────────────
     "apps_research": GovernedAppEntry(
         app_name="apps_research",
@@ -133,30 +178,55 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry] = {
         routing_target="lic_campaign_assembly",
         proof_prefix="LIC",
     ),
-    # ── Permanent exceptions (cannot adopt GovernedAppRunner) ────────────
-    "apps_eval": ExceptionAppEntry(
+    # ── Formal governed exceptions (permanent; FormalExceptionEntry required) ──
+    "apps_eval": FormalExceptionEntry(
         app_name="apps_eval",
         status=GovernanceStatus.EXCEPTION,
-        exception_category="circular_dependency",
+        exception_reason_code=ExceptionReasonCode.CIRCULAR_DEPENDENCY,
         exception_reason=(
             "apps_eval IS the evaluation framework; routing it through GovernedAppRunner "
             "(which calls evaluate_and_emit) would create a circular evaluation-of-evaluator "
-            "dependency. Permanent exception."
+            "dependency. Permanent exception. Compensating: BUS-T telemetry without circularity."
         ),
+        blocked_layers=("L0", "L1", "C0", "L2", "L5", "L6"),
+        safe_layers=("BUS_T_telemetry", "conformance_metadata"),
+        compensating_controls=(
+            "CC-EVAL-01: eval runs emit standard telemetry without calling evaluate_and_emit",
+            "CC-EVAL-02: get_exception_record() exposes machine-readable ExceptionRecord",
+            "CC-EVAL-03: module import guard — no L6 circularity triggered on import",
+            "CC-EVAL-04: exception reviewed and re-certified annually by eval-platform team",
+        ),
+        review_cadence="annual",
         owner="eval-platform team",
         target_phase="N/A — permanent exception",
+        partial_adoption_module="apps_eval.integrations.governed_eval_exception",
+        partial_adoption_class="GovernedEvalException",
+        proof_prefix="EVAL",
     ),
-    "apps_underwriting_ai": ExceptionAppEntry(
+    "apps_underwriting_ai": FormalExceptionEntry(
         app_name="apps_underwriting_ai",
         status=GovernanceStatus.EXCEPTION,
-        exception_category="regulatory_domain",
+        exception_reason_code=ExceptionReasonCode.REGULATORY_DOMAIN,
         exception_reason=(
             "Underwriting decisions are legally-binding credit determinations; injecting "
-            "them through a generic evidence-retrieval substrate is inappropriate. The app "
-            "defines its own CoreAdapter + CoreHandoffPayload governance protocol. Permanent exception."
+            "them through a generic evidence-retrieval substrate is inappropriate and a "
+            "regulatory compliance risk. The app defines its own CoreAdapter + "
+            "CoreHandoffPayload governance protocol. Permanent exception."
         ),
+        blocked_layers=("L0", "L1", "C0", "L2", "L5"),
+        safe_layers=("BUS_T_telemetry", "conformance_metadata"),
+        compensating_controls=(
+            "CC-UW-01: all decisions emit L6-compatible telemetry via ObservabilityAdapter",
+            "CC-UW-02: CoreAdapter.prepare_handoff() provides equivalent L2 governance guarantees",
+            "CC-UW-03: get_exception_record() exposes machine-readable ExceptionRecord",
+            "CC-UW-04: governance protocol reviewed annually with regulatory compliance sign-off",
+        ),
+        review_cadence="annual",
         owner="underwriting-ai team",
         target_phase="N/A — permanent exception",
+        partial_adoption_module="apps_underwriting_ai.integrations.governed_uw_exception",
+        partial_adoption_class="GovernedUwException",
+        proof_prefix="UW",
     ),
 }
 
@@ -171,11 +241,22 @@ def get_governed_apps() -> list[GovernedAppEntry]:
     return [e for e in APP_REGISTRY.values() if isinstance(e, GovernedAppEntry)]
 
 
-def get_exception_apps() -> list[ExceptionAppEntry]:
-    """Return all exception/candidate app entries."""
-    return [e for e in APP_REGISTRY.values() if isinstance(e, ExceptionAppEntry)]
+def get_exception_apps() -> list[ExceptionAppEntry | FormalExceptionEntry]:
+    """Return all exception/candidate app entries (both legacy and formal)."""
+    return [
+        e
+        for e in APP_REGISTRY.values()
+        if isinstance(e, (ExceptionAppEntry, FormalExceptionEntry))
+    ]
 
 
-def get_apps_by_status(status: GovernanceStatus) -> list[GovernedAppEntry | ExceptionAppEntry]:
+def get_formal_exception_apps() -> list[FormalExceptionEntry]:
+    """Return only formal governed-exception entries."""
+    return [e for e in APP_REGISTRY.values() if isinstance(e, FormalExceptionEntry)]
+
+
+def get_apps_by_status(
+    status: GovernanceStatus,
+) -> list[GovernedAppEntry | ExceptionAppEntry | FormalExceptionEntry]:
     """Return all entries matching a given status."""
     return [e for e in APP_REGISTRY.values() if e.status == status]
