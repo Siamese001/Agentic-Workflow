@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 from agentic_core.embeddings.bge_runtime import bge_embed_query
 
-# guardian: allow-cross-layer-import -- L4 retrieval seam routes through sanctioned infrastructure adapter
+# guardian: allow-layer-violation -- L4 retrieval seam routes through sanctioned infrastructure adapter
 from infrastructure.sdks_mcps import create_openai_sync_client
 
 # Add project root to path for imports
@@ -263,6 +263,38 @@ class L3SemanticRAG:
             Logger.warning("query_traces: runtime_evidence collection unavailable")
             return []
         return self._query_collection(self.traces_collection, query, n_results, "runtime_evidence")
+
+    # ------------------------------------------------------------------
+    # EvidenceBundle companions (Phase 2 — EvidenceBundle propagation)
+    # Existing query_docs / query_traces are unchanged for backward compat.
+    # ------------------------------------------------------------------
+
+    def query_docs_with_evidence(self, query: str, n_results: int = 5) -> "Any":
+        """Query arch_docs and return an EvidenceBundle instead of plain dicts.
+
+        Returns:
+            EvidenceShaper::EvidenceBundle from shape_search().  Falls back to a
+            minimal stub bundle (empty ranked_chunks) if the collection is missing.
+        """
+        return self._query_with_evidence("arch_docs", query, n_results)
+
+    def query_traces_with_evidence(self, query: str, n_results: int = 5) -> "Any":
+        """Query runtime_evidence and return an EvidenceBundle instead of plain dicts.
+
+        Returns:
+            EvidenceShaper::EvidenceBundle from shape_search().  Falls back to a
+            minimal stub bundle (empty ranked_chunks) if the collection is missing.
+        """
+        return self._query_with_evidence("runtime_evidence", query, n_results)
+
+    def _query_with_evidence(self, collection_name: str, query: str, n_results: int) -> "Any":
+        """Internal: run shaped hybrid search and return EvidenceBundle."""
+        from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
+            get_global_hybrid_engine,
+        )
+
+        engine = get_global_hybrid_engine(collection_name)
+        return engine.shape_search(query, collection_name=collection_name, top_k=n_results)
 
     def _query_collection(
         self, collection, query: str, n_results: int, collection_type: str

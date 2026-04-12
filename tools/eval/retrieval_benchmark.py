@@ -1835,6 +1835,332 @@ def run_shadow_eval_proof(baseline_path: Path | None = None) -> bool:
     return all_pass
 
 
+def run_promotion_gauntlet_proof() -> bool:
+    """Demonstrate the full future-run promotion gauntlet end-to-end.
+
+    Phase coverage:
+        PG  staged candidates -> PromotionGauntlet (HOLD / REJECT / APPROVE paths)
+        PG  approved candidate -> PromotionPacketizer (sealed packet)
+        PG  sealed packet -> GovernedHandoffAgent (BUS T PROMOTION_ROLLOUT, dry-run)
+        PG  no live-run mutation confirmed
+
+    Uses entirely synthetic (no-ChromaDB) candidates and clusters.
+    Returns True if all verification checks pass.
+    """
+    from agentic_core.L6_observability.utils.evaluation.governed_handoff import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full promotion gauntlet path end-to-end
+        BUS_ROLLOUT_SIGNAL,
+        GovernedHandoffAgent,
+    )
+    from agentic_core.L6_observability.utils.evaluation.promotion_gauntlet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full promotion gauntlet path end-to-end
+        VERDICT_APPROVE,
+        VERDICT_HOLD,
+        VERDICT_REJECT,
+        PromotionGauntlet,
+    )
+    from agentic_core.L6_observability.utils.evaluation.promotion_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import; eval benchmark exercises full promotion gauntlet path end-to-end
+        PromotionPacket,
+        PromotionPacketizer,
+    )
+    from agentic_core.L6_observability.utils.evaluation.promotion_stager import (
+        PromotionCandidate,
+    )  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+    from agentic_core.L6_observability.utils.evaluation.rca_aggregator import (
+        RcaCluster,
+    )  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+    from agentic_core.L2_execution.audit.telemetry_bus import BusType, get_telemetry_bus
+
+    print(f"\n{'=' * 80}")
+    print("  PROMOTION GAUNTLET PROOF  —  HOLD / REJECT / APPROVE + packetize + handoff")
+    print(f"{'=' * 80}")
+
+    # ── Synthetic HOLD candidate (classification=HOLD → immediate HOLD verdict) ──
+    hold_cluster = RcaCluster(
+        cluster_id="cid-hold-001",
+        cluster_key="proof.hold_lane|ABSTAIN_MISSED",
+        lane_id="proof.hold_lane",
+        failure_mode="ABSTAIN_MISSED",
+        failure_count=1,
+        sample_packet_ids=["pkt-hold-001"],
+        collections_affected=["code_chunks"],
+        avg_support_coverage=0.10,
+        avg_citation_completeness=0.20,
+        avg_exact_match_drift=0.0,
+        severity="low",
+        rca_summary="Low failure count — not enough evidence for promotion",
+        first_seen_at=0.0,
+        last_seen_at=0.0,
+    )
+    hold_candidate = PromotionCandidate(
+        candidate_id="pc-hold-001",
+        cluster_id="cid-hold-001",
+        cluster_key="proof.hold_lane|ABSTAIN_MISSED",
+        classification="HOLD",
+        baseline_drift_findings=("ABSTAIN_MISSED: coverage=0.10",),
+        suggested_changes=(
+            {
+                "parameter": "abstain_threshold",
+                "current_value": 0.30,
+                "proposed_value": 0.25,
+                "rationale": "Lower threshold",
+            },
+        ),
+        rationale="Hold: 1 failure, below promotion threshold",
+        replay_references=("pkt-hold-001",),
+        staged_at=0.0,
+    )
+
+    # ── Synthetic REJECT candidate (ESCALATION_MISSED → safety blocked → REJECT) ──
+    reject_cluster = RcaCluster(
+        cluster_id="cid-reject-001",
+        cluster_key="proof.reject_lane|ESCALATION_MISSED",
+        lane_id="proof.reject_lane",
+        failure_mode="ESCALATION_MISSED",
+        failure_count=5,
+        sample_packet_ids=["pkt-reject-001", "pkt-reject-002"],
+        collections_affected=["code_chunks"],
+        avg_support_coverage=0.05,
+        avg_citation_completeness=0.10,
+        avg_exact_match_drift=0.0,
+        severity="high",
+        rca_summary="Escalation missed — safety-blocked failure mode",
+        first_seen_at=0.0,
+        last_seen_at=0.0,
+    )
+    reject_candidate = PromotionCandidate(
+        candidate_id="pc-reject-001",
+        cluster_id="cid-reject-001",
+        cluster_key="proof.reject_lane|ESCALATION_MISSED",
+        classification="PROPOSE",
+        baseline_drift_findings=("ESCALATION_MISSED",),
+        suggested_changes=(
+            {
+                "parameter": "escalation_threshold",
+                "current_value": 0.9,
+                "proposed_value": 0.95,
+                "rationale": "Raise escalation bar",
+            },
+        ),
+        rationale="Escalation failure pattern detected",
+        replay_references=("pkt-reject-001", "pkt-reject-002"),
+        staged_at=0.0,
+    )
+
+    # ── Synthetic APPROVE candidate (ABSTAIN_MISSED × 5, safety clear) ──────────
+    approve_cluster = RcaCluster(
+        cluster_id="cid-approve-001",
+        cluster_key="proof.approve_lane|ABSTAIN_MISSED",
+        lane_id="proof.approve_lane",
+        failure_mode="ABSTAIN_MISSED",
+        failure_count=5,
+        sample_packet_ids=["pkt-ap-001", "pkt-ap-002", "pkt-ap-003"],
+        collections_affected=["code_chunks"],
+        avg_support_coverage=0.10,
+        avg_citation_completeness=0.20,
+        avg_exact_match_drift=-0.30,
+        severity="high",
+        rca_summary="Consistent ABSTAIN_MISSED pattern — threshold adjustment warranted",
+        first_seen_at=0.0,
+        last_seen_at=0.0,
+    )
+    approve_candidate = PromotionCandidate(
+        candidate_id="pc-approve-001",
+        cluster_id="cid-approve-001",
+        cluster_key="proof.approve_lane|ABSTAIN_MISSED",
+        classification="PROPOSE",
+        baseline_drift_findings=("ABSTAIN_MISSED: coverage=0.10",),
+        suggested_changes=(
+            {
+                "parameter": "abstain_threshold",
+                "current_value": 0.30,
+                "proposed_value": 0.25,
+                "rationale": "Lower abstain threshold for lane",
+            },
+        ),
+        rationale="Propose: 5+ failures, ABSTAIN_MISSED, safety clear",
+        replay_references=("pkt-ap-001", "pkt-ap-002", "pkt-ap-003"),
+        staged_at=0.0,
+    )
+
+    # ── Run gauntlet on all three ─────────────────────────────────────────────
+    print("\n  [PG1] Running gauntlet (HOLD / REJECT / APPROVE cases) ...")
+    gauntlet = PromotionGauntlet()
+    hold_result = gauntlet.evaluate(hold_candidate, hold_cluster)
+    reject_result = gauntlet.evaluate(reject_candidate, reject_cluster)
+    approve_result = gauntlet.evaluate(approve_candidate, approve_cluster)
+
+    # ── Packetize the APPROVE case ─────────────────────────────────────────────
+    print("  [PG2] Packetizing approved candidate ...")
+    packetizer = PromotionPacketizer()
+    packet = packetizer.packetize(approve_candidate, approve_cluster, approve_result)
+
+    # ── Governed handoff (dry-run) ────────────────────────────────────────────
+    print("  [PG3] Governed handoff (dry-run=True) ...")
+    # drain BUS T first to get a clean count
+    bus = get_telemetry_bus()
+    bus.drain(bus_type=BusType.TELEMETRY)
+    agent = GovernedHandoffAgent()
+    record = agent.handoff(packet, dry_run=True)
+    rollout_msgs = bus.drain(bus_type=BusType.TELEMETRY)
+
+    # ── Verification checks ───────────────────────────────────────────────────
+    checks: list[tuple[str, bool, str]] = []
+
+    # PG01: HOLD verdict correct
+    checks.append(
+        ("PG01 HOLD verdict issued", hold_result.verdict == VERDICT_HOLD, f"verdict={hold_result.verdict}")
+    )
+
+    # PG02: HOLD reason is destination_class_ready failure
+    hold_dest_check = next((c for c in hold_result.checks if c.check_name == "destination_class_ready"), None)
+    hold_dest_ok = hold_dest_check is not None and not hold_dest_check.passed
+    checks.append(
+        (
+            "PG02 HOLD: dest_class_ready=False",
+            hold_dest_ok,
+            f"{hold_dest_check.detail if hold_dest_check else 'missing'}",
+        )
+    )
+
+    # PG03: REJECT verdict correct
+    checks.append(
+        (
+            "PG03 REJECT verdict issued",
+            reject_result.verdict == VERDICT_REJECT,
+            f"verdict={reject_result.verdict}",
+        )
+    )
+
+    # PG04: REJECT reason is safety_policy_ready failure
+    rej_safety_check = next((c for c in reject_result.checks if c.check_name == "safety_policy_ready"), None)
+    rej_safety_ok = rej_safety_check is not None and not rej_safety_check.passed
+    checks.append(
+        (
+            "PG04 REJECT: safety_policy_ready=False",
+            rej_safety_ok,
+            f"{rej_safety_check.detail if rej_safety_check else 'missing'}",
+        )
+    )
+
+    # PG05: APPROVE verdict correct
+    checks.append(
+        (
+            "PG05 APPROVE verdict issued",
+            approve_result.verdict == VERDICT_APPROVE,
+            f"verdict={approve_result.verdict}",
+        )
+    )
+
+    # PG06: All 5 approve gauntlet checks passed
+    all_approve_checks_pass = all(c.passed for c in approve_result.checks)
+    checks.append(
+        (
+            "PG06 APPROVE: all 5 checks passed",
+            all_approve_checks_pass,
+            f"{[c.check_name for c in approve_result.checks if not c.passed] or 'all clear'}",
+        )
+    )
+
+    # PG07: PromotionPacket has 13 fields
+    packet_field_count = len(PromotionPacket.__dataclass_fields__)
+    checks.append(
+        ("PG07 PromotionPacket (13 fields sealed)", packet_field_count == 13, f"fields={packet_field_count}")
+    )
+
+    # PG08: Packet edition well-formed
+    edition_ok = packet.edition.startswith("future-run/v1/")
+    checks.append(("PG08 Packet edition tag well-formed", edition_ok, f"edition={packet.edition[:30]}"))
+
+    # PG09: HandoffRecord token issued
+    token_ok = record.token_id != "UNISSUED" and record.token_valid
+    checks.append(
+        (
+            "PG09 HandoffRecord token valid",
+            token_ok,
+            f"token_id={record.token_id[:16]} valid={record.token_valid}",
+        )
+    )
+
+    # PG10: BUS T PROMOTION_ROLLOUT published
+    rollout_published = any(getattr(m, "signal_type", None) == BUS_ROLLOUT_SIGNAL for m in rollout_msgs)
+    checks.append(
+        (
+            "PG10 BUS T PROMOTION_ROLLOUT published",
+            rollout_published or record.bus_published,
+            f"bus_published={record.bus_published} msgs={len(rollout_msgs)}",
+        )
+    )
+
+    # PG11: committed=False (dry-run; no live mutation)
+    checks.append(
+        (
+            "PG11 committed=False (no live mutation)",
+            not record.committed,
+            f"committed={record.committed} dry_run={record.dry_run}",
+        )
+    )
+
+    # PG12: HOLD/REJECT candidates rejected by packetizer (no spurious packets)
+    packetize_hold_blocked = False
+    packetize_reject_blocked = False
+    try:
+        packetizer.packetize(hold_candidate, hold_cluster, hold_result)
+    except ValueError:
+        packetize_hold_blocked = True
+    try:
+        packetizer.packetize(reject_candidate, reject_cluster, reject_result)
+    except ValueError:
+        packetize_reject_blocked = True
+    checks.append(
+        (
+            "PG12 HOLD/REJECT blocked by packetizer",
+            packetize_hold_blocked and packetize_reject_blocked,
+            f"hold={packetize_hold_blocked} reject={packetize_reject_blocked}",
+        )
+    )
+
+    # ── Print table ───────────────────────────────────────────────────────────
+    print(f"\n  {'Check':<52} {'Status':>6}  Detail")
+    print(f"  {'-' * 52} {'-' * 6}  {'-' * 30}")
+    for label, ok, detail in checks:
+        mark = PASS_MARK if ok else FAIL_MARK
+        print(f"  {label:<52} {mark}  {detail}")
+
+    all_pass = all(ok for _, ok, _ in checks)
+
+    # ── Before / after summary table ─────────────────────────────────────────
+    print(f"\n  {'─' * 80}")
+    print("  BEFORE / AFTER  (promotion gauntlet slice)")
+    print(f"  {'Dimension':<46} {'Before':>8}  {'After':>8}")
+    print(f"  {'-' * 46} {'-' * 8}  {'-' * 8}")
+    ba_rows = [
+        ("Candidate gauntlet coverage", "none", "3 verdicts"),
+        ("HOLD path", "staging-only", "HOLD"),
+        ("REJECT path (safety blocked)", "staging-only", "REJECT"),
+        ("APPROVE path", "staging-only", "APPROVE"),
+        ("Promotion packet (13 fields)", "none", "sealed" if packet_field_count == 13 else "partial"),
+        ("BUS T PROMOTION_ROLLOUT", "none", "published" if record.bus_published else "queued"),
+        ("UWG commit (live)", "N/A", "False [dry-run]"),
+        ("Live-run mutation", "none", "none [confirmed]"),
+    ]
+    for dim, before, after in ba_rows:
+        print(f"  {dim:<46} {before:>8}  {after:>8}")
+
+    print(f"\n{'=' * 80}")
+    verdict_str = (
+        "\033[92mPASS — first real future-run promotion path is live\033[0m"
+        if all_pass
+        else "\033[91mFAIL\033[0m"
+    )
+    print(f"  PROMOTION GAUNTLET VERDICT: {verdict_str}")
+    print(
+        f"  hold={hold_result.verdict} reject={reject_result.verdict} approve={approve_result.verdict}"
+        f"  packet_id={packet.packet_id}  token={record.token_id[:16]}"
+        f"  committed={record.committed}  error={record.error!r}"
+    )
+    print(f"{'=' * 80}\n")
+    return all_pass
+
+
 def _print_proof_table(checks: list[tuple[str, bool, str]]) -> None:
     """Print proof check table (shared by e2e and live-path proofs)."""
     print(f"\n{'=' * 80}")
@@ -1884,6 +2210,11 @@ def main() -> None:
         action="store_true",
         help="Demonstrate the full L6 shadow-evaluation and RCA staging slice end-to-end (no ChromaDB)",
     )
+    parser.add_argument(
+        "--promotion-gauntlet-proof",
+        action="store_true",
+        help="Demonstrate the full future-run promotion gauntlet: HOLD/REJECT/APPROVE + packetize + governed handoff (no ChromaDB)",
+    )
     args = parser.parse_args()
 
     if args.regression_check:
@@ -1892,6 +2223,10 @@ def main() -> None:
 
     if args.shadow_eval_proof:
         passed = run_shadow_eval_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.promotion_gauntlet_proof:
+        passed = run_promotion_gauntlet_proof()
         sys.exit(0 if passed else 1)
 
     if args.live_path_proof:

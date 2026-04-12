@@ -66,10 +66,10 @@ class SemanticRetriever:
         # BGE-aligned collection routing — all targets hold BAAI/bge-m3 1024-dim vectors
         self.collection_routing = {
             "code_questions": ["code_chunks"],
-            "architecture": ["code_chunks", "docs"],
+            "architecture": ["code_chunks", "arch_docs"],
             "implementation": ["code_chunks"],
-            "documentation": ["docs"],
-            "general": ["code_chunks", "docs"],
+            "documentation": ["arch_docs"],
+            "general": ["code_chunks", "arch_docs"],
         }
 
         # Available collections
@@ -271,6 +271,118 @@ class SemanticRetriever:
         for collection in self.available_collections:
             stats[collection] = self.chroma.get_collection_stats(collection)
         return stats
+
+    # ------------------------------------------------------------------
+    # C0 Evidence Contract surface (Phase 2 — EvidenceBundle propagation)
+    # ------------------------------------------------------------------
+
+    def retrieve_as_contract(
+        self,
+        query: str,
+        collection_name: str,
+        request_id: str,
+        top_k: int = 5,
+    ) -> "C0EvidenceContract":
+        """Run shaped hybrid retrieval and wrap the result in a C0EvidenceContract.
+
+        This is the preferred retrieval surface for callers that need the formal
+        evidence contract for prompt assembly or exit evaluation.
+
+        Backward compatibility: existing callers using retrieve() are unaffected.
+
+        Args:
+            query:           Free-text retrieval query.
+            collection_name: Target canonical collection (e.g. ``"code_chunks"``).
+            request_id:      Upstream request identifier (for HMAC and replay).
+            top_k:           Maximum number of ranked chunks to include.
+
+        Returns:
+            Validated ``C0EvidenceContract`` ready for prompt assembly or exit eval.
+        """
+        import hashlib as _hashlib
+        import uuid as _uuid
+
+        from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
+            get_global_hybrid_engine,
+        )
+        from agentic_core.L3_orchestration.types.c0_evidence_contract_types import (
+            C0EvidenceContract,
+            CitedSpan,
+        )
+
+        retrieval_id = str(_uuid.uuid4())
+        engine = get_global_hybrid_engine(collection_name)
+        bundle = engine.shape_search(query, collection_name=collection_name, top_k=top_k)
+
+        cited_spans: list[CitedSpan] = []
+        for chunk in bundle.ranked_chunks[:top_k]:  # progress_bar: bounded to top_k (≤20 items)
+            anchor = bundle.citation_anchors.get(chunk.chunk_id)
+            source_ref = (
+                (anchor.file_path or anchor.source_url or collection_name) if anchor else collection_name
+            )
+            raw_digest = chunk.metadata.get("canonical_digest", "")
+            chunk_hash = (
+                str(raw_digest) if raw_digest else _hashlib.sha256(chunk.content.encode()).hexdigest()[:32]
+            )
+            cited_spans.append(
+                CitedSpan(
+                    span_id=chunk.chunk_id,
+                    source_ref=source_ref,
+                    text_snippet=chunk.content[:512],
+                    relevance_score=float(chunk.combined_score),
+                    chunk_hash=chunk_hash,
+                )
+            )
+
+        # Coverage: mean combined_score weighted by citation completeness fraction
+        top5_ids = [c.chunk_id for c in bundle.ranked_chunks[:5]]
+        anchored = sum(1 for cid in top5_ids if cid in bundle.citation_anchors)
+        cit_fraction = anchored / max(len(top5_ids), 1)
+        mean_score = sum(c.combined_score for c in bundle.ranked_chunks[:top_k]) / max(
+            len(bundle.ranked_chunks[:top_k]), 1
+        )
+        coverage_score = min(mean_score * (0.5 + 0.5 * cit_fraction), 1.0)
+
+        return C0EvidenceContract.build(
+            retrieval_id=retrieval_id,
+            request_id=request_id,
+            coverage_score=coverage_score,
+            cited_spans=tuple(cited_spans),
+        )
+
+    def build_evidence_packet(
+        self,
+        query: str,
+        collection_name: str,
+        task_block: str,
+        request_id: str,
+        intent_hint: str = "",
+        top_k: int = 5,
+    ) -> "PromptEnvelope | None":
+        """Full pipeline: shaped retrieval → C0EvidenceContract → PromptEnvelope.
+
+        Wraps retrieve_as_contract() + assemble_from_c0_contract() into one
+        convenience call for callers that need a ready-to-use prompt packet.
+
+        Returns ``None`` if retrieval coverage is below the abstain threshold (0.30).
+
+        Args:
+            query:           Free-text retrieval query.
+            collection_name: Target canonical collection.
+            task_block:      Task instruction forwarded verbatim into the envelope.
+            request_id:      Upstream request identifier.
+            intent_hint:     Optional hint; graph-path keywords select a different
+                             packet type inside the assembler.
+            top_k:           Maximum number of chunks to retrieve.
+
+        Returns:
+            ``PromptEnvelope`` on success, ``None`` on abstain.
+        """
+        # guardian: allow-layer-violation -- L1 retriever convenience method uses c0_dispatcher for prompt envelope assembly; deferred import keeps dependency optional
+        from tools.adg.prompt_assembly.c0_dispatcher import assemble_from_c0_contract
+
+        contract = self.retrieve_as_contract(query, collection_name, request_id, top_k)
+        return assemble_from_c0_contract(contract, task_block, intent_hint=intent_hint)
 
 
 # Example usage and testing

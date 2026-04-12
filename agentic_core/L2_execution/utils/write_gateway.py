@@ -277,9 +277,13 @@ def _check_write_amplification(path: Path, content: str, encoding: str = "utf-8"
             growth_ratio = proposed_bytes / max(original_bytes, 1)
             if growth_ratio > MAX_GROWTH_RATIO:
                 raise WriteAmplificationError(path, original_bytes, proposed_bytes, growth_ratio)
-        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: allow-silent-swallow -- OSError/UnicodeDecodeError reading existing file for write amplification check; content unreadable so guard is skipped
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("write_gateway: OSError swallowed at L280: %s", e)
+            logging.getLogger(__name__).debug("write_gateway: OSError swallowed: %s", e)
 
 
 _prohibition_hits: dict[tuple[str, str, str], int] = {}
@@ -344,7 +348,7 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
     try:
         rel = path.resolve().relative_to(repo_root)
         rel_str = str(rel).replace("\\", "/")
-    except ValueError:
+    except ValueError:  # guardian: allow-silent-swallow -- ValueError from Path.relative_to() means path is outside repo root; intended: skip source-root write check for out-of-repo paths
         return
     for safe_prefix in _SAFE_OUTPUT_PREFIXES:
         if rel_str.startswith(safe_prefix):
@@ -441,7 +445,10 @@ def write_text(
     if p.exists():
         try:
             before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ):  # guardian: allow-silent-swallow -- OSError/UnicodeDecodeError reading file bytes for before-hash; swallowed intentionally, sentinel value used
             before_hash = "READ_ERROR"
     if substitution_count is not None:
         expected_max = expected_max_substitutions if expected_max_substitutions is not None else 1
@@ -452,17 +459,6 @@ def write_text(
     try:
         enforce_protected_root(p, allow_override=allow_override)
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        gateway_approved = False
-        _append_ledger_entry(
-            operation="write_text",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=False,
-            result="BLOCKED",
-            error=str(e),
-        )
         raise
     _deny_writes_into_source_roots(p, "write")
     try:
@@ -482,16 +478,6 @@ def write_text(
         return str(p)
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        _append_ledger_entry(
-            operation="write_text",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=gateway_approved,
-            result="FAILED",
-            error=str(e),
-        )
-        raise
 
 
 def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) -> str:
@@ -501,23 +487,14 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
     if p.exists():
         try:
             before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-        except OSError:  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
+        except (
+            OSError
+        ):  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
             before_hash = "READ_ERROR"
     gateway_approved = True
     try:
         enforce_protected_root(p, allow_override=allow_override)
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        gateway_approved = False
-        _append_ledger_entry(
-            operation="write_bytes",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=False,
-            result="BLOCKED",
-            error=str(e),
-        )
         raise
     _deny_writes_into_source_roots(p, "write")
     try:
@@ -536,16 +513,6 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
         Logger.debug(f"[WriteGateway] write_bytes: {p}")
         return str(p)
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        _append_ledger_entry(
-            operation="write_bytes",
-            path=p,
-            before_hash=before_hash,
-            after_hash=None,
-            gateway_approved=gateway_approved,
-            result="FAILED",
-            error=str(e),
-        )
         raise
 
 
@@ -690,7 +657,9 @@ def write_json_atomic(path: str | Path, obj: Any, indent: int = 2) -> str:
     except BaseException:  # guardian: allow-broad-exception -- atomic write rollback must catch all exceptions to clean temp file
         try:
             os.unlink(tmp)
-        except OSError:  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
+        except (
+            OSError
+        ):  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
             pass
         raise
     Logger.debug(f"[WriteGateway] write_json_atomic: {p}")

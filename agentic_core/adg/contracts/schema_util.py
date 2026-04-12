@@ -736,6 +736,7 @@ LAYER_PREFIXES: dict[str, str] = {
     "agentic_core/agents": "L_SHARED",
     "agentic_core/evaluation": "L_SHARED",
     "agentic_core/runtime": "L_RUNTIME",
+    "agentic_core/L_CONTRACTS": "L_RUNTIME",
     "agentic_core/prompt_governance": "L_PG",
     "agentic_core/knowledge": "L_PG",
     "agentic_core/adg": "L_TOOLS",
