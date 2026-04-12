@@ -192,8 +192,11 @@ class ExecutionOrchestrator:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "retry"}
             else:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "blocked"}
-        # D2 semantic cache gate — at Path D only, before D3 retrieval starts
-        if path.value == "D":
+        # D2 semantic cache gate — at Path D only, before D3 retrieval starts.
+        # Gated by SEMANTIC_CACHE_D2_ENABLED=1 (default off — fail-closed in production).
+        import os as _os  # noqa: PLC0415
+
+        if path.value == "D" and _os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") == "1":
             _tenant_id = intent_input.get("tenant_id", "")
             _flow_class = intent_input.get("flow_class", None)
             _replay_mode = bool(intent_input.get("replay_mode", False))

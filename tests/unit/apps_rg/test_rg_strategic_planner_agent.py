@@ -46,6 +46,9 @@ class TestRgStrategicPlannerAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
+        from apps_rg.reasoning.RgStrategicPlannerAgent import RgStrategicPlannerAgent
+
+        return RgStrategicPlannerAgent
 
     def test_class_exists(self, agent_class):
         """Verify RgStrategicPlannerAgent exists and is importable."""

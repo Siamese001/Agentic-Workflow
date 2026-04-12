@@ -44,6 +44,9 @@ class TestRgHealingOrchestratorAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
+        from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
+
+        return RgHealingOrchestrator
 
     def test_class_exists(self, agent_class):
         """Verify RgHealingOrchestrator exists and is importable."""
@@ -52,7 +55,7 @@ class TestRgHealingOrchestratorAgent:
     def test_inherits_from_r_g_agent_base(self, agent_class):
         """Verify proper inheritance from RGAgentBase."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "RGAgentBase" in mro_names, "Should inherit from RGAgentBase"
+        assert "BaseHealingOrchestrator" in mro_names, "Should inherit from BaseHealingOrchestrator"
 
     def test_has_post_init_method(self, agent_class):
         """Verify agent has __post_init__ method."""

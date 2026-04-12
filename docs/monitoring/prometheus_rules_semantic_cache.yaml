@@ -1,0 +1,117 @@
+# Prometheus Alerting Rules — D2 Semantic Cache
+#
+# Load into Prometheus via --web.enable-lifecycle and rule_files:
+#   rule_files:
+#     - "prometheus_rules_semantic_cache.yaml"
+#
+# Metric:  agentic_workflow_l4_semantic_cache_events_total{event, namespace}
+# Registry: AGENTIC_REGISTRY (custom — see docs/monitoring/semantic_cache_observability.md §1)
+
+groups:
+  - name: semantic_cache
+    rules:
+
+      # -----------------------------------------------------------------------
+      # Miss-rate anomaly
+      # Fires when more than 80% of all cache traffic is misses for 5 minutes.
+      # Expected during cold-start; investigate if sustained after warm-up.
+      # -----------------------------------------------------------------------
+      - alert: SemanticCacheMissRateAnomaly
+        expr: |
+          (
+            sum(rate(agentic_workflow_l4_semantic_cache_events_total{event="miss"}[5m]))
+            /
+            sum(rate(agentic_workflow_l4_semantic_cache_events_total[5m]))
+          ) > 0.80
+        for: 5m
+        labels:
+          severity: warning
+          component: semantic_cache
+        annotations:
+          summary: "Semantic cache miss rate > 80% for 5 minutes"
+          description: >
+            D2 semantic cache miss rate is {{ $value | humanizePercentage }}.
+            Possible causes: cold cache after wipe, corpus version mismatch,
+            tenant_id / embedding_model_id mismatch.
+            Runbook: docs/monitoring/semantic_cache_observability.md#alert-semanticcachemissrateanomaly
+
+      # -----------------------------------------------------------------------
+      # Bypass-rate anomaly
+      # Fires when >50% of traffic is bypassed for 10+ minutes.
+      # Normal for HITL/action flows; investigate for READ_ONLY namespaces.
+      # -----------------------------------------------------------------------
+      - alert: SemanticCacheBypassRateAnomaly
+        expr: |
+          (
+            sum(rate(agentic_workflow_l4_semantic_cache_events_total{event="bypass"}[5m]))
+            /
+            sum(rate(agentic_workflow_l4_semantic_cache_events_total[5m]))
+          ) > 0.50
+        for: 10m
+        labels:
+          severity: warning
+          component: semantic_cache
+        annotations:
+          summary: "Semantic cache bypass rate > 50% for 10 minutes"
+          description: >
+            D2 bypass rate is {{ $value | humanizePercentage }}.
+            Possible causes: MUST_BYPASS_FLOWS membership change, high HITL traffic volume.
+            Runbook: docs/monitoring/semantic_cache_observability.md#alert-semanticcachebypassrateanomaly
+
+      # -----------------------------------------------------------------------
+      # Eviction spike
+      # Fires when more than 10 evictions per minute are observed for 5 minutes.
+      # -----------------------------------------------------------------------
+      - alert: SemanticCacheEvictionSpike
+        expr: |
+          60 * rate(agentic_workflow_l4_semantic_cache_events_total{event="eviction"}[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: semantic_cache
+        annotations:
+          summary: "Semantic cache eviction rate > 10/min for 5 minutes"
+          description: >
+            Eviction rate is {{ $value | humanize }} events/min.
+            Possible causes: TTL cliff (batch expiry), cache pollution cycle.
+            Runbook: docs/monitoring/semantic_cache_observability.md#alert-semanticcacheevictionspike
+
+      # -----------------------------------------------------------------------
+      # Invalidation spike
+      # Fires when > 50 invalidations occur within 5 minutes.
+      # -----------------------------------------------------------------------
+      - alert: SemanticCacheInvalidationSpike
+        expr: |
+          increase(agentic_workflow_l4_semantic_cache_events_total{event="invalidation"}[5m]) > 50
+        for: 0m
+        labels:
+          severity: warning
+          component: semantic_cache
+        annotations:
+          summary: "Semantic cache: > 50 invalidations in 5 minutes"
+          description: >
+            {{ $value }} invalidation events in last 5 minutes.
+            Possible causes: corpus rotation, accidental no-filter wipe.
+            Runbook: docs/monitoring/semantic_cache_observability.md#alert-semanticcacheinvalidationspike
+
+      # -----------------------------------------------------------------------
+      # No traffic / dead metric
+      # Fires when zero cache events are observed for 15 minutes.
+      # Only meaningful when D2 is enabled (SEMANTIC_CACHE_D2_ENABLED=1).
+      # -----------------------------------------------------------------------
+      - alert: SemanticCacheNoTraffic
+        expr: |
+          absent(agentic_workflow_l4_semantic_cache_events_total)
+          or
+          sum(rate(agentic_workflow_l4_semantic_cache_events_total[5m])) == 0
+        for: 15m
+        labels:
+          severity: critical
+          component: semantic_cache
+        annotations:
+          summary: "Semantic cache: zero traffic for 15 minutes"
+          description: >
+            No semantic cache events emitted for 15 minutes.
+            Possible causes: SEMANTIC_CACHE_D2_ENABLED=0 (kill-switch), scrape target down,
+            AGENTIC_REGISTRY not mounted.
+            Runbook: docs/monitoring/semantic_cache_observability.md#alert-semanticcachenotraffic

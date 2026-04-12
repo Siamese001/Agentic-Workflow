@@ -245,8 +245,19 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     state = _read_session_state()
 
     # Rule 2: memory already recalled this session — gate satisfied.
+    # Also check the plain session_state.json written by pre_prompt_classifier +
+    # post_mcp_audit, because PPID instability gives each hook spawn a fresh
+    # PID-namespaced file that never carries memory_recalled from the audit path.
     if state.get("memory_recalled", False):
         return 0
+    _plain = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+    try:
+        if _plain.exists():
+            _ps = json.loads(_plain.read_text(encoding="utf-8"))
+            if isinstance(_ps, dict) and _ps.get("memory_recalled", False):
+                return 0
+    except (OSError, json.JSONDecodeError):
+        pass
 
     # Rule 3: degrade-open if memory MCP is unhealthy (SQLite inaccessible)
     if check_memory_gate(REPO_ROOT) != 0:

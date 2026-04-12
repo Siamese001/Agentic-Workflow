@@ -231,12 +231,20 @@ class SubAtomicEngineImpl:
         fission_active = kwargs.get("fission_active", False)
         injection_mixin = get_instructional_injection_mixin()
         injected_prompt = injection_mixin.inject_all_layers(prompt, goal=system_prompt or "Execute mutation")
-        full_prompt = assemble_prompt(
-            role="SubAtomicEngine",
-            objective=system_prompt or "Execute mutation",
-            context_data=injected_prompt,
-            injections=[],
-        )
+        assemble_prompt = _get_prompt_assembler()
+        scan_untrusted_text = _get_injection_scanner()
+        from agentic_core.prompt_governance.core.prompt_assembler import SecurityIntegrityError as _SecIntErr  # noqa: PLC0415
+
+        try:
+            full_prompt = assemble_prompt(
+                role="SubAtomicEngine",
+                objective=system_prompt or "Execute mutation",
+                context_data=injected_prompt,
+                injections=[],
+            )
+        except (ImportError, _SecIntErr) as _asm_exc:
+            Logger.warning("Prompt assembly failed: %s", _asm_exc)
+            full_prompt = injected_prompt
         scan_untrusted_text(prompt, source="sub_atomic_user_prompt")
         scan_untrusted_text(full_prompt, source="sub_atomic_full_prompt")
         try:

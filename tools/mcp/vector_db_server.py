@@ -81,6 +81,66 @@ MAX_RESULTS: int = _parse_int_env("VECTOR_DB_MAX_QUERY_RESULTS", 100)
 MAX_EMBEDDING_BATCH_SIZE: int = _parse_int_env("VECTOR_DB_MAX_BATCH", 32)
 MAX_SEARCH_RESULTS: int = _parse_int_env("VECTOR_DB_MAX_SEARCH_RESULTS", 20)
 
+# Known model → output dimension map. Extend when new models are indexed into the corpus.
+_KNOWN_MODEL_DIMS: dict[str, int] = {
+    "BAAI/bge-m3": 1024,
+    "all-MiniLM-L6-v2": 384,
+    "all-mpnet-base-v2": 768,
+    "text-embedding-ada-002": 1536,
+}
+
+
+def _check_embedding_alignment(chroma_client: "chromadb.PersistentClient", model_name: str) -> None:
+    """Fail-fast startup check: configured embedding model dimension must match corpus.
+
+    Reads each collection's ``embedding_dim`` metadata field and compares it to
+    the dimension expected for *model_name*.  Emits a loud ERROR tagged
+    EMBEDDING_MISMATCH if they differ.  Fail-open on infrastructure errors so
+    startup is never blocked by a listing failure.
+    """
+    configured_dim = _KNOWN_MODEL_DIMS.get(model_name)
+    if configured_dim is None:
+        logger.warning(
+            "EMBEDDING_DIM_UNKNOWN: cannot validate alignment for model %r "
+            "\u2014 add it to _KNOWN_MODEL_DIMS to enable the check.",
+            model_name,
+        )
+        return
+    try:
+        collections = chroma_client.list_collections()
+    except Exception:  # guardian: allow-broad-exception -- ChromaDB list_collections raises heterogeneous internal errors with no shared catchable base; fail-open to avoid blocking startup
+        return
+    for col in tqdm(collections, desc="Checking embedding dims", unit="collection", leave=False):
+        corpus_dim = (col.metadata or {}).get("embedding_dim")
+        if corpus_dim is None:
+            continue
+        try:
+            corpus_dim_int = int(corpus_dim)
+        except (TypeError, ValueError):
+            continue
+        if corpus_dim_int != configured_dim:
+            corpus_model = (col.metadata or {}).get("embedding_model", "<unknown>")
+            logger.error(
+                "EMBEDDING_MISMATCH: configured model=%r (dim=%d) ≠ corpus collection=%r "
+                "(embedding_dim=%d, embedding_model=%r). "
+                "All semantic_search / query_collection calls will return empty results "
+                "or raise InvalidDimensionException. "
+                "Fix: set VECTOR_DB_EMBEDDING_MODEL to %r in mcp_config.json.",
+                model_name,
+                configured_dim,
+                col.name,
+                corpus_dim_int,
+                corpus_model,
+                corpus_model,
+            )
+            return  # one loud error is enough
+    logger.info(
+        "EMBEDDING_ALIGNMENT_OK: model=%r dim=%d is consistent with corpus.",
+        model_name,
+        configured_dim,
+    )
+
+
 _log_level_name: str = os.environ.get("VECTOR_DB_LOG_LEVEL", "INFO").upper()
 _log_level: int = getattr(logging, _log_level_name, logging.INFO)
 if not isinstance(_log_level, int):
@@ -109,7 +169,8 @@ class VectorDBMCPServer:
                 settings=Settings(anonymized_telemetry=False),
             )
             logger.info(f"ChromaDB initialized at: {CHROMA_PATH}")
-        except Exception as e:
+            _check_embedding_alignment(self.chroma_client, DEFAULT_EMBEDDING_MODEL)
+        except Exception as e:  # guardian: allow-broad-exception -- chromadb.PersistentClient raises heterogeneous errors from SQLite/HNSW/hnswlib with no shared catchable base
             logger.error(f"Failed to initialize ChromaDB: {e}")
 
     async def _ensure_embedding_model(self):
@@ -400,14 +461,21 @@ class VectorDBMCPServer:
 
             result = f"Vector Collections ({len(collections)} total):\n\n"
 
+            import concurrent.futures as _cf
+
             for collection in tqdm(collections, desc="list-collections", leave=False, disable=True):
                 result += f"📁 {collection.name}\n"
                 result += f"   ID: {collection.id}\n"
                 if collection.metadata:
                     result += f"   Metadata: {json.dumps(collection.metadata, indent=6)}\n"
+                # count() can block >10 s on large/fragmented segments — run with timeout
                 try:
-                    count = collection.count()
+                    with _cf.ThreadPoolExecutor(max_workers=1) as _ex:
+                        _fut = _ex.submit(collection.count)
+                        count = _fut.result(timeout=1.0)
                     result += f"   Count: {count}\n"
+                except _cf.TimeoutError:
+                    result += "   Count: N/A (timeout — collection may be large or segment not loaded)\n"
                 except Exception as count_err:  # guardian: allow-broad-exception -- ChromaDB count() surfaces heterogeneous internal errors with no shared catchable base type
                     result += f"   Count: null (count_error: {count_err})\n"
                 result += "\n"

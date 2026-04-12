@@ -49,10 +49,11 @@ class TestResumeOrchestratorReasoningProfile:
         master_resume = {"name": "Test", "skills": ["Python"]}
         profile = MockReasoningProfile(complexity_tier="complex")
 
-        orchestrator = ResumeOrchestrator(
-            master_resume=master_resume,
-            reasoning_profile=profile,
-        )
+        with patch("apps_rg.reasoning.ResumeOrchestrator._emit_records_telemetry_event"):
+            orchestrator = ResumeOrchestrator(
+                master_resume=master_resume,
+                reasoning_profile=profile,
+            )
 
         assert orchestrator.reasoning_profile == profile
         assert orchestrator.complexity_tier == "complex"
@@ -66,10 +67,11 @@ class TestResumeOrchestratorReasoningProfile:
             profile_hash="simple-hash",
         )
 
-        orchestrator = ResumeOrchestrator(
-            master_resume=master_resume,
-            reasoning_profile=profile,
-        )
+        with patch("apps_rg.reasoning.ResumeOrchestrator._emit_records_telemetry_event"):
+            orchestrator = ResumeOrchestrator(
+                master_resume=master_resume,
+                reasoning_profile=profile,
+            )
 
         assert orchestrator.complexity_tier == "simple"
         assert orchestrator.profile_hash == "simple-hash"
@@ -83,10 +85,11 @@ class TestResumeOrchestratorReasoningProfile:
             adg_edge_count=20000,
         )
 
-        orchestrator = ResumeOrchestrator(
-            master_resume=master_resume,
-            reasoning_profile=profile,
-        )
+        with patch("apps_rg.reasoning.ResumeOrchestrator._emit_records_telemetry_event"):
+            orchestrator = ResumeOrchestrator(
+                master_resume=master_resume,
+                reasoning_profile=profile,
+            )
 
         assert orchestrator.complexity_tier == "deep"
         assert orchestrator.reasoning_profile.adg_node_count == 5000
@@ -94,15 +97,16 @@ class TestResumeOrchestratorReasoningProfile:
     def test_orchestrator_profile_without_adg_tier_defaults_moderate(self):
         """Edge case: profile without adg_complexity_tier defaults to moderate."""
         master_resume = {"name": "Test", "skills": ["Python"]}
-        profile = MagicMock()
-        # Don't set adg_complexity_tier, so getattr defaults to 'moderate'
-        profile.adg_complexity_tier = None
-        profile.profile_hash = "test-hash"
+        import types
 
-        orchestrator = ResumeOrchestrator(
-            master_resume=master_resume,
-            reasoning_profile=profile,
-        )
+        # Omit adg_complexity_tier entirely so getattr falls back to 'moderate'
+        profile = types.SimpleNamespace(profile_hash="test-hash")
+
+        with patch("apps_rg.reasoning.ResumeOrchestrator._emit_records_telemetry_event"):
+            orchestrator = ResumeOrchestrator(
+                master_resume=master_resume,
+                reasoning_profile=profile,
+            )
 
         # When adg_complexity_tier is None, getattr returns 'moderate'
         assert orchestrator.complexity_tier == "moderate"
@@ -151,7 +155,10 @@ class TestOrchestrateResumeFunction:
 
     def test_orchestrate_resume_with_profile(self, master_resume, job_description, reasoning_profile):
         """Happy path: orchestrate_resume passes profile to orchestrator."""
-        with patch.object(ResumeOrchestrator, "run") as mock_run:
+        with (
+            patch.object(ResumeOrchestrator, "run") as mock_run,
+            patch("apps_rg.reasoning.ResumeOrchestrator._emit_records_telemetry_event"),
+        ):
             mock_run.return_value = {
                 "status": "success",
                 "enriched_data": {},
@@ -170,7 +177,10 @@ class TestOrchestrateResumeFunction:
         """Validation: orchestrate_resume propagates complexity tier correctly."""
         profile = MockReasoningProfile(complexity_tier="deep")
 
-        with patch.object(ResumeOrchestrator, "run") as mock_run:
+        with (
+            patch.object(ResumeOrchestrator, "run") as mock_run,
+            patch("apps_rg.reasoning.ResumeOrchestrator._emit_records_telemetry_event"),
+        ):
             mock_run.return_value = {
                 "status": "success",
                 "enriched_data": {"complexity_tier": "deep"},

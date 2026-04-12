@@ -584,7 +584,15 @@ class GlobalCache:
         hive = self.get_hive_mind()
         if hive is not None:
             try:
-                recalled = hive.recall(query_text, self._HIVE_NAMESPACE)
+                # App-level learning path: not a D2 production gate.
+                # flow_class=None → MUST_BYPASS_FLOWS check intentionally skipped here.
+                # replay_mode=False → always a live read (no replay suppression at this layer).
+                recalled = hive.recall(
+                    query_text,
+                    self._HIVE_NAMESPACE,
+                    flow_class=None,
+                    replay_mode=False,
+                )
                 if recalled is not None:
                     self._stats["l2_hits"] += 1
                     value = recalled.get("value", recalled)

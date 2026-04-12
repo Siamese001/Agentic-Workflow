@@ -46,6 +46,9 @@ class TestRgTemplateOptimizerAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
+        from apps_rg.reasoning.RgTemplateOptimizerAgent import RgTemplateOptimizerAgent
+
+        return RgTemplateOptimizerAgent
 
     def test_class_exists(self, agent_class):
         """Verify RgTemplateOptimizerAgent exists and is importable."""

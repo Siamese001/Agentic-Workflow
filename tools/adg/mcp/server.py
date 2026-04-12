@@ -197,7 +197,7 @@ def adg_nodes_by_layer(layer: str, limit: int = 100) -> dict[str, Any]:
 def adg_nodes_by_file(file_path: str, limit: int = 100) -> dict[str, Any]:
     """Get nodes by file path.
 
-    SQLite-only query.
+    Tries Redis cache first (lazy warm on miss), falls back to SQLite.
     """
     try:
         svc = _init_service()
@@ -256,7 +256,7 @@ def adg_edge_fanout(src_id: str, relation_type: str, limit: int = 30) -> dict[st
 def adg_edge_fanin(tgt_id: str, relation_type: str, limit: int = 30) -> dict[str, Any]:
     """Get incoming edges to tgt_id via relation_type.
 
-    SQLite-only query.
+    Tries Redis cache first (lazy warm on miss), falls back to SQLite.
     """
     try:
         svc = _init_service()

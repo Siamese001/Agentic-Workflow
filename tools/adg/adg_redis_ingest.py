@@ -8,7 +8,8 @@ so ADGService.get_node() / get_edge_fanout() get cache hits immediately.
 Key scheme (mirrors tools/adg/cache/redis_cache.py):
     adg:v1:<snapshot_id>:node:<node_id>          → HSET (node fields, pre-ingested)
     adg:v1:<snapshot_id>:edge:<src_id>:<rel>     → SADD <edge_id> (fanout index, pre-ingested)
-    adg:v1:<snapshot_id>:edge_detail:<edge_id>   → HSET (lazy backfill on first MCP access)
+    adg:v1:<snapshot_id>:fanin:<dst_id>:<rel>    → SADD <edge_id> (fanin index, pre-ingested)
+    adg:v1:<snapshot_id>:edge_detail:<edge_id>   → HSET (pre-ingested — first MCP query hits Redis directly)
     adg:v1:<snapshot_id>:_hot                    → SET 1 (sentinel — cache is populated)
 
 Usage:
@@ -26,6 +27,8 @@ import sqlite3
 import sys
 import time
 from pathlib import Path
+
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_VERSION = "v1"
@@ -150,21 +153,43 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
     pipe.execute()
     print(f"[adg_redis_ingest] Nodes written : {nodes_written:,}          ")
 
-    # --- Ingest edges (fanout index only — edge_detail hashes are lazily backfilled on MCP query) ---
+    # --- Ingest edges (fanout + fanin indexes + edge_detail hashes — fully hot at startup) ---
     edges_written = 0
-    cursor_edges = conn.execute("SELECT id, src_id, relation_type FROM edges")
+    cursor_edges = conn.execute(
+        "SELECT id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges"
+    )
     pipe = client.pipeline(transaction=False)
     while True:
         batch = cursor_edges.fetchmany(BATCH_SIZE)
         if not batch:
             break
-        for row in batch:
+        for row in tqdm(batch, desc="Ingesting edges", unit="edge", leave=False):
             edge_id = str(row[0])
             src_id = str(row[1])
-            relation_type = str(row[2])
-            # Fanout index set only (detail hash backfilled lazily on first MCP access)
+            dst_id = str(row[2])
+            relation_type = str(row[3])
+            # Fanout index (edges going out from src_id)
             fanout_key = _redis_key(snapshot_id, f"edge:{src_id}:{relation_type}")
             pipe.sadd(fanout_key, edge_id)
+            # Fanin index (edges coming in to dst_id)
+            fanin_key = _redis_key(snapshot_id, f"fanin:{dst_id}:{relation_type}")
+            pipe.sadd(fanin_key, edge_id)
+            # Edge detail hash — pre-written so first MCP query hits Redis with no SQLite round-trip
+            detail_key = _redis_key(snapshot_id, f"edge_detail:{edge_id}")
+            detail = {
+                "id": edge_id,
+                "src_id": src_id,
+                "dst_id": dst_id,
+                "relation_type": relation_type,
+                "edge_kind": str(row[4]),
+            }
+            if row[5] is not None:
+                detail["source_file"] = str(row[5])
+            if row[6] is not None:
+                detail["line_no"] = str(row[6])
+            if row[7] is not None:
+                detail["symbol"] = str(row[7])
+            pipe.hmset(detail_key, detail)
             edges_written += 1
         pipe.execute()
         pipe = client.pipeline(transaction=False)

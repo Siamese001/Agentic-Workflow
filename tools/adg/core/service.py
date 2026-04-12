@@ -62,8 +62,9 @@ class ADGService:
         redis_query: Callable[[], Any | None],
         sqlite_query: Callable[[], Any],
         cache_set: Callable[[Any], None],
+        method: str = "",
     ) -> tuple[Any, str]:
-        """Generic read-through pattern."""
+        """Generic read-through pattern with structured backend telemetry."""
         # Try Redis first
         if self._redis._available:
             try:
@@ -71,6 +72,11 @@ class ADGService:
                 # Treat [] the same as None: an empty cached list is indistinguishable
                 # from a cache miss for edge queries, so always fall through to SQLite.
                 if result is not None and result != []:
+                    logger.debug(
+                        "adg.backend method=%s snapshot=%s cache=hit backend=redis",
+                        method,
+                        self._adg_snapshot_id,
+                    )
                     return result, "redis"
             except Exception as e:  # guardian: allow-broad-exception -- Redis client can raise varied transport/timeout/serialization errors; all are non-fatal and should fall through to SQLite
                 logger.debug(f"Redis query failed: {e}")
@@ -92,6 +98,12 @@ class ADGService:
                 except Exception as e:
                     logger.debug(f"Cache backfill failed: {e}")
 
+        logger.debug(
+            "adg.backend method=%s snapshot=%s cache=%s backend=sqlite",
+            method,
+            self._adg_snapshot_id,
+            "miss" if self._redis._available else "unavailable",
+        )
         return result, "sqlite"
 
     def get_node(self, node_id: str) -> ADGResponse:
@@ -100,6 +112,7 @@ class ADGService:
             redis_query=lambda: self._redis.get_node(node_id, self._adg_snapshot_id),
             sqlite_query=lambda: self._sqlite.get_node(node_id),
             cache_set=lambda n: self._redis.set_node(n, self._adg_snapshot_id),
+            method="get_node",
         )
 
         if node is None:
@@ -130,17 +143,21 @@ class ADGService:
         )
 
     def get_nodes_by_file(self, file_path: str, limit: int = 100) -> ADGResponse:
-        """Fetch nodes by file path."""
-        nodes = self._sqlite.get_nodes_by_file(file_path, limit)
-
+        """Fetch nodes by file path with Redis-first read-through."""
+        nodes, backend = self._query_with_fallback(
+            redis_query=lambda: self._redis.get_nodes_by_file(file_path, self._adg_snapshot_id),
+            sqlite_query=lambda: self._sqlite.get_nodes_by_file(file_path, limit),
+            cache_set=lambda n: self._redis.set_nodes_by_file(file_path, n, self._adg_snapshot_id),
+            method="get_nodes_by_file",
+        )
         return ADGResponse(
             status="ok",
             data={
                 "file_path": file_path,
-                "nodes": [n.model_dump() for n in nodes],
-                "count": len(nodes),
+                "nodes": [n.model_dump() for n in nodes] if nodes else [],
+                "count": len(nodes) if nodes else 0,
             },
-            backend_used="sqlite",
+            backend_used=backend,
         )
 
     def get_edge_fanout(self, src_id: str, relation_type: str, limit: int = 30) -> ADGResponse:
@@ -158,6 +175,7 @@ class ADGService:
                 e,
                 self._adg_snapshot_id,
             ),
+            method="get_edge_fanout",
         )
 
         # edges is never None from _query_with_fallback (SQLite always returns list)
@@ -174,18 +192,32 @@ class ADGService:
         )
 
     def get_edge_fanin(self, tgt_id: str, relation_type: str, limit: int = 30) -> ADGResponse:
-        """Fetch incoming edges (SQLite only for now)."""
-        edges = self._sqlite.get_edge_fanin(tgt_id, relation_type, limit)
+        """Fetch incoming edges with Redis-first read-through (lazy backfill on miss)."""
+        edges, backend = self._query_with_fallback(
+            redis_query=lambda: self._redis.get_edge_fanin(
+                tgt_id,
+                relation_type,
+                self._adg_snapshot_id,
+            ),
+            sqlite_query=lambda: self._sqlite.get_edge_fanin(tgt_id, relation_type, limit),
+            cache_set=lambda e: self._redis.set_edge_fanin(
+                tgt_id,
+                relation_type,
+                e,
+                self._adg_snapshot_id,
+            ),
+            method="get_edge_fanin",
+        )
 
         return ADGResponse(
             status="ok",
             data={
                 "tgt_id": tgt_id,
                 "relation_type": relation_type,
-                "edges": [e.model_dump() for e in edges],
-                "count": len(edges),
+                "edges": [e.model_dump() for e in edges] if edges else [],
+                "count": len(edges) if edges else 0,
             },
-            backend_used="sqlite",
+            backend_used=backend,
         )
 
     def get_status(self) -> ADGResponse:

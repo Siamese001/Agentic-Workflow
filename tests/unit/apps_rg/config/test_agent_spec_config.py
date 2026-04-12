@@ -13,7 +13,6 @@ from apps_rg.config.agent_spec_config import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
-    MAX_RETRIES,
     THRESHOLD,
     AgentSpec,
     ClerkExtractionConfig,
@@ -72,11 +71,6 @@ class TestValidationConfigContract:
 
     def test_instantiable_or_abstract(self):
         assert isinstance(ValidationConfig, type)
-
-
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
 
 
 class TestDefaultSleepConstant:

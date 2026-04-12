@@ -32,7 +32,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
-from post_mcp_audit import main
+from post_mcp_audit import _mark_memory_recalled, main
 
 
 # ---------------------------------------------------------------------------
@@ -214,3 +214,72 @@ class TestMain:
         assert result == 0
         record = json.loads(log.read_text().strip())
         assert record["duration_ms"] == 10**15
+
+    # --- memory_recalled tracking ---
+
+    def test_memory_server_recall_tool_sets_flag(self, tmp_path):
+        """memory + mem_recall_session_start sets memory_recalled=True in session state."""
+        log = tmp_path / "audit.jsonl"
+        state = tmp_path / "session_state.json"
+        payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": "mem_recall_session_start"}}
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            self._run(payload, log)
+        data = json.loads(state.read_text(encoding="utf-8"))
+        assert data["memory_recalled"] is True
+
+    def test_other_memory_tool_does_not_set_flag(self, tmp_path):
+        """memory server + different tool does NOT set memory_recalled."""
+        log = tmp_path / "audit.jsonl"
+        state = tmp_path / "session_state.json"
+        payload = {"tool_info": {"mcp_server_name": "memory", "mcp_tool_name": "search_nodes"}}
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            self._run(payload, log)
+        assert not state.exists() or "memory_recalled" not in json.loads(state.read_text(encoding="utf-8"))
+
+    def test_other_server_does_not_set_flag(self, tmp_path):
+        """Non-memory server does NOT set memory_recalled."""
+        log = tmp_path / "audit.jsonl"
+        state = tmp_path / "session_state.json"
+        payload = {
+            "tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "mem_recall_session_start"}
+        }
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            self._run(payload, log)
+        assert not state.exists() or "memory_recalled" not in json.loads(state.read_text(encoding="utf-8"))
+
+
+# ---------------------------------------------------------------------------
+# _mark_memory_recalled unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestMarkMemoryRecalled:
+    def test_creates_state_file_with_flag(self, tmp_path):
+        state = tmp_path / "session_state.json"
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            _mark_memory_recalled()
+        data = json.loads(state.read_text(encoding="utf-8"))
+        assert data["memory_recalled"] is True
+
+    def test_sets_flag_in_existing_state(self, tmp_path):
+        state = tmp_path / "session_state.json"
+        state.write_text(json.dumps({"current_tier": "T2", "task_created": True}), encoding="utf-8")
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            _mark_memory_recalled()
+        data = json.loads(state.read_text(encoding="utf-8"))
+        assert data["memory_recalled"] is True
+        assert data["current_tier"] == "T2"
+
+    def test_overwrites_false_with_true(self, tmp_path):
+        state = tmp_path / "session_state.json"
+        state.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            _mark_memory_recalled()
+        data = json.loads(state.read_text(encoding="utf-8"))
+        assert data["memory_recalled"] is True
+
+    def test_fail_open_on_corrupt_json(self, tmp_path):
+        state = tmp_path / "session_state.json"
+        state.write_text("{bad json", encoding="utf-8")
+        with patch("post_mcp_audit.SESSION_STATE", state):
+            _mark_memory_recalled()  # must not raise

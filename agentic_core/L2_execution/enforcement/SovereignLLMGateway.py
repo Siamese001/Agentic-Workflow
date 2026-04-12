@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Protocol
 
+from tqdm import tqdm
+
 from agentic_core.L2_execution.reasoning import CompiledPromptArtifact
 
 _LOGGER = logging.getLogger(__name__)
@@ -463,7 +465,9 @@ class SovereignLLMGateway:
             fallback_order = ["simple", "moderate", "complex", "deep"]
             current_idx = fallback_order.index(tier) if tier in fallback_order else 1
 
-            for fallback_tier in fallback_order[:current_idx]:
+            for fallback_tier in tqdm(
+                fallback_order[:current_idx], desc="Fallback scan", leave=False, disable=True
+            ):
                 fallback_path = REASONING_PATH_TABLE[fallback_tier]
                 if fallback_path.estimated_latency_ms <= latency_budget_ms:
                     _LOGGER.info(
@@ -746,3 +750,20 @@ def create_openai_gateway(api_key: str, model: str = "gpt-4", **kwargs) -> Sover
     gateway.register_provider(ProviderType.OPENAI, config)
     gateway.set_default_provider(ProviderType.OPENAI)
     return gateway
+
+
+_llm_gateway_singleton: SovereignLLMGateway | None = None
+
+
+def get_llm_gateway() -> SovereignLLMGateway:
+    """Return the process-level SovereignLLMGateway singleton."""
+    global _llm_gateway_singleton
+    if _llm_gateway_singleton is None:
+        import os as _os
+        import secrets as _secrets
+
+        secret = _os.getenv("LLM_GATEWAY_SECRET", "")
+        _llm_gateway_singleton = SovereignLLMGateway(
+            secret_key=secret.encode("utf-8") if secret else _secrets.token_bytes(32),
+        )
+    return _llm_gateway_singleton

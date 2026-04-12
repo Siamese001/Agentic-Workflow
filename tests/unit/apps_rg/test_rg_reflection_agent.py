@@ -47,6 +47,9 @@ class TestRgReflectionAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
+        from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
+
+        return RgReflectionAgent
 
     def test_class_exists(self, agent_class):
         """Verify RgReflectionAgent exists and is importable."""
@@ -55,7 +58,7 @@ class TestRgReflectionAgent:
     def test_inherits_from_r_g_agent_base(self, agent_class):
         """Verify proper inheritance from RGAgentBase."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "RGAgentBase" in mro_names, "Should inherit from RGAgentBase"
+        assert "BaseReflectionAgent" in mro_names, "Should inherit from BaseReflectionAgent"
 
     def test_has_post_init_method(self, agent_class):
         """Verify agent has __post_init__ method."""

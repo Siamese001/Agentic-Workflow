@@ -392,9 +392,20 @@ class SemanticCacheManager:
     def _init_gptcache(self) -> Exception | None:
         """Initialize Native L2 cache client for persistent Layer 2 storage.
 
+        Gated by the ``SEMANTIC_CACHE_D2_ENABLED`` environment variable.
+        Default is ``"0"`` (disabled) so production is fail-closed unless
+        the flag is explicitly set to ``"1"``.  Non-production environments
+        opt-in by exporting ``SEMANTIC_CACHE_D2_ENABLED=1``.
+
         Returns:
-            Exception if initialization failed, None if successful
+            Exception if initialization failed or flag is off, None if successful
         """
+        if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") != "1":
+            Logger.info(
+                "[HiveMind] Native L2 cache disabled "
+                "(SEMANTIC_CACHE_D2_ENABLED != '1'). Set SEMANTIC_CACHE_D2_ENABLED=1 to enable."
+            )
+            return ValueError("SEMANTIC_CACHE_D2_ENABLED not set — L2 cache intentionally disabled")
         try:
             self._gptcache = GPTCacheClient(
                 cache_dir="artifacts/gptcache",

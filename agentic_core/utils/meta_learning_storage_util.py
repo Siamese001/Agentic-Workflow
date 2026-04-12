@@ -209,11 +209,17 @@ class MetaLearningStorage:
 
     @classmethod
     def recall(cls, context: str, namespace: str) -> dict[str, Any] | None:
-        """Query Pinecone for a cached experience."""
+        """Recall a prior experience from the Hive Mind.
+
+        Offline / meta-learning path: NOT a D2 production gate.
+        flow_class and replay_mode are intentionally absent — this path is only
+        invoked for agent instinct/learning recall, never for HITL or action flows.
+        """
         if cls._lobotomized or cls._memory is None:
             return None
         try:
-            result = cls._memory.recall(context, namespace)
+            # Offline learning path: no flow_class bypass enforcement required.
+            result = cls._memory.recall(context, namespace, flow_class=None, replay_mode=False)
             if result:
                 Logger.info(f"[{namespace}] INSTINCT TRIGGERED: Recalled previous experience.")
             return result

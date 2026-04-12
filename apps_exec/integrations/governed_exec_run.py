@@ -1,11 +1,12 @@
 """
-True end-to-end governed runner — apps_research.
+True end-to-end governed runner — apps_exec.
 
 Lane trace (all substrates real; graceful degradation where store absent):
 
-  ResearchRequest
-    ↓ L1 query_planner.decompose_query(topic)         [intent decomposition → sub-queries]
-    ↓ L0 AgenticRouter.route(topic)                   [route switching → research_assembly]
+  ExecBriefRequest
+    ↓ [query construction] audience + emphasis_areas → query string
+    ↓ L1 query_planner.decompose_query(query)         [intent decomposition → sub-queries]
+    ↓ L0 AgenticRouter.route(query)                   [route switching → exec_brief_assembly]
     ↓ C0 HybridSearchEngine.search()                  [grounded retrieval — degrades gracefully]
          EvidenceShaper.shape()                        [evidence shaping → EvidenceBundle]
     ↓ L2 authorize_and_execute()                      [chokepoint — guardrail + safety plane]
@@ -13,12 +14,12 @@ Lane trace (all substrates real; graceful degradation where store absent):
       → ExitControlGate.evaluate()                    [L5]
       → emit_bundle_telemetry()                       [BUS T — EvidenceMetrics sealed]
       → ingest_eval_packet()                          [L6 — AsyncEvalPacket queued]
-    ↓ GovernedE2ERunRecord (frozen)
+    ↓ GovernedExecE2ERunRecord (frozen)
 
 No bypass.  No new packages.  No router redesign.  No collection rebuilds.
 Common L1→L0→C0→L2→L5+L6 pipeline lives in GovernedAppRunner (apps_shared).
-This module configures the runner for apps_research and translates the shared
-GovernedAppRunRecord into the app-specific GovernedE2ERunRecord.
+This module configures the runner for apps_exec and translates the shared
+GovernedAppRunRecord into the app-specific GovernedExecE2ERunRecord.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from apps_research.types.research_types import ResearchRequest
+from apps_exec.types.exec_types import ExecBriefRequest
 from apps_shared.integrations.governed_app_runner import (
     GovernedAppRunRecord,
     GovernedAppRunner,
@@ -35,59 +36,43 @@ from apps_shared.integrations.governed_app_runner import (
 
 
 # ---------------------------------------------------------------------------
-# App-specific stage output types (kept for backward compatibility)
+# Exec-specific run record
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
-class ResearchPlanOutput:
-    """L1 stage output: sub-queries derived from the research topic."""
-
-    sub_queries: tuple[str, ...]
-    planner: str = "query_planner"
-    fallback_used: bool = False
-
-
-@dataclass(frozen=True)
-class L0RouteDecision:
-    """L0 stage output: intent classification and routing target."""
-
-    intent: str
-    target_name: str
-    confidence: float
-    router: str = "AgenticRouter"
-    fallback_used: bool = False
-
-
-@dataclass(frozen=True)
-class GovernedE2ERunRecord:
-    """Sealed record of one true end-to-end governed run.
+class GovernedExecE2ERunRecord:
+    """Sealed record of one governed executive-brief E2E run.
 
     Fields
     ------
-    run_id:           Correlation key (= ResearchRequest.trace_id or generated UUID).
-    topic:            Research topic.
+    run_id:           Correlation key (= ExecBriefRequest.trace_id or UUID).
+    audience:         Target audience persona (recruiter / cto / svp_eng / board / head_of_ai).
+    emphasis_areas:   Emphasis areas from the original request.
+    query:            Constructed query string fed through L1→L0→C0.
     l1_sub_queries:   Sub-queries produced by L1 query_planner.
-    l1_fallback:      True when L1 gracefully fell back to the original topic.
+    l1_fallback:      True when L1 gracefully fell back to the original query.
     l0_intent:        Intent label assigned by L0 router.
     l0_target:        Routing target chosen by L0 router.
     l0_confidence:    L0 routing confidence (0.0–1.0).
     l0_fallback:      True when L0 gracefully fell back.
-    c0_raw_count:     Chunks from real retrieval (0 when ChromaDB/sparse index absent).
-    c0_shaped_count:  Chunks after EvidenceShaper.shape() (incl. any injected chunks).
-    c0_collection:    ChromaDB collection queried.
-    disposition:      WeakSupportDisposition.value — proceed / refine / abstain / escalate.
-    gate_disposition: ExitDisposition.value — allow_response / deny_return / …
-    grounded:         True when gate result reports grounded_replayable=True.
-    citation_count:   Citation anchors built from the shaped bundle.
-    support_coverage: Mean combined_score across ranked chunks (0.0 when no results).
-    l6_ingested:      True when L6 ingest_eval_packet() was invoked successfully.
-    error:            "" on success; exception message on failure.
+    c0_raw_count:     Chunks from real retrieval (0 when store absent).
+    c0_shaped_count:  Chunks after EvidenceShaper.shape() (incl. injected).
+    c0_collection:    Collection queried.
+    disposition:      WeakSupportDisposition.value.
+    gate_disposition: ExitDisposition.value.
+    grounded:         True when gate reports grounded_replayable=True.
+    citation_count:   Citation anchors from the shaped bundle.
+    support_coverage: Mean combined_score across ranked chunks.
+    l6_ingested:      True when L6 ingest_eval_packet() was invoked.
     l2_executed:      True when authorize_and_execute() ran without error.
+    error:            "" on success; exception message on failure.
     """
 
     run_id: str
-    topic: str
+    audience: str
+    emphasis_areas: tuple[str, ...]
+    query: str
     l1_sub_queries: tuple[str, ...]
     l1_fallback: bool
     l0_intent: str
@@ -103,69 +88,74 @@ class GovernedE2ERunRecord:
     citation_count: int
     support_coverage: float
     l6_ingested: bool
+    l2_executed: bool
     error: str
-    l2_executed: bool = False
 
 
 # ---------------------------------------------------------------------------
-# GovernedResearchRun — subclass of GovernedAppRunner
+# GovernedExecRun — subclass of GovernedAppRunner
 # ---------------------------------------------------------------------------
 
 
-class GovernedResearchRun(GovernedAppRunner):
-    """True E2E governed runner for apps_research.
+class GovernedExecRun(GovernedAppRunner):
+    """True E2E governed runner for apps_exec (executive brief generation).
 
-    Configures the shared GovernedAppRunner for research artifact assembly
-    and translates GovernedAppRunRecord → GovernedE2ERunRecord.
+    Configures the shared GovernedAppRunner for executive brief assembly and
+    translates GovernedAppRunRecord → GovernedExecE2ERunRecord.
 
     Usage::
 
-        runner = GovernedResearchRun(collection="process_docs")
+        runner = GovernedExecRun(collection="exec_docs")
 
-        # Degraded path — real retrieval; degrades gracefully without ChromaDB
+        # Degraded path — real retrieval; degrades gracefully without store
         rec = runner.run_governed_e2e(request)
 
         # Happy-path demonstration — inject well-formed HybridSearchResult chunks
         rec = runner.run_governed_e2e(request, inject_chunks=[...])
-
-    ``inject_chunks`` are appended to the real (possibly empty) retrieval result
-    BEFORE EvidenceShaper.shape() runs.  The C0 shaping pipeline is always real;
-    only the source of raw chunks differs between happy and degraded paths.
     """
 
-    APP_NAME = "apps_research"
-    CAPABILITY_TOKEN = "apps_research.governed_e2e.v1"
-    ROUTING_TARGET = "research_assembly"
+    APP_NAME = "apps_exec"
+    CAPABILITY_TOKEN = "apps_exec.governed_e2e.v1"
+    ROUTING_TARGET = "exec_brief_assembly"
     ROUTING_KEYWORDS = [
-        "research",
-        "analysis",
-        "study",
-        "compare",
-        "trend",
+        "brief",
+        "executive",
+        "capabilities",
+        "board",
+        "technical",
         "governance",
-        "agentic",
-        "ai",
+        "architecture",
+        "platform",
     ]
 
-    def __init__(self, collection: str = "process_docs") -> None:
+    def __init__(self, collection: str = "exec_docs") -> None:
         super().__init__(collection=collection)
 
     def run_governed_e2e(
         self,
-        request: ResearchRequest,
+        request: ExecBriefRequest,
         *,
         inject_chunks: list[Any] | None = None,
-    ) -> GovernedE2ERunRecord:
-        """Run one governed end-to-end research pass.  Returns a frozen sealed record."""
+    ) -> GovernedExecE2ERunRecord:
+        """Run one governed end-to-end exec-brief pass.  Returns a frozen sealed record."""
+        audience: str = (
+            request.audience.value if hasattr(request.audience, "value") else str(request.audience)
+        )
+        emphasis_areas: list[str] = list(request.emphasis_areas or [])
+        emphasis_str = " ".join(emphasis_areas) if emphasis_areas else "governance architecture"
+        query = f"{audience} executive brief: {emphasis_str}"
+
         run_id = request.trace_id or str(uuid.uuid4())
         core: GovernedAppRunRecord = self.run_governed_core(
-            query=request.topic,
+            query=query,
             run_id=run_id,
             inject_chunks=inject_chunks,
         )
-        return GovernedE2ERunRecord(
+        return GovernedExecE2ERunRecord(
             run_id=core.run_id,
-            topic=core.query,
+            audience=audience,
+            emphasis_areas=tuple(emphasis_areas),
+            query=core.query,
             l1_sub_queries=core.l1_sub_queries,
             l1_fallback=core.l1_fallback,
             l0_intent=core.l0_intent,
@@ -181,6 +171,6 @@ class GovernedResearchRun(GovernedAppRunner):
             citation_count=core.citation_count,
             support_coverage=core.support_coverage,
             l6_ingested=core.l6_ingested,
-            error=core.error,
             l2_executed=core.l2_executed,
+            error=core.error,
         )

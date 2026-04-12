@@ -51,7 +51,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from apps_rg.utils.RGAgentBase import RGAgentBase
+from apps_rg.utils.rg_agent_base_util import RGAgentBase
 
 _emit_applies_guardrail("p0", "RGStrategyExecutor", "p0_governance")
 _emit_reads_policy_state("p0", "RGStrategyExecutor", "policy_binding")

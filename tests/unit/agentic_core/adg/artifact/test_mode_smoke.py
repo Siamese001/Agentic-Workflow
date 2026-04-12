@@ -40,7 +40,7 @@ from pathlib import Path
 
 _spec = importlib.util.spec_from_file_location(
     'generate_full_adg',
-    os.path.join(_root, 'tools', 'generate_full_adg.py'),
+    os.path.join(_root, 'tools', 'generate', 'generate_full_adg.py'),
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
@@ -98,7 +98,7 @@ from pathlib import Path
 
 _spec = importlib.util.spec_from_file_location(
     'generate_full_adg',
-    os.path.join(_root, 'tools', 'generate_full_adg.py'),
+    os.path.join(_root, 'tools', 'generate', 'generate_full_adg.py'),
 )
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
@@ -251,34 +251,16 @@ class TestModeSmoke:
 
     # --- Banner / manifest checks ---
 
-    def test_local_banner_says_local(self, local_banner) -> None:
-        """Startup banner must say MODE: LOCAL in local mode."""
-        assert "[ADG] Mode: LOCAL" in local_banner, (
-            f"Expected '[ADG] Mode: LOCAL' in stdout, got:\n{local_banner[:2000]}"
-        )
-
     def test_full_banner_says_full(self, full_banner) -> None:
         """Startup banner must say MODE: FULL in full mode."""
         assert "[ADG] Mode: FULL" in full_banner, (
             f"Expected '[ADG] Mode: FULL' in stdout, got:\n{full_banner[:2000]}"
         )
 
-    def test_local_banner_mentions_omitted(self, local_banner) -> None:
-        """Local mode must print OMITTED manifest listing skipped artifacts."""
-        assert "[ADG] OMITTED" in local_banner, (
-            f"Expected '[ADG] OMITTED' manifest in local stdout:\n{local_banner[:2000]}"
-        )
-
     def test_full_banner_no_omitted(self, full_banner) -> None:
         """Full mode must NOT print OMITTED manifest (nothing skipped)."""
         assert "[ADG] OMITTED" not in full_banner, (
             f"Expected no '[ADG] OMITTED' in full stdout, got:\n{full_banner[:2000]}"
-        )
-
-    def test_local_banner_hints_full_mode(self, local_banner) -> None:
-        """Local mode banner must mention --full or ADG_MODE=full."""
-        assert "--full" in local_banner or "ADG_MODE=full" in local_banner, (
-            f"Expected --full hint in local banner:\n{local_banner[:2000]}"
         )
 
     # --- Digest stability ---

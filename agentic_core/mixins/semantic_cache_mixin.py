@@ -188,9 +188,28 @@ class SemanticCacheMixin:
 
         return SemanticCacheManager.get_instance()
 
-    def semantic_recall(self, context: str, namespace: str) -> Any:
-        """Recall from semantic cache (L1 Redis + L2 BGE vector store)."""
-        return self.semantic_cache.recall(context, namespace)
+    def semantic_recall(
+        self,
+        context: str,
+        namespace: str,
+        *,
+        flow_class: str | None = None,
+        replay_mode: bool = False,
+    ) -> Any:
+        """Recall from semantic cache (L1 Redis + L2 BGE vector store).
+
+        Args:
+            flow_class: Flow classification (e.g. 'D4_ACTION', 'HITL'). Must-bypass
+                flows are gated inside SemanticCacheManager.recall(). Pass None for
+                non-D2 paths where bypass enforcement is not required.
+            replay_mode: Set True to suppress all cache reads (replay scenarios).
+        """
+        return self.semantic_cache.recall(
+            context,
+            namespace,
+            flow_class=flow_class,
+            replay_mode=replay_mode,
+        )
 
     def semantic_learn(
         self,
