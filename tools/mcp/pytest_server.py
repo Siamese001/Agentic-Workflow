@@ -74,7 +74,7 @@ def _validate_expr(value: str, param_name: str) -> str:
 
 class PytestMCPServer:
     def __init__(self):
-        self.server = Server("pytest")
+        self.server = Server("pytest_mcp")
         self._setup_handlers()
 
     def _setup_handlers(self):
@@ -667,7 +667,7 @@ async def main():
             read_stream,
             write_stream,
             InitializationOptions(
-                server_name="pytest",
+                server_name="pytest_mcp",
                 server_version="1.0.0",
                 capabilities=server_instance.server.get_capabilities(
                     notification_options=NotificationOptions(

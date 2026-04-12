@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE  
 **SSOT**: This file reflects live `.windsurf/mcp_config.json`. Runtime config is the authority.  
-**Updated**: 2026-04-10 (post-pilot seeding cleanup)  
+**Updated**: 2026-04-12 (notion capability names corrected to runtime-actual API-* names)  
 **Rule**: `global_rules.md` §MCP Authority: One SSOT Per Capability
 
 ---
@@ -89,7 +89,7 @@ explicit authority assignment.
 ### `pytest_mcp` — Test Execution
 - **Transport**: Python (local subprocess)
 - **Authority**: Test discovery, execution, and coverage
-- **Capability**: `run_tests`, `discover_tests`, `analyze_test_coverage`, `list_pytest_config`
+- **Capability**: `run_tests`, `discover_tests`, `get_test_details`, `analyze_test_coverage`, `list_pytest_config`
 
 ### `deepwiki` — Repository Documentation
 - **Transport**: Remote URL (`https://mcp.deepwiki.com/mcp`)
@@ -99,8 +99,11 @@ explicit authority assignment.
 ### `notion` — Notion Workspace
 - **Transport**: Local stdio (`npx @notionhq/notion-mcp-server`)
 - **Authority**: Notion workspace read/write — pages, databases, comments, search
-- **Capability**: `notion-fetch`, `notion-create-pages`, `notion-update-page`, `notion-search`, `notion-create-database`
-- **Note**: Updated 2026-04-12. Uses local stdio transport. Auth via `NOTION_TOKEN` OS environment variable (internal integration token, format `ntn_...` or `secret_...`).
+- **Capability** (Windsurf auto-prefixes all names with `mcp6_`, e.g. `mcp6_API-post-page`):
+  - Read: `API-retrieve-a-page`, `API-get-block-children`, `API-retrieve-a-block`, `API-retrieve-a-database`, `API-retrieve-a-data-source`, `API-retrieve-a-page-property`, `API-retrieve-a-comment`, `API-get-self`, `API-get-user`, `API-get-users`
+  - Write: `API-post-page`, `API-patch-page`, `API-patch-block-children`, `API-update-a-block`, `API-create-a-data-source`, `API-update-a-data-source`, `API-delete-a-block`, `API-move-page`, `API-create-a-comment`
+  - Query/Search: `API-post-search`, `API-query-data-source`, `API-list-data-source-templates`
+- **Note**: Auth via `NOTION_TOKEN` OS environment variable (format `ntn_...` or `secret_...`). `pre_mcp_gate` blocks with an actionable message when token is absent. Legacy aliases (`notion-fetch`, `notion-create-pages`, etc.) are stale — use `API-*` names above.
 
 ---
 

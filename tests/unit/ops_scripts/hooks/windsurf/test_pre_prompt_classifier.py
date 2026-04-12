@@ -34,6 +34,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
 from pre_prompt_classifier import (
+    _detect_pytest_intent,
+    _should_emit_memory_mandate,
     check_plan_exists,
     check_redis_adg_hot,
     check_redis_up,
@@ -475,3 +477,196 @@ class TestMain:
         payload = {"tool_info": {"user_prompt": "refactor " + "x" * 50000}}
         result = self._run(payload, adg_red=False, redis_down=False)
         assert result in (0, 2)
+
+    # --- memory mandate ---
+
+    def test_memory_mandate_emitted_when_no_session_state(self, capsys, tmp_path):
+        """Mandate fires on first turn (no session_state.json)."""
+        state_path = tmp_path / "session_state.json"
+        payload = {"tool_info": {"user_prompt": "explain how routing works"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        captured = capsys.readouterr()
+        assert "MEMORY RECALL REQUIRED" in captured.err
+        assert "mem_recall_session_start" in captured.err
+
+    def test_memory_mandate_emitted_when_not_recalled(self, capsys, tmp_path):
+        """Mandate fires when memory_recalled=False in session state."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
+        payload = {"tool_info": {"user_prompt": "explain how routing works"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        captured = capsys.readouterr()
+        assert "MEMORY RECALL REQUIRED" in captured.err
+
+    def test_memory_mandate_suppressed_when_recalled(self, capsys, tmp_path):
+        """Mandate is NOT emitted when memory_recalled=True in session state."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        payload = {"tool_info": {"user_prompt": "explain how routing works"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        captured = capsys.readouterr()
+        assert "MEMORY RECALL REQUIRED" not in captured.err
+
+    def test_t0_resets_memory_recalled_in_session_state(self, tmp_path):
+        """T0 prompt resets memory_recalled=False in session_state.json."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        payload = {"tool_info": {"user_prompt": "explain how routing works"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["memory_recalled"] is False
+
+    def test_t2_preserves_memory_recalled_true(self, tmp_path):
+        """T2 continuation preserves memory_recalled=True once set."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        payload = {"tool_info": {"user_prompt": "fix and update the module"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["memory_recalled"] is True
+
+
+# ---------------------------------------------------------------------------
+# _should_emit_memory_mandate
+# ---------------------------------------------------------------------------
+
+
+class TestShouldEmitMemoryMandate:
+    def test_returns_true_when_no_file(self, tmp_path):
+        state_path = tmp_path / "missing_state.json"
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            assert _should_emit_memory_mandate() is True
+
+    def test_returns_true_when_field_absent(self, tmp_path):
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"current_tier": "T2"}), encoding="utf-8")
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            assert _should_emit_memory_mandate() is True
+
+    def test_returns_true_when_false(self, tmp_path):
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            assert _should_emit_memory_mandate() is True
+
+    def test_returns_false_when_true(self, tmp_path):
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            assert _should_emit_memory_mandate() is False
+
+    def test_fail_open_on_corrupt_json(self, tmp_path):
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text("{bad json", encoding="utf-8")
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            assert _should_emit_memory_mandate() is True
+
+
+# ---------------------------------------------------------------------------
+# _detect_pytest_intent
+# ---------------------------------------------------------------------------
+
+
+class TestDetectPytestIntent:
+    """Pytest-intent signal detection used for pytest_mcp routing."""
+
+    def test_pytest_keyword_detected(self):
+        assert _detect_pytest_intent("run pytest for the failing module") is True
+
+    def test_run_tests_detected(self):
+        assert _detect_pytest_intent("run tests in apps_rg/") is True
+
+    def test_discover_tests_detected(self):
+        assert _detect_pytest_intent("discover tests under tests/unit") is True
+
+    def test_test_coverage_detected(self):
+        assert _detect_pytest_intent("analyze test coverage for agentic_core") is True
+
+    def test_coverage_report_detected(self):
+        assert _detect_pytest_intent("show me the coverage report") is True
+
+    def test_pytest_config_detected(self):
+        assert _detect_pytest_intent("show pytest config") is True
+
+    def test_test_suite_detected(self):
+        assert _detect_pytest_intent("run the test suite") is True
+
+    def test_failing_tests_detected(self):
+        assert _detect_pytest_intent("why are the failing tests red") is True
+
+    def test_non_pytest_prompt_not_detected(self):
+        assert _detect_pytest_intent("refactor the L0 routing layer") is False
+
+    def test_adg_query_not_detected(self):
+        assert _detect_pytest_intent("who uses blast radius in the import graph") is False
+
+    def test_notion_prompt_not_detected(self):
+        assert _detect_pytest_intent("create a notion page for the sprint") is False
+
+    def test_empty_prompt_not_detected(self):
+        assert _detect_pytest_intent("") is False
+
+    def test_case_insensitive(self):
+        assert _detect_pytest_intent("RUN PYTEST NOW") is True
+
+
+# ---------------------------------------------------------------------------
+# pytest_mcp routing trace in main()
+# ---------------------------------------------------------------------------
+
+
+class TestPytestMcpRoutingTrace:
+    """Verify PYTEST_MCP_TRACE lines are emitted correctly for detected and not-detected cases."""
+
+    def _run(self, prompt: str, capsys, tmp_path) -> int:
+        payload = json.dumps({"tool_info": {"prompt": prompt}})
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        with (
+            patch("pre_prompt_classifier.SESSION_STATE", state_path),
+            patch("pre_prompt_classifier.check_redis_up", return_value=True),
+            patch("pre_prompt_classifier.check_redis_adg_hot", return_value=True),
+            patch("sys.stdin", StringIO(payload)),
+        ):
+            return main()
+
+    def test_pytest_prompt_emits_detected_trace(self, capsys, tmp_path):
+        self._run("run pytest for the failing tests", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST_MCP_TRACE: pytest_intent=DETECTED" in err
+
+    def test_non_pytest_prompt_emits_not_detected_trace(self, capsys, tmp_path):
+        self._run("explain the architecture of the ADG module", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST_MCP_TRACE: pytest_intent=NOT_DETECTED" in err
+
+    def test_pytest_prompt_sr_hint_injected_for_t2(self, capsys, tmp_path):
+        """pytest SR hint must be appended to SR_MANDATE when pytest intent detected in T2 prompt."""
+        self._run("run the test suite and fix failing tests", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST INTENT DETECTED" in err
+        assert "mcp8_run_tests" in err
+
+    def test_non_pytest_prompt_no_sr_hint(self, capsys, tmp_path):
+        """SR hint must NOT appear when no pytest intent is detected."""
+        self._run("implement the new L3 orchestration feature", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST INTENT DETECTED" not in err
+
+    def test_pytest_trace_emitted_on_every_prompt_regardless_of_tier(self, capsys, tmp_path):
+        """Routing trace is emitted at all tiers, not only T2/T3."""
+        self._run("explain how to run pytest", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST_MCP_TRACE" in err
+
+    def test_over_routing_guard_adg_prompt_not_detected(self, capsys, tmp_path):
+        """ADG-specific prompts must not trigger pytest routing."""
+        self._run("what depends on the import graph fanin nodes", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST_MCP_TRACE: pytest_intent=NOT_DETECTED" in err
+        assert "PYTEST INTENT DETECTED" not in err

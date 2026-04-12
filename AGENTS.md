@@ -50,10 +50,12 @@ Keep these four layers separate at all times:
 |------|------|
 | ADG scope / blast radius | `adg_health`, `adg_edge_fanout` (server: `adg_sqlite`) |
 | Session context | `mem_recall_session_start` (server: `memory`) |
+| Semantic / concept search | `mcp11_semantic_search`, `mcp11_query_collection` (server: `vector_db`) — use for meaning-based lookup, cross-file concept search, similarity retrieval; NOT structural deps (→ `adg_sqlite`), NOT episodic recall (→ `memory`), NOT direct file reads (→ `filesystem`) |
 | Task tracking | `create_task`, `update_task` (server: `task_manager`) |
 | File reads | `read_text_file` (server: `filesystem`) or native `read_file` |
-| Tests | `run_tests` (server: `pytest_mcp`) or `run_command` with pytest |
+| Tests | `run_tests` (server: `pytest_mcp`) — prefer `mcp8_run_tests`; fallback `run_command` only when pytest_mcp is unavailable |
 | Git state | `git_status` (server: `GitKraken`) or `run_command` with git |
+| Notion pages/databases | `API-post-page`, `API-patch-page`, `API-post-search`, `API-retrieve-a-page` (server: `notion`; Windsurf prefixes all tools with `mcp6_`) |
 
 If any MCP hangs: STOP, do not retry, route around it, note `[MCP UNAVAILABLE]`.
 

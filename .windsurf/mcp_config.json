@@ -68,8 +68,8 @@
       ],
       "disabled": false,
       "env": {
-        "VECTOR_DB_CHROMA_PATH": "C:/Git/Agentic-Workflow/artifacts/chroma",
-        "VECTOR_DB_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
+        "VECTOR_DB_CHROMA_PATH": "C:/Git/Agentic-Workflow/data/cache/chromadb",
+        "VECTOR_DB_EMBEDDING_MODEL": "BAAI/bge-m3",
         "VECTOR_DB_MAX_BATCH": "32",
         "VECTOR_DB_MAX_QUERY_RESULTS": "100",
         "VECTOR_DB_MAX_SEARCH_RESULTS": "20",
@@ -117,9 +117,11 @@
         "-c",
         "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/pytest_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/pytest_server.py', encoding='utf-8').read())"
       ],
+      "cwd": "C:/Git/Agentic-Workflow",
       "disabled": false
     },
     "notion": {
+      "_auth": "Requires NOTION_TOKEN set as a Windows OS environment variable (setx NOTION_TOKEN secret_...). The npx subprocess inherits it from Windsurf's process env. Without it the server starts but every API call returns HTTP 401. Create at https://www.notion.so/my-integrations (Internal integration). pre_mcp_gate blocks with an actionable message when the variable is absent.",
       "command": "npx",
       "args": ["-y", "@notionhq/notion-mcp-server"],
       "disabled": false
