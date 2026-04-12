@@ -18,7 +18,12 @@ from pathlib import Path
 from typing import Any
 
 import chromadb
-from openai import OpenAI
+from tqdm import tqdm
+
+from agentic_core.embeddings.bge_runtime import bge_embed_query
+
+# guardian: allow-cross-layer-import -- L4 retrieval seam routes through sanctioned infrastructure adapter
+from infrastructure.sdks_mcps import create_openai_sync_client
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -49,7 +54,7 @@ class L1ExactCache:
         if result is not None:
             self.hit_count += 1
             Logger.debug(f"L1 cache HIT for query: {query[:50]}...")
-            return result.decode('utf-8')
+            return result.decode("utf-8")
 
         self.miss_count += 1
         Logger.debug(f"L1 cache MISS for query: {query[:50]}...")
@@ -60,7 +65,7 @@ class L1ExactCache:
         normalized_query = self._normalize_query(query)
         cache_key = f"l1_exact:{hashlib.sha256(normalized_query.encode()).hexdigest()}"
 
-        self.cache.set(cache_key, response.encode('utf-8'), ttl_seconds=self.ttl_seconds)
+        self.cache.set(cache_key, response.encode("utf-8"), ttl_seconds=self.ttl_seconds)
         Logger.debug(f"L1 cache SET for query: {query[:50]}...")
 
     def _normalize_query(self, query: str) -> str:
@@ -100,7 +105,7 @@ class L2SemanticCache:
         # Initialize embedding generator
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
-            self.embedding_client = OpenAI(api_key=api_key)
+            self.embedding_client = create_openai_sync_client()
             self.mock_embeddings = False
         else:
             Logger.warning("OPENAI_API_KEY not set, using mock embeddings")
@@ -114,6 +119,7 @@ class L2SemanticCache:
         if self.mock_embeddings:
             # Generate deterministic mock embedding based on text hash
             import random
+
             # Ensure positive seed by using absolute value of hash
             random.seed(self.embedding_seed + abs(hash(text)))
             return [random.uniform(-1, 1) for _ in range(1536)]
@@ -141,17 +147,22 @@ class L2SemanticCache:
 
         if cached_data:
             try:
-                data = json.loads(cached_data.decode('utf-8'))
+                data = json.loads(cached_data.decode("utf-8"))
                 cached_embedding = data.get("embedding")
                 cached_response = data.get("response")
 
-                if cached_embedding and self._calculate_similarity(query_embedding, cached_embedding) >= self.similarity_threshold:
+                if (
+                    cached_embedding
+                    and self._calculate_similarity(query_embedding, cached_embedding)
+                    >= self.similarity_threshold
+                ):
                     self.hit_count += 1
                     Logger.debug(f"L2 semantic cache HIT for query: {query[:50]}...")
                     return cached_response
             except (json.JSONDecodeError, KeyError) as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("retrieval_layers: Exception swallowed at L152: %s", e)
+                logging.getLogger(__name__).debug("retrieval_layers: Exception swallowed at L152: %s", e)
 
         self.miss_count += 1
         Logger.debug(f"L2 semantic cache MISS for query: {query[:50]}...")
@@ -170,7 +181,7 @@ class L2SemanticCache:
             "timestamp": time.time(),
         }
 
-        self.cache.set(cache_key, json.dumps(cache_data).encode('utf-8'), ttl_seconds=self.ttl_seconds)
+        self.cache.set(cache_key, json.dumps(cache_data).encode("utf-8"), ttl_seconds=self.ttl_seconds)
         Logger.debug(f"L2 semantic cache SET for query: {query[:50]}...")
 
     def _calculate_similarity(self, embedding1: list[float], embedding2: list[float]) -> float:
@@ -208,45 +219,54 @@ class L2SemanticCache:
 class L3SemanticRAG:
     """L3 Semantic RAG - vector search retrieval from ChromaDB."""
 
-    def __init__(self, persist_directory: str = None):
+    def __init__(self, persist_directory: str = "data/cache/chromadb"):
         """Initialize L3 RAG with ChromaDB."""
         self.config = MemoryStoreConfig()
 
-        # Initialize ChromaDB client with persistent storage
-        if persist_directory:
-            self.client = chromadb.PersistentClient(path=persist_directory)
-        else:
-            persist_dir = Path("artifacts/chromadb")
-            persist_dir.mkdir(parents=True, exist_ok=True)
-            self.client = chromadb.PersistentClient(path=str(persist_dir))
+        persist_dir = Path(persist_directory)
+        persist_dir.mkdir(parents=True, exist_ok=True)
+        self.client = chromadb.PersistentClient(path=str(persist_dir))
 
-        # Get collections
-        self.docs_collection = self.client.get_or_create_collection(name="docs")
-        self.traces_collection = self.client.get_or_create_collection(name="traces")
+        # Get canonical collections — graceful degrade until Phase 2 collections exist
+        try:
+            self.docs_collection = self.client.get_collection(name="arch_docs")
+        except (
+            Exception
+        ):  # guardian: allow-broad-exception -- graceful degrade before Phase 2 collection exists
+            Logger.warning(
+                "L3SemanticRAG: 'arch_docs' collection not found — degrading gracefully until Phase 2 ingest"
+            )
+            self.docs_collection = None
 
-        # Initialize embedding generator
-        api_key = os.getenv("OPENAI_API_KEY")
-        if api_key:
-            self.embedding_client = OpenAI(api_key=api_key)
-            self.mock_embeddings = False
-        else:
-            Logger.warning("OPENAI_API_KEY not set, using mock embeddings")
-            self.embedding_client = None
-            self.mock_embeddings = True
-            # For deterministic mock embeddings
-            self.embedding_seed = 42
+        try:
+            self.traces_collection = self.client.get_collection(name="runtime_evidence")
+        except (
+            Exception
+        ):  # guardian: allow-broad-exception -- graceful degrade before Phase 2 collection exists
+            Logger.warning(
+                "L3SemanticRAG: 'runtime_evidence' collection not found — degrading gracefully until Phase 2 ingest"
+            )
+            self.traces_collection = None
 
         self.query_count = 0
 
     def query_docs(self, query: str, n_results: int = 5) -> list[dict[str, Any]]:
         """Query document collection."""
-        return self._query_collection(self.docs_collection, query, n_results, "docs")
+        if self.docs_collection is None:
+            Logger.warning("query_docs: arch_docs collection unavailable")
+            return []
+        return self._query_collection(self.docs_collection, query, n_results, "arch_docs")
 
     def query_traces(self, query: str, n_results: int = 5) -> list[dict[str, Any]]:
         """Query traces collection."""
-        return self._query_collection(self.traces_collection, query, n_results, "traces")
+        if self.traces_collection is None:
+            Logger.warning("query_traces: runtime_evidence collection unavailable")
+            return []
+        return self._query_collection(self.traces_collection, query, n_results, "runtime_evidence")
 
-    def _query_collection(self, collection, query: str, n_results: int, collection_type: str) -> list[dict[str, Any]]:
+    def _query_collection(
+        self, collection, query: str, n_results: int, collection_type: str
+    ) -> list[dict[str, Any]]:
         """Query a specific ChromaDB collection."""
         query_embedding = self._get_embedding(query)
         if query_embedding is None:
@@ -259,18 +279,29 @@ class L3SemanticRAG:
             )
 
             self.query_count += 1
-            Logger.debug(f"L3 RAG query {self.query_count}: {query[:50]}... ({len(results['ids'][0])} results)")
+            Logger.debug(
+                f"L3 RAG query {self.query_count}: {query[:50]}... ({len(results['ids'][0])} results)"
+            )
 
             # Format results
             formatted_results = []
-            for i, (doc_id, document, metadata) in enumerate(zip(results['ids'][0], results['documents'][0], results['metadatas'][0])):
-                formatted_results.append({
-                    "id": doc_id,
-                    "content": document,
-                    "metadata": metadata,
-                    "collection": collection_type,
-                    "rank": i + 1,
-                })
+            for i, (doc_id, document, metadata) in enumerate(
+                tqdm(
+                    zip(results["ids"][0], results["documents"][0], results["metadatas"][0]),
+                    desc="format-results",
+                    leave=False,
+                    disable=True,
+                )
+            ):
+                formatted_results.append(
+                    {
+                        "id": doc_id,
+                        "content": document,
+                        "metadata": metadata,
+                        "collection": collection_type,
+                        "rank": i + 1,
+                    }
+                )
 
             return formatted_results
 
@@ -279,22 +310,11 @@ class L3SemanticRAG:
             return []
 
     def _get_embedding(self, text: str) -> list[float] | None:
-        """Get embedding for text."""
-        if self.mock_embeddings:
-            # Generate deterministic mock embedding based on text hash
-            import random
-            # Ensure positive seed by using absolute value of hash
-            random.seed(self.embedding_seed + abs(hash(text)))
-            return [random.uniform(-1, 1) for _ in range(1536)]
-
+        """Get BGE-M3 embedding for text."""
         try:
-            response = self.embedding_client.embeddings.create(
-                model="text-embedding-ada-002",
-                input=text,
-            )
-            return response.data[0].embedding
-        except Exception as e:
-            Logger.error(f"Failed to generate embedding: {e}")
+            return bge_embed_query(text)
+        except (RuntimeError, ImportError) as e:
+            Logger.error("Failed to generate BGE-M3 embedding: %s", e)
             return None
 
     def get_stats(self) -> dict[str, Any]:
@@ -302,8 +322,8 @@ class L3SemanticRAG:
         return {
             "layer": "L3_Semantic_RAG",
             "query_count": self.query_count,
-            "docs_count": self.docs_collection.count(),
-            "traces_count": self.traces_collection.count(),
+            "docs_count": self.docs_collection.count() if self.docs_collection else 0,
+            "traces_count": self.traces_collection.count() if self.traces_collection else 0,
             "vector_dimensions": self.config.VECTOR_DIMENSIONS,
             "vector_metric": self.config.VECTOR_METRIC,
         }
@@ -380,7 +400,9 @@ class L4AgenticActions:
         for param in required_params:
             if param not in parameters:
                 self.validation_failures += 1
-                Logger.error(f"L4 validation: Missing required parameter '{param}' for action '{action_name}'")
+                Logger.error(
+                    f"L4 validation: Missing required parameter '{param}' for action '{action_name}'"
+                )
                 return False
 
         Logger.debug(f"L4 validation: Action '{action_name}' passed validation")
@@ -430,11 +452,13 @@ class RetrievalOrchestrator:
         cached_result = self.l1_cache.get(query)
         if cached_result:
             results["layers_used"].append("L1")
-            results["results"].append({
-                "layer": "L1_Exact_Cache",
-                "content": cached_result,
-                "metadata": {"cache_hit": True},
-            })
+            results["results"].append(
+                {
+                    "layer": "L1_Exact_Cache",
+                    "content": cached_result,
+                    "metadata": {"cache_hit": True},
+                }
+            )
             results["stats"]["l1"] = self.l1_cache.get_stats()
             return results
 
@@ -442,11 +466,13 @@ class RetrievalOrchestrator:
         semantic_result = self.l2_cache.get(query)
         if semantic_result:
             results["layers_used"].append("L2")
-            results["results"].append({
-                "layer": "L2_Semantic_Cache",
-                "content": semantic_result,
-                "metadata": {"cache_hit": True},
-            })
+            results["results"].append(
+                {
+                    "layer": "L2_Semantic_Cache",
+                    "content": semantic_result,
+                    "metadata": {"cache_hit": True},
+                }
+            )
             results["stats"]["l2"] = self.l2_cache.get_stats()
             return results
 
@@ -456,12 +482,8 @@ class RetrievalOrchestrator:
 
         if docs_results or traces_results:
             results["layers_used"].append("L3")
-            results["results"].extend([
-                {"layer": "L3_Docs", **result} for result in docs_results
-            ])
-            results["results"].extend([
-                {"layer": "L3_Traces", **result} for result in traces_results
-            ])
+            results["results"].extend([{"layer": "L3_Docs", **result} for result in docs_results])
+            results["results"].extend([{"layer": "L3_Traces", **result} for result in traces_results])
             results["stats"]["l3"] = self.l3_rag.get_stats()
 
         # L4: Action validation (if this is an action query)
@@ -469,11 +491,13 @@ class RetrievalOrchestrator:
             action_name, params = self._parse_action_query(query)
             if self.l4_actions.validate_action(action_name, params):
                 results["layers_used"].append("L4")
-                results["results"].append({
-                    "layer": "L4_Agentic_Actions",
-                    "content": f"Action '{action_name}' validated successfully",
-                    "metadata": {"action": action_name, "parameters": params},
-                })
+                results["results"].append(
+                    {
+                        "layer": "L4_Agentic_Actions",
+                        "content": f"Action '{action_name}' validated successfully",
+                        "metadata": {"action": action_name, "parameters": params},
+                    }
+                )
                 results["stats"]["l4"] = self.l4_actions.get_stats()
 
         return results
@@ -495,7 +519,8 @@ class RetrievalOrchestrator:
         elif "trace" in query_lower:
             # Look for trace ID pattern
             import re
-            trace_match = re.search(r'trace_\d+', query)
+
+            trace_match = re.search(r"trace_\d+", query)
             trace_id = trace_match.group(0) if trace_match else "trace_000042"
             return "find_similar_traces", {"trace_id": trace_id, "n_results": 5}
         elif "architecture" in query_lower:

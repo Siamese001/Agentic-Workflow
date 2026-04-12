@@ -14,6 +14,8 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from tqdm import tqdm
+
 import anyio
 
 # Vector database imports
@@ -55,7 +57,7 @@ logger = logging.getLogger(__name__)
 REPO_ROOT = Path(__file__).parent.parent.parent
 
 _raw_chroma_path = os.environ.get("VECTOR_DB_CHROMA_PATH", "")
-CHROMA_PATH: Path = Path(_raw_chroma_path) if _raw_chroma_path else REPO_ROOT / "artifacts" / "chroma"
+CHROMA_PATH: Path = Path(_raw_chroma_path) if _raw_chroma_path else REPO_ROOT / "data" / "cache" / "chromadb"
 
 DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 
@@ -398,7 +400,7 @@ class VectorDBMCPServer:
 
             result = f"Vector Collections ({len(collections)} total):\n\n"
 
-            for collection in collections:
+            for collection in tqdm(collections, desc="list-collections", leave=False, disable=True):
                 result += f"📁 {collection.name}\n"
                 result += f"   ID: {collection.id}\n"
                 if collection.metadata:
@@ -753,7 +755,7 @@ class VectorDBMCPServer:
             collection_errors: dict[str, str] = {}
             total_time = 0.0
 
-            for collection_name in collections:
+            for collection_name in tqdm(collections, desc="search-collections", leave=False, disable=True):
                 try:
                     collection = self.chroma_client.get_collection(collection_name)
                     start_time = time.time()

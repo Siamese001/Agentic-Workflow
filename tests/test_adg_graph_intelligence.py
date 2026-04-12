@@ -21,12 +21,18 @@ from tools.generate.materialized_views.phase_e_graph_intelligence import materia
 
 
 def get_latest_adg_sqlite() -> Path:
-    """Find the latest ADG SQLite snapshot."""
-    adg_dir = Path("artifacts/adg")
-    sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
-    if not sqlite_files:
+    """Find the latest ADG SQLite snapshot.
+
+    Delegates to the shared conftest._find_latest_canonical_sqlite() utility so
+    artifact discovery logic has a single source of truth. Tests that receive the
+    `latest_canonical_sqlite` fixture directly should prefer it over this function.
+    """
+    from tests.conftest import _find_latest_canonical_sqlite
+
+    path = _find_latest_canonical_sqlite()
+    if path is None:
         pytest.skip("No ADG SQLite found")
-    return sqlite_files[-1]
+    return path
 
 
 class TestGraphNativeViews:

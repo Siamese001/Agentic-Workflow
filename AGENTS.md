@@ -71,6 +71,8 @@ Full rules: `.windsurf/rules/` and `.windsurf/RULES_INDEX.md`
 
 - Local docs: `docs/windsurf/llms-full.txt` (broad coverage), `docs/windsurf/*.md` (per-topic Markdown)
 - Check local docs first. Use web search only for version-sensitive or newly-changed features.
+- Prefer `docs/windsurf/changelog.md` when the question may depend on recent product changes.
+- If local docs conflict with observed product behavior, note possible staleness and verify against live docs.
 - Hooks: `command`, `show_output`, `working_directory` only — `file_pattern` is non-standard and FORBIDDEN.
 - Skills: entry file MUST be `SKILL.md` (uppercase). Supporting files live alongside it in the skill directory.
 - Rules: `model_decision` and `glob` triggers MUST have a single-sentence `description` field in frontmatter.

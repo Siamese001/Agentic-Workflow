@@ -20,9 +20,11 @@ It answers:
 
 ### In-Scope Outputs
 
+#### Canonical Artifacts (source of truth)
+
 | Output | Location | Purpose |
 |--------|----------|---------|
-| `adg_indexed_<ts>.sqlite` | `artifacts/adg/` | Primary queryable DB (nodes, edges, violations, meta) |
+| `adg_indexed_<ts>.sqlite` | `artifacts/adg/` | **Primary canonical DB** (nodes, edges, violations, meta) |
 | `adg_snapshot_<ts>.json` | `artifacts/adg/` | Lightweight metrics/counts snapshot |
 | `adg_file_graph_<ts>.json` | `artifacts/adg/` | File-level import graph |
 | `adg_symbol_graph_<ts>.json` | `artifacts/adg/` | Symbol-level call graph |
@@ -35,6 +37,16 @@ It answers:
 | `mutation_integrity_report_<ts>.json` | `artifacts/adg/` | Mutation signature coverage |
 | `test_surface_coverage_<ts>.json` | `artifacts/adg/` | Test→execution linkage |
 | `closure_validation_report_<ts>.json` | `artifacts/adg/` | 13-gate closure checklist |
+
+#### Derived Artifacts (non-canonical)
+
+Derived artifacts are built from canonical outputs and carry no independent authority.
+They are rebuilt automatically when the canonical artifact is regenerated. CI gates do
+not depend on derived artifacts — their build step is non-blocking.
+
+| Output | Location | Built from | Purpose |
+|--------|----------|------------|---------|
+| `adg_graph_<ts>.sqlite` | `artifacts/adg/` | `adg_indexed_<ts>.sqlite` | **Graph-native metrics** (centrality, SCC, reachability, cross-run diff). Non-canonical. Freshness verified via `source_artifact_digest`. See [`adg-graph-projection.md`](adg-graph-projection.md). |
 
 ### In-Scope Queries (via ADG MCP tools)
 
@@ -73,6 +85,9 @@ ADG (structural truth)
   └── MCP Server (adg_sqlite) — serves ADG queries to Cascade at T3 analysis time
   └── Memory MCP — receives ADG snapshot for session context
   └── Redis hot cache — serves ADG topology for fast Cascade queries
+  └── Graph Projection (derived) — adg_graph_<ts>.sqlite, built non-blocking from adg_indexed_<ts>.sqlite
+        └── GraphProjectionBackend — read-only adapter (tools/adg/core/graph_projection_backend.py)
+        └── Analyst CLI — tools/adg/adg_graph_query.py
 ```
 
 ---
@@ -84,7 +99,10 @@ ADG (structural truth)
 | Structural dependencies | **ADG** | `adg_edge_fanout`, `adg_edge_fanin` |
 | Layer membership | **ADG** | `adg_nodes_by_layer` |
 | Violation detection | **ADG** | `adg_violations` |
-| Blast radius | **ADG** | `adg_edge_fanin` (transitive) |
+| Blast radius (topology) | **ADG** | `adg_edge_fanin` (transitive) |
+| Blast radius (pre-computed scalar) | **Graph Projection** | `adg_graph_query.py blast-radius` |
+| SCC / cycle detection | **Graph Projection** | `adg_graph_query.py scc` |
+| Cross-run metric deltas | **Graph Projection** | `adg_graph_query.py diff` |
 | Runtime traces | **OTel / L6** | Not ADG |
 | Test pass/fail | **pytest** | Not ADG |
 | Refactor priority | **Refactor Accelerator** | Consumes ADG |

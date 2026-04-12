@@ -1,6 +1,10 @@
 """SQLite Backend — Canonical ADG source, mandatory, always available.
 
-Enhanced with SQLiteGraphStore for graph-native operations.
+Provides query access to `adg_indexed_<ts>.sqlite` (canonical CI artifact).
+Optionally wires a `GraphProjectionBackend` instance (Increment 3) to serve
+pre-computed graph-native metrics from the derived `adg_graph_<ts>.sqlite`.
+The graph store is non-critical: construction failure falls back to None and
+all canonical query paths remain unaffected.
 """
 
 import logging
@@ -8,6 +12,9 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from tqdm import tqdm
+
+from tools.adg.core.graph_projection_backend import GraphProjectionBackend
 from tools.adg.core.models import ADGEdge, ADGNode
 from tools.adg.shared_modules.path_resolver import get_adg_dir
 
@@ -34,12 +41,18 @@ class SQLiteBackend:
             self._init_graph_store()
 
     def _init_graph_store(self) -> None:
-        """Initialize optional SQLiteGraphStore for graph-native operations.
+        """Initialize GraphProjectionBackend for graph-native operations.
 
-        Currently a no-op stub — SQLiteGraphStore integration is deferred.
-        Graph-native methods fall back to SQL-based implementations.
+        Discovers the latest adg_graph_<ts>.sqlite and wires it as the
+        graph store. Falls back to None if the projection is absent or
+        cannot be opened — all canonical query paths remain unaffected.
         """
-        self._graph_store = None  # No graph store implementation at this time
+        try:
+            self._graph_store = GraphProjectionBackend(
+                canonical_sqlite_path=self._sqlite_path,
+            )
+        except Exception:  # guardian: allow-broad-exception -- GraphProjectionBackend init can fail for many environmental reasons (missing file, sqlite error, bad schema); all are non-fatal and must not block SQLiteBackend construction
+            self._graph_store = None
 
     def _connect(self) -> None:
         """Establish connection to latest SQLite file."""
@@ -228,9 +241,18 @@ class SQLiteBackend:
     # Graph-native methods that delegate to SQLiteGraphStore when available
 
     def get_centrality(self, node_id: str) -> float:
-        """Get centrality score for a node using graph store if available."""
+        """Get centrality score for a node using graph store if available.
+
+        When GraphProjectionBackend is active, returns blast_radius_direct as
+        the scalar centrality proxy (fan-in count, closest to the SQL fallback
+        which counts total edges touching the node). Returns a float in all cases.
+        """
         if self._graph_store:
-            return self._graph_store.get_centrality(node_id)
+            proj = self._graph_store.get_centrality(node_id)
+            if isinstance(proj, dict):
+                return float(proj.get("blast_radius_direct", 0))
+            if isinstance(proj, (int, float)):
+                return float(proj)
         # Fallback: degree centrality from direct edge count
         cur = self._conn.execute(
             "SELECT COUNT(*) FROM edges WHERE src_id = ? OR dst_id = ?",
@@ -240,7 +262,7 @@ class SQLiteBackend:
 
     def traverse(self, start_id: str, max_depth: int = 2, relation_types: list[str] | None = None) -> list:
         """Traverse graph from start node using graph store if available."""
-        if self._graph_store:
+        if self._graph_store and hasattr(self._graph_store, "traverse"):
             return self._graph_store.traverse(start_id, max_depth, relation_types)
         # Fallback: simple BFS using SQL
         return self._traverse_sql(start_id, max_depth, relation_types)
@@ -251,9 +273,9 @@ class SQLiteBackend:
         visited = {start_id}
         current_level = [(start_id, [])]  # (node_id, path)
 
-        for depth in range(max_depth):  # progress: bounded by max_depth (shallow traversal)
+        for depth in tqdm(range(max_depth), desc="traverse-depth", leave=False, disable=True):
             next_level = []
-            for node_id, path in current_level:  # progress: bounded by graph fanout
+            for node_id, path in tqdm(current_level, desc="traverse-level", leave=False, disable=True):
                 # Get neighbors
                 query = "SELECT dst_id FROM edges WHERE src_id = ?"
                 params = [node_id]

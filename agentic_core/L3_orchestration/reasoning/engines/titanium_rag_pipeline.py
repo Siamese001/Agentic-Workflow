@@ -27,6 +27,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class TitaniumQuery:
     """Decomposed query for Titanium pipeline."""
+
     original_query: str
     sub_queries: list[str] = field(default_factory=list)
     query_embedding: list[float] | None = None
@@ -37,6 +38,7 @@ class TitaniumQuery:
 @dataclass
 class TitaniumRetrievalResult:
     """Result from Titanium RAG pipeline."""
+
     content: str
     chunk_id: str
     retrieval_score: float
@@ -211,21 +213,15 @@ class AdaptiveReranker:
                 selected.append(remaining.pop(0))
             else:
                 # Pick based on MMR: λ*score - (1-λ)*max_similarity
-                best_mmr_score = -float('inf')
+                best_mmr_score = -float("inf")
                 best_idx = 0
 
                 for i, result in enumerate(remaining):
                     # Calculate max similarity to selected
-                    max_sim = max(
-                        self._calculate_similarity(result, s)
-                        for s in selected
-                    )
+                    max_sim = max(self._calculate_similarity(result, s) for s in selected)
 
                     # MMR score
-                    mmr = (
-                        (1 - self.diversity_weight) * result.rerank_score -
-                        self.diversity_weight * max_sim
-                    )
+                    mmr = (1 - self.diversity_weight) * result.rerank_score - self.diversity_weight * max_sim
 
                     if mmr > best_mmr_score:
                         best_mmr_score = mmr
@@ -273,12 +269,18 @@ class TitaniumRAGPipeline:
         """Initialize Titanium pipeline.
 
         Args:
-            retriever: Base retriever (HybridSearchEngine)
+            retriever: Base retriever (HybridSearchEngine); defaults to global BGE-backed engine
             llm_client: LLM for compression/decomposition
             enable_compression: Enable context compression
             enable_decomposition: Enable query decomposition
             enable_reranking: Enable adaptive reranking
         """
+        if retriever is None:
+            from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
+                get_global_hybrid_engine,
+            )
+
+            retriever = get_global_hybrid_engine()
         self.retriever = retriever
         self.llm_client = llm_client
 
@@ -311,11 +313,14 @@ class TitaniumRAGPipeline:
             Retrieval result dict
         """
         import time
+
         start_time = time.time()
 
         _trace_id = f"titanium_{self._query_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "TitaniumRAGPipeline.retrieve",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "TitaniumRAGPipeline.retrieve",
         )
 
         # Step 1: Query Decomposition (if enabled)
@@ -357,14 +362,12 @@ class TitaniumRAGPipeline:
 
         # Update stats
         elapsed_ms = (time.time() - start_time) * 1000
-        self._avg_retrieval_time_ms = (
-            self._avg_retrieval_time_ms * self._query_count + elapsed_ms
-        ) / (self._query_count + 1)
+        self._avg_retrieval_time_ms = (self._avg_retrieval_time_ms * self._query_count + elapsed_ms) / (
+            self._query_count + 1
+        )
         self._query_count += 1
 
-        _emit_captures_evaluation_metric(
-            _trace_id, "titanium", "retrieval_time_ms", elapsed_ms,
-        )
+        _emit_captures_evaluation_metric(_trace_id, "titanium", "retrieval_time_ms")
 
         return {
             "query": query,
@@ -401,7 +404,7 @@ class TitaniumRAGPipeline:
             )
 
             if isinstance(self.retriever, HybridSearchEngine):
-                hybrid_results = self.retriever.search(query, top_k=top_k)
+                hybrid_results = self.retriever.search(query)
             else:
                 # Fallback to whatever retriever provides
                 hybrid_results = self.retriever.search(query)
@@ -409,13 +412,15 @@ class TitaniumRAGPipeline:
             # Convert to Titanium results
             titanium_results = []
             for result in hybrid_results:
-                titanium_results.append(TitaniumRetrievalResult(
-                    content=result.content,
-                    chunk_id=result.chunk_id,
-                    retrieval_score=result.combined_score,
-                    rerank_score=result.combined_score,
-                    metadata=result.metadata,
-                ))
+                titanium_results.append(
+                    TitaniumRetrievalResult(
+                        content=result.content,
+                        chunk_id=result.chunk_id,
+                        retrieval_score=result.combined_score,
+                        rerank_score=result.combined_score,
+                        metadata=result.metadata,
+                    )
+                )
 
             return titanium_results
 

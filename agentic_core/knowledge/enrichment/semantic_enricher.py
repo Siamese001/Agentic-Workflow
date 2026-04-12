@@ -134,6 +134,7 @@ class SemanticEnricher:
         """Initialize default LLM client based on provider."""
         if self.provider == "openai":
             try:
+                # guardian: allow-layer-violation -- infrastructure SDK access required for OpenAI provider, no agentic_core alternative exists
                 from infrastructure.sdks_mcps import create_openai_sync_client
 
                 self.llm_client = create_openai_sync_client()

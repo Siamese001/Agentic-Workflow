@@ -91,7 +91,7 @@ SANCTIONED_ADAPTER_FILES = {
     "neo4j_store.py",  # Neo4j — EXPERIMENTAL_ISOLATED; pending deprecation or formalization (§F1)
     "prometheus_metrics.py",  # Prometheus — de-facto L6 approved adapter (defines AGENTIC_REGISTRY)
     "metrics_server.py",  # Prometheus — L6 metrics HTTP server (lazy import guard in place)
-    "optimized_vllm_client.py",  # HTTP/aiohttp — UNDER_REVIEW; L3 raw HTTP for vLLM inference (§F2)
+    "optimized_vllm_client.py",  # HTTP/aiohttp — APPROVED 2026-04-11; sanctioned L3 vLLM HTTP adapter (vllm_http_decision_packet.md §E Path A)
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling

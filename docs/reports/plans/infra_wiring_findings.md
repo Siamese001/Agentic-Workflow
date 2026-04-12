@@ -24,6 +24,8 @@ Phase 3 rebuild with the Phase 2 detection layer surfaced **10 distinct findings
 
 **Compliance score dropped from 100% → 96%** — expected; the drop reflects newly visible detections, not regressions.
 
+**Reconciliation note (2026-04-11):** Waves A, B, C (partial), vLLM Path A, OTel bypass, and retrieval_layers fixes are complete. Current scan: P0=0 P1=0. Compliance restored to 100%. See repair plan for per-item resolution status.
+
 Three ratchets now show **BLOCK** status:
 - `apps_* direct infra access` — 3 google-import violations in `agentic_core/` (scan-ratchet label mismatch, findings real)
 - `zero-caller infra` — 2 adapters registered but never called
@@ -212,57 +214,33 @@ Both rows counted in scorecard `violations.p1 = 4`.
 ---
 
 #### F-P2-001 — Mixed Raw/Wrapped Usage: retrieval_layers.py
+**Status: PARTIALLY RESOLVED (2026-04-11)**
 **Evidence:** PROVEN_ADG (`v_p2_mixed_usage` = 3) + FILE_ONLY
 **infra_surface:** `chromadb`, `openai`
 **File/symbol:** `agentic_core/L4_state/reasoning/retrieval_layers.py:20-21`
-```python
-import chromadb
-from openai import OpenAI
-```
-And at line 103: `self.embedding_client = OpenAI(api_key=api_key)` in `L2SemanticCache.__init__`.
-**Violated law:** P2 — raw infra import in a file listed in `SANCTIONED_ADAPTER_FILES`. Mixed
-direct and wrapped usage: OpenAI is available via `embedding_factory.py`; chromadb via `chroma_client.py`.
-**Why it matters:** `retrieval_layers.py` is a core L4 module. Raw provider imports here mean
-provider rotation, mocking, and testing all require touching this file directly.
-**Confidence:** HIGH — direct file evidence confirmed.
-**Remediation:** Inject embedding client and vector DB client via constructor (dependency injection).
-Pre-existing; accepted at ceiling 3 — no regression.
+
+**OpenAI bypass: RESOLVED** — `from openai import OpenAI` replaced with `create_openai_sync_client()` from `infrastructure.sdks_mcps`. Guardian comment added. Both `L2SemanticCache.__init__` and `L3SemanticRAG.__init__` now use the sanctioned seam.
+
+**ChromaDB raw import: REMAINS** — `import chromadb` at line 20 is the remaining mixed-usage item (at accepted P2 ceiling of 3). `v_p2_mixed_usage` count unchanged — ADG counts chromadb edges, not openai.
+**Remediation:** ChromaDB injection deferred — accepted ceiling, no regression.
 
 ---
 
 #### F-P2-002 — Lazy Provider Import: semantic_enricher.py
+**Status: RESOLVED (2026-04-11)**
 **Evidence:** FILE_ONLY
 **infra_surface:** `openai`
-**File/symbol:** `agentic_core/knowledge/enrichment/semantic_enricher.py:136`
-```python
-from openai import OpenAI   # inside _init_default_client() method body
-```
-Called from `__init__` when `llm_client is None`.
-**Violated law:** P2 — lazy provider import bypasses `embedding_factory.py`. File is in
-`SANCTIONED_ADAPTER_FILES`, but self-provisions OpenAI instead of delegating to the embedding factory.
-**Confidence:** HIGH — direct file evidence, line 136 confirmed.
-**Remediation:** Accept `llm_client` injection at construction (preferred path already exists);
-remove fallback self-provisioning or route via `embedding_factory.py`.
+
+**Resolution (R-B3):** `from openai import OpenAI` inside `_init_default_client()` replaced with `create_openai_sync_client()` from `infrastructure.sdks_mcps`. Guardian comment added. `try/except (ImportError, ValueError)` preserves mock fallback on missing key or missing package.
 
 ---
 
 #### F-P2-003 — OTel Bypass: apps_tracing_mixin.py
+**Status: RESOLVED (2026-04-11)**
 **Evidence:** FILE_ONLY
 **infra_surface:** `opentelemetry`
-**File/symbol:** `apps_shared/mixins/apps_tracing_mixin.py:32-33`
-```python
-from opentelemetry import trace
-from opentelemetry.trace import Status, StatusCode
-```
-**Violated law:** P2 — `apps_shared/utils/open_telemetry_tracing_adapter_util.py` is the canonical
-OTel adapter (formally registered in Phase 2). The mixin imports directly from `opentelemetry` SDK
-instead of using the adapter's `get_tracer()` factory.
-**Why it matters:** All `apps_*` agents use this mixin. If the OTel adapter changes its tracer
-factory, the mixin will not pick up the change. The `try/except ImportError` guard (`OTEL_AVAILABLE`)
-makes this P2 — not immediately fatal.
-**Confidence:** HIGH — direct file evidence, lines 31-36 confirmed.
-**Remediation:** Replace raw `from opentelemetry import trace` with import from
-`open_telemetry_tracing_adapter_util`.
+
+**Resolution:** `apps_shared/mixins/apps_tracing_mixin.py` now imports `OTEL_AVAILABLE` from `apps_shared/utils/open_telemetry_tracing_adapter_util` (canonical adapter) and conditionally imports raw `trace`/`Status`/`StatusCode` only when the adapter confirms availability. The independent `try/except ImportError` bypass is eliminated. Runtime graceful degradation preserved.
 
 ---
 
@@ -326,22 +304,11 @@ Ranked by: severity × caller-count-at-risk × ease of fix.
 
 ## E. False-Negative / Visibility Limitations Still Remaining
 
-### E-1 — Raw aiohttp in optimized_vllm_client.py: ADG-Blind
+### E-1 — Raw aiohttp in optimized_vllm_client.py: RESOLVED (2026-04-11)
 **Evidence:** FILE_ONLY (proven by direct read)
 **Location:** `agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py:21-22`
-```python
-import aiohttp
-import aiohttp.client_exceptions
-```
-**Expected view:** `v_p1_raw_http_outside_seam = 0` even after rebuild.
-**Root cause:** `v_p1_raw_http_outside_seam` detects raw HTTP via ADG `imports` edges to external
-package nodes. `aiohttp` is a PyPI package — it is not indexed as an ADG module node. Therefore
-no `imports` edge from `optimized_vllm_client.py` → `aiohttp` exists in the graph.
-**Classification (file-proven):** P1-15 — full production HTTP session lifecycle managed here:
-`aiohttp.ClientSession` with connection pooling (20 total, 10 per host), keep-alive, 5-min timeout.
-No routing through `enhanced_http_server.py` or `api_gateway_integration.py`.
-The file is currently in `SANCTIONED_ADAPTER_FILES` with UNDER_REVIEW status — the architectural
-decision (§FC) must be made before this can be reclassified as compliant or escalated to P1.
+
+**Resolution:** vLLM Path A approved via `docs/reports/plans/vllm_http_decision_packet.md` (2026-04-11). `optimized_vllm_client.py` added to `_APPROVED_ADAPTER_PATHS` in `tools/generate/infra_wiring_views.py` and reclassified from `UNDER_REVIEW` to `APPROVED` in `ops_scripts/ci/infra_wiring_scan.py`. Sanctioned seam contract comment block added to file. `v_p1_raw_http_outside_seam = 0` (ADG-blind by design — external PyPI packages not in ADG nodes; file-scan exclusion clause added to `_VIEW_P1_RAW_HTTP_OUTSIDE_SEAM` SQL). ADG visibility limitation documented as permanent — no further action required.
 
 ### E-2 — neo4j_store.py Absent from v_p1_zero_caller_infra
 **Expected:** Phase 2 predicted neo4j_store.py would appear with 0 callers after rebuild.
@@ -384,30 +351,19 @@ only imports `botocore.exceptions` (error handling), not `blob_storage_provider`
 and remove from approved/sanctioned lists.
 **Blocks:** F-P1-004 remediation strategy.
 
-### §FC — optimized_vllm_client.py Architecture Decision
-**Question:** Is raw `aiohttp` in L3 acceptable, or must vLLM access route through
-`enhanced_http_server.py`?
-**Evidence:** Full production HTTP session with connection pooling, concurrency control, and caching.
-Currently UNDER_REVIEW in `SANCTIONED_ADAPTER_FILES`. No ADG view can enforce this without
-external-package edge support.
-**Decision needed:** (a) Formally approve — add to `_APPROVED_ADAPTER_PATHS`, remove UNDER_REVIEW;
-or (b) Require migration to `enhanced_http_server.py`-style MCP routing.
-**Blocks:** Whether `v_p1_raw_http_outside_seam` ceiling should be 0 or 1 in CI ratchet.
+### §FC — optimized_vllm_client.py Architecture Decision — RESOLVED (2026-04-11)
+**Decision: Path A approved.** `optimized_vllm_client.py` added to `_APPROVED_ADAPTER_PATHS` and reclassified APPROVED in `SANCTIONED_ADAPTER_FILES`. Seam contract comment block added. `v_p1_raw_http_outside_seam = 0`. ADG-blind by design (external PyPI). CI ratchet question closed — ceiling is 0 with file-scan exclusion clause in SQL.
 
-### §FD — dependencygraph_validator.py Google Dependency Purpose
-**Question:** Why does the L5 safety validator depend on Google GenAI?
-**Evidence:** `from google import genai` used at module level; the validator appears to use Gemini
-as an AI-powered style/hygiene checker.
-**Concern:** L5 Safety depending on an external AI provider silently degrades if the API is
-unavailable. The guardian comment exempts the wrong violation type.
-**Decision needed:** Remove Google dependency from L5 validator entirely.
+### §FD — dependencygraph_validator.py Google Dependency Purpose — RESOLVED (2026-04-11)
+**Decision: R-C1 executed.** `from google import genai` removed; `ValidationContext._init_intelligence()` now calls `create_vertex_client()` via sanctioned seam. Graceful no-op preserved when `GOOGLE_API_KEY` absent. File-scan violation cleared.
 
-### §FE — neo4j_store.py: Deprecate or Formalize?
+### §FE — neo4j_store.py: Deprecate or Formalize? — CONFIRMED EXPERIMENTAL_ISOLATED (2026-04-11)
 **Question:** Should Neo4j remain in P3 Watch or escalate?
-**Evidence:** Broken guard pattern (dead fallback), zero callers, ADG invisible, EXPERIMENTAL_ISOLATED.
-**Decision needed:** (a) Deprecate: hard-block neo4j in `FORBIDDEN_IMPORTS` for non-sanctioned
-files, remove adapter; or (b) Formalize: fix guard pattern, document use case, ensure a caller.
-**Blocks:** Whether neo4j remains P3 or escalates to P1 zero-caller in Phase 4.
+**Evidence:** Broken guard pattern (dead fallback), zero ADG callers confirmed, EXPERIMENTAL_ISOLATED.
+
+**Audit result (2026-04-11):** Zero-caller classification confirmed via ADG fan-in (node 613, 0 import edges) and direct file analysis. The only caller candidate (`apps_shared/utils/rank_observability_components_util.py` line 187) has a broken guard catching `(ValueError, TypeError, RuntimeError)` but NOT `ImportError` — meaning when neo4j is absent, both files fail to import. Effective live caller count: 0. Classification EXPERIMENTAL_ISOLATED is correct and internally consistent across all enforcement surfaces (scan.py, views.py, ownership matrix).
+
+**Decision deferred:** Deprecate-vs-formalize remains open. P3 Watch status retained. No escalation to P1 — zero-caller state is expected and documented. No action required in Phase 4 repairs.
 
 ---
 

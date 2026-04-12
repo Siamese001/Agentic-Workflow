@@ -10,17 +10,25 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-# Add L4_state to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "L4_state"))
+import chromadb
+import numpy as np
+
+# Add L4_state/utils to path for imports (client/ package lives there)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "L4_state" / "utils"))
 
 from client.chroma_client import SovereignChromaClient
+from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM, bge_embed_query
 
 logger = logging.getLogger(__name__)
+
+_BGE_EMBEDDING_DIM = BGE_QUERY_DIM  # backward-compat alias for external readers
+_CANONICAL_CHROMA_PATH = str(Path(__file__).resolve().parents[3] / "data" / "cache" / "chromadb")
 
 
 @dataclass
 class RetrievalResult:
     """Result from semantic retrieval."""
+
     content: str
     metadata: dict[str, Any]
     score: float
@@ -30,6 +38,7 @@ class RetrievalResult:
 @dataclass
 class RetrievalQuery:
     """Query for semantic retrieval."""
+
     text: str
     collections: list[str]
     filters: dict[str, Any] | None = None
@@ -44,26 +53,27 @@ class SemanticRetriever:
     with query routing, multi-collection fusion, and reranking.
     """
 
-    def __init__(self, chroma_persist_dir: str = "artifacts/chromadb"):
+    def __init__(self, chroma_persist_dir: str = _CANONICAL_CHROMA_PATH):
         """
         Initialize semantic retriever.
 
         Args:
-            chroma_persist_dir: ChromaDB persistence directory
+            chroma_persist_dir: ChromaDB persistence directory (defaults to canonical BGE store)
         """
         self.chroma = SovereignChromaClient(persist_dir=chroma_persist_dir)
+        self._bge_chroma = chromadb.PersistentClient(path=chroma_persist_dir)
 
-        # Collection routing rules
+        # BGE-aligned collection routing — all targets hold BAAI/bge-m3 1024-dim vectors
         self.collection_routing = {
-            "code_questions": ["repo_code_chunks", "repo_symbols"],
-            "architecture": ["repo_arch_docs", "repo_symbols"],
-            "implementation": ["repo_code_chunks", "repo_symbols"],
-            "documentation": ["repo_arch_docs"],
-            "general": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
+            "code_questions": ["code_chunks"],
+            "architecture": ["code_chunks", "docs"],
+            "implementation": ["code_chunks"],
+            "documentation": ["docs"],
+            "general": ["code_chunks", "docs"],
         }
 
         # Available collections
-        self.available_collections = self.chroma.list_collections()
+        self.available_collections = [c.name for c in self._bge_chroma.list_collections()]
         logger.info(f"Semantic retriever initialized with collections: {self.available_collections}")
 
     async def retrieve(self, query: RetrievalQuery) -> list[RetrievalResult]:
@@ -115,7 +125,9 @@ class SemanticRetriever:
         else:
             return self.collection_routing["general"]
 
-    async def _parallel_query(self, query: RetrievalQuery, collections: list[str]) -> dict[str, list[RetrievalResult]]:
+    async def _parallel_query(
+        self, query: RetrievalQuery, collections: list[str]
+    ) -> dict[str, list[RetrievalResult]]:
         """Execute parallel queries across collections."""
         results = {}
 
@@ -139,23 +151,38 @@ class SemanticRetriever:
         return results
 
     async def _query_collection(self, collection: str, query: RetrievalQuery) -> list[RetrievalResult]:
-        """Query a single collection."""
+        """Query a single BGE-aligned collection using a real BGE-m3 query embedding."""
         try:
-            # Query ChromaDB
-            chroma_results = self.chroma.query(
-                collection_name=collection,
-                query_texts=[query.text],
+            query_embedding = bge_embed_query(query.text)
+
+            chroma_col = self._bge_chroma.get_collection(collection)
+
+            # Guard: verify stored dimension matches query dimension before querying
+            sample = chroma_col.get(limit=1, include=["embeddings"])
+            sample_embs = sample.get("embeddings")
+            if sample_embs is not None:
+                arr = np.array(sample_embs)
+                stored_dim = arr.shape[1] if arr.ndim == 2 else arr.shape[0]
+                if stored_dim != len(query_embedding):
+                    raise RuntimeError(
+                        f"BGE_DIM_MISMATCH: collection='{collection}' stored dim={stored_dim} "
+                        f"vs query dim={len(query_embedding)}. "
+                        f"Collection must be re-ingested with {BGE_MODEL}."
+                    )
+
+            chroma_results = chroma_col.query(
+                query_embeddings=[query_embedding],
                 n_results=query.max_results,
                 where=query.filters,
+                include=["documents", "metadatas", "distances"],
             )
 
-            # Convert to RetrievalResult objects
             results = []
-            for i in range(len(chroma_results['ids'][0])):
+            for i in range(len(chroma_results["ids"][0])):
                 result = RetrievalResult(
-                    content=chroma_results['documents'][0][i],
-                    metadata=chroma_results['metadatas'][0][i],
-                    score=1.0 - chroma_results['distances'][0][i],  # Convert distance to similarity
+                    content=chroma_results["documents"][0][i],
+                    metadata=chroma_results["metadatas"][0][i],
+                    score=1.0 - chroma_results["distances"][0][i],
                     collection=collection,
                 )
                 results.append(result)
@@ -192,9 +219,8 @@ class SemanticRetriever:
 
         # Apply simple reranking based on collection priority
         collection_priority = {
-            "repo_symbols": 1.1,
-            "repo_code_chunks": 1.05,
-            "repo_arch_docs": 1.0,
+            "code_chunks": 1.1,
+            "docs": 1.0,
         }
 
         for result in all_results:
@@ -233,7 +259,7 @@ class SemanticRetriever:
 
         for i, result in enumerate(results[:5]):  # Use top 5 results
             source = f"{result.collection}:{result.metadata.get('file_path', 'unknown')}"
-            answer_parts.append(f"{i+1}. {result.content[:200]}...")
+            answer_parts.append(f"{i + 1}. {result.content[:200]}...")
             answer_parts.append(f"   Source: {source} (score: {result.score:.2f})")
 
         answer = "\n".join(answer_parts)

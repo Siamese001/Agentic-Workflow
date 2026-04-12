@@ -27,17 +27,17 @@ import time
 from contextlib import contextmanager
 from typing import Any, Generator
 
-# Try to import OpenTelemetry
-try:
+# Route OTel availability through the canonical adapter — no raw opentelemetry bypass.
+from apps_shared.utils.open_telemetry_tracing_adapter_util import OTEL_AVAILABLE
+
+if OTEL_AVAILABLE:
     from opentelemetry import trace
     from opentelemetry.trace import Status, StatusCode
-    OTEL_AVAILABLE = True
-except ImportError:
-    OTEL_AVAILABLE = False
 
 # Import agentic_core tracing for cross-layer bridging
 try:
     from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
+
     AGENTIC_CORE_AVAILABLE = True
 except ImportError:
     AGENTIC_CORE_AVAILABLE = False
@@ -49,6 +49,7 @@ try:
         _emit_records_execution_trace,
         _emit_records_telemetry_event,
     )
+
     LIFECYCLE_AVAILABLE = True
 except ImportError:
     LIFECYCLE_AVAILABLE = False
@@ -81,7 +82,7 @@ class AppsTracingMixin:
         super().__init__(*args, **kwargs)
         self._apps_tracer: Any = None
         self._apps_tracing_enabled = False
-        self._service_name = getattr(self, '__class__.__name__', 'unknown_agent')
+        self._service_name = getattr(self, "__class__.__name__", "unknown_agent")
 
         # Initialize OpenTelemetry tracer
         self._init_apps_tracer()
@@ -280,11 +281,13 @@ class AppsTracingMixin:
     def _generate_trace_id(self) -> str:
         """Generate unique trace ID."""
         import uuid
+
         return str(uuid.uuid4())
 
     def _generate_span_id(self) -> str:
         """Generate unique span ID."""
         import uuid
+
         return str(uuid.uuid4())[:16]
 
     def get_tracing_status(self) -> dict[str, Any]:

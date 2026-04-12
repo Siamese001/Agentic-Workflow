@@ -11,11 +11,14 @@ Provides unified 🔵 intent vs 🟠 fact matching across both search modalities
 
 from __future__ import annotations
 
+import glob
 import logging
 import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+from tqdm import tqdm
 
 # BM25Index imported lazily to avoid L3->L4 violation
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -26,9 +29,16 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 Logger = logging.getLogger(__name__)
 
 
+def _resolve_adg_path() -> str:
+    """Resolve the latest ADG SQLite snapshot dynamically."""
+    candidates = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"))
+    return candidates[-1] if candidates else "artifacts/adg/adg_indexed_latest.sqlite"
+
+
 @dataclass
 class HybridSearchResult:
     """Result from hybrid search combining vector + lexical scores."""
+
     chunk_id: str
     content: str
     vector_score: float = 0.0
@@ -73,14 +83,14 @@ class HybridSearchEngine:
         self._avg_fusion_time_ms = 0.0
 
         # ADG SQLite connection for structural queries
-        self.adg_db_path = adg_db_path or "artifacts/adg/adg_indexed_04062026_1246.sqlite"
+        self.adg_db_path = adg_db_path or _resolve_adg_path()
         self._adg_conn: sqlite3.Connection | None = None
 
     def search(
         self,
         query: str,
         query_embedding: list[float] | None = None,
-        collection_name: str = "docs",
+        collection_name: str = "code_chunks",
         filter_dict: dict[str, Any] | None = None,
         governance_filter: dict[str, Any] | None = None,
     ) -> list[HybridSearchResult]:
@@ -100,6 +110,7 @@ class HybridSearchEngine:
             Fused hybrid search results sorted by combined score
         """
         import time
+
         start_time = time.time()
 
         _trace_id = f"hybrid_search_{self._search_count}"
@@ -120,14 +131,14 @@ class HybridSearchEngine:
 
         # Update stats
         elapsed_ms = (time.time() - start_time) * 1000
-        self._avg_fusion_time_ms = (
-            self._avg_fusion_time_ms * self._search_count + elapsed_ms
-        ) / (self._search_count + 1)
+        self._avg_fusion_time_ms = (self._avg_fusion_time_ms * self._search_count + elapsed_ms) / (
+            self._search_count + 1
+        )
         self._search_count += 1
 
         Logger.info(f"Hybrid search complete: {len(fused_results)} results in {elapsed_ms:.1f}ms")
 
-        return fused_results[:self.top_k]
+        return fused_results[: self.top_k]
 
     def _vector_search(
         self,
@@ -154,7 +165,6 @@ class HybridSearchEngine:
             return results
 
         try:
-
             # Get embedding if not provided
             if query_embedding is None:
                 query_embedding = self._generate_query_embedding(query)
@@ -174,11 +184,16 @@ class HybridSearchEngine:
 
             # Convert to results dict
             for i, (doc_id, doc, metadata, distance) in enumerate(
-                zip(
-                    chroma_results["ids"][0],
-                    chroma_results["documents"][0],
-                    chroma_results["metadatas"][0],
-                    chroma_results["distances"][0],
+                tqdm(
+                    zip(
+                        chroma_results["ids"][0],
+                        chroma_results["documents"][0],
+                        chroma_results["metadatas"][0],
+                        chroma_results["distances"][0],
+                    ),
+                    desc="vector-results",
+                    leave=False,
+                    disable=True,
                 ),
             ):
                 # Convert distance to similarity score (cosine distance -> similarity)
@@ -218,7 +233,7 @@ class HybridSearchEngine:
             # Get top-k from BM25
             bm25_results = self.bm25_index.search(query, top_k=self.top_k * 2)
 
-            for result in bm25_results:
+            for result in tqdm(bm25_results, desc="bm25-results", leave=False, disable=True):
                 doc_id = result.get("id", "")
                 score = result.get("score", 0.0)
                 content = result.get("content", "")
@@ -278,8 +293,7 @@ class HybridSearchEngine:
         # Calculate combined scores
         for doc_id, result in fused.items():
             result.combined_score = (
-                self.vector_weight * result.vector_score +
-                self.lexical_weight * result.lexical_score
+                self.vector_weight * result.vector_score + self.lexical_weight * result.lexical_score
             )
 
         # Sort by combined score
@@ -292,29 +306,22 @@ class HybridSearchEngine:
         return sorted_results
 
     def _generate_query_embedding(self, query: str) -> list[float] | None:
-        """Generate embedding for query (🔵 intent_vec).
+        """Generate embedding for query (🔵 intent_vec) using BAAI/bge-m3 (1024-dim).
+
+        Delegates to the shared process-level singleton in bge_runtime.
+        RuntimeError(BGE_DIM_MISMATCH) propagates — never swallowed silently.
 
         Args:
             query: Query text
 
         Returns:
-            Query embedding vector
+            Query embedding vector (1024-dim, L2-normalised), or None on install failure
         """
         try:
-            # Use BGE-M3 or OpenAI based on config
-            import asyncio
+            from agentic_core.embeddings.bge_runtime import BGEInstallError, bge_embed_query
 
-            from agentic_core.embeddings.embedding_factory import create_embedding_client
-            from agentic_core.embeddings.embedding_input_guard import GuardedText
-
-            client = create_embedding_client("bge-m3")
-            guarded = GuardedText(raw_text=query, redacted_text=query)
-
-            # Run async embedding generation
-            embedding = asyncio.run(client.get_embedding(guarded))
-            return embedding
-
-        except (RuntimeError, ValueError) as e:
+            return bge_embed_query(query)
+        except BGEInstallError as e:
             Logger.error(f"Failed to generate query embedding: {e}")
             return None
 
@@ -490,7 +497,9 @@ class HybridSearchEngine:
             return []
 
     def _apply_governance_filters(
-        self, results: list[HybridSearchResult], filters: dict[str, Any],
+        self,
+        results: list[HybridSearchResult],
+        filters: dict[str, Any],
     ) -> list[HybridSearchResult]:
         """Apply ADG governance filters to search results.
 
@@ -506,7 +515,7 @@ class HybridSearchEngine:
         """
         filtered_results = []
 
-        for result in results:
+        for result in tqdm(results, desc="filter-results", leave=False, disable=True):
             metadata = result.metadata
             should_include = True
 
@@ -563,7 +572,9 @@ class HybridSearchEngine:
             Logger.error(f"ADG query failed (get_node_by_id): {e}")
             return None
 
-    def get_chunks_by_adg_node(self, adg_node_id: int, collection_name: str = "repo_code_chunks") -> list[HybridSearchResult]:
+    def get_chunks_by_adg_node(
+        self, adg_node_id: int, collection_name: str = "repo_code_chunks"
+    ) -> list[HybridSearchResult]:
         """Get ChromaDB chunks for a specific ADG node ID.
 
         Args:
@@ -604,7 +615,9 @@ class HybridSearchEngine:
             Logger.error(f"Failed to get chunks by ADG node: {e}")
             return []
 
-    def get_related_chunks(self, chunk_id: str, relation_type: str = "calls", limit: int = 10) -> list[HybridSearchResult]:
+    def get_related_chunks(
+        self, chunk_id: str, relation_type: str = "calls", limit: int = 10
+    ) -> list[HybridSearchResult]:
         """Get chunks related to a given chunk via ADG structural relationships.
 
         Args:
@@ -653,7 +666,9 @@ class HybridSearchEngine:
             # Get chunks for related nodes
             related_chunks = []
             for node in related_nodes:
-                chunks = self.get_chunks_by_adg_node(node["src_id"] if relation_type in ["calls", "imports"] else node["dst_id"])
+                chunks = self.get_chunks_by_adg_node(
+                    node["src_id"] if relation_type in ["calls", "imports"] else node["dst_id"]
+                )
                 related_chunks.extend(chunks)
 
             return related_chunks[:limit]
@@ -663,7 +678,10 @@ class HybridSearchEngine:
             return []
 
     def expand_results_with_adg(
-        self, results: list[HybridSearchResult], relation_types: list[str] = ["calls"], limit_per_relation: int = 3,
+        self,
+        results: list[HybridSearchResult],
+        relation_types: list[str] = ["calls"],
+        limit_per_relation: int = 3,
     ) -> list[HybridSearchResult]:
         """Expand search results with ADG-related chunks.
 
@@ -695,7 +713,9 @@ class HybridSearchEngine:
         return expanded_results
 
     def expand_results_with_parent_child(
-        self, results: list[HybridSearchResult], max_depth: int = 1,
+        self,
+        results: list[HybridSearchResult],
+        max_depth: int = 1,
     ) -> list[HybridSearchResult]:
         """Expand search results using parent-child relationships from metadata.
 
@@ -716,7 +736,7 @@ class HybridSearchEngine:
         try:
             collection = self.chroma_client.get_collection("repo_code_chunks")
 
-            for result in results:
+            for result in tqdm(results, desc="expand-parents", leave=False, disable=True):
                 parent_id = result.metadata.get("parent_id")
                 chunk_id = result.chunk_id
 
@@ -745,7 +765,9 @@ class HybridSearchEngine:
                     )
 
                     if child_results["ids"] and child_results["ids"][0]:
-                        for i, child_id in enumerate(child_results["ids"][0]):
+                        for i, child_id in enumerate(
+                            tqdm(child_results["ids"][0], desc="expand-children", leave=False, disable=True)
+                        ):
                             if child_id not in seen_ids:
                                 child_chunk = HybridSearchResult(
                                     chunk_id=child_id,
@@ -768,7 +790,10 @@ class HybridSearchEngine:
             return results
 
     def enforce_context_budget(
-        self, results: list[HybridSearchResult], max_tokens: int = 4000, avg_tokens_per_chunk: int = 100,
+        self,
+        results: list[HybridSearchResult],
+        max_tokens: int = 4000,
+        avg_tokens_per_chunk: int = 100,
     ) -> list[HybridSearchResult]:
         """Enforce context budget by limiting number of chunks.
 
@@ -805,19 +830,48 @@ class HybridSearchEngine:
 # Global instance
 _global_hybrid_engine: HybridSearchEngine | None = None
 
+# Canonical BGE store — same path used by ingest_code_chunks.py and SemanticRetriever
+_CANONICAL_CHROMA_PATH = str(Path(__file__).resolve().parents[4] / "data" / "cache" / "chromadb")
+
 
 def get_global_hybrid_engine() -> HybridSearchEngine:
-    """Get or create global hybrid search engine."""
+    """Get or create global hybrid search engine backed by the canonical BGE Chroma store."""
     global _global_hybrid_engine
     if _global_hybrid_engine is None:
-        _global_hybrid_engine = HybridSearchEngine()
+        try:
+            import chromadb as _chromadb
+
+            _chroma_client = _chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
+        except (
+            Exception
+        ):  # guardian: allow-broad-exception -- best-effort client init, falls back to vector-disabled mode
+            _chroma_client = None
+        _global_hybrid_engine = HybridSearchEngine(chroma_client=_chroma_client)
     return _global_hybrid_engine
 
 
 def hybrid_search(
     query: str,
     query_embedding: list[float] | None = None,
-    top_k: int = 10,
+    collection_name: str = "code_chunks",
 ) -> list[HybridSearchResult]:
-    """Convenience function for hybrid search."""
-    return get_global_hybrid_engine().search(query, query_embedding, top_k=top_k)
+    """Convenience function for hybrid search against the global BGE-backed engine."""
+    return get_global_hybrid_engine().search(query, query_embedding, collection_name)
+
+
+def get_hybrid_search_engine(
+    collection_name: str = "code_chunks",
+    vector_weight: float = 0.7,
+    lexical_weight: float = 0.3,
+    top_k: int = 10,
+) -> HybridSearchEngine:
+    """Return a HybridSearchEngine wired to the canonical Chroma store."""
+    import chromadb as _chromadb
+
+    client = _chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
+    return HybridSearchEngine(
+        chroma_client=client,
+        vector_weight=vector_weight,
+        lexical_weight=lexical_weight,
+        top_k=top_k,
+    )

@@ -27,7 +27,7 @@ CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "symbols"
 EMBEDDING_MODEL = "BAAI/bge-m3"
 EMBEDDING_DIM = 1024
-BATCH_SIZE = 32
+BATCH_SIZE = 512
 
 SCAN_DIRS = [
     "agentic_core",
@@ -265,7 +265,7 @@ def embed_batch(model, texts: list[str]) -> list[list[float]]:
         texts,
         convert_to_numpy=True,
         normalize_embeddings=True,
-        batch_size=BATCH_SIZE,
+        batch_size=32,  # internal ST mini-batch; outer loop controls Chroma batch
         show_progress_bar=False,
     ).tolist()
     return [[float(x) for x in emb] for emb in embeddings]
@@ -296,7 +296,8 @@ def run(store_path: Path, dry_run: bool = False) -> None:
     from tools.progress_display import ProgressReporter
 
     print(f"Loading embedding model: {EMBEDDING_MODEL}")
-    model = SentenceTransformer(EMBEDDING_MODEL, device="cpu")
+    model = SentenceTransformer(EMBEDDING_MODEL, device="cuda")
+    model.max_seq_length = 512  # prevent GPU OOM on very long symbol texts
     actual_dim = model.get_sentence_embedding_dimension()
     if actual_dim != EMBEDDING_DIM:
         raise RuntimeError(f"Model dimension mismatch: got {actual_dim}, expected {EMBEDDING_DIM}")

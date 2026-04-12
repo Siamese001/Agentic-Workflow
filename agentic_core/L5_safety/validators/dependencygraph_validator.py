@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ast
 
+from tqdm import tqdm
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -226,7 +228,7 @@ def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-            for attempt in range(1, max_attempts + 1):
+            for attempt in tqdm(range(1, max_attempts + 1), desc="retry", leave=False, disable=True):
                 try:
                     return await func(*args, **kwargs)
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -253,7 +255,7 @@ class DependencyGraph:
     async def build(self, files: list[str]):
         """Asynchronously builds the code graph from a list of files."""
         print("   🕸️ Building Holistic Code Graph...")
-        for file_path in files:
+        for file_path in tqdm(files, desc="build-graph", leave=False, disable=True):
             self.graph[file_path] = {"imports": [], "classes": []}
             try:
                 with open(file_path, encoding="utf-8") as f:
@@ -359,6 +361,7 @@ class ValidationContext:
         api_key = os.environ.get("GOOGLE_API_KEY")
         if api_key:
             try:
+                # guardian: allow-layer-violation -- infrastructure SDK access required for Gemini provider, no agentic_core alternative exists
                 from infrastructure.sdks_mcps import create_vertex_client
 
                 genai = create_vertex_client()
@@ -498,7 +501,7 @@ class ValidationContext:
         print("   🕸️ Building Holistic Code Graph...")
         self.graph.graph = {}
         self.graph.reverse_graph = {}
-        for file_path in self.python_files:
+        for file_path in tqdm(self.python_files, desc="refresh-graph", leave=False, disable=True):
             self.graph.graph[file_path] = {"imports": [], "classes": []}
             try:
                 with open(file_path, encoding="utf-8") as f:

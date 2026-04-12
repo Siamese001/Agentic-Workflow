@@ -7,6 +7,13 @@ Provides high-performance async client for Qwen vLLM inference with:
 - Response caching for identical prompts
 - GPU memory monitoring integration
 """
+# SANCTIONED SEAM — approved L3 vLLM HTTP adapter (2026-04-11 vllm-path-a).
+# Approved hosts: localhost / 127.0.0.1 port 8000-8099 only (Qwen vLLM OpenAI-compat API).
+# Approved callers: qwen_inference_gateway.py, hardened_vllm_client.py, test harnesses only.
+# Must NOT be imported from apps_* or any layer outside the L3 qwen_vllm subtree.
+# Lifecycle: call start() before first request; call close() on shutdown.
+# ADG enforcement: file-scanner only (aiohttp is an external package; ADG edge is invisible).
+# Decision packet: docs/reports/plans/vllm_http_decision_packet.md §E (Path A).
 
 from __future__ import annotations
 
@@ -27,6 +34,7 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class VLLMRequest:
     """Single vLLM inference request."""
+
     prompt: str
     max_tokens: int = 2048
     temperature: float = 0.1
@@ -38,6 +46,7 @@ class VLLMRequest:
 @dataclass(frozen=True)
 class VLLMResponse:
     """vLLM inference response."""
+
     success: bool
     text: str
     model: str
@@ -144,8 +153,9 @@ class OptimizedVLLMClient:
             try:
                 await self._batch_task
             except asyncio.CancelledError as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("optimized_vllm_client: Exception swallowed at L146: %s", e)
+                logging.getLogger(__name__).debug("optimized_vllm_client: Exception swallowed at L146: %s", e)
 
         if self._session:
             await self._session.close()

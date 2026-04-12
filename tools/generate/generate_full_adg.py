@@ -283,6 +283,15 @@ def generate_full_adg(
     # --- ADG materialized views: structural/authority/trace/snapshot visibility ---
     _materialize_adg_views(paths.sqlite)
 
+    # --- P6: Derived graph projection (non-blocking, adg_graph_<ts>.sqlite) ---
+    try:
+        from tools.generate.graph_projection import build_graph_projection
+
+        _graph_proj_path = build_graph_projection(paths.sqlite, adg_artifacts_dir, ts)
+        print(f"[ADG] P6 graph projection: {_graph_proj_path.name}")
+    except Exception as e:  # guardian: allow-silent-swallow -- graph projection is a non-critical derived artifact; failure must never block the canonical CI truth path
+        print(f"[ADG] P6 graph projection skipped: {e}")
+
     # --- Architecture witness-tier gates: Class A positive / Class B absence ---
     _check_witness_tier_gates(sqlite_path=prod_sqlite_path)
 
@@ -509,11 +518,16 @@ def generate_full_adg(
     # --- Create zip archive of consolidated artifacts + Wave 6 reports ---
     # Build artifact file list for zip (no JSON graphs - 100.75 MB savings)
     # NOTE: adg_graphsnap_*.json is an internal drift detection state file, not archived
-    # Zip contains: 2 ADG artifacts (snapshot.json, sqlite) + reports
+    # Zip contains: 2 ADG artifacts (snapshot.json, sqlite) + reports + burndown + watchlists
     artifact_files = [
         paths.snapshot,
         paths.sqlite,
     ]
+
+    # Include derived graph projection in zip if it was produced this run
+    _proj_candidates = sorted(adg_artifacts_dir.glob(f"adg_graph_{ts}.sqlite"))
+    if _proj_candidates:
+        artifact_files.append(_proj_candidates[0])
 
     # Add high-signal reports to zip archive
     report_files = [
@@ -528,6 +542,26 @@ def generate_full_adg(
     if existing_reports:
         artifact_files.extend(existing_reports)
         print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
+
+    # Add burndown table and watchlists (small JSON, high signal, excluded graphsnap)
+    # Watchlist files use datetime.now() with seconds, so glob for most-recent match this run
+    import time as _zip_time
+
+    _run_cutoff = _zip_time.time() - 600  # files modified within last 10 min belong to this run
+    extra_files: list[Path] = []
+    burndown = adg_artifacts_dir / "adg_burndown_table.json"
+    if burndown.exists():
+        extra_files.append(burndown)
+    for pattern in ("adg_anomaly_watchlist_*.json", "adg_graph_watchlist_*.json"):
+        candidates = sorted(
+            (f for f in adg_artifacts_dir.glob(pattern) if f.stat().st_mtime >= _run_cutoff),
+            key=lambda f: f.stat().st_mtime,
+        )
+        if candidates:
+            extra_files.append(candidates[-1])  # most recent from this run
+    if extra_files:
+        artifact_files.extend(extra_files)
+        print(f"[ADG] Adding {len(extra_files)} extra artifacts to zip archive (burndown/watchlists)")
 
     # --- Create zip archive (always enabled) ---
     zip_created = False

@@ -1,11 +1,19 @@
 """ADG Core Models — Pydantic models for type-safe ADG entities."""
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
+from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+__all__ = [
+    "GraphProjectionBackend",
+]
+
 
 class ADGNode(BaseModel):
     """Canonical node representation from SQLite."""
+
     id: str
     adg_name: str
     entity_type: str
@@ -19,6 +27,7 @@ class ADGNode(BaseModel):
 
 class ADGEdge(BaseModel):
     """Canonical edge representation from SQLite."""
+
     id: str
     src_id: str
     dst_id: str
@@ -34,6 +43,7 @@ class ADGEdge(BaseModel):
 
 class ADGResponse(BaseModel):
     """Unified response shape regardless of backend."""
+
     status: str = "ok"
     data: dict[str, Any]
     backend_used: str = Field(..., description="redis|sqlite")
@@ -42,9 +52,10 @@ class ADGResponse(BaseModel):
 
 class HealthStatus(BaseModel):
     """Health check response."""
+
     mode: str  # "sqlite_only" | "full"
     sqlite: str  # "healthy" | "degraded" | "unavailable"
-    redis: str   # "healthy" | "degraded" | "unavailable"
+    redis: str  # "healthy" | "degraded" | "unavailable"
     cache_hit_capable: bool
     schema_version: str
     adg_snapshot_id: str

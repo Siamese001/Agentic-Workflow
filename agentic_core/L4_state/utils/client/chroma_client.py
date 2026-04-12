@@ -3,8 +3,8 @@ Sovereign ChromaDB Client
 Persistent semantic memory client aligned with Library OS SSOT principles.
 """
 
-import hashlib
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +21,7 @@ class SovereignChromaClient:
     For Wave 1, we'll use simple text-based embeddings as a fallback.
     """
 
-    def __init__(self, persist_dir: str = "artifacts/chromadb"):
+    def __init__(self, persist_dir: str = "data/cache/chromadb"):
         """
         Initialize ChromaDB client.
 
@@ -37,7 +37,7 @@ class SovereignChromaClient:
         # Cache for collections
         self._collections = {}
 
-        logger.info("ChromaDB client initialized (using fallback embeddings)")
+        logger.info("ChromaDB client initialized")
 
     def get_collection(self, name: str):
         """
@@ -52,40 +52,36 @@ class SovereignChromaClient:
         if name not in self._collections:
             self._collections[name] = self.client.get_or_create_collection(
                 name=name,
-                metadata={"description": f"Semantic collection for {name}"},
+                metadata={"hnsw:space": "cosine", "description": f"Semantic collection for {name}"},
             )
         return self._collections[name]
 
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
         """
-        Generate simple fallback embeddings for texts.
+        Generate BGE-M3 embeddings for texts.
 
         Args:
             texts: List of text strings to embed
 
         Returns:
-            List of embedding vectors (384-dim each)
+            List of embedding vectors (1024-dim each)
+
+        Raises:
+            RuntimeError: If EMBEDDING_ENABLED is not set to 'true'
         """
         if not texts:
             return []
 
-        # Simple hash-based embedding as fallback
-        embeddings = []
-        for text in texts:
-            # Create a deterministic embedding from text hash
-            text_hash = hashlib.sha256(text.encode()).hexdigest()
-            # Convert hash to 384-dim vector
-            vector = []
-            for i in range(0, len(text_hash), 2):
-                hex_pair = text_hash[i:i+2]
-                val = int(hex_pair, 16) / 255.0  # Normalize to 0-1
-                vector.append(val)
-            # Pad or truncate to 384 dimensions
-            while len(vector) < 384:
-                vector.append(0.0)
-            embeddings.append(vector[:384])
+        if os.getenv("EMBEDDING_ENABLED", "").lower() != "true":
+            raise RuntimeError(
+                "embed_texts() called but EMBEDDING_ENABLED is not 'true'. "
+                "Set EMBEDDING_ENABLED=true to enable BGE-M3 embedding."
+            )
 
-        logger.debug(f"Generated {len(embeddings)} fallback embeddings of dimension 384")
+        from agentic_core.embeddings.bge_runtime import bge_embed_query
+
+        embeddings = [bge_embed_query(text) for text in texts]
+        logger.debug(f"Generated {len(embeddings)} BGE-M3 embeddings of dimension 1024")
         return embeddings
 
     def add_documents(
@@ -161,7 +157,9 @@ class SovereignChromaClient:
             where_document=where_document,
         )
 
-        logger.info(f"Queried collection '{collection_name}' with {len(query_texts)} queries, returned {len(results['ids'][0])} results")
+        logger.info(
+            f"Queried collection '{collection_name}' with {len(query_texts)} queries, returned {len(results['ids'][0])} results"
+        )
         return results
 
     def get_collection_stats(self, collection_name: str) -> dict[str, Any]:

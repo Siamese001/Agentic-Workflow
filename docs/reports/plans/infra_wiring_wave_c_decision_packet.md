@@ -1,19 +1,24 @@
 # Infrastructure Wiring Wave C — Decision Packet
 
 **Generated:** 2026-04-11
+**Reconciled:** 2026-04-11 (post-Wave B/vLLM/OTel/retrieval_layers)
 **Tier:** T2 — Decision-prep only. No code changes in this document.
-**Preceding waves:** Wave A complete ✅ | Wave B (R-B1 + R-B2) complete ✅ | R-B3 blocked
+**Preceding waves:** Wave A ✅ | Wave B R-B1+R-B2 ✅ | vLLM Path A ✅ | OTel bypass ✅ | retrieval_layers OpenAI bypass ✅
+**R-B3 blocker RESOLVED:** `create_openai_sync_client()` added to `infrastructure/sdks_mcps/__init__.py` during retrieval_layers fix — `semantic_enricher.py` patch can proceed
+**R-C2 RESOLVED:** vLLM Path A approved via `vllm_http_decision_packet.md`
+**Status: ALL ITEMS COMPLETE ✅** — R-C1, R-B3, R-C3 confirmed done via repo truth-pass (2026-04-11)
 
 ---
 
 ## A. Executive Summary
 
-| Item | Classification | Recommended Path | HITL Required? |
-|---|---|---|---|
-| R-C1: `dependencygraph_validator.py` Google import | **Live optional behavior** — `genai.Client()` called at runtime | Route through `create_vertex_client()` same as R-B1/R-B2 | No — same pattern already approved by Wave B |
-| R-B3 unblock: `semantic_enricher.py` OpenAI seam | **Interface mismatch** — `create_openai_client()` returns async; enricher is sync | Add `create_openai_sync_client()` to seam | No — minimal seam extension |
-| Deletion gate: `cache/core/redis_cache_client.py` | **Zero callers confirmed** — no production import from dead-duplicate path | Safe to delete | No |
-| Dormant-vs-delete: `blob_storage_provider.py` | **Live callers exist** — `create_storage_adapter` called in `NervousSystemAgent` | Keep dormant; do NOT delete | No — evidence is clear |
+| Item | Classification | Recommended Path | HITL Required? | Status |
+|---|---|---|---|---|
+| R-C1: `dependencygraph_validator.py` Google import | **Live optional behavior** — `genai.Client()` called at runtime | Route through `create_vertex_client()` same as R-B1/R-B2 | No — same pattern already approved by Wave B | ✅ DONE |
+| R-B3 unblock: `semantic_enricher.py` OpenAI seam | **Interface mismatch resolved** — `create_openai_sync_client()` now exists in seam | Use `create_openai_sync_client()` in `_init_default_client()` | No | ✅ DONE |
+| Deletion gate: `cache/core/redis_cache_client.py` | **Zero callers confirmed** — no production import from dead-duplicate path | Safe to delete | No | ✅ DONE — file deleted |
+| Dormant-vs-delete: `blob_storage_provider.py` | **Live callers exist** — `create_storage_adapter` called in `NervousSystemAgent` | Keep dormant; do NOT delete | No | ✅ CONFIRMED DORMANT-RETAINED |
+| R-C2: `optimized_vllm_client.py` aiohttp | Architecture decision | vLLM Path A approved | Was YES | ✅ RESOLVED |
 
 ---
 

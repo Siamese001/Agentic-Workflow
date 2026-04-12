@@ -60,6 +60,13 @@ _APPROVED_ADAPTER_PATHS = (
     # REMOVED 2026-04-11 R-A1: cache/core/redis_cache_client.py deregistered — dead duplicate of cache/redis_cache_client.py (F-P1-005). File retained on disk.
     "agentic_core/L6_observability/utils/metrics/prometheus_metrics.py",  # Prometheus — de-facto approved adapter at L6 (defines AGENTIC_REGISTRY)
     "agentic_core/L4_state/enforcement/neo4j_store.py",  # Neo4j — EXPERIMENTAL_ISOLATED; zero callers expected; tracked for P1 visibility
+    # APPROVED 2026-04-11 vllm-path-a: optimized_vllm_client.py — sanctioned L3 vLLM HTTP adapter.
+    # Approved hosts: localhost / 127.0.0.1 port 8000-8099 only (Qwen vLLM OpenAI-compat API).
+    # Approved callers: qwen_inference_gateway.py, hardened_vllm_client.py, test harnesses only.
+    # Must NOT be imported from apps_* or any layer outside L3 qwen_vllm subtree.
+    # Lifecycle: start() before first request, close() on shutdown. ADG enforcement: file-scanner only.
+    # Decision packet: docs/reports/plans/vllm_http_decision_packet.md §E (Path A).
+    "agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py",
 )
 
 # Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
@@ -488,6 +495,7 @@ WHERE e.relation_type = 'imports'
   AND n_src.resolved_path NOT LIKE 'apps_shared/%'
   AND n_src.resolved_path NOT LIKE 'tests/%'
   AND n_src.resolved_path NOT LIKE '%api_gateway_integration%'
+  AND n_src.resolved_path NOT LIKE '%optimized_vllm_client%'
 """
 
 

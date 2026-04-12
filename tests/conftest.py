@@ -199,4 +199,93 @@ TEST_CONFIG = {"batch_size": 32, "timeout": 30, "max_retries": 3}
 TEST_AGENT_CONFIG = {"id": "test-agent-001", "type": "test", "state": "idle"}
 
 
+# ---------------------------------------------------------------------------
+# Shared ADG sqlite fixtures
+# ---------------------------------------------------------------------------
+
+
+def _find_latest_canonical_sqlite() -> "Path | None":
+    """Return the latest adg_indexed_*.sqlite path or None if none exists."""
+    adg_dir = Path(_REPO_ROOT) / "artifacts" / "adg"
+    files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
+    return files[-1] if files else None
+
+
+@pytest.fixture
+def latest_canonical_sqlite():
+    """Yield the path to the latest canonical adg_indexed_<ts>.sqlite.
+
+    Auto-skips the test if no canonical artifact exists in artifacts/adg/.
+    Never mutates the artifact — callers must treat it as read-only.
+    """
+    path = _find_latest_canonical_sqlite()
+    if path is None:
+        pytest.skip("No canonical adg_indexed_*.sqlite found in artifacts/adg/")
+    return path
+
+
+@pytest.fixture
+def tmp_canonical_sqlite(tmp_path):
+    """Yield a minimal writable canonical-schema sqlite in a temp directory.
+
+    Suitable for unit tests that need a real sqlite file but must not touch
+    live artifacts. Schema mirrors the canonical adg_indexed_<ts>.sqlite tables
+    needed by graph_projection.py: nodes, edges, meta, violations.
+    """
+    import sqlite3 as _sqlite3
+
+    db_path = tmp_path / "adg_indexed_test.sqlite"
+    conn = _sqlite3.connect(str(db_path))
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS nodes (
+            id             INTEGER PRIMARY KEY,
+            adg_name       TEXT NOT NULL UNIQUE,
+            entity_type    TEXT NOT NULL DEFAULT 'module',
+            layer          TEXT NOT NULL DEFAULT 'L0_routing',
+            file_path      TEXT NOT NULL DEFAULT '',
+            resolved_path  TEXT NOT NULL DEFAULT '',
+            precision_type TEXT NOT NULL DEFAULT 'symbol'
+        );
+        CREATE TABLE IF NOT EXISTS edges (
+            id               INTEGER PRIMARY KEY,
+            src_id           INTEGER NOT NULL,
+            dst_id           INTEGER NOT NULL,
+            relation_type    TEXT NOT NULL DEFAULT 'imports',
+            edge_kind        TEXT NOT NULL DEFAULT 'static',
+            source_file      TEXT NOT NULL DEFAULT '',
+            line_no          INTEGER NOT NULL DEFAULT 0,
+            confidence_score REAL NOT NULL DEFAULT 1.0
+        );
+        CREATE TABLE IF NOT EXISTS meta (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS violations (
+            id             INTEGER PRIMARY KEY,
+            src_id         INTEGER,
+            dst_id         INTEGER,
+            relation_type  TEXT NOT NULL DEFAULT 'imports',
+            edge_kind      TEXT NOT NULL DEFAULT 'static',
+            source_file    TEXT NOT NULL DEFAULT '',
+            line_no        INTEGER NOT NULL DEFAULT 0,
+            severity       TEXT NOT NULL DEFAULT 'MEDIUM',
+            category       TEXT NOT NULL DEFAULT ''
+        );
+        INSERT INTO meta VALUES ('artifact_digest', 'deadbeef1234567890abcdef');
+        INSERT INTO meta VALUES ('schema_version', '3.0.0');
+        INSERT INTO meta VALUES ('snapshot_id', 'test-snap-001');
+        INSERT INTO nodes VALUES (1, 'ADG::Module::tools/a', 'module', 'L0_routing', 'tools/a.py', 'tools/a.py', 'symbol');
+        INSERT INTO nodes VALUES (2, 'ADG::Module::tools/b', 'module', 'L1_cognition', 'tools/b.py', 'tools/b.py', 'symbol');
+        INSERT INTO nodes VALUES (3, 'ADG::Module::tools/c', 'module', 'L2_execution', 'tools/c.py', 'tools/c.py', 'symbol');
+        INSERT INTO edges VALUES (1, 1, 2, 'imports', 'static', 'tools/a.py', 5, 1.0);
+        INSERT INTO edges VALUES (2, 2, 3, 'imports', 'static', 'tools/b.py', 3, 1.0);
+        INSERT INTO edges VALUES (3, 3, 1, 'imports', 'static', 'tools/c.py', 1, 1.0);
+        """
+    )
+    conn.commit()
+    conn.close()
+    return db_path
+
+
 _install_integration_compat_shims()
