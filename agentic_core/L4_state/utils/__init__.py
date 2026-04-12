@@ -184,13 +184,6 @@ _emit_validated_by_safety_plane("p1", "__init__", "safety_validation")
 _emit_invokes_eval("p1", "__init__", "eval_call")
 _emit_proposal_commits_routing("p1", "__init__", "routing_commit")
 
-try:
-    from agentic_core.L4_state.utils.context_util import L4ContextManager, get_context_manager
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
-    L4ContextManager = None  # type: ignore[assignment,misc]
-    get_context_manager = None  # type: ignore[assignment]
-
 __all__ = [
     "calculate_mccabe_complexity",
     "check_function_complexity",
@@ -199,6 +192,4 @@ __all__ = [
     "extract_layer_from_path",
     "extract_layer_from_module",
     "is_gravity_violation",
-    "L4ContextManager",
-    "get_context_manager",
 ]
